@@ -36,8 +36,7 @@ public class DBManager {
 	private static final String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME
 			+ "?serverTimezone=UTC";
 
-	private static final String DB_MSQ_CONN_OK = "CONEXION CORRECTA";
-	private static final String DB_MSQ_CONN_NO = "ERROR EN LA CONEXION";
+
 
 	/**
 	 * Conecta el proyecto con el driver JBDC
@@ -46,12 +45,9 @@ public class DBManager {
 	 */
 	public static boolean loadDriver() {
 		try {
-			System.out.print("Cargando Driver...");
 			Class.forName("com.mysql.cj.jdbc.Driver");
-			System.out.println("OK!");
 			return true;
 		} catch (ClassNotFoundException ex) {
-			System.err.println("ERROR. Fallo en driver.");
 			return false;
 		}
 	}
@@ -64,13 +60,11 @@ public class DBManager {
 	public static boolean isConnected() {
 		// Comprobamos estado de la conexión
 		try {
-			System.out.print("Conectando a la base de datos... ");
+
 			if (conn != null && conn.isValid(0)) {
-				System.out.println(DB_MSQ_CONN_OK);
 				return true;
 			}
 		} catch (SQLException ex) {
-			System.out.println(DB_MSQ_CONN_NO);
 			return false;
 		}
 		return false;

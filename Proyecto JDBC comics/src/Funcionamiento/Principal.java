@@ -1,7 +1,6 @@
 package Funcionamiento;
 import java.io.IOException;
 
-import DBManager.DBManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -17,14 +16,12 @@ public class Principal extends Application{
 			primaryStage.setScene(new Scene(root)); //Creamos una escena para poder usar la aplicacion.
 			primaryStage.setTitle("Aplicacion bbdd comics"); //Titulo de la aplicacion.
 			primaryStage.show(); //Mostramos la aplicacion.
-
 		}
+		
 		public static void main(String[] args) 
 		{
-			DBManager.loadDriver();
-			DBManager.isConnected();
+			
 			
 			launch(args);
 		}
-
 }
