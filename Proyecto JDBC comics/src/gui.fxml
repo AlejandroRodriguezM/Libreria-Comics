@@ -6,27 +6,28 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 
-
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="495.0" prefWidth="715.0" style="-fx-background-color: DFA394;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="495.0" prefWidth="715.0" style="-fx-background-color: DFA394;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller">
    <children>
-      <Label alignment="TOP_LEFT" layoutX="471.0" layoutY="216.0" prefHeight="249.0" prefWidth="222.0" style="-fx-background-color: white;" />
-      <TextField layoutX="23.0" layoutY="51.0" />
-      <TextField layoutX="23.0" layoutY="118.0" />
-      <TextField layoutX="23.0" layoutY="184.0" />
+      <Label fx:id="labelResultado" alignment="TOP_LEFT" layoutX="471.0" layoutY="216.0" prefHeight="249.0" prefWidth="222.0" style="-fx-background-color: white;" />
+      <TextField fx:id="NombreComic" layoutX="23.0" layoutY="51.0" />
+      <TextField fx:id="NombreGuinista" layoutX="23.0" layoutY="118.0" />
+      <TextField fx:id="NombreDibujante" layoutX="23.0" layoutY="184.0" />
       <TextField layoutX="23.0" layoutY="21.0" prefHeight="24.0" prefWidth="140.0" text="Nombre del comic" />
       <TextField layoutX="23.0" layoutY="84.0" prefHeight="24.0" prefWidth="162.0" text="Nombre del guionista" />
       <TextField layoutX="23.0" layoutY="152.0" prefHeight="24.0" prefWidth="162.0" text="Nombre del dibujante" />
-      <TextField layoutX="23.0" layoutY="256.0" />
+      <TextField layoutX="23.0" layoutY="256.0" onAction="#NombreVariante" />
       <TextField layoutX="23.0" layoutY="220.0" prefHeight="24.0" prefWidth="119.0" text="Artista variante" />
-      <TextField layoutX="23.0" layoutY="328.0" />
+      <TextField layoutX="23.0" layoutY="328.0" onAction="#numero" />
       <TextField layoutX="23.0" layoutY="295.0" prefHeight="24.0" prefWidth="72.0" text="Numero" />
-      <TextField layoutX="23.0" layoutY="395.0" />
+      <TextField fx:id="nombreEditorial" layoutX="23.0" layoutY="395.0" />
       <TextField layoutX="23.0" layoutY="362.0" prefHeight="24.0" prefWidth="72.0" text="Editorial" />
-      <Button layoutX="471.0" layoutY="149.0" mnemonicParsing="false" prefHeight="54.0" prefWidth="222.0" text="Añadir a la base de datos" />
-      <RadioButton layoutX="27.0" layoutY="430.0" mnemonicParsing="false" text="Tomo" />
-      <RadioButton layoutX="27.0" layoutY="463.0" mnemonicParsing="false" text="Grapa" />
-      <Label alignment="TOP_LEFT" layoutX="471.0" layoutY="18.0" prefHeight="65.0" prefWidth="222.0" style="-fx-background-color: white;" />
+      <Button fx:id="botonAniadirBBDD" layoutX="471.0" layoutY="149.0" mnemonicParsing="false" prefHeight="54.0" prefWidth="222.0" text="Añadir a la base de datos" />
+      <RadioButton fx:id="botonTomo" layoutX="27.0" layoutY="430.0" mnemonicParsing="false" text="Tomo" />
+      <RadioButton fx:id="BotonGrapa" layoutX="27.0" layoutY="463.0" mnemonicParsing="false" text="Grapa" />
+      <Label fx:id="labelConexion" alignment="TOP_LEFT" layoutX="471.0" layoutY="18.0" prefHeight="65.0" prefWidth="222.0" style="-fx-background-color: white;" />
       <TextField layoutX="288.0" layoutY="152.0" prefHeight="24.0" prefWidth="93.0" text="Version 1.0" />
       <TextField layoutX="272.0" layoutY="181.0" prefHeight="31.0" prefWidth="126.0" text="Por @silverAlox" />
+      <TextField fx:id="anioPublicacion" layoutX="203.0" layoutY="48.0" />
+      <TextField layoutX="203.0" layoutY="18.0" prefHeight="24.0" prefWidth="140.0" text="Año publicacion" />
    </children>
 </Pane>
