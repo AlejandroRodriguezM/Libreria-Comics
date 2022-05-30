@@ -14,7 +14,7 @@ public class Principal extends Application{
 			Parent root = FXMLLoader.load(getClass().getResource("gui.fxml")); //Obtenemos el diseño en la ruta y fichero ya creado.
 			primaryStage.setScene(new Scene(root)); //Creamos una escena para poder usar la aplicacion.
 			primaryStage.setTitle("Aplicacion bbdd comics"); //Titulo de la aplicacion.
-			primaryStage.show(); //Mostramos la aplicacion-
+			primaryStage.show(); //Mostramos la aplicacion.
 
 		}
 		public static void main(String[] args) 
