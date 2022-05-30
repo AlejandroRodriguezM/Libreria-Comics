@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 
 public class Principal extends Application{
 	
-	//Metodo que permite la ejecutcion de la aplicacion
+	//Metodo que permite la ejecutcion de la aplicacion.
 		public void start(Stage primaryStage) throws IOException 
 		{
 			Parent root = FXMLLoader.load(getClass().getResource("gui.fxml")); //Obtenemos el diseño en la ruta y fichero ya creado.

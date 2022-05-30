@@ -5,7 +5,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 
-//Controlado
+//Controlador
 
 public class Controller {
 
