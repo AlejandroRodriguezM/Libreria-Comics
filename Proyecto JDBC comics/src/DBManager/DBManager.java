@@ -88,8 +88,6 @@ public class DBManager {
 		} catch (SQLException ex) {
 			return null;
 		}
-		
-		
 	}
 	
 	public static String datos(String mens) {

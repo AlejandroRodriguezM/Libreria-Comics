@@ -22,7 +22,7 @@
       <TextField layoutX="23.0" layoutY="153.0" prefHeight="24.0" prefWidth="72.0" text="Numero" />
       <TextField fx:id="nombreEditorial" layoutX="208.0" layoutY="188.0" />
       <TextField layoutX="208.0" layoutY="153.0" prefHeight="24.0" prefWidth="72.0" text="Editorial" />
-      <Button fx:id="botonAniadirBBDD" layoutX="23.0" layoutY="279.0" mnemonicParsing="false" prefHeight="54.0" prefWidth="222.0" text="Añadir a la base de datos" />
+      <Button fx:id="botonAniadirBBDD" layoutX="23.0" layoutY="279.0" mnemonicParsing="false" onAction="#BotonAniadir" prefHeight="54.0" prefWidth="222.0" text="Añadir a la base de datos" />
       <RadioButton fx:id="botonTomo" layoutX="198.0" layoutY="224.0" mnemonicParsing="false" text="Tomo" />
       <RadioButton fx:id="botonGrapa" layoutX="196.0" layoutY="252.0" mnemonicParsing="false" text="Grapa" />
       <Label fx:id="labelConexion" alignment="TOP_LEFT" layoutX="474.0" layoutY="283.0" prefHeight="132.0" prefWidth="235.0" style="-fx-background-color: white;" />
@@ -30,13 +30,13 @@
       <TextField layoutX="474.0" layoutY="471.0" prefHeight="31.0" prefWidth="126.0" text="Por @silverAlox" />
       <TextField fx:id="anioPublicacion" layoutX="23.0" layoutY="249.0" prefHeight="24.0" prefWidth="53.0" />
       <TextField layoutX="21.0" layoutY="221.0" prefHeight="24.0" prefWidth="119.0" text="Año publicacion" />
-      <TextField fx:id="nombreUser" layoutX="530.0" layoutY="118.0" />
-      <TextField layoutX="530.0" layoutY="84.0" prefHeight="24.0" prefWidth="150.0" text="Nombre de usuario" />
-      <TextField fx:id="ContrasniaUser" layoutX="530.0" layoutY="188.0" />
-      <TextField layoutX="530.0" layoutY="153.0" prefHeight="24.0" prefWidth="140.0" text="Contraseña" />
-      <Button fx:id="botonConexion" layoutX="530.0" layoutY="217.0" mnemonicParsing="false" prefHeight="54.0" prefWidth="140.0" text="Conectar" />
+      <Button fx:id="botonConexion" layoutX="476.0" layoutY="218.0" mnemonicParsing="false" onAction="#BotonConectar" prefHeight="54.0" prefWidth="140.0" text="Conectar" />
       <Line endX="460.5" endY="10.292892456054688" startX="460.5" startY="546.5" />
-      <TextField fx:id="nombreBBDD" layoutX="532.0" layoutY="51.0" />
-      <TextField alignment="TOP_LEFT" layoutX="530.0" layoutY="10.0" prefHeight="31.0" prefWidth="150.0" text="Nombre de la bbdd" />
+      <TextField fx:id="nombreGuinista1" layoutX="474.0" layoutY="52.0" />
+      <TextField layoutX="474.0" layoutY="23.0" prefHeight="24.0" prefWidth="170.0" text="Nombre bbdd" />
+      <TextField fx:id="nombreVariante1" layoutX="474.0" layoutY="119.0" />
+      <TextField layoutX="474.0" layoutY="85.0" prefHeight="24.0" prefWidth="170.0" text="Nombre usuario" />
+      <TextField fx:id="nombreEditorial1" layoutX="474.0" layoutY="189.0" />
+      <TextField layoutX="474.0" layoutY="154.0" prefHeight="24.0" prefWidth="170.0" text="Contraseñña bbdd" />
    </children>
 </Pane>
