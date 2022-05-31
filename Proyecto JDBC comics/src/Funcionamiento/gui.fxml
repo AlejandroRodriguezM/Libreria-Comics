@@ -8,45 +8,47 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="558.0" prefWidth="976.0" style="-fx-background-color: DFA394;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Funcionamiento.Controller">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="559.0" prefWidth="981.0" style="-fx-background-color: DFA394;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Funcionamiento.Controller">
    <children>
-      <Label fx:id="labelResultado" alignment="TOP_LEFT" layoutX="23.0" layoutY="391.0" prefHeight="154.0" prefWidth="286.0" style="-fx-background-color: white;" />
-      <TextField fx:id="nombreComic" layoutX="23.0" layoutY="94.0" />
-      <TextField fx:id="nombreGuinista" layoutX="208.0" layoutY="94.0" />
-      <TextField fx:id="nombreDibujante" layoutX="23.0" layoutY="161.0" />
-      <TextField layoutX="23.0" layoutY="64.0" prefHeight="24.0" prefWidth="140.0" text="Nombre del comic" />
-      <TextField layoutX="208.0" layoutY="65.0" prefHeight="24.0" prefWidth="162.0" text="Nombre del guionista" />
-      <TextField layoutX="23.0" layoutY="127.0" prefHeight="24.0" prefWidth="162.0" text="Nombre del dibujante" />
-      <TextField fx:id="nombreVariante" layoutX="208.0" layoutY="161.0" />
-      <TextField layoutX="208.0" layoutY="127.0" prefHeight="24.0" prefWidth="119.0" text="Artista variante" />
-      <TextField fx:id="numeroComic" layoutX="23.0" layoutY="231.0" />
-      <TextField layoutX="23.0" layoutY="196.0" prefHeight="24.0" prefWidth="72.0" text="Numero" />
-      <TextField fx:id="nombreEditorial" layoutX="208.0" layoutY="231.0" />
-      <TextField layoutX="208.0" layoutY="196.0" prefHeight="24.0" prefWidth="72.0" text="Editorial" />
-      <Button fx:id="botonAniadirBBDD" layoutX="23.0" layoutY="322.0" mnemonicParsing="false" onAction="#BotonAniadir" prefHeight="54.0" prefWidth="222.0" text="Añadir a la base de datos" />
-      <Label fx:id="labelConexion" alignment="TOP_LEFT" layoutX="474.0" layoutY="283.0" prefHeight="132.0" prefWidth="235.0" style="-fx-background-color: white;">
+      <Label fx:id="labelResultado" alignment="TOP_LEFT" layoutX="370.0" layoutY="394.0" prefHeight="154.0" prefWidth="286.0" style="-fx-background-color: white;" />
+      <TextField fx:id="nombreComic" layoutX="370.0" layoutY="97.0" />
+      <TextField fx:id="nombreGuinista" layoutX="555.0" layoutY="97.0" />
+      <TextField fx:id="nombreDibujante" layoutX="370.0" layoutY="164.0" />
+      <TextField layoutX="370.0" layoutY="67.0" prefHeight="24.0" prefWidth="140.0" text="Nombre del comic" />
+      <TextField layoutX="555.0" layoutY="68.0" prefHeight="24.0" prefWidth="162.0" text="Nombre del guionista" />
+      <TextField layoutX="370.0" layoutY="130.0" prefHeight="24.0" prefWidth="162.0" text="Nombre del dibujante" />
+      <TextField fx:id="nombreVariante" layoutX="555.0" layoutY="164.0" />
+      <TextField layoutX="555.0" layoutY="130.0" prefHeight="24.0" prefWidth="119.0" text="Artista variante" />
+      <TextField fx:id="numeroComic" layoutX="370.0" layoutY="234.0" />
+      <TextField layoutX="370.0" layoutY="199.0" prefHeight="24.0" prefWidth="72.0" text="Numero" />
+      <TextField fx:id="nombreEditorial" layoutX="555.0" layoutY="234.0" />
+      <TextField layoutX="555.0" layoutY="199.0" prefHeight="24.0" prefWidth="72.0" text="Editorial" />
+      <Button fx:id="botonAniadirBBDD" layoutX="370.0" layoutY="325.0" mnemonicParsing="false" onAction="#BotonAniadir" prefHeight="54.0" prefWidth="222.0" text="Añadir a la base de datos" />
+      <Label fx:id="labelConexion" alignment="TOP_LEFT" layoutX="20.0" layoutY="328.0" prefHeight="132.0" prefWidth="235.0" style="-fx-background-color: white;">
          <font>
             <Font size="15.0" />
          </font></Label>
-      <TextField layoutX="474.0" layoutY="438.0" prefHeight="24.0" prefWidth="93.0" text="Version 1.0" />
-      <TextField layoutX="474.0" layoutY="471.0" prefHeight="31.0" prefWidth="126.0" text="Por @silverAlox" />
-      <TextField fx:id="anioPublicacion" layoutX="23.0" layoutY="292.0" prefHeight="24.0" prefWidth="53.0" />
-      <TextField layoutX="21.0" layoutY="264.0" prefHeight="24.0" prefWidth="119.0" text="Año publicacion" />
-      <Button fx:id="botonConexion" layoutX="476.0" layoutY="218.0" mnemonicParsing="false" onAction="#BotonConectar" prefHeight="54.0" prefWidth="140.0" text="Conectar" />
-      <Line endX="460.5" endY="10.292892456054688" startX="460.5" startY="546.5" />
-      <TextField fx:id="nombreBBDD" layoutX="474.0" layoutY="52.0" />
-      <TextField layoutX="474.0" layoutY="23.0" prefHeight="24.0" prefWidth="170.0" text="Nombre bbdd" />
-      <TextField fx:id="nombreUsuario" layoutX="474.0" layoutY="119.0" />
-      <TextField layoutX="474.0" layoutY="85.0" prefHeight="24.0" prefWidth="170.0" text="Nombre usuario" />
-      <TextField fx:id="contraBBDD" layoutX="474.0" layoutY="189.0" />
-      <TextField layoutX="474.0" layoutY="154.0" prefHeight="24.0" prefWidth="170.0" text="Contraseña bbdd" />
-      <Label fx:id="labelTestConexion" alignment="TOP_LEFT" layoutX="20.0" layoutY="13.0" prefHeight="38.0" prefWidth="188.0" style="-fx-background-color: white;">
+      <TextField layoutX="20.0" layoutY="473.0" prefHeight="24.0" prefWidth="93.0" text="Version 1.0" />
+      <TextField layoutX="20.0" layoutY="506.0" prefHeight="31.0" prefWidth="126.0" text="Por @silverAlox" />
+      <TextField fx:id="anioPublicacion" layoutX="370.0" layoutY="295.0" prefHeight="24.0" prefWidth="53.0" />
+      <TextField layoutX="368.0" layoutY="267.0" prefHeight="24.0" prefWidth="119.0" text="Año publicacion" />
+      <Button fx:id="botonConexion" layoutX="20.0" layoutY="264.0" mnemonicParsing="false" onAction="#BotonConectar" prefHeight="54.0" prefWidth="140.0" text="Conectar" />
+      <Line endX="460.5" endY="-12.0" layoutX="-156.0" layoutY="12.0" startX="460.5" startY="546.5" />
+      <TextField fx:id="numeroPuerto" layoutX="20.0" layoutY="45.0" prefHeight="24.0" prefWidth="53.0" />
+      <TextField layoutX="20.0" layoutY="16.0" prefHeight="24.0" prefWidth="60.0" text="Puerto" />
+      <TextField fx:id="nombreUsuario" layoutX="20.0" layoutY="164.0" />
+      <TextField layoutX="20.0" layoutY="130.0" prefHeight="24.0" prefWidth="119.0" text="Nombre usuario" />
+      <TextField fx:id="contraBBDD" layoutX="20.0" layoutY="234.0" />
+      <TextField layoutX="20.0" layoutY="199.0" prefHeight="24.0" prefWidth="126.0" text="Contraseña bbdd" />
+      <Label fx:id="labelTestConexion" alignment="TOP_LEFT" layoutX="367.0" layoutY="16.0" prefHeight="38.0" prefWidth="188.0" style="-fx-background-color: white;">
          <font>
             <Font size="26.0" />
          </font></Label>
-      <TextField fx:id="nombreFormato" layoutX="208.0" layoutY="294.0" prefHeight="24.0" prefWidth="126.0" />
-      <TextField layoutX="208.0" layoutY="264.0" prefHeight="24.0" prefWidth="126.0" text="Tipo de formato" />
-      <Line endX="460.5" endY="10.292892456054688" layoutX="272.0" layoutY="4.0" startX="460.5" startY="546.5" />
+      <TextField fx:id="nombreFormato" layoutX="555.0" layoutY="297.0" prefHeight="24.0" prefWidth="126.0" />
+      <TextField layoutX="555.0" layoutY="267.0" prefHeight="24.0" prefWidth="126.0" text="Tipo de formato" />
+      <Line endX="460.5" endY="-18.0" layoutX="274.0" layoutY="18.0" startX="460.5" startY="546.5" />
       <TextArea layoutX="748.0" layoutY="27.0" prefHeight="122.0" prefWidth="200.0" text="Todos los datos son&#10;obligatorios para rellenar.&#10;El año de publicacion&#10;debe de costar del año,&#10;escrito como milenio&#10;completo: &quot;1992&quot;.&#10;" />
+      <TextField fx:id="nombreBBDD" layoutX="20.0" layoutY="100.0" />
+      <TextField layoutX="20.0" layoutY="71.0" prefHeight="24.0" prefWidth="106.0" text="Nombre bbdd" />
    </children>
 </Pane>
