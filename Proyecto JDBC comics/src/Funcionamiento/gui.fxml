@@ -32,11 +32,11 @@
       <TextField layoutX="21.0" layoutY="221.0" prefHeight="24.0" prefWidth="119.0" text="Año publicacion" />
       <Button fx:id="botonConexion" layoutX="476.0" layoutY="218.0" mnemonicParsing="false" onAction="#BotonConectar" prefHeight="54.0" prefWidth="140.0" text="Conectar" />
       <Line endX="460.5" endY="10.292892456054688" startX="460.5" startY="546.5" />
-      <TextField fx:id="nombreGuinista1" layoutX="474.0" layoutY="52.0" />
+      <TextField fx:id="nombreBBDD" layoutX="474.0" layoutY="52.0" />
       <TextField layoutX="474.0" layoutY="23.0" prefHeight="24.0" prefWidth="170.0" text="Nombre bbdd" />
-      <TextField fx:id="nombreVariante1" layoutX="474.0" layoutY="119.0" />
+      <TextField fx:id="nombreUsuario" layoutX="474.0" layoutY="119.0" />
       <TextField layoutX="474.0" layoutY="85.0" prefHeight="24.0" prefWidth="170.0" text="Nombre usuario" />
-      <TextField fx:id="nombreEditorial1" layoutX="474.0" layoutY="189.0" />
-      <TextField layoutX="474.0" layoutY="154.0" prefHeight="24.0" prefWidth="170.0" text="Contraseñña bbdd" />
+      <TextField fx:id="contraBBDD" layoutX="474.0" layoutY="189.0" />
+      <TextField layoutX="474.0" layoutY="154.0" prefHeight="24.0" prefWidth="170.0" text="Contraseña bbdd" />
    </children>
 </Pane>
