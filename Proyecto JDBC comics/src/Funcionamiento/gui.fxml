@@ -2,12 +2,13 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="558.0" prefWidth="715.0" style="-fx-background-color: DFA394;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Funcionamiento.Controller">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="558.0" prefWidth="976.0" style="-fx-background-color: DFA394;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Funcionamiento.Controller">
    <children>
       <Label fx:id="labelResultado" alignment="TOP_LEFT" layoutX="23.0" layoutY="391.0" prefHeight="154.0" prefWidth="286.0" style="-fx-background-color: white;" />
       <TextField fx:id="nombreComic" layoutX="23.0" layoutY="94.0" />
@@ -25,7 +26,7 @@
       <Button fx:id="botonAniadirBBDD" layoutX="23.0" layoutY="322.0" mnemonicParsing="false" onAction="#BotonAniadir" prefHeight="54.0" prefWidth="222.0" text="Añadir a la base de datos" />
       <Label fx:id="labelConexion" alignment="TOP_LEFT" layoutX="474.0" layoutY="283.0" prefHeight="132.0" prefWidth="235.0" style="-fx-background-color: white;">
          <font>
-            <Font size="21.0" />
+            <Font size="15.0" />
          </font></Label>
       <TextField layoutX="474.0" layoutY="438.0" prefHeight="24.0" prefWidth="93.0" text="Version 1.0" />
       <TextField layoutX="474.0" layoutY="471.0" prefHeight="31.0" prefWidth="126.0" text="Por @silverAlox" />
@@ -45,5 +46,7 @@
          </font></Label>
       <TextField fx:id="nombreFormato" layoutX="208.0" layoutY="294.0" prefHeight="24.0" prefWidth="126.0" />
       <TextField layoutX="208.0" layoutY="264.0" prefHeight="24.0" prefWidth="126.0" text="Tipo de formato" />
+      <Line endX="460.5" endY="10.292892456054688" layoutX="272.0" layoutY="4.0" startX="460.5" startY="546.5" />
+      <TextArea layoutX="748.0" layoutY="27.0" prefHeight="122.0" prefWidth="200.0" text="Todos los datos son&#10;obligatorios para rellenar.&#10;El año de publicacion&#10;debe de costar del año,&#10;escrito como milenio&#10;completo: &quot;1992&quot;.&#10;" />
    </children>
 </Pane>

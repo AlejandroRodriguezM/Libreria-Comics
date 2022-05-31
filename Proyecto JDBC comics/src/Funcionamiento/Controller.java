@@ -67,6 +67,9 @@ public class Controller {
 
 	@FXML
 	private TextField nombreFormato;
+	
+    @FXML
+    private TextField numeroPuerto;
 
 	@FXML
 	public void BotonAniadir(ActionEvent event) {
@@ -176,7 +179,7 @@ public class Controller {
 
 		// Configuración de la conexión a la base de datos
 		String DB_HOST = "localhost";
-		String DB_PORT = "3306";
+		String DB_PORT = numeroPuerto.getText();
 		String DB_NAME = nombreBBDD.getText();
 		String DB_USER = nombreUsuario.getText();
 		String DB_PASS = contraBBDD.getText();
