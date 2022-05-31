@@ -70,6 +70,9 @@ public class Controller {
 
 	@FXML
 	public void BotonAniadir(ActionEvent event) {
+		
+		loadDriver();
+		conn = conexion();
 		String nom_comic,nom_dibujante,nom_editorial,nom_guionista,nom_variante,nom_Formato,num_comic;
 		String sentenciaSQL = "insert into comics(nomComic,nomDibujante,nomEditorial,nomGuionista,nomVariante,nomFormato,numComic) values (?,?,?,?,?,?,?)";
 
@@ -81,7 +84,6 @@ public class Controller {
 		nom_Formato = nombreFormato.getText();
 		num_comic = numeroComic.getText();
 
-
 		try {
 			PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
 			statement.setString(1, nom_comic);
@@ -91,15 +93,14 @@ public class Controller {
 			statement.setString(5, nom_variante);
 			statement.setString(6, nom_Formato);
 			statement.setString(7, num_comic);
-
-			statement.executeUpdate();
-			statement.close();
+			
 			if(statement.executeUpdate() == 1)
 			{
 				labelConexion.setStyle("-fx-background-color: #A0F52D");
 				labelResultado.setText("Comic añadido correctamente!" + "\nNombre del comic: " + nom_comic 
 						+ "\nNombre del dibujante: " + nom_dibujante + "\nEditorial: " + nom_editorial 
-						+ "\nGuinista: " + "\nVariante: " + nom_variante + "\nNumero del comic: " + num_comic);
+						+ "\nGuinista: " + nom_guionista + "\nVariante: " + nom_variante + "\nNumero del comic: " + num_comic);
+				statement.close();
 			}
 			else
 			{
@@ -107,7 +108,7 @@ public class Controller {
 				labelResultado.setText("Se ha encontrado un error. No ha sido posible añadir el comic a la base de datos.");
 			}
 		} catch (SQLException ex) {
-			System.err.println("Error al insertar un Cliente ");
+			System.err.println("Error al insertar un comic" + ex);
 		}
 	}
 
@@ -142,6 +143,7 @@ public class Controller {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			return true;
 		} catch (ClassNotFoundException ex) {
+			System.out.println("LECTURA DRIVER");
 			return false;
 		}
 	}
@@ -158,7 +160,12 @@ public class Controller {
 			if (conn != null && conn.isValid(0)) {
 				return true;
 			}
+			else
+			{
+				System.out.println("PRUEBA ERROR IS CONNECTED");
+			}
 		} catch (SQLException ex) {
+			System.out.println("ERROR. IS CONECTED");
 			return false;
 		}
 		return false;
@@ -179,6 +186,7 @@ public class Controller {
 			conn = DriverManager.getConnection(DB_URL, DB_USER,DB_PASS);
 			return conn;
 		} catch (SQLException ex) {
+			System.out.println("ERROR. CONEXION");
 			return null;
 		}
 	}
