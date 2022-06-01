@@ -88,32 +88,41 @@ public class Controller {
 		nom_Formato = nombreFormato.getText();
 		num_comic = numeroComic.getText();
 
-		try {
-			PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
-			statement.setString(1, nom_comic);
-			statement.setString(2, nom_dibujante);
-			statement.setString(3, nom_editorial);
-			statement.setString(4, nom_guionista);
-			statement.setString(5, nom_variante);
-			statement.setString(6, nom_Formato);
-			statement.setString(7, num_comic);
-			
-			if(statement.executeUpdate() == 1)
-			{
-				labelConexion.setStyle("-fx-background-color: #A0F52D");
-				labelResultado.setText("Comic añadido correctamente!" + "\nNombre del comic: " + nom_comic 
-						+ "\nNombre del dibujante: " + nom_dibujante + "\nEditorial: " + nom_editorial 
-						+ "\nGuinista: " + nom_guionista + "\nVariante: " + nom_variante + "\nNumero del comic: " + num_comic);
-				statement.close();
+		if(DBManager.DBManager.isConnected())
+		{
+			try {
+				PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
+				statement.setString(1, nom_comic);
+				statement.setString(2, nom_dibujante);
+				statement.setString(3, nom_editorial);
+				statement.setString(4, nom_guionista);
+				statement.setString(5, nom_variante);
+				statement.setString(6, nom_Formato);
+				statement.setString(7, num_comic);
+				
+				if(statement.executeUpdate() == 1)
+				{
+					labelConexion.setStyle("-fx-background-color: #A0F52D");
+					labelResultado.setText("Comic añadido correctamente!" + "\nNombre del comic: " + nom_comic 
+							+ "\nNombre del dibujante: " + nom_dibujante + "\nEditorial: " + nom_editorial 
+							+ "\nGuinista: " + nom_guionista + "\nVariante: " + nom_variante + "\nNumero del comic: " + num_comic);
+					statement.close();
+				}
+				else
+				{
+					labelConexion.setStyle("-fx-background-color: #DD370F");
+					labelResultado.setText("Se ha encontrado un error. No ha sido posible añadir el comic a la base de datos.");
+				}
+			} catch (SQLException ex) {
+				System.err.println("Error al insertar un comic" + ex);
 			}
-			else
-			{
-				labelConexion.setStyle("-fx-background-color: #DD370F");
-				labelResultado.setText("Se ha encontrado un error. No ha sido posible añadir el comic a la base de datos.");
-			}
-		} catch (SQLException ex) {
-			System.err.println("Error al insertar un comic" + ex);
 		}
+		else
+		{
+			labelConexion.setStyle("-fx-background-color: #DD370F");
+			labelConexion.setText("ERROR. Conecta primero a \nla bbdd");
+		}
+		
 	}
 
 	@FXML
