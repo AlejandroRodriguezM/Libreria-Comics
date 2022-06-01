@@ -75,8 +75,8 @@ public class Controller {
 	@FXML
 	public void BotonAniadir(ActionEvent event) {
 		
-		loadDriver();
-		conn = conexion();
+		DBManager.DBManager.loadDriver();
+		conn = conexionBBDD();
 		String nom_comic,nom_dibujante,nom_editorial,nom_guionista,nom_variante,nom_Formato,num_comic;
 		String sentenciaSQL = "insert into comics(nomComic,nomDibujante,nomEditorial,nomGuionista,nomVariante,nomFormato,numComic) values (?,?,?,?,?,?,?)";
 
@@ -119,9 +119,9 @@ public class Controller {
 	@FXML
 	public void BotonConectar(ActionEvent event) {
 
-		loadDriver();
-		conn = conexion();
-		if(isConnected())
+		DBManager.DBManager.loadDriver();
+		conn = conexionBBDD();
+		if(DBManager.DBManager.isConnected())
 		{   
 			labelTestConexion.setStyle("-fx-background-color: #A0F52D");
 			labelTestConexion.setText("Conectado");
@@ -137,62 +137,14 @@ public class Controller {
 		}
 	}
 
-	/**
-	 * Conecta el proyecto con el driver JBDC
-	 * 
-	 * @return
-	 */
-	public boolean loadDriver() {
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			return true;
-		} catch (ClassNotFoundException ex) {
-			System.out.println("LECTURA DRIVER");
-			return false;
-		}
-	}
-
-	/**
-	 * Comprueba la conexión y muestra su estado por pantalla
-	 *
-	 * @return true si la conexión existe y es válida, false en caso contrario
-	 */
-	public boolean isConnected() {
-		// Comprobamos estado de la conexión
-		try {
-
-			if (conn != null && conn.isValid(0)) {
-				return true;
-			}
-			else
-			{
-				System.out.println("PRUEBA ERROR IS CONNECTED");
-			}
-		} catch (SQLException ex) {
-			System.out.println("ERROR. IS CONECTED");
-			return false;
-		}
-		return false;
+	private Connection conexionBBDD()
+	{
+		return DBManager.DBManager.conexion(numeroPuerto.getText(), nombreBBDD.getText(), nombreUsuario.getText(), contraBBDD.getText());
 	}
 
 
-	public Connection conexion() {
 
-		// Configuración de la conexión a la base de datos
-		String DB_HOST = "localhost";
-		String DB_PORT = numeroPuerto.getText();
-		String DB_NAME = nombreBBDD.getText();
-		String DB_USER = nombreUsuario.getText();
-		String DB_PASS = contraBBDD.getText();
-		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME
-				+ "?serverTimezone=UTC";
-		try {
-			conn = DriverManager.getConnection(DB_URL, DB_USER,DB_PASS);
-			return conn;
-		} catch (SQLException ex) {
-			System.out.println("ERROR. CONEXION");
-			return null;
-		}
-	}
+
+
 
 }
