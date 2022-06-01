@@ -29,7 +29,7 @@
          <font>
             <Font size="15.0" />
          </font></Label>
-      <TextField layoutX="20.0" layoutY="473.0" prefHeight="24.0" prefWidth="93.0" text="Version 1.0" />
+      <TextField layoutX="20.0" layoutY="473.0" prefHeight="24.0" prefWidth="93.0" text="Version 2.1" />
       <TextField layoutX="20.0" layoutY="506.0" prefHeight="31.0" prefWidth="126.0" text="Por @silverAlox" />
       <TextField fx:id="anioPublicacion" layoutX="370.0" layoutY="295.0" prefHeight="24.0" prefWidth="53.0" />
       <TextField layoutX="368.0" layoutY="267.0" prefHeight="24.0" prefWidth="119.0" text="Año publicacion" />
@@ -51,5 +51,7 @@
       <TextField fx:id="nombreBBDD" layoutX="20.0" layoutY="100.0" />
       <TextField layoutX="20.0" layoutY="71.0" prefHeight="24.0" prefWidth="106.0" text="Nombre bbdd" />
       <PasswordField fx:id="contraBBDD" layoutX="20.0" layoutY="234.0" />
+      <Button fx:id="botonLimpiarDatos" layoutX="172.0" layoutY="264.0" mnemonicParsing="false" onAction="#BotonLimpiarBBDD" prefHeight="54.0" prefWidth="93.0" text="Limpiar" />
+      <Button fx:id="botonLimpiarComic" layoutX="610.0" layoutY="325.0" mnemonicParsing="false" onAction="#BotonLimpiarComic" prefHeight="54.0" prefWidth="93.0" text="Limpiar" />
    </children>
 </Pane>

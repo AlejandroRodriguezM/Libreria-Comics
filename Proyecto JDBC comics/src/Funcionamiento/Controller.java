@@ -1,7 +1,6 @@
 package Funcionamiento;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -28,7 +27,6 @@ public class Controller {
 
 	@FXML
 	private Button botonConexion;
-
 
 	@FXML
 	private Label labelConexion;
@@ -57,8 +55,8 @@ public class Controller {
 	@FXML
 	private TextField nombreVariante;
 
-    @FXML
-    private PasswordField contraBBDD;
+	@FXML
+	private PasswordField contraBBDD;
 
 	@FXML
 	private TextField numeroComic;
@@ -68,16 +66,22 @@ public class Controller {
 
 	@FXML
 	private TextField nombreFormato;
+
+	@FXML
+	private TextField numeroPuerto;
 	
     @FXML
-    private TextField numeroPuerto;
+    private Button botonLimpiarComic;
+
+    @FXML
+    private Button botonLimpiarDatos;
 
 	@FXML
 	public void BotonAniadir(ActionEvent event) {
-		
+
 		DBManager.DBManager.loadDriver();
 		conn = conexionBBDD();
-		String nom_comic,nom_dibujante,nom_editorial,nom_guionista,nom_variante,nom_Formato,num_comic;
+		String nom_comic, nom_dibujante, nom_editorial, nom_guionista, nom_variante, nom_Formato, num_comic;
 		String sentenciaSQL = "insert into comics(nomComic,nomDibujante,nomEditorial,nomGuionista,nomVariante,nomFormato,numComic) values (?,?,?,?,?,?,?)";
 
 		nom_comic = nombreComic.getText();
@@ -88,8 +92,7 @@ public class Controller {
 		nom_Formato = nombreFormato.getText();
 		num_comic = numeroComic.getText();
 
-		if(DBManager.DBManager.isConnected())
-		{
+		if (DBManager.DBManager.isConnected()) {
 			try {
 				PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
 				statement.setString(1, nom_comic);
@@ -99,30 +102,27 @@ public class Controller {
 				statement.setString(5, nom_variante);
 				statement.setString(6, nom_Formato);
 				statement.setString(7, num_comic);
-				
-				if(statement.executeUpdate() == 1)
-				{
+
+				if (statement.executeUpdate() == 1) {
 					labelConexion.setStyle("-fx-background-color: #A0F52D");
-					labelResultado.setText("Comic añadido correctamente!" + "\nNombre del comic: " + nom_comic 
-							+ "\nNombre del dibujante: " + nom_dibujante + "\nEditorial: " + nom_editorial 
-							+ "\nGuinista: " + nom_guionista + "\nVariante: " + nom_variante + "\nNumero del comic: " + num_comic);
+					labelResultado.setText("Comic añadido correctamente!" + "\nNombre del comic: " + nom_comic
+							+ "\nNombre del dibujante: " + nom_dibujante + "\nEditorial: " + nom_editorial
+							+ "\nGuinista: " + nom_guionista + "\nVariante: " + nom_variante + "\nNumero del comic: "
+							+ num_comic);
 					statement.close();
-				}
-				else
-				{
+				} else {
 					labelConexion.setStyle("-fx-background-color: #DD370F");
-					labelResultado.setText("Se ha encontrado un error. No ha sido posible añadir el comic a la base de datos.");
+					labelResultado.setText(
+							"Se ha encontrado un error. No ha sido posible añadir el comic a la base de datos.");
 				}
 			} catch (SQLException ex) {
 				System.err.println("Error al insertar un comic" + ex);
 			}
-		}
-		else
-		{
+		} else {
 			labelConexion.setStyle("-fx-background-color: #DD370F");
 			labelConexion.setText("ERROR. Conecta primero a \nla bbdd");
 		}
-		
+
 	}
 
 	@FXML
@@ -130,30 +130,43 @@ public class Controller {
 
 		DBManager.DBManager.loadDriver();
 		conn = conexionBBDD();
-		if(DBManager.DBManager.isConnected())
-		{   
+		if (DBManager.DBManager.isConnected()) {
 			labelTestConexion.setStyle("-fx-background-color: #A0F52D");
 			labelTestConexion.setText("Conectado");
 			labelConexion.setStyle("-fx-background-color: #A0F52D");
 			labelConexion.setText("Cargando Driver... " + "OK! \nConectando a la base de datos... \n" + DB_MSQ_CONN_OK);
-		}
-		else
-		{
+		} else {
+			contraBBDD.setText("");
 			labelTestConexion.setStyle("-fx-background-color: #DD370F");
 			labelTestConexion.setText("No conectado");
 			labelConexion.setStyle("-fx-background-color: #DD370F");
-			labelConexion.setText("Cargando Driver... " + "OK! \nConectando a la base de datos... \n" +DB_MSQ_CONN_NO);
+			labelConexion.setText("Cargando Driver... " + "OK! \nConectando a la base de datos... \n" + DB_MSQ_CONN_NO);
 		}
 	}
 
-	private Connection conexionBBDD()
-	{
-		return DBManager.DBManager.conexion(numeroPuerto.getText(), nombreBBDD.getText(), nombreUsuario.getText(), contraBBDD.getText());
+	private Connection conexionBBDD() {
+		return DBManager.DBManager.conexion(numeroPuerto.getText(), nombreBBDD.getText(), nombreUsuario.getText(),
+				contraBBDD.getText());
 	}
+	
+    @FXML
+    private void BotonLimpiarBBDD(ActionEvent event) {
+    	nombreBBDD.setText("");
+    	nombreUsuario.setText("");
+    	contraBBDD.setText("");
+    	numeroPuerto.setText("");
+    }
 
-
-
-
-
-
+    @FXML
+    private void BotonLimpiarComic(ActionEvent event) {
+    	anioPublicacion.setText("");
+		nombreComic.setText("");
+		nombreDibujante.setText("");
+		nombreEditorial.setText("");
+		nombreBBDD.setText("");
+		nombreGuinista.setText("");
+		nombreVariante.setText("");
+		nombreFormato.setText("");
+		numeroPuerto.setText("");
+    }
 }
