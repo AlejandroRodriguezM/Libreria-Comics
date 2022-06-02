@@ -9,7 +9,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="559.0" prefWidth="981.0" style="-fx-background-color: DFA394;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Funcionamiento.Controller">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="559.0" prefWidth="981.0" style="-fx-background-color: DFA394;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Funcionamiento.AniadirController">
    <children>
       <Label fx:id="labelResultado" alignment="TOP_LEFT" layoutX="370.0" layoutY="394.0" prefHeight="154.0" prefWidth="286.0" style="-fx-background-color: white;" />
       <TextField fx:id="nombreComic" layoutX="370.0" layoutY="97.0" />
@@ -40,7 +40,7 @@
       <TextField fx:id="nombreUsuario" layoutX="20.0" layoutY="164.0" />
       <TextField layoutX="20.0" layoutY="130.0" prefHeight="24.0" prefWidth="119.0" text="Nombre usuario" />
       <TextField layoutX="20.0" layoutY="199.0" prefHeight="24.0" prefWidth="126.0" text="Contraseña bbdd" />
-      <Label fx:id="labelTestConexion" alignment="TOP_LEFT" layoutX="367.0" layoutY="16.0" prefHeight="38.0" prefWidth="188.0" style="-fx-background-color: white;">
+      <Label fx:id="labelTestConexion" alignment="TOP_LEFT" layoutX="367.0" layoutY="16.0" prefHeight="38.0" prefWidth="222.0" style="-fx-background-color: grey;" text="NO CONECTADO">
          <font>
             <Font size="26.0" />
          </font></Label>
