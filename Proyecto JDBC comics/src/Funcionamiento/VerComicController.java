@@ -1,74 +1,91 @@
 package Funcionamiento;
 
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 public class VerComicController {
-	
-    @FXML
-    private Button botonAccesobbdd;
 
     @FXML
-    private Button botonEnviar;
+    private TextField anioPublicacion;
 
     @FXML
-    private Button botonLimpiar;
+    private Button botonMostrarParametro;
 
     @FXML
-    private TextArea informacion;
+    private Button botonMostrarParametro1;
 
     @FXML
-    private TextArea informacion1;
+    private Button botonbbdd;
 
     @FXML
-    private TextField nombreBBDD;
+    private Button botonbbdd1;
 
     @FXML
-    private PasswordField pass;
+    private TextArea mostrarDatosBBDD;
 
     @FXML
-    private TextField puertobbdd;
+    private TextField nombreComic;
 
     @FXML
-    private TextField usuario;
+    private TextField nombreDibujante;
 
     @FXML
-    void entrarbbdd(ActionEvent event) {
+    private TextField nombreEditorial;
+
+    @FXML
+    private TextField nombreFormato;
+
+    @FXML
+    private TextField nombreGuionista;
+
+    @FXML
+    private TextField nombreVariante;
+
+    @FXML
+    void escribirDibujante(ActionEvent event) {
 
     }
 
     @FXML
-    void enviarDatos(ActionEvent event) {
+    void escribirEditorial(ActionEvent event) {
 
     }
 
     @FXML
-    void limpiarDatos(ActionEvent event) {
+    void escribirFecha(ActionEvent event) {
 
     }
 
     @FXML
-    void nombreBaseDatos(ActionEvent event) {
+    void escribirFormato(ActionEvent event) {
 
     }
 
     @FXML
-    void nombreContra(ActionEvent event) {
+    void escribirGuionista(ActionEvent event) {
 
     }
 
     @FXML
-    void nombreUsuario(ActionEvent event) {
+    void escribirNombre(ActionEvent event) {
 
     }
 
     @FXML
-    void puertoBaseDatos(ActionEvent event) {
+    void escribirVariante(ActionEvent event) {
+
+    }
+
+    @FXML
+    void mostrarPorParametro(ActionEvent event) {
+
+    }
+
+    @FXML
+    void verTodabbdd(ActionEvent event) {
 
     }
 

@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="562.0" prefWidth="315.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Funcionamiento.VerComicController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="562.0" prefWidth="315.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Funcionamiento.MenuPrincipalController">
    <children>
       <TextArea fx:id="informacion" layoutX="25.0" layoutY="14.0" prefHeight="85.0" prefWidth="264.0" text="Introduzca los siguientes datos para&#10;poder acceder a la base de datos." />
       <TextField fx:id="nombreBBDD" layoutX="71.0" layoutY="130.0" onAction="#nombreBaseDatos" />
