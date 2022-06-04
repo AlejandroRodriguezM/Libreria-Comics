@@ -83,17 +83,17 @@ public class DBManager {
 		}
 	}
 
-//	/**
-//	 * Cierra la conexión con la base de datos
-//	 */
-//	public static void close() {
-//		try {
-//			System.out.print("Cerrando la conexion...");
-//			conn.close();
-//			System.out.println("OK!");
-//		} catch (SQLException ex) {
-//			System.out.println("ERROR. No es posible desconectarse de la BBDD ");
-//		}
-//	}
+	/**
+	 * Cierra la conexión con la base de datos
+	 */
+	public static void close() {
+		try {
+			System.out.print("Cerrando la conexion...");
+			conn.close();
+			System.out.println("OK!");
+		} catch (SQLException ex) {
+			System.out.println("ERROR. No es posible desconectarse de la BBDD ");
+		}
+	}
 
 }

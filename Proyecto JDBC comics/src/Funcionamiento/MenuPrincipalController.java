@@ -9,9 +9,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Pane;
 
 public class MenuPrincipalController {
+
+	// Conexión a la base de datos
+	private static Connection conn;
 
 	@FXML
 	private Button botonAccesobbdd;
@@ -23,34 +25,36 @@ public class MenuPrincipalController {
 	private Button botonLimpiar;
 
 	@FXML
+	private Button botonCerrar;
+
+	@FXML
 	private TextArea informacion;
 
 	@FXML
 	private Label estadoConexion;
 
 	@FXML
-	private static TextField nombreBBDD;
+	private TextField nombreBBDD;
 
 	@FXML
-	private static PasswordField pass;
+	private PasswordField pass;
 
 	@FXML
-	private static TextField puertobbdd;
+	private TextField puertobbdd;
 
 	@FXML
-	private static TextField usuario;
+	private TextField usuario;
 
 	@FXML
 	void entrarMenu(ActionEvent event) {
-		System.out.println(nombreBBDD);
+
 	}
 
 	@FXML
 	void enviarDatos(ActionEvent event) {
 
-		
-		conexionBBDD();
 		DBManager.DBManager.loadDriver();
+		conn = conexionBBDD();
 
 		if (DBManager.DBManager.isConnected()) {
 			estadoConexion.setStyle("-fx-background-color: #A0F52D");
@@ -70,7 +74,22 @@ public class MenuPrincipalController {
 		puertobbdd.setText("");
 	}
 
-	private static Connection conexionBBDD() {
+	@FXML
+	void cerrarbbdd(ActionEvent event) {
+		
+		if (DBManager.DBManager.isConnected()) {
+			estadoConexion.setText("No conectado");
+			estadoConexion.setStyle("-fx-background-color: #696969");
+			DBManager.DBManager.close();
+		} else {
+			estadoConexion.setStyle("-fx-background-color: #DD370F");
+			estadoConexion.setText("ERROR.");
+		}
+		
+		
+	}
+
+	private Connection conexionBBDD() {
 		return DBManager.DBManager.conexion(puertobbdd.getText(), nombreBBDD.getText(), usuario.getText(),
 				pass.getText());
 	}
