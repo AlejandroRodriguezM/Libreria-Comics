@@ -13,8 +13,6 @@ import javafx.scene.control.TextField;
 
 public class AniadirDatosController {
 
-//	private static final String DB_MSQ_CONN_OK = "CONEXION CORRECTA";
-//	private static final String DB_MSQ_CONN_NO = "ERROR EN LA CONEXION";
 //
 //	// Conexión a la base de datos
 //	private static Connection conn;

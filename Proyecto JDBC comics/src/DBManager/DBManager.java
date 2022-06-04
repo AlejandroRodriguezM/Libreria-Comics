@@ -1,13 +1,14 @@
 package DBManager;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /*
  * Por Alejandro Rodriguez Mena
- * 
+ *
  * Ejercicio 32
- * 
+ *
  * Tenemos una base de datos para gestionar las cuentas corrientes de un banco con las siguientes tablas:
 
 CLIENTES (dni, nombre, teléfono, dirección).
@@ -18,7 +19,7 @@ MOVIMIENTOS (nº cuenta, importe [+], fecha y hora, tipo [ingreso, salida, trans
 
 Necesitamos una aplicación para gestionar nuestro sistema bancario:
 
-Gestión de Clientes: alta, baja (solo si no tiene cuentas corrientes), modificación (todo salvo dni). 
+Gestión de Clientes: alta, baja (solo si no tiene cuentas corrientes), modificación (todo salvo dni).
 Gestión de cuentas corrientes (alta de cuenta, baja de cuenta [no la elimina de la base de datos para no perder los datos], ingreso en cuenta, salida de cuenta, transferencia [tiene una cuenta emisora y una receptora, generará dos movimientos].
 Gestión de movimientos de la cuenta corriente de un cliente. Recibe el número de cuenta corriente a gestionar y permite: listar los movimientos entre fechas, ver saldo, ingresar y retirar dinero, hacer transferencias.
  */
@@ -28,10 +29,9 @@ public class DBManager {
 	// Conexión a la base de datos
 	private static Connection conn = null;
 
-
 	/**
 	 * Conecta el proyecto con el driver JBDC
-	 * 
+	 *
 	 * @return
 	 */
 	public static boolean loadDriver() {
@@ -55,9 +55,7 @@ public class DBManager {
 
 			if (conn != null && conn.isValid(0)) {
 				return true;
-			}
-			else
-			{
+			} else {
 				System.out.println("PRUEBA ERROR IS CONNECTED");
 			}
 		} catch (SQLException ex) {
@@ -67,7 +65,7 @@ public class DBManager {
 		return false;
 	}
 
-	public static Connection conexion(String numeroPuerto, String nombreBBDD,String nombreUsuario,String contraBBDD) {
+	public static Connection conexion(String numeroPuerto, String nombreBBDD, String nombreUsuario, String contraBBDD) {
 
 		// Configuración de la conexión a la base de datos
 		String DB_HOST = "localhost";
@@ -75,10 +73,9 @@ public class DBManager {
 		String DB_NAME = nombreBBDD;
 		String DB_USER = nombreUsuario;
 		String DB_PASS = contraBBDD;
-		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME
-				+ "?serverTimezone=UTC";
+		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
 		try {
-			conn = DriverManager.getConnection(DB_URL, DB_USER,DB_PASS);
+			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
 			return conn;
 		} catch (SQLException ex) {
 			System.out.println("ERROR. CONEXION");
