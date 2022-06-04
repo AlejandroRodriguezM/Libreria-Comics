@@ -12,7 +12,7 @@ public class Principal extends Application{
 	//Metodo que permite la ejecutcion de la aplicacion.
 		public void start(Stage primaryStage) throws IOException 
 		{
-			Parent root = FXMLLoader.load(getClass().getResource("/ventanas/aniadirComics.fxml")); //Obtenemos el diseño en la ruta y fichero ya creado.
+			Parent root = FXMLLoader.load(getClass().getResource("/ventanas/principal.fxml")); //Obtenemos el diseño en la ruta y fichero ya creado.
 			primaryStage.setScene(new Scene(root)); //Creamos una escena para poder usar la aplicacion.
 			primaryStage.setTitle("Aplicacion bbdd comics"); //Titulo de la aplicacion.
 			primaryStage.show(); //Mostramos la aplicacion.
