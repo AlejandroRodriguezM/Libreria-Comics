@@ -39,7 +39,7 @@ public class DBManager {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			return true;
 		} catch (ClassNotFoundException ex) {
-			System.out.println("LECTURA DRIVER");
+			System.out.println("ERROR. LECTURA DRIVER");
 			return false;
 		}
 	}
@@ -59,7 +59,7 @@ public class DBManager {
 				System.out.println("PRUEBA ERROR IS CONNECTED");
 			}
 		} catch (SQLException ex) {
-			System.out.println("ERROR. IS CONECTED");
+			System.out.println(ex);
 			return false;
 		}
 		return false;
