@@ -1,10 +1,18 @@
 package Funcionamiento;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 public class VerComicController {
 
@@ -18,10 +26,10 @@ public class VerComicController {
     private Button botonMostrarParametro1;
 
     @FXML
-    private Button botonbbdd;
+    private Button botonVolver;
 
     @FXML
-    private Button botonbbdd1;
+    private Button botonbbdd;
 
     @FXML
     private TextArea mostrarDatosBBDD;
@@ -87,6 +95,27 @@ public class VerComicController {
     @FXML
     void verTodabbdd(ActionEvent event) {
 
+    }
+    
+    public void closeWindows() {
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuOpciones.fxml"));
+
+            Parent root = loader.load();
+
+            Scene scene = new Scene(root);
+            Stage stage = new Stage();
+
+            stage.setScene(scene);
+            stage.show();
+
+            Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
+            myStage.close();
+
+        } catch (IOException ex) {
+            Logger.getLogger(MenuPrincipalController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

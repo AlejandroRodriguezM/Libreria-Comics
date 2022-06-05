@@ -1,6 +1,5 @@
 package Funcionamiento;
 
-
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.logging.Level;
@@ -22,7 +21,6 @@ public class MenuPrincipalController {
 
 	// Conexión a la base de datos
 	private static Connection conn;
-
 
 	@FXML
 	private Button botonAccesobbdd;

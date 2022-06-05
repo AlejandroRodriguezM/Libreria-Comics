@@ -41,11 +41,67 @@ public class MenuOpcionesController implements Initializable{
     @FXML
     public void VentanaAniadir(ActionEvent event) {
 
+        try {
+            // Cargo la vista
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/AniadirComicsBBDD.fxml"));
+
+            // Cargo el padre
+            Parent root = loader.load();
+
+            // Obtengo el controlador
+            AniadirDatosController controlador = loader.getController();
+
+            // Creo la scene y el stage
+            Scene scene = new Scene(root);
+            Stage stage = new Stage();
+
+            // Asocio el stage con el scene
+            stage.setScene(scene);
+            stage.show();
+
+            // Indico que debe hacer al cerrar
+            stage.setOnCloseRequest(e -> controlador.closeWindows());
+
+            // Ciero la ventana donde estoy
+            Stage myStage = (Stage) this.BotonVentanaAniadir.getScene().getWindow();
+            myStage.close();
+
+        } catch (IOException ex) {
+            Logger.getLogger(MenuPrincipalController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    	
     }
 
     @FXML
     public void verBaseDatos(ActionEvent event) {
+    	 try {
+             // Cargo la vista
+             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/verBBDD.fxml"));
 
+             // Cargo el padre
+             Parent root = loader.load();
+
+             // Obtengo el controlador
+             AniadirDatosController controlador = loader.getController();
+
+             // Creo la scene y el stage
+             Scene scene = new Scene(root);
+             Stage stage = new Stage();
+
+             // Asocio el stage con el scene
+             stage.setScene(scene);
+             stage.show();
+
+             // Indico que debe hacer al cerrar
+             stage.setOnCloseRequest(e -> controlador.closeWindows());
+
+             // Ciero la ventana donde estoy
+             Stage myStage = (Stage) this.BotonVentanaAniadir.getScene().getWindow();
+             myStage.close();
+
+         } catch (IOException ex) {
+             Logger.getLogger(MenuPrincipalController.class.getName()).log(Level.SEVERE, null, ex);
+         }
     }
 
     @FXML
@@ -100,7 +156,6 @@ public class MenuOpcionesController implements Initializable{
         } catch (IOException ex) {
             Logger.getLogger(MenuPrincipalController.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 
 	@Override
