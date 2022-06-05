@@ -82,7 +82,7 @@ public class MenuOpcionesController implements Initializable{
              Parent root = loader.load();
 
              // Obtengo el controlador
-             AniadirDatosController controlador = loader.getController();
+             VerComicController controlador = loader.getController();
 
              // Creo la scene y el stage
              Scene scene = new Scene(root);
@@ -96,7 +96,7 @@ public class MenuOpcionesController implements Initializable{
              stage.setOnCloseRequest(e -> controlador.closeWindows());
 
              // Ciero la ventana donde estoy
-             Stage myStage = (Stage) this.BotonVentanaAniadir.getScene().getWindow();
+             Stage myStage = (Stage) this.botonVerBaseDatos.getScene().getWindow();
              myStage.close();
 
          } catch (IOException ex) {
@@ -130,6 +130,8 @@ public class MenuOpcionesController implements Initializable{
         // Ciero la ventana donde estoy
         Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
         myStage.close();
+        
+        DBManager.DBManager.close();
     }
     
     @FXML
@@ -140,7 +142,7 @@ public class MenuOpcionesController implements Initializable{
     public void closeWindows() {
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/vista/MenuVista.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuPrincipal.fxml"));
 
             Parent root = loader.load();
 

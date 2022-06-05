@@ -232,8 +232,31 @@ public class AniadirDatosController {
     }
 
     @FXML
-    void volverAlMenu(ActionEvent event) {
+    void volverAlMenu(ActionEvent event) throws IOException {
 
+		 // Cargo la vista
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuOpciones.fxml"));
+
+        // Cargo el padre
+        Parent root = loader.load();
+
+        // Obtengo el controlador
+        MenuOpcionesController controlador = loader.getController();
+
+        // Creo la scene y el stage
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+
+        // Asocio el stage con el scene
+        stage.setScene(scene);
+        stage.show();
+
+        // Indico que debe hacer al cerrar
+        stage.setOnCloseRequest(e -> controlador.closeWindows());
+
+        // Ciero la ventana donde estoy
+        Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
+        myStage.close();
     }
     
     public void closeWindows() {

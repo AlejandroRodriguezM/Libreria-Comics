@@ -26,6 +26,6 @@
       <Button fx:id="botonMostrarParametro" layoutX="26.0" layoutY="242.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="49.0" prefWidth="202.0" text="Mostrar segun parametros." />
       <Button fx:id="botonbbdd" layoutX="428.0" layoutY="17.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="95.0" prefWidth="269.0" text="Ver toda la base de datos." />
       <Button fx:id="botonMostrarParametro1" layoutX="238.0" layoutY="242.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="49.0" prefWidth="111.0" text="Limpiar" />
-      <Button fx:id="botonVolver" layoutX="583.0" layoutY="258.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="33.0" prefWidth="124.0" text="Volver al menu" />
+      <Button fx:id="botonVolver" layoutX="583.0" layoutY="258.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="33.0" prefWidth="124.0" text="Volver al menu" />
    </children>
 </Pane>
