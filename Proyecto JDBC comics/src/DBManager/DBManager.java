@@ -52,7 +52,6 @@ public class DBManager {
 	public static boolean isConnected() {
 		// Comprobamos estado de la conexión
 		try {
-
 			if (conn != null && conn.isValid(0)) {
 				return true;
 			} else {
@@ -65,6 +64,14 @@ public class DBManager {
 		return false;
 	}
 
+	/**
+	 * 
+	 * @param numeroPuerto
+	 * @param nombreBBDD
+	 * @param nombreUsuario
+	 * @param contraBBDD
+	 * @return
+	 */
 	public static Connection conexion(String numeroPuerto, String nombreBBDD, String nombreUsuario, String contraBBDD) {
 
 		// Configuración de la conexión a la base de datos
@@ -78,7 +85,7 @@ public class DBManager {
 			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
 			return conn;
 		} catch (SQLException ex) {
-			System.out.println("ERROR. CONEXION");
+			System.out.println(ex);
 			return null;
 		}
 	}
