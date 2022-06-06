@@ -2,28 +2,32 @@ package Funcionamiento;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class MenuPrincipalController {
 
 	// Conexión a la base de datos
-	private static Connection conn;
+//	private static Connection conn;
 
 	@FXML
 	private Button botonAccesobbdd;
+
+	@FXML
+	private Button botonCerrar;
 
 	@FXML
 	private Button botonEnviar;
@@ -32,16 +36,22 @@ public class MenuPrincipalController {
 	private Button botonLimpiar;
 
 	@FXML
-	private Button botonCerrar;
+	private Button botonSalir;
 
 	@FXML
-	private TextArea informacion;
+	private Button botonTwitter;
 
 	@FXML
 	private Label estadoConexion;
 
 	@FXML
+	private TextArea informacion;
+
+	@FXML
 	private TextField nombreBBDD;
+
+	@FXML
+	private Button numeroVersion;
 
 	@FXML
 	private PasswordField pass;
@@ -52,58 +62,65 @@ public class MenuPrincipalController {
 	@FXML
 	private TextField usuario;
 
-	@FXML
-	private Button numeroVersion;
-
-	@FXML
-	private Button botonTwitter;
-
+	/**
+	 * 
+	 * @param event
+	 * @throws IOException
+	 */
 	@FXML
 	void accesoGitHub(ActionEvent event) throws IOException {
-        String url = "https://www.google.com";
-        java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
+		String url = "https://www.google.com";
+		java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
 	}
 
+	/**
+	 * 
+	 * @param event
+	 * @throws IOException
+	 */
 	@FXML
 	void accesoTwitter(ActionEvent event) throws IOException {
-        String url = "https://www.google.com";
-        java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
+		String url = "https://www.google.com";
+		java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
 	}
 
+	/**
+	 * 
+	 * @param event
+	 * @throws InterruptedException
+	 * @throws IOException
+	 */
 	@FXML
 	void entrarMenu(ActionEvent event) throws InterruptedException, IOException {
 
 		if (DBManager.DBManager.isConnected()) {
 			estadoConexion.setStyle("-fx-background-color: #A0F52D");
 			estadoConexion.setText("Conectando . . . ");
-//			Thread.sleep(3*1000);
-			
-			 // Cargo la vista
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuOpciones.fxml"));
+			//			Thread.sleep(3*1000);
 
-            // Cargo el padre
-            Parent root = loader.load();
+			// Cargo la vista
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuOpciones.fxml"));
 
-            // Obtengo el controlador
-            MenuOpcionesController controlador = loader.getController();
+			// Cargo el padre
+			Parent root = loader.load();
 
-            // Creo la scene y el stage
-            Scene scene = new Scene(root);
-            Stage stage = new Stage();
+			// Obtengo el controlador
+			MenuOpcionesController controlador = loader.getController();
 
-            // Asocio el stage con el scene
-            stage.setScene(scene);
-            stage.show();
+			// Creo la scene y el stage
+			Scene scene = new Scene(root);
+			Stage stage = new Stage();
 
-            // Indico que debe hacer al cerrar
-            stage.setOnCloseRequest(e -> controlador.closeWindows());
+			// Asocio el stage con el scene
+			stage.setScene(scene);
+			stage.show();
 
-            // Ciero la ventana donde estoy
-            Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
-            myStage.close();
-			
+			// Indico que debe hacer al cerrar
+			stage.setOnCloseRequest(e -> controlador.closeWindows());
 
-
+			// Ciero la ventana donde estoy
+			Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
+			myStage.close();
 
 		} else {
 			estadoConexion.setStyle("-fx-background-color: #DD370F");
@@ -112,7 +129,10 @@ public class MenuPrincipalController {
 		}
 	}
 
-
+	/**
+	 * 
+	 * @param event
+	 */
 	@FXML
 	void limpiarDatos(ActionEvent event) {
 		nombreBBDD.setText("");
@@ -121,6 +141,10 @@ public class MenuPrincipalController {
 		puertobbdd.setText("");
 	}
 
+	/**
+	 * 
+	 * @param event
+	 */
 	@FXML
 	void cerrarbbdd(ActionEvent event) {
 
@@ -135,12 +159,15 @@ public class MenuPrincipalController {
 		}
 	}
 
-
+	/**
+	 * 
+	 * @param event
+	 */
 	@FXML
 	void enviarDatos(ActionEvent event) {
 
 		DBManager.DBManager.loadDriver();
-		conn = conexionBBDD();
+		conexionBBDD();
 
 		if (DBManager.DBManager.isConnected()) {
 			estadoConexion.setStyle("-fx-background-color: #A0F52D");
@@ -150,35 +177,43 @@ public class MenuPrincipalController {
 			estadoConexion.setStyle("-fx-background-color: #DD370F");
 			estadoConexion.setFont(new Font("Arial", 22));
 			estadoConexion.setText("ERROR. Los datos son \nincorrectos. Revise \nlos datos.");
-			//			conn = null;
 		}
 	}
 
+	/**
+	 * 
+	 * @param event
+	 */
+	@FXML
+	public void salirPrograma(ActionEvent event) {
+
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.setTitle("Saliendo");
+		alert.setHeaderText("Estas apunto de salir.");
+		alert.setContentText("¿Estas seguro que quieres salir?");
+
+		if(alert.showAndWait().get() == ButtonType.OK)
+		{
+			Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
+			myStage.close();
+		}
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
 	private Connection conexionBBDD() {
 		return DBManager.DBManager.conexion(puertobbdd.getText(), nombreBBDD.getText(), usuario.getText(),
 				pass.getText());
 	}
-	
+
+	/**
+	 * 
+	 */
 	public void closeWindows() {
-
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/vista/MenuVista.fxml"));
-
-            Parent root = loader.load();
-
-            Scene scene = new Scene(root);
-            Stage stage = new Stage();
-
-            stage.setScene(scene);
-            stage.show();
-
-            Stage myStage = (Stage) this.botonEnviar.getScene().getWindow();
-            myStage.close();
-
-        } catch (IOException ex) {
-            Logger.getLogger(MenuPrincipalController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }
+		Stage myStage = (Stage) this.botonEnviar.getScene().getWindow();
+		myStage.close();
+	}
 
 }

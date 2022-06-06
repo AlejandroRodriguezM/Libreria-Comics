@@ -8,9 +8,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 
 public class AniadirDatosController {
@@ -177,6 +180,7 @@ public class AniadirDatosController {
 //		numeroPuerto.setText("");
 //	}
 	
+
     @FXML
     private TextField anioPublicacion;
 
@@ -185,6 +189,9 @@ public class AniadirDatosController {
 
     @FXML
     private Button botonLimpiarComic;
+
+    @FXML
+    private Button botonSalir;
 
     @FXML
     private Button botonVolver;
@@ -257,6 +264,21 @@ public class AniadirDatosController {
         // Ciero la ventana donde estoy
         Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
         myStage.close();
+    }
+    
+    @FXML
+    public void salirPrograma(ActionEvent event) {
+    	
+    	Alert alert = new Alert(AlertType.CONFIRMATION);
+    	alert.setTitle("Saliendo");
+    	alert.setHeaderText("Estas apunto de salir.");
+    	alert.setContentText("¿Estas seguro que quieres salir?");
+    	
+    	if(alert.showAndWait().get() == ButtonType.OK)
+    	{
+        	Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
+            myStage.close();
+    	}
     }
     
     public void closeWindows() {

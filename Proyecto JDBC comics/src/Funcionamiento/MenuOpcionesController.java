@@ -12,7 +12,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 
 
@@ -137,6 +140,16 @@ public class MenuOpcionesController implements Initializable{
     @FXML
     public void salirPrograma(ActionEvent event) {
     	
+    	Alert alert = new Alert(AlertType.CONFIRMATION);
+    	alert.setTitle("Saliendo");
+    	alert.setHeaderText("Estas apunto de salir.");
+    	alert.setContentText("¿Estas seguro que quieres salir?");
+    	
+    	if(alert.showAndWait().get() == ButtonType.OK)
+    	{
+        	Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
+            myStage.close();
+    	}
     }
     
     public void closeWindows() {
