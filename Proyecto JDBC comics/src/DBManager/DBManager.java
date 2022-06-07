@@ -28,6 +28,7 @@ public class DBManager {
 
 	// Conexión a la base de datos
 	private static Connection conn = null;
+	private static final String DB_CLI_SELECT = "SELECT * FROM ";
 
 	/**
 	 * Conecta el proyecto con el driver JBDC

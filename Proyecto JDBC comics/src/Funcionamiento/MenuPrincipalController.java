@@ -20,47 +20,44 @@ import javafx.stage.Stage;
 
 public class MenuPrincipalController {
 
-	// Conexión a la base de datos
-//	private static Connection conn;
+	@FXML
+	Button botonAccesobbdd;
 
 	@FXML
-	private Button botonAccesobbdd;
+	Button botonCerrar;
 
 	@FXML
-	private Button botonCerrar;
+	Button botonEnviar;
 
 	@FXML
-	private Button botonEnviar;
+	Button botonLimpiar;
 
 	@FXML
-	private Button botonLimpiar;
+	Button botonSalir;
 
 	@FXML
-	private Button botonSalir;
+	Button botonTwitter;
 
 	@FXML
-	private Button botonTwitter;
+	Label estadoConexion;
 
 	@FXML
-	private Label estadoConexion;
+	TextArea informacion;
 
 	@FXML
-	private TextArea informacion;
+	TextField nombreBBDD;
 
 	@FXML
-	private TextField nombreBBDD;
+	Button numeroVersion;
 
 	@FXML
-	private Button numeroVersion;
+	PasswordField pass;
 
 	@FXML
-	private PasswordField pass;
+	TextField puertobbdd;
 
 	@FXML
-	private TextField puertobbdd;
-
-	@FXML
-	private TextField usuario;
+	TextField usuario;
 
 	/**
 	 * 
@@ -68,7 +65,7 @@ public class MenuPrincipalController {
 	 * @throws IOException
 	 */
 	@FXML
-	void accesoGitHub(ActionEvent event) throws IOException {
+	public void accesoGitHub(ActionEvent event) throws IOException {
 		String url = "https://www.google.com";
 		java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
 	}
@@ -79,7 +76,7 @@ public class MenuPrincipalController {
 	 * @throws IOException
 	 */
 	@FXML
-	void accesoTwitter(ActionEvent event) throws IOException {
+	public void accesoTwitter(ActionEvent event) throws IOException {
 		String url = "https://www.google.com";
 		java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
 	}
@@ -91,7 +88,7 @@ public class MenuPrincipalController {
 	 * @throws IOException
 	 */
 	@FXML
-	void entrarMenu(ActionEvent event) throws InterruptedException, IOException {
+	public void entrarMenu(ActionEvent event) throws InterruptedException, IOException {
 
 		if (DBManager.DBManager.isConnected()) {
 			estadoConexion.setStyle("-fx-background-color: #A0F52D");
@@ -134,7 +131,7 @@ public class MenuPrincipalController {
 	 * @param event
 	 */
 	@FXML
-	void limpiarDatos(ActionEvent event) {
+	public void limpiarDatos(ActionEvent event) {
 		nombreBBDD.setText("");
 		usuario.setText("");
 		pass.setText("");
@@ -146,7 +143,7 @@ public class MenuPrincipalController {
 	 * @param event
 	 */
 	@FXML
-	void cerrarbbdd(ActionEvent event) {
+	public void cerrarbbdd(ActionEvent event) {
 
 		if (DBManager.DBManager.isConnected()) {
 			estadoConexion.setText("BBDD Cerrada con existo.\nNo conectado.");
@@ -164,7 +161,7 @@ public class MenuPrincipalController {
 	 * @param event
 	 */
 	@FXML
-	void enviarDatos(ActionEvent event) {
+	public void enviarDatos(ActionEvent event) {
 
 		DBManager.DBManager.loadDriver();
 		conexionBBDD();
@@ -203,7 +200,7 @@ public class MenuPrincipalController {
 	 * 
 	 * @return
 	 */
-	private Connection conexionBBDD() {
+	public Connection conexionBBDD() {
 		return DBManager.DBManager.conexion(puertobbdd.getText(), nombreBBDD.getText(), usuario.getText(),
 				pass.getText());
 	}
