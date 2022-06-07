@@ -21,6 +21,9 @@ public class VerComicController {
 
     @FXML
     private TextField anioPublicacion;
+    
+    @FXML
+    private Button botonLimpiar;
 
     @FXML
     private Button botonMostrarParametro;
@@ -57,39 +60,10 @@ public class VerComicController {
 
     @FXML
     private TextField nombreVariante;
+    
 
     @FXML
-    void escribirDibujante(ActionEvent event) {
-
-    }
-
-    @FXML
-    void escribirEditorial(ActionEvent event) {
-
-    }
-
-    @FXML
-    void escribirFecha(ActionEvent event) {
-
-    }
-
-    @FXML
-    void escribirFormato(ActionEvent event) {
-
-    }
-
-    @FXML
-    void escribirGuionista(ActionEvent event) {
-
-    }
-
-    @FXML
-    void escribirNombre(ActionEvent event) {
-
-    }
-
-    @FXML
-    void escribirVariante(ActionEvent event) {
+    void limpiarDatos(ActionEvent event) {
 
     }
 
@@ -100,7 +74,7 @@ public class VerComicController {
 
     @FXML
     void verTodabbdd(ActionEvent event) {
-
+    	String sentenciaSQL = "SELECT * FROM comics.comicsbbdd;";
     }
     
     @FXML

@@ -15,17 +15,17 @@
       <Label layoutX="26.0" layoutY="176.0" text="Año de publicacion" />
       <Label layoutX="25.0" layoutY="115.0" text="Formato" />
       <Label layoutX="25.0" layoutY="144.0" text="Editorial" />
-      <TextField fx:id="nombreComic" layoutX="177.0" layoutY="20.0" onAction="#escribirNombre" />
+      <TextField fx:id="nombreComic" layoutX="177.0" layoutY="20.0" />
       <Label layoutX="26.0" layoutY="206.0" text="Variante" />
-      <TextField fx:id="nombreGuionista" layoutX="177.0" layoutY="52.0" onAction="#escribirGuionista" />
-      <TextField fx:id="nombreDibujante" layoutX="177.0" layoutY="83.0" onAction="#escribirDibujante" />
-      <TextField fx:id="nombreFormato" layoutX="177.0" layoutY="111.0" onAction="#escribirFormato" />
-      <TextField fx:id="nombreEditorial" layoutX="177.0" layoutY="140.0" onAction="#escribirEditorial" />
-      <TextField fx:id="anioPublicacion" layoutX="177.0" layoutY="172.0" onAction="#escribirFecha" />
-      <TextField fx:id="nombreVariante" layoutX="177.0" layoutY="202.0" onAction="#escribirVariante" />
+      <TextField fx:id="nombreGuionista" layoutX="177.0" layoutY="52.0" />
+      <TextField fx:id="nombreDibujante" layoutX="177.0" layoutY="83.0" />
+      <TextField fx:id="nombreFormato" layoutX="177.0" layoutY="111.0" />
+      <TextField fx:id="nombreEditorial" layoutX="177.0" layoutY="140.0" />
+      <TextField fx:id="anioPublicacion" layoutX="177.0" layoutY="172.0" />
+      <TextField fx:id="nombreVariante" layoutX="177.0" layoutY="202.0" />
       <Button fx:id="botonMostrarParametro" layoutX="26.0" layoutY="242.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="49.0" prefWidth="202.0" text="Mostrar segun parametros." />
       <Button fx:id="botonbbdd" layoutX="428.0" layoutY="17.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="95.0" prefWidth="269.0" text="Ver toda la base de datos." />
-      <Button fx:id="botonMostrarParametro1" layoutX="238.0" layoutY="242.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="49.0" prefWidth="111.0" text="Limpiar" />
+      <Button fx:id="botonLimpiar" layoutX="238.0" layoutY="242.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="49.0" prefWidth="111.0" text="Limpiar" />
       <Button fx:id="botonVolver" layoutX="454.0" layoutY="258.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="33.0" prefWidth="124.0" text="Volver al menu" />
       <Button fx:id="botonSalir" layoutX="598.0" layoutY="258.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="33.0" prefWidth="99.0" text="Salir" />
    </children>
