@@ -7,7 +7,14 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+
 public class Principal extends Application{
+	
+    private EntityManagerFactory emf;
+    private EntityManager em;
 
 	//Metodo que permite la ejecutcion de la aplicacion.
 	public void start(Stage primaryStage) throws IOException 

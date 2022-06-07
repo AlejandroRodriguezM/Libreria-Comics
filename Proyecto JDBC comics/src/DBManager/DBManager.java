@@ -6,29 +6,12 @@ import java.sql.SQLException;
 
 /*
  * Por Alejandro Rodriguez Mena
- *
- * Ejercicio 32
- *
- * Tenemos una base de datos para gestionar las cuentas corrientes de un banco con las siguientes tablas:
-
-CLIENTES (dni, nombre, teléfono, dirección).
-
-CUENTAS (número cuenta [entero, autoincrementable], dni cliente, activa ó baja)
-
-MOVIMIENTOS (nº cuenta, importe [+], fecha y hora, tipo [ingreso, salida, transferencia enviada, transferencia recibida], nº cuenta transferencia, concepto).
-
-Necesitamos una aplicación para gestionar nuestro sistema bancario:
-
-Gestión de Clientes: alta, baja (solo si no tiene cuentas corrientes), modificación (todo salvo dni).
-Gestión de cuentas corrientes (alta de cuenta, baja de cuenta [no la elimina de la base de datos para no perder los datos], ingreso en cuenta, salida de cuenta, transferencia [tiene una cuenta emisora y una receptora, generará dos movimientos].
-Gestión de movimientos de la cuenta corriente de un cliente. Recibe el número de cuenta corriente a gestionar y permite: listar los movimientos entre fechas, ver saldo, ingresar y retirar dinero, hacer transferencias.
  */
 
 public class DBManager {
 
 	// Conexión a la base de datos
 	private static Connection conn = null;
-	private static final String DB_CLI_SELECT = "SELECT * FROM ";
 
 	/**
 	 * Conecta el proyecto con el driver JBDC
@@ -73,14 +56,14 @@ public class DBManager {
 	 * @param contraBBDD
 	 * @return
 	 */
-	public static Connection conexion(String numeroPuerto, String nombreBBDD, String nombreUsuario, String contraBBDD) {
+	public static Connection conexion() {
 
 		// Configuración de la conexión a la base de datos
 		String DB_HOST = "localhost";
-		String DB_PORT = numeroPuerto;
-		String DB_NAME = nombreBBDD;
-		String DB_USER = nombreUsuario;
-		String DB_PASS = contraBBDD;
+		String DB_PORT = "3306";
+		String DB_NAME = "comics";
+		String DB_USER = "root";
+		String DB_PASS = "Forosonanime13!";
 		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
 		try {
 			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
