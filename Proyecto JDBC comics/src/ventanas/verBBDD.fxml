@@ -7,7 +7,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="702.0" prefWidth="1108.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Funcionamiento.VerComicController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="704.0" prefWidth="1119.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Funcionamiento.VerComicController">
    <children>
       <Label layoutX="26.0" layoutY="24.0" text="Nombre" />
       <Label layoutX="26.0" layoutY="56.0" text="Guionista" />
@@ -28,7 +28,7 @@
       <Button fx:id="botonLimpiar" layoutX="238.0" layoutY="242.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="49.0" prefWidth="111.0" text="Limpiar" />
       <Button fx:id="botonVolver" layoutX="845.0" layoutY="258.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="33.0" prefWidth="124.0" text="Volver al menu" />
       <Button fx:id="botonSalir" layoutX="986.0" layoutY="258.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="33.0" prefWidth="99.0" text="Salir" />
-      <TableView fx:id="tablaBBDD" layoutX="-3.0" layoutY="295.0" onSort="#verBBDD" prefHeight="407.0" prefWidth="1108.0">
+      <TableView fx:id="tablaBBDD" layoutX="-3.0" layoutY="295.0" prefHeight="414.0" prefWidth="1122.0">
         <columns>
           <TableColumn fx:id="nombre" prefWidth="126.0" text="Nombre" />
           <TableColumn id="nombre" fx:id="numero" prefWidth="68.0" text="Numero" />
@@ -39,7 +39,7 @@
             <TableColumn id="nombre" fx:id="procedencia" prefWidth="102.0" text="Procedencia" />
             <TableColumn id="nombre" fx:id="fecha" prefWidth="66.0" text="Fecha" />
             <TableColumn id="nombre" fx:id="guionista" prefWidth="218.0" text="Guionista" />
-            <TableColumn id="nombre" fx:id="dibujante" prefWidth="201.0" text="Dibujante" />
+            <TableColumn id="nombre" fx:id="dibujante" prefWidth="215.0" text="Dibujante" />
         </columns>
       </TableView>
    </children>

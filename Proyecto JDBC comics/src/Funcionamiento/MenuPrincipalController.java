@@ -1,7 +1,6 @@
 package Funcionamiento;
 
 import java.io.IOException;
-import java.sql.Connection;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

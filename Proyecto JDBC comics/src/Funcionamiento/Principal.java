@@ -1,33 +1,22 @@
 package Funcionamiento;
 import java.io.IOException;
+import java.sql.SQLException;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-
 public class Principal extends Application{
-	
-    private EntityManagerFactory emf;
-    private EntityManager em;
 
 	//Metodo que permite la ejecutcion de la aplicacion.
-	public void start(Stage primaryStage) throws IOException 
+	public void start(Stage primaryStage) throws IOException, SQLException 
 	{
 		try {
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(Principal.class.getResource("/ventanas/MenuPrincipal.fxml"));
-			Pane ventana = (Pane) loader.load();
-
-			// Show the scene containing the root layout.
-			Scene scene = new Scene(ventana);
+			Parent root = FXMLLoader.load(getClass().getResource("/ventanas/MenuPrincipal.fxml"));
+			primaryStage.setScene(new Scene(root));
 			primaryStage.setTitle("Aplicacion bbdd comics"); //Titulo de la aplicacion.
-			primaryStage.setScene(scene);
 			primaryStage.show();
 			
 		} catch (IOException e) {

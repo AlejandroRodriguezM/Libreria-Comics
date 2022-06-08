@@ -2,12 +2,14 @@ package Funcionamiento;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import DBManager.DBManager;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -24,105 +26,88 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.scene.control.Alert.AlertType;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 
 public class VerComicController implements Initializable{
 
 	
 //	private static final String DB_CLI_SELECT = "SELECT * FROM comics.comicsbbdd";
 //	private static Connection conn = DBManager.DBManager.conexion();
-	private EntityManager entityManager;
 
-    @FXML
-    private TextField anioPublicacion;
+	@FXML
+	private TextField anioPublicacion;
 
-    @FXML
-    private Button botonLimpiar;
+	@FXML
+	private Button botonLimpiar;
 
-    @FXML
-    private Button botonMostrarParametro;
+	@FXML
+	private Button botonMostrarParametro;
 
-    @FXML
-    private Button botonSalir;
+	@FXML
+	private Button botonSalir;
 
-    @FXML
-    private Button botonVolver;
+	@FXML
+	private Button botonVolver;
 
-    @FXML
-    private Button botonbbdd;
+	@FXML
+	private Button botonbbdd;
 
-    @FXML
-    private TableColumn<Comic, String> dibujante;
+	@FXML
+	private TableColumn<Comics, String> dibujante;
 
-    @FXML
-    private TableColumn<Comic, String> editorial;
+	@FXML
+	private TableColumn<Comics, String> editorial;
 
-    @FXML
-    private TableColumn<Comic, String>fecha;
+	@FXML
+	private TableColumn<Comics, String> fecha;
 
-    @FXML
-    private TableColumn<Comic, String>firma;
+	@FXML
+	private TableColumn<Comics, String> firma;
 
-    @FXML
-    private TableColumn<Comic, String>formato;
+	@FXML
+	private TableColumn<Comics, String> formato;
 
-    @FXML
-    private TableColumn<Comic, String> guionista;
+	@FXML
+	private TableColumn<Comics, String> guionista;
 
-    @FXML
-    private TableColumn<Comic, String> nombre;
+	@FXML
+	private TableColumn<Comics, String> nombre;
 
-    @FXML
-    private TextField nombreComic;
+	@FXML
+	private TextField nombreComic;
 
-    @FXML
-    private TextField nombreDibujante;
+	@FXML
+	private TextField nombreDibujante;
 
-    @FXML
-    private TextField nombreEditorial;
+	@FXML
+	private TextField nombreEditorial;
 
-    @FXML
-    private TextField nombreFormato;
+	@FXML
+	private TextField nombreFormato;
 
-    @FXML
-    private TextField nombreGuionista;
+	@FXML
+	private TextField nombreGuionista;
 
-    @FXML
-    private TextField nombreVariante;
+	@FXML
+	private TextField nombreVariante;
 
-    @FXML
-    private TableColumn<Comic, String>numero;
+	@FXML
+	private TableColumn<Comics, String> numero;
 
-    @FXML
-    private TableColumn<Comic, String> procedencia;
+	@FXML
+	private TableColumn<Comics, String> procedencia;
 
-    @FXML
-    private TableView<Comic> tablaBBDD;
+	@FXML
+	public TableView<Comics> tablaBBDD;
 
-    @FXML
-    private TableColumn <Comic, String> variante;
+	@FXML
+	private TableColumn<Comics, String> variante;
     
-    public void setEntityManager(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		nombre.setCellValueFactory(new PropertyValueFactory<>("nomComics"));
-		numero.setCellValueFactory(new PropertyValueFactory<>("numComic"));
-		variante.setCellValueFactory(new PropertyValueFactory<>("nomVariante"));
-		firma.setCellValueFactory(new PropertyValueFactory<>("firma"));
-		editorial.setCellValueFactory(new PropertyValueFactory<>("nomEditorial"));
-		formato.setCellValueFactory(new PropertyValueFactory<>("formato"));
-		procedencia.setCellValueFactory(new PropertyValueFactory<>("procedencia"));
-		fecha.setCellValueFactory(new PropertyValueFactory<>("anioPubli"));
-		guionista.setCellValueFactory(new PropertyValueFactory<>("nomGuionista"));
-		dibujante.setCellValueFactory(new PropertyValueFactory<>("nomDibujante"));
-		
+
 	}
-    
-    
+   
 	@FXML
 	void limpiarDatos(ActionEvent event) {
 		anioPublicacion.setText("");
@@ -141,15 +126,24 @@ public class VerComicController implements Initializable{
 	}
 
 	@FXML
-	void verTodabbdd(ActionEvent event) {
+	void verTodabbdd(ActionEvent event) throws SQLException {
 		
-	    Query queryPersonaFindAll = entityManager.createNamedQuery("Comic.findAll");
-	    List<Comic> listComics = queryPersonaFindAll.getResultList();
-	    tablaBBDD.setItems(FXCollections.observableArrayList(listComics));
+		nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+		numero.setCellValueFactory(new PropertyValueFactory<>("numero"));
+		variante.setCellValueFactory(new PropertyValueFactory<>("variante"));
+		firma.setCellValueFactory(new PropertyValueFactory<>("firma"));
+		editorial.setCellValueFactory(new PropertyValueFactory<>("editorial"));
+		formato.setCellValueFactory(new PropertyValueFactory<>("formato"));
+		procedencia.setCellValueFactory(new PropertyValueFactory<>("procedencia"));
+		fecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+		guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
+		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
+		
+	    List<Comics> listComics = FXCollections.observableArrayList(Comics.verTodo());
+	    tablaBBDD.getColumns().setAll(nombre,numero,variante,firma,editorial,formato,procedencia,fecha,guionista,dibujante);
+	    tablaBBDD.getItems().setAll(listComics);
 
-
-		
-		
+	    
 	}
 
 
@@ -215,7 +209,4 @@ public class VerComicController implements Initializable{
 			Logger.getLogger(MenuPrincipalController.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
-
-
-
 }

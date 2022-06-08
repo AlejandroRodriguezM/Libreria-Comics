@@ -1,7 +1,12 @@
 package Funcionamiento;
 
-public class Comic {
-	
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import DBManager.DBManager;
+
+public class Comics {
+
 	private String nombre;
 	private String numero;
 	private String variante;
@@ -9,11 +14,15 @@ public class Comic {
 	private String editorial;
 	private String formato;
 	private String procedencia;
+
+
+
+
 	private String fecha;
 	private String guionista;
 	private String dibujante;
-	
-	public Comic(String nombre, String numero, String variante, String firma, String editorial, String formato,
+
+	public Comics(String nombre, String numero, String variante, String firma, String editorial, String formato,
 			String procedencia, String fecha, String guionista, String dibujante) {
 		super();
 		this.nombre = nombre;
@@ -27,7 +36,7 @@ public class Comic {
 		this.guionista = guionista;
 		this.dibujante = dibujante;
 	}
-	
+
 	public String getNombre() {
 		return nombre;
 	}
@@ -88,6 +97,57 @@ public class Comic {
 	public void setDibujante(String dibujante) {
 		this.dibujante = dibujante;
 	}
-	
+
+
+
+	public static Comics[] verTodo() throws SQLException
+	{
+		int posicion = 0;
+		String sentenciaSql = "SELECT * from comics.comicsbbdd";
+
+		Comics comic []= null;
+
+		ResultSet rs = DBManager.getComic(sentenciaSql);
+
+		try {
+			if(rs.last()) {
+				comic = new Comics[(rs.getRow())];
+				System.out.println();
+				rs.isBeforeFirst();
+
+				do
+				{
+					String nombre = rs.getString("nomComic");
+					String numero = rs.getString("numComic");
+					String variante = rs.getString("nomVariante");
+					String firma = rs.getString("firma");
+					String editorial = rs.getString("nomEditorial");
+					String formato = rs.getString("formato");
+					String procedencia = rs.getString("procedencia");
+					String anioPubli = rs.getString("anioPubli");
+					String guionista = rs.getString("nomGuionista");
+					String dibujante = rs.getString("nomDibujante");
+					comic[posicion] = new Comics(nombre,numero,variante,firma,editorial,formato,procedencia,anioPubli,guionista,dibujante);
+					posicion++;
+					
+				}
+				while(rs.next());
+			}
+
+		}
+		catch(Exception ex)
+		{
+			System.out.println();
+		}
+		return comic;
+	}
+
+	@Override
+	public String toString() {
+		return "Comics [nombre=" + nombre + ", numero=" + numero + ", variante=" + variante + ", firma=" + firma
+				+ ", editorial=" + editorial + ", formato=" + formato + ", procedencia=" + procedencia + ", fecha="
+				+ fecha + ", guionista=" + guionista + ", dibujante=" + dibujante + "]";
+	}
+
 
 }

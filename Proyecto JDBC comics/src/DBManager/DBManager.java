@@ -2,6 +2,8 @@ package DBManager;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /*
@@ -85,6 +87,33 @@ public class DBManager {
 		} catch (SQLException ex) {
 			System.out.println("ERROR. No es posible desconectarse de la BBDD ");
 		}
+	}
+	
+	/**
+	 * Consulta si existe un cliente con el DNI indicado
+	 * 
+	 * @param DNI
+	 * @return
+	 * @throws SQLException 
+	 */
+	public static ResultSet getComic(String sentenciaSQL) throws SQLException {
+		try {
+			// Realizamos la consulta SQL
+			PreparedStatement stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+
+			ResultSet rs = stmt.executeQuery();
+			if (!rs.first()) {
+				return null;
+			}
+
+			// Todo bien, devolvemos el cliente
+			return rs;
+		
+		} catch (NullPointerException ex) {
+			System.err.println("ERROR. No se puede mostrar porque no hay clientes.");
+		}
+		return null;
 	}
 
 }
