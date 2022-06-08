@@ -88,13 +88,12 @@ public class DBManager {
 			System.out.println("ERROR. No es posible desconectarse de la BBDD ");
 		}
 	}
-	
+
 	/**
-	 * Consulta si existe un cliente con el DNI indicado
 	 * 
-	 * @param DNI
+	 * @param sentenciaSQL
 	 * @return
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	public static ResultSet getComic(String sentenciaSQL) throws SQLException {
 		try {
@@ -109,7 +108,7 @@ public class DBManager {
 
 			// Todo bien, devolvemos el cliente
 			return rs;
-		
+
 		} catch (NullPointerException ex) {
 			System.err.println("ERROR. No se puede mostrar porque no hay clientes.");
 		}
