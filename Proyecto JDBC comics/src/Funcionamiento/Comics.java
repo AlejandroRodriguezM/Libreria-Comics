@@ -19,6 +19,9 @@ public class Comics {
 	private String fecha;
 	private String guionista;
 	private String dibujante;
+	
+	private static List<Comics> listComics = new ArrayList<>();
+	private static List<Comics> FiltrolistComics = new ArrayList<>();
 
 	public Comics(String nombre, String numero, String variante, String firma, String editorial, String formato,
 			String procedencia, String fecha, String guionista, String dibujante) {
@@ -118,11 +121,11 @@ public class Comics {
 		String sentenciaSql = "SELECT * from comics.comicsbbdd";
 
 		Comics comics[] = null;
-		List<Comics> list = new ArrayList<>();
+		
 		ResultSet rs = DBManager.getComic(sentenciaSql);
 
 		try {
-			while (rs.next()) {
+			do {
 
 				String nombre = rs.getString("nomComic");
 				String numero = rs.getString("numComic");
@@ -134,9 +137,10 @@ public class Comics {
 				String anioPubli = rs.getString("anioPubli");
 				String guionista = rs.getString("nomGuionista");
 				String dibujante = rs.getString("nomDibujante");
-				list.add(new Comics(nombre, numero, variante, firma, editorial, formato, procedencia, anioPubli,
+				listComics.add(new Comics(nombre, numero, variante, firma, editorial, formato, procedencia, anioPubli,
 						guionista, dibujante));
 			}
+			while (rs.next());
 
 		} catch (Exception ex) {
 			ex.printStackTrace(); // Try to use relevant Exception classes instead of calling the 'Exception'
@@ -144,8 +148,8 @@ public class Comics {
 		}
 
 		// Convert the list to array
-		comics = new Comics[list.size()];
-		comics = list.toArray(comics);
+		comics = new Comics[listComics.size()];
+		comics = listComics.toArray(comics);
 		return comics ;
 	}
 }
