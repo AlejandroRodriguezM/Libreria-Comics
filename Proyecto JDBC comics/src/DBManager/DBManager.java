@@ -75,6 +75,32 @@ public class DBManager {
 			return null;
 		}
 	}
+	
+	/**
+	 * 
+	 * @param numeroPuerto
+	 * @param nombreBBDD
+	 * @param nombreUsuario
+	 * @param contraBBDD
+	 * @return
+	 */
+	public static Connection conexion() {
+
+		// Configuración de la conexión a la base de datos
+		String DB_HOST = "localhost";
+		String DB_PORT = "3306";
+		String DB_NAME = "comics";
+		String DB_USER = "root";
+		String DB_PASS = "Forosonanime13!";
+		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
+		try {
+			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+			return conn;
+		} catch (SQLException ex) {
+			System.out.println(ex);
+			return null;
+		}
+	}
 
 	/**
 	 * Cierra la conexión con la base de datos

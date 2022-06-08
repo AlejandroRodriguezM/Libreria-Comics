@@ -67,23 +67,32 @@ public class VerComicController implements Initializable {
 	@FXML
 	private TableColumn<Comics, String> nombre;
 
-	@FXML
-	private TextField nombreComic;
+    @FXML
+    private TextField nombreComic;
 
-	@FXML
-	private TextField nombreDibujante;
+    @FXML
+    private TextField nombreDibujante;
 
-	@FXML
-	private TextField nombreEditorial;
+    @FXML
+    private TextField nombreEditorial;
 
-	@FXML
-	private TextField nombreFormato;
+    @FXML
+    private TextField nombreFirma;
 
-	@FXML
-	private TextField nombreGuionista;
+    @FXML
+    private TextField nombreFormato;
 
-	@FXML
-	private TextField nombreVariante;
+    @FXML
+    private TextField nombreGuionista;
+
+    @FXML
+    private TextField nombreProcedencia;
+
+    @FXML
+    private TextField nombreVariante;
+    
+    @FXML
+    private TextField numeroComic;
 
 	@FXML
 	private TableColumn<Comics, String> numero;
@@ -96,6 +105,8 @@ public class VerComicController implements Initializable {
 
 	@FXML
 	private TableColumn<Comics, String> variante;
+	
+	
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -104,19 +115,59 @@ public class VerComicController implements Initializable {
 
 	@FXML
 	void limpiarDatos(ActionEvent event) {
-		anioPublicacion.setText("");
+		
 		nombreComic.setText("");
 		nombreDibujante.setText("");
 		nombreEditorial.setText("");
 		nombreFormato.setText("");
 		nombreGuionista.setText("");
 		nombreVariante.setText("");
+		anioPublicacion.setText("");
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
+		
+		String nombreCom,numeroCom,varianteCom,firmaCom,editorialCom,formatoCom,procedenciaCom,fechaCom,guionistaCom,dibujanteCom;
 
+		
+	    nombreCom = nombreComic.getText();
+
+	    numeroCom = numeroComic.getText();
+
+	    varianteCom = nombreEditorial.getText();
+
+	    firmaCom = nombreFirma.getText();
+
+	    editorialCom = nombreFormato.getText();
+
+	    formatoCom = nombreGuionista.getText();
+
+	    procedenciaCom = nombreProcedencia.getText();
+
+	    fechaCom = nombreVariante.getText();
+	    
+		guionistaCom = anioPublicacion.getText();
+		
+		dibujanteCom = nombreDibujante.getText();
+		
+		nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+		numero.setCellValueFactory(new PropertyValueFactory<>("numero"));
+		variante.setCellValueFactory(new PropertyValueFactory<>("variante"));
+		firma.setCellValueFactory(new PropertyValueFactory<>("firma"));
+		editorial.setCellValueFactory(new PropertyValueFactory<>("editorial"));
+		formato.setCellValueFactory(new PropertyValueFactory<>("formato"));
+		procedencia.setCellValueFactory(new PropertyValueFactory<>("procedencia"));
+		fecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+		guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
+		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
+
+		List<Comics> listComics = FXCollections.observableArrayList(Comics.filtadroBBDD(nombreCom,numeroCom,varianteCom,firmaCom,editorialCom,formatoCom,procedenciaCom,fechaCom,guionistaCom,dibujanteCom));
+		tablaBBDD.getColumns().setAll(nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+				guionista, dibujante);
+		tablaBBDD.getItems().setAll(listComics);
 	}
 
 	@SuppressWarnings("unchecked")

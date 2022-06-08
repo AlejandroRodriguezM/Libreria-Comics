@@ -7,28 +7,28 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="704.0" prefWidth="1119.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.VerComicController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="812.0" prefWidth="1119.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.VerComicController">
    <children>
       <Label layoutX="26.0" layoutY="24.0" text="Nombre" />
-      <Label layoutX="26.0" layoutY="56.0" text="Guionista" />
-      <Label layoutX="25.0" layoutY="87.0" text="Dibujante" />
-      <Label layoutX="26.0" layoutY="176.0" text="Año de publicacion" />
-      <Label layoutX="25.0" layoutY="115.0" text="Formato" />
-      <Label layoutX="25.0" layoutY="144.0" text="Editorial" />
+      <Label layoutX="26.0" layoutY="280.0" text="Guionista" />
+      <Label layoutX="26.0" layoutY="313.0" text="Dibujante" />
+      <Label layoutX="26.0" layoutY="248.0" text="Año de publicacion" />
+      <Label layoutX="26.0" layoutY="186.0" text="Formato" />
+      <Label layoutX="26.0" layoutY="156.0" text="Editorial" />
       <TextField fx:id="nombreComic" layoutX="177.0" layoutY="20.0" />
-      <Label layoutX="26.0" layoutY="206.0" text="Variante" />
-      <TextField fx:id="nombreGuionista" layoutX="177.0" layoutY="52.0" />
-      <TextField fx:id="nombreDibujante" layoutX="177.0" layoutY="83.0" />
-      <TextField fx:id="nombreFormato" layoutX="177.0" layoutY="111.0" />
-      <TextField fx:id="nombreEditorial" layoutX="177.0" layoutY="140.0" />
-      <TextField fx:id="anioPublicacion" layoutX="177.0" layoutY="172.0" />
-      <TextField fx:id="nombreVariante" layoutX="177.0" layoutY="202.0" />
-      <Button fx:id="botonMostrarParametro" layoutX="26.0" layoutY="242.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="49.0" prefWidth="202.0" text="Mostrar segun parametros." />
+      <Label layoutX="26.0" layoutY="91.0" text="Variante" />
+      <TextField fx:id="nombreGuionista" layoutX="177.0" layoutY="276.0" />
+      <TextField fx:id="nombreDibujante" layoutX="178.0" layoutY="309.0" />
+      <TextField fx:id="nombreFormato" layoutX="178.0" layoutY="182.0" />
+      <TextField fx:id="nombreEditorial" layoutX="178.0" layoutY="152.0" />
+      <TextField fx:id="anioPublicacion" layoutX="177.0" layoutY="244.0" />
+      <TextField fx:id="nombreVariante" layoutX="177.0" layoutY="87.0" />
+      <Button fx:id="botonMostrarParametro" layoutX="26.0" layoutY="344.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="49.0" prefWidth="202.0" text="Mostrar segun parametros." />
       <Button fx:id="botonbbdd" layoutX="428.0" layoutY="17.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="95.0" prefWidth="269.0" text="Ver toda la base de datos." />
-      <Button fx:id="botonLimpiar" layoutX="238.0" layoutY="242.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="49.0" prefWidth="111.0" text="Limpiar" />
-      <Button fx:id="botonVolver" layoutX="845.0" layoutY="258.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="33.0" prefWidth="124.0" text="Volver al menu" />
-      <Button fx:id="botonSalir" layoutX="986.0" layoutY="258.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="33.0" prefWidth="99.0" text="Salir" />
-      <TableView fx:id="tablaBBDD" layoutX="-3.0" layoutY="295.0" prefHeight="414.0" prefWidth="1122.0">
+      <Button fx:id="botonLimpiar" layoutX="237.0" layoutY="344.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="49.0" prefWidth="111.0" text="Limpiar" />
+      <Button fx:id="botonVolver" layoutX="848.0" layoutY="352.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="33.0" prefWidth="124.0" text="Volver al menu" />
+      <Button fx:id="botonSalir" layoutX="994.0" layoutY="352.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="33.0" prefWidth="99.0" text="Salir" />
+      <TableView fx:id="tablaBBDD" layoutX="-1.0" layoutY="397.0" prefHeight="415.0" prefWidth="1122.0">
         <columns>
           <TableColumn fx:id="nombre" prefWidth="126.0" text="Nombre" />
           <TableColumn id="nombre" fx:id="numero" prefWidth="68.0" text="Numero" />
@@ -42,5 +42,11 @@
             <TableColumn id="nombre" fx:id="dibujante" prefWidth="215.0" text="Dibujante" />
         </columns>
       </TableView>
+      <Label layoutX="26.0" layoutY="57.0" text="Numero" />
+      <TextField fx:id="numeroComic" layoutX="177.0" layoutY="53.0" />
+      <Label layoutX="26.0" layoutY="124.0" text="Firma" />
+      <TextField fx:id="nombreFirma" layoutX="177.0" layoutY="120.0" />
+      <Label layoutX="26.0" layoutY="218.0" text="Procedencia" />
+      <TextField fx:id="nombreProcedencia" layoutX="177.0" layoutY="214.0" />
    </children>
 </Pane>

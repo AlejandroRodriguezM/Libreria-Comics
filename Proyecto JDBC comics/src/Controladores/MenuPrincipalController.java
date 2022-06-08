@@ -168,7 +168,9 @@ public class MenuPrincipalController {
 	void enviarDatos(ActionEvent event) {
 
 		DBManager.DBManager.loadDriver();
-		conexionBBDD();
+//		conexionBBDD();
+		
+		DBManager.DBManager.conexion();
 
 		if (DBManager.DBManager.isConnected()) {
 			estadoConexion.setStyle("-fx-background-color: #A0F52D");
