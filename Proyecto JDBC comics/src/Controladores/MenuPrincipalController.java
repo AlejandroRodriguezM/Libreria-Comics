@@ -1,6 +1,8 @@
-package Funcionamiento;
+package Controladores;
 
 import java.io.IOException;
+import java.sql.Connection;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -166,7 +168,7 @@ public class MenuPrincipalController {
 	void enviarDatos(ActionEvent event) {
 
 		DBManager.DBManager.loadDriver();
-		DBManager.DBManager.conexion();
+		conexionBBDD();
 
 		if (DBManager.DBManager.isConnected()) {
 			estadoConexion.setStyle("-fx-background-color: #A0F52D");
@@ -202,11 +204,10 @@ public class MenuPrincipalController {
 	 * 
 	 * @return
 	 */
-//	private Connection conexionBBDD() {
-//		return null;
-////		return DBManager.DBManager.conexion(puertobbdd.getText(), nombreBBDD.getText(), usuario.getText(),
-////				pass.getText());
-//	}
+	private Connection conexionBBDD() {
+		return DBManager.DBManager.conexion(puertobbdd.getText(), nombreBBDD.getText(), usuario.getText(),
+				pass.getText());
+	}
 
 	/**
 	 * 

@@ -58,14 +58,14 @@ public class DBManager {
 	 * @param contraBBDD
 	 * @return
 	 */
-	public static Connection conexion() {
+	public static Connection conexion(String puertobbdd,String nombreBBDD,String usuario,String pass) {
 
 		// Configuración de la conexión a la base de datos
 		String DB_HOST = "localhost";
-		String DB_PORT = "3306";
-		String DB_NAME = "comics";
-		String DB_USER = "root";
-		String DB_PASS = "Forosonanime13!";
+		String DB_PORT = puertobbdd;
+		String DB_NAME = nombreBBDD;
+		String DB_USER = usuario;
+		String DB_PASS = pass;
 		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
 		try {
 			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);

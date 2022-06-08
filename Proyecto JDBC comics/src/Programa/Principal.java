@@ -1,4 +1,4 @@
-package Funcionamiento;
+package Programa;
 import java.io.IOException;
 import java.sql.SQLException;
 

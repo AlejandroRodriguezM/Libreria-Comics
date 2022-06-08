@@ -1,14 +1,14 @@
-package Funcionamiento;
+package Controladores;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import Funcionamiento.Comics;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -27,10 +27,6 @@ import javafx.stage.Stage;
 import javafx.scene.control.Alert.AlertType;
 
 public class VerComicController implements Initializable{
-
-	
-//	private static final String DB_CLI_SELECT = "SELECT * FROM comics.comicsbbdd";
-	private static Connection conn = DBManager.DBManager.conexion();
 
 	@FXML
 	private TextField anioPublicacion;

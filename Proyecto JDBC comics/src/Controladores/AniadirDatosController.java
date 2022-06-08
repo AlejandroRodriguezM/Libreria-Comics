@@ -1,4 +1,4 @@
-package Funcionamiento;
+package Controladores;
 
 import java.io.IOException;
 import java.util.logging.Level;
