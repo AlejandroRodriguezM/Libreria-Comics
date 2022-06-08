@@ -26,7 +26,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.scene.control.Alert.AlertType;
 
-public class VerComicController implements Initializable{
+public class VerComicController implements Initializable {
 
 	@FXML
 	private TextField anioPublicacion;
@@ -96,13 +96,12 @@ public class VerComicController implements Initializable{
 
 	@FXML
 	private TableColumn<Comics, String> variante;
-    
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
 	}
-   
+
 	@FXML
 	void limpiarDatos(ActionEvent event) {
 		anioPublicacion.setText("");
@@ -123,7 +122,7 @@ public class VerComicController implements Initializable{
 	@SuppressWarnings("unchecked")
 	@FXML
 	void verTodabbdd(ActionEvent event) throws SQLException {
-		
+
 		nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
 		numero.setCellValueFactory(new PropertyValueFactory<>("numero"));
 		variante.setCellValueFactory(new PropertyValueFactory<>("variante"));
@@ -134,14 +133,13 @@ public class VerComicController implements Initializable{
 		fecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
 		guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
 		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
-		
-	    List<Comics> listComics = FXCollections.observableArrayList(Comics.verTodo());
-	    tablaBBDD.getColumns().setAll(nombre,numero,variante,firma,editorial,formato,procedencia,fecha,guionista,dibujante);
-	    tablaBBDD.getItems().setAll(listComics);
 
-	    
+		List<Comics> listComics = FXCollections.observableArrayList(Comics.verTodo());
+		tablaBBDD.getColumns().setAll(nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+				guionista, dibujante);
+		tablaBBDD.getItems().setAll(listComics);
+
 	}
-
 
 	@FXML
 	void volverMenu(ActionEvent event) throws IOException {
@@ -178,8 +176,7 @@ public class VerComicController implements Initializable{
 		alert.setHeaderText("Estas apunto de salir.");
 		alert.setContentText("¿Estas seguro que quieres salir?");
 
-		if(alert.showAndWait().get() == ButtonType.OK)
-		{
+		if (alert.showAndWait().get() == ButtonType.OK) {
 			Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
 			myStage.close();
 		}

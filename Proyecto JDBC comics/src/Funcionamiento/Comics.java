@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 import DBManager.DBManager;
 
 public class Comics {
@@ -36,74 +37,92 @@ public class Comics {
 	public String getNombre() {
 		return nombre;
 	}
+
 	public String getNumero() {
 		return numero;
 	}
+
 	public String getVariante() {
 		return variante;
 	}
+
 	public String getFirma() {
 		return firma;
 	}
+
 	public String getEditorial() {
 		return editorial;
 	}
+
 	public String getFormato() {
 		return formato;
 	}
+
 	public String getProcedencia() {
 		return procedencia;
 	}
+
 	public String getFecha() {
 		return fecha;
 	}
+
 	public String getGuionista() {
 		return guionista;
 	}
+
 	public String getDibujante() {
 		return dibujante;
 	}
+
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
+
 	public void setNumero(String numero) {
 		this.numero = numero;
 	}
+
 	public void setVariante(String variante) {
 		this.variante = variante;
 	}
+
 	public void setFirma(String firma) {
 		this.firma = firma;
 	}
+
 	public void setEditorial(String editorial) {
 		this.editorial = editorial;
 	}
+
 	public void setFormato(String formato) {
 		this.formato = formato;
 	}
+
 	public void setProcedencia(String procedencia) {
 		this.procedencia = procedencia;
 	}
+
 	public void setFecha(String fecha) {
 		this.fecha = fecha;
 	}
+
 	public void setGuionista(String guionista) {
 		this.guionista = guionista;
 	}
+
 	public void setDibujante(String dibujante) {
 		this.dibujante = dibujante;
 	}
 
-	public static Comics[] verTodo() throws SQLException
-	{
+	public static Comics[] verTodo() throws SQLException {
 		String sentenciaSql = "SELECT * from comics.comicsbbdd";
 
-		Comics comic []=null;
+		Comics comics[] = null;
 		List<Comics> list = new ArrayList<>();
 		ResultSet rs = DBManager.getComic(sentenciaSql);
 
 		try {
-			while(rs.next()){
+			while (rs.next()) {
 
 				String nombre = rs.getString("nomComic");
 				String numero = rs.getString("numComic");
@@ -115,16 +134,18 @@ public class Comics {
 				String anioPubli = rs.getString("anioPubli");
 				String guionista = rs.getString("nomGuionista");
 				String dibujante = rs.getString("nomDibujante");
-				list.add(new Comics(nombre,numero,variante,firma,editorial,formato,procedencia,anioPubli,guionista,dibujante));
+				list.add(new Comics(nombre, numero, variante, firma, editorial, formato, procedencia, anioPubli,
+						guionista, dibujante));
 			}
 
-		}catch(Exception ex){
-			ex.printStackTrace(); // Try to use relevant Exception classes instead of calling the 'Exception' itself. 
+		} catch (Exception ex) {
+			ex.printStackTrace(); // Try to use relevant Exception classes instead of calling the 'Exception'
+									// itself.
 		}
 
 		// Convert the list to array
-		comic =  new Comics[list.size()];
-		comic = list.toArray(comic);
-		return comic;
+		comics = new Comics[list.size()];
+		comics = list.toArray(comics);
+		return comics ;
 	}
 }

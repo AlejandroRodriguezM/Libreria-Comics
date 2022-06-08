@@ -58,7 +58,7 @@ public class DBManager {
 	 * @param contraBBDD
 	 * @return
 	 */
-	public static Connection conexion(String puertobbdd,String nombreBBDD,String usuario,String pass) {
+	public static Connection conexion(String puertobbdd, String nombreBBDD, String usuario, String pass) {
 
 		// Configuración de la conexión a la base de datos
 		String DB_HOST = "localhost";
