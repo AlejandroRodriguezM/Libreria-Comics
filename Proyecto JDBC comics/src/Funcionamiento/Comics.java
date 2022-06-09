@@ -1,10 +1,12 @@
 package Funcionamiento;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import DBManager.DBManager;
@@ -25,6 +27,7 @@ public class Comics {
 	private static List<Comics> listComics = new ArrayList<>();
 	private static List<Comics> FiltrolistComics = new ArrayList<>();
 
+	@SuppressWarnings("unused")
 	private static Connection conn = DBManager.conexion();
 
 	public Comics(String nombre, String numero, String variante, String firma, String editorial, String formato,
@@ -162,67 +165,133 @@ public class Comics {
 		return comics;
 	}
 
+
+
 	public static Comics[] filtadroBBDD(String nombreC, String numeroC, String varianteC, String firmaC,
-			String nomEditorialC, String formatoC, String procedenciaC, String fechaC, String guionistaC,
-			String nomDibujanteC) {
+			String editorialC, String formatoC, String procedenciaC, String fechaC, String guionistaC,
+			String dibujanteC) throws SQLException {
 
 		reiniciarBBDD();
 
 		String nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom,
-				guionistaCom, dibujanteCom;
+		guionistaCom, dibujanteCom;
 		Comics comics[] = null;
 
-		String sql1 = "SELECT * FROM comicsbbdd where nomComic = '" + nombreC + "';";
-		String sql2 = "SELECT * FROM comicsbbdd where numComic = '" + numeroC + "';";
-		String sql3 = "SELECT * FROM comicsbbdd where nomVariante = '" + varianteC + "';";
-		String sql4 = "SELECT * FROM comicsbbdd where firma = '" + firmaC + "';";
-		String sql5 = "SELECT * FROM comicsbbdd where nomEditorial = '" + nomEditorialC + "';";
-		String sql6 = "SELECT * FROM comicsbbdd where formato = '" + formatoC + "';";
-		String sql7 = "SELECT * FROM comicsbbdd where procedencia = '" + procedenciaC + "';";
-		String sql8 = "SELECT * FROM comicsbbdd where anioPubli = '" + fechaC + "';";
-		String sql9 = "SELECT * FROM comicsbbdd where nomGuionistas = '" + guionistaC + "';";
-		String sql10 = "SELECT * FROM comicsbbdd where nomDibujantes = '" + nomDibujanteC + "';";
-//		String []sentenciasSQL = {sql1,sql2,sql3,sql4,sql5,sql6,sql7,sql8,sql9,sql10};
-		String[] sentenciasSQL = { sql1 };
+		ArrayList<String> strFilter = new ArrayList<>();
 
-//		String sql = "SELECT * FROM comicsbbdd WHERE nomComic = '" + nombreC + "' AND numComic = '" + numeroC
-//				+ "' AND nomVariante = '" + varianteC + "' AND firma = '" + firmaC + "' AND nomEditorial = '"
-//				+ nomEditorialC + "' and formato = '" + formatoC + "' AND procedencia = '" + procedenciaC
-//				+ "' AND anioPubli = '" + fechaC + "' AND nomGuionista = '" + guionistaC + "' AND nomDibujante = '"
-//				+ nomDibujanteC + "';";
+		String connector = " WHERE ";
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT * FROM comicsbbdd");
+		if (nombreC.length() != 0) {
+			sql.append(connector).append("nomComic = ?");
+			connector = " AND ";
+			strFilter.add(nombreC);
+		}
+		if (numeroC.length() != 0) {
+			sql.append(connector).append("numComic = ?");
+			connector = " AND ";
+			strFilter.add(numeroC);
+		}
+		if (varianteC.length() != 0) {
+			sql.append(connector).append("nomVariante = ?");
+			connector = " AND ";
+			strFilter.add(varianteC);
+		}
+		if (firmaC.length() != 0) {
+			sql.append(connector).append("firma = ?");
+			connector = " AND ";
+			strFilter.add(firmaC);
+		}
+		if (editorialC.length() != 0) {
+			sql.append(connector).append("nomEditorial = ?");
+			connector = " AND ";
+			strFilter.add(editorialC);
+		}
+		if (formatoC.length() != 0) {
+			sql.append(connector).append("formato = ?");
+			connector = " AND ";
+			strFilter.add(formatoC);
+		}
+		if (procedenciaC.length() != 0) {
+			sql.append(connector).append("procedencia = ?");
+			connector = " AND ";
+			strFilter.add(procedenciaC);
+		}
+		if (fechaC.length() != 0) {
+			sql.append(connector).append("anioPubli = ?");
+			connector = " AND ";
+			strFilter.add(fechaC);
+		}
+		if (guionistaC.length() != 0) {
+			sql.append(connector).append("nomGuionista = ?");
+			connector = " AND ";
+			strFilter.add(guionistaC);
+		}
+		if (dibujanteC.length() != 0) {
+			sql.append(connector).append("nomDibujante = ?");
+			strFilter.add(dibujanteC);
+		}
+		Collections.sort(strFilter);
+		System.out.println("Nombre: " + nombreC);
+		System.out.println("Numero: " + numeroC);
+		System.out.println("Variante: " + varianteC);
+		System.out.println("Firma: " + firmaC);
+		System.out.println("Editorial: " + editorialC);
+		System.out.println("Formato: " + formatoC);
+		System.out.println("Procedencia: " + procedenciaC);
+		System.out.println("Fecha: " + fechaC);
+		System.out.println("Guionista: " + guionistaC);
+		System.out.println("Dibujante: " + dibujanteC + "\n");
 
 		try {
-			for (int i = 0; i < sentenciasSQL.length; i++) {
-				ResultSet rs = DBManager.getComic(sentenciasSQL[i]);
-
-				do {
-					nombreCom = rs.getString("nomComic");
-					numeroCom = rs.getString("numComic");
-					varianteCom = rs.getString("nomVariante");
-					firmaCom = rs.getString("firma");
-					editorialCom = rs.getString("nomEditorial");
-					formatoCom = rs.getString("formato");
-					procedenciaCom = rs.getString("procedencia");
-					fechaCom = rs.getString("anioPubli");
-					guionistaCom = rs.getString("nomGuionista");
-					dibujanteCom = rs.getString("nomDibujante");
-
-					FiltrolistComics.add(new Comics(nombreCom, numeroCom, varianteCom, firmaCom, editorialCom,
-							formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
-
-				} while (rs.next());
+			PreparedStatement ps = conn.prepareStatement(sql.toString());
+			for (int i = 0; i < strFilter.size();) {
+				Collections.sort(strFilter);
+				ps.setString(++i, strFilter.get(i-1));
 			}
+			ResultSet rs = ps.executeQuery();
+			
+			while(rs.next()){
+				nombreCom = rs.getString("nomComic");
+				numeroCom = rs.getString("numComic");
+				varianteCom = rs.getString("nomVariante");
+				firmaCom = rs.getString("firma");
+				editorialCom = rs.getString("nomEditorial");
+				formatoCom = rs.getString("formato");
+				procedenciaCom = rs.getString("procedencia");
+				fechaCom = rs.getString("anioPubli");
+				guionistaCom = rs.getString("nomGuionista");
+				dibujanteCom = rs.getString("nomDibujante");
+				
 
-		} catch (SQLException ex) {
-			System.err.println(ex);
+
+				FiltrolistComics.add(new Comics(nombreCom, numeroCom, varianteCom, firmaCom, editorialCom,
+						formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
+			System.out.println(FiltrolistComics.toString());
+				
+			}
+			rs.close();
 		}
+		catch(SQLException ex)
+		{
+			ex.printStackTrace();
+		}
+
 		comics = new Comics[FiltrolistComics.size()];
 		comics = FiltrolistComics.toArray(comics);
 		return comics;
 	}
-
+	
 	public static void reiniciarBBDD() {
 		FiltrolistComics.clear();
 		listComics.clear();
 	}
+
+	@Override
+	public String toString() {
+		return "\nnombre: " + nombre + "\nnumero: " + numero + "\nvariante: " + variante + "\nfirma: " + firma
+				+ "\neditorial: " + editorial + "\nformato: " + formato + "\nprocedencia: " + procedencia + "\nfecha: "
+				+ fecha + "\nguionista: " + guionista + "\ndibujante: " + dibujante + "\n";
+	}
+
 }

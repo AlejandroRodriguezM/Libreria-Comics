@@ -128,11 +128,10 @@ public class VerComicController implements Initializable {
 
 	@SuppressWarnings("unchecked")
 	@FXML
-	void mostrarPorParametro(ActionEvent event) {
+	void mostrarPorParametro(ActionEvent event) throws SQLException {
 		
 		String nombreCom,numeroCom,varianteCom,firmaCom,editorialCom,formatoCom,procedenciaCom,fechaCom,guionistaCom,dibujanteCom;
 
-		
 	    nombreCom = nombreComic.getText();
 
 	    numeroCom = numeroComic.getText();
