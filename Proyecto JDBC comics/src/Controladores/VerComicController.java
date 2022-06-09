@@ -117,12 +117,15 @@ public class VerComicController implements Initializable {
 	void limpiarDatos(ActionEvent event) {
 		
 		nombreComic.setText("");
-		nombreDibujante.setText("");
+		numeroComic.setText("");
+		nombreVariante.setText("");
+		nombreFirma.setText("");
 		nombreEditorial.setText("");
 		nombreFormato.setText("");
-		nombreGuionista.setText("");
-		nombreVariante.setText("");
+		procedencia.setText("");
 		anioPublicacion.setText("");
+		nombreDibujante.setText("");
+		nombreGuionista.setText("");
 
 	}
 
@@ -136,19 +139,19 @@ public class VerComicController implements Initializable {
 
 	    numeroCom = numeroComic.getText();
 
-	    varianteCom = nombreEditorial.getText();
+	    varianteCom = nombreVariante.getText();
 
 	    firmaCom = nombreFirma.getText();
 
-	    editorialCom = nombreFormato.getText();
+	    editorialCom = nombreEditorial.getText();
 
-	    formatoCom = nombreGuionista.getText();
+	    formatoCom = nombreFormato.getText();
 
 	    procedenciaCom = nombreProcedencia.getText();
 
-	    fechaCom = nombreVariante.getText();
+	    fechaCom = anioPublicacion.getText();
 	    
-		guionistaCom = anioPublicacion.getText();
+		guionistaCom = nombreGuionista.getText();
 		
 		dibujanteCom = nombreDibujante.getText();
 		

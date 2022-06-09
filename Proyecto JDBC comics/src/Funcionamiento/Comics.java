@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -250,7 +249,7 @@ public class Comics {
 				ps.setString(++i, strFilter.get(i-1));
 			}
 			ResultSet rs = ps.executeQuery();
-			
+
 			while(rs.next()){
 				nombreCom = rs.getString("nomComic");
 				numeroCom = rs.getString("numComic");
@@ -262,13 +261,11 @@ public class Comics {
 				fechaCom = rs.getString("anioPubli");
 				guionistaCom = rs.getString("nomGuionista");
 				dibujanteCom = rs.getString("nomDibujante");
-				
-
 
 				FiltrolistComics.add(new Comics(nombreCom, numeroCom, varianteCom, firmaCom, editorialCom,
 						formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
-			System.out.println(FiltrolistComics.toString());
-				
+				System.out.println(FiltrolistComics.toString());
+
 			}
 			rs.close();
 		}
@@ -281,7 +278,7 @@ public class Comics {
 		comics = FiltrolistComics.toArray(comics);
 		return comics;
 	}
-	
+
 	public static void reiniciarBBDD() {
 		FiltrolistComics.clear();
 		listComics.clear();
