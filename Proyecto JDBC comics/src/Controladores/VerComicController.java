@@ -24,6 +24,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class VerComicController {
@@ -111,6 +112,9 @@ public class VerComicController {
 
 	@FXML
 	private Button BotonVentanaAniadir;
+	
+    @FXML
+    private Button botonExportarBBDD;
 	
     @FXML
     private Label labelDatosGuardados;
@@ -293,7 +297,9 @@ public class VerComicController {
 	@FXML
 	void Guardarbbdd(ActionEvent event) {
 
-		File fichero = new File("ficheroBBDD/bbdd.txt");
+		FileChooser fileChooser = new FileChooser();
+		File fichero = fileChooser.showSaveDialog(null);
+    	
 		try {
 			fichero.createNewFile();
 
@@ -326,10 +332,20 @@ public class VerComicController {
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
-
-
-
 	}
+	
+    @FXML
+    void exportarBBDD(ActionEvent event) throws IOException {
+    	String copiaSeguridad = "";
+    	FileChooser fileChooser = new FileChooser();
+		File fichero = fileChooser.showSaveDialog(null);
+		fichero.createNewFile();
+		
+		copiaSeguridad = "mysqldump --opt -u" + "root" + " -p" + "Forosonanime13!" + " -B " + "comics" + " -r " + fichero;
+		Runtime rt = Runtime.getRuntime();
+		rt.exec(copiaSeguridad);
+    	
+    }
 
 	/**
 	 * Permite salir totalmente del programa.

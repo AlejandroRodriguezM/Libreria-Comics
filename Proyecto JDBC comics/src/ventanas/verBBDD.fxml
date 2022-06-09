@@ -56,5 +56,6 @@
             <Font size="21.0" />
          </font>
       </Label>
+      <Button fx:id="botonExportarBBDD" layoutX="430.0" layoutY="283.0" mnemonicParsing="false" onAction="#exportarBBDD" prefHeight="53.0" prefWidth="269.0" text="Exportar base de datos" />
    </children>
 </Pane>
