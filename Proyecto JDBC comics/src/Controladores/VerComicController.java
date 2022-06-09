@@ -110,7 +110,7 @@ public class VerComicController {
 	private Button BotonVentanaAniadir;
 
 	/**
-	 * 
+	 * Limpia los campos de pantalla donde se escriben los datos.
 	 * @param event
 	 */
 	@FXML
@@ -130,7 +130,7 @@ public class VerComicController {
 	}
 
 	/**
-	 * 
+	 * Muestra la bbdd segun los parametros introducidos en los TextField
 	 * @param event
 	 * @throws SQLException
 	 */
@@ -180,7 +180,7 @@ public class VerComicController {
 	}
 
 	/**
-	 * 
+	 * Muestra toda la base de datos.
 	 * @param event
 	 * @throws SQLException
 	 */
@@ -207,7 +207,7 @@ public class VerComicController {
 	}
 
 	/**
-	 * 
+	 * Vuelve al menu inicial de conexion de la base de datos.
 	 * @param event
 	 * @throws IOException
 	 */
@@ -242,7 +242,7 @@ public class VerComicController {
 	}
 
 	/**
-	 * 
+	 * Permite abrir y cargar la ventana para añadir datos.
 	 * @param event
 	 */
 	@FXML
@@ -279,7 +279,7 @@ public class VerComicController {
 	}
 
 	/**
-	 * 
+	 * Guarda los datos de la base de datos en un fichero.
 	 * @param event
 	 */
 	@FXML
@@ -288,7 +288,7 @@ public class VerComicController {
 	}
 
 	/**
-	 * 
+	 * Permite salir totalmente del programa.
 	 * @param event
 	 */
 	@FXML
@@ -306,12 +306,12 @@ public class VerComicController {
 	}
 
 	/**
-	 * 
+	 * Al cerrar la ventana, carga la ventana del menu principal
 	 */
 	public void closeWindows() {
 
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuOpciones.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuPrincipal.fxml"));
 
 			Parent root = loader.load();
 

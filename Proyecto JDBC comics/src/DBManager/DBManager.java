@@ -51,7 +51,7 @@ public class DBManager {
 	}
 
 	/**
-	 * 
+	 * Devuelve un objeto Connection en caso de que la conexion sea correcta, datos introducidos por parametro
 	 * @param numeroPuerto
 	 * @param nombreBBDD
 	 * @param nombreUsuario
@@ -77,7 +77,7 @@ public class DBManager {
 	}
 	
 	/**
-	 * 
+	 * Devuelve un objeto Connection en caso de que la conexion sea correcta.
 	 * @param numeroPuerto
 	 * @param nombreBBDD
 	 * @param nombreUsuario
@@ -116,7 +116,7 @@ public class DBManager {
 	}
 
 	/**
-	 * 
+	 * Devuelve un objeto ResultSet para realizar una sentencia en la bbdd
 	 * @param sentenciaSQL
 	 * @return
 	 * @throws SQLException

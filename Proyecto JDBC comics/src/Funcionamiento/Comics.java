@@ -29,6 +29,7 @@ public class Comics {
 	@SuppressWarnings("unused")
 	private static Connection conn = DBManager.conexion();
 
+	//Constructor
 	public Comics(String nombre, String numero, String variante, String firma, String editorial, String formato,
 			String procedencia, String fecha, String guionista, String dibujante) {
 		this.nombre = nombre;
@@ -43,6 +44,7 @@ public class Comics {
 		this.dibujante = dibujante;
 	}
 
+	//Getters y setters
 	public String getNombre() {
 		return nombre;
 	}
@@ -124,7 +126,7 @@ public class Comics {
 	}
 
 	/**
-	 * 
+	 * Devuelve todos los datos de la base de datos.
 	 * @return
 	 * @throws SQLException
 	 */
@@ -164,8 +166,21 @@ public class Comics {
 		return comics;
 	}
 
-
-
+	/**
+	 * Devuelve datos de la base de datos segun el parametro.
+	 * @param nombreC
+	 * @param numeroC
+	 * @param varianteC
+	 * @param firmaC
+	 * @param editorialC
+	 * @param formatoC
+	 * @param procedenciaC
+	 * @param fechaC
+	 * @param guionistaC
+	 * @param dibujanteC
+	 * @return
+	 * @throws SQLException
+	 */
 	public static Comics[] filtadroBBDD(String nombreC, String numeroC, String varianteC, String firmaC,
 			String editorialC, String formatoC, String procedenciaC, String fechaC, String guionistaC,
 			String dibujanteC) throws SQLException {
@@ -279,6 +294,9 @@ public class Comics {
 		return comics;
 	}
 
+	/**
+	 * Permite reiniciar la pantalla donde se muestran los datos
+	 */
 	public static void reiniciarBBDD() {
 		FiltrolistComics.clear();
 		listComics.clear();

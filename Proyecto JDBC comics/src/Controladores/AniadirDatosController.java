@@ -89,7 +89,7 @@ public class AniadirDatosController {
 	}
 
 	/**
-	 * 
+	 * Añade datos a la base de datos segun los parametros introducidos en los textField
 	 * @param event
 	 */
 	@FXML
@@ -161,7 +161,7 @@ public class AniadirDatosController {
 	}
 
 	/**
-	 * 
+	 * Permite volver al menu de conexion a la base de datos.
 	 * @param event
 	 * @throws IOException
 	 */
@@ -193,6 +193,10 @@ public class AniadirDatosController {
 		myStage.close();
 	}
 
+	/**
+	 * Permite salir completamente del programa.
+	 * @param event
+	 */
 	@FXML
 	public void salirPrograma(ActionEvent event) {
 
@@ -208,7 +212,7 @@ public class AniadirDatosController {
 	}
 
 	/**
-	 * 
+	 * Al cerrar la ventana, se cargara la ventana de verBBDD
 	 */
 	public void closeWindows() {
 
