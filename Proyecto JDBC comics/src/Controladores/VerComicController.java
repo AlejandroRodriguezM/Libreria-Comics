@@ -106,8 +106,12 @@ public class VerComicController implements Initializable {
 	@FXML
 	private TableColumn<Comics, String> variante;
 	
+    @FXML
+    private Button botonGuardarBaseDatos;
+    
+    @FXML
+    private Button BotonVentanaAniadir;
 	
-
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
@@ -194,32 +198,73 @@ public class VerComicController implements Initializable {
 
 	}
 
-	@FXML
-	void volverMenu(ActionEvent event) throws IOException {
-		// Cargo la vista
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuOpciones.fxml"));
+    @FXML
+    public void volverMenu(ActionEvent event) throws IOException {
+    	
+		 // Cargo la vista
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuPrincipal.fxml"));
 
-		// Cargo el padre
-		Parent root = loader.load();
+        // Cargo el padre
+        Parent root = loader.load();
 
-		// Obtengo el controlador
-		MenuOpcionesController controlador = loader.getController();
+        // Obtengo el controlador
+        MenuPrincipalController controlador = loader.getController();
 
-		// Creo la scene y el stage
-		Scene scene = new Scene(root);
-		Stage stage = new Stage();
+        // Creo la scene y el stage
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
 
-		// Asocio el stage con el scene
-		stage.setScene(scene);
-		stage.show();
+        // Asocio el stage con el scene
+        stage.setScene(scene);
+        stage.show();
 
-		// Indico que debe hacer al cerrar
-		stage.setOnCloseRequest(e -> controlador.closeWindows());
+        // Indico que debe hacer al cerrar
+        stage.setOnCloseRequest(e -> controlador.closeWindows());
 
-		// Ciero la ventana donde estoy
-		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-		myStage.close();
-	}
+        // Ciero la ventana donde estoy
+        Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
+        myStage.close();
+        
+        DBManager.DBManager.close();
+    }
+	
+    @FXML
+    public void VentanaAniadir(ActionEvent event) {
+
+        try {
+            // Cargo la vista
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/AniadirComicsBBDD.fxml"));
+
+            // Cargo el padre
+            Parent root = loader.load();
+
+            // Obtengo el controlador
+            AniadirDatosController controlador = loader.getController();
+
+            // Creo la scene y el stage
+            Scene scene = new Scene(root);
+            Stage stage = new Stage();
+
+            // Asocio el stage con el scene
+            stage.setScene(scene);
+            stage.show();
+
+            // Indico que debe hacer al cerrar
+            stage.setOnCloseRequest(e -> controlador.closeWindows());
+
+            // Ciero la ventana donde estoy
+            Stage myStage = (Stage) this.BotonVentanaAniadir.getScene().getWindow();
+            myStage.close();
+
+        } catch (IOException ex) {
+            Logger.getLogger(MenuPrincipalController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    @FXML
+    void Guardarbbdd(ActionEvent event) {
+
+    }
 
 	@FXML
 	public void salirPrograma(ActionEvent event) {

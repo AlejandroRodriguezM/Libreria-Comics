@@ -22,7 +22,7 @@ import javafx.stage.Stage;
 public class MenuPrincipalController {
 
 	// Conexión a la base de datos
-//	private static Connection conn;
+	//	private static Connection conn;
 
 	@FXML
 	private Button botonAccesobbdd;
@@ -99,31 +99,38 @@ public class MenuPrincipalController {
 			estadoConexion.setText("Conectando . . . ");
 			//			Thread.sleep(3*1000);
 
-			// Cargo la vista
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuOpciones.fxml"));
+			try {
+				// Cargo la vista
+				FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/verBBDD.fxml"));
 
-			// Cargo el padre
-			Parent root = loader.load();
+				// Cargo el padre
+				Parent root = loader.load();
 
-			// Obtengo el controlador
-			MenuOpcionesController controlador = loader.getController();
+				// Obtengo el controlador
+				VerComicController controlador = loader.getController();
 
-			// Creo la scene y el stage
-			Scene scene = new Scene(root);
-			Stage stage = new Stage();
+				// Creo la scene y el stage
+				Scene scene = new Scene(root);
+				Stage stage = new Stage();
 
-			// Asocio el stage con el scene
-			stage.setScene(scene);
-			stage.show();
+				// Asocio el stage con el scene
+				stage.setScene(scene);
+				stage.show();
 
-			// Indico que debe hacer al cerrar
-			stage.setOnCloseRequest(e -> controlador.closeWindows());
+				// Indico que debe hacer al cerrar
+				stage.setOnCloseRequest(e -> controlador.closeWindows());
 
-			// Ciero la ventana donde estoy
-			Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
-			myStage.close();
+				// Ciero la ventana donde estoy
+				Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
+				myStage.close();
 
-		} else {
+			}
+			catch(Exception ex)
+			{
+				System.out.println(ex);
+			}
+		}
+		else {
 			estadoConexion.setStyle("-fx-background-color: #DD370F");
 			estadoConexion.setFont(new Font("Arial", 25));
 			estadoConexion.setText("Conectate a la bbdd \nantes de continuar");
@@ -168,8 +175,8 @@ public class MenuPrincipalController {
 	void enviarDatos(ActionEvent event) {
 
 		DBManager.DBManager.loadDriver();
-//		conexionBBDD();
-		
+		//		conexionBBDD();
+
 		DBManager.DBManager.conexion();
 
 		if (DBManager.DBManager.isConnected()) {

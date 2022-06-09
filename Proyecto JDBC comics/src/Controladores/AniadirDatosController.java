@@ -1,8 +1,13 @@
 package Controladores;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import DBManager.DBManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,172 +23,187 @@ import javafx.stage.Stage;
 
 public class AniadirDatosController {
 
+	@FXML
+	private TextField anioPublicacion;
 
-//	@FXML
-//	public void BotonAniadir(ActionEvent event) {
-//
-//		DBManager.DBManager.loadDriver();
-//		conn = conexionBBDD();
-//		String nom_comic, nom_dibujante, nom_editorial, nom_guionista, nom_variante, nom_Formato, num_comic;
-//		String sentenciaSQL = "insert into comics(nomComic,nomDibujante,nomEditorial,nomGuionista,nomVariante,nomFormato,numComic) values (?,?,?,?,?,?,?)";
-//
-//		nom_comic = nombreComic.getText();
-//		nom_dibujante = nombreDibujante.getText();
-//		nom_editorial = nombreEditorial.getText();
-//		nom_guionista = nombreGuinista.getText();
-//		nom_variante = nombreVariante.getText();
-//		nom_Formato = nombreFormato.getText();
-//		num_comic = numeroComic.getText();
-//
-//		if(pruebaConexion())
-//		{
-//			try {
-//				PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
-//				statement.setString(1, nom_comic);
-//				statement.setString(2, nom_dibujante);
-//				statement.setString(3, nom_editorial);
-//				statement.setString(4, nom_guionista);
-//				statement.setString(5, nom_variante);
-//				statement.setString(6, nom_Formato);
-//				statement.setString(7, num_comic);
-//
-//				if (statement.executeUpdate() == 1) {
-//					labelConexion.setStyle("-fx-background-color: #A0F52D");
-//					labelResultado.setText("Comic añadido correctamente!" + "\nNombre del comic: " + nom_comic
-//							+ "\nNombre del dibujante: " + nom_dibujante + "\nEditorial: " + nom_editorial
-//							+ "\nGuinista: " + nom_guionista + "\nVariante: " + nom_variante + "\nNumero del comic: "
-//							+ num_comic);
-//					statement.close();
-//				} else {
-//					labelConexion.setStyle("-fx-background-color: #DD370F");
-//					labelResultado.setText(
-//							"Se ha encontrado un error. No ha sido posible añadir el comic a la base de datos.");
-//				}
-//			} catch (SQLException ex) {
-//				System.err.println("Error al insertar un comic" + ex);
-//			}
-//		}
-//	}
-	
+	@FXML
+	private Button botonAniadirBBDD;
 
-    @FXML
-    private TextField anioPublicacion;
+	@FXML
+	private Button botonLimpiarComic;
 
-    @FXML
-    private Button botonAniadirBBDD;
+	@FXML
+	private Button botonSalir;
 
-    @FXML
-    private Button botonLimpiarComic;
+	@FXML
+	private Button botonVolver;
 
-    @FXML
-    private Button botonSalir;
+	@FXML
+	private Label labelResultado;
 
-    @FXML
-    private Button botonVolver;
+	@FXML
+	private TextField nombreComic;
 
-    @FXML
-    private Label labelResultado;
+	@FXML
+	private TextField nombreDibujante;
 
-    @FXML
-    private Label labelTestConexion;
+	@FXML
+	private TextField nombreEditorial;
 
-    @FXML
-    private TextField nombreComic;
+	@FXML
+	private TextField nombreFirma;
 
-    @FXML
-    private TextField nombreDibujante;
+	@FXML
+	private TextField nombreFormato;
 
-    @FXML
-    private TextField nombreEditorial;
+	@FXML
+	private TextField nombreGuionista;
 
-    @FXML
-    private TextField nombreFormato;
+	@FXML
+	private TextField nombreProcedencia;
 
-    @FXML
-    private TextField nombreGuinista;
+	@FXML
+	private TextField nombreVariante;
 
-    @FXML
-    private TextField nombreVariante;
+	@FXML
+	private TextField numeroComic;
 
-    @FXML
-    private TextField numeroComic;
+	private static Connection conn = DBManager.conexion();
 
-    @FXML
-    void BotonAniadir(ActionEvent event) {
+	// private static DBManager.DBManager.loadDriver();
 
-    }
+	@FXML
+	void BotonLimpiarComic(ActionEvent event) {
 
-    @FXML
-    void BotonLimpiarComic(ActionEvent event) {
+	}
 
-    }
+	@FXML
+	public void BotonAniadir(ActionEvent event) {
 
-    @FXML
-    void BotonVolver(ActionEvent event) {
+		String nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom,
+				guionistaCom, dibujanteCom;
 
-    }
+		String sentenciaSQL = "insert into comicsbbdd(nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante) values (?,?,?,?,?,?,?,?,?,?)";
 
-    @FXML
-    void volverAlMenu(ActionEvent event) throws IOException {
+		nombreCom = nombreComic.getText();
 
-		 // Cargo la vista
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuOpciones.fxml"));
+		numeroCom = numeroComic.getText();
 
-        // Cargo el padre
-        Parent root = loader.load();
+		varianteCom = nombreVariante.getText();
 
-        // Obtengo el controlador
-        MenuOpcionesController controlador = loader.getController();
+		firmaCom = nombreFirma.getText();
 
-        // Creo la scene y el stage
-        Scene scene = new Scene(root);
-        Stage stage = new Stage();
+		editorialCom = nombreEditorial.getText();
 
-        // Asocio el stage con el scene
-        stage.setScene(scene);
-        stage.show();
+		formatoCom = nombreFormato.getText();
 
-        // Indico que debe hacer al cerrar
-        stage.setOnCloseRequest(e -> controlador.closeWindows());
+		procedenciaCom = nombreProcedencia.getText();
 
-        // Ciero la ventana donde estoy
-        Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-        myStage.close();
-    }
-    
-    @FXML
-    public void salirPrograma(ActionEvent event) {
-    	
-    	Alert alert = new Alert(AlertType.CONFIRMATION);
-    	alert.setTitle("Saliendo");
-    	alert.setHeaderText("Estas apunto de salir.");
-    	alert.setContentText("¿Estas seguro que quieres salir?");
-    	
-    	if(alert.showAndWait().get() == ButtonType.OK)
-    	{
-        	Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
-            myStage.close();
-    	}
-    }
-    
-    public void closeWindows() {
+		fechaCom = anioPublicacion.getText();
 
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuOpciones.fxml"));
+		guionistaCom = nombreGuionista.getText();
 
-            Parent root = loader.load();
+		dibujanteCom = nombreDibujante.getText();
 
-            Scene scene = new Scene(root);
-            Stage stage = new Stage();
+		try {
+			PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
+			statement.setString(1, nombreCom);
+			statement.setString(2, numeroCom);
 
-            stage.setScene(scene);
-            stage.show();
+			if (varianteCom.length() > 0) {
+				statement.setString(3, varianteCom);
+			} else {
+				statement.setString(3, "normal");
+			}
+			if (firmaCom.length() > 0) {
+				statement.setString(4, firmaCom);
+			} else {
+				statement.setString(4, "No firmado");
+			}
+			statement.setString(5, editorialCom);
+			statement.setString(6, formatoCom);
+			statement.setString(7, procedenciaCom);
+			statement.setString(8, fechaCom);
+			statement.setString(9, guionistaCom);
+			statement.setString(10, dibujanteCom);
 
-            Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-            myStage.close();
+			if (statement.executeUpdate() == 1) {
+				labelResultado.setText("Comic añadido correctamente!" + "\nNombre del comic: " + nombreCom
+						+ dibujanteCom + "\nNumero: " + numeroCom + "\nPortada variante: " + varianteCom + "\nFirma: "
+						+ firmaCom + "\nEditorial: " + editorialCom + "\nFormato: " + formatoCom + "\nProcedencia: "
+						+ procedenciaCom + "\nFecha de publicacion: " + fechaCom + "\nGuionista: " + guionistaCom
+						+ "\nDibujante: " + dibujanteCom);
+				statement.close();
+			} else {
+				labelResultado
+						.setText("Se ha encontrado un error. No ha sido posible añadir el comic a la base de datos.");
+			}
+		} catch (SQLException ex) {
+			System.err.println("Error al insertar un comic" + ex);
+		}
 
-        } catch (IOException ex) {
-            Logger.getLogger(MenuPrincipalController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+	}
+
+	@FXML
+	void volverAlMenu(ActionEvent event) throws IOException {
+
+		// Cargo la vista
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/verBBDD.fxml"));
+
+		// Cargo el padre
+		Parent root = loader.load();
+
+		// Obtengo el controlador
+		VerComicController controlador = loader.getController();
+
+		// Creo la scene y el stage
+		Scene scene = new Scene(root);
+		Stage stage = new Stage();
+
+		// Asocio el stage con el scene
+		stage.setScene(scene);
+		stage.show();
+
+		// Indico que debe hacer al cerrar
+		stage.setOnCloseRequest(e -> controlador.closeWindows());
+
+		// Ciero la ventana donde estoy
+		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
+		myStage.close();
+	}
+
+	@FXML
+	public void salirPrograma(ActionEvent event) {
+
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.setTitle("Saliendo");
+		alert.setHeaderText("Estas apunto de salir.");
+		alert.setContentText("¿Estas seguro que quieres salir?");
+
+		if (alert.showAndWait().get() == ButtonType.OK) {
+			Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
+			myStage.close();
+		}
+	}
+
+	public void closeWindows() {
+
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuOpciones.fxml"));
+
+			Parent root = loader.load();
+
+			Scene scene = new Scene(root);
+			Stage stage = new Stage();
+
+			stage.setScene(scene);
+			stage.show();
+
+			Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
+			myStage.close();
+
+		} catch (IOException ex) {
+			Logger.getLogger(MenuPrincipalController.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
 }

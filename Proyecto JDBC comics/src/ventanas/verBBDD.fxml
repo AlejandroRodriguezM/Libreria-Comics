@@ -24,7 +24,7 @@
       <TextField fx:id="anioPublicacion" layoutX="177.0" layoutY="244.0" />
       <TextField fx:id="nombreVariante" layoutX="177.0" layoutY="87.0" />
       <Button fx:id="botonMostrarParametro" layoutX="26.0" layoutY="344.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="49.0" prefWidth="202.0" text="Mostrar segun parametros." />
-      <Button fx:id="botonbbdd" layoutX="428.0" layoutY="17.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="95.0" prefWidth="269.0" text="Ver toda la base de datos." />
+      <Button fx:id="botonbbdd" layoutX="428.0" layoutY="17.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="113.0" prefWidth="269.0" text="Ver toda la base de datos." />
       <Button fx:id="botonLimpiar" layoutX="237.0" layoutY="344.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="49.0" prefWidth="111.0" text="Limpiar" />
       <Button fx:id="botonVolver" layoutX="848.0" layoutY="352.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="33.0" prefWidth="124.0" text="Volver al menu" />
       <Button fx:id="botonSalir" layoutX="994.0" layoutY="352.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="33.0" prefWidth="99.0" text="Salir" />
@@ -48,5 +48,7 @@
       <TextField fx:id="nombreFirma" layoutX="177.0" layoutY="120.0" />
       <Label layoutX="26.0" layoutY="218.0" text="Procedencia" />
       <TextField fx:id="nombreProcedencia" layoutX="177.0" layoutY="214.0" />
+      <Button fx:id="BotonVentanaAniadir" layoutX="712.0" layoutY="18.0" mnemonicParsing="false" onAction="#VentanaAniadir" prefHeight="53.0" prefWidth="261.0" text="Añadir comics a la base de datos." />
+      <Button fx:id="botonGuardarBaseDatos" layoutX="712.0" layoutY="85.0" mnemonicParsing="false" onAction="#Guardarbbdd" prefHeight="45.0" prefWidth="261.0" text="Guardar base de datos en un fichero." />
    </children>
 </Pane>
