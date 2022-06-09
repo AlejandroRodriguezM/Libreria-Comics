@@ -24,9 +24,6 @@ import javafx.stage.Stage;
 public class AniadirDatosController {
 
 	@FXML
-	private TextField anioPublicacion;
-
-	@FXML
 	private Button botonAniadirBBDD;
 
 	@FXML
@@ -40,6 +37,9 @@ public class AniadirDatosController {
 
 	@FXML
 	private Label labelResultado;
+
+	@FXML
+	private TextField anioPublicacion;
 
 	@FXML
 	private TextField nombreComic;
@@ -70,18 +70,35 @@ public class AniadirDatosController {
 
 	private static Connection conn = DBManager.conexion();
 
-	// private static DBManager.DBManager.loadDriver();
-
+	/**
+	 * 
+	 * @param event
+	 */
 	@FXML
 	void BotonLimpiarComic(ActionEvent event) {
-
+		nombreComic.setText("");
+		numeroComic.setText("");
+		nombreVariante.setText("");
+		nombreFirma.setText("");
+		nombreEditorial.setText("");
+		nombreFormato.setText("");
+		anioPublicacion.setText("");
+		anioPublicacion.setText("");
+		nombreDibujante.setText("");
+		nombreGuionista.setText("");
 	}
 
+	/**
+	 * 
+	 * @param event
+	 */
 	@FXML
 	public void BotonAniadir(ActionEvent event) {
 
 		String nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom,
-				guionistaCom, dibujanteCom;
+		guionistaCom, dibujanteCom;
+		
+		DBManager.loadDriver();
 
 		String sentenciaSQL = "insert into comicsbbdd(nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante) values (?,?,?,?,?,?,?,?,?,?)";
 
@@ -110,12 +127,12 @@ public class AniadirDatosController {
 			statement.setString(1, nombreCom);
 			statement.setString(2, numeroCom);
 
-			if (varianteCom.length() > 0) {
+			if (varianteCom.length() != 0) {
 				statement.setString(3, varianteCom);
 			} else {
-				statement.setString(3, "normal");
+				statement.setString(3, "Normal");
 			}
-			if (firmaCom.length() > 0) {
+			if (firmaCom.length() != 0) {
 				statement.setString(4, firmaCom);
 			} else {
 				statement.setString(4, "No firmado");
@@ -136,14 +153,18 @@ public class AniadirDatosController {
 				statement.close();
 			} else {
 				labelResultado
-						.setText("Se ha encontrado un error. No ha sido posible añadir el comic a la base de datos.");
+				.setText("Se ha encontrado un error. No ha sido posible añadir el comic a la base de datos.");
 			}
 		} catch (SQLException ex) {
 			System.err.println("Error al insertar un comic" + ex);
 		}
-
 	}
 
+	/**
+	 * 
+	 * @param event
+	 * @throws IOException
+	 */
 	@FXML
 	void volverAlMenu(ActionEvent event) throws IOException {
 
@@ -186,6 +207,9 @@ public class AniadirDatosController {
 		}
 	}
 
+	/**
+	 * 
+	 */
 	public void closeWindows() {
 
 		try {

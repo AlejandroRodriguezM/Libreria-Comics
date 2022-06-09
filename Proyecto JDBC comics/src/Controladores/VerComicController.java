@@ -1,10 +1,8 @@
 package Controladores;
 
 import java.io.IOException;
-import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,10 +11,10 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
@@ -24,9 +22,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import javafx.scene.control.Alert.AlertType;
 
-public class VerComicController implements Initializable {
+public class VerComicController {
 
 	@FXML
 	private TextField anioPublicacion;
@@ -67,32 +64,32 @@ public class VerComicController implements Initializable {
 	@FXML
 	private TableColumn<Comics, String> nombre;
 
-    @FXML
-    private TextField nombreComic;
+	@FXML
+	private TextField nombreComic;
 
-    @FXML
-    private TextField nombreDibujante;
+	@FXML
+	private TextField nombreDibujante;
 
-    @FXML
-    private TextField nombreEditorial;
+	@FXML
+	private TextField nombreEditorial;
 
-    @FXML
-    private TextField nombreFirma;
+	@FXML
+	private TextField nombreFirma;
 
-    @FXML
-    private TextField nombreFormato;
+	@FXML
+	private TextField nombreFormato;
 
-    @FXML
-    private TextField nombreGuionista;
+	@FXML
+	private TextField nombreGuionista;
 
-    @FXML
-    private TextField nombreProcedencia;
+	@FXML
+	private TextField nombreProcedencia;
 
-    @FXML
-    private TextField nombreVariante;
-    
-    @FXML
-    private TextField numeroComic;
+	@FXML
+	private TextField nombreVariante;
+
+	@FXML
+	private TextField numeroComic;
 
 	@FXML
 	private TableColumn<Comics, String> numero;
@@ -105,21 +102,20 @@ public class VerComicController implements Initializable {
 
 	@FXML
 	private TableColumn<Comics, String> variante;
-	
-    @FXML
-    private Button botonGuardarBaseDatos;
-    
-    @FXML
-    private Button BotonVentanaAniadir;
-	
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-
-	}
 
 	@FXML
+	private Button botonGuardarBaseDatos;
+
+	@FXML
+	private Button BotonVentanaAniadir;
+
+	/**
+	 * 
+	 * @param event
+	 */
+	@FXML
 	void limpiarDatos(ActionEvent event) {
-		
+
 		nombreComic.setText("");
 		numeroComic.setText("");
 		nombreVariante.setText("");
@@ -133,32 +129,38 @@ public class VerComicController implements Initializable {
 
 	}
 
+	/**
+	 * 
+	 * @param event
+	 * @throws SQLException
+	 */
 	@SuppressWarnings("unchecked")
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
-		
-		String nombreCom,numeroCom,varianteCom,firmaCom,editorialCom,formatoCom,procedenciaCom,fechaCom,guionistaCom,dibujanteCom;
 
-	    nombreCom = nombreComic.getText();
+		String nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom,
+				guionistaCom, dibujanteCom;
 
-	    numeroCom = numeroComic.getText();
+		nombreCom = nombreComic.getText();
 
-	    varianteCom = nombreVariante.getText();
+		numeroCom = numeroComic.getText();
 
-	    firmaCom = nombreFirma.getText();
+		varianteCom = nombreVariante.getText();
 
-	    editorialCom = nombreEditorial.getText();
+		firmaCom = nombreFirma.getText();
 
-	    formatoCom = nombreFormato.getText();
+		editorialCom = nombreEditorial.getText();
 
-	    procedenciaCom = nombreProcedencia.getText();
+		formatoCom = nombreFormato.getText();
 
-	    fechaCom = anioPublicacion.getText();
-	    
+		procedenciaCom = nombreProcedencia.getText();
+
+		fechaCom = anioPublicacion.getText();
+
 		guionistaCom = nombreGuionista.getText();
-		
+
 		dibujanteCom = nombreDibujante.getText();
-		
+
 		nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
 		numero.setCellValueFactory(new PropertyValueFactory<>("numero"));
 		variante.setCellValueFactory(new PropertyValueFactory<>("variante"));
@@ -170,12 +172,18 @@ public class VerComicController implements Initializable {
 		guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
 		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
 
-		List<Comics> listComics = FXCollections.observableArrayList(Comics.filtadroBBDD(nombreCom,numeroCom,varianteCom,firmaCom,editorialCom,formatoCom,procedenciaCom,fechaCom,guionistaCom,dibujanteCom));
+		List<Comics> listComics = FXCollections.observableArrayList(Comics.filtadroBBDD(nombreCom, numeroCom,
+				varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
 		tablaBBDD.getColumns().setAll(nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante);
 		tablaBBDD.getItems().setAll(listComics);
 	}
 
+	/**
+	 * 
+	 * @param event
+	 * @throws SQLException
+	 */
 	@SuppressWarnings("unchecked")
 	@FXML
 	void verTodabbdd(ActionEvent event) throws SQLException {
@@ -198,74 +206,91 @@ public class VerComicController implements Initializable {
 
 	}
 
-    @FXML
-    public void volverMenu(ActionEvent event) throws IOException {
-    	
-		 // Cargo la vista
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuPrincipal.fxml"));
+	/**
+	 * 
+	 * @param event
+	 * @throws IOException
+	 */
+	@FXML
+	public void volverMenu(ActionEvent event) throws IOException {
 
-        // Cargo el padre
-        Parent root = loader.load();
+		// Cargo la vista
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuPrincipal.fxml"));
 
-        // Obtengo el controlador
-        MenuPrincipalController controlador = loader.getController();
+		// Cargo el padre
+		Parent root = loader.load();
 
-        // Creo la scene y el stage
-        Scene scene = new Scene(root);
-        Stage stage = new Stage();
+		// Obtengo el controlador
+		MenuPrincipalController controlador = loader.getController();
 
-        // Asocio el stage con el scene
-        stage.setScene(scene);
-        stage.show();
+		// Creo la scene y el stage
+		Scene scene = new Scene(root);
+		Stage stage = new Stage();
 
-        // Indico que debe hacer al cerrar
-        stage.setOnCloseRequest(e -> controlador.closeWindows());
+		// Asocio el stage con el scene
+		stage.setScene(scene);
+		stage.show();
 
-        // Ciero la ventana donde estoy
-        Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-        myStage.close();
-        
-        DBManager.DBManager.close();
-    }
-	
-    @FXML
-    public void VentanaAniadir(ActionEvent event) {
+		// Indico que debe hacer al cerrar
+		stage.setOnCloseRequest(e -> controlador.closeWindows());
 
-        try {
-            // Cargo la vista
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/AniadirComicsBBDD.fxml"));
+		// Ciero la ventana donde estoy
+		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
+		myStage.close();
 
-            // Cargo el padre
-            Parent root = loader.load();
+		DBManager.DBManager.close();
+	}
 
-            // Obtengo el controlador
-            AniadirDatosController controlador = loader.getController();
+	/**
+	 * 
+	 * @param event
+	 */
+	@FXML
+	public void VentanaAniadir(ActionEvent event) {
 
-            // Creo la scene y el stage
-            Scene scene = new Scene(root);
-            Stage stage = new Stage();
+		try {
+			// Cargo la vista
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/AniadirComicsBBDD.fxml"));
 
-            // Asocio el stage con el scene
-            stage.setScene(scene);
-            stage.show();
+			// Cargo el padre
+			Parent root = loader.load();
 
-            // Indico que debe hacer al cerrar
-            stage.setOnCloseRequest(e -> controlador.closeWindows());
+			// Obtengo el controlador
+			AniadirDatosController controlador = loader.getController();
 
-            // Ciero la ventana donde estoy
-            Stage myStage = (Stage) this.BotonVentanaAniadir.getScene().getWindow();
-            myStage.close();
+			// Creo la scene y el stage
+			Scene scene = new Scene(root);
+			Stage stage = new Stage();
 
-        } catch (IOException ex) {
-            Logger.getLogger(MenuPrincipalController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
-    @FXML
-    void Guardarbbdd(ActionEvent event) {
+			// Asocio el stage con el scene
+			stage.setScene(scene);
+			stage.show();
 
-    }
+			// Indico que debe hacer al cerrar
+			stage.setOnCloseRequest(e -> controlador.closeWindows());
 
+			// Ciero la ventana donde estoy
+			Stage myStage = (Stage) this.BotonVentanaAniadir.getScene().getWindow();
+			myStage.close();
+
+		} catch (IOException ex) {
+			Logger.getLogger(MenuPrincipalController.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+
+	/**
+	 * 
+	 * @param event
+	 */
+	@FXML
+	void Guardarbbdd(ActionEvent event) {
+
+	}
+
+	/**
+	 * 
+	 * @param event
+	 */
 	@FXML
 	public void salirPrograma(ActionEvent event) {
 
@@ -280,6 +305,9 @@ public class VerComicController implements Initializable {
 		}
 	}
 
+	/**
+	 * 
+	 */
 	public void closeWindows() {
 
 		try {
