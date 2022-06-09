@@ -11,7 +11,9 @@ import javafx.stage.Stage;
 
 public class Principal extends Application {
 
-	// Metodo que permite la ejecutcion de la aplicacion.
+	/**
+	 * Carga la ventana principal y arranca el programa.
+	 */
 	public void start(Stage primaryStage) throws IOException, SQLException {
 		try {
 			Parent root = FXMLLoader.load(getClass().getResource("/ventanas/MenuPrincipal.fxml"));

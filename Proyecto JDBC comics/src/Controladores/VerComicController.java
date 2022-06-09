@@ -1,5 +1,7 @@
 package Controladores;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
@@ -17,6 +19,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -108,6 +111,9 @@ public class VerComicController {
 
 	@FXML
 	private Button BotonVentanaAniadir;
+	
+    @FXML
+    private Label labelDatosGuardados;
 
 	/**
 	 * Limpia los campos de pantalla donde se escriben los datos.
@@ -139,7 +145,7 @@ public class VerComicController {
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
 
 		String nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom,
-				guionistaCom, dibujanteCom;
+		guionistaCom, dibujanteCom;
 
 		nombreCom = nombreComic.getText();
 
@@ -281,9 +287,47 @@ public class VerComicController {
 	/**
 	 * Guarda los datos de la base de datos en un fichero.
 	 * @param event
+	 * @throws SQLException 
 	 */
+	@SuppressWarnings("unchecked")
 	@FXML
 	void Guardarbbdd(ActionEvent event) {
+
+		File fichero = new File("ficheroBBDD/bbdd.txt");
+		try {
+			fichero.createNewFile();
+
+			nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+			numero.setCellValueFactory(new PropertyValueFactory<>("numero"));
+			variante.setCellValueFactory(new PropertyValueFactory<>("variante"));
+			firma.setCellValueFactory(new PropertyValueFactory<>("firma"));
+			editorial.setCellValueFactory(new PropertyValueFactory<>("editorial"));
+			formato.setCellValueFactory(new PropertyValueFactory<>("formato"));
+			procedencia.setCellValueFactory(new PropertyValueFactory<>("procedencia"));
+			fecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+			guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
+			dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
+
+			List<Comics> listComics = FXCollections.observableArrayList(Comics.verTodo());
+			tablaBBDD.getColumns().setAll(nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+					guionista, dibujante);
+			
+			FileWriter guardarDatos = new FileWriter(fichero);
+			for (int i = 0; i < listComics.size(); i++) {
+				guardarDatos.write(listComics.get(i) + "\n");
+			}
+			guardarDatos.close();
+			labelDatosGuardados.setStyle("-fx-background-color: #A0F52D");
+			labelDatosGuardados.setText("Datos guardados correctamente");
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+
 
 	}
 

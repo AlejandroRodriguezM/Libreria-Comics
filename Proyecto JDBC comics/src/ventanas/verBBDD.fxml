@@ -6,6 +6,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="812.0" prefWidth="1119.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.VerComicController">
    <children>
@@ -48,7 +49,12 @@
       <TextField fx:id="nombreFirma" layoutX="177.0" layoutY="120.0" />
       <Label layoutX="26.0" layoutY="218.0" text="Procedencia" />
       <TextField fx:id="nombreProcedencia" layoutX="177.0" layoutY="214.0" />
-      <Button fx:id="BotonVentanaAniadir" layoutX="712.0" layoutY="18.0" mnemonicParsing="false" onAction="#VentanaAniadir" prefHeight="53.0" prefWidth="261.0" text="Añadir comics a la base de datos." />
-      <Button fx:id="botonGuardarBaseDatos" layoutX="712.0" layoutY="85.0" mnemonicParsing="false" onAction="#Guardarbbdd" prefHeight="45.0" prefWidth="261.0" text="Guardar base de datos en un fichero." />
+      <Button fx:id="BotonVentanaAniadir" layoutX="430.0" layoutY="150.0" mnemonicParsing="false" onAction="#VentanaAniadir" prefHeight="53.0" prefWidth="269.0" text="Añadir comics a la base de datos." />
+      <Button fx:id="botonGuardarBaseDatos" layoutX="430.0" layoutY="216.0" mnemonicParsing="false" onAction="#Guardarbbdd" prefHeight="53.0" prefWidth="269.0" text="Guardar base de datos en un fichero." />
+      <Label fx:id="labelDatosGuardados" layoutX="731.0" layoutY="24.0" prefHeight="103.0" prefWidth="349.0" style="-fx-background-color: #A0A0A0;">
+         <font>
+            <Font size="21.0" />
+         </font>
+      </Label>
    </children>
 </Pane>

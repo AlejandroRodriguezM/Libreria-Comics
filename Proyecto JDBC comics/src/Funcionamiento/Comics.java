@@ -304,9 +304,9 @@ public class Comics {
 
 	@Override
 	public String toString() {
-		return "\nnombre: " + nombre + "\nnumero: " + numero + "\nvariante: " + variante + "\nfirma: " + firma
-				+ "\neditorial: " + editorial + "\nformato: " + formato + "\nprocedencia: " + procedencia + "\nfecha: "
-				+ fecha + "\nguionista: " + guionista + "\ndibujante: " + dibujante + "\n";
+		return "\nNombre: " + nombre + "\nNumero: " + numero + "\nVariante: " + variante + "\nFirma: " + firma
+				+ "\nEditorial: " + editorial + "\nFormato: " + formato + "\nProcedencia: " + procedencia + "\nFecha: "
+				+ fecha + "\nGuionista: " + guionista + "\nDibujante: " + dibujante + "\n";
 	}
 
 }
