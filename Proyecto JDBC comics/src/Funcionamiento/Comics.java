@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +30,7 @@ public class Comics {
 	@SuppressWarnings("unused")
 	private static Connection conn = DBManager.conexion();
 
-	//Constructor
+	// Constructor
 	public Comics(String nombre, String numero, String variante, String firma, String editorial, String formato,
 			String procedencia, String fecha, String guionista, String dibujante) {
 		this.nombre = nombre;
@@ -44,7 +45,7 @@ public class Comics {
 		this.dibujante = dibujante;
 	}
 
-	//Getters y setters
+	// Getters y setters
 	public String getNombre() {
 		return nombre;
 	}
@@ -127,6 +128,7 @@ public class Comics {
 
 	/**
 	 * Devuelve todos los datos de la base de datos.
+	 * 
 	 * @return
 	 * @throws SQLException
 	 */
@@ -135,12 +137,12 @@ public class Comics {
 
 		Comics comics[] = null;
 
+		ordenarBBDD();
 		ResultSet rs = DBManager.getComic(sentenciaSql);
 
 		reiniciarBBDD();
 		try {
 			do {
-
 				String nombre = rs.getString("nomComic");
 				String numero = rs.getString("numComic");
 				String variante = rs.getString("nomVariante");
@@ -168,6 +170,7 @@ public class Comics {
 
 	/**
 	 * Devuelve datos de la base de datos segun el parametro.
+	 * 
 	 * @param nombreC
 	 * @param numeroC
 	 * @param varianteC
@@ -186,9 +189,10 @@ public class Comics {
 			String dibujanteC) throws SQLException {
 
 		reiniciarBBDD();
+		ordenarBBDD();
 
 		String nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom,
-		guionistaCom, dibujanteCom;
+				guionistaCom, dibujanteCom;
 		Comics comics[] = null;
 
 		ArrayList<String> strFilter = new ArrayList<>();
@@ -261,11 +265,11 @@ public class Comics {
 			PreparedStatement ps = conn.prepareStatement(sql.toString());
 			for (int i = 0; i < strFilter.size();) {
 				Collections.sort(strFilter);
-				ps.setString(++i, strFilter.get(i-1));
+				ps.setString(++i, strFilter.get(i - 1));
 			}
 			ResultSet rs = ps.executeQuery();
 
-			while(rs.next()){
+			while (rs.next()) {
 				nombreCom = rs.getString("nomComic");
 				numeroCom = rs.getString("numComic");
 				varianteCom = rs.getString("nomVariante");
@@ -277,15 +281,13 @@ public class Comics {
 				guionistaCom = rs.getString("nomGuionista");
 				dibujanteCom = rs.getString("nomDibujante");
 
-				FiltrolistComics.add(new Comics(nombreCom, numeroCom, varianteCom, firmaCom, editorialCom,
-						formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
+				FiltrolistComics.add(new Comics(nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom,
+						procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
 				System.out.println(FiltrolistComics.toString());
 
 			}
 			rs.close();
-		}
-		catch(SQLException ex)
-		{
+		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
 
@@ -300,6 +302,16 @@ public class Comics {
 	public static void reiniciarBBDD() {
 		FiltrolistComics.clear();
 		listComics.clear();
+	}
+
+	/**
+	 * 
+	 * @throws SQLException
+	 */
+	public static void ordenarBBDD() throws SQLException {
+		String sql = "ALTER TABLE comicsbbdd ORDER BY nomComic;";
+		Statement st = conn.createStatement();
+		st.execute(sql);
 	}
 
 	@Override
