@@ -96,7 +96,7 @@ public class AniadirDatosController {
 	 * @param event
 	 */
 	@FXML
-	public void BotonAniadir(ActionEvent event) {
+	public void AniadirDatos(ActionEvent event) {
 
 		String nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom,
 		guionistaCom, dibujanteCom;

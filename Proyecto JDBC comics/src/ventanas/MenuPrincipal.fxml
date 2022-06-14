@@ -10,7 +10,7 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="733.0" prefWidth="315.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.MenuPrincipalController">
    <children>
-      <TextArea fx:id="informacion" layoutX="25.0" layoutY="14.0" prefHeight="84.0" prefWidth="270.0" text="Introduzca los siguientes datos para&#10;poder acceder a la base de datos.&#10;Si quieres cambiar de base de datos&#10;Debes cerrar la que tengas conectada" />
+      <TextArea fx:id="informacion" editable="false" layoutX="25.0" layoutY="14.0" prefHeight="84.0" prefWidth="270.0" text="Introduzca los siguientes datos para&#10;poder acceder a la base de datos.&#10;Si quieres cambiar de base de datos&#10;Debes cerrar la que tengas conectada" />
       <TextField fx:id="nombreBBDD" layoutX="71.0" layoutY="130.0" />
       <TextField fx:id="puertobbdd" layoutX="71.0" layoutY="188.0" />
       <TextField fx:id="usuario" layoutX="71.0" layoutY="247.0" />

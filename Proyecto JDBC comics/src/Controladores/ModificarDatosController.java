@@ -13,61 +13,59 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 
+public class ModificarDatosController {
 
+    @FXML
+    private TextField anioPublicacion;
 
-public class ModificarComicController {
+    @FXML
+    private Button botonLimpiarComic;
 
-	@FXML
-	private TextField anioPublicacion;
+    @FXML
+    private Button botonModificar;
 
-	@FXML
-	private Button botonEliminar;
+    @FXML
+    private Button botonSalir;
 
-	@FXML
-	private Button botonLimpiarComic;
+    @FXML
+    private Button botonVolver;
 
-	@FXML
-	private Button botonSalir;
+    @FXML
+    private Label labelResultado;
 
-	@FXML
-	private Button botonVolver;
+    @FXML
+    private TextField nombreComic;
 
-	@FXML
-	private Label labelResultado;
+    @FXML
+    private TextField nombreDibujante;
 
-	@FXML
-	private TextField nombreComic;
+    @FXML
+    private TextField nombreEditorial;
 
-	@FXML
-	private TextField nombreDibujante;
+    @FXML
+    private TextField nombreFirma;
 
-	@FXML
-	private TextField nombreEditorial;
+    @FXML
+    private TextField nombreFormato;
 
-	@FXML
-	private TextField nombreFirma;
+    @FXML
+    private TextField nombreGuionista;
 
-	@FXML
-	private TextField nombreFormato;
+    @FXML
+    private TextField nombreProcedencia;
 
-	@FXML
-	private TextField nombreGuionista;
+    @FXML
+    private TextField nombreVariante;
 
-	@FXML
-	private TextField nombreProcedencia;
-
-	@FXML
-	private TextField nombreVariante;
-
-	@FXML
-	private TextField numeroComic;
+    @FXML
+    private TextField numeroComic;
 	
 	private static Connection conn = DBManager.conexion();
 
@@ -92,7 +90,7 @@ public class ModificarComicController {
 	}
 
 	@FXML
-	void eliminarDatos(ActionEvent event) {
+	void modificarDatos(ActionEvent event) {
 
 	}
 

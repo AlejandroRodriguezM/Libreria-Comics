@@ -37,6 +37,12 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 
 public class VerComicController {
+	
+    @FXML
+    private Button BotonEliminarComic;
+
+    @FXML
+    private Button BotonModificarComic;
 
 	@FXML
 	private TextField anioPublicacion;
@@ -127,12 +133,6 @@ public class VerComicController {
 	
     @FXML
     private Button BotonVentanaEliminar;
-    
-    @FXML
-    private Button BotonModificarComic;
-    
-    @FXML
-    private Button BotonEliminarComic;
 
 	@FXML
 	private Label labelDatosGuardados;
@@ -263,7 +263,7 @@ public class VerComicController {
     	
     	nav.EliminarDatos();
     	
-		Stage myStage = (Stage) this.BotonVentanaAniadir.getScene().getWindow();
+		Stage myStage = (Stage) this.BotonEliminarComic.getScene().getWindow();
 		myStage.close();
 
     }
@@ -273,7 +273,7 @@ public class VerComicController {
     	
     	nav.ModificarDatos();
     	
-		Stage myStage = (Stage) this.BotonVentanaAniadir.getScene().getWindow();
+		Stage myStage = (Stage) this.BotonModificarComic.getScene().getWindow();
 		myStage.close();
 
     }

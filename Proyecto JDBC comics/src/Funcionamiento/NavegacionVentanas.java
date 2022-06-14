@@ -5,7 +5,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import Controladores.AniadirDatosController;
+import Controladores.EliminarDatosController;
 import Controladores.MenuPrincipalController;
+import Controladores.ModificarDatosController;
 import Controladores.VerComicController;
 import SinUsar.MenuOpcionesController;
 import javafx.fxml.FXMLLoader;
@@ -125,7 +127,7 @@ public class NavegacionVentanas {
 			Parent root = loader.load();
 
 			// Obtengo el controlador
-			AniadirDatosController controlador = loader.getController();
+			ModificarDatosController controlador = loader.getController();
 
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
@@ -157,7 +159,7 @@ public class NavegacionVentanas {
 			Parent root = loader.load();
 
 			// Obtengo el controlador
-			AniadirDatosController controlador = loader.getController();
+			EliminarDatosController controlador = loader.getController();
 
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);

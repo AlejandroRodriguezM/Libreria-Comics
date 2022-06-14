@@ -42,7 +42,7 @@ public class Comics {
 		this.guionista = guionista;
 		this.dibujante = dibujante;
 	}
-	
+
 	// Constructor
 	public Comics() {
 		this.nombre = "";
@@ -147,15 +147,16 @@ public class Comics {
 	public static Comics[] verTodo() throws SQLException {
 		String nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 		guionista, dibujante;
-		
+
 		String sentenciaSql = "SELECT * from comicsbbdd";
 
 		Comics comics[] = null;
 
 		ordenarBBDD();
+		reiniciarBBDD();
+		
 		ResultSet rs = DBManager.getComic(sentenciaSql);
 
-		reiniciarBBDD();
 		try {
 			do {
 				nombre = rs.getString("nomComic");
@@ -207,7 +208,7 @@ public class Comics {
 		ordenarBBDD();
 
 		String nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom,
-				guionistaCom, dibujanteCom;
+		guionistaCom, dibujanteCom;
 		Comics comics[] = null;
 
 		ArrayList<String> strFilter = new ArrayList<>();
@@ -288,7 +289,6 @@ public class Comics {
 
 				FiltrolistComics.add(new Comics(nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom,
 						procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
-				System.out.println(FiltrolistComics.toString());
 
 			}
 			rs.close();
