@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import DBManager.DBManager;
-
 public class Comics {
 
 	private String nombre;
@@ -43,6 +41,20 @@ public class Comics {
 		this.fecha = fecha;
 		this.guionista = guionista;
 		this.dibujante = dibujante;
+	}
+	
+	// Constructor
+	public Comics() {
+		this.nombre = "";
+		this.numero = "";
+		this.variante = "";
+		this.firma = "";
+		this.editorial = "";
+		this.formato = "";
+		this.procedencia = "";
+		this.fecha = "";
+		this.guionista = "";
+		this.dibujante = "";
 	}
 
 	// Getters y setters
@@ -133,6 +145,9 @@ public class Comics {
 	 * @throws SQLException
 	 */
 	public static Comics[] verTodo() throws SQLException {
+		String nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+		guionista, dibujante;
+		
 		String sentenciaSql = "SELECT * from comicsbbdd";
 
 		Comics comics[] = null;
@@ -143,17 +158,17 @@ public class Comics {
 		reiniciarBBDD();
 		try {
 			do {
-				String nombre = rs.getString("nomComic");
-				String numero = rs.getString("numComic");
-				String variante = rs.getString("nomVariante");
-				String firma = rs.getString("firma");
-				String editorial = rs.getString("nomEditorial");
-				String formato = rs.getString("formato");
-				String procedencia = rs.getString("procedencia");
-				String anioPubli = rs.getString("anioPubli");
-				String guionista = rs.getString("nomGuionista");
-				String dibujante = rs.getString("nomDibujante");
-				listComics.add(new Comics(nombre, numero, variante, firma, editorial, formato, procedencia, anioPubli,
+				nombre = rs.getString("nomComic");
+				numero = rs.getString("numComic");
+				variante = rs.getString("nomVariante");
+				firma = rs.getString("firma");
+				editorial = rs.getString("nomEditorial");
+				formato = rs.getString("formato");
+				procedencia = rs.getString("procedencia");
+				fecha = rs.getString("anioPubli");
+				guionista = rs.getString("nomGuionista");
+				dibujante = rs.getString("nomDibujante");
+				listComics.add(new Comics(nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 						guionista, dibujante));
 			} while (rs.next());
 

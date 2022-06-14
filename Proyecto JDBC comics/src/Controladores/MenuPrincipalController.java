@@ -3,11 +3,9 @@ package Controladores;
 import java.io.IOException;
 import java.sql.Connection;
 
+import Funcionamiento.NavegacionVentanas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -49,19 +47,21 @@ public class MenuPrincipalController {
 	private TextArea informacion;
 
 	@FXML
-	private TextField nombreBBDD;
+	public TextField nombreBBDD;
 
 	@FXML
 	private Button numeroVersion;
 
 	@FXML
-	private PasswordField pass;
+	public PasswordField pass;
 
 	@FXML
-	private TextField puertobbdd;
+	public TextField puertobbdd;
 
 	@FXML
-	private TextField usuario;
+	public TextField usuario;
+
+	NavegacionVentanas nav = new NavegacionVentanas();
 
 	/**
 	 * 
@@ -94,41 +94,12 @@ public class MenuPrincipalController {
 	@FXML
 	void entrarMenu(ActionEvent event) throws InterruptedException, IOException {
 
-		if (DBManager.DBManager.isConnected()) {
-			estadoConexion.setStyle("-fx-background-color: #A0F52D");
-			estadoConexion.setText("Conectando . . . ");
-			//			Thread.sleep(3*1000);
+		if (Funcionamiento.DBManager.isConnected()) {
 
-			try {
-				// Cargo la vista
-				FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/verBBDD.fxml"));
+			nav.verBBDD();
 
-				// Cargo el padre
-				Parent root = loader.load();
-
-				// Obtengo el controlador
-				VerComicController controlador = loader.getController();
-
-				// Creo la scene y el stage
-				Scene scene = new Scene(root);
-				Stage stage = new Stage();
-
-				// Asocio el stage con el scene
-				stage.setScene(scene);
-				stage.show();
-
-				// Indico que debe hacer al cerrar
-				stage.setOnCloseRequest(e -> controlador.closeWindows());
-
-				// Ciero la ventana donde estoy
-				Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
-				myStage.close();
-
-			}
-			catch(Exception ex)
-			{
-				System.out.println(ex);
-			}
+			Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
+			myStage.close();
 		}
 		else {
 			estadoConexion.setStyle("-fx-background-color: #DD370F");
@@ -156,10 +127,10 @@ public class MenuPrincipalController {
 	@FXML
 	void cerrarbbdd(ActionEvent event) {
 
-		if (DBManager.DBManager.isConnected()) {
+		if (Funcionamiento.DBManager.isConnected()) {
 			estadoConexion.setText("BBDD Cerrada con existo.\nNo conectado.");
 			estadoConexion.setStyle("-fx-background-color: #696969");
-			DBManager.DBManager.close();
+			Funcionamiento.DBManager.close();
 		} else {
 			estadoConexion.setStyle("-fx-background-color: #DD370F");
 			estadoConexion.setFont(new Font("Arial", 22));
@@ -174,12 +145,12 @@ public class MenuPrincipalController {
 	@FXML
 	void enviarDatos(ActionEvent event) {
 
-		DBManager.DBManager.loadDriver();
-		//		conexionBBDD();
+		Funcionamiento.DBManager.loadDriver();
+		conexionBBDD();
 
-		DBManager.DBManager.conexion();
+		//Funcionamiento.DBManager.conexion();
 
-		if (DBManager.DBManager.isConnected()) {
+		if (Funcionamiento.DBManager.isConnected()) {
 			estadoConexion.setStyle("-fx-background-color: #A0F52D");
 			estadoConexion.setText("Conectado");
 		} else {
@@ -214,7 +185,7 @@ public class MenuPrincipalController {
 	 * @return
 	 */
 	private Connection conexionBBDD() {
-		return DBManager.DBManager.conexion(puertobbdd.getText(), nombreBBDD.getText(), usuario.getText(),
+		return Funcionamiento.DBManager.conexion(puertobbdd.getText(), nombreBBDD.getText(), usuario.getText(),
 				pass.getText());
 	}
 

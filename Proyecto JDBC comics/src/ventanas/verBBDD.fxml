@@ -51,7 +51,7 @@
       <TextField fx:id="nombreProcedencia" layoutX="177.0" layoutY="214.0" />
       <Button fx:id="BotonVentanaAniadir" layoutX="430.0" layoutY="150.0" mnemonicParsing="false" onAction="#VentanaAniadir" prefHeight="53.0" prefWidth="269.0" text="Añadir comics a la base de datos" />
       <Button fx:id="botonGuardarBaseDatos" layoutX="430.0" layoutY="216.0" mnemonicParsing="false" onAction="#Guardarbbdd" prefHeight="53.0" prefWidth="269.0" text="Guardar base de datos en un fichero" />
-      <Label fx:id="labelDatosGuardados" layoutX="731.0" layoutY="24.0" prefHeight="103.0" prefWidth="349.0" style="-fx-background-color: #A0A0A0;">
+      <Label fx:id="labelDatosGuardados" layoutX="731.0" layoutY="24.0" prefHeight="243.0" prefWidth="349.0" style="-fx-background-color: #A0A0A0;">
          <font>
             <Font size="21.0" />
          </font>

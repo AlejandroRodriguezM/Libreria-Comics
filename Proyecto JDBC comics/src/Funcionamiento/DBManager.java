@@ -1,4 +1,4 @@
-package DBManager;
+package Funcionamiento;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -14,6 +14,11 @@ public class DBManager {
 
 	// Conexión a la base de datos
 	private static Connection conn = null;
+
+	public static String nombreUsuario;
+	public static String passUsuario;
+	public static String puerto;
+	public static String nombreBBDD;
 
 	/**
 	 * Conecta el proyecto con el driver JBDC
@@ -69,13 +74,14 @@ public class DBManager {
 		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
 		try {
 			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+			conn = conexion();
 			return conn;
 		} catch (SQLException ex) {
 			System.out.println(ex);
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Devuelve un objeto Connection en caso de que la conexion sea correcta.
 	 * @param numeroPuerto
@@ -86,20 +92,7 @@ public class DBManager {
 	 */
 	public static Connection conexion() {
 
-		// Configuración de la conexión a la base de datos
-		String DB_HOST = "localhost";
-		String DB_PORT = "3306";
-		String DB_NAME = "comics";
-		String DB_USER = "root";
-		String DB_PASS = "Forosonanime13!";
-		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
-		try {
-			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
-			return conn;
-		} catch (SQLException ex) {
-			System.out.println(ex);
-			return null;
-		}
+		return conn;
 	}
 
 	/**

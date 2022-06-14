@@ -135,7 +135,7 @@ public class MenuOpcionesController{
         Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
         myStage.close();
         
-        DBManager.DBManager.close();
+        Funcionamiento.DBManager.close();
     }
     
     @FXML

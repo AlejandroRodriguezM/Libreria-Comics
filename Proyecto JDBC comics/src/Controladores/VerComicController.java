@@ -6,17 +6,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-
-import DBManager.DBManager;
-
-import java.io.*;
 import java.sql.*;
 
 import Funcionamiento.Comics;
+import Funcionamiento.DBManager;
+import Funcionamiento.NavegacionVentanas;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -34,6 +28,13 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
+import java.io.FileOutputStream;
+
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
 
 public class VerComicController {
 
@@ -129,6 +130,8 @@ public class VerComicController {
 
 	@FXML
 	private Button botonGuardarBaseDatosExcel;
+	
+	NavegacionVentanas nav = new NavegacionVentanas();
 
 	@SuppressWarnings("unused")
 	private static Connection conn = DBManager.conexion();
@@ -165,7 +168,7 @@ public class VerComicController {
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
 
 		String nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom,
-				guionistaCom, dibujanteCom;
+		guionistaCom, dibujanteCom;
 
 		nombreCom = nombreComic.getText();
 
@@ -187,16 +190,7 @@ public class VerComicController {
 
 		dibujanteCom = nombreDibujante.getText();
 
-		nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-		numero.setCellValueFactory(new PropertyValueFactory<>("numero"));
-		variante.setCellValueFactory(new PropertyValueFactory<>("variante"));
-		firma.setCellValueFactory(new PropertyValueFactory<>("firma"));
-		editorial.setCellValueFactory(new PropertyValueFactory<>("editorial"));
-		formato.setCellValueFactory(new PropertyValueFactory<>("formato"));
-		procedencia.setCellValueFactory(new PropertyValueFactory<>("procedencia"));
-		fecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
-		guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
-		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
+		nombreColumnas();
 
 		List<Comics> listComics = FXCollections.observableArrayList(Comics.filtadroBBDD(nombreCom, numeroCom,
 				varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
@@ -215,16 +209,7 @@ public class VerComicController {
 	@FXML
 	void verTodabbdd(ActionEvent event) throws SQLException {
 
-		nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-		numero.setCellValueFactory(new PropertyValueFactory<>("numero"));
-		variante.setCellValueFactory(new PropertyValueFactory<>("variante"));
-		firma.setCellValueFactory(new PropertyValueFactory<>("firma"));
-		editorial.setCellValueFactory(new PropertyValueFactory<>("editorial"));
-		formato.setCellValueFactory(new PropertyValueFactory<>("formato"));
-		procedencia.setCellValueFactory(new PropertyValueFactory<>("procedencia"));
-		fecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
-		guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
-		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
+		nombreColumnas();
 
 		List<Comics> listComics = FXCollections.observableArrayList(Comics.verTodo());
 		tablaBBDD.getColumns().setAll(nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
@@ -241,32 +226,13 @@ public class VerComicController {
 	 */
 	@FXML
 	public void volverMenu(ActionEvent event) throws IOException {
-
-		// Cargo la vista
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuPrincipal.fxml"));
-
-		// Cargo el padre
-		Parent root = loader.load();
-
-		// Obtengo el controlador
-		MenuPrincipalController controlador = loader.getController();
-
-		// Creo la scene y el stage
-		Scene scene = new Scene(root);
-		Stage stage = new Stage();
-
-		// Asocio el stage con el scene
-		stage.setScene(scene);
-		stage.show();
-
-		// Indico que debe hacer al cerrar
-		stage.setOnCloseRequest(e -> controlador.closeWindows());
+		
+		nav.menuPrincipal();
 
 		// Ciero la ventana donde estoy
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();
 
-		DBManager.close();
 	}
 
 	/**
@@ -277,34 +243,11 @@ public class VerComicController {
 	@FXML
 	public void VentanaAniadir(ActionEvent event) {
 
-		try {
-			// Cargo la vista
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/AniadirComicsBBDD.fxml"));
+		nav.aniadirDatos();
+		// Ciero la ventana donde estoy
+		Stage myStage = (Stage) this.BotonVentanaAniadir.getScene().getWindow();
+		myStage.close();
 
-			// Cargo el padre
-			Parent root = loader.load();
-
-			// Obtengo el controlador
-			AniadirDatosController controlador = loader.getController();
-
-			// Creo la scene y el stage
-			Scene scene = new Scene(root);
-			Stage stage = new Stage();
-
-			// Asocio el stage con el scene
-			stage.setScene(scene);
-			stage.show();
-
-			// Indico que debe hacer al cerrar
-			stage.setOnCloseRequest(e -> controlador.closeWindows());
-
-			// Ciero la ventana donde estoy
-			Stage myStage = (Stage) this.BotonVentanaAniadir.getScene().getWindow();
-			myStage.close();
-
-		} catch (IOException ex) {
-			Logger.getLogger(MenuPrincipalController.class.getName()).log(Level.SEVERE, null, ex);
-		}
 	}
 
 	/**
@@ -316,36 +259,32 @@ public class VerComicController {
 	@SuppressWarnings("unchecked")
 	@FXML
 	void Guardarbbdd(ActionEvent event) {
-
 		FileChooser fileChooser = new FileChooser();
 		File fichero = fileChooser.showSaveDialog(null);
 
 		try {
-			fichero.createNewFile();
+			if(fichero != null)
+			{
+				fichero.createNewFile();
 
-			nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-			numero.setCellValueFactory(new PropertyValueFactory<>("numero"));
-			variante.setCellValueFactory(new PropertyValueFactory<>("variante"));
-			firma.setCellValueFactory(new PropertyValueFactory<>("firma"));
-			editorial.setCellValueFactory(new PropertyValueFactory<>("editorial"));
-			formato.setCellValueFactory(new PropertyValueFactory<>("formato"));
-			procedencia.setCellValueFactory(new PropertyValueFactory<>("procedencia"));
-			fecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
-			guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
-			dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
+				nombreColumnas();
 
-			List<Comics> listComics = FXCollections.observableArrayList(Comics.verTodo());
-			tablaBBDD.getColumns().setAll(nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
-					guionista, dibujante);
+				List<Comics> listComics = FXCollections.observableArrayList(Comics.verTodo());
+				tablaBBDD.getColumns().setAll(nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+						guionista, dibujante);
 
-			FileWriter guardarDatos = new FileWriter(fichero);
-			for (int i = 0; i < listComics.size(); i++) {
-				guardarDatos.write(listComics.get(i) + "\n");
+				FileWriter guardarDatos = new FileWriter(fichero);
+				for (int i = 0; i < listComics.size(); i++) {
+					guardarDatos.write(listComics.get(i) + "\n");
+				}
+				guardarDatos.close();
 			}
-			guardarDatos.close();
-			labelDatosGuardados.setStyle("-fx-background-color: #A0F52D");
-			labelDatosGuardados.setText("Datos guardados correctamente");
+			else
+			{
 
+				labelDatosGuardados.setStyle("-fx-background-color: #F53636");
+				labelDatosGuardados.setText("ERROR. Contenido de la bbdd \n cancelada.");
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
@@ -353,8 +292,27 @@ public class VerComicController {
 		}
 	}
 
+	/**
+	 * 
+	 */
+	private void nombreColumnas()
+	{
+		nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+		numero.setCellValueFactory(new PropertyValueFactory<>("numero"));
+		variante.setCellValueFactory(new PropertyValueFactory<>("variante"));
+		firma.setCellValueFactory(new PropertyValueFactory<>("firma"));
+		editorial.setCellValueFactory(new PropertyValueFactory<>("editorial"));
+		formato.setCellValueFactory(new PropertyValueFactory<>("formato"));
+		procedencia.setCellValueFactory(new PropertyValueFactory<>("procedencia"));
+		fecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+		guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
+		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
+	}
+
 	@FXML
 	void GuardarbbddExcel(ActionEvent event) {
+
+		// ConvertirAExcel.export();
 
 		FileChooser fileChooser = new FileChooser();
 		File fichero = fileChooser.showSaveDialog(null);
@@ -396,31 +354,44 @@ public class VerComicController {
 			hwb.write(fileOut);
 			fileOut.close();
 			hwb.close();
-			labelDatosGuardados.setStyle("-fx-background-color: #A0F52D");
+			labelDatosGuardados.setStyle("-fx-background-color: #F53636");
 			labelDatosGuardados.setText("Se ha generado el Excel correctamente");
 
 		} catch (Exception ex) {
 			System.out.println(ex);
-
 		}
 	}
 
 	@FXML
-	void exportarBBDD(ActionEvent event) throws IOException {
+	void exportarBBDD(ActionEvent event) {
+
 		String copiaSeguridad = "";
 		FileChooser fileChooser = new FileChooser();
-		File fichero = fileChooser.showSaveDialog(null);
-		fichero.createNewFile();
+		try {
+			File fichero = fileChooser.showSaveDialog(null);
+			if(fichero != null)
+			{
+				fichero.createNewFile();
 
-		copiaSeguridad = "mysqldump --opt -u" + "root" + " -p" + "Forosonanime13!" + " -B " + "comics" + " -r "
-				+ fichero;
-		Runtime rt = Runtime.getRuntime();
+				copiaSeguridad = "mysqldump --opt -u" + "root" + " -p" + "Forosonanime13!" + " -B " + "comics" + " -r "
+						+ fichero + ".sql";
+				Runtime rt = Runtime.getRuntime();
 
-		labelDatosGuardados.setStyle("-fx-background-color: #A0F52D");
-		labelDatosGuardados.setText("Base de datos exportada correctamente");
+				labelDatosGuardados.setStyle("-fx-background-color: #A0F52D");
+				labelDatosGuardados.setText("Base de datos exportada \ncorrectamente");
 
-		rt.exec(copiaSeguridad);
+				rt.exec(copiaSeguridad);
+			}
+			else
+			{
+				labelDatosGuardados.setStyle("-fx-background-color: #F53636");
+				labelDatosGuardados.setText("ERROR. Base de datos \nexportada cancelada.");
+			}
 
+		} catch (IOException ex) {
+
+			System.out.println(ex);
+		}
 	}
 
 	/**

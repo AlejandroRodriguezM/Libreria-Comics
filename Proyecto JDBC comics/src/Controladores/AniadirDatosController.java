@@ -7,7 +7,8 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import DBManager.DBManager;
+import Funcionamiento.DBManager;
+import Funcionamiento.NavegacionVentanas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -69,6 +70,8 @@ public class AniadirDatosController {
 	private TextField numeroComic;
 
 	private static Connection conn = DBManager.conexion();
+	
+	NavegacionVentanas nav = new NavegacionVentanas();
 
 	/**
 	 * 
@@ -168,25 +171,27 @@ public class AniadirDatosController {
 	@FXML
 	void volverAlMenu(ActionEvent event) throws IOException {
 
-		// Cargo la vista
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/verBBDD.fxml"));
-
-		// Cargo el padre
-		Parent root = loader.load();
-
-		// Obtengo el controlador
-		VerComicController controlador = loader.getController();
-
-		// Creo la scene y el stage
-		Scene scene = new Scene(root);
-		Stage stage = new Stage();
-
-		// Asocio el stage con el scene
-		stage.setScene(scene);
-		stage.show();
-
-		// Indico que debe hacer al cerrar
-		stage.setOnCloseRequest(e -> controlador.closeWindows());
+//		// Cargo la vista
+//		FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/verBBDD.fxml"));
+//
+//		// Cargo el padre
+//		Parent root = loader.load();
+//
+//		// Obtengo el controlador
+//		VerComicController controlador = loader.getController();
+//
+//		// Creo la scene y el stage
+//		Scene scene = new Scene(root);
+//		Stage stage = new Stage();
+//
+//		// Asocio el stage con el scene
+//		stage.setScene(scene);
+//		stage.show();
+//
+//		// Indico que debe hacer al cerrar
+//		stage.setOnCloseRequest(e -> controlador.closeWindows());
+		
+		nav.verBBDD();
 
 		// Ciero la ventana donde estoy
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
