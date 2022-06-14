@@ -124,6 +124,15 @@ public class VerComicController {
 
 	@FXML
 	private Button botonExportarBBDD;
+	
+    @FXML
+    private Button BotonVentanaEliminar;
+    
+    @FXML
+    private Button BotonModificarComic;
+    
+    @FXML
+    private Button BotonEliminarComic;
 
 	@FXML
 	private Label labelDatosGuardados;
@@ -229,7 +238,6 @@ public class VerComicController {
 		
 		nav.menuPrincipal();
 
-		// Ciero la ventana donde estoy
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();
 
@@ -244,11 +252,29 @@ public class VerComicController {
 	public void VentanaAniadir(ActionEvent event) {
 
 		nav.aniadirDatos();
-		// Ciero la ventana donde estoy
+		
 		Stage myStage = (Stage) this.BotonVentanaAniadir.getScene().getWindow();
 		myStage.close();
 
 	}
+	
+    @FXML
+    void ventanaEliminar(ActionEvent event) {
+    	
+    	
+		Stage myStage = (Stage) this.BotonVentanaAniadir.getScene().getWindow();
+		myStage.close();
+
+    }
+    
+    @FXML
+    void VentanaModificar(ActionEvent event) {
+    	
+    	
+		Stage myStage = (Stage) this.BotonVentanaAniadir.getScene().getWindow();
+		myStage.close();
+
+    }
 
 	/**
 	 * Guarda los datos de la base de datos en un fichero.
@@ -362,6 +388,10 @@ public class VerComicController {
 		}
 	}
 
+	/**
+	 * 
+	 * @param event
+	 */
 	@FXML
 	void exportarBBDD(ActionEvent event) {
 
