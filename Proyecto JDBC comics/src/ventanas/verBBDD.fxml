@@ -24,8 +24,8 @@
       <TextField fx:id="nombreEditorial" layoutX="178.0" layoutY="152.0" />
       <TextField fx:id="anioPublicacion" layoutX="177.0" layoutY="244.0" />
       <TextField fx:id="nombreVariante" layoutX="177.0" layoutY="87.0" />
-      <Button fx:id="botonMostrarParametro" layoutX="26.0" layoutY="344.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="49.0" prefWidth="202.0" text="Mostrar segun parametros." />
-      <Button fx:id="botonbbdd" layoutX="428.0" layoutY="17.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="113.0" prefWidth="269.0" text="Ver toda la base de datos." />
+      <Button fx:id="botonMostrarParametro" layoutX="26.0" layoutY="344.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="49.0" prefWidth="202.0" text="Mostrar segun parametros" />
+      <Button fx:id="botonbbdd" layoutX="428.0" layoutY="17.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="113.0" prefWidth="269.0" text="Ver toda la base de datos" />
       <Button fx:id="botonLimpiar" layoutX="237.0" layoutY="344.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="49.0" prefWidth="111.0" text="Limpiar" />
       <Button fx:id="botonVolver" layoutX="848.0" layoutY="352.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="33.0" prefWidth="124.0" text="Volver al menu" />
       <Button fx:id="botonSalir" layoutX="994.0" layoutY="352.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="33.0" prefWidth="99.0" text="Salir" />
@@ -49,13 +49,14 @@
       <TextField fx:id="nombreFirma" layoutX="177.0" layoutY="120.0" />
       <Label layoutX="26.0" layoutY="218.0" text="Procedencia" />
       <TextField fx:id="nombreProcedencia" layoutX="177.0" layoutY="214.0" />
-      <Button fx:id="BotonVentanaAniadir" layoutX="430.0" layoutY="150.0" mnemonicParsing="false" onAction="#VentanaAniadir" prefHeight="53.0" prefWidth="269.0" text="Añadir comics a la base de datos." />
-      <Button fx:id="botonGuardarBaseDatos" layoutX="430.0" layoutY="216.0" mnemonicParsing="false" onAction="#Guardarbbdd" prefHeight="53.0" prefWidth="269.0" text="Guardar base de datos en un fichero." />
+      <Button fx:id="BotonVentanaAniadir" layoutX="430.0" layoutY="150.0" mnemonicParsing="false" onAction="#VentanaAniadir" prefHeight="53.0" prefWidth="269.0" text="Añadir comics a la base de datos" />
+      <Button fx:id="botonGuardarBaseDatos" layoutX="430.0" layoutY="216.0" mnemonicParsing="false" onAction="#Guardarbbdd" prefHeight="53.0" prefWidth="269.0" text="Guardar base de datos en un fichero" />
       <Label fx:id="labelDatosGuardados" layoutX="731.0" layoutY="24.0" prefHeight="103.0" prefWidth="349.0" style="-fx-background-color: #A0A0A0;">
          <font>
             <Font size="21.0" />
          </font>
       </Label>
-      <Button fx:id="botonExportarBBDD" layoutX="430.0" layoutY="283.0" mnemonicParsing="false" onAction="#exportarBBDD" prefHeight="53.0" prefWidth="269.0" text="Exportar base de datos" />
+      <Button fx:id="botonExportarBBDD" layoutX="430.0" layoutY="333.0" mnemonicParsing="false" onAction="#exportarBBDD" prefHeight="53.0" prefWidth="269.0" text="Exportar base de datos" />
+      <Button fx:id="botonGuardarBaseDatosExcel" layoutX="430.0" layoutY="274.0" mnemonicParsing="false" onAction="#GuardarbbddExcel" prefHeight="53.0" prefWidth="269.0" text="Guardar base de datos en un excel" />
    </children>
 </Pane>

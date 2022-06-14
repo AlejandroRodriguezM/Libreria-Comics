@@ -16,5 +16,45 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/home/alejandrorm/Eclipse/poi-bin-5.2.2/poi-5.2.2.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/alejandrorm/Eclipse/poi-bin-5.2.2/poi-examples-5.2.2.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/alejandrorm/Eclipse/poi-bin-5.2.2/poi-excelant-5.2.2.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/alejandrorm/Eclipse/poi-bin-5.2.2/poi-javadoc-5.2.2.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/alejandrorm/Eclipse/poi-bin-5.2.2/poi-ooxml-5.2.2.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/alejandrorm/Eclipse/poi-bin-5.2.2/poi-ooxml-full-5.2.2.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/alejandrorm/Eclipse/poi-bin-5.2.2/poi-ooxml-lite-5.2.2.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/alejandrorm/Eclipse/poi-bin-5.2.2/poi-scratchpad-5.2.2.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

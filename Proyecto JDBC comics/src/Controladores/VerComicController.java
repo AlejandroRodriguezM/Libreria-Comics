@@ -3,10 +3,18 @@ package Controladores;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
+import DBManager.DBManager;
+
+import java.io.*;
+import java.sql.*;
 
 import Funcionamiento.Comics;
 import javafx.collections.FXCollections;
@@ -112,15 +120,22 @@ public class VerComicController {
 
 	@FXML
 	private Button BotonVentanaAniadir;
-	
-    @FXML
-    private Button botonExportarBBDD;
-	
-    @FXML
-    private Label labelDatosGuardados;
+
+	@FXML
+	private Button botonExportarBBDD;
+
+	@FXML
+	private Label labelDatosGuardados;
+
+	@FXML
+	private Button botonGuardarBaseDatosExcel;
+
+	@SuppressWarnings("unused")
+	private static Connection conn = DBManager.conexion();
 
 	/**
 	 * Limpia los campos de pantalla donde se escriben los datos.
+	 * 
 	 * @param event
 	 */
 	@FXML
@@ -141,6 +156,7 @@ public class VerComicController {
 
 	/**
 	 * Muestra la bbdd segun los parametros introducidos en los TextField
+	 * 
 	 * @param event
 	 * @throws SQLException
 	 */
@@ -149,7 +165,7 @@ public class VerComicController {
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
 
 		String nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom,
-		guionistaCom, dibujanteCom;
+				guionistaCom, dibujanteCom;
 
 		nombreCom = nombreComic.getText();
 
@@ -191,6 +207,7 @@ public class VerComicController {
 
 	/**
 	 * Muestra toda la base de datos.
+	 * 
 	 * @param event
 	 * @throws SQLException
 	 */
@@ -218,6 +235,7 @@ public class VerComicController {
 
 	/**
 	 * Vuelve al menu inicial de conexion de la base de datos.
+	 * 
 	 * @param event
 	 * @throws IOException
 	 */
@@ -248,11 +266,12 @@ public class VerComicController {
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();
 
-		DBManager.DBManager.close();
+		DBManager.close();
 	}
 
 	/**
 	 * Permite abrir y cargar la ventana para añadir datos.
+	 * 
 	 * @param event
 	 */
 	@FXML
@@ -290,8 +309,9 @@ public class VerComicController {
 
 	/**
 	 * Guarda los datos de la base de datos en un fichero.
+	 * 
 	 * @param event
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	@SuppressWarnings("unchecked")
 	@FXML
@@ -299,7 +319,7 @@ public class VerComicController {
 
 		FileChooser fileChooser = new FileChooser();
 		File fichero = fileChooser.showSaveDialog(null);
-    	
+
 		try {
 			fichero.createNewFile();
 
@@ -317,7 +337,7 @@ public class VerComicController {
 			List<Comics> listComics = FXCollections.observableArrayList(Comics.verTodo());
 			tablaBBDD.getColumns().setAll(nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 					guionista, dibujante);
-			
+
 			FileWriter guardarDatos = new FileWriter(fichero);
 			for (int i = 0; i < listComics.size(); i++) {
 				guardarDatos.write(listComics.get(i) + "\n");
@@ -328,27 +348,84 @@ public class VerComicController {
 
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-		catch (SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-	
-    @FXML
-    void exportarBBDD(ActionEvent event) throws IOException {
-    	String copiaSeguridad = "";
-    	FileChooser fileChooser = new FileChooser();
+
+	@FXML
+	void GuardarbbddExcel(ActionEvent event) {
+
+		FileChooser fileChooser = new FileChooser();
+		File fichero = fileChooser.showSaveDialog(null);
+
+		try {
+			HSSFWorkbook hwb = new HSSFWorkbook();
+			HSSFSheet sheet = hwb.createSheet("new sheet");
+
+			HSSFRow rowhead = sheet.createRow((short) 0);
+			rowhead.createCell((short) 0).setCellValue("Nombre");
+			rowhead.createCell((short) 1).setCellValue("Numero");
+			rowhead.createCell((short) 2).setCellValue("Variante");
+			rowhead.createCell((short) 3).setCellValue("Firma");
+			rowhead.createCell((short) 4).setCellValue("Editorial");
+			rowhead.createCell((short) 5).setCellValue("Formato");
+			rowhead.createCell((short) 6).setCellValue("Procedencia");
+			rowhead.createCell((short) 7).setCellValue("Publicacion");
+			rowhead.createCell((short) 8).setCellValue("Guionista");
+			rowhead.createCell((short) 9).setCellValue("Dibujante");
+
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery("Select * from comicsbbdd");
+			int i = 1;
+			while (rs.next()) {
+				HSSFRow row = sheet.createRow((short) i);
+				row.createCell((short) 0).setCellValue(rs.getString("nombreCom"));
+				row.createCell((short) 1).setCellValue(rs.getString("numeroCom"));
+				row.createCell((short) 2).setCellValue(rs.getString("varianteCom"));
+				row.createCell((short) 3).setCellValue(rs.getString("firmaCom"));
+				row.createCell((short) 4).setCellValue(rs.getString("editorialCom"));
+				row.createCell((short) 5).setCellValue(rs.getString("formatoCom"));
+				row.createCell((short) 6).setCellValue(rs.getString("procedenciaCom"));
+				row.createCell((short) 7).setCellValue(rs.getString("fechaCom"));
+				row.createCell((short) 8).setCellValue(rs.getString("guionistaCom"));
+				row.createCell((short) 9).setCellValue(rs.getString("dibujanteCom"));
+				i++;
+			}
+			FileOutputStream fileOut = new FileOutputStream(fichero);
+			hwb.write(fileOut);
+			fileOut.close();
+			hwb.close();
+			labelDatosGuardados.setStyle("-fx-background-color: #A0F52D");
+			labelDatosGuardados.setText("Se ha generado el Excel correctamente");
+
+		} catch (Exception ex) {
+			System.out.println(ex);
+
+		}
+	}
+
+	@FXML
+	void exportarBBDD(ActionEvent event) throws IOException {
+		String copiaSeguridad = "";
+		FileChooser fileChooser = new FileChooser();
 		File fichero = fileChooser.showSaveDialog(null);
 		fichero.createNewFile();
-		
-		copiaSeguridad = "mysqldump --opt -u" + "root" + " -p" + "Forosonanime13!" + " -B " + "comics" + " -r " + fichero;
+
+		copiaSeguridad = "mysqldump --opt -u" + "root" + " -p" + "Forosonanime13!" + " -B " + "comics" + " -r "
+				+ fichero;
 		Runtime rt = Runtime.getRuntime();
+
+		labelDatosGuardados.setStyle("-fx-background-color: #A0F52D");
+		labelDatosGuardados.setText("Base de datos exportada correctamente");
+
 		rt.exec(copiaSeguridad);
-    	
-    }
+
+	}
 
 	/**
 	 * Permite salir totalmente del programa.
+	 * 
 	 * @param event
 	 */
 	@FXML

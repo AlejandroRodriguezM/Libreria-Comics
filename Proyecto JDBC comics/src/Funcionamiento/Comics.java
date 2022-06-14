@@ -250,16 +250,6 @@ public class Comics {
 			strFilter.add(dibujanteC);
 		}
 		Collections.sort(strFilter);
-		System.out.println("Nombre: " + nombreC);
-		System.out.println("Numero: " + numeroC);
-		System.out.println("Variante: " + varianteC);
-		System.out.println("Firma: " + firmaC);
-		System.out.println("Editorial: " + editorialC);
-		System.out.println("Formato: " + formatoC);
-		System.out.println("Procedencia: " + procedenciaC);
-		System.out.println("Fecha: " + fechaC);
-		System.out.println("Guionista: " + guionistaC);
-		System.out.println("Dibujante: " + dibujanteC + "\n");
 
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql.toString());
