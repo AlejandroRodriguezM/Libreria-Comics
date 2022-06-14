@@ -261,7 +261,7 @@ public class VerComicController {
     @FXML
     void ventanaEliminar(ActionEvent event) {
     	
-    	
+    	nav.EliminarDatos();
 		Stage myStage = (Stage) this.BotonVentanaAniadir.getScene().getWindow();
 		myStage.close();
 
@@ -270,7 +270,7 @@ public class VerComicController {
     @FXML
     void VentanaModificar(ActionEvent event) {
     	
-    	
+    	nav.ModificarDatos();
 		Stage myStage = (Stage) this.BotonVentanaAniadir.getScene().getWindow();
 		myStage.close();
 
