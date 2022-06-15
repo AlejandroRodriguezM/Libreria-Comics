@@ -102,7 +102,7 @@ public class ModificarDatosController {
 	 * @param event
 	 */
 	@FXML
-	void BotonLimpiarComic(ActionEvent event) {
+	void limpiarDatos(ActionEvent event) {
 		nombreComic.setText("");
 		numeroComic.setText("");
 		ID.setText("");
