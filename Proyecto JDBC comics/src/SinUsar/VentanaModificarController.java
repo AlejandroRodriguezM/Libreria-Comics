@@ -83,10 +83,10 @@ public class VentanaModificarController {
 	void modificarDatos(ActionEvent event) throws SQLException {
 
 
-		String id,nombreCom = "", numeroCom = "", varianteCom = "", firmaCom = "", editorialCom = "", formatoCom = "", procedenciaCom = "", fechaCom = "",
+		String id = "",nombreCom = "", numeroCom = "", varianteCom = "", firmaCom = "", editorialCom = "", formatoCom = "", procedenciaCom = "", fechaCom = "",
 				guionistaCom = "", dibujanteCom = "", sentenciaSQL;
 
-		id = datos.devolverID();
+//		id = datos.devolverID();
 		
 		sentenciaSQL = "UPDATE comicsbbdd set nomComic = ?,numComic = ?,nomVariante = ?,"
 				+ "Firma = ?,nomEditorial = ?,formato = ?,Procedencia = ?,anioPubli = ?"

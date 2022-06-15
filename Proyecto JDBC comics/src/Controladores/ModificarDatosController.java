@@ -191,11 +191,6 @@ public class ModificarDatosController {
 
 	}
 
-	public String devolverID() {
-		String id = numeroID.getText();
-		return id;
-	}
-
 	/**
 	 * Permite volver al menu de conexion a la base de datos.
 	 *
