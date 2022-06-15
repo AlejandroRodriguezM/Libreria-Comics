@@ -2,6 +2,7 @@ package Controladores;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
@@ -47,7 +48,33 @@ public class ModificarDatosController {
 	@FXML
 	private TextField nombreComic;
 
+	@FXML
+    private TextField anioPublicacion;
 
+    @FXML
+    private TextField nombreComicMod;
+
+    @FXML
+    private TextField nombreDibujante;
+
+    @FXML
+    private TextField nombreEditorial;
+
+    @FXML
+    private TextField nombreFirma;
+
+    @FXML
+    private TextField nombreFormato;
+
+    @FXML
+    private TextField nombreGuionista;
+
+    @FXML
+    private TextField nombreProcedencia;
+
+    @FXML
+    private TextField nombreVariante;
+	
 	@FXML
 	private TextField numeroComic;
 
@@ -109,13 +136,64 @@ public class ModificarDatosController {
 	 }
 
 	 @FXML
-	 void modificarDatos(ActionEvent event) {
+	 void modificarDatos(ActionEvent event) throws SQLException {
 
-		 if(devolverID().length() != 0)
+		 String id,nombreCom = "", numeroCom = "", varianteCom = "", firmaCom = "", editorialCom = "", formatoCom = "", procedenciaCom = "", fechaCom = "",
+				 guionistaCom = "", dibujanteCom = "", sentenciaSQL;
+
+		 id = numeroID.getText();
+
+		 sentenciaSQL = "UPDATE comicsbbdd set nomComic = ?,numComic = ?,nomVariante = ?,"
+				 + "Firma = ?,nomEditorial = ?,formato = ?,Procedencia = ?,anioPubli = ?"
+				 + "nomGuionista = ?,nomDibujante = ? where ID = " + id;
+
+		 if(id.length() != 0)
 		 {
-			 nav.VentanaModificacion();
+
+			 List<Comics> listComics = FXCollections.observableArrayList(Comics.filtadroBBDD(id,nombreCom, numeroCom,
+					 varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
+
 			 pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-			 pantallaInformativa.setText("Modificando comic con \nID: " + devolverID());
+			 pantallaInformativa.setText(listComics.toString());
+
+			 try {
+				 PreparedStatement ps = null;
+
+				 ps = DBManager.conexion().prepareStatement(sentenciaSQL);
+				 ps.setString(1, nombreComic.getText());
+				 ps.setString(2, numeroComic.getText());
+				 if (nombreVariante.getText().length() != 0) {
+					 ps.setString(3, nombreVariante.getText());
+				 } else {
+					 ps.setString(3, "No variante");
+				 }
+				 if (nombreFirma.getText().length() != 0) {
+					 ps.setString(4, nombreFirma.getText());
+				 } else {
+					 ps.setString(4, "No firmado");
+				 }
+				 ps.setString(5, nombreEditorial.getText());
+				 ps.setString(6, nombreFormato.getText());
+				 ps.setString(7, nombreProcedencia.getText());
+				 ps.setString(8, anioPublicacion.getText());
+				 ps.setString(9, nombreGuionista.getText());
+				 ps.setString(10, nombreDibujante.getText());
+
+				 if(ps.executeUpdate() == 1)
+				 {
+					 pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
+					 pantallaInformativa.setText("Comic Modificado correctamente.");
+				 }
+				 else
+				 {
+					 pantallaInformativa.setStyle("-fx-background-color: #F53636");
+					 pantallaInformativa.setText("ERROR. Comic no modificado de forma correcta.");
+				 }
+			 }
+			 catch(SQLException ex)
+			 {
+				 System.out.println(ex);
+			 }
 		 }
 		 else
 		 {
