@@ -148,7 +148,7 @@ public class Comics {
 		String nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 		guionista, dibujante;
 
-		String sentenciaSql = "SELECT * from comicsbbdd";
+		String sentenciaSql = "SELECT * from comicsbbdd where estado = 'En posesion'";
 
 		Comics comics[] = null;
 
@@ -275,7 +275,7 @@ public class Comics {
 			}
 			ResultSet rs = ps.executeQuery();
 
-			while (rs.next()) {
+			while (rs.next() && rs.getString("estado").equals("En posesion")) {
 				nombreCom = rs.getString("nomComic");
 				numeroCom = rs.getString("numComic");
 				varianteCom = rs.getString("nomVariante");
