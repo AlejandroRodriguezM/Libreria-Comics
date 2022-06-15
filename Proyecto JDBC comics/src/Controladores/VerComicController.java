@@ -201,7 +201,7 @@ public class VerComicController {
 
 		nombreColumnas();
 
-		List<Comics> listComics = FXCollections.observableArrayList(Comics.filtadroBBDD(nombreCom, numeroCom,
+		List<Comics> listComics = FXCollections.observableArrayList(Comics.filtadroBBDD("",nombreCom, numeroCom,
 				varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
 		tablaBBDD.getColumns().setAll(nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante);

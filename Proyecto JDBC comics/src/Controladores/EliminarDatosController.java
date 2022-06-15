@@ -2,11 +2,15 @@ package Controladores;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import Funcionamiento.Comics;
 import Funcionamiento.DBManager;
 import Funcionamiento.NavegacionVentanas;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,20 +20,23 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 public class EliminarDatosController{
 
-    @FXML
-    private TextField anioPublicacion;
-
-    @FXML
+	@FXML
     private Button botonEliminar;
 
     @FXML
     private Button botonLimpiarComic;
+
+    @FXML
+    private Button botonMostrarParametro;
 
     @FXML
     private Button botonSalir;
@@ -38,36 +45,58 @@ public class EliminarDatosController{
     private Button botonVolver;
 
     @FXML
-    private Label labelResultado;
-
-    @FXML
     private TextField nombreComic;
 
-    @FXML
-    private TextField nombreDibujante;
-
-    @FXML
-    private TextField nombreEditorial;
-
-    @FXML
-    private TextField nombreFirma;
-
-    @FXML
-    private TextField nombreFormato;
-
-    @FXML
-    private TextField nombreGuionista;
-
-    @FXML
-    private TextField nombreProcedencia;
-
-    @FXML
-    private TextField nombreVariante;
 
     @FXML
     private TextField numeroComic;
+
+    @FXML
+    private TextField numeroID;
+
+    @FXML
+    private Label pantallaInformativa;
+    
+	@FXML
+	public TableView<Comics> tablaBBDD;
+
+    @FXML
+    private TableColumn<Comics,String> ID;
+	
+	@FXML
+	private TableColumn<Comics, String> numero;
+
+	@FXML
+	private TableColumn<Comics, String> procedencia;
+
+	@FXML
+	private TableColumn<Comics, String> variante;
+	
+	@FXML
+	private TableColumn<Comics, String> dibujante;
+
+	@FXML
+	private TableColumn<Comics, String> editorial;
+
+	@FXML
+	private TableColumn<Comics, String> fecha;
+
+	@FXML
+	private TableColumn<Comics, String> firma;
+
+	@FXML
+	private TableColumn<Comics, String> formato;
+
+	@FXML
+	private TableColumn<Comics, String> guionista;
+
+	@FXML
+	private TableColumn<Comics, String> nombre;
+
     
 	private static Connection conn = DBManager.conexion();
+	
+	VerComicController ver = new VerComicController();
 	
 	NavegacionVentanas nav = new NavegacionVentanas();
 
@@ -76,23 +105,56 @@ public class EliminarDatosController{
 	 * @param event
 	 */
 	@FXML
-	void BotonLimpiarComic(ActionEvent event) {
+	void limpiarDatos(ActionEvent event) {
 		nombreComic.setText("");
 		numeroComic.setText("");
-		nombreVariante.setText("");
-		nombreFirma.setText("");
-		nombreEditorial.setText("");
-		nombreFormato.setText("");
-		anioPublicacion.setText("");
-		anioPublicacion.setText("");
-		nombreDibujante.setText("");
-		nombreGuionista.setText("");
 	}
 
     @FXML
     void eliminarDatos(ActionEvent event) {
 
     }
+    
+    @SuppressWarnings("unchecked")
+	@FXML
+    void mostrarPorParametro(ActionEvent event) throws SQLException {
+    	
+		String id,nombreCom, numeroCom, varianteCom = "", firmaCom = "", editorialCom = "", formatoCom = "", procedenciaCom = "", fechaCom = "",
+		guionistaCom = "", dibujanteCom = "";
+
+		nombreCom = nombreComic.getText();
+
+		numeroCom = numeroComic.getText();
+		
+		id = numeroID.getText();
+
+		nombreColumnas();
+
+		List<Comics> listComics = FXCollections.observableArrayList(Comics.filtadroBBDD(id,nombreCom, numeroCom,
+				varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
+		tablaBBDD.getColumns().setAll(ID,nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+				guionista, dibujante);
+		tablaBBDD.getItems().setAll(listComics);
+
+    }
+    
+	/**
+	 * 
+	 */
+	private void nombreColumnas()
+	{
+		ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
+		nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+		numero.setCellValueFactory(new PropertyValueFactory<>("numero"));
+		variante.setCellValueFactory(new PropertyValueFactory<>("variante"));
+		firma.setCellValueFactory(new PropertyValueFactory<>("firma"));
+		editorial.setCellValueFactory(new PropertyValueFactory<>("editorial"));
+		formato.setCellValueFactory(new PropertyValueFactory<>("formato"));
+		procedencia.setCellValueFactory(new PropertyValueFactory<>("procedencia"));
+		fecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+		guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
+		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
+	}
 
 	/**
 	 * Permite volver al menu de conexion a la base de datos.
@@ -101,26 +163,6 @@ public class EliminarDatosController{
 	 */
 	@FXML
 	void volverAlMenu(ActionEvent event) throws IOException {
-
-//		// Cargo la vista
-//		FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/verBBDD.fxml"));
-//
-//		// Cargo el padre
-//		Parent root = loader.load();
-//
-//		// Obtengo el controlador
-//		VerComicController controlador = loader.getController();
-//
-//		// Creo la scene y el stage
-//		Scene scene = new Scene(root);
-//		Stage stage = new Stage();
-//
-//		// Asocio el stage con el scene
-//		stage.setScene(scene);
-//		stage.show();
-//
-//		// Indico que debe hacer al cerrar
-//		stage.setOnCloseRequest(e -> controlador.closeWindows());
 		
 		nav.verBBDD();
 
@@ -153,7 +195,7 @@ public class EliminarDatosController{
 	public void closeWindows() {
 
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuOpciones.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/verBBDD.fxml"));
 
 			Parent root = loader.load();
 

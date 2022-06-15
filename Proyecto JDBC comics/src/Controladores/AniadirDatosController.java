@@ -222,7 +222,7 @@ public class AniadirDatosController {
 	public void closeWindows() {
 
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuOpciones.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/verBBDD.fxml.fxml"));
 
 			Parent root = loader.load();
 

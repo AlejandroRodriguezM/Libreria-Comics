@@ -11,6 +11,7 @@ import java.util.List;
 
 public class Comics {
 
+	private String ID;
 	private String nombre;
 	private String numero;
 	private String variante;
@@ -29,8 +30,9 @@ public class Comics {
 	private static Connection conn = DBManager.conexion();
 
 	// Constructor
-	public Comics(String nombre, String numero, String variante, String firma, String editorial, String formato,
+	public Comics(String ID,String nombre, String numero, String variante, String firma, String editorial, String formato,
 			String procedencia, String fecha, String guionista, String dibujante) {
+		this.ID = ID;
 		this.nombre = nombre;
 		this.numero = numero;
 		this.variante = variante;
@@ -45,6 +47,7 @@ public class Comics {
 
 	// Constructor
 	public Comics() {
+		this.ID = "";
 		this.nombre = "";
 		this.numero = "";
 		this.variante = "";
@@ -58,6 +61,11 @@ public class Comics {
 	}
 
 	// Getters y setters
+	
+	public String getID() {
+		return ID;
+	}
+	
 	public String getNombre() {
 		return nombre;
 	}
@@ -96,6 +104,10 @@ public class Comics {
 
 	public String getDibujante() {
 		return dibujante;
+	}
+	
+	public void setID(String ID) {
+		this.ID = ID;
 	}
 
 	public void setNombre(String nombre) {
@@ -145,7 +157,7 @@ public class Comics {
 	 * @throws SQLException
 	 */
 	public static Comics[] verTodo() throws SQLException {
-		String nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+		String ID,nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 		guionista, dibujante;
 
 		String sentenciaSql = "SELECT * from comicsbbdd where estado = 'En posesion'";
@@ -159,6 +171,7 @@ public class Comics {
 
 		try {
 			do {
+				ID = rs.getString("ID");
 				nombre = rs.getString("nomComic");
 				numero = rs.getString("numComic");
 				variante = rs.getString("nomVariante");
@@ -169,7 +182,7 @@ public class Comics {
 				fecha = rs.getString("anioPubli");
 				guionista = rs.getString("nomGuionista");
 				dibujante = rs.getString("nomDibujante");
-				listComics.add(new Comics(nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+				listComics.add(new Comics(ID,nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 						guionista, dibujante));
 			} while (rs.next());
 
@@ -200,14 +213,14 @@ public class Comics {
 	 * @return
 	 * @throws SQLException
 	 */
-	public static Comics[] filtadroBBDD(String nombreC, String numeroC, String varianteC, String firmaC,
+	public static Comics[] filtadroBBDD(String ID,String nombreC, String numeroC, String varianteC, String firmaC,
 			String editorialC, String formatoC, String procedenciaC, String fechaC, String guionistaC,
 			String dibujanteC) throws SQLException {
 
 		reiniciarBBDD();
 		ordenarBBDD();
 
-		String nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom,
+		String id,nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom,
 		guionistaCom, dibujanteCom;
 		Comics comics[] = null;
 
@@ -216,6 +229,12 @@ public class Comics {
 		String connector = " WHERE ";
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT * FROM comicsbbdd");
+		
+		if (ID.length() != 0) {
+			sql.append(connector).append("ID = ?");
+			connector = " AND ";
+			strFilter.add(ID);
+		}
 		if (nombreC.length() != 0) {
 			sql.append(connector).append("nomComic = ?");
 			connector = " AND ";
@@ -276,6 +295,7 @@ public class Comics {
 			ResultSet rs = ps.executeQuery();
 
 			while (rs.next() && rs.getString("estado").equals("En posesion")) {
+				id = rs.getString("ID");
 				nombreCom = rs.getString("nomComic");
 				numeroCom = rs.getString("numComic");
 				varianteCom = rs.getString("nomVariante");
@@ -287,7 +307,7 @@ public class Comics {
 				guionistaCom = rs.getString("nomGuionista");
 				dibujanteCom = rs.getString("nomDibujante");
 
-				FiltrolistComics.add(new Comics(nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom,
+				FiltrolistComics.add(new Comics(id,nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom,
 						procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
 
 			}
