@@ -82,7 +82,13 @@ public class VerComicController {
 
 	@FXML
 	private TableColumn<Comics, String> nombre;
+	
+	@FXML
+	private TableColumn<Comics, String> ID;
 
+    @FXML
+    private TextField numeroID;
+	
 	@FXML
 	private TextField nombreComic;
 
@@ -163,7 +169,6 @@ public class VerComicController {
 		anioPublicacion.setText("");
 		nombreDibujante.setText("");
 		nombreGuionista.setText("");
-
 	}
 
 	/**
@@ -176,9 +181,11 @@ public class VerComicController {
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
 
-		String nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom,
+		String idCom, nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom,
 		guionistaCom, dibujanteCom;
 
+		idCom = numeroID.getText();
+		
 		nombreCom = nombreComic.getText();
 
 		numeroCom = numeroComic.getText();
@@ -201,9 +208,9 @@ public class VerComicController {
 
 		nombreColumnas();
 
-		List<Comics> listComics = FXCollections.observableArrayList(Comics.filtadroBBDD("",nombreCom, numeroCom,
+		List<Comics> listComics = FXCollections.observableArrayList(Comics.filtadroBBDD(idCom,nombreCom, numeroCom,
 				varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
-		tablaBBDD.getColumns().setAll(nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+		tablaBBDD.getColumns().setAll(ID,nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante);
 		tablaBBDD.getItems().setAll(listComics);
 	}
@@ -221,7 +228,7 @@ public class VerComicController {
 		nombreColumnas();
 
 		List<Comics> listComics = FXCollections.observableArrayList(Comics.verTodo());
-		tablaBBDD.getColumns().setAll(nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+		tablaBBDD.getColumns().setAll(ID,nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante);
 		tablaBBDD.getItems().setAll(listComics);
 
@@ -325,6 +332,7 @@ public class VerComicController {
 	 */
 	private void nombreColumnas()
 	{
+		ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
 		nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
 		numero.setCellValueFactory(new PropertyValueFactory<>("numero"));
 		variante.setCellValueFactory(new PropertyValueFactory<>("variante"));
@@ -406,7 +414,7 @@ public class VerComicController {
 				fichero.createNewFile();
 
 				copiaSeguridad = "mysqldump --opt -u" + "root" + " -p" + "Forosonanime13!" + " -B " + "comics" + " -r "
-						+ fichero + ".sql";
+						+ fichero;
 				Runtime rt = Runtime.getRuntime();
 
 				labelDatosGuardados.setStyle("-fx-background-color: #A0F52D");

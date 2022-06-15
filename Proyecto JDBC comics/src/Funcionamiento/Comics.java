@@ -230,7 +230,7 @@ public class Comics {
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT * FROM comicsbbdd");
 		
-		if (ID.length() != 0) {
+		if (ID.length() != 0 && ID != null) {
 			sql.append(connector).append("ID = ?");
 			connector = " AND ";
 			strFilter.add(ID);
@@ -294,22 +294,24 @@ public class Comics {
 			}
 			ResultSet rs = ps.executeQuery();
 
-			while (rs.next() && rs.getString("estado").equals("En posesion")) {
-				id = rs.getString("ID");
-				nombreCom = rs.getString("nomComic");
-				numeroCom = rs.getString("numComic");
-				varianteCom = rs.getString("nomVariante");
-				firmaCom = rs.getString("firma");
-				editorialCom = rs.getString("nomEditorial");
-				formatoCom = rs.getString("formato");
-				procedenciaCom = rs.getString("procedencia");
-				fechaCom = rs.getString("anioPubli");
-				guionistaCom = rs.getString("nomGuionista");
-				dibujanteCom = rs.getString("nomDibujante");
-
-				FiltrolistComics.add(new Comics(id,nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom,
-						procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
-
+			while (rs.next()) {
+				if(!rs.getString("estado").equals("En posesion"))
+				{
+					id = rs.getString("ID");
+					nombreCom = rs.getString("nomComic");
+					numeroCom = rs.getString("numComic");
+					varianteCom = rs.getString("nomVariante");
+					firmaCom = rs.getString("firma");
+					editorialCom = rs.getString("nomEditorial");
+					formatoCom = rs.getString("formato");
+					procedenciaCom = rs.getString("procedencia");
+					fechaCom = rs.getString("anioPubli");
+					guionistaCom = rs.getString("nomGuionista");
+					dibujanteCom = rs.getString("nomDibujante");
+					
+					FiltrolistComics.add(new Comics(id,nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom,
+							procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
+				}
 			}
 			rs.close();
 		} catch (SQLException ex) {
