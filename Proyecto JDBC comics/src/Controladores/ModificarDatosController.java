@@ -1,7 +1,6 @@
 package Controladores;
 
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
@@ -120,7 +119,7 @@ public class ModificarDatosController {
 	@FXML
 	private TableColumn<Comics, String> nombre;
 
-	private static Connection conn = DBManager.conexion();
+//	private static Connection conn = DBManager.conexion();
 
 	NavegacionVentanas nav = new NavegacionVentanas();
 
@@ -135,6 +134,11 @@ public class ModificarDatosController {
 		 ID.setText("");
 	 }
 
+	 /**
+	  * 
+	  * @param event
+	  * @throws SQLException
+	  */
 	 @FXML
 	 void modificarDatos(ActionEvent event) throws SQLException {
 
