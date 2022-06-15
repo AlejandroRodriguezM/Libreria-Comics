@@ -16,57 +16,7 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/alejandrorm/Eclipse/spire.xls-12.6.0.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/alejandrorm/Eclipse/poi-bin-5.2.2/poi-5.2.2.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/alejandrorm/Eclipse/poi-bin-5.2.2/poi-examples-5.2.2.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/alejandrorm/Eclipse/poi-bin-5.2.2/poi-excelant-5.2.2.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/alejandrorm/Eclipse/poi-bin-5.2.2/poi-javadoc-5.2.2.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/alejandrorm/Eclipse/poi-bin-5.2.2/poi-ooxml-5.2.2.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/alejandrorm/Eclipse/poi-bin-5.2.2/poi-ooxml-full-5.2.2.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/alejandrorm/Eclipse/poi-bin-5.2.2/poi-ooxml-lite-5.2.2.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/alejandrorm/Eclipse/poi-bin-5.2.2/poi-scratchpad-5.2.2.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/alejandrorm/Eclipse/poi-bin-5.2.2/lib/commons-collections4-4.4.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/alejandrorm/Eclipse/poi-bin-5.2.2/ooxml-lib/xmlbeans-5.0.3.jar">
+	<classpathentry kind="lib" path="/home/alejandrorm/Eclipse/poi-5.2.2.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
