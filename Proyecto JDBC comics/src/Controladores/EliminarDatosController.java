@@ -96,8 +96,6 @@ public class EliminarDatosController{
     
 	private static Connection conn = DBManager.conexion();
 	
-	VerComicController ver = new VerComicController();
-	
 	NavegacionVentanas nav = new NavegacionVentanas();
 
 	/**
@@ -108,6 +106,7 @@ public class EliminarDatosController{
 	void limpiarDatos(ActionEvent event) {
 		nombreComic.setText("");
 		numeroComic.setText("");
+		ID.setText("");
 	}
 
     @FXML
