@@ -110,6 +110,13 @@ public class ModificarDatosController {
 
 	@FXML
 	void modificarDatos(ActionEvent event) {
+		
+		String SentenciaSQL = "UPDATE comicsbbdd set estado = 'Vendido' where ID = ?;";
+		
+		nav.VentanaModificacion();
+		
+//		Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
+//		myStage.close();
 
 	}
 
