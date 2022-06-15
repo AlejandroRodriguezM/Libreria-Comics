@@ -170,26 +170,6 @@ public class AniadirDatosController {
 	 */
 	@FXML
 	void volverAlMenu(ActionEvent event) throws IOException {
-
-//		// Cargo la vista
-//		FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/verBBDD.fxml"));
-//
-//		// Cargo el padre
-//		Parent root = loader.load();
-//
-//		// Obtengo el controlador
-//		VerComicController controlador = loader.getController();
-//
-//		// Creo la scene y el stage
-//		Scene scene = new Scene(root);
-//		Stage stage = new Stage();
-//
-//		// Asocio el stage con el scene
-//		stage.setScene(scene);
-//		stage.show();
-//
-//		// Indico que debe hacer al cerrar
-//		stage.setOnCloseRequest(e -> controlador.closeWindows());
 		
 		nav.verBBDD();
 

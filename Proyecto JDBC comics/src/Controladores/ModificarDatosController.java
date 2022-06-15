@@ -30,39 +30,39 @@ import javafx.stage.Stage;
 public class ModificarDatosController {
 
 	@FXML
-    private Button botonModificar;
+	private Button botonModificar;
 
-    @FXML
-    private Button botonLimpiarComic;
+	@FXML
+	private Button botonLimpiarComic;
 
-    @FXML
-    private Button botonMostrarParametro;
+	@FXML
+	private Button botonMostrarParametro;
 
-    @FXML
-    private Button botonSalir;
+	@FXML
+	private Button botonSalir;
 
-    @FXML
-    private Button botonVolver;
+	@FXML
+	private Button botonVolver;
 
-    @FXML
-    private TextField nombreComic;
+	@FXML
+	private TextField nombreComic;
 
 
-    @FXML
-    private TextField numeroComic;
+	@FXML
+	private TextField numeroComic;
 
-    @FXML
-    private TextField numeroID;
+	@FXML
+	private TextField numeroID;
 
-    @FXML
-    private Label pantallaInformativa;
-    
+	@FXML
+	private Label pantallaInformativa;
+
 	@FXML
 	public TableView<Comics> tablaBBDD;
 
-    @FXML
-    private TableColumn<Comics,String> ID;
-	
+	@FXML
+	private TableColumn<Comics,String> ID;
+
 	@FXML
 	private TableColumn<Comics, String> numero;
 
@@ -71,7 +71,7 @@ public class ModificarDatosController {
 
 	@FXML
 	private TableColumn<Comics, String> variante;
-	
+
 	@FXML
 	private TableColumn<Comics, String> dibujante;
 
@@ -92,7 +92,7 @@ public class ModificarDatosController {
 
 	@FXML
 	private TableColumn<Comics, String> nombre;
-	
+
 	private static Connection conn = DBManager.conexion();
 
 	NavegacionVentanas nav = new NavegacionVentanas();
@@ -101,30 +101,41 @@ public class ModificarDatosController {
 	 * 
 	 * @param event
 	 */
-	@FXML
-	void limpiarDatos(ActionEvent event) {
-		nombreComic.setText("");
-		numeroComic.setText("");
-		ID.setText("");
-	}
+	 @FXML
+	 void limpiarDatos(ActionEvent event) {
+		 nombreComic.setText("");
+		 numeroComic.setText("");
+		 ID.setText("");
+	 }
 
-	@FXML
-	void modificarDatos(ActionEvent event) {
-		
-		String SentenciaSQL = "UPDATE comicsbbdd set estado = 'Vendido' where ID = ?;";
-		
-		nav.VentanaModificacion();
-		
-//		Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
-//		myStage.close();
+	 @FXML
+	 void modificarDatos(ActionEvent event) {
 
-	}
+		 if(devolverID().length() != 0)
+		 {
+			 nav.VentanaModificacion();
+			 pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
+			 pantallaInformativa.setText("Modificando comic con \nID: " + devolverID());
+		 }
+		 else
+		 {
+			 pantallaInformativa.setStyle("-fx-background-color: #F53636");
+			 pantallaInformativa.setText("ERROR. No ha puesto ningun \nID en la busqueda.");
+		 }
 
-	/**
-	 * Permite volver al menu de conexion a la base de datos.
-	 * @param event
-	 * @throws IOException
-	 */
+	 }
+
+	 public String devolverID()
+	 {
+		 String id = numeroID.getText();
+		 return id;
+	 }
+
+	 /**
+	  * Permite volver al menu de conexion a la base de datos.
+	  * @param event
+	  * @throws IOException
+	  */
 	 @FXML
 	 void volverAlMenu(ActionEvent event) throws IOException {
 
@@ -134,47 +145,47 @@ public class ModificarDatosController {
 		 Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		 myStage.close();
 	 }
-	 
-	    @SuppressWarnings("unchecked")
-		@FXML
-	    void mostrarPorParametro(ActionEvent event) throws SQLException {
-	    	
-			String id,nombreCom, numeroCom, varianteCom = "", firmaCom = "", editorialCom = "", formatoCom = "", procedenciaCom = "", fechaCom = "",
-			guionistaCom = "", dibujanteCom = "";
 
-			nombreCom = nombreComic.getText();
+	 @SuppressWarnings("unchecked")
+	 @FXML
+	 void mostrarPorParametro(ActionEvent event) throws SQLException {
 
-			numeroCom = numeroComic.getText();
-			
-			id = numeroID.getText();
+		 String id,nombreCom, numeroCom, varianteCom = "", firmaCom = "", editorialCom = "", formatoCom = "", procedenciaCom = "", fechaCom = "",
+				 guionistaCom = "", dibujanteCom = "";
 
-			nombreColumnas();
+		 nombreCom = nombreComic.getText();
 
-			List<Comics> listComics = FXCollections.observableArrayList(Comics.filtadroBBDD(id,nombreCom, numeroCom,
-					varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
-			tablaBBDD.getColumns().setAll(ID,nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
-					guionista, dibujante);
-			tablaBBDD.getItems().setAll(listComics);
+		 numeroCom = numeroComic.getText();
 
-	    }
-	    
-		/**
-		 * 
-		 */
-		private void nombreColumnas()
-		{
-			ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
-			nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-			numero.setCellValueFactory(new PropertyValueFactory<>("numero"));
-			variante.setCellValueFactory(new PropertyValueFactory<>("variante"));
-			firma.setCellValueFactory(new PropertyValueFactory<>("firma"));
-			editorial.setCellValueFactory(new PropertyValueFactory<>("editorial"));
-			formato.setCellValueFactory(new PropertyValueFactory<>("formato"));
-			procedencia.setCellValueFactory(new PropertyValueFactory<>("procedencia"));
-			fecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
-			guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
-			dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
-		}
+		 id = numeroID.getText();
+
+		 nombreColumnas();
+
+		 List<Comics> listComics = FXCollections.observableArrayList(Comics.filtadroBBDD(id,nombreCom, numeroCom,
+				 varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
+		 tablaBBDD.getColumns().setAll(ID,nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+				 guionista, dibujante);
+		 tablaBBDD.getItems().setAll(listComics);
+
+	 }
+
+	 /**
+	  * 
+	  */
+	 private void nombreColumnas()
+	 {
+		 ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
+		 nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+		 numero.setCellValueFactory(new PropertyValueFactory<>("numero"));
+		 variante.setCellValueFactory(new PropertyValueFactory<>("variante"));
+		 firma.setCellValueFactory(new PropertyValueFactory<>("firma"));
+		 editorial.setCellValueFactory(new PropertyValueFactory<>("editorial"));
+		 formato.setCellValueFactory(new PropertyValueFactory<>("formato"));
+		 procedencia.setCellValueFactory(new PropertyValueFactory<>("procedencia"));
+		 fecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+		 guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
+		 dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
+	 }
 
 	 /**
 	  * Permite salir completamente del programa.
