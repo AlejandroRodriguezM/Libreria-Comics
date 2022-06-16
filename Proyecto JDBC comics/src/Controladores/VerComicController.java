@@ -165,6 +165,7 @@ public class VerComicController {
 	@FXML
 	void limpiarDatos(ActionEvent event) {
 
+		numeroID.setText("");
 		nombreComic.setText("");
 		numeroComic.setText("");
 		nombreVariante.setText("");

@@ -62,6 +62,6 @@
          </columns>
       </TableView>
       <Label layoutX="26.0" layoutY="18.0" text="ID" />
-      <TextField fx:id="numeroID" layoutX="177.0" layoutY="14.0" prefHeight="24.0" prefWidth="170.0" />
+      <TextField fx:id="numeroID" layoutX="177.0" layoutY="14.0" prefHeight="25.0" prefWidth="149.0" />
    </children>
 </Pane>
