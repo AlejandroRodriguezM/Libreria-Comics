@@ -1,14 +1,19 @@
 package Controladores;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.sql.*;
+
 import Funcionamiento.Comics;
 import Funcionamiento.DBManager;
 import Funcionamiento.NavegacionVentanas;
@@ -29,12 +34,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
-import java.io.FileOutputStream;
-
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 public class VerComicController {
 
@@ -189,7 +188,7 @@ public class VerComicController {
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
 
 		String idCom, nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom,
-				guionistaCom, dibujanteCom;
+		guionistaCom, dibujanteCom;
 
 		idCom = numeroID.getText();
 
@@ -347,88 +346,157 @@ public class VerComicController {
 		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
 	}
 
+	//	@FXML
+	//	void GuardarbbddExcel(ActionEvent event) {
+
+	//		// ConvertirAExcel.export();
+	//
+	//		FileChooser fileChooser = new FileChooser();
+	//		File fichero = fileChooser.showSaveDialog(null);
+	//
+	//		try {
+	//			HSSFWorkbook hwb = new HSSFWorkbook();
+	//			HSSFSheet sheet = hwb.createSheet("new sheet");
+	//
+	//			HSSFRow rowhead = sheet.createRow((short) 0);
+	//			rowhead.createCell((short) 0).setCellValue("Nombre");
+	//			rowhead.createCell((short) 1).setCellValue("Numero");
+	//			rowhead.createCell((short) 2).setCellValue("Variante");
+	//			rowhead.createCell((short) 3).setCellValue("Firma");
+	//			rowhead.createCell((short) 4).setCellValue("Editorial");
+	//			rowhead.createCell((short) 5).setCellValue("Formato");
+	//			rowhead.createCell((short) 6).setCellValue("Procedencia");
+	//			rowhead.createCell((short) 7).setCellValue("Publicacion");
+	//			rowhead.createCell((short) 8).setCellValue("Guionista");
+	//			rowhead.createCell((short) 9).setCellValue("Dibujante");
+	//
+	//			Statement st = conn.createStatement();
+	//			ResultSet rs = st.executeQuery("Select * from comicsbbdd");
+	//			int i = 1;
+	//			while (rs.next()) {
+	//				HSSFRow row = sheet.createRow((short) i);
+	//				row.createCell((short) 0).setCellValue(rs.getString("nombreCom"));
+	//				row.createCell((short) 1).setCellValue(rs.getString("numeroCom"));
+	//				row.createCell((short) 2).setCellValue(rs.getString("varianteCom"));
+	//				row.createCell((short) 3).setCellValue(rs.getString("firmaCom"));
+	//				row.createCell((short) 4).setCellValue(rs.getString("editorialCom"));
+	//				row.createCell((short) 5).setCellValue(rs.getString("formatoCom"));
+	//				row.createCell((short) 6).setCellValue(rs.getString("procedenciaCom"));
+	//				row.createCell((short) 7).setCellValue(rs.getString("fechaCom"));
+	//				row.createCell((short) 8).setCellValue(rs.getString("guionistaCom"));
+	//				row.createCell((short) 9).setCellValue(rs.getString("dibujanteCom"));
+	//				i++;
+	//			}
+	//			FileOutputStream fileOut = new FileOutputStream(fichero);
+	//			hwb.write(fileOut);
+	//			fileOut.close();
+	//			hwb.close();
+	//			labelDatosGuardados.setStyle("-fx-background-color: #F53636");
+	//			labelDatosGuardados.setText("Se ha generado el Excel correctamente");
+	//
+	//		} catch (Exception ex) {
+	//			System.out.println(ex);
+	//		}
+	//	}
+
 	@FXML
 	void GuardarbbddExcel(ActionEvent event) {
 
-		// ConvertirAExcel.export();
-
 		FileChooser fileChooser = new FileChooser();
 		File fichero = fileChooser.showSaveDialog(null);
+
 
 		try {
-			HSSFWorkbook hwb = new HSSFWorkbook();
-			HSSFSheet sheet = hwb.createSheet("new sheet");
+			String query="select * from comicsbbdd";
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery(query);
+			BufferedWriter fw = new BufferedWriter(new FileWriter(fichero));
+			fw.write("NomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante,estado");
 
-			HSSFRow rowhead = sheet.createRow((short) 0);
-			rowhead.createCell((short) 0).setCellValue("Nombre");
-			rowhead.createCell((short) 1).setCellValue("Numero");
-			rowhead.createCell((short) 2).setCellValue("Variante");
-			rowhead.createCell((short) 3).setCellValue("Firma");
-			rowhead.createCell((short) 4).setCellValue("Editorial");
-			rowhead.createCell((short) 5).setCellValue("Formato");
-			rowhead.createCell((short) 6).setCellValue("Procedencia");
-			rowhead.createCell((short) 7).setCellValue("Publicacion");
-			rowhead.createCell((short) 8).setCellValue("Guionista");
-			rowhead.createCell((short) 9).setCellValue("Dibujante");
+			while(rs.next()){
+				String id = (rs.getString("ID"));
+				String nombre = (rs.getString("nomComic"));
+				String numero = (rs.getString("numComic"));
+				String variante = (rs.getString("nomVariante"));
+				String firma = (rs.getString("firma"));
+				String editorial = (rs.getString("nomEditorial"));
+				String formato = (rs.getString("formato"));
+				String procedencia = (rs.getString("procedencia"));
+				String fecha = (rs.getString("anioPubli"));
+				String guionista = (rs.getString("nomGuionista"));
+				String dibujante = (rs.getString("nomDibujante"));
+				String estado = (rs.getString("estado"));
 
-			Statement st = conn.createStatement();
-			ResultSet rs = st.executeQuery("Select * from comicsbbdd");
-			int i = 1;
-			while (rs.next()) {
-				HSSFRow row = sheet.createRow((short) i);
-				row.createCell((short) 0).setCellValue(rs.getString("nombreCom"));
-				row.createCell((short) 1).setCellValue(rs.getString("numeroCom"));
-				row.createCell((short) 2).setCellValue(rs.getString("varianteCom"));
-				row.createCell((short) 3).setCellValue(rs.getString("firmaCom"));
-				row.createCell((short) 4).setCellValue(rs.getString("editorialCom"));
-				row.createCell((short) 5).setCellValue(rs.getString("formatoCom"));
-				row.createCell((short) 6).setCellValue(rs.getString("procedenciaCom"));
-				row.createCell((short) 7).setCellValue(rs.getString("fechaCom"));
-				row.createCell((short) 8).setCellValue(rs.getString("guionistaCom"));
-				row.createCell((short) 9).setCellValue(rs.getString("dibujanteCom"));
-				i++;
-			}
-			FileOutputStream fileOut = new FileOutputStream(fichero);
-			hwb.write(fileOut);
-			fileOut.close();
-			hwb.close();
-			labelDatosGuardados.setStyle("-fx-background-color: #F53636");
-			labelDatosGuardados.setText("Se ha generado el Excel correctamente");
+				String line = String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+						id, nombre, numero, variante, firma,editorial,formato,procedencia,fecha,guionista,dibujante,estado);
 
-		} catch (Exception ex) {
-			System.out.println(ex);
-		}
-	}
-
-	/**
-	 * 
-	 * @param event
-	 */
-	@FXML
-	void exportarBBDD(ActionEvent event) {
-
-		FileChooser fileChooser = new FileChooser();
-		File fichero = fileChooser.showSaveDialog(null);
-		if (fichero != null) {
-			try {
-				fichero.createNewFile();
-				String mysqlCom = String.format("mysqldump -u%s -p%s %s", usuarioBBDD, passBBDD, nombreBBDD);
-				String[] command = new String[] { "/bin/bash", "-c", mysqlCom };
-				ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
-				pb.redirectError(Redirect.INHERIT);
-				pb.redirectOutput(Redirect.to(fichero));
-				pb.start();
-				labelDatosGuardados.setStyle("-fx-background-color: #A0F52D");
-				labelDatosGuardados.setText("Base de datos exportada \ncorrectamente");
-			} catch (IOException e1) {
-				e1.printStackTrace();
+				fw.newLine();
+				fw.write(line);
 			}
 
-		} else {
-			labelDatosGuardados.setStyle("-fx-background-color: #F53636");
-			labelDatosGuardados.setText("ERROR. Base de datos \nexportada cancelada.");
-		}
+			statement.close();
+			fw.close();
+
+		} catch (Exception e) {
+			System.out.println(e);
+			e.printStackTrace();
+		} 
 	}
+
+	//FUNCIONA SOLO EN LINUX
+		/**
+		 * 
+		 * @param event
+		 */
+		@FXML
+		void exportarBBDD(ActionEvent event) {
+	
+			FileChooser fileChooser = new FileChooser();
+			File fichero = fileChooser.showSaveDialog(null);
+			if (fichero != null) {
+				try {
+					fichero.createNewFile();
+					String mysqlCom = String.format("mysqldump -u%s -p%s %s", usuarioBBDD, passBBDD, nombreBBDD);
+					String[] command = new String[] { "/bin/bash", "-c", mysqlCom };
+					ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
+					pb.redirectError(Redirect.INHERIT);
+					pb.redirectOutput(Redirect.to(fichero));
+					pb.start();
+					labelDatosGuardados.setStyle("-fx-background-color: #A0F52D");
+					labelDatosGuardados.setText("Base de datos exportada \ncorrectamente");
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+	
+			} else {
+				labelDatosGuardados.setStyle("-fx-background-color: #F53636");
+				labelDatosGuardados.setText("ERROR. Base de datos \nexportada cancelada.");
+			}
+		}
+
+	//NO FUNCIONA
+//	/**
+//	 * 
+//	 * @param event
+//	 */
+//	@FXML
+//	void exportarBBDD(ActionEvent event) {
+//
+//		//		FileChooser fileChooser = new FileChooser();
+//		//		File fichero = fileChooser.showSaveDialog(null);
+//		//		if (fichero != null) {
+//		try {
+//			//				fichero.createNewFile();
+//			String sentenciaSQL = "mysqldump --opt -u" + usuarioBBDD + " -p" + passBBDD + " -B " + nombreBBDD + " -r " + "\\prueba.sql";
+//			Runtime rt = Runtime.getRuntime();
+//			rt.exec(sentenciaSQL);
+//			labelDatosGuardados.setStyle("-fx-background-color: #A0F52D");
+//			labelDatosGuardados.setText("Base de datos exportada \ncorrectamente");
+//		} catch (IOException e1) {
+//			e1.printStackTrace();
+//		}
+//
+//	} 
 
 	/**
 	 * 
