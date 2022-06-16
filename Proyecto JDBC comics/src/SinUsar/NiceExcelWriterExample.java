@@ -12,7 +12,7 @@ public class NiceExcelWriterExample {
 		List<ConvertirAExcel> listBook = excelWriter.getListBook();
 		String excelFilePath = "NiceJavaBooks.xls";
 		 
-		excelWriter.writeExcel(listBook, excelFilePath);
+//		excelWriter.writeExcel(listBook, excelFilePath);
 	}
 
 }

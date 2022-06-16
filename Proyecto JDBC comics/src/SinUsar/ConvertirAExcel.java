@@ -6,11 +6,11 @@ import java.util.Arrays;
 import java.util.List;
 
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+//import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+//import org.apache.poi.ss.usermodel.Cell;
+//import org.apache.poi.ss.usermodel.Row;
+//import org.apache.poi.ss.usermodel.Sheet;
+//import org.apache.poi.ss.usermodel.Workbook;
 
 
 public class ConvertirAExcel {
@@ -55,33 +55,33 @@ public class ConvertirAExcel {
 		this.price = price;
 	}
 	
-	public void writeExcel(List<ConvertirAExcel> listBook, String excelFilePath) throws IOException {
-	    try (Workbook workbook = new HSSFWorkbook()) {
-			Sheet sheet = workbook.createSheet();
- 
-			int rowCount = 0;
- 
-			for (ConvertirAExcel aBook : listBook) {
-			    Row row = sheet.createRow(++rowCount);
-			    writeBook(aBook, row);
-			}
- 
-			try (FileOutputStream outputStream = new FileOutputStream(excelFilePath)) {
-			    workbook.write(outputStream);
-			}
-		}
-	}
+//	public void writeExcel(List<ConvertirAExcel> listBook, String excelFilePath) throws IOException {
+//	    try (Workbook workbook = new HSSFWorkbook()) {
+//			Sheet sheet = workbook.createSheet();
+// 
+//			int rowCount = 0;
+// 
+//			for (ConvertirAExcel aBook : listBook) {
+//			    Row row = sheet.createRow(++rowCount);
+//			    writeBook(aBook, row);
+//			}
+// 
+//			try (FileOutputStream outputStream = new FileOutputStream(excelFilePath)) {
+//			    workbook.write(outputStream);
+//			}
+//		}
+//	}
 	
-	public void writeBook(ConvertirAExcel aBook, Row row) {
-	    Cell cell = row.createCell(1);
-	    cell.setCellValue(aBook.getTitle());
-	 
-	    cell = row.createCell(2);
-	    cell.setCellValue(aBook.getAuthor());
-	 
-	    cell = row.createCell(3);
-	    cell.setCellValue(aBook.getPrice());
-	}
+//	public void writeBook(ConvertirAExcel aBook, Row row) {
+//	    Cell cell = row.createCell(1);
+//	    cell.setCellValue(aBook.getTitle());
+//	 
+//	    cell = row.createCell(2);
+//	    cell.setCellValue(aBook.getAuthor());
+//	 
+//	    cell = row.createCell(3);
+//	    cell.setCellValue(aBook.getPrice());
+//	}
 	
 	public List<ConvertirAExcel> getListBook() {
 		ConvertirAExcel book1 = new ConvertirAExcel("Head First Java", "Kathy Serria", 79);
