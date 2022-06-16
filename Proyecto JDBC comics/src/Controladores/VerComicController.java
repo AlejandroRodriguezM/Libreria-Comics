@@ -35,14 +35,13 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
-
 public class VerComicController {
-	
-    @FXML
-    private Button BotonEliminarComic;
 
-    @FXML
-    private Button BotonModificarComic;
+	@FXML
+	private Button BotonEliminarComic;
+
+	@FXML
+	private Button BotonModificarComic;
 
 	@FXML
 	private TextField anioPublicacion;
@@ -82,13 +81,13 @@ public class VerComicController {
 
 	@FXML
 	private TableColumn<Comics, String> nombre;
-	
+
 	@FXML
 	private TableColumn<Comics, String> ID;
 
-    @FXML
-    private TextField numeroID;
-	
+	@FXML
+	private TextField numeroID;
+
 	@FXML
 	private TextField nombreComic;
 
@@ -136,9 +135,9 @@ public class VerComicController {
 
 	@FXML
 	private Button botonExportarBBDD;
-	
-    @FXML
-    private Button BotonVentanaEliminar;
+
+	@FXML
+	private Button BotonVentanaEliminar;
 
 	@FXML
 	private Label labelDatosGuardados;
@@ -146,9 +145,15 @@ public class VerComicController {
 	@FXML
 	private Button botonGuardarBaseDatosExcel;
 	
-	NavegacionVentanas nav = new NavegacionVentanas();
+	private static String nombreBBDD;
+	
+	private static String usuarioBBDD;
+	
+	private static String passBBDD;
 
-	@SuppressWarnings("unused")
+	NavegacionVentanas nav = new NavegacionVentanas();
+	MenuPrincipalController datos = new MenuPrincipalController();
+
 	private static Connection conn = DBManager.conexion();
 
 	/**
@@ -182,10 +187,10 @@ public class VerComicController {
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
 
 		String idCom, nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom,
-		guionistaCom, dibujanteCom;
+				guionistaCom, dibujanteCom;
 
 		idCom = numeroID.getText();
-		
+
 		nombreCom = nombreComic.getText();
 
 		numeroCom = numeroComic.getText();
@@ -208,9 +213,9 @@ public class VerComicController {
 
 		nombreColumnas();
 
-		List<Comics> listComics = FXCollections.observableArrayList(Comics.filtadroBBDD(idCom,nombreCom, numeroCom,
+		List<Comics> listComics = FXCollections.observableArrayList(Comics.filtadroBBDD(idCom, nombreCom, numeroCom,
 				varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
-		tablaBBDD.getColumns().setAll(ID,nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante);
 		tablaBBDD.getItems().setAll(listComics);
 	}
@@ -228,7 +233,7 @@ public class VerComicController {
 		nombreColumnas();
 
 		List<Comics> listComics = FXCollections.observableArrayList(Comics.verTodo());
-		tablaBBDD.getColumns().setAll(ID,nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante);
 		tablaBBDD.getItems().setAll(listComics);
 
@@ -242,7 +247,7 @@ public class VerComicController {
 	 */
 	@FXML
 	public void volverMenu(ActionEvent event) throws IOException {
-		
+
 		nav.menuPrincipal();
 
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
@@ -259,31 +264,31 @@ public class VerComicController {
 	public void VentanaAniadir(ActionEvent event) {
 
 		nav.aniadirDatos();
-		
+
 		Stage myStage = (Stage) this.BotonVentanaAniadir.getScene().getWindow();
 		myStage.close();
 
 	}
-	
-    @FXML
-    public void ventanaEliminar(ActionEvent event) {
-    	
-    	nav.EliminarDatos();
-    	
+
+	@FXML
+	public void ventanaEliminar(ActionEvent event) {
+
+		nav.EliminarDatos();
+
 		Stage myStage = (Stage) this.BotonEliminarComic.getScene().getWindow();
 		myStage.close();
 
-    }
-    
-    @FXML
-    public void VentanaModificar(ActionEvent event) {
-    	
-    	nav.ModificarDatos();
-    	
+	}
+
+	@FXML
+	public void VentanaModificar(ActionEvent event) {
+
+		nav.ModificarDatos();
+
 		Stage myStage = (Stage) this.BotonModificarComic.getScene().getWindow();
 		myStage.close();
 
-    }
+	}
 
 	/**
 	 * Guarda los datos de la base de datos en un fichero.
@@ -298,8 +303,7 @@ public class VerComicController {
 		File fichero = fileChooser.showSaveDialog(null);
 
 		try {
-			if(fichero != null)
-			{
+			if (fichero != null) {
 				fichero.createNewFile();
 
 				nombreColumnas();
@@ -313,10 +317,7 @@ public class VerComicController {
 					guardarDatos.write(listComics.get(i) + "\n");
 				}
 				guardarDatos.close();
-			}
-			else
-			{
-
+			} else {
 				labelDatosGuardados.setStyle("-fx-background-color: #F53636");
 				labelDatosGuardados.setText("ERROR. Contenido de la bbdd \n cancelada.");
 			}
@@ -330,8 +331,7 @@ public class VerComicController {
 	/**
 	 * 
 	 */
-	private void nombreColumnas()
-	{
+	private void nombreColumnas() {
 		ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
 		nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
 		numero.setCellValueFactory(new PropertyValueFactory<>("numero"));
@@ -409,21 +409,19 @@ public class VerComicController {
 		FileChooser fileChooser = new FileChooser();
 		try {
 			File fichero = fileChooser.showSaveDialog(null);
-			if(fichero != null)
-			{
+			if (fichero != null) {
 				fichero.createNewFile();
 
-				copiaSeguridad = "mysqldump --opt -u" + "root" + " -p" + "Forosonanime13!" + " -B " + "comics" + " -r "
-						+ fichero;
+				copiaSeguridad = "mysqldump --opt -u" +  usuarioBBDD+ " -p" + passBBDD + " -B "
+						+ nombreBBDD + " -r " + fichero + ".sql";
+				
 				Runtime rt = Runtime.getRuntime();
 
 				labelDatosGuardados.setStyle("-fx-background-color: #A0F52D");
 				labelDatosGuardados.setText("Base de datos exportada \ncorrectamente");
 
 				rt.exec(copiaSeguridad);
-			}
-			else
-			{
+			} else {
 				labelDatosGuardados.setStyle("-fx-background-color: #F53636");
 				labelDatosGuardados.setText("ERROR. Base de datos \nexportada cancelada.");
 			}
@@ -432,6 +430,21 @@ public class VerComicController {
 
 			System.out.println(ex);
 		}
+	}
+	
+
+	/**
+	 * 
+	 * @param datos
+	 * @return
+	 */
+	public static String[] datos(String[] datos)
+	{
+		nombreBBDD = datos[1];
+		usuarioBBDD = datos[2];
+		passBBDD = datos[3];
+
+		return datos;
 	}
 
 	/**

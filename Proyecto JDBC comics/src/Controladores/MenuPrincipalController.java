@@ -97,6 +97,7 @@ public class MenuPrincipalController {
 		if (Funcionamiento.DBManager.isConnected()) {
 
 			nav.verBBDD();
+			datosBBDD();
 
 			Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
 			myStage.close();
@@ -187,6 +188,19 @@ public class MenuPrincipalController {
 	private Connection conexionBBDD() {
 		return Funcionamiento.DBManager.conexion(puertobbdd.getText(), nombreBBDD.getText(), usuario.getText(),
 				pass.getText());
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public String[] datosBBDD() {
+		String datos[] = new String[4];
+//		datos[0] = puertobbdd.getText();
+		datos[1] = nombreBBDD.getText();
+		datos[2] = usuario.getText();
+		datos[3] = pass.getText();
+		return VerComicController.datos(datos);
 	}
 
 	/**
