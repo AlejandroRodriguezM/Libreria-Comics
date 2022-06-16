@@ -3,11 +3,12 @@ package Controladores;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.ProcessBuilder.Redirect;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.sql.*;
-
 import Funcionamiento.Comics;
 import Funcionamiento.DBManager;
 import Funcionamiento.NavegacionVentanas;
@@ -144,15 +145,15 @@ public class VerComicController {
 
 	@FXML
 	private Button botonGuardarBaseDatosExcel;
-	
+
 	private static String nombreBBDD;
-	
+
 	private static String usuarioBBDD;
-	
+
 	private static String passBBDD;
 
 	NavegacionVentanas nav = new NavegacionVentanas();
-	
+
 	MenuPrincipalController datos = new MenuPrincipalController();
 
 	private static Connection conn = DBManager.conexion();
@@ -406,45 +407,35 @@ public class VerComicController {
 	@FXML
 	void exportarBBDD(ActionEvent event) {
 
-		String copiaSeguridad = "";
 		FileChooser fileChooser = new FileChooser();
-		try {
-			File fichero = fileChooser.showSaveDialog(null);
-			if (fichero != null) {
+		File fichero = fileChooser.showSaveDialog(null);
+		if (fichero != null) {
+			try {
 				fichero.createNewFile();
-
-//				String mysqlCom =  String.format("mysqldump --opt -u %s -p %s -r %s",usuarioBBDD,passBBDD,nombreBBDD);
-//				ProcessBuilder pb = new ProcessBuilder(mysqlCom);
-//				pb.redirectOutput(Redirect.to(fichero));
-//				pb.start();
-				
-				copiaSeguridad = "mysqldump --opt -u " +  usuarioBBDD+ " -p " + passBBDD + " -B "
-				+ nombreBBDD + " -r " + fichero;
-				Runtime rt = Runtime.getRuntime();
-
+				String mysqlCom = String.format("mysqldump -u%s -p%s %s", usuarioBBDD, passBBDD, nombreBBDD);
+				String[] command = new String[] { "/bin/bash", "-c", mysqlCom };
+				ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
+				pb.redirectError(Redirect.INHERIT);
+				pb.redirectOutput(Redirect.to(fichero));
+				pb.start();
 				labelDatosGuardados.setStyle("-fx-background-color: #A0F52D");
 				labelDatosGuardados.setText("Base de datos exportada \ncorrectamente");
-
-				rt.exec(copiaSeguridad);
-			} else {
-				labelDatosGuardados.setStyle("-fx-background-color: #F53636");
-				labelDatosGuardados.setText("ERROR. Base de datos \nexportada cancelada.");
+			} catch (IOException e1) {
+				e1.printStackTrace();
 			}
 
-		} catch (IOException ex) {
-
-			System.out.println(ex);
+		} else {
+			labelDatosGuardados.setStyle("-fx-background-color: #F53636");
+			labelDatosGuardados.setText("ERROR. Base de datos \nexportada cancelada.");
 		}
 	}
-	
 
 	/**
 	 * 
 	 * @param datos
 	 * @return
 	 */
-	public static String[] datos(String[] datos)
-	{
+	public static String[] datos(String[] datos) {
 		nombreBBDD = datos[1];
 		usuarioBBDD = datos[2];
 		passBBDD = datos[3];
