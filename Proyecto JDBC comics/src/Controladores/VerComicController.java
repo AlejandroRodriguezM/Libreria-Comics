@@ -44,9 +44,6 @@ public class VerComicController {
 	private Button BotonModificarComic;
 
 	@FXML
-	private TextField anioPublicacion;
-
-	@FXML
 	private Button botonLimpiar;
 
 	@FXML
@@ -62,29 +59,8 @@ public class VerComicController {
 	private Button botonbbdd;
 
 	@FXML
-	private TableColumn<Comics, String> dibujante;
-
-	@FXML
-	private TableColumn<Comics, String> editorial;
-
-	@FXML
-	private TableColumn<Comics, String> fecha;
-
-	@FXML
-	private TableColumn<Comics, String> firma;
-
-	@FXML
-	private TableColumn<Comics, String> formato;
-
-	@FXML
-	private TableColumn<Comics, String> guionista;
-
-	@FXML
-	private TableColumn<Comics, String> nombre;
-
-	@FXML
-	private TableColumn<Comics, String> ID;
-
+	private TextField anioPublicacion;
+	
 	@FXML
 	private TextField numeroID;
 
@@ -114,6 +90,30 @@ public class VerComicController {
 
 	@FXML
 	private TextField numeroComic;
+	
+	@FXML
+	private TableColumn<Comics, String> dibujante;
+
+	@FXML
+	private TableColumn<Comics, String> editorial;
+
+	@FXML
+	private TableColumn<Comics, String> fecha;
+
+	@FXML
+	private TableColumn<Comics, String> firma;
+
+	@FXML
+	private TableColumn<Comics, String> formato;
+
+	@FXML
+	private TableColumn<Comics, String> guionista;
+
+	@FXML
+	private TableColumn<Comics, String> nombre;
+
+	@FXML
+	private TableColumn<Comics, String> ID;
 
 	@FXML
 	private TableColumn<Comics, String> numero;
@@ -122,10 +122,10 @@ public class VerComicController {
 	private TableColumn<Comics, String> procedencia;
 
 	@FXML
-	public TableView<Comics> tablaBBDD;
-
-	@FXML
 	private TableColumn<Comics, String> variante;
+	
+	@FXML
+	public TableView<Comics> tablaBBDD;
 
 	@FXML
 	private Button botonGuardarBaseDatos;
