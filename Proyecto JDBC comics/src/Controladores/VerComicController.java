@@ -152,6 +152,7 @@ public class VerComicController {
 	private static String passBBDD;
 
 	NavegacionVentanas nav = new NavegacionVentanas();
+	
 	MenuPrincipalController datos = new MenuPrincipalController();
 
 	private static Connection conn = DBManager.conexion();
@@ -412,9 +413,13 @@ public class VerComicController {
 			if (fichero != null) {
 				fichero.createNewFile();
 
-				copiaSeguridad = "mysqldump --opt -u" +  usuarioBBDD+ " -p" + passBBDD + " -B "
-						+ nombreBBDD + " -r " + fichero + ".sql";
+//				String mysqlCom =  String.format("mysqldump --opt -u %s -p %s -r %s",usuarioBBDD,passBBDD,nombreBBDD);
+//				ProcessBuilder pb = new ProcessBuilder(mysqlCom);
+//				pb.redirectOutput(Redirect.to(fichero));
+//				pb.start();
 				
+				copiaSeguridad = "mysqldump --opt -u " +  usuarioBBDD+ " -p " + passBBDD + " -B "
+				+ nombreBBDD + " -r " + fichero;
 				Runtime rt = Runtime.getRuntime();
 
 				labelDatosGuardados.setStyle("-fx-background-color: #A0F52D");
