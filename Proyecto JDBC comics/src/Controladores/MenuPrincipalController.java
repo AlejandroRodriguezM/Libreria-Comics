@@ -3,17 +3,15 @@ package Controladores;
 import java.io.IOException;
 import java.sql.Connection;
 
+import Funcionamiento.DBManager;
 import Funcionamiento.NavegacionVentanas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
@@ -147,9 +145,7 @@ public class MenuPrincipalController {
 	void enviarDatos(ActionEvent event) {
 
 		Funcionamiento.DBManager.loadDriver();
-		conexionBBDD();
-
-		//Funcionamiento.DBManager.conexion();
+		datosBBDD();
 
 		if (Funcionamiento.DBManager.isConnected()) {
 			estadoConexion.setStyle("-fx-background-color: #A0F52D");
@@ -164,43 +160,29 @@ public class MenuPrincipalController {
 
 	/**
 	 * 
+	 * @return
+	 */
+	public Connection datosBBDD() {
+		String datos[] = new String[4];
+		datos[0] = puertobbdd.getText();
+		datos[1] = nombreBBDD.getText();
+		datos[2] = usuario.getText();
+		datos[3] = pass.getText();
+		return DBManager.conexion(datos);
+	}
+
+	/**
+	 * Permite salir completamente del programa.
 	 * @param event
 	 */
 	@FXML
 	public void salirPrograma(ActionEvent event) {
 
-		Alert alert = new Alert(AlertType.CONFIRMATION);
-		alert.setTitle("Saliendo");
-		alert.setHeaderText("Estas apunto de salir.");
-		alert.setContentText("¿Estas seguro que quieres salir?");
-
-		if(alert.showAndWait().get() == ButtonType.OK)
+		if(nav.salirPrograma(event))
 		{
 			Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
 			myStage.close();
 		}
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	private Connection conexionBBDD() {
-		return Funcionamiento.DBManager.conexion(puertobbdd.getText(), nombreBBDD.getText(), usuario.getText(),
-				pass.getText());
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public String[] datosBBDD() {
-		String datos[] = new String[4];
-//		datos[0] = puertobbdd.getText();
-		datos[1] = nombreBBDD.getText();
-		datos[2] = usuario.getText();
-		datos[3] = pass.getText();
-		return VerComicController.datos(datos);
 	}
 
 	/**

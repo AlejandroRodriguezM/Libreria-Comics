@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import Funcionamiento.Comics;
 import Funcionamiento.DBManager;
@@ -13,13 +11,7 @@ import Funcionamiento.NavegacionVentanas;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -81,7 +73,7 @@ public class ModificarDatosController {
 	private TextField numeroComic;
 
 	@FXML
-	private TextField numeroID;
+	private TextField idComic;
 
 	@FXML
 	private Label pantallaInformativa;
@@ -123,6 +115,8 @@ public class ModificarDatosController {
 	private TableColumn<Comics, String> nombre;
 
 	NavegacionVentanas nav = new NavegacionVentanas();
+	
+	Comics comic = new Comics();
 
 	/**
 	 *
@@ -143,7 +137,7 @@ public class ModificarDatosController {
 	@FXML
 	void modificarDatos(ActionEvent event) throws SQLException {
 
-		String sentenciaSQL, id = numeroID.getText();
+		String sentenciaSQL, id = idComic.getText();
 
 		sentenciaSQL = "UPDATE comicsbbdd set nomComic = ?,numComic = ?,nomVariante = ?,"
 				+ "Firma = ?,nomEditorial = ?,formato = ?,Procedencia = ?,anioPubli = ?,"
@@ -172,7 +166,7 @@ public class ModificarDatosController {
 				ps.setString(8, anioPublicacion.getText());
 				ps.setString(9, nombreGuionista.getText());
 				ps.setString(10, nombreDibujante.getText());
-				ps.setString(11, numeroID.getText());
+				ps.setString(11, idComic.getText());
 
 				if (ps.executeUpdate() == 1) {
 					pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
@@ -198,11 +192,10 @@ public class ModificarDatosController {
 	 * @throws IOException
 	 */
 	@FXML
-	void volverAlMenu(ActionEvent event) throws IOException {
+	void volverMenu(ActionEvent event) throws IOException {
 
 		nav.verBBDD();
 
-		// Ciero la ventana donde estoy
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();
 	}
@@ -214,15 +207,15 @@ public class ModificarDatosController {
 		String id, nombreCom, numeroCom, varianteCom = "", firmaCom = "", editorialCom = "", formatoCom = "",
 				procedenciaCom = "", fechaCom = "", guionistaCom = "", dibujanteCom = "";
 
+		id = idComic.getText();
+		
 		nombreCom = nombreComic.getText();
 
 		numeroCom = numeroComic.getText();
 
-		id = numeroID.getText();
-
 		nombreColumnas();
 
-		List<Comics> listComics = FXCollections.observableArrayList(Comics.filtadroBBDD(id, nombreCom, numeroCom,
+		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(id, nombreCom, numeroCom,
 				varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
 		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante);
@@ -249,18 +242,13 @@ public class ModificarDatosController {
 
 	/**
 	 * Permite salir completamente del programa.
-	 *
 	 * @param event
 	 */
 	@FXML
 	public void salirPrograma(ActionEvent event) {
-
-		Alert alert = new Alert(AlertType.CONFIRMATION);
-		alert.setTitle("Saliendo");
-		alert.setHeaderText("Estas apunto de salir.");
-		alert.setContentText("¿Estas seguro que quieres salir?");
-
-		if (alert.showAndWait().get() == ButtonType.OK) {
+		
+		if(nav.salirPrograma(event))
+		{
 			Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
 			myStage.close();
 		}
@@ -271,23 +259,11 @@ public class ModificarDatosController {
 	 */
 	public void closeWindows() {
 
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/verBBDD.fxml"));
+		nav.cerrarVentanaSubMenu();
 
-			Parent root = loader.load();
+		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
+		myStage.close();
 
-			Scene scene = new Scene(root);
-			Stage stage = new Stage();
-
-			stage.setScene(scene);
-			stage.show();
-
-			Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-			myStage.close();
-
-		} catch (IOException ex) {
-			Logger.getLogger(MenuPrincipalController.class.getName()).log(Level.SEVERE, null, ex);
-		}
 	}
 
 }

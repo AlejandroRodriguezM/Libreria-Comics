@@ -9,7 +9,9 @@ public class NiceExcelWriterExample {
 		
 		ConvertirAExcel excelWriter = new ConvertirAExcel();
 		 
+		@SuppressWarnings("unused")
 		List<ConvertirAExcel> listBook = excelWriter.getListBook();
+		@SuppressWarnings("unused")
 		String excelFilePath = "NiceJavaBooks.xls";
 		 
 //		excelWriter.writeExcel(listBook, excelFilePath);

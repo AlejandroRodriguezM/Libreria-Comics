@@ -6,8 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import Funcionamiento.Comics;
 import Funcionamiento.DBManager;
@@ -15,17 +13,14 @@ import Funcionamiento.NavegacionVentanas;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
@@ -49,12 +44,11 @@ public class EliminarDatosController{
 	@FXML
 	private TextField nombreComic;
 
-
 	@FXML
 	private TextField numeroComic;
 
 	@FXML
-	private TextField numeroID;
+	private TextField idComic;
 
 	@FXML
 	private Label pantallaInformativa;
@@ -94,6 +88,8 @@ public class EliminarDatosController{
 
 	@FXML
 	private TableColumn<Comics, String> nombre;
+	
+	Comics comic = new Comics();
 
 
 	private static Connection conn = DBManager.conexion();
@@ -104,155 +100,139 @@ public class EliminarDatosController{
 	 * 
 	 * @param event
 	 */
-	 @FXML
-	 void limpiarDatos(ActionEvent event) {
-		 nombreComic.setText("");
-		 numeroComic.setText("");
-		 ID.setText("");
-	 }
+	@FXML
+	void limpiarDatos(ActionEvent event) {
+		nombreComic.setText("");
+		numeroComic.setText("");
+		ID.setText("");
+	}
 
-	 @FXML
-	 void eliminarDatos(ActionEvent event) throws SQLException {
-		 String id,nombreCom = "", numeroCom = "", varianteCom = "", firmaCom = "", editorialCom = "", formatoCom = "", procedenciaCom = "", fechaCom = "",
-				 guionistaCom = "", dibujanteCom = "", sentenciaSQL;
-
-
-		 PreparedStatement stmt;
-		 id = numeroID.getText();
-		 sentenciaSQL = "UPDATE comicsbbdd set estado = 'Vendido' where ID = ?";
-
-		 List<Comics> listComics = FXCollections.observableArrayList(Comics.filtadroBBDD(id,nombreCom, numeroCom,
-				 varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
-
-		 try {
-			 if (id.length() != 0) {
-
-				 Alert alert = new Alert(AlertType.CONFIRMATION);
-				 alert.setTitle("Eliminando . . .");
-				 alert.setHeaderText("Estas apunto de eliminar datos.");
-				 alert.setContentText("¿Estas seguro que quieres eliminar el comic?");
-
-				 if (alert.showAndWait().get() == ButtonType.OK) {
-					 stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-
-					 stmt.setString(1, id);
-					 if(stmt.executeUpdate() == 1)
-					 {
-						 pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-						 pantallaInformativa.setText("Has eliminado correctamente: " + listComics.toString());
-					 }
-					 else
-					 {
-						 pantallaInformativa.setStyle("-fx-background-color: #F53636");
-						 pantallaInformativa.setText("ERROR. ID desconocido.");
-					 }
-				 }
+	@FXML
+	void eliminarDatos(ActionEvent event) throws SQLException {
+		String id,nombreCom = "", numeroCom = "", varianteCom = "", firmaCom = "", editorialCom = "", formatoCom = "", procedenciaCom = "", fechaCom = "",
+				guionistaCom = "", dibujanteCom = "", sentenciaSQL;
 
 
-			 }
+		PreparedStatement stmt;
+		id = idComic.getText();
+		sentenciaSQL = "UPDATE comicsbbdd set estado = 'Vendido' where ID = ?";
 
-		 } catch (SQLException ex) {
-			 System.err.println(ex);
-		 }
+		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(id,nombreCom, numeroCom,
+				varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
 
-	 }
+		try {
+			if (id.length() != 0) {
 
-	 @SuppressWarnings("unchecked")
-	 @FXML
-	 void mostrarPorParametro(ActionEvent event) throws SQLException {
+				Alert alert = new Alert(AlertType.CONFIRMATION);
+				alert.setTitle("Eliminando . . .");
+				alert.setHeaderText("Estas apunto de eliminar datos.");
+				alert.setContentText("¿Estas seguro que quieres eliminar el comic?");
 
-		 String id,nombreCom, numeroCom, varianteCom = "", firmaCom = "", editorialCom = "", formatoCom = "", procedenciaCom = "", fechaCom = "",
-				 guionistaCom = "", dibujanteCom = "";
+				if (alert.showAndWait().get() == ButtonType.OK) {
+					stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
-		 nombreCom = nombreComic.getText();
+					stmt.setString(1, id);
+					if(stmt.executeUpdate() == 1)
+					{
+						pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
+						pantallaInformativa.setText("Has eliminado correctamente: " + listComics.toString());
+					}
+					else
+					{
+						pantallaInformativa.setStyle("-fx-background-color: #F53636");
+						pantallaInformativa.setText("ERROR. ID desconocido.");
+					}
+				}
 
-		 numeroCom = numeroComic.getText();
 
-		 id = numeroID.getText();
+			}
 
-		 nombreColumnas();
+		} catch (SQLException ex) {
+			System.err.println(ex);
+		}
 
-		 List<Comics> listComics = FXCollections.observableArrayList(Comics.filtadroBBDD(id,nombreCom, numeroCom,
-				 varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
-		 tablaBBDD.getColumns().setAll(ID,nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
-				 guionista, dibujante);
-		 tablaBBDD.getItems().setAll(listComics);
+	}
 
-	 }
+	@SuppressWarnings("unchecked")
+	@FXML
+	void mostrarPorParametro(ActionEvent event) throws SQLException {
 
-	 /**
-	  * 
-	  */
-	 private void nombreColumnas()
-	 {
-		 ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
-		 nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-		 numero.setCellValueFactory(new PropertyValueFactory<>("numero"));
-		 variante.setCellValueFactory(new PropertyValueFactory<>("variante"));
-		 firma.setCellValueFactory(new PropertyValueFactory<>("firma"));
-		 editorial.setCellValueFactory(new PropertyValueFactory<>("editorial"));
-		 formato.setCellValueFactory(new PropertyValueFactory<>("formato"));
-		 procedencia.setCellValueFactory(new PropertyValueFactory<>("procedencia"));
-		 fecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
-		 guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
-		 dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
-	 }
+		String id,nombreCom, numeroCom, varianteCom = "", firmaCom = "", editorialCom = "", formatoCom = "", procedenciaCom = "", fechaCom = "",
+				guionistaCom = "", dibujanteCom = "";
 
-	 /**
-	  * Permite volver al menu de conexion a la base de datos.
-	  * @param event
-	  * @throws IOException
-	  */
-	 @FXML
-	 void volverAlMenu(ActionEvent event) throws IOException {
+		nombreCom = nombreComic.getText();
 
-		 nav.verBBDD();
+		numeroCom = numeroComic.getText();
 
-		 // Ciero la ventana donde estoy
-		 Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-		 myStage.close();
-	 }
+		id = idComic.getText();
 
-	 /**
-	  * Permite salir completamente del programa.
-	  * @param event
-	  */
-	 @FXML
-	 public void salirPrograma(ActionEvent event) {
+		nombreColumnas();
 
-		 Alert alert = new Alert(AlertType.CONFIRMATION);
-		 alert.setTitle("Saliendo");
-		 alert.setHeaderText("Estas apunto de salir.");
-		 alert.setContentText("¿Estas seguro que quieres salir?");
+		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(id,nombreCom, numeroCom,
+				varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
+		tablaBBDD.getColumns().setAll(ID,nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+				guionista, dibujante);
+		tablaBBDD.getItems().setAll(listComics);
 
-		 if (alert.showAndWait().get() == ButtonType.OK) {
-			 Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
-			 myStage.close();
-		 }
-	 }
+	}
 
-	 /**
-	  * Al cerrar la ventana, se cargara la ventana de verBBDD
-	  */
-	 public void closeWindows() {
+	/**
+	 * 
+	 */
+	private void nombreColumnas()
+	{
+		ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
+		nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+		numero.setCellValueFactory(new PropertyValueFactory<>("numero"));
+		variante.setCellValueFactory(new PropertyValueFactory<>("variante"));
+		firma.setCellValueFactory(new PropertyValueFactory<>("firma"));
+		editorial.setCellValueFactory(new PropertyValueFactory<>("editorial"));
+		formato.setCellValueFactory(new PropertyValueFactory<>("formato"));
+		procedencia.setCellValueFactory(new PropertyValueFactory<>("procedencia"));
+		fecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+		guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
+		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
+	}
 
-		 try {
-			 FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/verBBDD.fxml"));
+	/**
+	 * Permite volver al menu de conexion a la base de datos.
+	 * @param event
+	 * @throws IOException
+	 */
+	@FXML
+	void volverMenu(ActionEvent event) throws IOException {
 
-			 Parent root = loader.load();
+		nav.verBBDD();
 
-			 Scene scene = new Scene(root);
-			 Stage stage = new Stage();
+		// Ciero la ventana donde estoy
+		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
+		myStage.close();
+	}
 
-			 stage.setScene(scene);
-			 stage.show();
+	/**
+	 * Permite salir completamente del programa.
+	 * @param event
+	 */
+	@FXML
+	public void salirPrograma(ActionEvent event) {
 
-			 Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-			 myStage.close();
+		if(nav.salirPrograma(event))
+		{
+			Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
+			myStage.close();
+		}
+	}
 
-		 } catch (IOException ex) {
-			 Logger.getLogger(MenuPrincipalController.class.getName()).log(Level.SEVERE, null, ex);
-		 }
-	 }
+	/**
+	 * Al cerrar la ventana, se cargara la ventana de verBBDD
+	 */
+	public void closeWindows() {
+
+		nav.cerrarVentanaSubMenu();
+
+		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
+		myStage.close();
+
+	}
 
 }

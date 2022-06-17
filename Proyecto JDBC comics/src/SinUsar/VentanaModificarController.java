@@ -73,6 +73,8 @@ public class VentanaModificarController {
 	NavegacionVentanas nav = new NavegacionVentanas();
 
 	ModificarDatosController datos = new ModificarDatosController();
+	
+	Comics comic = new Comics();
 
 	@FXML
 	void BotonLimpiarComic(ActionEvent event) {
@@ -92,7 +94,7 @@ public class VentanaModificarController {
 				+ "Firma = ?,nomEditorial = ?,formato = ?,Procedencia = ?,anioPubli = ?"
 				+ "nomGuionista = ?,nomDibujante = ? where ID = " + id;
 		
-		List<Comics> listComics = FXCollections.observableArrayList(Comics.filtadroBBDD(id,nombreCom, numeroCom,
+		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(id,nombreCom, numeroCom,
 				varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
 
 		pantallaInformativa.setStyle("-fx-background-color: #A0F52D");

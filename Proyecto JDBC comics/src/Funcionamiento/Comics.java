@@ -26,12 +26,11 @@ public class Comics {
 	private static List<Comics> listComics = new ArrayList<>();
 	private static List<Comics> FiltrolistComics = new ArrayList<>();
 
-	@SuppressWarnings("unused")
 	private static Connection conn = DBManager.conexion();
 
 	// Constructor
-	public Comics(String ID,String nombre, String numero, String variante, String firma, String editorial, String formato,
-			String procedencia, String fecha, String guionista, String dibujante) {
+	public Comics(String ID, String nombre, String numero, String variante, String firma, String editorial,
+			String formato, String procedencia, String fecha, String guionista, String dibujante) {
 		this.ID = ID;
 		this.nombre = nombre;
 		this.numero = numero;
@@ -156,9 +155,7 @@ public class Comics {
 	 * @return
 	 * @throws SQLException
 	 */
-	public static Comics[] verTodo() throws SQLException {
-		String ID,nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
-		guionista, dibujante;
+	public Comics[] verTodo() throws SQLException {
 
 		String sentenciaSql = "SELECT * from comicsbbdd where estado = 'En posesion'";
 
@@ -171,27 +168,26 @@ public class Comics {
 
 		try {
 			do {
-				ID = rs.getString("ID");
-				nombre = rs.getString("nomComic");
-				numero = rs.getString("numComic");
-				variante = rs.getString("nomVariante");
-				firma = rs.getString("firma");
-				editorial = rs.getString("nomEditorial");
-				formato = rs.getString("formato");
-				procedencia = rs.getString("procedencia");
-				fecha = rs.getString("anioPubli");
-				guionista = rs.getString("nomGuionista");
-				dibujante = rs.getString("nomDibujante");
-				listComics.add(new Comics(ID,nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
-						guionista, dibujante));
+				this.ID = rs.getString("ID");
+				this.nombre = rs.getString("nomComic");
+				this.numero = rs.getString("numComic");
+				this.variante = rs.getString("nomVariante");
+				this.firma = rs.getString("firma");
+				this.editorial = rs.getString("nomEditorial");
+				this.formato = rs.getString("formato");
+				this.procedencia = rs.getString("procedencia");
+				this.fecha = rs.getString("anioPubli");
+				this.guionista = rs.getString("nomGuionista");
+				this.dibujante = rs.getString("nomDibujante");
+				listComics.add(new Comics(this.ID, this.nombre, this.numero, this.variante, this.firma, this.editorial,
+						this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante));
 			} while (rs.next());
 
 		} catch (Exception ex) {
-			ex.printStackTrace(); // Try to use relevant Exception classes instead of calling the 'Exception'
+			ex.printStackTrace(); 
 			// itself.
 		}
 
-		// Convert the list to array
 		comics = new Comics[listComics.size()];
 		comics = listComics.toArray(comics);
 		return comics;
@@ -213,15 +209,13 @@ public class Comics {
 	 * @return
 	 * @throws SQLException
 	 */
-	public static Comics[] filtadroBBDD(String ID,String nombreC, String numeroC, String varianteC, String firmaC,
+	public Comics[] filtadroBBDD(String ID, String nombreC, String numeroC, String varianteC, String firmaC,
 			String editorialC, String formatoC, String procedenciaC, String fechaC, String guionistaC,
 			String dibujanteC) throws SQLException {
 
 		reiniciarBBDD();
 		ordenarBBDD();
 
-		String id,nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom,
-		guionistaCom, dibujanteCom;
 		Comics comics[] = null;
 
 		ArrayList<String> strFilter = new ArrayList<>();
@@ -296,21 +290,20 @@ public class Comics {
 
 			while (rs.next()) {
 
-				id = rs.getString("ID");
-				nombreCom = rs.getString("nomComic");
-				numeroCom = rs.getString("numComic");
-				varianteCom = rs.getString("nomVariante");
-				firmaCom = rs.getString("firma");
-				editorialCom = rs.getString("nomEditorial");
-				formatoCom = rs.getString("formato");
-				procedenciaCom = rs.getString("procedencia");
-				fechaCom = rs.getString("anioPubli");
-				guionistaCom = rs.getString("nomGuionista");
-				dibujanteCom = rs.getString("nomDibujante");
-				if(rs.getString("estado").equals("En posesion"))
-				{
-					FiltrolistComics.add(new Comics(id,nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom,
-							procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
+				this.ID = rs.getString("ID");
+				this.nombre = rs.getString("nomComic");
+				this.numero = rs.getString("numComic");
+				this.variante = rs.getString("nomVariante");
+				this.firma = rs.getString("firma");
+				this.editorial = rs.getString("nomEditorial");
+				this.formato = rs.getString("formato");
+				this.procedencia = rs.getString("procedencia");
+				this.fecha = rs.getString("anioPubli");
+				this.guionista = rs.getString("nomGuionista");
+				this.dibujante = rs.getString("nomDibujante");
+				if (rs.getString("estado").equals("En posesion")) {
+					FiltrolistComics.add(new Comics(this.ID, this.nombre, this.numero, this.variante, this.firma, this.editorial,
+							this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante));
 				}
 			}
 			rs.close();

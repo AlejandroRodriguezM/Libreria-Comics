@@ -11,9 +11,14 @@ import Controladores.ModificarDatosController;
 import Controladores.VerComicController;
 import SinUsar.MenuOpcionesController;
 import SinUsar.VentanaModificarController;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 
 public class NavegacionVentanas {
@@ -214,6 +219,69 @@ public class NavegacionVentanas {
         }
     }
 	
-	
+	/**
+	 * Al cerrar la ventana, se cargara la ventana de verBBDD
+	 */
+	public void cerrarVentanaSubMenu() {
 
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/verBBDD.fxml.fxml"));
+
+			Parent root = loader.load();
+
+			Scene scene = new Scene(root);
+			Stage stage = new Stage();
+
+			stage.setScene(scene);
+			stage.show();
+
+		} catch (IOException ex) {
+			Logger.getLogger(MenuPrincipalController.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+	
+	/**
+	 * Al cerrar la ventana, carga la ventana del menu principal
+	 */
+	public void cerrarVentanaMenuPrincipal() {
+
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuPrincipal.fxml"));
+
+			Parent root = loader.load();
+
+			Scene scene = new Scene(root);
+			Stage stage = new Stage();
+
+			stage.setScene(scene);
+			stage.show();
+
+
+
+		} catch (IOException ex) {
+			Logger.getLogger(MenuPrincipalController.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+	
+	/**
+	 * Permite salir completamente del programa.
+	 * @param event
+	 */
+	public boolean salirPrograma(ActionEvent event) {
+
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.setTitle("Saliendo");
+		alert.setHeaderText("Estas apunto de salir.");
+		alert.setContentText("¿Estas seguro que quieres salir?");
+
+		if(alert.showAndWait().get() == ButtonType.OK)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+
+	}
 }

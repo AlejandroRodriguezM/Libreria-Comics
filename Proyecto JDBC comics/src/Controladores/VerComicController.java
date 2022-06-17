@@ -11,8 +11,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import Funcionamiento.Comics;
 import Funcionamiento.DBManager;
@@ -20,13 +18,7 @@ import Funcionamiento.NavegacionVentanas;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -128,13 +120,13 @@ public class VerComicController {
 	public TableView<Comics> tablaBBDD;
 
 	@FXML
-	private Button botonGuardarBaseDatos;
+	private Button botonGuardarFichero;
 
 	@FXML
 	private Button BotonVentanaAniadir;
 
 	@FXML
-	private Button botonExportarBBDD;
+	private Button botonBackupBBDD;
 
 	@FXML
 	private Button BotonVentanaEliminar;
@@ -143,17 +135,13 @@ public class VerComicController {
 	private Label labelDatosGuardados;
 
 	@FXML
-	private Button botonGuardarBaseDatosExcel;
-
-	private static String nombreBBDD;
-
-	private static String usuarioBBDD;
-
-	private static String passBBDD;
+	private Button botonGuardarExcel;
 
 	NavegacionVentanas nav = new NavegacionVentanas();
 
 	MenuPrincipalController datos = new MenuPrincipalController();
+	
+	Comics comic = new Comics();
 
 	private static Connection conn = DBManager.conexion();
 
@@ -215,7 +203,7 @@ public class VerComicController {
 
 		nombreColumnas();
 
-		List<Comics> listComics = FXCollections.observableArrayList(Comics.filtadroBBDD(idCom, nombreCom, numeroCom,
+		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(idCom, nombreCom, numeroCom,
 				varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
 		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante);
@@ -234,7 +222,7 @@ public class VerComicController {
 
 		nombreColumnas();
 
-		List<Comics> listComics = FXCollections.observableArrayList(Comics.verTodo());
+		List<Comics> listComics = FXCollections.observableArrayList(comic.verTodo());
 		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante);
 		tablaBBDD.getItems().setAll(listComics);
@@ -300,7 +288,7 @@ public class VerComicController {
 	 */
 	@SuppressWarnings("unchecked")
 	@FXML
-	void Guardarbbdd(ActionEvent event) {
+	void exportFichero(ActionEvent event) {
 		FileChooser fileChooser = new FileChooser();
 		File fichero = fileChooser.showSaveDialog(null);
 
@@ -310,7 +298,7 @@ public class VerComicController {
 
 				nombreColumnas();
 
-				List<Comics> listComics = FXCollections.observableArrayList(Comics.verTodo());
+				List<Comics> listComics = FXCollections.observableArrayList(comic.verTodo());
 				tablaBBDD.getColumns().setAll(nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 						guionista, dibujante);
 
@@ -349,7 +337,7 @@ public class VerComicController {
 
 
 	@FXML
-	void GuardarbbddExcel(ActionEvent event) {
+	void exportExcel(ActionEvent event) {
 
 		FileChooser fileChooser = new FileChooser();
 		File fichero = fileChooser.showSaveDialog(null);
@@ -400,14 +388,14 @@ public class VerComicController {
 	 * @param event
 	 */
 	@FXML
-	void exportarBBDD(ActionEvent event) {
+	void exportarSQL(ActionEvent event) {
 
 		FileChooser fileChooser = new FileChooser();
 		File fichero = fileChooser.showSaveDialog(null);
 		if (fichero != null) {
 			try {
 				fichero.createNewFile();
-				String mysqlCom = String.format("mysqldump -u%s -p%s %s", usuarioBBDD, passBBDD, nombreBBDD);
+				String mysqlCom = String.format("mysqldump -u%s -p%s %s", DBManager.DB_USER, DBManager.DB_PASS, DBManager.DB_PORT);
 				String[] command = new String[] { "/bin/bash", "-c", mysqlCom };
 				ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
 				pb.redirectError(Redirect.INHERIT);
@@ -426,32 +414,14 @@ public class VerComicController {
 	}
 
 	/**
-	 * 
-	 * @param datos
-	 * @return
-	 */
-	public static String[] datos(String[] datos) {
-		nombreBBDD = datos[1];
-		usuarioBBDD = datos[2];
-		passBBDD = datos[3];
-
-		return datos;
-	}
-
-	/**
-	 * Permite salir totalmente del programa.
-	 * 
+	 * Permite salir completamente del programa.
 	 * @param event
 	 */
 	@FXML
 	public void salirPrograma(ActionEvent event) {
-
-		Alert alert = new Alert(AlertType.CONFIRMATION);
-		alert.setTitle("Saliendo");
-		alert.setHeaderText("Estas apunto de salir.");
-		alert.setContentText("¿Estas seguro que quieres salir?");
-
-		if (alert.showAndWait().get() == ButtonType.OK) {
+		
+		if(nav.salirPrograma(event))
+		{
 			Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
 			myStage.close();
 		}
@@ -462,22 +432,10 @@ public class VerComicController {
 	 */
 	public void closeWindows() {
 
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuPrincipal.fxml"));
+		nav.cerrarVentanaMenuPrincipal();
 
-			Parent root = loader.load();
+		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
+		myStage.close();
 
-			Scene scene = new Scene(root);
-			Stage stage = new Stage();
-
-			stage.setScene(scene);
-			stage.show();
-
-			Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-			myStage.close();
-
-		} catch (IOException ex) {
-			Logger.getLogger(MenuPrincipalController.class.getName()).log(Level.SEVERE, null, ex);
-		}
 	}
 }

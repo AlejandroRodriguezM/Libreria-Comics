@@ -82,6 +82,8 @@ public class MetodosVentanas {
 	NavegacionVentanas nav = new NavegacionVentanas();
 
 	MenuPrincipalController datos = new MenuPrincipalController();
+	
+	Comics comic = new Comics();
 
 	private static Connection conn = DBManager.conexion();
 
@@ -140,7 +142,7 @@ public class MetodosVentanas {
 
 		nombreColumnas();
 
-		List<Comics> listComics = FXCollections.observableArrayList(Comics.filtadroBBDD(idCom, nombreCom, numeroCom,
+		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(idCom, nombreCom, numeroCom,
 				varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
 		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante);
@@ -181,7 +183,7 @@ public class MetodosVentanas {
 
 				nombreColumnas();
 
-				List<Comics> listComics = FXCollections.observableArrayList(Comics.verTodo());
+				List<Comics> listComics = FXCollections.observableArrayList(comic.verTodo());
 				tablaBBDD.getColumns().setAll(nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 						guionista, dibujante);
 

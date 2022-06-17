@@ -1,7 +1,5 @@
 package SinUsar;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 

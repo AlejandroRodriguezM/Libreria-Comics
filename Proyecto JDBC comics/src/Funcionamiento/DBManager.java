@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import Controladores.MenuPrincipalController;
+
 /*
  * Por Alejandro Rodriguez Mena
  */
@@ -15,10 +17,12 @@ public class DBManager {
 	// Conexión a la base de datos
 	private static Connection conn = null;
 
-	public static String nombreUsuario;
-	public static String passUsuario;
-	public static String puerto;
-	public static String nombreBBDD;
+	public static String DB_USER;
+	public static String DB_PASS;
+	public static String DB_PORT;
+	public static String DB_NAME;
+	
+	static MenuPrincipalController menuPrincipalController = new MenuPrincipalController();
 
 	/**
 	 * Conecta el proyecto con el driver JBDC
@@ -63,14 +67,15 @@ public class DBManager {
 	 * @param contraBBDD
 	 * @return
 	 */
-	public static Connection conexion(String puertobbdd, String nombreBBDD, String usuario, String pass) {
+	public static Connection conexion(String[] datos) {
 
 		// Configuración de la conexión a la base de datos
+		
 		String DB_HOST = "localhost";
-		String DB_PORT = puertobbdd;
-		String DB_NAME = nombreBBDD;
-		String DB_USER = usuario;
-		String DB_PASS = pass;
+		DB_PORT = datos[0];
+		DB_NAME = datos[1];
+		DB_USER = datos[2];
+		DB_PASS = datos[3];
 		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
 		try {
 			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);

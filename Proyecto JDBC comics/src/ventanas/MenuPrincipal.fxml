@@ -29,7 +29,7 @@
       </Label>
       <Button fx:id="botonCerrar" layoutX="163.0" layoutY="555.0" mnemonicParsing="false" onAction="#cerrarbbdd" prefHeight="54.0" prefWidth="118.0" text="Cerrar BBDD" />
       <Button fx:id="botonTwitter" layoutX="162.0" layoutY="686.0" mnemonicParsing="false" onAction="#accesoTwitter" text="Por @silverAlox" />
-      <Button fx:id="numeroVersion" layoutX="43.0" layoutY="686.0" mnemonicParsing="false" onAction="#accesoGitHub" text="Version 2.1" />
+      <Button fx:id="numeroVersion" layoutX="43.0" layoutY="686.0" mnemonicParsing="false" onAction="#accesoGitHub" text="Version 2.3" />
       <Button fx:id="botonSalir" layoutX="84.0" layoutY="617.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="54.0" prefWidth="144.0" text="Salir" />
    </children>
 </Pane>

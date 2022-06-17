@@ -4,22 +4,14 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import Funcionamiento.DBManager;
 import Funcionamiento.NavegacionVentanas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 
 public class AniadirDatosController {
@@ -37,7 +29,7 @@ public class AniadirDatosController {
 	private Button botonVolver;
 
 	@FXML
-	private Label labelResultado;
+	private Label prontDatos;
 
 	@FXML
 	private TextField anioPublicacion;
@@ -70,7 +62,7 @@ public class AniadirDatosController {
 	private TextField numeroComic;
 
 	private static Connection conn = DBManager.conexion();
-	
+
 	NavegacionVentanas nav = new NavegacionVentanas();
 
 	/**
@@ -78,7 +70,7 @@ public class AniadirDatosController {
 	 * @param event
 	 */
 	@FXML
-	void BotonLimpiarComic(ActionEvent event) {
+	void limpiarDatos(ActionEvent event) {
 		nombreComic.setText("");
 		numeroComic.setText("");
 		nombreVariante.setText("");
@@ -96,11 +88,11 @@ public class AniadirDatosController {
 	 * @param event
 	 */
 	@FXML
-	public void AniadirDatos(ActionEvent event) {
+	public void agregarDatos(ActionEvent event) {
 
 		String nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom,
 		guionistaCom, dibujanteCom;
-		
+
 		DBManager.loadDriver();
 
 		String sentenciaSQL = "insert into comicsbbdd(nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante) values (?,?,?,?,?,?,?,?,?,?)";
@@ -148,14 +140,14 @@ public class AniadirDatosController {
 			statement.setString(10, dibujanteCom);
 
 			if (statement.executeUpdate() == 1) {
-				labelResultado.setText("Comic añadido correctamente!" + "\nNombre del comic: " + nombreCom
+				prontDatos.setText("Comic añadido correctamente!" + "\nNombre del comic: " + nombreCom
 						+ dibujanteCom + "\nNumero: " + numeroCom + "\nPortada variante: " + varianteCom + "\nFirma: "
 						+ firmaCom + "\nEditorial: " + editorialCom + "\nFormato: " + formatoCom + "\nProcedencia: "
 						+ procedenciaCom + "\nFecha de publicacion: " + fechaCom + "\nGuionista: " + guionistaCom
 						+ "\nDibujante: " + dibujanteCom);
 				statement.close();
 			} else {
-				labelResultado
+				prontDatos
 				.setText("Se ha encontrado un error. No ha sido posible añadir el comic a la base de datos.");
 			}
 		} catch (SQLException ex) {
@@ -170,10 +162,9 @@ public class AniadirDatosController {
 	 */
 	@FXML
 	void volverAlMenu(ActionEvent event) throws IOException {
-		
+
 		nav.verBBDD();
 
-		// Ciero la ventana donde estoy
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();
 	}
@@ -184,13 +175,9 @@ public class AniadirDatosController {
 	 */
 	@FXML
 	public void salirPrograma(ActionEvent event) {
-
-		Alert alert = new Alert(AlertType.CONFIRMATION);
-		alert.setTitle("Saliendo");
-		alert.setHeaderText("Estas apunto de salir.");
-		alert.setContentText("¿Estas seguro que quieres salir?");
-
-		if (alert.showAndWait().get() == ButtonType.OK) {
+		
+		if(nav.salirPrograma(event))
+		{
 			Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
 			myStage.close();
 		}
@@ -201,22 +188,10 @@ public class AniadirDatosController {
 	 */
 	public void closeWindows() {
 
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/verBBDD.fxml.fxml"));
+		nav.cerrarVentanaSubMenu();
 
-			Parent root = loader.load();
+		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
+		myStage.close();
 
-			Scene scene = new Scene(root);
-			Stage stage = new Stage();
-
-			stage.setScene(scene);
-			stage.show();
-
-			Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-			myStage.close();
-
-		} catch (IOException ex) {
-			Logger.getLogger(MenuPrincipalController.class.getName()).log(Level.SEVERE, null, ex);
-		}
 	}
 }
