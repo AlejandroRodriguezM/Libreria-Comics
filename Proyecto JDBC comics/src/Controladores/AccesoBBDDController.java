@@ -68,7 +68,7 @@ public class AccesoBBDDController {
 	 */
 	@FXML
 	void accesoGitHub(ActionEvent event) throws IOException {
-		String url = "https://www.google.com";
+		String url = "https://github.com/MisterioRojo/Proyecto-gui-bbdd";
 		java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
 	}
 
@@ -79,7 +79,7 @@ public class AccesoBBDDController {
 	 */
 	@FXML
 	void accesoTwitter(ActionEvent event) throws IOException {
-		String url = "https://www.google.com";
+		String url = "https://twitter.com/home";
 		java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
 	}
 
