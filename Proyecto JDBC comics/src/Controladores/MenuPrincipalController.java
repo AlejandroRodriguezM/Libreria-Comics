@@ -1,174 +1,416 @@
 package Controladores;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.ProcessBuilder.Redirect;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Arrays;
+import java.util.List;
 
+import Funcionamiento.Comics;
 import Funcionamiento.DBManager;
 import Funcionamiento.NavegacionVentanas;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.text.Font;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class MenuPrincipalController {
 
-	// Conexión a la base de datos
-	//	private static Connection conn;
+	@FXML
+	private Button BotonEliminarComic;
 
 	@FXML
-	private Button botonAccesobbdd;
-
-	@FXML
-	private Button botonCerrar;
-
-	@FXML
-	private Button botonEnviar;
+	private Button BotonModificarComic;
 
 	@FXML
 	private Button botonLimpiar;
 
 	@FXML
+	private Button botonMostrarParametro;
+
+	@FXML
 	private Button botonSalir;
 
 	@FXML
-	private Button botonTwitter;
+	private Button botonVolver;
 
 	@FXML
-	private Label estadoConexion;
+	private Button botonbbdd;
 
 	@FXML
-	private TextArea informacion;
+	private TextField anioPublicacion;
+	
+	@FXML
+	private TextField numeroID;
 
 	@FXML
-	public TextField nombreBBDD;
+	private TextField nombreComic;
 
 	@FXML
-	private Button numeroVersion;
+	private TextField nombreDibujante;
 
 	@FXML
-	public PasswordField pass;
+	private TextField nombreEditorial;
 
 	@FXML
-	public TextField puertobbdd;
+	private TextField nombreFirma;
 
 	@FXML
-	public TextField usuario;
+	private TextField nombreFormato;
+
+	@FXML
+	private TextField nombreGuionista;
+
+	@FXML
+	private TextField nombreProcedencia;
+
+	@FXML
+	private TextField nombreVariante;
+
+	@FXML
+	private TextField numeroComic;
+	
+	@FXML
+	private TableColumn<Comics, String> dibujante;
+
+	@FXML
+	private TableColumn<Comics, String> editorial;
+
+	@FXML
+	private TableColumn<Comics, String> fecha;
+
+	@FXML
+	private TableColumn<Comics, String> firma;
+
+	@FXML
+	private TableColumn<Comics, String> formato;
+
+	@FXML
+	private TableColumn<Comics, String> guionista;
+
+	@FXML
+	private TableColumn<Comics, String> nombre;
+
+	@FXML
+	private TableColumn<Comics, String> ID;
+
+	@FXML
+	private TableColumn<Comics, String> numero;
+
+	@FXML
+	private TableColumn<Comics, String> procedencia;
+
+	@FXML
+	private TableColumn<Comics, String> variante;
+	
+	@FXML
+	public TableView<Comics> tablaBBDD;
+
+	@FXML
+	private Button botonGuardarFichero;
+
+	@FXML
+	private Button BotonVentanaAniadir;
+
+	@FXML
+	private Button botonBackupBBDD;
+
+	@FXML
+	private Button BotonVentanaEliminar;
+
+	@FXML
+	private Label labelDatosGuardados;
+
+	@FXML
+	private Button botonGuardarExcel;
 
 	NavegacionVentanas nav = new NavegacionVentanas();
 
-	/**
-	 * 
-	 * @param event
-	 * @throws IOException
-	 */
-	@FXML
-	void accesoGitHub(ActionEvent event) throws IOException {
-		String url = "https://www.google.com";
-		java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
-	}
+	AccesoBBDDController datos = new AccesoBBDDController();
+	
+	Comics comic = new Comics();
+
+	private static Connection conn = DBManager.conexion();
 
 	/**
-	 * 
-	 * @param event
-	 * @throws IOException
-	 */
-	@FXML
-	void accesoTwitter(ActionEvent event) throws IOException {
-		String url = "https://www.google.com";
-		java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
-	}
-
-	/**
-	 * 
-	 * @param event
-	 * @throws InterruptedException
-	 * @throws IOException
-	 */
-	@FXML
-	void entrarMenu(ActionEvent event) throws InterruptedException, IOException {
-
-		if (Funcionamiento.DBManager.isConnected()) {
-
-			nav.verBBDD();
-			datosBBDD();
-
-			Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
-			myStage.close();
-		}
-		else {
-			estadoConexion.setStyle("-fx-background-color: #DD370F");
-			estadoConexion.setFont(new Font("Arial", 25));
-			estadoConexion.setText("Conectate a la bbdd \nantes de continuar");
-		}
-	}
-
-	/**
+	 * Limpia los campos de pantalla donde se escriben los datos.
 	 * 
 	 * @param event
 	 */
 	@FXML
 	void limpiarDatos(ActionEvent event) {
-		nombreBBDD.setText("");
-		usuario.setText("");
-		pass.setText("");
-		puertobbdd.setText("");
+
+		numeroID.setText("");
+		nombreComic.setText("");
+		numeroComic.setText("");
+		nombreVariante.setText("");
+		nombreFirma.setText("");
+		nombreEditorial.setText("");
+		nombreFormato.setText("");
+		procedencia.setText("");
+		anioPublicacion.setText("");
+		nombreDibujante.setText("");
+		nombreGuionista.setText("");
 	}
 
 	/**
+	 * Muestra la bbdd segun los parametros introducidos en los TextField
+	 * 
+	 * @param event
+	 * @throws SQLException
+	 */
+	@SuppressWarnings("unchecked")
+	@FXML
+	void mostrarPorParametro(ActionEvent event) throws SQLException {
+
+		String idCom, nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom,
+		guionistaCom, dibujanteCom;
+
+		idCom = numeroID.getText();
+
+		nombreCom = nombreComic.getText();
+
+		numeroCom = numeroComic.getText();
+
+		varianteCom = nombreVariante.getText();
+
+		firmaCom = nombreFirma.getText();
+
+		editorialCom = nombreEditorial.getText();
+
+		formatoCom = nombreFormato.getText();
+
+		procedenciaCom = nombreProcedencia.getText();
+
+		fechaCom = anioPublicacion.getText();
+
+		guionistaCom = nombreGuionista.getText();
+
+		dibujanteCom = nombreDibujante.getText();
+
+		nombreColumnas();
+
+		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(idCom, nombreCom, numeroCom,
+				varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
+		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+				guionista, dibujante);
+		tablaBBDD.getItems().setAll(listComics);
+	}
+
+	/**
+	 * Muestra toda la base de datos.
+	 * 
+	 * @param event
+	 * @throws SQLException
+	 */
+	@SuppressWarnings("unchecked")
+	@FXML
+	void verTodabbdd(ActionEvent event) throws SQLException {
+
+		nombreColumnas();
+
+		List<Comics> listComics = FXCollections.observableArrayList(comic.verTodo());
+		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+				guionista, dibujante);
+		tablaBBDD.getItems().setAll(listComics);
+
+	}
+
+	/**
+	 * Vuelve al menu inicial de conexion de la base de datos.
+	 * 
+	 * @param event
+	 * @throws IOException
+	 */
+	@FXML
+	public void volverMenu(ActionEvent event) throws IOException {
+
+		nav.menuPrincipal();
+
+		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
+		myStage.close();
+
+	}
+
+	/**
+	 * Permite abrir y cargar la ventana para añadir datos.
 	 * 
 	 * @param event
 	 */
 	@FXML
-	void cerrarbbdd(ActionEvent event) {
+	public void VentanaAniadir(ActionEvent event) {
 
-		if (Funcionamiento.DBManager.isConnected()) {
-			estadoConexion.setText("BBDD Cerrada con existo.\nNo conectado.");
-			estadoConexion.setStyle("-fx-background-color: #696969");
-			Funcionamiento.DBManager.close();
-		} else {
-			estadoConexion.setStyle("-fx-background-color: #DD370F");
-			estadoConexion.setFont(new Font("Arial", 22));
-			estadoConexion.setText("ERROR. No se encuentra \nconectado a ninguna bbdd");
+		nav.aniadirDatos();
+
+		Stage myStage = (Stage) this.BotonVentanaAniadir.getScene().getWindow();
+		myStage.close();
+
+	}
+
+	@FXML
+	public void ventanaEliminar(ActionEvent event) {
+
+		nav.EliminarDatos();
+
+		Stage myStage = (Stage) this.BotonEliminarComic.getScene().getWindow();
+		myStage.close();
+
+	}
+
+	@FXML
+	public void VentanaModificar(ActionEvent event) {
+
+		nav.ModificarDatos();
+
+		Stage myStage = (Stage) this.BotonModificarComic.getScene().getWindow();
+		myStage.close();
+
+	}
+
+	/**
+	 * Guarda los datos de la base de datos en un fichero.
+	 * 
+	 * @param event
+	 * @throws SQLException
+	 */
+	@SuppressWarnings("unchecked")
+	@FXML
+	void exportFichero(ActionEvent event) {
+		FileChooser fileChooser = new FileChooser();
+		File fichero = fileChooser.showSaveDialog(null);
+
+		try {
+			if (fichero != null) {
+				fichero.createNewFile();
+
+				nombreColumnas();
+
+				List<Comics> listComics = FXCollections.observableArrayList(comic.verTodo());
+				tablaBBDD.getColumns().setAll(nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+						guionista, dibujante);
+
+				FileWriter guardarDatos = new FileWriter(fichero);
+				for (int i = 0; i < listComics.size(); i++) {
+					guardarDatos.write(listComics.get(i) + "\n");
+				}
+				guardarDatos.close();
+			} else {
+				labelDatosGuardados.setStyle("-fx-background-color: #F53636");
+				labelDatosGuardados.setText("ERROR. Contenido de la bbdd \n cancelada.");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 
 	/**
 	 * 
+	 */
+	private void nombreColumnas() {
+		ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
+		nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+		numero.setCellValueFactory(new PropertyValueFactory<>("numero"));
+		variante.setCellValueFactory(new PropertyValueFactory<>("variante"));
+		firma.setCellValueFactory(new PropertyValueFactory<>("firma"));
+		editorial.setCellValueFactory(new PropertyValueFactory<>("editorial"));
+		formato.setCellValueFactory(new PropertyValueFactory<>("formato"));
+		procedencia.setCellValueFactory(new PropertyValueFactory<>("procedencia"));
+		fecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+		guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
+		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
+	}
+
+
+	@FXML
+	void exportExcel(ActionEvent event) {
+
+		FileChooser fileChooser = new FileChooser();
+		File fichero = fileChooser.showSaveDialog(null);
+
+
+		try {
+			String query="select * from comicsbbdd";
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery(query);
+			BufferedWriter fw = new BufferedWriter(new FileWriter(fichero + ".xls"));
+			fw.write("ID,NomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante,estado");
+
+			while(rs.next()){
+				String id = (rs.getString("ID"));
+				String nombre = (rs.getString("nomComic"));
+				String numero = (rs.getString("numComic"));
+				String variante = (rs.getString("nomVariante"));
+				String firma = (rs.getString("firma"));
+				String editorial = (rs.getString("nomEditorial"));
+				String formato = (rs.getString("formato"));
+				String procedencia = (rs.getString("procedencia"));
+				String fecha = (rs.getString("anioPubli"));
+				String guionista = (rs.getString("nomGuionista"));
+				String dibujante = (rs.getString("nomDibujante"));
+				String estado = (rs.getString("estado"));
+
+				String line = String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+						id, nombre, numero, variante, firma,editorial,formato,procedencia,fecha,guionista,dibujante,estado);
+
+				fw.newLine();
+				fw.write(line);
+			}
+
+			statement.close();
+			fw.close();
+
+		} catch (Exception e) {
+			System.out.println(e);
+			e.printStackTrace();
+		} 
+	}
+
+
+
+	//FUNCIONA SOLO EN LINUX
+	/**
+	 * 
 	 * @param event
 	 */
 	@FXML
-	void enviarDatos(ActionEvent event) {
+	void exportarSQL(ActionEvent event) {
 
-		Funcionamiento.DBManager.loadDriver();
-		datosBBDD();
+		FileChooser fileChooser = new FileChooser();
+		File fichero = fileChooser.showSaveDialog(null);
+		if (fichero != null) {
+			try {
+				fichero.createNewFile();
+				String mysqlCom = String.format("mysqldump -u%s -p%s %s", DBManager.DB_USER, DBManager.DB_PASS, DBManager.DB_PORT);
+				String[] command = new String[] { "/bin/bash", "-c", mysqlCom };
+				ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
+				pb.redirectError(Redirect.INHERIT);
+				pb.redirectOutput(Redirect.to(fichero));
+				pb.start();
+				labelDatosGuardados.setStyle("-fx-background-color: #A0F52D");
+				labelDatosGuardados.setText("Base de datos exportada \ncorrectamente");
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 
-		if (Funcionamiento.DBManager.isConnected()) {
-			estadoConexion.setStyle("-fx-background-color: #A0F52D");
-			estadoConexion.setText("Conectado");
 		} else {
-			pass.setText("");
-			estadoConexion.setStyle("-fx-background-color: #DD370F");
-			estadoConexion.setFont(new Font("Arial", 22));
-			estadoConexion.setText("ERROR. Los datos son \nincorrectos. Revise \nlos datos.");
+			labelDatosGuardados.setStyle("-fx-background-color: #F53636");
+			labelDatosGuardados.setText("ERROR. Base de datos \nexportada cancelada.");
 		}
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public Connection datosBBDD() {
-		String datos[] = new String[4];
-		datos[0] = puertobbdd.getText();
-		datos[1] = nombreBBDD.getText();
-		datos[2] = usuario.getText();
-		datos[3] = pass.getText();
-		return DBManager.conexion(datos);
 	}
 
 	/**
@@ -177,7 +419,7 @@ public class MenuPrincipalController {
 	 */
 	@FXML
 	public void salirPrograma(ActionEvent event) {
-
+		
 		if(nav.salirPrograma(event))
 		{
 			Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
@@ -186,11 +428,14 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * 
+	 * Al cerrar la ventana, carga la ventana del menu principal
 	 */
 	public void closeWindows() {
-		Stage myStage = (Stage) this.botonEnviar.getScene().getWindow();
-		myStage.close();
-	}
 
+		nav.cerrarVentanaMenuPrincipal();
+
+		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
+		myStage.close();
+
+	}
 }

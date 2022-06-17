@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import Controladores.MenuPrincipalController;
+import Controladores.AccesoBBDDController;
 
 /*
  * Por Alejandro Rodriguez Mena
@@ -22,7 +22,7 @@ public class DBManager {
 	public static String DB_PORT;
 	public static String DB_NAME;
 	
-	static MenuPrincipalController menuPrincipalController = new MenuPrincipalController();
+	static AccesoBBDDController menuPrincipalController = new AccesoBBDDController();
 
 	/**
 	 * Conecta el proyecto con el driver JBDC

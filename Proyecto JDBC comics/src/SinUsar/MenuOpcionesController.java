@@ -5,9 +5,9 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import Controladores.AniadirDatosController;
+import Controladores.IntroducirDatosController;
+import Controladores.AccesoBBDDController;
 import Controladores.MenuPrincipalController;
-import Controladores.VerComicController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -53,7 +53,7 @@ public class MenuOpcionesController{
             Parent root = loader.load();
 
             // Obtengo el controlador
-            AniadirDatosController controlador = loader.getController();
+            IntroducirDatosController controlador = loader.getController();
 
             // Creo la scene y el stage
             Scene scene = new Scene(root);
@@ -71,7 +71,7 @@ public class MenuOpcionesController{
             myStage.close();
 
         } catch (IOException ex) {
-            Logger.getLogger(MenuPrincipalController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AccesoBBDDController.class.getName()).log(Level.SEVERE, null, ex);
         }
     	
     }
@@ -86,7 +86,7 @@ public class MenuOpcionesController{
              Parent root = loader.load();
 
              // Obtengo el controlador
-             VerComicController controlador = loader.getController();
+             MenuPrincipalController controlador = loader.getController();
 
              // Creo la scene y el stage
              Scene scene = new Scene(root);
@@ -104,7 +104,7 @@ public class MenuOpcionesController{
              myStage.close();
 
          } catch (IOException ex) {
-             Logger.getLogger(MenuPrincipalController.class.getName()).log(Level.SEVERE, null, ex);
+             Logger.getLogger(AccesoBBDDController.class.getName()).log(Level.SEVERE, null, ex);
          }
     }
 
@@ -118,7 +118,7 @@ public class MenuOpcionesController{
         Parent root = loader.load();
 
         // Obtengo el controlador
-        MenuPrincipalController controlador = loader.getController();
+        AccesoBBDDController controlador = loader.getController();
 
         // Creo la scene y el stage
         Scene scene = new Scene(root);
@@ -170,7 +170,7 @@ public class MenuOpcionesController{
             myStage.close();
 
         } catch (IOException ex) {
-            Logger.getLogger(MenuPrincipalController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AccesoBBDDController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

@@ -9,7 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class Principal extends Application {
+public class Programa extends Application {
 
 	/**
 	 * Carga la ventana principal y arranca el programa.

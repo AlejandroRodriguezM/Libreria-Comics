@@ -14,7 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-public class AniadirDatosController {
+public class IntroducirDatosController {
 
 	@FXML
 	private Button botonAniadirBBDD;

@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import Controladores.AniadirDatosController;
+import Controladores.IntroducirDatosController;
 import Controladores.EliminarDatosController;
-import Controladores.MenuPrincipalController;
+import Controladores.AccesoBBDDController;
 import Controladores.ModificarDatosController;
-import Controladores.VerComicController;
+import Controladores.MenuPrincipalController;
 import SinUsar.MenuOpcionesController;
 import SinUsar.VentanaModificarController;
 import javafx.event.ActionEvent;
@@ -35,7 +35,7 @@ public class NavegacionVentanas {
     		Parent root = loader.load();
 
     		// Obtengo el controlador
-    		MenuPrincipalController controlador = loader.getController();
+    		AccesoBBDDController controlador = loader.getController();
 
     		// Creo la scene y el stage
     		Scene scene = new Scene(root);
@@ -69,7 +69,7 @@ public class NavegacionVentanas {
 		Parent root = loader.load();
 
 		// Obtengo el controlador
-		VerComicController controlador = loader.getController();
+		MenuPrincipalController controlador = loader.getController();
 
 		// Creo la scene y el stage
 		Scene scene = new Scene(root);
@@ -100,7 +100,7 @@ public class NavegacionVentanas {
 			Parent root = loader.load();
 
 			// Obtengo el controlador
-			AniadirDatosController controlador = loader.getController();
+			IntroducirDatosController controlador = loader.getController();
 
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
@@ -235,7 +235,7 @@ public class NavegacionVentanas {
 			stage.show();
 
 		} catch (IOException ex) {
-			Logger.getLogger(MenuPrincipalController.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(AccesoBBDDController.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 	
@@ -258,7 +258,7 @@ public class NavegacionVentanas {
 
 
 		} catch (IOException ex) {
-			Logger.getLogger(MenuPrincipalController.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(AccesoBBDDController.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 	

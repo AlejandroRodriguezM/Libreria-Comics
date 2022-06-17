@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.Line?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="637.0" prefWidth="609.0" style="-fx-background-color: DFA394;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.AniadirDatosController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="637.0" prefWidth="609.0" style="-fx-background-color: DFA394;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.IntroducirDatosController">
    <children>
       <Label fx:id="prontDatos" alignment="TOP_LEFT" layoutX="17.0" layoutY="396.0" prefHeight="235.0" prefWidth="354.0" style="-fx-background-color: white;" />
       <Button fx:id="botonAniadirBBDD" layoutX="17.0" layoutY="334.0" mnemonicParsing="false" onAction="#agregarDatos" prefHeight="54.0" prefWidth="184.0" text="Añadir a la base de datos" />

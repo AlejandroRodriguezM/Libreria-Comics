@@ -12,7 +12,7 @@ import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
 
-import Controladores.MenuPrincipalController;
+import Controladores.AccesoBBDDController;
 import Funcionamiento.Comics;
 import Funcionamiento.DBManager;
 import Funcionamiento.NavegacionVentanas;
@@ -84,7 +84,7 @@ public class MetodosVentanas {
 	
 	NavegacionVentanas nav = new NavegacionVentanas();
 
-	MenuPrincipalController datos = new MenuPrincipalController();
+	AccesoBBDDController datos = new AccesoBBDDController();
 	
 	Comics comic = new Comics();
 
