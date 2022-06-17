@@ -1,7 +1,6 @@
 package Controladores;
 
 import java.io.IOException;
-import java.sql.Connection;
 
 import Funcionamiento.DBManager;
 import Funcionamiento.NavegacionVentanas;
@@ -92,8 +91,7 @@ public class AccesoBBDDController {
 		if (Funcionamiento.DBManager.isConnected()) {
 
 			nav.verMenuPrincipal();
-			;
-			datosBBDD();
+			envioDatosBBDD();
 
 			Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
 			myStage.close();
@@ -142,7 +140,8 @@ public class AccesoBBDDController {
 	void enviarDatos(ActionEvent event) {
 
 		Funcionamiento.DBManager.loadDriver();
-		datosBBDD();
+		envioDatosBBDD();
+		DBManager.conexion();
 
 		if (Funcionamiento.DBManager.isConnected()) {
 			estadoConexion.setStyle("-fx-background-color: #A0F52D");
@@ -159,13 +158,13 @@ public class AccesoBBDDController {
 	 * 
 	 * @return
 	 */
-	public Connection datosBBDD() {
+	public void envioDatosBBDD() {
 		String datos[] = new String[4];
 		datos[0] = puertobbdd.getText();
 		datos[1] = nombreBBDD.getText();
 		datos[2] = usuario.getText();
 		datos[3] = pass.getText();
-		return DBManager.conexion(datos);
+		DBManager.datosBBDD(datos);
 	}
 
 	/**

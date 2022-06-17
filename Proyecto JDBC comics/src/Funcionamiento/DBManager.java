@@ -17,10 +17,10 @@ public class DBManager {
 	// Conexión a la base de datos
 	private static Connection conn = null;
 
-	public static String DB_USER;
-	public static String DB_PASS;
-	public static String DB_PORT;
-	public static String DB_NAME;
+	public static String DB_USER = "";
+	public static String DB_PASS = ""; 
+	public static String DB_PORT = "";
+	public static String DB_NAME = "";
 
 	static AccesoBBDDController menuPrincipalController = new AccesoBBDDController();
 
@@ -45,7 +45,7 @@ public class DBManager {
 	 * @return true si la conexión existe y es válida, false en caso contrario
 	 */
 	public static boolean isConnected() {
-		// Comprobamos estado de la conexión
+		
 		try {
 			if (conn != null && conn.isValid(0)) {
 				return true;
@@ -69,24 +69,12 @@ public class DBManager {
 	 * @param contraBBDD
 	 * @return
 	 */
-	public static Connection conexion(String[] datos) {
+	public static void datosBBDD(String[] datos) {
 
-		// Configuración de la conexión a la base de datos
-
-		String DB_HOST = "localhost";
 		DB_PORT = datos[0];
 		DB_NAME = datos[1];
 		DB_USER = datos[2];
 		DB_PASS = datos[3];
-		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
-		try {
-			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
-			conn = conexion();
-			return conn;
-		} catch (SQLException ex) {
-			System.out.println(ex);
-			return null;
-		}
 	}
 
 	/**
@@ -100,7 +88,15 @@ public class DBManager {
 	 */
 	public static Connection conexion() {
 
-		return conn;
+		String DB_HOST = "localhost";
+		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
+		try {
+			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+			return conn;
+		} catch (SQLException ex) {
+			System.out.println(ex);
+			return null;
+		}
 	}
 
 	/**
