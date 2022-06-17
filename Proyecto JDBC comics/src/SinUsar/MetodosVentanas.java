@@ -1,4 +1,4 @@
-package Funcionamiento;
+package SinUsar;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -13,6 +13,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import Controladores.MenuPrincipalController;
+import Funcionamiento.Comics;
+import Funcionamiento.DBManager;
+import Funcionamiento.NavegacionVentanas;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
