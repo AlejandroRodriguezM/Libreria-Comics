@@ -17,9 +17,6 @@ import javafx.stage.Stage;
 
 public class AccesoBBDDController {
 
-	// Conexión a la base de datos
-	// private static Connection conn;
-
 	@FXML
 	private Button botonAccesobbdd;
 
