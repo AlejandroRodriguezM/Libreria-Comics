@@ -130,9 +130,15 @@ public class MenuPrincipalController {
 
 	@FXML
 	private Button BotonVentanaEliminar;
+	
+    @FXML
+    private Button botonFrase;
 
 	@FXML
-	private Label labelDatosGuardados;
+	private Label prontInformacion;
+	
+    @FXML
+    private Label prontFrases;
 
 	@FXML
 	private Button botonGuardarExcel;
@@ -144,6 +150,14 @@ public class MenuPrincipalController {
 	Comics comic = new Comics();
 
 	private static Connection conn = DBManager.conexion();
+	
+	
+    @FXML
+    void fraseRandom(ActionEvent event) {
+
+    	prontFrases.setText(Comics.frasesComics());
+    	
+    }
 
 	/**
 	 * Limpia los campos de pantalla donde se escriben los datos.
@@ -292,8 +306,8 @@ public class MenuPrincipalController {
 				}
 				guardarDatos.close();
 			} else {
-				labelDatosGuardados.setStyle("-fx-background-color: #F53636");
-				labelDatosGuardados.setText("ERROR. Contenido de la bbdd \n cancelada.");
+				prontInformacion.setStyle("-fx-background-color: #F53636");
+				prontInformacion.setText("ERROR. Contenido de la bbdd \n cancelada.");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -383,15 +397,15 @@ public class MenuPrincipalController {
 				pb.redirectError(Redirect.INHERIT);
 				pb.redirectOutput(Redirect.to(fichero));
 				pb.start();
-				labelDatosGuardados.setStyle("-fx-background-color: #A0F52D");
-				labelDatosGuardados.setText("Base de datos exportada \ncorrectamente");
+				prontInformacion.setStyle("-fx-background-color: #A0F52D");
+				prontInformacion.setText("Base de datos exportada \ncorrectamente");
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
 
 		} else {
-			labelDatosGuardados.setStyle("-fx-background-color: #F53636");
-			labelDatosGuardados.setText("ERROR. Base de datos \nexportada cancelada.");
+			prontInformacion.setStyle("-fx-background-color: #F53636");
+			prontInformacion.setText("ERROR. Base de datos \nexportada cancelada.");
 		}
 	}
 

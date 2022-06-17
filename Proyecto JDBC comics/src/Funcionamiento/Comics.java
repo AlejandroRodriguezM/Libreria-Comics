@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 public class Comics {
 
@@ -333,6 +334,31 @@ public class Comics {
 		String sql = "ALTER TABLE comicsbbdd ORDER BY nomComic;";
 		Statement st = conn.createStatement();
 		st.execute(sql);
+	}
+
+	public static String frasesComics() {
+		
+		Random r = new Random();
+		int n;
+		
+		String frases[] = {"O sostienes el látigo, o recibes los látigazos.\n-Magneto",
+				"Hay belleza en todo, aún en la muerte. Pero no todos son capaces de verlo.\n-Vision",
+				"Blasfemar es el intento de una mente frágil por expresarse violentamente.\n-El Acertijo",
+				"Esto es la mesa de operaciones y yo soy el cirujano.\n-Batman",
+				"Afróntalo tigre, te acaba de tocar la loteria.\n-Mary Jane Watson",
+				"Si he de tener un pasado, prefiero que sea de opción multiple.\n-Joker",
+				"Si eres culpable, estás muerto.\n-Punisher",
+				"Soy el mejor en lo que hago... Y lo que hago no es agradable.\n-Wolverine",
+				"El poder absoluto corrompe de manera absoluta.\n-Charles Xavier",
+				"Cuando ellos griten, sálvanos, yo susurraré, no.\n-Rorschac",
+				"La existencia de la vida es un fenómeno altamente sobrevalorado.\n-Dr. Manhatan",
+				"No son los dioses los que deciden si el hombre existe; son los hombres los que deciden si los dioses existen.\n-Thor",
+				"Un hombre sin esperanza es un hombre sin miedo.\n-Wilson Fisk",
+				"No tiene nada de malo sentir miedo, siempre y cuando no te dejes vencer\n-Capitan America" };
+		n = (int)(Math.random()*r.nextInt(frases.length));
+		
+		return frases[n];
+		
 	}
 
 	@Override
