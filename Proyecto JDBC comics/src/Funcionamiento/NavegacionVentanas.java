@@ -9,6 +9,7 @@ import Controladores.EliminarDatosController;
 import Controladores.IntroducirDatosController;
 import Controladores.MenuPrincipalController;
 import Controladores.ModificarDatosController;
+import Controladores.RecomendacionesComic;
 import SinUsar.MenuOpcionesController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -146,6 +147,44 @@ public class NavegacionVentanas {
 
 			// Obtengo el controlador
 			ModificarDatosController controlador = loader.getController();
+
+			// Creo la scene y el stage
+			Scene scene = new Scene(root);
+			Stage stage = new Stage();
+
+			// Asocio el stage con el scene
+			stage.setScene(scene);
+			stage.show();
+
+			// Indico que debe hacer al cerrar
+			stage.setOnCloseRequest(e -> {
+				try {
+					controlador.closeWindows();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			});
+
+			stage.setScene(scene);
+			stage.show();
+
+		} catch (IOException ex) {
+			Logger.getLogger(MenuOpcionesController.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+	
+	public void verRecomendacion() {
+
+		try {
+			// Cargo la vista
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/RecomendacionComic.fxml"));
+
+			// Cargo el padre
+			Parent root = loader.load();
+
+			// Obtengo el controlador
+			RecomendacionesComic controlador = loader.getController();
 
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);

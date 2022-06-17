@@ -132,6 +132,9 @@ public class MenuPrincipalController {
 	private Button BotonVentanaEliminar;
 	
     @FXML
+    private Button botonVerRecomendacion;
+	
+    @FXML
     private Button botonFrase;
 
 	@FXML
@@ -408,6 +411,14 @@ public class MenuPrincipalController {
 			prontInformacion.setText("ERROR. Base de datos \nexportada cancelada.");
 		}
 	}
+	
+    @FXML
+    void recomendacionComic(ActionEvent event) {
+    	nav.verRecomendacion();
+    	
+		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
+		myStage.close();
+    }
 
 	/**
 	 * Vuelve al menu inicial de conexion de la base de datos.

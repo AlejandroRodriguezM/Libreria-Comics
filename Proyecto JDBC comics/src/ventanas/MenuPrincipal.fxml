@@ -74,5 +74,6 @@
             <Font size="21.0" />
          </font>
       </Label>
+      <Button fx:id="botonVerRecomendacion" layoutX="666.0" layoutY="365.0" mnemonicParsing="false" onAction="#recomendacionComic" prefHeight="53.0" prefWidth="324.0" text="No sabes que leer? Pulsa aqui!" />
    </children>
 </Pane>
