@@ -14,7 +14,7 @@
       <Line endX="460.5" endY="-18.0" layoutX="-79.0" layoutY="15.0" startX="460.5" startY="622.0" />
       <TextArea editable="false" layoutX="395.0" layoutY="24.0" prefHeight="122.0" prefWidth="200.0" text="Todos los datos son&#10;obligatorios para rellenar.&#10;El año de publicacion&#10;debe de costar del año,&#10;escrito como milenio&#10;completo: &quot;1992&quot;.&#10;" />
       <Button fx:id="botonLimpiarComic" layoutX="225.0" layoutY="334.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="54.0" prefWidth="93.0" text="Limpiar" />
-      <Button fx:id="botonVolver" layoutX="395.0" layoutY="569.0" mnemonicParsing="false" onAction="#volverAlMenu" prefHeight="54.0" prefWidth="93.0" text="Volver" />
+      <Button fx:id="botonVolver" layoutX="395.0" layoutY="569.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="54.0" prefWidth="93.0" text="Volver" />
       <Button fx:id="botonSalir" layoutX="502.0" layoutY="569.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="54.0" prefWidth="93.0" text="Salir" />
       <Label layoutX="17.0" layoutY="18.0" text="Nombre" />
       <Label layoutX="17.0" layoutY="274.0" text="Guionista" />

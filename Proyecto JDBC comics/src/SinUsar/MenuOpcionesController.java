@@ -64,7 +64,14 @@ public class MenuOpcionesController{
             stage.show();
 
             // Indico que debe hacer al cerrar
-            stage.setOnCloseRequest(e -> controlador.closeWindows());
+            stage.setOnCloseRequest(e -> {
+				try {
+					controlador.closeWindows();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			});
 
             // Ciero la ventana donde estoy
             Stage myStage = (Stage) this.BotonVentanaAniadir.getScene().getWindow();
@@ -97,7 +104,14 @@ public class MenuOpcionesController{
              stage.show();
 
              // Indico que debe hacer al cerrar
-             stage.setOnCloseRequest(e -> controlador.closeWindows());
+             stage.setOnCloseRequest(e -> {
+				try {
+					controlador.closeWindows();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			});
 
              // Ciero la ventana donde estoy
              Stage myStage = (Stage) this.botonVerBaseDatos.getScene().getWindow();

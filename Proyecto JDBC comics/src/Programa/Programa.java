@@ -16,7 +16,7 @@ public class Programa extends Application {
 	 */
 	public void start(Stage primaryStage) throws IOException, SQLException {
 		try {
-			Parent root = FXMLLoader.load(getClass().getResource("/ventanas/MenuPrincipal.fxml"));
+			Parent root = FXMLLoader.load(getClass().getResource("/ventanas/AccesoBBDD.fxml"));
 			primaryStage.setScene(new Scene(root));
 			primaryStage.setTitle("Aplicacion bbdd comics"); // Titulo de la aplicacion.
 			primaryStage.show();

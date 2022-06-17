@@ -52,7 +52,7 @@ public class MenuPrincipalController {
 
 	@FXML
 	private TextField anioPublicacion;
-	
+
 	@FXML
 	private TextField numeroID;
 
@@ -82,7 +82,7 @@ public class MenuPrincipalController {
 
 	@FXML
 	private TextField numeroComic;
-	
+
 	@FXML
 	private TableColumn<Comics, String> dibujante;
 
@@ -115,7 +115,7 @@ public class MenuPrincipalController {
 
 	@FXML
 	private TableColumn<Comics, String> variante;
-	
+
 	@FXML
 	public TableView<Comics> tablaBBDD;
 
@@ -140,7 +140,7 @@ public class MenuPrincipalController {
 	NavegacionVentanas nav = new NavegacionVentanas();
 
 	AccesoBBDDController datos = new AccesoBBDDController();
-	
+
 	Comics comic = new Comics();
 
 	private static Connection conn = DBManager.conexion();
@@ -177,7 +177,7 @@ public class MenuPrincipalController {
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
 
 		String idCom, nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom,
-		guionistaCom, dibujanteCom;
+				guionistaCom, dibujanteCom;
 
 		idCom = numeroID.getText();
 
@@ -230,22 +230,6 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * Vuelve al menu inicial de conexion de la base de datos.
-	 * 
-	 * @param event
-	 * @throws IOException
-	 */
-	@FXML
-	public void volverMenu(ActionEvent event) throws IOException {
-
-		nav.menuPrincipal();
-
-		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-		myStage.close();
-
-	}
-
-	/**
 	 * Permite abrir y cargar la ventana para añadir datos.
 	 * 
 	 * @param event
@@ -253,7 +237,7 @@ public class MenuPrincipalController {
 	@FXML
 	public void VentanaAniadir(ActionEvent event) {
 
-		nav.aniadirDatos();
+		nav.verIntroducirDatos();
 
 		Stage myStage = (Stage) this.BotonVentanaAniadir.getScene().getWindow();
 		myStage.close();
@@ -263,7 +247,7 @@ public class MenuPrincipalController {
 	@FXML
 	public void ventanaEliminar(ActionEvent event) {
 
-		nav.EliminarDatos();
+		nav.verEliminarDatos();
 
 		Stage myStage = (Stage) this.BotonEliminarComic.getScene().getWindow();
 		myStage.close();
@@ -273,7 +257,7 @@ public class MenuPrincipalController {
 	@FXML
 	public void VentanaModificar(ActionEvent event) {
 
-		nav.ModificarDatos();
+		nav.verModificarDatos();
 
 		Stage myStage = (Stage) this.BotonModificarComic.getScene().getWindow();
 		myStage.close();
@@ -335,22 +319,21 @@ public class MenuPrincipalController {
 		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
 	}
 
-
 	@FXML
 	void exportExcel(ActionEvent event) {
 
 		FileChooser fileChooser = new FileChooser();
 		File fichero = fileChooser.showSaveDialog(null);
 
-
 		try {
-			String query="select * from comicsbbdd";
+			String query = "select * from comicsbbdd";
 			Statement statement = conn.createStatement();
 			ResultSet rs = statement.executeQuery(query);
 			BufferedWriter fw = new BufferedWriter(new FileWriter(fichero + ".xls"));
-			fw.write("ID,NomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante,estado");
+			fw.write(
+					"ID,NomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante,estado");
 
-			while(rs.next()){
+			while (rs.next()) {
 				String id = (rs.getString("ID"));
 				String nombre = (rs.getString("nomComic"));
 				String numero = (rs.getString("numComic"));
@@ -364,8 +347,8 @@ public class MenuPrincipalController {
 				String dibujante = (rs.getString("nomDibujante"));
 				String estado = (rs.getString("estado"));
 
-				String line = String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
-						id, nombre, numero, variante, firma,editorial,formato,procedencia,fecha,guionista,dibujante,estado);
+				String line = String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", id, nombre, numero, variante, firma,
+						editorial, formato, procedencia, fecha, guionista, dibujante, estado);
 
 				fw.newLine();
 				fw.write(line);
@@ -377,12 +360,10 @@ public class MenuPrincipalController {
 		} catch (Exception e) {
 			System.out.println(e);
 			e.printStackTrace();
-		} 
+		}
 	}
 
-
-
-	//FUNCIONA SOLO EN LINUX
+	// FUNCIONA SOLO EN LINUX
 	/**
 	 * 
 	 * @param event
@@ -395,7 +376,8 @@ public class MenuPrincipalController {
 		if (fichero != null) {
 			try {
 				fichero.createNewFile();
-				String mysqlCom = String.format("mysqldump -u%s -p%s %s", DBManager.DB_USER, DBManager.DB_PASS, DBManager.DB_PORT);
+				String mysqlCom = String.format("mysqldump -u%s -p%s %s", DBManager.DB_USER, DBManager.DB_PASS,
+						DBManager.DB_PORT);
 				String[] command = new String[] { "/bin/bash", "-c", mysqlCom };
 				ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
 				pb.redirectError(Redirect.INHERIT);
@@ -414,14 +396,30 @@ public class MenuPrincipalController {
 	}
 
 	/**
+	 * Vuelve al menu inicial de conexion de la base de datos.
+	 * 
+	 * @param event
+	 * @throws IOException
+	 */
+	@FXML
+	public void volverMenu(ActionEvent event) throws IOException {
+
+		nav.verAccesoBBDD();
+
+		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
+		myStage.close();
+
+	}
+
+	/**
 	 * Permite salir completamente del programa.
+	 * 
 	 * @param event
 	 */
 	@FXML
 	public void salirPrograma(ActionEvent event) {
-		
-		if(nav.salirPrograma(event))
-		{
+
+		if (nav.salirPrograma(event)) {
 			Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
 			myStage.close();
 		}
@@ -429,10 +427,12 @@ public class MenuPrincipalController {
 
 	/**
 	 * Al cerrar la ventana, carga la ventana del menu principal
+	 * 
+	 * @throws IOException
 	 */
-	public void closeWindows() {
+	public void closeWindows() throws IOException {
 
-		nav.cerrarVentanaMenuPrincipal();
+		nav.verMenuPrincipal();
 
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();

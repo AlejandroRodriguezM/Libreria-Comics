@@ -184,7 +184,7 @@ public class Comics {
 			} while (rs.next());
 
 		} catch (Exception ex) {
-			ex.printStackTrace(); 
+			ex.printStackTrace();
 			// itself.
 		}
 
@@ -302,8 +302,9 @@ public class Comics {
 				this.guionista = rs.getString("nomGuionista");
 				this.dibujante = rs.getString("nomDibujante");
 				if (rs.getString("estado").equals("En posesion")) {
-					FiltrolistComics.add(new Comics(this.ID, this.nombre, this.numero, this.variante, this.firma, this.editorial,
-							this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante));
+					FiltrolistComics.add(
+							new Comics(this.ID, this.nombre, this.numero, this.variante, this.firma, this.editorial,
+									this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante));
 				}
 			}
 			rs.close();

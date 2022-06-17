@@ -115,7 +115,7 @@ public class ModificarDatosController {
 	private TableColumn<Comics, String> nombre;
 
 	NavegacionVentanas nav = new NavegacionVentanas();
-	
+
 	Comics comic = new Comics();
 
 	/**
@@ -194,7 +194,7 @@ public class ModificarDatosController {
 	@FXML
 	void volverMenu(ActionEvent event) throws IOException {
 
-		nav.verBBDD();
+		nav.verMenuPrincipal();
 
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();
@@ -208,7 +208,7 @@ public class ModificarDatosController {
 				procedenciaCom = "", fechaCom = "", guionistaCom = "", dibujanteCom = "";
 
 		id = idComic.getText();
-		
+
 		nombreCom = nombreComic.getText();
 
 		numeroCom = numeroComic.getText();
@@ -242,13 +242,13 @@ public class ModificarDatosController {
 
 	/**
 	 * Permite salir completamente del programa.
+	 * 
 	 * @param event
 	 */
 	@FXML
 	public void salirPrograma(ActionEvent event) {
-		
-		if(nav.salirPrograma(event))
-		{
+
+		if (nav.salirPrograma(event)) {
 			Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
 			myStage.close();
 		}
@@ -256,10 +256,12 @@ public class ModificarDatosController {
 
 	/**
 	 * Al cerrar la ventana, se cargara la ventana de verBBDD
+	 * 
+	 * @throws IOException
 	 */
-	public void closeWindows() {
+	public void closeWindows() throws IOException {
 
-		nav.cerrarVentanaSubMenu();
+		nav.verMenuPrincipal();
 
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();

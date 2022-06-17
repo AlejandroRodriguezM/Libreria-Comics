@@ -18,7 +18,7 @@ import javafx.stage.Stage;
 public class AccesoBBDDController {
 
 	// Conexión a la base de datos
-	//	private static Connection conn;
+	// private static Connection conn;
 
 	@FXML
 	private Button botonAccesobbdd;
@@ -94,13 +94,13 @@ public class AccesoBBDDController {
 
 		if (Funcionamiento.DBManager.isConnected()) {
 
-			nav.verBBDD();
+			nav.verMenuPrincipal();
+			;
 			datosBBDD();
 
 			Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
 			myStage.close();
-		}
-		else {
+		} else {
 			estadoConexion.setStyle("-fx-background-color: #DD370F");
 			estadoConexion.setFont(new Font("Arial", 25));
 			estadoConexion.setText("Conectate a la bbdd \nantes de continuar");
@@ -173,13 +173,13 @@ public class AccesoBBDDController {
 
 	/**
 	 * Permite salir completamente del programa.
+	 * 
 	 * @param event
 	 */
 	@FXML
 	public void salirPrograma(ActionEvent event) {
 
-		if(nav.salirPrograma(event))
-		{
+		if (nav.salirPrograma(event)) {
 			Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
 			myStage.close();
 		}

@@ -84,14 +84,16 @@ public class IntroducirDatosController {
 	}
 
 	/**
-	 * Añade datos a la base de datos segun los parametros introducidos en los textField
+	 * Añade datos a la base de datos segun los parametros introducidos en los
+	 * textField
+	 * 
 	 * @param event
 	 */
 	@FXML
 	public void agregarDatos(ActionEvent event) {
 
 		String nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom,
-		guionistaCom, dibujanteCom;
+				guionistaCom, dibujanteCom;
 
 		DBManager.loadDriver();
 
@@ -140,15 +142,14 @@ public class IntroducirDatosController {
 			statement.setString(10, dibujanteCom);
 
 			if (statement.executeUpdate() == 1) {
-				prontDatos.setText("Comic añadido correctamente!" + "\nNombre del comic: " + nombreCom
-						+ dibujanteCom + "\nNumero: " + numeroCom + "\nPortada variante: " + varianteCom + "\nFirma: "
-						+ firmaCom + "\nEditorial: " + editorialCom + "\nFormato: " + formatoCom + "\nProcedencia: "
+				prontDatos.setText("Comic añadido correctamente!" + "\nNombre del comic: " + nombreCom + dibujanteCom
+						+ "\nNumero: " + numeroCom + "\nPortada variante: " + varianteCom + "\nFirma: " + firmaCom
+						+ "\nEditorial: " + editorialCom + "\nFormato: " + formatoCom + "\nProcedencia: "
 						+ procedenciaCom + "\nFecha de publicacion: " + fechaCom + "\nGuionista: " + guionistaCom
 						+ "\nDibujante: " + dibujanteCom);
 				statement.close();
 			} else {
-				prontDatos
-				.setText("Se ha encontrado un error. No ha sido posible añadir el comic a la base de datos.");
+				prontDatos.setText("Se ha encontrado un error. No ha sido posible añadir el comic a la base de datos.");
 			}
 		} catch (SQLException ex) {
 			System.err.println("Error al insertar un comic" + ex);
@@ -157,13 +158,14 @@ public class IntroducirDatosController {
 
 	/**
 	 * Permite volver al menu de conexion a la base de datos.
+	 * 
 	 * @param event
 	 * @throws IOException
 	 */
 	@FXML
-	void volverAlMenu(ActionEvent event) throws IOException {
+	void volverMenu(ActionEvent event) throws IOException {
 
-		nav.verBBDD();
+		nav.verMenuPrincipal();
 
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();
@@ -171,13 +173,13 @@ public class IntroducirDatosController {
 
 	/**
 	 * Permite salir completamente del programa.
+	 * 
 	 * @param event
 	 */
 	@FXML
 	public void salirPrograma(ActionEvent event) {
-		
-		if(nav.salirPrograma(event))
-		{
+
+		if (nav.salirPrograma(event)) {
 			Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
 			myStage.close();
 		}
@@ -185,10 +187,12 @@ public class IntroducirDatosController {
 
 	/**
 	 * Al cerrar la ventana, se cargara la ventana de verBBDD
+	 * 
+	 * @throws IOException
 	 */
-	public void closeWindows() {
+	public void closeWindows() throws IOException {
 
-		nav.cerrarVentanaSubMenu();
+		nav.verMenuPrincipal();
 
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();
