@@ -60,9 +60,9 @@ public class EliminarDatosController {
 
 	@FXML
 	private Button botonVolver;
-	
-    @FXML
-    private Button botonbbdd;
+
+	@FXML
+	private Button botonbbdd;
 
 	@FXML
 	private TextField nombreComic;
@@ -143,21 +143,21 @@ public class EliminarDatosController {
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();
 	}
-	
+
 	@FXML
 	void eliminarDatos(ActionEvent event) throws SQLException { //Metodo que permite cambiar de estado un comic, para que se deje de mostrar en el programa, pero este sigue estando dentro de la bbdd
 		String id, nombreCom = "", numeroCom = "", varianteCom = "", firmaCom = "", editorialCom = "", formatoCom = "",
 				procedenciaCom = "", fechaCom = "", guionistaCom = "", dibujanteCom = "", sentenciaSQL;
 
 		sentenciaSQL = "UPDATE comicsbbdd set estado = 'Vendido' where ID = ?";
-		
+
 		PreparedStatement stmt;
-		
+
 		try {
 			if (nav.alertaEliminar()) { //Llamada a metodo que permite lanzar una alerta. En caso de aceptarlo permitira lo siguiente.
-				
+
 				id = idComic.getText();
-				
+
 				List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(id, nombreCom, numeroCom,
 						varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom)); //Lista que contiene toda los comics de la base de datos.
 				if (id.length() != 0) {
@@ -209,7 +209,7 @@ public class EliminarDatosController {
 		tablaBBDD.getItems().setAll(listComics); //Muestra el contenido de la bbdd en las columnas especificas.
 
 	}
-	
+
 	/**
 	 * Muestra toda la base de datos.
 	 * 
@@ -228,7 +228,7 @@ public class EliminarDatosController {
 		tablaBBDD.getItems().setAll(listComics);
 
 	}
-	
+
 	/**
 	 * Muestra las columnas especificas del fichero FXML
 	 */
