@@ -218,11 +218,11 @@ public class EliminarDatosController {
 	 */
 	@SuppressWarnings("unchecked")
 	@FXML
-	void verTodabbdd(ActionEvent event) throws SQLException {
+	void verTodabbdd(ActionEvent event) throws SQLException { //Muestra todo el contenido de la base de datos.
 
-		nombreColumnas();
+		nombreColumnas(); //Llamada a metodo que sirve poner los datos en su columna.
 
-		List<Comics> listComics = FXCollections.observableArrayList(comic.verTodo());
+		List<Comics> listComics = FXCollections.observableArrayList(comic.verTodo()); //List que contiene todo el contenido de la bbdd
 		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante);
 		tablaBBDD.getItems().setAll(listComics);
