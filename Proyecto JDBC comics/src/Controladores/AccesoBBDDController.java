@@ -1,5 +1,8 @@
 package Controladores;
 
+import java.applet.AppletContext;
+import java.awt.Desktop;
+
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  * Las ventanas graficas se realizan con JavaFX.
@@ -24,6 +27,8 @@ package Controladores;
  */
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 
 import Funcionamiento.DBManager;
 import Funcionamiento.NavegacionVentanas;
@@ -82,28 +87,50 @@ public class AccesoBBDDController {
 
 	/**
 	 * Metodo de acceso a pagina web
+	 * 
 	 * @param event
 	 * @throws IOException
 	 */
 	@FXML
 	void accesoGitHub(ActionEvent event) throws IOException {
 		String url = "https://github.com/MisterioRojo/Proyecto-gui-bbdd";
-		java.awt.Desktop.getDesktop().browse(java.net.URI.create(url)); //Metodo que abre tu navegador por defecto y muestra la url que se encuentra en el String
+
+		if (Desktop.isDesktopSupported()) {
+			java.awt.Desktop.getDesktop().browse(java.net.URI.create(url)); // Metodo que abre tu navegador por defecto
+																			// y muestra la url que se encuentra en el
+																			// String
+		} else {
+			Desktop desktop = Desktop.getDesktop();
+			if (desktop.isSupported(Desktop.Action.BROWSE)) {
+				desktop.browse(URI.create(url));
+			}
+		}
 	}
 
 	/**
 	 * MEtodo de acceso a pagina web
+	 * 
 	 * @param event
 	 * @throws IOException
 	 */
 	@FXML
 	void accesoTwitter(ActionEvent event) throws IOException {
 		String url = "https://twitter.com/home";
-		java.awt.Desktop.getDesktop().browse(java.net.URI.create(url)); //Metodo que abre tu navegador por defecto y muestra la url que se encuentra en el String
+
+		if (Desktop.isDesktopSupported()) {
+			java.awt.Desktop.getDesktop().browse(java.net.URI.create(url)); // Metodo que abre tu navegador por defecto
+																			// y muestra la url que se encuentra en el																// String
+		} else {
+			Desktop desktop = Desktop.getDesktop();
+			if (desktop.isSupported(Desktop.Action.BROWSE)) {
+				desktop.browse(URI.create(url));
+			}
+		}
 	}
 
 	/**
 	 * Permite entrar dentro del menuPrincipal
+	 * 
 	 * @param event
 	 * @throws InterruptedException
 	 * @throws IOException
@@ -111,14 +138,16 @@ public class AccesoBBDDController {
 	@FXML
 	void entrarMenu(ActionEvent event) throws InterruptedException, IOException {
 
-		if (Funcionamiento.DBManager.isConnected()) { //Siempre que el metodo de la clase DBManager sea true, permitira acceder al menu principal
+		if (Funcionamiento.DBManager.isConnected()) { // Siempre que el metodo de la clase DBManager sea true, permitira
+														// acceder al menu principal
 
-			nav.verMenuPrincipal(); //Llamada a metodo de la clase NavegacionVentanas. Permite cargar y mostrar el menu principal
+			nav.verMenuPrincipal(); // Llamada a metodo de la clase NavegacionVentanas. Permite cargar y mostrar el
+									// menu principal
 			envioDatosBBDD();
 
 			Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
 			myStage.close();
-		} else { //En caso contrario mostrara el siguiente mensaje.
+		} else { // En caso contrario mostrara el siguiente mensaje.
 			estadoConexion.setStyle("-fx-background-color: #DD370F");
 			estadoConexion.setFont(new Font("Arial", 25));
 			estadoConexion.setText("Conectate a la bbdd \nantes de continuar");
@@ -127,10 +156,11 @@ public class AccesoBBDDController {
 
 	/**
 	 * Limpia los datos de los campos
+	 * 
 	 * @param event
 	 */
 	@FXML
-	void limpiarDatos(ActionEvent event) { //Metodo que permite limpiar todos textField de la ventna.
+	void limpiarDatos(ActionEvent event) { // Metodo que permite limpiar todos textField de la ventna.
 		nombreBBDD.setText("");
 		usuario.setText("");
 		pass.setText("");
@@ -139,16 +169,18 @@ public class AccesoBBDDController {
 
 	/**
 	 * Cierra la bbdd
+	 * 
 	 * @param event
 	 */
 	@FXML
 	void cerrarbbdd(ActionEvent event) {
 
-		if (Funcionamiento.DBManager.isConnected()) { //Siempre que el metodo isConnected sea true, permitira cerrar la base de datos.
+		if (Funcionamiento.DBManager.isConnected()) { // Siempre que el metodo isConnected sea true, permitira cerrar la
+														// base de datos.
 			estadoConexion.setText("BBDD Cerrada con existo.\nNo conectado.");
 			estadoConexion.setStyle("-fx-background-color: #696969");
 			Funcionamiento.DBManager.close();
-		} else { //En caso contrario, mostrara el siguiente mensaje.
+		} else { // En caso contrario, mostrara el siguiente mensaje.
 			estadoConexion.setStyle("-fx-background-color: #DD370F");
 			estadoConexion.setFont(new Font("Arial", 22));
 			estadoConexion.setText("ERROR. No se encuentra \nconectado a ninguna bbdd");
@@ -157,20 +189,24 @@ public class AccesoBBDDController {
 
 	/**
 	 * Envia los datos a la clase DBManager y permite conectarse a esta.
+	 * 
 	 * @param event
 	 */
 	@FXML
 	void enviarDatos(ActionEvent event) {
 
-		Funcionamiento.DBManager.loadDriver(); //Llamada a metodo que permite comprobar que el driver de conexion a la base de datos sea correcto y funcione
-		envioDatosBBDD(); //Llamada a metodo que manda los datos de los textField de la ventana hacia la clase DBManager.
-		DBManager.conexion(); //Llamada a metodo que permite conectar con la base de datos.
+		Funcionamiento.DBManager.loadDriver(); // Llamada a metodo que permite comprobar que el driver de conexion a la
+												// base de datos sea correcto y funcione
+		envioDatosBBDD(); // Llamada a metodo que manda los datos de los textField de la ventana hacia la
+							// clase DBManager.
+		DBManager.conexion(); // Llamada a metodo que permite conectar con la base de datos.
 
-		if (Funcionamiento.DBManager.isConnected()) { //Siempre que la base de datos se haya conectado de forma correcta, mostrara el siguiente mensaje
+		if (Funcionamiento.DBManager.isConnected()) { // Siempre que la base de datos se haya conectado de forma
+														// correcta, mostrara el siguiente mensaje
 			estadoConexion.setStyle("-fx-background-color: #A0F52D");
 			estadoConexion.setText("Conectado");
-		} else { //En caso contrario mostrara el siguiente mensaje
-			pass.setText(""); //Limpia el campo de la contraseña en caso de que isConnected sea false.
+		} else { // En caso contrario mostrara el siguiente mensaje
+			pass.setText(""); // Limpia el campo de la contraseña en caso de que isConnected sea false.
 			estadoConexion.setStyle("-fx-background-color: #DD370F");
 			estadoConexion.setFont(new Font("Arial", 22));
 			estadoConexion.setText("ERROR. Los datos son \nincorrectos. Revise \nlos datos.");
@@ -179,15 +215,17 @@ public class AccesoBBDDController {
 
 	/**
 	 * Funcion que permite mandar los datos a la clase DBManager
+	 * 
 	 * @return
 	 */
-	public void envioDatosBBDD() { //Metodo que manda toda la informacion de los textField a la clase DBManager.
+	public void envioDatosBBDD() { // Metodo que manda toda la informacion de los textField a la clase DBManager.
 		String datos[] = new String[4];
 		datos[0] = puertobbdd.getText();
 		datos[1] = nombreBBDD.getText();
 		datos[2] = usuario.getText();
 		datos[3] = pass.getText();
-		DBManager.datosBBDD(datos); //llamada a metodo que permite mandar los datos de los TextField a la clase DBManager
+		DBManager.datosBBDD(datos); // llamada a metodo que permite mandar los datos de los TextField a la clase
+									// DBManager
 	}
 
 	/**
@@ -198,7 +236,7 @@ public class AccesoBBDDController {
 	@FXML
 	public void salirPrograma(ActionEvent event) {
 
-		if (nav.salirPrograma(event)) { //Llamada a metodo que permite salir completamente del programa
+		if (nav.salirPrograma(event)) { // Llamada a metodo que permite salir completamente del programa
 			Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
 			myStage.close();
 		}
@@ -207,7 +245,8 @@ public class AccesoBBDDController {
 	/**
 	 * Cierra el programa a la fuerza correctamente.
 	 */
-	public void closeWindows() { //Metodo que permite cerrar completamente el programa en caso de cerrar a la fuerza.
+	public void closeWindows() { // Metodo que permite cerrar completamente el programa en caso de cerrar a la
+									// fuerza.
 		Stage myStage = (Stage) this.botonEnviar.getScene().getWindow();
 		myStage.close();
 	}

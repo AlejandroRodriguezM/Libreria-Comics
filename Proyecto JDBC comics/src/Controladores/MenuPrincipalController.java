@@ -181,8 +181,8 @@ public class MenuPrincipalController {
 	@FXML
 	void fraseRandom(ActionEvent event) {
 
+		prontFrases.setStyle("-fx-background-color: #D5D8D7");
 		prontFrases.setText(Comics.frasesComics());
-
 	}
 
 	/**
@@ -456,7 +456,43 @@ public class MenuPrincipalController {
 				guionista, dibujante);
 		tablaBBDD.getItems().setAll(listComics);
 	}
+	
+	/**
+	 * 
+	 * @param fichero
+	 */
+	@SuppressWarnings("unchecked")
+	public void makeFile(File fichero) {
+		try {
+			if (fichero != null) {
+				fichero.createNewFile();
 
+				nombreColumnas();
+
+				List<Comics> listComics = FXCollections.observableArrayList(comic.verTodo());
+				tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia,
+						fecha, guionista, dibujante);
+
+				FileWriter guardarDatos = new FileWriter(fichero + ".txt");
+				for (int i = 0; i < listComics.size(); i++) {
+					guardarDatos.write(listComics.get(i) + "\n");
+				}
+				guardarDatos.close();
+			} else {
+				prontInformacion.setStyle("-fx-background-color: #F53636");
+				prontInformacion.setText("ERROR. Contenido de la bbdd \n cancelada.");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
 	public String[] camposComics() {
 		String campos[] = new String[11];
 
@@ -483,38 +519,6 @@ public class MenuPrincipalController {
 		campos[10] = nombreDibujante.getText();
 
 		return campos;
-	}
-
-	/**
-	 * 
-	 * @param fichero
-	 */
-	@SuppressWarnings("unchecked")
-	public void makeFile(File fichero) {
-		try {
-			if (fichero != null) {
-				fichero.createNewFile();
-
-				nombreColumnas();
-
-				List<Comics> listComics = FXCollections.observableArrayList(comic.verTodo());
-				tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia,
-						fecha, guionista, dibujante);
-
-				FileWriter guardarDatos = new FileWriter(fichero);
-				for (int i = 0; i < listComics.size(); i++) {
-					guardarDatos.write(listComics.get(i) + "\n");
-				}
-				guardarDatos.close();
-			} else {
-				prontInformacion.setStyle("-fx-background-color: #F53636");
-				prontInformacion.setText("ERROR. Contenido de la bbdd \n cancelada.");
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 	}
 
 	/////////////////////////////

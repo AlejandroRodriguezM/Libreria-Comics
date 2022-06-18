@@ -51,6 +51,11 @@ public class RecomendacionesComic {
 
 	NavegacionVentanas nav = new NavegacionVentanas();
 
+	/**
+	 * 
+	 * @param event
+	 * @throws SQLException
+	 */
 	@FXML
 	void eligePorMi(ActionEvent event) throws SQLException {
 

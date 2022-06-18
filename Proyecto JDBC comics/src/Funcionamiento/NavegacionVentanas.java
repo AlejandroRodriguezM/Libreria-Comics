@@ -64,7 +64,9 @@ public class NavegacionVentanas {
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
 			Stage stage = new Stage();
-			stage.getIcons().add(new Image("/Icono/icon.png"));
+			stage.setTitle("Aplicacion bbdd comics"); // Titulo de la aplicacion.
+
+			stage.getIcons().add(new Image("/Icono/icon2.png"));
 
 			// Asocio el stage con el scene
 			stage.setScene(scene);
@@ -100,7 +102,8 @@ public class NavegacionVentanas {
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
 			Stage stage = new Stage();
-			stage.getIcons().add(new Image("/Icono/icon.png"));
+			stage.setTitle("Aplicacion bbdd comics"); // Titulo de la aplicacion.
+			stage.getIcons().add(new Image("/Icono/icon2.png"));
 
 			// Asocio el stage con el scene
 			stage.setScene(scene);
@@ -139,7 +142,8 @@ public class NavegacionVentanas {
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
 			Stage stage = new Stage();
-			stage.getIcons().add(new Image("/Icono/icon.png"));
+			stage.setTitle("Aplicacion bbdd comics"); // Titulo de la aplicacion.
+			stage.getIcons().add(new Image("/Icono/icon2.png"));
 
 			// Asocio el stage con el scene
 			stage.setScene(scene);
@@ -178,7 +182,8 @@ public class NavegacionVentanas {
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
 			Stage stage = new Stage();
-			stage.getIcons().add(new Image("/Icono/icon.png"));
+			stage.setTitle("Aplicacion bbdd comics"); // Titulo de la aplicacion.
+			stage.getIcons().add(new Image("/Icono/icon2.png"));
 
 			// Asocio el stage con el scene
 			stage.setScene(scene);
@@ -217,7 +222,8 @@ public class NavegacionVentanas {
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
 			Stage stage = new Stage();
-			stage.getIcons().add(new Image("/Icono/icon.png"));
+			stage.setTitle("Aplicacion bbdd comics"); // Titulo de la aplicacion.
+			stage.getIcons().add(new Image("/Icono/icon2.png"));
 
 			// Asocio el stage con el scene
 			stage.setScene(scene);
@@ -256,7 +262,8 @@ public class NavegacionVentanas {
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
 			Stage stage = new Stage();
-			stage.getIcons().add(new Image("/Icono/icon.png"));
+			stage.setTitle("Aplicacion bbdd comics"); // Titulo de la aplicacion.
+			stage.getIcons().add(new Image("/Icono/icon2.png"));
 
 			// Asocio el stage con el scene
 			stage.setScene(scene);

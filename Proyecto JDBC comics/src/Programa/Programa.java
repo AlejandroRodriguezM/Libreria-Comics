@@ -44,7 +44,7 @@ public class Programa extends Application {
 			primaryStage.setScene(new Scene(root));
 			primaryStage.setTitle("Aplicacion bbdd comics"); // Titulo de la aplicacion.
 			primaryStage.show();
-			primaryStage.getIcons().add(new Image("/Icono/icon.png"));
+			primaryStage.getIcons().add(new Image("/Icono/icon2.png"));
 
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
