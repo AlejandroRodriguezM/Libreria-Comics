@@ -30,6 +30,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class Programa extends Application {
@@ -43,6 +44,7 @@ public class Programa extends Application {
 			primaryStage.setScene(new Scene(root));
 			primaryStage.setTitle("Aplicacion bbdd comics"); // Titulo de la aplicacion.
 			primaryStage.show();
+			primaryStage.getIcons().add(new Image("/Icono/icon.png"));
 
 		} catch (IOException e) {
 			System.out.println(e.getMessage());

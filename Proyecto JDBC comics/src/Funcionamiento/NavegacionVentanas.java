@@ -40,6 +40,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 
@@ -63,6 +64,7 @@ public class NavegacionVentanas {
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
 			Stage stage = new Stage();
+			stage.getIcons().add(new Image("/Icono/icon.png"));
 
 			// Asocio el stage con el scene
 			stage.setScene(scene);
@@ -98,6 +100,7 @@ public class NavegacionVentanas {
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
 			Stage stage = new Stage();
+			stage.getIcons().add(new Image("/Icono/icon.png"));
 
 			// Asocio el stage con el scene
 			stage.setScene(scene);
@@ -136,6 +139,7 @@ public class NavegacionVentanas {
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
 			Stage stage = new Stage();
+			stage.getIcons().add(new Image("/Icono/icon.png"));
 
 			// Asocio el stage con el scene
 			stage.setScene(scene);
@@ -174,6 +178,7 @@ public class NavegacionVentanas {
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
 			Stage stage = new Stage();
+			stage.getIcons().add(new Image("/Icono/icon.png"));
 
 			// Asocio el stage con el scene
 			stage.setScene(scene);
@@ -212,6 +217,7 @@ public class NavegacionVentanas {
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
 			Stage stage = new Stage();
+			stage.getIcons().add(new Image("/Icono/icon.png"));
 
 			// Asocio el stage con el scene
 			stage.setScene(scene);
@@ -250,6 +256,7 @@ public class NavegacionVentanas {
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
 			Stage stage = new Stage();
+			stage.getIcons().add(new Image("/Icono/icon.png"));
 
 			// Asocio el stage con el scene
 			stage.setScene(scene);
