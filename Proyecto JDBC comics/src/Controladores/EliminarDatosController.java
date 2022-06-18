@@ -130,22 +130,95 @@ public class EliminarDatosController {
 	}
 
 	/**
-	 * Permite volver al menu de conexion a la base de datos.
-	 *
+	 * 
 	 * @param event
-	 * @throws IOException
+	 * @throws SQLException
 	 */
 	@FXML
-	void volverMenu(ActionEvent event) throws IOException {
-
-		nav.verMenuPrincipal();
-
-		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-		myStage.close();
+	void eliminarDatos(ActionEvent event) throws SQLException { //Metodo que permite cambiar de estado un comic, para que se deje de mostrar en el programa, pero este sigue estando dentro de la bbdd
+		deleteData();
 	}
 
+	/**
+	 * 
+	 * @param event
+	 * @throws SQLException
+	 */
 	@FXML
-	void eliminarDatos(ActionEvent event) throws SQLException { //Metodo que permite cambiar de estado un comic, para que se deje de mostrar en el programa, pero este sigue estando dentro de la bbdd
+	void mostrarPorParametro(ActionEvent event) throws SQLException { //Permite ver el contenido de la base de datos por marametro.
+
+		nombreColumnas(); //Llamada a metodo que servira para comprar que columnas hay
+		listaPorParametro();
+	}
+
+	/**
+	 * Muestra toda la base de datos.
+	 * 
+	 * @param event
+	 * @throws SQLException
+	 */
+	@FXML
+	void verTodabbdd(ActionEvent event) throws SQLException { //Muestra todo el contenido de la base de datos.
+
+		nombreColumnas(); //Llamada a metodo que sirve poner los datos en su columna.
+		listaCompleta();
+	}
+
+	/**
+	 * Muestra las columnas especificas del fichero FXML
+	 */
+	private void nombreColumnas() { //Funcion que especifica el total de columnas de la bbdd se mostraran en la ventana
+		ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
+		nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+		numero.setCellValueFactory(new PropertyValueFactory<>("numero"));
+		variante.setCellValueFactory(new PropertyValueFactory<>("variante"));
+		firma.setCellValueFactory(new PropertyValueFactory<>("firma"));
+		editorial.setCellValueFactory(new PropertyValueFactory<>("editorial"));
+		formato.setCellValueFactory(new PropertyValueFactory<>("formato"));
+		procedencia.setCellValueFactory(new PropertyValueFactory<>("procedencia"));
+		fecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+		guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
+		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
+	}
+	
+	//////////////////////////
+	////FUNCIONES/////////////
+	//////////////////////////
+	
+	/**
+	 * 
+	 * @throws SQLException
+	 */
+	@SuppressWarnings("unchecked")
+	public void listaCompleta() throws SQLException {
+		List<Comics> listComics = FXCollections.observableArrayList(comic.verTodo());
+		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+				guionista, dibujante);
+		tablaBBDD.getItems().setAll(listComics);
+	}
+
+	/**
+	 * 
+	 * @throws SQLException
+	 */
+	@SuppressWarnings("unchecked")
+	public void listaPorParametro() throws SQLException {
+		String datosComics[] = camposComics();
+
+		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(datosComics[0], datosComics[1],
+				datosComics[2], datosComics[3], datosComics[4], datosComics[5], datosComics[6], datosComics[7],
+				datosComics[8], datosComics[9], datosComics[10]));
+		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+				guionista, dibujante);
+		tablaBBDD.getItems().setAll(listComics);
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public void deleteData()
+	{
 		String id, nombreCom = "", numeroCom = "", varianteCom = "", firmaCom = "", editorialCom = "", formatoCom = "",
 				procedenciaCom = "", fechaCom = "", guionistaCom = "", dibujanteCom = "", sentenciaSQL;
 
@@ -167,7 +240,7 @@ public class EliminarDatosController {
 					stmt.setString(1, id);
 					if (stmt.executeUpdate() == 1) { //En caso de que el cambio de estado se haya realizado correctamente, mostrara lo siguiente
 						pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-						pantallaInformativa.setText("Has eliminado correctamente: " + listComics.toString());
+						pantallaInformativa.setText("Has eliminado correctamente: " + listComics.toString().replace("[", "").replace("]", "")); 
 					} else { //En caso contrario mostrara lo siguiente
 						pantallaInformativa.setStyle("-fx-background-color: #F53636");
 						pantallaInformativa.setText("ERROR. ID desconocido.");
@@ -181,71 +254,42 @@ public class EliminarDatosController {
 			System.err.println(ex);
 		}
 	}
+	
+	public String[] camposComics() {
+		String campos[] = new String[11];
 
+		campos[0] = idComic.getText();
+
+		campos[1] = nombreComic.getText();
+
+		campos[2] = numeroComic.getText();
+
+		return campos;
+	}
+	
+	/////////////////////////////////
+	//// METODO LLAMADA A VENTANA//
+	/////////////////////////////////
+	
 	/**
-	 * 
+	 * Permite volver al menu de conexion a la base de datos.
+	 *
 	 * @param event
-	 * @throws SQLException
+	 * @throws IOException
 	 */
-	@SuppressWarnings("unchecked")
 	@FXML
-	void mostrarPorParametro(ActionEvent event) throws SQLException { //Permite ver el contenido de la base de datos por marametro.
+	void volverMenu(ActionEvent event) throws IOException {
 
-		String id, nombreCom, numeroCom, varianteCom = "", firmaCom = "", editorialCom = "", formatoCom = "",
-				procedenciaCom = "", fechaCom = "", guionistaCom = "", dibujanteCom = "";
+		nav.verMenuPrincipal();
 
-		nombreCom = nombreComic.getText();
-
-		numeroCom = numeroComic.getText();
-
-		id = idComic.getText();
-
-		nombreColumnas(); //Llamada a metodo que servira para comprar que columnas hay
-
-		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(id, nombreCom, numeroCom,
-				varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom)); //Lista que contiene toda los comics de la base de datos.
-		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
-				guionista, dibujante); //Muestra los datos en las columnas 
-		tablaBBDD.getItems().setAll(listComics); //Muestra el contenido de la bbdd en las columnas especificas.
-
+		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
+		myStage.close();
 	}
 
-	/**
-	 * Muestra toda la base de datos.
-	 * 
-	 * @param event
-	 * @throws SQLException
-	 */
-	@SuppressWarnings("unchecked")
-	@FXML
-	void verTodabbdd(ActionEvent event) throws SQLException { //Muestra todo el contenido de la base de datos.
-
-		nombreColumnas(); //Llamada a metodo que sirve poner los datos en su columna.
-
-		List<Comics> listComics = FXCollections.observableArrayList(comic.verTodo()); //List que contiene todo el contenido de la bbdd
-		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
-				guionista, dibujante);
-		tablaBBDD.getItems().setAll(listComics);
-
-	}
-
-	/**
-	 * Muestra las columnas especificas del fichero FXML
-	 */
-	private void nombreColumnas() { //Funcion que especifica el total de columnas de la bbdd se mostraran en la ventana
-		ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
-		nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-		numero.setCellValueFactory(new PropertyValueFactory<>("numero"));
-		variante.setCellValueFactory(new PropertyValueFactory<>("variante"));
-		firma.setCellValueFactory(new PropertyValueFactory<>("firma"));
-		editorial.setCellValueFactory(new PropertyValueFactory<>("editorial"));
-		formato.setCellValueFactory(new PropertyValueFactory<>("formato"));
-		procedencia.setCellValueFactory(new PropertyValueFactory<>("procedencia"));
-		fecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
-		guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
-		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
-	}
-
+	/////////////////////////////
+	//// FUNCIONES PARA SALIR////
+	/////////////////////////////
+	
 	/**
 	 * Permite salir completamente del programa.
 	 * 

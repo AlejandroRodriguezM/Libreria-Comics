@@ -54,6 +54,16 @@ public class RecomendacionesComic {
 	@FXML
 	void eligePorMi(ActionEvent event) throws SQLException {
 
+		printComicRecomendado.setText(generarLectura());
+	}
+	
+	/**
+	 * 
+	 * @return
+	 * @throws SQLException
+	 */
+	public String generarLectura() throws SQLException
+	{
 		Random r = new Random();
 
 		int n;
@@ -66,8 +76,8 @@ public class RecomendacionesComic {
 
 		limpiarPront();
 		
-		printComicRecomendado.setText(comic.verTodo()[n].toString());
-
+		return comic.verTodo()[n].toString();
+		
 	}
 	
 	public void limpiarPront()
@@ -90,7 +100,6 @@ public class RecomendacionesComic {
 	 * @param event
 	 * @throws IOException
 	 */
-	@FXML
 	public void volverMenu(ActionEvent event) throws IOException {
 
 		nav.verMenuPrincipal();

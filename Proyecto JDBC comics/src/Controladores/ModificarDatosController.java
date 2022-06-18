@@ -58,9 +58,9 @@ public class ModificarDatosController {
 
 	@FXML
 	private Button botonVolver;
-	
-    @FXML
-    private Button botonbbdd;
+
+	@FXML
+	private Button botonbbdd;
 
 	@FXML
 	private TextField nombreComic;
@@ -150,9 +150,20 @@ public class ModificarDatosController {
 	 */
 	@FXML
 	void limpiarDatos(ActionEvent event) {
+
 		nombreComic.setText("");
+		anioPublicacion.setText("");
+		nombreComicMod.setText("");
+		numeroComicMod.setText("");
+		nombreDibujante.setText("");
+		nombreEditorial.setText("");
+		nombreFirma.setText("");
+		nombreFormato.setText("");
+		nombreGuionista.setText("");
+		nombreProcedencia.setText("");
+		nombreVariante.setText("");
 		numeroComic.setText("");
-		ID.setText("");
+		idComic.setText("");
 	}
 
 	/**
@@ -161,50 +172,86 @@ public class ModificarDatosController {
 	 * @throws SQLException
 	 */
 	@FXML
-	void modificarDatos(ActionEvent event) throws SQLException {
+	void modificarDatos(ActionEvent event) {
 
-		String nombreCom = "", numeroCom = "", varianteCom = "", firmaCom = "", editorialCom = "", formatoCom = "",
-				procedenciaCom = "", fechaCom = "", guionistaCom = "", dibujanteCom = "", sentenciaSQL;
-		
-		String id = idComic.getText();
+		modificacionDatos();
+	}
 
-		sentenciaSQL = "UPDATE comicsbbdd set nomComic = ?,numComic = ?,nomVariante = ?,"
+	/////////////////////////////////
+	//// FUNCIONES////////////////////
+	/////////////////////////////////
+
+	public String[] camposComics() {
+		String campos[] = new String[11];
+
+		campos[0] = idComic.getText();
+
+		campos[1] = nombreComicMod.getText();
+
+		campos[2] = numeroComicMod.getText();
+
+		campos[3] = nombreVariante.getText();
+
+		campos[4] = nombreFirma.getText();
+
+		campos[5] = nombreEditorial.getText();
+
+		campos[6] = nombreFormato.getText();
+
+		campos[7] = nombreProcedencia.getText();
+
+		campos[8] = anioPublicacion.getText();
+
+		campos[9] = nombreGuionista.getText();
+
+		campos[10] = nombreDibujante.getText();
+
+		return campos;
+	}
+
+	/**
+	 * 
+	 */
+	public void modificacionDatos() {
+
+		String sentenciaSQL = "UPDATE comicsbbdd set nomComic = ?,numComic = ?,nomVariante = ?,"
 				+ "Firma = ?,nomEditorial = ?,formato = ?,Procedencia = ?,anioPubli = ?,"
 				+ "nomGuionista = ?,nomDibujante = ? where ID = ?";
-		
-		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(id, nombreCom, numeroCom,
-				varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom)); //Lista que contiene toda los comics de la base de datos.
 
-		if(nav.alertaModificar())
-		{
-			if (id.length() != 0) {
+		String datos[] = camposComics();
+		if (nav.alertaModificar()) {
+			if (datos[0].length() != 0) {
 				try {
 					PreparedStatement ps = null;
 
 					ps = DBManager.conexion().prepareStatement(sentenciaSQL);
-					ps.setString(1, nombreComicMod.getText());
-					ps.setString(2, numeroComicMod.getText());
-					if (nombreVariante.getText().length() != 0) {
-						ps.setString(3, nombreVariante.getText());
+					ps.setString(1, datos[1]);
+					ps.setString(2, datos[2]);
+					if (datos[3].length() != 0) {
+						ps.setString(3, datos[3]);
 					} else {
 						ps.setString(3, "No variante");
 					}
-					if (nombreFirma.getText().length() != 0) {
-						ps.setString(4, nombreFirma.getText());
+					if (datos[4].length() != 0) {
+						ps.setString(4, datos[4]);
 					} else {
 						ps.setString(4, "No firmado");
 					}
-					ps.setString(5, nombreEditorial.getText());
-					ps.setString(6, nombreFormato.getText());
-					ps.setString(7, nombreProcedencia.getText());
-					ps.setString(8, anioPublicacion.getText());
-					ps.setString(9, nombreGuionista.getText());
-					ps.setString(10, nombreDibujante.getText());
-					ps.setString(11, idComic.getText());
+					ps.setString(5, datos[5]);
+					ps.setString(6, datos[6]);
+					ps.setString(7, datos[7]);
+					ps.setString(8, datos[8]);
+					ps.setString(9, datos[9]);
+					ps.setString(10, datos[10]);
+					ps.setString(11, datos[0]);
 
 					if (ps.executeUpdate() == 1) {
 						pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-						pantallaInformativa.setText("Ha modificado correctamente: \n." + listComics.toString());
+						pantallaInformativa.setText("Ha modificado correctamente: \n" + "\nNombre del comic: " + datos[1]
+								+ "\nNumero: " + datos[2] + "\nPortada variante: " + datos[3] + "\nFirma: " + datos[4]
+										+ "\nEditorial: " + datos[5] + "\nFormato: " + datos[6] + "\nProcedencia: "
+										+ datos[7] + "\nFecha de publicacion: " + datos[8] + "\nGuionista: " + datos[9]
+												+ "\nDibujante: " + datos[10]);
 					} else {
 						pantallaInformativa.setStyle("-fx-background-color: #F53636");
 						pantallaInformativa.setText("ERROR. Comic no modificado de forma correcta.");
@@ -216,27 +263,10 @@ public class ModificarDatosController {
 				pantallaInformativa.setStyle("-fx-background-color: #F53636");
 				pantallaInformativa.setText("ERROR. No ha puesto ningun \nID en la busqueda.");
 			}
-		}
-		else
-		{
+		} else {
 			pantallaInformativa.setStyle("-fx-background-color: #F53636");
 			pantallaInformativa.setText("ERROR. Se ha cancelado la modificacion.");
 		}
-	}
-
-	/**
-	 * Permite volver al menu de conexion a la base de datos.
-	 *
-	 * @param event
-	 * @throws IOException
-	 */
-	@FXML
-	void volverMenu(ActionEvent event) throws IOException {
-
-		nav.verMenuPrincipal();
-
-		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-		myStage.close();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -259,9 +289,8 @@ public class ModificarDatosController {
 		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante);
 		tablaBBDD.getItems().setAll(listComics);
-
 	}
-	
+
 	/**
 	 * Muestra toda la base de datos.
 	 * 
@@ -298,6 +327,29 @@ public class ModificarDatosController {
 		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
 	}
 
+	/////////////////////////////////
+	//// METODO LLAMADA A VENTANA////
+	/////////////////////////////////
+
+	/**
+	 * Permite volver al menu de conexion a la base de datos.
+	 *
+	 * @param event
+	 * @throws IOException
+	 */
+	@FXML
+	void volverMenu(ActionEvent event) throws IOException {
+
+		nav.verMenuPrincipal();
+
+		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
+		myStage.close();
+	}
+
+	/////////////////////////////
+	//// FUNCIONES PARA SALIR////
+	/////////////////////////////
+
 	/**
 	 * Permite salir completamente del programa.
 	 * 
@@ -323,7 +375,5 @@ public class ModificarDatosController {
 
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();
-
 	}
-
 }

@@ -35,7 +35,7 @@
       <TextField fx:id="nombreFirma" layoutX="177.0" layoutY="143.0" prefHeight="25.0" prefWidth="169.0" />
       <Label layoutX="26.0" layoutY="241.0" text="Procedencia" />
       <TextField fx:id="nombreProcedencia" layoutX="177.0" layoutY="237.0" prefHeight="25.0" prefWidth="169.0" />
-      <Button fx:id="BotonVentanaAniadir" layoutX="666.0" layoutY="239.0" mnemonicParsing="false" onAction="#VentanaAniadir" prefHeight="53.0" prefWidth="102.0" text="Añadir datos" />
+      <Button fx:id="BotonVentanaAniadir" layoutX="666.0" layoutY="239.0" mnemonicParsing="false" onAction="#ventanaAniadir" prefHeight="53.0" prefWidth="102.0" text="Añadir datos" />
       <Button fx:id="botonGuardarFichero" layoutX="376.0" layoutY="236.0" mnemonicParsing="false" onAction="#exportFichero" prefHeight="53.0" prefWidth="269.0" text="Guardar base de datos en un fichero" />
       <Label fx:id="prontInformacion" layoutX="376.0" layoutY="12.0" prefHeight="147.0" prefWidth="269.0" style="-fx-background-color: #A0A0A0;" wrapText="true">
          <font>
@@ -44,7 +44,7 @@
       </Label>
       <Button fx:id="botonBackupBBDD" layoutX="376.0" layoutY="363.0" mnemonicParsing="false" onAction="#exportarSQL" prefHeight="53.0" prefWidth="269.0" text="Exportar base de datos" />
       <Button fx:id="botonGuardarExcel" layoutX="376.0" layoutY="298.0" mnemonicParsing="false" onAction="#exportExcel" prefHeight="53.0" prefWidth="269.0" text="Guardar base de datos en un excel" />
-      <Button fx:id="BotonModificarComic" layoutX="888.0" layoutY="240.0" mnemonicParsing="false" onAction="#VentanaModificar" prefHeight="53.0" prefWidth="102.0" text="Modificar datos" />
+      <Button fx:id="BotonModificarComic" layoutX="888.0" layoutY="240.0" mnemonicParsing="false" onAction="#ventanaModificar" prefHeight="53.0" prefWidth="102.0" text="Modificar datos" />
       <Button fx:id="BotonEliminarComic" layoutX="778.0" layoutY="240.0" mnemonicParsing="false" onAction="#ventanaEliminar" prefHeight="53.0" prefWidth="102.0" text="Eliminar datos" />
       <TableView fx:id="tablaBBDD" layoutX="-1.0" layoutY="422.0" prefHeight="417.0" prefWidth="1103.0">
          <columns>
@@ -74,6 +74,6 @@
             <Font size="21.0" />
          </font>
       </Label>
-      <Button fx:id="botonVerRecomendacion" layoutX="666.0" layoutY="365.0" mnemonicParsing="false" onAction="#recomendacionComic" prefHeight="53.0" prefWidth="324.0" text="No sabes que leer? Pulsa aqui!" />
+      <Button fx:id="botonVerRecomendacion" layoutX="666.0" layoutY="365.0" mnemonicParsing="false" onAction="#ventanaRecomendar" prefHeight="53.0" prefWidth="324.0" text="No sabes que leer? Pulsa aqui!" />
    </children>
 </Pane>

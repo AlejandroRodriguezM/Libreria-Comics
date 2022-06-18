@@ -114,62 +114,79 @@ public class IntroducirDatosController {
 	 */
 	@FXML
 	public void agregarDatos(ActionEvent event) {
+		
+		IntroducirDatos();
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public String[] camposComics() {
+		String campos[] = new String[10];
 
-		String nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom,
-				guionistaCom, dibujanteCom;
+		campos[0] = nombreComic.getText();
 
+		campos[1] = numeroComic.getText();
+
+		campos[2] = nombreVariante.getText();
+
+		campos[3] = nombreFirma.getText();
+
+		campos[4] = nombreEditorial.getText();
+
+		campos[5] = nombreFormato.getText();
+
+		campos[6] = nombreProcedencia.getText();
+
+		campos[7] = anioPublicacion.getText();
+
+		campos[8] = nombreGuionista.getText();
+
+		campos[9] = nombreDibujante.getText();
+
+		return campos;
+	}
+	
+	/**
+	 * 
+	 */
+	public void IntroducirDatos()
+	{
 		DBManager.loadDriver();
-
+		
 		String sentenciaSQL = "insert into comicsbbdd(nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante) values (?,?,?,?,?,?,?,?,?,?)";
 
-		nombreCom = nombreComic.getText();
-
-		numeroCom = numeroComic.getText();
-
-		varianteCom = nombreVariante.getText();
-
-		firmaCom = nombreFirma.getText();
-
-		editorialCom = nombreEditorial.getText();
-
-		formatoCom = nombreFormato.getText();
-
-		procedenciaCom = nombreProcedencia.getText();
-
-		fechaCom = anioPublicacion.getText();
-
-		guionistaCom = nombreGuionista.getText();
-
-		dibujanteCom = nombreDibujante.getText();
-
+		String datos[] = camposComics();
+		
 		try {
 			PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
-			statement.setString(1, nombreCom);
-			statement.setString(2, numeroCom);
+			statement.setString(1, datos[0]);
+			statement.setString(2, datos[1]);
 
-			if (varianteCom.length() != 0) {
-				statement.setString(3, varianteCom);
+			if (datos[2].length() != 0) {
+				statement.setString(3, datos[2]);
 			} else {
 				statement.setString(3, "Normal");
 			}
-			if (firmaCom.length() != 0) {
-				statement.setString(4, firmaCom);
+			if (datos[3].length() != 0) {
+				statement.setString(4, datos[3]);
 			} else {
 				statement.setString(4, "No firmado");
 			}
-			statement.setString(5, editorialCom);
-			statement.setString(6, formatoCom);
-			statement.setString(7, procedenciaCom);
-			statement.setString(8, fechaCom);
-			statement.setString(9, guionistaCom);
-			statement.setString(10, dibujanteCom);
+			statement.setString(5, datos[4]);
+			statement.setString(6, datos[5]);
+			statement.setString(7, datos[6]);
+			statement.setString(8, datos[7]);
+			statement.setString(9, datos[8]);
+			statement.setString(10, datos[9]);
 
 			if (statement.executeUpdate() == 1) {
-				prontDatos.setText("Comic añadido correctamente!" + "\nNombre del comic: " + nombreCom + dibujanteCom
-						+ "\nNumero: " + numeroCom + "\nPortada variante: " + varianteCom + "\nFirma: " + firmaCom
-						+ "\nEditorial: " + editorialCom + "\nFormato: " + formatoCom + "\nProcedencia: "
-						+ procedenciaCom + "\nFecha de publicacion: " + fechaCom + "\nGuionista: " + guionistaCom
-						+ "\nDibujante: " + dibujanteCom);
+				prontDatos.setText("Comic añadido correctamente!" + "\nNombre del comic: " + datos[0]
+						+ "\nNumero: " + datos[1] + "\nPortada variante: " + datos[2] + "\nFirma: " + datos[3]
+						+ "\nEditorial: " + datos[4] + "\nFormato: " + datos[5] + "\nProcedencia: "
+						+ datos[6] + "\nFecha de publicacion: " + datos[7] + "\nGuionista: " + datos[8]
+						+ "\nDibujante: " + datos[9]);
 				statement.close();
 			} else {
 				prontDatos.setText("Se ha encontrado un error. No ha sido posible añadir el comic a la base de datos.");

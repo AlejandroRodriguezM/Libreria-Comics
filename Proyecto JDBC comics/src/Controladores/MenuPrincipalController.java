@@ -154,18 +154,18 @@ public class MenuPrincipalController {
 
 	@FXML
 	private Button BotonVentanaEliminar;
-	
-    @FXML
-    private Button botonVerRecomendacion;
-	
-    @FXML
-    private Button botonFrase;
+
+	@FXML
+	private Button botonVerRecomendacion;
+
+	@FXML
+	private Button botonFrase;
 
 	@FXML
 	private Label prontInformacion;
-	
-    @FXML
-    private Label prontFrases;
+
+	@FXML
+	private Label prontFrases;
 
 	@FXML
 	private Button botonGuardarExcel;
@@ -177,14 +177,13 @@ public class MenuPrincipalController {
 	Comics comic = new Comics();
 
 	private static Connection conn = DBManager.conexion();
-	
-	
-    @FXML
-    void fraseRandom(ActionEvent event) {
 
-    	prontFrases.setText(Comics.frasesComics());
-    	
-    }
+	@FXML
+	void fraseRandom(ActionEvent event) {
+
+		prontFrases.setText(Comics.frasesComics());
+
+	}
 
 	/**
 	 * Limpia los campos de pantalla donde se escriben los datos.
@@ -213,42 +212,10 @@ public class MenuPrincipalController {
 	 * @param event
 	 * @throws SQLException
 	 */
-	@SuppressWarnings("unchecked")
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
-
-		String idCom, nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom,
-				guionistaCom, dibujanteCom;
-
-		idCom = numeroID.getText();
-
-		nombreCom = nombreComic.getText();
-
-		numeroCom = numeroComic.getText();
-
-		varianteCom = nombreVariante.getText();
-
-		firmaCom = nombreFirma.getText();
-
-		editorialCom = nombreEditorial.getText();
-
-		formatoCom = nombreFormato.getText();
-
-		procedenciaCom = nombreProcedencia.getText();
-
-		fechaCom = anioPublicacion.getText();
-
-		guionistaCom = nombreGuionista.getText();
-
-		dibujanteCom = nombreDibujante.getText();
-
 		nombreColumnas();
-
-		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(idCom, nombreCom, numeroCom,
-				varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
-		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
-				guionista, dibujante);
-		tablaBBDD.getItems().setAll(listComics);
+		listaCompleta();
 	}
 
 	/**
@@ -257,18 +224,15 @@ public class MenuPrincipalController {
 	 * @param event
 	 * @throws SQLException
 	 */
-	@SuppressWarnings("unchecked")
 	@FXML
 	void verTodabbdd(ActionEvent event) throws SQLException {
-
 		nombreColumnas();
-
-		List<Comics> listComics = FXCollections.observableArrayList(comic.verTodo());
-		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
-				guionista, dibujante);
-		tablaBBDD.getItems().setAll(listComics);
-
+		listaPorParametro();
 	}
+
+	/////////////////////////////////
+	//// METODOS LLAMADA A VENTANAS//
+	/////////////////////////////////
 
 	/**
 	 * Permite abrir y cargar la ventana para añadir datos.
@@ -276,15 +240,18 @@ public class MenuPrincipalController {
 	 * @param event
 	 */
 	@FXML
-	public void VentanaAniadir(ActionEvent event) {
+	public void ventanaAniadir(ActionEvent event) {
 
 		nav.verIntroducirDatos();
 
 		Stage myStage = (Stage) this.BotonVentanaAniadir.getScene().getWindow();
 		myStage.close();
-
 	}
 
+	/**
+	 * 
+	 * @param event
+	 */
 	@FXML
 	public void ventanaEliminar(ActionEvent event) {
 
@@ -292,18 +259,52 @@ public class MenuPrincipalController {
 
 		Stage myStage = (Stage) this.BotonEliminarComic.getScene().getWindow();
 		myStage.close();
-
 	}
 
+	/**
+	 * 
+	 * @param event
+	 */
 	@FXML
-	public void VentanaModificar(ActionEvent event) {
+	public void ventanaModificar(ActionEvent event) {
 
 		nav.verModificarDatos();
 
 		Stage myStage = (Stage) this.BotonModificarComic.getScene().getWindow();
 		myStage.close();
-
 	}
+
+	/**
+	 * 
+	 * @param event
+	 */
+	@FXML
+	void ventanaRecomendar(ActionEvent event) {
+
+		nav.verRecomendacion();
+
+		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
+		myStage.close();
+	}
+
+	/**
+	 * Vuelve al menu inicial de conexion de la base de datos.
+	 * 
+	 * @param event
+	 * @throws IOException
+	 */
+	@FXML
+	public void volverMenu(ActionEvent event) throws IOException {
+
+		nav.verAccesoBBDD();
+
+		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
+		myStage.close();
+	}
+
+	////////////////////////////
+	/// METODOS PARA EXPORTAR///
+	////////////////////////////
 
 	/**
 	 * Guarda los datos de la base de datos en un fichero.
@@ -311,37 +312,44 @@ public class MenuPrincipalController {
 	 * @param event
 	 * @throws SQLException
 	 */
-	@SuppressWarnings("unchecked")
 	@FXML
 	void exportFichero(ActionEvent event) {
 		FileChooser fileChooser = new FileChooser();
 		File fichero = fileChooser.showSaveDialog(null);
 
-		try {
-			if (fichero != null) {
-				fichero.createNewFile();
-
-				nombreColumnas();
-
-				List<Comics> listComics = FXCollections.observableArrayList(comic.verTodo());
-				tablaBBDD.getColumns().setAll(ID,nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
-						guionista, dibujante);
-
-				FileWriter guardarDatos = new FileWriter(fichero);
-				for (int i = 0; i < listComics.size(); i++) {
-					guardarDatos.write(listComics.get(i) + "\n");
-				}
-				guardarDatos.close();
-			} else {
-				prontInformacion.setStyle("-fx-background-color: #F53636");
-				prontInformacion.setText("ERROR. Contenido de la bbdd \n cancelada.");
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		makeFile(fichero);
 	}
+
+	/**
+	 * 
+	 * @param event
+	 */
+	@FXML
+	void exportExcel(ActionEvent event) {
+
+		FileChooser fileChooser = new FileChooser();
+		File fichero = fileChooser.showSaveDialog(null);
+
+		makeExcel(fichero);
+	}
+
+	// FUNCIONA SOLO EN LINUX
+	/**
+	 * 
+	 * @param event
+	 */
+	@FXML
+	void exportarSQL(ActionEvent event) {
+
+		FileChooser fileChooser = new FileChooser();
+		File fichero = fileChooser.showSaveDialog(null);
+		makeSQL(fichero);
+
+	}
+
+	/////////////////////////////////
+	//// FUNCIONES////////////////////
+	/////////////////////////////////
 
 	/**
 	 * 
@@ -362,14 +370,36 @@ public class MenuPrincipalController {
 
 	/**
 	 * 
-	 * @param event
+	 * @param fichero
 	 */
-	@FXML
-	void exportExcel(ActionEvent event) {
+	public void makeSQL(File fichero) {
+		if (fichero != null) {
+			try {
+				fichero.createNewFile();
+				String mysqlCom = String.format("mysqldump -u%s -p%s %s", DBManager.DB_USER, DBManager.DB_PASS,
+						DBManager.DB_PORT);
+				String[] command = new String[] { "/bin/bash", "-c", mysqlCom };
+				ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
+				pb.redirectError(Redirect.INHERIT);
+				pb.redirectOutput(Redirect.to(fichero));
+				pb.start();
+				prontInformacion.setStyle("-fx-background-color: #A0F52D");
+				prontInformacion.setText("Base de datos exportada \ncorrectamente");
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 
-		FileChooser fileChooser = new FileChooser();
-		File fichero = fileChooser.showSaveDialog(null);
+		} else {
+			prontInformacion.setStyle("-fx-background-color: #F53636");
+			prontInformacion.setText("ERROR. Base de datos \nexportada cancelada.");
+		}
+	}
 
+	/**
+	 * 
+	 * @param fichero
+	 */
+	public void makeExcel(File fichero) {
 		try {
 			String query = "select * from comicsbbdd";
 			Statement statement = conn.createStatement();
@@ -398,7 +428,6 @@ public class MenuPrincipalController {
 				fw.newLine();
 				fw.write(line);
 			}
-
 			statement.close();
 			fw.close();
 
@@ -408,61 +437,89 @@ public class MenuPrincipalController {
 		}
 	}
 
-	// FUNCIONA SOLO EN LINUX
+	@SuppressWarnings("unchecked")
+	public void listaCompleta() throws SQLException {
+		List<Comics> listComics = FXCollections.observableArrayList(comic.verTodo());
+		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+				guionista, dibujante);
+		tablaBBDD.getItems().setAll(listComics);
+	}
+
+	@SuppressWarnings("unchecked")
+	public void listaPorParametro() throws SQLException {
+		String datosComics[] = camposComics();
+
+		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(datosComics[0], datosComics[1],
+				datosComics[2], datosComics[3], datosComics[4], datosComics[5], datosComics[6], datosComics[7],
+				datosComics[8], datosComics[9], datosComics[10]));
+		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+				guionista, dibujante);
+		tablaBBDD.getItems().setAll(listComics);
+	}
+
+	public String[] camposComics() {
+		String campos[] = new String[11];
+
+		campos[0] = numeroID.getText();
+
+		campos[1] = nombreComic.getText();
+
+		campos[2] = numeroComic.getText();
+
+		campos[3] = nombreVariante.getText();
+
+		campos[4] = nombreFirma.getText();
+
+		campos[5] = nombreEditorial.getText();
+
+		campos[6] = nombreFormato.getText();
+
+		campos[7] = nombreProcedencia.getText();
+
+		campos[8] = anioPublicacion.getText();
+
+		campos[9] = nombreGuionista.getText();
+
+		campos[10] = nombreDibujante.getText();
+
+		return campos;
+	}
+
 	/**
 	 * 
-	 * @param event
+	 * @param fichero
 	 */
-	@FXML
-	void exportarSQL(ActionEvent event) {
-
-		FileChooser fileChooser = new FileChooser();
-		File fichero = fileChooser.showSaveDialog(null);
-		if (fichero != null) {
-			try {
+	@SuppressWarnings("unchecked")
+	public void makeFile(File fichero) {
+		try {
+			if (fichero != null) {
 				fichero.createNewFile();
-				String mysqlCom = String.format("mysqldump -u%s -p%s %s", DBManager.DB_USER, DBManager.DB_PASS,
-						DBManager.DB_PORT);
-				String[] command = new String[] { "/bin/bash", "-c", mysqlCom };
-				ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
-				pb.redirectError(Redirect.INHERIT);
-				pb.redirectOutput(Redirect.to(fichero));
-				pb.start();
-				prontInformacion.setStyle("-fx-background-color: #A0F52D");
-				prontInformacion.setText("Base de datos exportada \ncorrectamente");
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
 
-		} else {
-			prontInformacion.setStyle("-fx-background-color: #F53636");
-			prontInformacion.setText("ERROR. Base de datos \nexportada cancelada.");
+				nombreColumnas();
+
+				List<Comics> listComics = FXCollections.observableArrayList(comic.verTodo());
+				tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia,
+						fecha, guionista, dibujante);
+
+				FileWriter guardarDatos = new FileWriter(fichero);
+				for (int i = 0; i < listComics.size(); i++) {
+					guardarDatos.write(listComics.get(i) + "\n");
+				}
+				guardarDatos.close();
+			} else {
+				prontInformacion.setStyle("-fx-background-color: #F53636");
+				prontInformacion.setText("ERROR. Contenido de la bbdd \n cancelada.");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
-	
-    @FXML
-    void recomendacionComic(ActionEvent event) {
-    	nav.verRecomendacion();
-    	
-		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-		myStage.close();
-    }
 
-	/**
-	 * Vuelve al menu inicial de conexion de la base de datos.
-	 * 
-	 * @param event
-	 * @throws IOException
-	 */
-	@FXML
-	public void volverMenu(ActionEvent event) throws IOException {
-
-		nav.verAccesoBBDD();
-
-		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-		myStage.close();
-
-	}
+	/////////////////////////////
+	//// FUNCIONES PARA SALIR////
+	/////////////////////////////
 
 	/**
 	 * Permite salir completamente del programa.
