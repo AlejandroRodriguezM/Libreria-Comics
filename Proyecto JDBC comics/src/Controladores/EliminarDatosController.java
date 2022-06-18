@@ -60,6 +60,9 @@ public class EliminarDatosController {
 
 	@FXML
 	private Button botonVolver;
+	
+    @FXML
+    private Button botonbbdd;
 
 	@FXML
 	private TextField nombreComic;
@@ -126,6 +129,21 @@ public class EliminarDatosController {
 		ID.setText("");
 	}
 
+	/**
+	 * Permite volver al menu de conexion a la base de datos.
+	 *
+	 * @param event
+	 * @throws IOException
+	 */
+	@FXML
+	void volverMenu(ActionEvent event) throws IOException {
+
+		nav.verMenuPrincipal();
+
+		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
+		myStage.close();
+	}
+	
 	@FXML
 	void eliminarDatos(ActionEvent event) throws SQLException { //Metodo que permite cambiar de estado un comic, para que se deje de mostrar en el programa, pero este sigue estando dentro de la bbdd
 		String id, nombreCom = "", numeroCom = "", varianteCom = "", firmaCom = "", editorialCom = "", formatoCom = "",
@@ -136,7 +154,7 @@ public class EliminarDatosController {
 		PreparedStatement stmt;
 		
 		try {
-			if (nav.alerta()) { //Llamada a metodo que permite lanzar una alerta. En caso de aceptarlo permitira lo siguiente.
+			if (nav.alertaEliminar()) { //Llamada a metodo que permite lanzar una alerta. En caso de aceptarlo permitira lo siguiente.
 				
 				id = idComic.getText();
 				
@@ -191,7 +209,26 @@ public class EliminarDatosController {
 		tablaBBDD.getItems().setAll(listComics); //Muestra el contenido de la bbdd en las columnas especificas.
 
 	}
+	
+	/**
+	 * Muestra toda la base de datos.
+	 * 
+	 * @param event
+	 * @throws SQLException
+	 */
+	@SuppressWarnings("unchecked")
+	@FXML
+	void verTodabbdd(ActionEvent event) throws SQLException {
 
+		nombreColumnas();
+
+		List<Comics> listComics = FXCollections.observableArrayList(comic.verTodo());
+		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+				guionista, dibujante);
+		tablaBBDD.getItems().setAll(listComics);
+
+	}
+	
 	/**
 	 * Muestra las columnas especificas del fichero FXML
 	 */
@@ -207,22 +244,6 @@ public class EliminarDatosController {
 		fecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
 		guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
 		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
-	}
-
-	/**
-	 * Permite volver al menu de conexion a la base de datos.
-	 * 
-	 * @param event
-	 * @throws IOException
-	 */
-	@FXML
-	void volverMenu(ActionEvent event) throws IOException { //Metodo que permite volver al menuPrincipal
-
-		nav.verMenuPrincipal(); //Llamada a metodo que carga y muestra la ventana de la pantalla principal
-
-		// Ciero la ventana donde estoy
-		Stage myStage = (Stage) this.botonVolver.getScene().getWindow(); 
-		myStage.close(); //Cierra la ventana actual
 	}
 
 	/**

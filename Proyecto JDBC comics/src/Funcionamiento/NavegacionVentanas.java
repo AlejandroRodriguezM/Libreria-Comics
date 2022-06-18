@@ -274,27 +274,6 @@ public class NavegacionVentanas {
 	}
 
 	/**
-	 * Al cerrar la ventana, carga la ventana del menu principal
-	 */
-	public void cerrarVentanaMenuPrincipal() {
-
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/AccesoBBDD.fxml"));
-
-			Parent root = loader.load();
-
-			Scene scene = new Scene(root);
-			Stage stage = new Stage();
-
-			stage.setScene(scene);
-			stage.show();
-
-		} catch (IOException ex) {
-			Logger.getLogger(AccesoBBDDController.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	}
-
-	/**
 	 * Permite salir completamente del programa.
 	 * 
 	 * @param event
@@ -313,12 +292,25 @@ public class NavegacionVentanas {
 		}
 	}
 	
-	public boolean alerta()
+	public boolean alertaEliminar()
 	{
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Eliminando . . .");
 		alert.setHeaderText("Estas apunto de eliminar datos.");
 		alert.setContentText("¿Estas seguro que quieres eliminar el comic?");
+		if (alert.showAndWait().get() == ButtonType.OK)
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean alertaModificar()
+	{
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.setTitle("Modificando . . .");
+		alert.setHeaderText("Estas apunto de modificar datos.");
+		alert.setContentText("¿Estas seguro que quieres modificar el comic?");
 		if (alert.showAndWait().get() == ButtonType.OK)
 		{
 			return true;

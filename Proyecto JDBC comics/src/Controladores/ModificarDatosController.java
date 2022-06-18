@@ -58,6 +58,9 @@ public class ModificarDatosController {
 
 	@FXML
 	private Button botonVolver;
+	
+    @FXML
+    private Button botonbbdd;
 
 	@FXML
 	private TextField nombreComic;
@@ -160,52 +163,65 @@ public class ModificarDatosController {
 	@FXML
 	void modificarDatos(ActionEvent event) throws SQLException {
 
-		String sentenciaSQL, id = idComic.getText();
+		String nombreCom = "", numeroCom = "", varianteCom = "", firmaCom = "", editorialCom = "", formatoCom = "",
+				procedenciaCom = "", fechaCom = "", guionistaCom = "", dibujanteCom = "", sentenciaSQL;
+		
+		String id = idComic.getText();
 
 		sentenciaSQL = "UPDATE comicsbbdd set nomComic = ?,numComic = ?,nomVariante = ?,"
 				+ "Firma = ?,nomEditorial = ?,formato = ?,Procedencia = ?,anioPubli = ?,"
 				+ "nomGuionista = ?,nomDibujante = ? where ID = ?";
+		
+		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(id, nombreCom, numeroCom,
+				varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom)); //Lista que contiene toda los comics de la base de datos.
 
-		if (id.length() != 0) {
-			try {
-				PreparedStatement ps = null;
+		if(nav.alertaModificar())
+		{
+			if (id.length() != 0) {
+				try {
+					PreparedStatement ps = null;
 
-				ps = DBManager.conexion().prepareStatement(sentenciaSQL);
-				ps.setString(1, nombreComicMod.getText());
-				ps.setString(2, numeroComicMod.getText());
-				if (nombreVariante.getText().length() != 0) {
-					ps.setString(3, nombreVariante.getText());
-				} else {
-					ps.setString(3, "No variante");
-				}
-				if (nombreFirma.getText().length() != 0) {
-					ps.setString(4, nombreFirma.getText());
-				} else {
-					ps.setString(4, "No firmado");
-				}
-				ps.setString(5, nombreEditorial.getText());
-				ps.setString(6, nombreFormato.getText());
-				ps.setString(7, nombreProcedencia.getText());
-				ps.setString(8, anioPublicacion.getText());
-				ps.setString(9, nombreGuionista.getText());
-				ps.setString(10, nombreDibujante.getText());
-				ps.setString(11, idComic.getText());
+					ps = DBManager.conexion().prepareStatement(sentenciaSQL);
+					ps.setString(1, nombreComicMod.getText());
+					ps.setString(2, numeroComicMod.getText());
+					if (nombreVariante.getText().length() != 0) {
+						ps.setString(3, nombreVariante.getText());
+					} else {
+						ps.setString(3, "No variante");
+					}
+					if (nombreFirma.getText().length() != 0) {
+						ps.setString(4, nombreFirma.getText());
+					} else {
+						ps.setString(4, "No firmado");
+					}
+					ps.setString(5, nombreEditorial.getText());
+					ps.setString(6, nombreFormato.getText());
+					ps.setString(7, nombreProcedencia.getText());
+					ps.setString(8, anioPublicacion.getText());
+					ps.setString(9, nombreGuionista.getText());
+					ps.setString(10, nombreDibujante.getText());
+					ps.setString(11, idComic.getText());
 
-				if (ps.executeUpdate() == 1) {
-					pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-					pantallaInformativa.setText("Comic Modificado correctamente.");
-				} else {
-					pantallaInformativa.setStyle("-fx-background-color: #F53636");
-					pantallaInformativa.setText("ERROR. Comic no modificado de forma correcta.");
+					if (ps.executeUpdate() == 1) {
+						pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
+						pantallaInformativa.setText("Ha modificado correctamente: \n." + listComics.toString());
+					} else {
+						pantallaInformativa.setStyle("-fx-background-color: #F53636");
+						pantallaInformativa.setText("ERROR. Comic no modificado de forma correcta.");
+					}
+				} catch (SQLException ex) {
+					System.out.println(ex);
 				}
-			} catch (SQLException ex) {
-				System.out.println(ex);
+			} else {
+				pantallaInformativa.setStyle("-fx-background-color: #F53636");
+				pantallaInformativa.setText("ERROR. No ha puesto ningun \nID en la busqueda.");
 			}
-		} else {
-			pantallaInformativa.setStyle("-fx-background-color: #F53636");
-			pantallaInformativa.setText("ERROR. No ha puesto ningun \nID en la busqueda.");
 		}
-
+		else
+		{
+			pantallaInformativa.setStyle("-fx-background-color: #F53636");
+			pantallaInformativa.setText("ERROR. Se ha cancelado la modificacion.");
+		}
 	}
 
 	/**
@@ -240,6 +256,25 @@ public class ModificarDatosController {
 
 		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(id, nombreCom, numeroCom,
 				varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
+		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+				guionista, dibujante);
+		tablaBBDD.getItems().setAll(listComics);
+
+	}
+	
+	/**
+	 * Muestra toda la base de datos.
+	 * 
+	 * @param event
+	 * @throws SQLException
+	 */
+	@SuppressWarnings("unchecked")
+	@FXML
+	void verTodabbdd(ActionEvent event) throws SQLException {
+
+		nombreColumnas();
+
+		List<Comics> listComics = FXCollections.observableArrayList(comic.verTodo());
 		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante);
 		tablaBBDD.getItems().setAll(listComics);

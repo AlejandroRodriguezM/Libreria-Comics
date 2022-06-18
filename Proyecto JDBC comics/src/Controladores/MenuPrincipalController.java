@@ -324,7 +324,7 @@ public class MenuPrincipalController {
 				nombreColumnas();
 
 				List<Comics> listComics = FXCollections.observableArrayList(comic.verTodo());
-				tablaBBDD.getColumns().setAll(nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+				tablaBBDD.getColumns().setAll(ID,nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 						guionista, dibujante);
 
 				FileWriter guardarDatos = new FileWriter(fichero);
@@ -360,6 +360,10 @@ public class MenuPrincipalController {
 		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
 	}
 
+	/**
+	 * 
+	 * @param event
+	 */
 	@FXML
 	void exportExcel(ActionEvent event) {
 
@@ -481,7 +485,7 @@ public class MenuPrincipalController {
 	 */
 	public void closeWindows() throws IOException {
 
-		nav.verMenuPrincipal();
+		nav.verAccesoBBDD();
 
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();
