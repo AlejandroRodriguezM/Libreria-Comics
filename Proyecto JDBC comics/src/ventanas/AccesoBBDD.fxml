@@ -12,6 +12,16 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="733.0" prefWidth="315.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.AccesoBBDDController">
    <children>
+      <ImageView fitHeight="176.0" fitWidth="315.0" layoutY="69.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imagenes/rojo.jpg" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="176.0" fitWidth="315.0" layoutX="-1.0" layoutY="57.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imagenes/rojo.jpg" />
+         </image>
+      </ImageView>
       <ImageView fitHeight="121.0" fitWidth="270.0" layoutY="614.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../../../../../Downloads/azul.jpg" />
@@ -19,7 +29,7 @@
       </ImageView>
       <ImageView fitHeight="121.0" fitWidth="222.0" layoutX="94.0" layoutY="614.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../../../../../Downloads/azul.jpg" />
+            <Image url="@../imagenes/azul.jpg" />
          </image>
       </ImageView>
       <ImageView fitHeight="121.0" fitWidth="270.0" layoutY="611.0" pickOnBounds="true" preserveRatio="true">
@@ -27,19 +37,14 @@
             <Image url="@../../../../../Downloads/azul.jpg" />
          </image>
       </ImageView>
-      <ImageView fitHeight="199.0" fitWidth="315.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="172.0" fitWidth="315.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../../../../../Downloads/rojo.jpg" />
+            <Image url="@../imagenes/rojo.jpg" />
          </image>
       </ImageView>
-      <ImageView fitHeight="277.0" fitWidth="315.0" layoutY="38.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="409.0" fitWidth="315.0" layoutY="218.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../../../../../Downloads/rojo.jpg" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="405.0" fitWidth="323.0" layoutX="-2.0" layoutY="209.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../../../Downloads/FVe-YDjVIAYCW9j.jpg" />
+            <Image url="@../imagenes/FVe-YDjVIAYCW9j.jpg" />
          </image>
       </ImageView>
       <TextArea fx:id="informacion" editable="false" layoutX="23.0" layoutY="14.0" prefHeight="84.0" prefWidth="270.0" text="Introduzca los siguientes datos para&#10;poder acceder a la base de datos.&#10;Si quieres cambiar de base de datos&#10;Debes cerrar la que tengas conectada" />

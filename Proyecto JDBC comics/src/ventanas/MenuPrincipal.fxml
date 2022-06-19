@@ -14,7 +14,7 @@
    <children>
       <ImageView fitHeight="469.0" fitWidth="1104.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../../../../../Downloads/Surfer-Banner.jpg" />
+            <Image url="@../imagenes/Surfer-Banner.jpg" />
          </image>
       </ImageView>
       <Label layoutX="14.0" layoutY="49.0" style="-fx-background-color: grey;" text="Nombre">
