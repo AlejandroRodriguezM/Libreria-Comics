@@ -1,6 +1,5 @@
 package Controladores;
 
-import java.applet.AppletContext;
 import java.awt.Desktop;
 
 /**
@@ -28,7 +27,6 @@ import java.awt.Desktop;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
 
 import Funcionamiento.DBManager;
 import Funcionamiento.NavegacionVentanas;
@@ -101,7 +99,7 @@ public class AccesoBBDDController {
 																			// String
 		} else {
 			Desktop desktop = Desktop.getDesktop();
-			if (desktop.isSupported(Desktop.Action.BROWSE)) {
+			if (!desktop.isSupported(Desktop.Action.BROWSE)) {
 				desktop.browse(URI.create(url));
 			}
 		}
@@ -122,7 +120,7 @@ public class AccesoBBDDController {
 																			// y muestra la url que se encuentra en el																// String
 		} else {
 			Desktop desktop = Desktop.getDesktop();
-			if (desktop.isSupported(Desktop.Action.BROWSE)) {
+			if (!desktop.isSupported(Desktop.Action.BROWSE)) {
 				desktop.browse(URI.create(url));
 			}
 		}
