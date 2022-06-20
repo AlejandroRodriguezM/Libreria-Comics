@@ -300,7 +300,6 @@ public class Comics {
 		}
 		if (dibujanteC.length() != 0) {
 			sql.append(connector).append("nomDibujante = ?");
-			
 			strFilter.add(dibujanteC);
 		}
 		Collections.sort(strFilter);
