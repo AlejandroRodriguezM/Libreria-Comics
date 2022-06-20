@@ -1,3 +1,4 @@
+
 -- MySQL dump 10.13  Distrib 8.0.29, for Win64 (x86_64)
 --
 -- Host: localhost    Database: comics
@@ -19,21 +20,27 @@
 -- Table structure for table `comicsbbdd`
 --
 
+drop DATABASE IF EXISTS `comics`;
+
+create database comics;
+
+use comics;
+
 DROP TABLE IF EXISTS `comicsbbdd`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `comicsbbdd` (
   `ID` int NOT NULL AUTO_INCREMENT,
-  `nomComic` varchar(150) DEFAULT NULL,
-  `numComic` varchar(150) DEFAULT NULL,
-  `nomVariante` varchar(150) DEFAULT NULL,
-  `Firma` varchar(150) DEFAULT NULL,
-  `nomEditorial` varchar(150) DEFAULT NULL,
-  `Formato` varchar(150) DEFAULT NULL,
-  `Procedencia` varchar(150) DEFAULT NULL,
-  `anioPubli` varchar(150) DEFAULT NULL,
-  `nomGuionista` varchar(150) DEFAULT NULL,
-  `nomDibujante` varchar(150) DEFAULT NULL,
+  `nomComic` varchar(150) NOT NULL,
+  `numComic` varchar(150) NOT NULL,
+  `nomVariante` varchar(150) NOT NULL,
+  `Firma` varchar(150) NOT NULL,
+  `nomEditorial` varchar(150) NOT NULL,
+  `Formato` varchar(150) NOT NULL,
+  `Procedencia` varchar(150) NOT NULL,
+  `anioPubli` varchar(150) NOT NULL,
+  `nomGuionista` varchar(150) NOT NULL,
+  `nomDibujante` varchar(150) NOT NULL,
   `estado` enum('En posesion','Vendido') DEFAULT 'En posesion',
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=320 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
