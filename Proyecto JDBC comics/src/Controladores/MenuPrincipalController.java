@@ -215,7 +215,8 @@ public class MenuPrincipalController {
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
 		nombreColumnas();
-		listaCompleta();
+		listaPorParametro();
+		
 	}
 
 	/**
@@ -227,7 +228,7 @@ public class MenuPrincipalController {
 	@FXML
 	void verTodabbdd(ActionEvent event) throws SQLException {
 		nombreColumnas();
-		listaPorParametro();
+		listaCompleta();
 	}
 
 	/////////////////////////////////
