@@ -10,16 +10,6 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="637.0" prefWidth="609.0" style="-fx-background-color: DFA394;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.IntroducirDatosController">
    <children>
-      <TextField fx:id="nombreComic" layoutX="132.0" layoutY="14.0" />
-      <TextField fx:id="numeroComic" layoutX="132.0" layoutY="47.0" />
-      <TextField fx:id="nombreVariante" layoutX="132.0" layoutY="81.0" />
-      <TextField fx:id="nombreFirma" layoutX="132.0" layoutY="114.0" />
-      <TextField fx:id="nombreEditorial" layoutX="132.0" layoutY="146.0" />
-      <TextField fx:id="nombreFormato" layoutX="132.0" layoutY="176.0" />
-      <TextField fx:id="nombreProcedencia" layoutX="132.0" layoutY="208.0" />
-      <TextField fx:id="anioPublicacion" layoutX="132.0" layoutY="238.0" />
-      <TextField fx:id="nombreGuionista" layoutX="132.0" layoutY="270.0" />
-      <TextField fx:id="nombreDibujante" layoutX="132.0" layoutY="303.0" />
       <ImageView fitHeight="637.0" fitWidth="264.0" layoutX="-5.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagenes/Fondo%20añadir%203.jpg" />
@@ -46,5 +36,15 @@
       <Label layoutX="17.0" layoutY="51.0" style="-fx-background-color: grey;" text="Numero" />
       <Label layoutX="17.0" layoutY="118.0" style="-fx-background-color: grey;" text="Firma" />
       <Label layoutX="17.0" layoutY="212.0" style="-fx-background-color: grey;" text="Procedencia" />
+      <TextField fx:id="nombreComic" layoutX="132.0" layoutY="14.0" />
+      <TextField fx:id="numeroComic" layoutX="132.0" layoutY="47.0" />
+      <TextField fx:id="nombreVariante" layoutX="132.0" layoutY="81.0" />
+      <TextField fx:id="nombreFirma" layoutX="132.0" layoutY="114.0" />
+      <TextField fx:id="nombreEditorial" layoutX="132.0" layoutY="146.0" />
+      <TextField fx:id="nombreFormato" layoutX="132.0" layoutY="176.0" />
+      <TextField fx:id="nombreProcedencia" layoutX="132.0" layoutY="208.0" />
+      <TextField fx:id="anioPublicacion" layoutX="132.0" layoutY="238.0" />
+      <TextField fx:id="nombreGuionista" layoutX="132.0" layoutY="270.0" />
+      <TextField fx:id="nombreDibujante" layoutX="132.0" layoutY="303.0" />
    </children>
 </Pane>
