@@ -9,19 +9,19 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="827.0" prefWidth="315.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.AccesoBBDDController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="797.0" prefWidth="315.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.AccesoBBDDController">
    <children>
-      <ImageView fitHeight="121.0" fitWidth="270.0" layoutX="94.0" layoutY="709.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="102.0" fitWidth="166.0" layoutX="150.0" layoutY="706.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagenes/azul.jpg" />
          </image>
       </ImageView>
-      <ImageView fitHeight="121.0" fitWidth="270.0" layoutY="706.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="91.0" fitWidth="176.0" layoutY="706.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagenes/azul.jpg" />
          </image>
       </ImageView>
-      <ImageView fitHeight="121.0" fitWidth="270.0" layoutY="697.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="99.0" fitWidth="176.0" layoutY="697.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagenes/azul.jpg" />
          </image>
@@ -90,11 +90,11 @@
          </font>
       </Label>
       <Button fx:id="botonCerrar" layoutX="163.0" layoutY="555.0" mnemonicParsing="false" onAction="#cerrarbbdd" prefHeight="54.0" prefWidth="118.0" text="Cerrar BBDD" />
-      <Button fx:id="botonTwitter" layoutX="166.0" layoutY="757.0" mnemonicParsing="false" onAction="#accesoTwitter" text="Por @silverAlox" />
-      <Button fx:id="numeroVersion" layoutX="47.0" layoutY="757.0" mnemonicParsing="false" onAction="#accesoGitHub" text="Version 2.3" />
+      <Button fx:id="botonTwitter" layoutX="173.0" layoutY="757.0" mnemonicParsing="false" onAction="#accesoTwitter" text="Por @silverAlox" />
+      <Button fx:id="numeroVersion" layoutX="52.0" layoutY="757.0" mnemonicParsing="false" onAction="#accesoGitHub" text="Version 2.4" />
       <Button fx:id="botonSalir" layoutX="30.0" layoutY="682.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="54.0" prefWidth="118.0" text="Salir" />
       <Button fx:id="botonCrearBBDD" layoutX="160.0" layoutY="491.0" mnemonicParsing="false" onAction="#crearBBDD" prefHeight="54.0" prefWidth="118.0" text="Crear BBDD" />
-      <Label fx:id="prontBBDDNames" alignment="TOP_LEFT" layoutX="54.0" layoutY="12.0" prefHeight="91.0" prefWidth="187.0" wrapText="true">
+      <Label fx:id="prontBBDDNames" alignment="TOP_LEFT" layoutX="54.0" layoutY="12.0" prefHeight="91.0" prefWidth="187.0" style="-fx-background-color: white;" text="Añade todos los datos para poder gestionar la bbdd" wrapText="true">
          <font>
             <Font size="13.0" />
          </font>

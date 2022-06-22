@@ -84,18 +84,18 @@ public class VentanaModificarController {
 	@FXML
 	void modificarDatos(ActionEvent event) throws SQLException {
 
-
-		String id = "",nombreCom = "", numeroCom = "", varianteCom = "", firmaCom = "", editorialCom = "", formatoCom = "", procedenciaCom = "", fechaCom = "",
-				guionistaCom = "", dibujanteCom = "", sentenciaSQL;
+		Comics comic = new Comics();
+		String id = "";
+//		String id = "",nombreCom = "", numeroCom = "", varianteCom = "", firmaCom = "", editorialCom = "", formatoCom = "", procedenciaCom = "", fechaCom = "",
+//				guionistaCom = "", dibujanteCom = "", sentenciaSQL;
 
 //		id = datos.devolverID();
 		
-		sentenciaSQL = "UPDATE comicsbbdd set nomComic = ?,numComic = ?,nomVariante = ?,"
+		String sentenciaSQL = "UPDATE comicsbbdd set nomComic = ?,numComic = ?,nomVariante = ?,"
 				+ "Firma = ?,nomEditorial = ?,formato = ?,Procedencia = ?,anioPubli = ?"
 				+ "nomGuionista = ?,nomDibujante = ? where ID = " + id;
 		
-		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(id,nombreCom, numeroCom,
-				varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
+		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(comic));
 
 		pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 		pantallaInformativa.setText(listComics.toString());
