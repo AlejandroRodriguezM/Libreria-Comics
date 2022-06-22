@@ -233,9 +233,7 @@ public class Comics {
 	 * @return
 	 * @throws SQLException
 	 */
-	public Comics[] filtadroBBDD(String ID, String nombreC, String numeroC, String varianteC, String firmaC,
-			String editorialC, String formatoC, String procedenciaC, String fechaC, String guionistaC,
-			String dibujanteC) throws SQLException {
+	public Comics[] filtadroBBDD(Comics comic) throws SQLException {
 
 		reiniciarBBDD();
 		ordenarBBDD();
@@ -248,59 +246,59 @@ public class Comics {
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT * FROM comicsbbdd");
 
-		if (ID.length() != 0 && ID != null) {
+		if (this.ID.length() != 0 && ID != null) {
 			sql.append(connector).append("ID = ?");
 			connector = " AND ";
 			strFilter.add(ID);
 		}
-		if (nombreC.length() != 0) {
+		if (this.nombre.length() != 0) {
 			sql.append(connector).append("nomComic = ?");
 			connector = " AND ";
-			strFilter.add(nombreC);
+			strFilter.add(this.nombre);
 		}
-		if (numeroC.length() != 0) {
+		if (this.numero.length() != 0) {
 			sql.append(connector).append("numComic = ?");
 			connector = " AND ";
-			strFilter.add(numeroC);
+			strFilter.add(this.numero);
 		}
-		if (varianteC.length() != 0) {
+		if (this.variante.length() != 0) {
 			sql.append(connector).append("nomVariante = ?");
 			connector = " AND ";
-			strFilter.add(varianteC);
+			strFilter.add(this.variante);
 		}
-		if (firmaC.length() != 0) {
+		if (this.firma.length() != 0) {
 			sql.append(connector).append("firma = ?");
 			connector = " AND ";
-			strFilter.add(firmaC);
+			strFilter.add(this.firma);
 		}
-		if (editorialC.length() != 0) {
+		if (this.editorial.length() != 0) {
 			sql.append(connector).append("nomEditorial = ?");
 			connector = " AND ";
-			strFilter.add(editorialC);
+			strFilter.add(this.editorial);
 		}
-		if (formatoC.length() != 0) {
+		if (this.formato.length() != 0) {
 			sql.append(connector).append("formato = ?");
 			connector = " AND ";
-			strFilter.add(formatoC);
+			strFilter.add(this.formato);
 		}
-		if (procedenciaC.length() != 0) {
+		if (this.procedencia.length() != 0) {
 			sql.append(connector).append("procedencia = ?");
 			connector = " AND ";
-			strFilter.add(procedenciaC);
+			strFilter.add(this.procedencia);
 		}
-		if (fechaC.length() != 0) {
+		if (this.fecha.length() != 0) {
 			sql.append(connector).append("anioPubli = ?");
 			connector = " AND ";
-			strFilter.add(fechaC);
+			strFilter.add(this.fecha);
 		}
-		if (guionistaC.length() != 0) {
+		if (this.guionista.length() != 0) {
 			sql.append(connector).append("nomGuionista = ?");
 			connector = " AND ";
-			strFilter.add(guionistaC);
+			strFilter.add(this.guionista);
 		}
-		if (dibujanteC.length() != 0) {
+		if (this.dibujante.length() != 0) {
 			sql.append(connector).append("nomDibujante = ?");
-			strFilter.add(dibujanteC);
+			strFilter.add(this.dibujante);
 		}
 		Collections.sort(strFilter);
 

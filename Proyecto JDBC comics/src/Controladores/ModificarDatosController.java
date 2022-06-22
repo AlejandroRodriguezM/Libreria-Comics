@@ -281,11 +281,15 @@ public class ModificarDatosController {
 		nombreCom = nombreComic.getText();
 
 		numeroCom = numeroComic.getText();
+		
+		Comics comic = new Comics(id, nombreCom,
+				numeroCom, varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom,
+				fechaCom, guionistaCom, dibujanteCom);
+
+		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(comic));
 
 		nombreColumnas();
 
-		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(id, nombreCom, numeroCom,
-				varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
 		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante);
 		tablaBBDD.getItems().setAll(listComics);

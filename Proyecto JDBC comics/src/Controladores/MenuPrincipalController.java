@@ -449,10 +449,12 @@ public class MenuPrincipalController {
 	@SuppressWarnings("unchecked")
 	public void listaPorParametro() throws SQLException {
 		String datosComics[] = camposComics();
-
-		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(datosComics[0], datosComics[1],
+		
+		Comics comic = new Comics(datosComics[0], datosComics[1],
 				datosComics[2], datosComics[3], datosComics[4], datosComics[5], datosComics[6], datosComics[7],
-				datosComics[8], datosComics[9], datosComics[10]));
+				datosComics[8], datosComics[9], datosComics[10]);
+
+		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(comic));
 		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante);
 		tablaBBDD.getItems().setAll(listComics);

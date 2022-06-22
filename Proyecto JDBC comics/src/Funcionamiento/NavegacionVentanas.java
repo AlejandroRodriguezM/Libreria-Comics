@@ -309,6 +309,9 @@ public class NavegacionVentanas {
 	public boolean alertaEliminar()
 	{
 		Alert alert = new Alert(AlertType.CONFIRMATION);
+		
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
 		alert.setTitle("Eliminando . . .");
 		alert.setHeaderText("Estas apunto de eliminar datos.");
 		alert.setContentText("¿Estas seguro que quieres eliminar el comic?");
@@ -322,6 +325,8 @@ public class NavegacionVentanas {
 	public boolean alertaModificar()
 	{
 		Alert alert = new Alert(AlertType.CONFIRMATION);
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
 		alert.setTitle("Modificando . . .");
 		alert.setHeaderText("Estas apunto de modificar datos.");
 		alert.setContentText("¿Estas seguro que quieres modificar el comic?");

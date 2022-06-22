@@ -64,14 +64,40 @@ public class EliminarDatosController {
 	@FXML
 	private Button botonbbdd;
 
-	@FXML
-	private TextField nombreComic;
+    @FXML
+    private TextField idComic;
+	
+    @FXML
+    private TextField nombreComic;
+    
+    @FXML
+    private TextField numeroComic;
+    
+    @FXML
+    private TextField nombreVariante;
 
-	@FXML
-	private TextField numeroComic;
+    @FXML
+    private TextField nombreEditorial;
 
-	@FXML
-	private TextField idComic;
+    @FXML
+    private TextField anioPublicacion;
+    
+    @FXML
+    private TextField nombreFirma;
+
+    @FXML
+    private TextField nombreFormato;
+
+    @FXML
+    private TextField nombreProcedencia;
+    
+    @FXML
+    private TextField nombreGuionista;
+    
+    @FXML
+    private TextField nombreDibujante;
+
+
 
 	@FXML
 	private Label pantallaInformativa;
@@ -205,9 +231,11 @@ public class EliminarDatosController {
 	public void listaPorParametro() throws SQLException {
 		String datosComics[] = camposComics();
 
-		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(datosComics[0], datosComics[1],
+		Comics comic = new Comics(datosComics[0], datosComics[1],
 				datosComics[2], datosComics[3], datosComics[4], datosComics[5], datosComics[6], datosComics[7],
-				datosComics[8], datosComics[9], datosComics[10]));
+				datosComics[8], datosComics[9], datosComics[10]);
+
+		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(comic));
 		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante);
 		tablaBBDD.getItems().setAll(listComics);
@@ -223,16 +251,19 @@ public class EliminarDatosController {
 				procedenciaCom = "", fechaCom = "", guionistaCom = "", dibujanteCom = "", sentenciaSQL;
 
 		sentenciaSQL = "UPDATE comicsbbdd set estado = 'Vendido' where ID = ?";
+		
+		id = idComic.getText();
+		
+		Comics comic = new Comics(id, nombreCom,
+				numeroCom, varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom,
+				fechaCom, guionistaCom, dibujanteCom);
 
 		PreparedStatement stmt;
 
 		try {
 			if (nav.alertaEliminar()) { //Llamada a metodo que permite lanzar una alerta. En caso de aceptarlo permitira lo siguiente.
 
-				id = idComic.getText();
-
-				List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(id, nombreCom, numeroCom,
-						varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom)); //Lista que contiene toda los comics de la base de datos.
+				List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(comic)); //Lista que contiene toda los comics de la base de datos.
 				if (id.length() != 0) {
 					stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE,
 							ResultSet.CONCUR_UPDATABLE); //Permite leer y ejecutar la sentencia de MySql
@@ -263,6 +294,22 @@ public class EliminarDatosController {
 		campos[1] = nombreComic.getText();
 
 		campos[2] = numeroComic.getText();
+
+		campos[3] = nombreVariante.getText();
+
+		campos[4] = nombreFirma.getText();
+
+		campos[5] = nombreEditorial.getText();
+
+		campos[6] = nombreFormato.getText();
+
+		campos[7] = nombreProcedencia.getText();
+
+		campos[8] = anioPublicacion.getText();
+
+		campos[9] = nombreGuionista.getText();
+
+		campos[10] = nombreDibujante.getText();
 
 		return campos;
 	}
