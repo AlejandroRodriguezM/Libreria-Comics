@@ -171,7 +171,7 @@ public class CrearBBDDController {
 	@FXML
 	void volverMenu(ActionEvent event) throws IOException {
 
-		nav.verCrearBBDD();
+		nav.verAccesoBBDD();
 
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();
