@@ -3,7 +3,6 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -62,26 +61,25 @@
             <Image url="@../imagenes/FVe-YDjVIAYCW9j.jpg" />
          </image>
       </ImageView>
-      <TextArea fx:id="informacion" editable="false" layoutX="23.0" layoutY="14.0" prefHeight="84.0" prefWidth="270.0" text="Introduzca los siguientes datos para&#10;poder acceder a la base de datos.&#10;Si quieres cambiar de base de datos&#10;Debes cerrar la que tengas conectada" />
-      <TextField fx:id="nombreBBDD" layoutX="71.0" layoutY="130.0" />
-      <TextField fx:id="puertobbdd" layoutX="71.0" layoutY="188.0" />
-      <TextField fx:id="usuario" layoutX="71.0" layoutY="247.0" />
-      <PasswordField fx:id="pass" layoutX="71.0" layoutY="304.0" />
+      <TextField fx:id="nombreBBDD" layoutX="71.0" layoutY="136.0" />
+      <TextField fx:id="puertobbdd" layoutX="71.0" layoutY="199.0" />
+      <TextField fx:id="usuario" layoutX="71.0" layoutY="257.0" />
+      <PasswordField fx:id="pass" layoutX="71.0" layoutY="308.0" />
       <Button fx:id="botonEnviar" layoutX="30.0" layoutY="491.0" mnemonicParsing="false" onAction="#enviarDatos" prefHeight="54.0" prefWidth="118.0" text="Conectar bbdd" />
-      <Button fx:id="botonLimpiar" layoutX="163.0" layoutY="491.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="54.0" prefWidth="118.0" text="Limpiar" />
-      <Label layoutX="54.0" layoutY="103.0" style="-fx-background-color: grey;" text="Nombre de la base de datos">
+      <Button fx:id="botonLimpiar" layoutX="30.0" layoutY="617.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="54.0" prefWidth="118.0" text="Limpiar" />
+      <Label layoutX="54.0" layoutY="109.0" style="-fx-background-color: grey;" text="Nombre de la base de datos">
          <font>
             <Font size="15.0" />
          </font></Label>
-      <Label layoutX="59.0" layoutY="161.0" style="-fx-background-color: grey;" text="Puerto de la base de datos">
+      <Label layoutX="59.0" layoutY="172.0" style="-fx-background-color: grey;" text="Puerto de la base de datos">
          <font>
             <Font size="15.0" />
          </font></Label>
-      <Label layoutX="81.0" layoutY="219.0" style="-fx-background-color: grey;" text="Nombre de usuario">
+      <Label layoutX="81.0" layoutY="229.0" style="-fx-background-color: grey;" text="Nombre de usuario">
          <font>
             <Font size="15.0" />
          </font></Label>
-      <Label layoutX="71.0" layoutY="280.0" style="-fx-background-color: grey;" text="Contraseña de usuario">
+      <Label layoutX="71.0" layoutY="284.0" style="-fx-background-color: grey;" text="Contraseña de usuario">
          <font>
             <Font size="15.0" />
          </font></Label>
@@ -94,7 +92,13 @@
       <Button fx:id="botonCerrar" layoutX="163.0" layoutY="555.0" mnemonicParsing="false" onAction="#cerrarbbdd" prefHeight="54.0" prefWidth="118.0" text="Cerrar BBDD" />
       <Button fx:id="botonTwitter" layoutX="166.0" layoutY="757.0" mnemonicParsing="false" onAction="#accesoTwitter" text="Por @silverAlox" />
       <Button fx:id="numeroVersion" layoutX="47.0" layoutY="757.0" mnemonicParsing="false" onAction="#accesoGitHub" text="Version 2.3" />
-      <Button fx:id="botonSalir" layoutX="88.0" layoutY="688.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="54.0" prefWidth="144.0" text="Salir" />
-      <Button fx:id="botonCrearBBDD" layoutX="30.0" layoutY="617.0" mnemonicParsing="false" onAction="#crearBBDD" prefHeight="54.0" prefWidth="118.0" text="Crear BBDD" />
+      <Button fx:id="botonSalir" layoutX="30.0" layoutY="682.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="54.0" prefWidth="118.0" text="Salir" />
+      <Button fx:id="botonCrearBBDD" layoutX="160.0" layoutY="491.0" mnemonicParsing="false" onAction="#crearBBDD" prefHeight="54.0" prefWidth="118.0" text="Crear BBDD" />
+      <Label fx:id="prontBBDDNames" alignment="TOP_LEFT" layoutX="54.0" layoutY="12.0" prefHeight="91.0" prefWidth="187.0" wrapText="true">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Label>
+      <Button fx:id="botonVerDDBB" layoutX="163.0" layoutY="617.0" mnemonicParsing="false" onAction="#verDBDisponibles" prefHeight="54.0" prefWidth="118.0" text="Ver bbdd" />
    </children>
 </Pane>

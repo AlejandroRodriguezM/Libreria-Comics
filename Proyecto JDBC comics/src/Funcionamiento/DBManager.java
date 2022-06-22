@@ -44,6 +44,7 @@ public class DBManager {
 	public static String DB_PASS = ""; 
 	public static String DB_PORT = "";
 	public static String DB_NAME = "";
+	public static String DB_HOST = "localhost";
 
 	static AccesoBBDDController menuPrincipalController = new AccesoBBDDController();
 

@@ -27,6 +27,13 @@ import java.awt.Desktop;
 
 import java.io.IOException;
 import java.net.URI;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 
 import Funcionamiento.DBManager;
 import Funcionamiento.NavegacionVentanas;
@@ -59,12 +66,15 @@ public class AccesoBBDDController {
 
 	@FXML
 	private Button botonTwitter;
-	
-    @FXML
-    private Button botonCrearBBDD;
+
+	@FXML
+	private Button botonCrearBBDD;
 
 	@FXML
 	private Label estadoConexion;
+
+	@FXML
+	private Label prontBBDDNames;
 
 	@FXML
 	private TextArea informacion;
@@ -74,6 +84,9 @@ public class AccesoBBDDController {
 
 	@FXML
 	private Button numeroVersion;
+
+	@FXML
+	private Button botonVerDDBB;
 
 	@FXML
 	public PasswordField pass;
@@ -98,8 +111,8 @@ public class AccesoBBDDController {
 
 		if (Desktop.isDesktopSupported()) {
 			java.awt.Desktop.getDesktop().browse(java.net.URI.create(url)); // Metodo que abre tu navegador por defecto
-																			// y muestra la url que se encuentra en el
-																			// String
+			// y muestra la url que se encuentra en el
+			// String
 		} else {
 			Desktop desktop = Desktop.getDesktop();
 			if (!desktop.isSupported(Desktop.Action.BROWSE)) {
@@ -120,7 +133,7 @@ public class AccesoBBDDController {
 
 		if (Desktop.isDesktopSupported()) {
 			java.awt.Desktop.getDesktop().browse(java.net.URI.create(url)); // Metodo que abre tu navegador por defecto
-																			// y muestra la url que se encuentra en el																// String
+			// y muestra la url que se encuentra en el // String
 		} else {
 			Desktop desktop = Desktop.getDesktop();
 			if (!desktop.isSupported(Desktop.Action.BROWSE)) {
@@ -140,10 +153,10 @@ public class AccesoBBDDController {
 	void entrarMenu(ActionEvent event) throws InterruptedException, IOException {
 
 		if (Funcionamiento.DBManager.isConnected()) { // Siempre que el metodo de la clase DBManager sea true, permitira
-														// acceder al menu principal
+			// acceder al menu principal
 
 			nav.verMenuPrincipal(); // Llamada a metodo de la clase NavegacionVentanas. Permite cargar y mostrar el
-									// menu principal
+			// menu principal
 			envioDatosBBDD();
 
 			Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
@@ -154,17 +167,49 @@ public class AccesoBBDDController {
 			estadoConexion.setText("Conectate a la bbdd \nantes de continuar");
 		}
 	}
-	
 
-    @FXML
-    void crearBBDD(ActionEvent event) {
-    	
-    	nav.verCrearBBDD();
-    	
-    	Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
+	@FXML
+	void crearBBDD(ActionEvent event) {
+
+		nav.verCrearBBDD();
+
+		Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
 		myStage.close();
 
-    }
+	}
+
+	@FXML
+	void verDBDisponibles(ActionEvent event) {
+
+		String url = "jdbc:mysql://" + DBManager.DB_HOST + ":" + puertobbdd.getText() + "?serverTimezone=UTC";
+
+		try {
+			Connection connection = DriverManager.getConnection(url, usuario.getText(), pass.getText());
+
+			DatabaseMetaData meta = connection.getMetaData();
+			ResultSet res = meta.getCatalogs();
+
+			ArrayList<String> databases = new ArrayList<String>();
+
+			while (res.next()) {
+				
+				if(!res.getString("TABLE_CAT").equals("information_schema") && !res.getString("TABLE_CAT").equals("mysql") && !res.getString("TABLE_CAT").equals("performance_schema"))
+				{
+					databases.add(res.getString("TABLE_CAT") + "\n");
+				}
+			}
+			res.close();
+
+			prontBBDDNames.setStyle("-fx-background-color: #696969");
+			String bbddNames = databases.toString().replace("[", "").replace("]", "").replace(",", "").replace(" ", "");
+			prontBBDDNames.setText(bbddNames);
+
+		} catch (SQLException e) {
+
+			System.out.println(e);
+		}
+
+	}
 
 	/**
 	 * Limpia los datos de los campos
@@ -188,8 +233,8 @@ public class AccesoBBDDController {
 	void cerrarbbdd(ActionEvent event) {
 
 		if (Funcionamiento.DBManager.isConnected()) { // Siempre que el metodo isConnected sea true, permitira cerrar la
-														// base de datos.
-			estadoConexion.setText("BBDD Cerrada con existo.\nNo conectado.");
+			// base de datos.
+			estadoConexion.setText("BBDD Cerrada con exito.\nNo conectado.");
 			estadoConexion.setStyle("-fx-background-color: #696969");
 			Funcionamiento.DBManager.close();
 		} else { // En caso contrario, mostrara el siguiente mensaje.
@@ -208,13 +253,13 @@ public class AccesoBBDDController {
 	void enviarDatos(ActionEvent event) {
 
 		Funcionamiento.DBManager.loadDriver(); // Llamada a metodo que permite comprobar que el driver de conexion a la
-												// base de datos sea correcto y funcione
+		// base de datos sea correcto y funcione
 		envioDatosBBDD(); // Llamada a metodo que manda los datos de los textField de la ventana hacia la
-							// clase DBManager.
+		// clase DBManager.
 		DBManager.conexion(); // Llamada a metodo que permite conectar con la base de datos.
 
 		if (Funcionamiento.DBManager.isConnected()) { // Siempre que la base de datos se haya conectado de forma
-														// correcta, mostrara el siguiente mensaje
+			// correcta, mostrara el siguiente mensaje
 			estadoConexion.setStyle("-fx-background-color: #A0F52D");
 			estadoConexion.setText("Conectado");
 		} else { // En caso contrario mostrara el siguiente mensaje
@@ -237,7 +282,7 @@ public class AccesoBBDDController {
 		datos[2] = usuario.getText();
 		datos[3] = pass.getText();
 		DBManager.datosBBDD(datos); // llamada a metodo que permite mandar los datos de los TextField a la clase
-									// DBManager
+		// DBManager
 	}
 
 	/**
@@ -258,7 +303,7 @@ public class AccesoBBDDController {
 	 * Cierra el programa a la fuerza correctamente.
 	 */
 	public void closeWindows() { // Metodo que permite cerrar completamente el programa en caso de cerrar a la
-									// fuerza.
+		// fuerza.
 		Stage myStage = (Stage) this.botonEnviar.getScene().getWindow();
 		myStage.close();
 	}

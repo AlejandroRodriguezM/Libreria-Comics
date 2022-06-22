@@ -3,6 +3,7 @@ package Controladores;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -33,9 +34,6 @@ public class CrearBBDDController {
 	private TextField nombreBBDD;
 
 	@FXML
-	private TextField nombreTabla;
-
-	@FXML
 	private TextField userBBDD;
 
 	@FXML
@@ -50,55 +48,102 @@ public class CrearBBDDController {
 	NavegacionVentanas nav = new NavegacionVentanas();
 
 	@FXML
-	void crearBBDD(ActionEvent event) throws SQLException, ClassNotFoundException {
+	void crearBBDD(ActionEvent event) throws SQLException {
 
-		createDataBase();
-		createTable();
+		if(checkDatabase())
+		{
+			createDataBase();
+			createTable();
+			prontInformativo.setStyle("-fx-background-color: #A0F52D");
+			prontInformativo.setText("Base de datos: " + nombreBBDD.getText() + " creada correctamente.");
+		}
+		
 	}
 
-	public void createDataBase() throws SQLException
-	{
-		String sentenciaSQL = "CREATE DATABASE " + nombreBBDD.getText() + ";";
+	public void createDataBase() {
+		
+		String DB_HOST = "localhost";
 
-		String url = "jdbc:mysql://localhost:" + puertoBBDD.getText() + "/mysql?zeroDateTimeBehavior=convertToNull";
-		Connection connection = DriverManager.getConnection(url,userBBDD.getText(),passBBDD.getText());
+		String sentenciaSQL = "CREATE DATABASE " + nombreBBDD.getText() + ";";
+		
+		String url = "jdbc:mysql://" + DB_HOST + ":" + puertoBBDD.getText() + "?serverTimezone=UTC";
 
 		Statement statement;
 		try {
+			Connection connection = DriverManager.getConnection(url, userBBDD.getText(), passBBDD.getText());
+			
 			statement = connection.createStatement();
 			statement.executeUpdate(sentenciaSQL);
-			statement.close();
+				
 		} catch (SQLException e) {
-			e.printStackTrace();
+			
+			System.out.println(e);
 		}
 	}
-
-	public void createTable() throws SQLException, ClassNotFoundException
+	
+	public boolean checkDatabase()
 	{
-		String url = "jdbc:mysql://localhost:" + puertoBBDD.getText() + "/mysql?zeroDateTimeBehavior=convertToNull";
-
-
-		String sentenciaSQL = "CREATE TABLE " + nombreTabla.getText()
-		+ "( `ID` int NOT NULL AUTO_INCREMENT," + "`nomComic` varchar(150) NOT NULL,"
-		+ "`numComic` varchar(150) NOT NULL," + "`nomVariante` varchar(150) NOT NULL,"
-		+ "`Firma` varchar(150) NOT NULL," + "`nomEditorial` varchar(150) NOT NULL,"
-		+ "`Formato` varchar(150) NOT NULL," + "`Procedencia` varchar(150) NOT NULL,"
-		+ "`anioPubli` varchar(150) NOT NULL," + "`nomGuionista` varchar(150) NOT NULL,"
-		+ "`nomDibujante` varchar(150) NOT NULL,"
-		+ "`estado` enum('En posesion','Vendido') DEFAULT 'En posesion'" + ",PRIMARY KEY (`ID`)) "
-		+ "ENGINE=InnoDB AUTO_INCREMENT=320 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;";
+		boolean exists;
+		String DB_HOST = "localhost";
+		
+		String sentenciaSQL = "SELECT COUNT(*)"
+				+ "FROM information_schema.tables "
+				+ "WHERE table_schema = '" + nombreBBDD.getText() + "';";
+		
+		String url = "jdbc:mysql://" + DB_HOST + ":" + puertoBBDD.getText() + "?serverTimezone=UTC";
 
 		Statement statement;
-		Connection connection = DriverManager.getConnection(url + nombreBBDD.getText(), userBBDD.getText(),passBBDD.getText());
+		try {
+			
+			Connection connection = DriverManager.getConnection(url, userBBDD.getText(), passBBDD.getText());
+			
+			statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+		               ResultSet.CONCUR_UPDATABLE);
+			ResultSet rs = statement.executeQuery(sentenciaSQL);
+			rs.next();
+			
+			exists = rs.getInt("COUNT(*)") < 1;
+			
+			if(exists) {
+				return true;
+			}
+
+
+		} catch (SQLException e) {
+			
+			System.out.println(e);
+		}
+		prontInformativo.setStyle("-fx-background-color: #DD370F");
+		prontInformativo.setText("ERROR. Ya existe una base de datos llamada: " + nombreBBDD.getText());
+		return false;
+	}
+
+	public void createTable() throws SQLException
+	{
+
+		String DB_HOST = "localhost";
+		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + puertoBBDD.getText() + "/" + nombreBBDD.getText() + "?serverTimezone=UTC";
+
+
+		String sentenciaSQL = "CREATE TABLE "
+				+ " comicsbbdd ( ID int NOT NULL AUTO_INCREMENT," + "nomComic varchar(150) NOT NULL,"
+				+ "numComic varchar(150) NOT NULL," + "nomVariante varchar(150) NOT NULL,"
+				+ "Firma varchar(150) NOT NULL," + "nomEditorial varchar(150) NOT NULL,"
+				+ "Formato varchar(150) NOT NULL," + "Procedencia varchar(150) NOT NULL,"
+				+ "anioPubli varchar(150) NOT NULL," + "nomGuionista varchar(150) NOT NULL,"
+				+ "nomDibujante varchar(150) NOT NULL,"
+				+ "estado enum('En posesion','Vendido') DEFAULT 'En posesion'" + ",PRIMARY KEY (`ID`)) "
+				+ "ENGINE=InnoDB AUTO_INCREMENT=320 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;";
+
+		Statement statement;
+		Connection connection = DriverManager.getConnection(DB_URL, userBBDD.getText(),passBBDD.getText());
 		try {
 
 			statement = connection.createStatement();
-			//This line has the issue
 			statement.executeUpdate(sentenciaSQL);
-			System.out.println("Table Created");
+			
 		}
 		catch (SQLException e ) {
-			System.out.println("An error has occured on Table Creation");
 			e.printStackTrace();
 		}
 
@@ -107,9 +152,10 @@ public class CrearBBDDController {
 	@FXML
 	void limpiarDatos(ActionEvent event) {
 
+		userBBDD.setText("");
+		passBBDD.setText("");
+		puertoBBDD.setText("");
 		nombreBBDD.setText("");
-		nombreTabla.setText("");
-
 	}
 
 	/////////////////////////////////

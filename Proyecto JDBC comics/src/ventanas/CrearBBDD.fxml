@@ -5,23 +5,25 @@
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="335.0" prefWidth="611.0" style="-fx-background-color: DFA394;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.CrearBBDDController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="236.0" prefWidth="611.0" style="-fx-background-color: DFA394;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.CrearBBDDController">
    <children>
-      <Button fx:id="botonCrearBBDD" layoutX="19.0" layoutY="196.0" mnemonicParsing="false" onAction="#crearBBDD" prefHeight="54.0" prefWidth="149.0" text="Crear base de datos" />
-      <Button fx:id="botonLimpiarDatos" layoutX="16.0" layoutY="267.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="54.0" prefWidth="150.0" text="Limpiar" />
-      <Button fx:id="botonVolver" layoutX="411.0" layoutY="267.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="54.0" prefWidth="85.0" text="Volver" />
-      <Button fx:id="botonSalir" layoutX="510.0" layoutY="267.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="54.0" prefWidth="85.0" text="Salir" />
-      <Label layoutX="19.0" layoutY="123.0" text="Nombre de la base de datos" />
-      <TextField fx:id="nombreBBDD" layoutX="187.0" layoutY="119.0" />
-      <Label layoutX="19.0" layoutY="156.0" text="Nombre de la tabla" />
-      <TextField fx:id="nombreTabla" layoutX="187.0" layoutY="152.0" />
-      <Label fx:id="prontInformativo" alignment="CENTER" layoutX="356.0" layoutY="14.0" prefHeight="142.0" prefWidth="237.0" style="-fx-background-color: white;" wrapText="true" />
-      <Label layoutX="19.0" layoutY="18.0" text="Usuario" />
       <TextField fx:id="userBBDD" layoutX="187.0" layoutY="14.0" />
-      <Label layoutX="19.0" layoutY="51.0" text="Contraseña" />
       <PasswordField fx:id="passBBDD" layoutX="187.0" layoutY="47.0" />
-      <Label layoutX="19.0" layoutY="89.0" text="Puerto" />
       <TextField fx:id="puertoBBDD" layoutX="187.0" layoutY="85.0" />
+      <TextField fx:id="nombreBBDD" layoutX="187.0" layoutY="119.0" />
+      <Button fx:id="botonCrearBBDD" layoutX="17.0" layoutY="168.0" mnemonicParsing="false" onAction="#crearBBDD" prefHeight="54.0" prefWidth="149.0" text="Crear base de datos" />
+      <Button fx:id="botonLimpiarDatos" layoutX="187.0" layoutY="168.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="54.0" prefWidth="85.0" text="Limpiar" />
+      <Button fx:id="botonVolver" layoutX="356.0" layoutY="168.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="54.0" prefWidth="85.0" text="Volver" />
+      <Button fx:id="botonSalir" layoutX="508.0" layoutY="168.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="54.0" prefWidth="85.0" text="Salir" />
+      <Label layoutX="19.0" layoutY="123.0" text="Nombre de la base de datos" />
+      <Label fx:id="prontInformativo" alignment="TOP_LEFT" layoutX="356.0" layoutY="14.0" prefHeight="142.0" prefWidth="237.0" style="-fx-background-color: white;" wrapText="true">
+         <font>
+            <Font size="18.0" />
+         </font></Label>
+      <Label layoutX="19.0" layoutY="18.0" text="Usuario" />
+      <Label layoutX="19.0" layoutY="51.0" text="Contraseña" />
+      <Label layoutX="19.0" layoutY="89.0" text="Puerto" />
    </children>
 </Pane>
