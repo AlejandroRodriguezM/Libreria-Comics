@@ -59,6 +59,9 @@ public class AccesoBBDDController {
 
 	@FXML
 	private Button botonTwitter;
+	
+    @FXML
+    private Button botonCrearBBDD;
 
 	@FXML
 	private Label estadoConexion;
@@ -151,6 +154,17 @@ public class AccesoBBDDController {
 			estadoConexion.setText("Conectate a la bbdd \nantes de continuar");
 		}
 	}
+	
+
+    @FXML
+    void crearBBDD(ActionEvent event) {
+    	
+    	nav.verCrearBBDD();
+    	
+    	Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
+		myStage.close();
+
+    }
 
 	/**
 	 * Limpia los datos de los campos

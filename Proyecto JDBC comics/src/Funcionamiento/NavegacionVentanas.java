@@ -28,6 +28,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import Controladores.AccesoBBDDController;
+import Controladores.CrearBBDDController;
 import Controladores.EliminarDatosController;
 import Controladores.IntroducirDatosController;
 import Controladores.MenuPrincipalController;
@@ -258,6 +259,46 @@ public class NavegacionVentanas {
 
 			// Obtengo el controlador
 			EliminarDatosController controlador = loader.getController();
+
+			// Creo la scene y el stage
+			Scene scene = new Scene(root);
+			Stage stage = new Stage();
+			stage.setTitle("Aplicacion bbdd comics"); // Titulo de la aplicacion.
+			stage.getIcons().add(new Image("/Icono/icon2.png"));
+
+			// Asocio el stage con el scene
+			stage.setScene(scene);
+			stage.show();
+
+			// Indico que debe hacer al cerrar
+			stage.setOnCloseRequest(e -> {
+				try {
+					controlador.closeWindows();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			});
+
+			stage.setScene(scene);
+			stage.show();
+
+		} catch (IOException ex) {
+			Logger.getLogger(MenuOpcionesController.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+	
+	public void verCrearBBDD() {
+
+		try {
+			// Cargo la vista
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/CrearBBDD.fxml"));
+
+			// Cargo el padre
+			Parent root = loader.load();
+
+			// Obtengo el controlador
+			CrearBBDDController controlador = loader.getController();
 
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
