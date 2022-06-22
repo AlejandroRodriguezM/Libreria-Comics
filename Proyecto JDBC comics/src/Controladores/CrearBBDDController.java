@@ -34,15 +34,15 @@ public class CrearBBDDController {
 
 	@FXML
 	private TextField nombreTabla;
-	
-    @FXML
-    private TextField userBBDD;
-    
-    @FXML
-    private TextField puertoBBDD;
-	
-    @FXML
-    private PasswordField passBBDD;
+
+	@FXML
+	private TextField userBBDD;
+
+	@FXML
+	private TextField puertoBBDD;
+
+	@FXML
+	private PasswordField passBBDD;
 
 	@FXML
 	private Label prontInformativo;
@@ -50,36 +50,55 @@ public class CrearBBDDController {
 	NavegacionVentanas nav = new NavegacionVentanas();
 
 	@FXML
-	void crearBBDD(ActionEvent event) throws SQLException {
+	void crearBBDD(ActionEvent event) throws SQLException, ClassNotFoundException {
+
+		createDataBase();
+		createTable();
+	}
+
+	public void createDataBase() throws SQLException
+	{
+		String sentenciaSQL = "CREATE DATABASE " + nombreBBDD.getText() + ";";
 
 		String url = "jdbc:mysql://localhost:" + puertoBBDD.getText() + "/mysql?zeroDateTimeBehavior=convertToNull";
-        Connection connection = DriverManager.getConnection(url,userBBDD.getText(),passBBDD.getText());
-		
-		String sentenciaSQL = "CREATE DATABASE " + nombreBBDD.getText() + "; CREATE TABLE " + nombreTabla.getText()
-				+ "( `ID` int NOT NULL AUTO_INCREMENT," + "`nomComic` varchar(150) NOT NULL,"
-				+ "`numComic` varchar(150) NOT NULL," + "`nomVariante` varchar(150) NOT NULL,"
-				+ "`Firma` varchar(150) NOT NULL," + "`nomEditorial` varchar(150) NOT NULL,"
-				+ "`Formato` varchar(150) NOT NULL," + "`Procedencia` varchar(150) NOT NULL,"
-				+ "`anioPubli` varchar(150) NOT NULL," + "`nomGuionista` varchar(150) NOT NULL,"
-				+ "`nomDibujante` varchar(150) NOT NULL,"
-				+ "`estado` enum('En posesion','Vendido') DEFAULT 'En posesion'" + ",PRIMARY KEY (`ID`)) "
-				+ "ENGINE=InnoDB AUTO_INCREMENT=320 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;";
+		Connection connection = DriverManager.getConnection(url,userBBDD.getText(),passBBDD.getText());
 
 		Statement statement;
 		try {
 			statement = connection.createStatement();
-			if(statement.executeUpdate(sentenciaSQL) == 1)
-			{
-				prontInformativo.setStyle("-fx-background-color: #A0F52D");
-				prontInformativo.setText("Has creado correctamente la base de datos: " + nombreBBDD.getText()); 
-			}
-			else
-			{
-				prontInformativo.setStyle("-fx-background-color: #F53636");
-				prontInformativo.setText("ERROR. No se ha podido crear la base de datos correctamente.");
-			}
+			statement.executeUpdate(sentenciaSQL);
 			statement.close();
 		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void createTable() throws SQLException, ClassNotFoundException
+	{
+		String url = "jdbc:mysql://localhost:" + puertoBBDD.getText() + "/mysql?zeroDateTimeBehavior=convertToNull";
+
+
+		String sentenciaSQL = "CREATE TABLE " + nombreTabla.getText()
+		+ "( `ID` int NOT NULL AUTO_INCREMENT," + "`nomComic` varchar(150) NOT NULL,"
+		+ "`numComic` varchar(150) NOT NULL," + "`nomVariante` varchar(150) NOT NULL,"
+		+ "`Firma` varchar(150) NOT NULL," + "`nomEditorial` varchar(150) NOT NULL,"
+		+ "`Formato` varchar(150) NOT NULL," + "`Procedencia` varchar(150) NOT NULL,"
+		+ "`anioPubli` varchar(150) NOT NULL," + "`nomGuionista` varchar(150) NOT NULL,"
+		+ "`nomDibujante` varchar(150) NOT NULL,"
+		+ "`estado` enum('En posesion','Vendido') DEFAULT 'En posesion'" + ",PRIMARY KEY (`ID`)) "
+		+ "ENGINE=InnoDB AUTO_INCREMENT=320 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;";
+
+		Statement statement;
+		Connection connection = DriverManager.getConnection(url + nombreBBDD.getText(), userBBDD.getText(),passBBDD.getText());
+		try {
+
+			statement = connection.createStatement();
+			//This line has the issue
+			statement.executeUpdate(sentenciaSQL);
+			System.out.println("Table Created");
+		}
+		catch (SQLException e ) {
+			System.out.println("An error has occured on Table Creation");
 			e.printStackTrace();
 		}
 
