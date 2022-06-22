@@ -106,7 +106,7 @@ public class AccesoBBDDController {
 	 */
 	@FXML
 	void accesoGitHub(ActionEvent event) throws IOException {
-		String url = "https://github.com/MisterioRojo/Proyecto-gui-bbdd";
+		String url = "https://github.com/MisterioRojo/Proyecto-gui-bbdd/tree/V2.4";
 
 		if (Desktop.isDesktopSupported()) {
 			java.awt.Desktop.getDesktop().browse(java.net.URI.create(url)); // Metodo que abre tu navegador por defecto

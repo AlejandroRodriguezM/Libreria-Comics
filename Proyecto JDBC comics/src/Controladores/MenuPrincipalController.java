@@ -288,20 +288,7 @@ public class MenuPrincipalController {
 		myStage.close();
 	}
 
-	/**
-	 * Vuelve al menu inicial de conexion de la base de datos.
-	 * 
-	 * @param event
-	 * @throws IOException
-	 */
-	@FXML
-	public void volverMenu(ActionEvent event) throws IOException {
 
-		nav.verAccesoBBDD();
-
-		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-		myStage.close();
-	}
 
 	////////////////////////////
 	/// METODOS PARA EXPORTAR///
@@ -528,6 +515,22 @@ public class MenuPrincipalController {
 	//// FUNCIONES PARA SALIR////
 	/////////////////////////////
 
+	/**
+	 * Vuelve al menu inicial de conexion de la base de datos.
+	 * 
+	 * @param event
+	 * @throws IOException
+	 */
+	@FXML
+	public void volverMenu(ActionEvent event) throws IOException {
+
+		nav.verAccesoBBDD();
+		DBManager.close();
+		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
+		myStage.close();
+	}
+	
+	
 	/**
 	 * Permite salir completamente del programa.
 	 * 

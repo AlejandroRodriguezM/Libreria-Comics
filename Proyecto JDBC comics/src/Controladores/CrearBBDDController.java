@@ -57,60 +57,60 @@ public class CrearBBDDController {
 			prontInformativo.setStyle("-fx-background-color: #A0F52D");
 			prontInformativo.setText("Base de datos: " + nombreBBDD.getText() + " creada correctamente.");
 		}
-		
+
 	}
 
 	public void createDataBase() {
-		
+
 		String DB_HOST = "localhost";
 
 		String sentenciaSQL = "CREATE DATABASE " + nombreBBDD.getText() + ";";
-		
+
 		String url = "jdbc:mysql://" + DB_HOST + ":" + puertoBBDD.getText() + "?serverTimezone=UTC";
 
 		Statement statement;
 		try {
 			Connection connection = DriverManager.getConnection(url, userBBDD.getText(), passBBDD.getText());
-			
+
 			statement = connection.createStatement();
 			statement.executeUpdate(sentenciaSQL);
-				
+
 		} catch (SQLException e) {
-			
+
 			System.out.println(e);
 		}
 	}
-	
+
 	public boolean checkDatabase()
 	{
 		boolean exists;
 		String DB_HOST = "localhost";
-		
+
 		String sentenciaSQL = "SELECT COUNT(*)"
 				+ "FROM information_schema.tables "
 				+ "WHERE table_schema = '" + nombreBBDD.getText() + "';";
-		
+
 		String url = "jdbc:mysql://" + DB_HOST + ":" + puertoBBDD.getText() + "?serverTimezone=UTC";
 
 		Statement statement;
 		try {
-			
+
 			Connection connection = DriverManager.getConnection(url, userBBDD.getText(), passBBDD.getText());
-			
+
 			statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-		               ResultSet.CONCUR_UPDATABLE);
+					ResultSet.CONCUR_UPDATABLE);
 			ResultSet rs = statement.executeQuery(sentenciaSQL);
 			rs.next();
-			
+
 			exists = rs.getInt("COUNT(*)") < 1;
-			
+
 			if(exists) {
 				return true;
 			}
 
 
 		} catch (SQLException e) {
-			
+
 			System.out.println(e);
 		}
 		prontInformativo.setStyle("-fx-background-color: #DD370F");
@@ -141,7 +141,7 @@ public class CrearBBDDController {
 
 			statement = connection.createStatement();
 			statement.executeUpdate(sentenciaSQL);
-			
+
 		}
 		catch (SQLException e ) {
 			e.printStackTrace();
@@ -163,13 +163,13 @@ public class CrearBBDDController {
 	/////////////////////////////////
 
 	/**
-	 * Permite volver al menu de conexion a la base de datos.
-	 *
+	 * Vuelve al menu inicial de conexion de la base de datos.
+	 * 
 	 * @param event
 	 * @throws IOException
 	 */
 	@FXML
-	void volverMenu(ActionEvent event) throws IOException {
+	public void volverMenu(ActionEvent event) throws IOException {
 
 		nav.verAccesoBBDD();
 
@@ -177,9 +177,6 @@ public class CrearBBDDController {
 		myStage.close();
 	}
 
-	/////////////////////////////
-	//// FUNCIONES PARA SALIR////
-	/////////////////////////////
 
 	/**
 	 * Permite salir completamente del programa.
@@ -187,26 +184,26 @@ public class CrearBBDDController {
 	 * @param event
 	 */
 	@FXML
-	public void salirPrograma(ActionEvent event) { // Metodo que poermite salir del programa
+	public void salirPrograma(ActionEvent event) {
 
-		if (nav.salirPrograma(event)) { // Llamada a metodo que permite salir del programa
+		if (nav.salirPrograma(event)) {
 			Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
-			myStage.close(); // Cierra la ventana actual
+			myStage.close();
 		}
 	}
 
 	/**
-	 * Al cerrar la ventana, se cargara la ventana de verBBDD
+	 * Al cerrar la ventana, carga la ventana del menu principal
 	 * 
 	 * @throws IOException
 	 */
-	public void closeWindows() throws IOException { // Metodo que permite cerrar el programa a la fuerza.
+	public void closeWindows() throws IOException {
 
-		nav.verMenuPrincipal(); // Llamada a metodo que carga y muestra la ventana de MenuPrincipal
+		nav.verAccesoBBDD();
 
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-		myStage.close(); // Cierra la ventana actual
+		myStage.close();
+
 
 	}
-
 }

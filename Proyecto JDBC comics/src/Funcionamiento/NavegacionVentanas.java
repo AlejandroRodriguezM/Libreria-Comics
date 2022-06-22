@@ -76,8 +76,6 @@ public class NavegacionVentanas {
 			// Indico que debe hacer al cerrar
 			stage.setOnCloseRequest(e -> controlador.closeWindows());
 
-			DBManager.close();
-
 		} catch (IOException ex) {
 			Logger.getLogger(MenuOpcionesController.class.getName()).log(Level.SEVERE, null, ex);
 		}
