@@ -73,6 +73,30 @@ public class MenuPrincipalController {
 
 	@FXML
 	private Button botonbbdd;
+	
+	@FXML
+	private Button botonGuardarFichero;
+
+	@FXML
+	private Button BotonVentanaAniadir;
+
+	@FXML
+	private Button botonBackupBBDD;
+
+	@FXML
+	private Button BotonVentanaEliminar;
+
+	@FXML
+	private Button botonVerRecomendacion;
+
+	@FXML
+	private Button botonFrase;
+	
+    @FXML
+    private Button botonGuardarCSV;
+    
+    @FXML
+    private Button botonImportarCSV;
 
 	@FXML
 	private TextField anioPublicacion;
@@ -144,31 +168,10 @@ public class MenuPrincipalController {
 	public TableView<Comics> tablaBBDD;
 
 	@FXML
-	private Button botonGuardarFichero;
-
-	@FXML
-	private Button BotonVentanaAniadir;
-
-	@FXML
-	private Button botonBackupBBDD;
-
-	@FXML
-	private Button BotonVentanaEliminar;
-
-	@FXML
-	private Button botonVerRecomendacion;
-
-	@FXML
-	private Button botonFrase;
-
-	@FXML
 	private Label prontInformacion;
 
 	@FXML
 	private Label prontFrases;
-
-	@FXML
-	private Button botonGuardarExcel;
 
 	NavegacionVentanas nav = new NavegacionVentanas();
 
@@ -313,13 +316,21 @@ public class MenuPrincipalController {
 	 * @param event
 	 */
 	@FXML
-	void exportExcel(ActionEvent event) {
+	 void exportCSV(ActionEvent event) {
 
 		FileChooser fileChooser = new FileChooser();
 		File fichero = fileChooser.showSaveDialog(null);
 
 		makeExcel(fichero);
 	}
+	
+    @FXML
+    void importCSV(ActionEvent event) {
+
+    	prontInformacion.setStyle("-fx-background-color: #A0F52D");
+		prontInformacion.setText("Funcion no implementada.");
+    	
+    }
 
 	// FUNCIONA SOLO EN LINUX
 	/**

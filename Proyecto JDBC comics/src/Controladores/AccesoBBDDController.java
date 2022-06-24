@@ -68,25 +68,28 @@ public class AccesoBBDDController {
 
 	@FXML
 	private Button botonCrearBBDD;
+	
+	@FXML
+	private Button numeroVersion;
 
 	@FXML
-	private Label estadoConexion;
+	private Button botonVerDDBB;
+	
+    @FXML
+    private Button botonInformacion;
 
-	@FXML
-	private Label prontBBDDNames;
+    @FXML
+    private Label prontEstadoConexion;
+
+    @FXML
+    private TextArea prontInformacion;
 
 	@FXML
 	private TextArea informacion;
 
 	@FXML
 	public TextField nombreBBDD;
-
-	@FXML
-	private Button numeroVersion;
-
-	@FXML
-	private Button botonVerDDBB;
-
+	
 	@FXML
 	public PasswordField pass;
 
@@ -95,6 +98,7 @@ public class AccesoBBDDController {
 
 	@FXML
 	public TextField usuario;
+
 
 	NavegacionVentanas nav = new NavegacionVentanas();
 
@@ -121,7 +125,7 @@ public class AccesoBBDDController {
 	}
 
 	/**
-	 * MEtodo de acceso a pagina web
+	 * Metodo de acceso a pagina web
 	 * 
 	 * @param event
 	 * @throws IOException
@@ -161,9 +165,9 @@ public class AccesoBBDDController {
 			Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
 			myStage.close();
 		} else { // En caso contrario mostrara el siguiente mensaje.
-			estadoConexion.setStyle("-fx-background-color: #DD370F");
-			estadoConexion.setFont(new Font("Arial", 25));
-			estadoConexion.setText("Conectate a la bbdd \nantes de continuar");
+			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
+			prontEstadoConexion.setFont(new Font("Arial", 25));
+			prontEstadoConexion.setText("Conectate a la bbdd \nantes de continuar");
 		}
 	}
 
@@ -199,16 +203,24 @@ public class AccesoBBDDController {
 			}
 			res.close();
 
-			prontBBDDNames.setStyle("-fx-background-color: #696969");
+			prontInformacion.setStyle("-fx-background-color: #696969");
 			String bbddNames = databases.toString().replace("[", "").replace("]", "").replace(",", "").replace(" ", "");
-			prontBBDDNames.setText(bbddNames);
+			prontInformacion.setText(bbddNames);
 
 		} catch (SQLException e) {
 
 			System.out.println(e);
 		}
-
 	}
+	
+    @FXML
+    void verInfo(ActionEvent event) {
+
+    	prontInformacion.setStyle("-fx-background-color: #696969");
+		prontInformacion.setText("Esta aplicacion ha sido creada con la intencion de ser usada junto a una base de datos MySql. Si la aplicacion MySql workbench no se encuentra instalada. Esta aplicacion no funcionara. La pagina oficial es: https://dev.mysql.com/downloads/workbench/");
+    	
+    }
+
 
 	/**
 	 * Limpia los datos de los campos
@@ -233,13 +245,13 @@ public class AccesoBBDDController {
 
 		if (Funcionamiento.DBManager.isConnected()) { // Siempre que el metodo isConnected sea true, permitira cerrar la
 			// base de datos.
-			estadoConexion.setText("BBDD Cerrada con exito.\nNo conectado.");
-			estadoConexion.setStyle("-fx-background-color: #696969");
+			prontEstadoConexion.setText("BBDD Cerrada con exito.\nNo conectado.");
+			prontEstadoConexion.setStyle("-fx-background-color: #696969");
 			Funcionamiento.DBManager.close();
 		} else { // En caso contrario, mostrara el siguiente mensaje.
-			estadoConexion.setStyle("-fx-background-color: #DD370F");
-			estadoConexion.setFont(new Font("Arial", 22));
-			estadoConexion.setText("ERROR. No se encuentra \nconectado a ninguna bbdd");
+			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
+			prontEstadoConexion.setFont(new Font("Arial", 22));
+			prontEstadoConexion.setText("ERROR. No se encuentra \nconectado a ninguna bbdd");
 		}
 	}
 
@@ -259,13 +271,13 @@ public class AccesoBBDDController {
 
 		if (Funcionamiento.DBManager.isConnected()) { // Siempre que la base de datos se haya conectado de forma
 			// correcta, mostrara el siguiente mensaje
-			estadoConexion.setStyle("-fx-background-color: #A0F52D");
-			estadoConexion.setText("Conectado");
+			prontEstadoConexion.setStyle("-fx-background-color: #A0F52D");
+			prontEstadoConexion.setText("Conectado");
 		} else { // En caso contrario mostrara el siguiente mensaje
 			pass.setText(""); // Limpia el campo de la contraseña en caso de que isConnected sea false.
-			estadoConexion.setStyle("-fx-background-color: #DD370F");
-			estadoConexion.setFont(new Font("Arial", 22));
-			estadoConexion.setText("ERROR. Los datos son \nincorrectos. Revise \nlos datos.");
+			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
+			prontEstadoConexion.setFont(new Font("Arial", 22));
+			prontEstadoConexion.setText("ERROR. Los datos son \nincorrectos. Revise \nlos datos.");
 		}
 	}
 

@@ -358,11 +358,11 @@ public class Comics {
 	}
 
 	public static String frasesComics() {
-		
+
 		Random r = new Random();
 		int n;
-		
-		String frases[] = {"O sostienes el látigo, o recibes los látigazos.\n-Magneto",
+
+		String frases[] = { "O sostienes el látigo, o recibes los látigazos.\n-Magneto",
 				"Hay belleza en todo, aún en la muerte. Pero no todos son capaces de verlo.\n-Vision",
 				"Blasfemar es el intento de una mente frágil por expresarse violentamente.\n-El Acertijo",
 				"Esto es la mesa de operaciones y yo soy el cirujano.\n-Batman",
@@ -376,10 +376,10 @@ public class Comics {
 				"No son los dioses los que deciden si el hombre existe; son los hombres los que deciden si los dioses existen.\n-Thor",
 				"Un hombre sin esperanza es un hombre sin miedo.\n-Wilson Fisk",
 				"No tiene nada de malo sentir miedo, siempre y cuando no te dejes vencer\n-Capitan America" };
-		n = (int)(Math.random()*r.nextInt(frases.length));
-		
+		n = (int) (Math.random() * r.nextInt(frases.length));
+
 		return frases[n];
-		
+
 	}
 
 	@Override
