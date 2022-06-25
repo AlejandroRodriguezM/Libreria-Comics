@@ -33,7 +33,7 @@ import Funcionamiento.NavegacionVentanas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -51,8 +51,8 @@ public class IntroducirDatosController {
 	@FXML
 	private Button botonVolver;
 
-	@FXML
-	private Label prontDatos;
+    @FXML
+    private TextArea prontDatos;
 
 	@FXML
 	private TextField anioPublicacion;
@@ -163,12 +163,8 @@ public class IntroducirDatosController {
 			PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
 			statement.setString(1, datos[0]);
 			statement.setString(2, datos[1]);
+			statement.setString(3, datos[2]);
 
-			if (datos[2].length() != 0) {
-				statement.setString(3, datos[2]);
-			} else {
-				statement.setString(3, "Normal");
-			}
 			if (datos[3].length() != 0) {
 				statement.setString(4, datos[3]);
 			} else {

@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -19,10 +20,6 @@
          </image>
       </ImageView>
       <Line endX="460.5" endY="-6.5" layoutX="-148.0" layoutY="13.0" startX="460.5" startY="359.0" />
-      <Label fx:id="pantallaInformativa" alignment="TOP_LEFT" layoutX="715.0" layoutY="14.0" prefHeight="294.0" prefWidth="316.0" wrapText="true">
-         <font>
-            <Font size="20.0" />
-         </font></Label>
       <TableView fx:id="tablaBBDD" layoutY="387.0" prefHeight="359.0" prefWidth="1061.0">
          <columns>
             <TableColumn fx:id="ID" prefWidth="53.0" text="ID" />
@@ -116,5 +113,6 @@
          </font>
       </Label>
       <Line endX="100.0" startX="-100.0" />
+      <TextArea fx:id="pantallaInformativa" editable="false" layoutX="787.0" layoutY="16.0" prefHeight="203.0" prefWidth="251.0" style="-fx-background-color: transparent;" wrapText="true" />
    </children>
 </Pane>
