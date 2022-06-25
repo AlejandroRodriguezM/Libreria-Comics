@@ -8,7 +8,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="637.0" prefWidth="609.0" style="-fx-background-color: DFA394;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.IntroducirDatosController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="632.0" prefWidth="609.0" style="-fx-background-color: DFA394;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.IntroducirDatosController">
    <children>
       <ImageView fitHeight="637.0" fitWidth="264.0" layoutX="-5.0" pickOnBounds="true" preserveRatio="true">
          <image>
@@ -20,12 +20,7 @@
             <Image url="@../imagenes/Fondo%20añadir.jpg" />
          </image>
       </ImageView>
-      <Label fx:id="prontDatos" alignment="TOP_LEFT" layoutX="17.0" layoutY="396.0" prefHeight="235.0" prefWidth="264.0" style="-fx-background-color: white;" wrapText="true" />
-      <Button fx:id="botonAniadirBBDD" layoutX="17.0" layoutY="334.0" mnemonicParsing="false" onAction="#agregarDatos" prefHeight="54.0" prefWidth="156.0" text="Añadir a la base de datos" />
       <TextArea editable="false" layoutX="395.0" layoutY="24.0" prefHeight="129.0" prefWidth="200.0" text="Todos los datos son&#10;obligatorios para rellenar.&#10;El año de publicacion&#10;debe de costar del año,&#10;escrito como milenio&#10;completo: &quot;1992&quot;.&#10;" />
-      <Button fx:id="botonLimpiarComic" layoutX="188.0" layoutY="334.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="54.0" prefWidth="93.0" text="Limpiar" />
-      <Button fx:id="botonVolver" layoutX="395.0" layoutY="569.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="54.0" prefWidth="93.0" text="Volver" />
-      <Button fx:id="botonSalir" layoutX="502.0" layoutY="569.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="54.0" prefWidth="93.0" text="Salir" />
       <Label layoutX="17.0" layoutY="18.0" style="-fx-background-color: grey;" text="Nombre" />
       <Label layoutX="17.0" layoutY="274.0" style="-fx-background-color: grey;" text="Guionista" />
       <Label layoutX="17.0" layoutY="307.0" style="-fx-background-color: grey;" text="Dibujante" />
@@ -46,5 +41,10 @@
       <TextField fx:id="anioPublicacion" layoutX="132.0" layoutY="238.0" />
       <TextField fx:id="nombreGuionista" layoutX="132.0" layoutY="270.0" />
       <TextField fx:id="nombreDibujante" layoutX="132.0" layoutY="303.0" />
+      <TextArea fx:id="prontDatos" editable="false" layoutX="19.0" layoutY="396.0" prefHeight="228.0" prefWidth="262.0" wrapText="true" />
+      <Button fx:id="botonAniadirBBDD" layoutX="17.0" layoutY="334.0" mnemonicParsing="false" onAction="#agregarDatos" prefHeight="54.0" prefWidth="156.0" text="Añadir a la base de datos" />
+      <Button fx:id="botonLimpiarComic" layoutX="188.0" layoutY="334.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="54.0" prefWidth="93.0" text="Limpiar" />
+      <Button fx:id="botonVolver" layoutX="395.0" layoutY="569.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="54.0" prefWidth="93.0" text="Volver" />
+      <Button fx:id="botonSalir" layoutX="502.0" layoutY="569.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="54.0" prefWidth="93.0" text="Salir" />
    </children>
 </Pane>
