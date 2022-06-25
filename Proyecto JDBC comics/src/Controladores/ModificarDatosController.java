@@ -455,7 +455,6 @@ public class ModificarDatosController {
 			pantallaInformativa.setText("ERROR. Se ha cancelado la modificacion.");
 			return false;
 		}
-
 	}
 
 	/**
