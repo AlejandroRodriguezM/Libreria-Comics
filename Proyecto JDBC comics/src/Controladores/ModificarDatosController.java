@@ -503,15 +503,7 @@ public class ModificarDatosController {
 	public Comics listaPorParametro() throws SQLException {
 		String datosComics[] = camposComicsActuales();
 
-		String id, nombreCom, numeroCom;
-
-		id = idComic.getText();
-
-		nombreCom = nombreComic.getText();
-
-		numeroCom = numeroComic.getText();
-
-		Comics comic = new Comics(id, nombreCom, numeroCom, datosComics[3], datosComics[4], datosComics[5],
+		Comics comic = new Comics(datosComics[0], datosComics[1], datosComics[2], datosComics[3], datosComics[4], datosComics[5],
 				datosComics[6], datosComics[7], datosComics[8], datosComics[9], datosComics[10]);
 
 		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(comic));

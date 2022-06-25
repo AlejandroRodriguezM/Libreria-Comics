@@ -298,6 +298,7 @@ public class Comics {
 		}
 		if (this.dibujante.length() != 0) {
 			sql.append(connector).append("nomDibujante = ?");
+			connector = " AND ";
 			strFilter.add(this.dibujante);
 		}
 		Collections.sort(strFilter);
