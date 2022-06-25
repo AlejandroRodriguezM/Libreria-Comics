@@ -85,11 +85,18 @@ public class RecomendacionesComic {
 		
 	}
 	
+	/**
+	 * 
+	 */
 	public void limpiarPront()
 	{
 		printComicRecomendado.setText("");
 	}
 
+	/**
+	 * 
+	 * @param event
+	 */
 	@FXML
 	void salirPrograma(ActionEvent event) {
 

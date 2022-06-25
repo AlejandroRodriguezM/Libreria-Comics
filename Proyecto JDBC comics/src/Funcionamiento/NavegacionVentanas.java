@@ -346,6 +346,8 @@ public class NavegacionVentanas {
 	public boolean salirPrograma(ActionEvent event) {
 
 		Alert alert = new Alert(AlertType.CONFIRMATION);
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.getIcons().add(new Image("/Icono/exit.png")); // To add an icon
 		alert.setTitle("Saliendo");
 		alert.setHeaderText("Estas apunto de salir.");
 		alert.setContentText("¿Estas seguro que quieres salir?");
