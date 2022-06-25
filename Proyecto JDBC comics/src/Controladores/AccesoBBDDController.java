@@ -216,8 +216,8 @@ public class AccesoBBDDController {
     @FXML
     void verInfo(ActionEvent event) {
 
-    	prontInformacion.setStyle("-fx-background-color: #696969");
-		prontInformacion.setText("Esta aplicacion ha sido creada con la intencion de ser usada junto a una base de datos MySql. Si la aplicacion MySql workbench no se encuentra instalada. Esta aplicacion no funcionara. La pagina oficial es: https://dev.mysql.com/downloads/workbench/");
+    	prontInformacion.setStyle("-fx-background-color: #A0F52D");
+		prontInformacion.setText("Programa creado por Alejandro Rodriguez. Es un proyecto personal para probar conocimientos adquiridos durante el primer curso de DAW. Esta aplicacion solamente puede usarse con una tabla de una forma estructurada de una forma concreta. Esta aplicacion ha sido creada con la intencion de ser usada junto a una base de datos MySql. Si la aplicacion MySql workbench no se encuentra instalada. Esta aplicacion no funcionara. La pagina oficial donde se encuentra la aplicacion es: https://dev.mysql.com/downloads/workbench/");
     	
     }
 
@@ -234,27 +234,7 @@ public class AccesoBBDDController {
 		pass.setText("");
 		puertobbdd.setText("");
 	}
-
-	/**
-	 * Cierra la bbdd
-	 * 
-	 * @param event
-	 */
-	@FXML
-	void cerrarbbdd(ActionEvent event) {
-
-		if (Funcionamiento.DBManager.isConnected()) { // Siempre que el metodo isConnected sea true, permitira cerrar la
-			// base de datos.
-			prontEstadoConexion.setText("BBDD Cerrada con exito.\nNo conectado.");
-			prontEstadoConexion.setStyle("-fx-background-color: #696969");
-			Funcionamiento.DBManager.close();
-		} else { // En caso contrario, mostrara el siguiente mensaje.
-			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
-			prontEstadoConexion.setFont(new Font("Arial", 22));
-			prontEstadoConexion.setText("ERROR. No se encuentra \nconectado a ninguna bbdd");
-		}
-	}
-
+	
 	/**
 	 * Envia los datos a la clase DBManager y permite conectarse a esta.
 	 * 
@@ -278,6 +258,26 @@ public class AccesoBBDDController {
 			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
 			prontEstadoConexion.setFont(new Font("Arial", 22));
 			prontEstadoConexion.setText("ERROR. Los datos son \nincorrectos. Revise \nlos datos.");
+		}
+	}
+
+	/**
+	 * Cierra la bbdd
+	 * 
+	 * @param event
+	 */
+	@FXML
+	void cerrarbbdd(ActionEvent event) {
+
+		if (Funcionamiento.DBManager.isConnected()) { // Siempre que el metodo isConnected sea true, permitira cerrar la
+			// base de datos.
+			prontEstadoConexion.setText("BBDD Cerrada con exito.\nNo conectado.");
+			prontEstadoConexion.setStyle("-fx-background-color: #696969");
+			Funcionamiento.DBManager.close();
+		} else { // En caso contrario, mostrara el siguiente mensaje.
+			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
+			prontEstadoConexion.setFont(new Font("Arial", 22));
+			prontEstadoConexion.setText("ERROR. No se encuentra \nconectado a ninguna bbdd");
 		}
 	}
 

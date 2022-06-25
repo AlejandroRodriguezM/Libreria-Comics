@@ -63,46 +63,76 @@ public class ModificarDatosController {
 	private Button botonbbdd;
 
 	@FXML
-	private TextField nombreComic;
-
-	@FXML
 	private TextField anioPublicacion;
 
 	@FXML
-	private TextField nombreComicMod;
-
-	@FXML
-	private TextField numeroComicMod;
-
-	@FXML
-	private TextField nombreDibujante;
-
-	@FXML
-	private TextField nombreEditorial;
-
-	@FXML
-	private TextField nombreFirma;
-
-	@FXML
-	private TextField nombreFormato;
-
-	@FXML
-	private TextField nombreGuionista;
-
-	@FXML
-	private TextField nombreProcedencia;
-
-	@FXML
-	private TextField nombreVariante;
-
-	@FXML
-	private TextField numeroComic;
+	private TextField anioPublicacionMod;
 
 	@FXML
 	private TextField idComic;
 
 	@FXML
+	private TextField idComicMod;
+
+	@FXML
+	private TextField nombreComic;
+
+	@FXML
+	private TextField nombreComicMod;
+
+	@FXML
+	private TextField nombreDibujante;
+
+	@FXML
+	private TextField nombreDibujanteMod;
+
+	@FXML
+	private TextField nombreEditorial;
+
+	@FXML
+	private TextField nombreEditorialMod;
+
+	@FXML
+	private TextField nombreFirma;
+
+	@FXML
+	private TextField nombreFirmaMod;
+
+	@FXML
+	private TextField nombreFormato;
+
+	@FXML
+	private TextField nombreFormatoMod;
+
+	@FXML
+	private TextField nombreGuionista;
+
+	@FXML
+	private TextField nombreGuionistaMod;
+
+	@FXML
+	private TextField nombreProcedencia;
+
+	@FXML
+	private TextField nombreProcedenciaMod;
+
+	@FXML
+	private TextField nombreVariante;
+
+	@FXML
+	private TextField nombreVarianteMod;
+
+	@FXML
+	private TextField numeroComic;
+
+	@FXML
+	private TextField numeroComicMod;
+
+	@FXML
 	private Label pantallaInformativa;
+
+	@FXML
+	private Label idMod;
 
 	@FXML
 	public TableView<Comics> tablaBBDD;
@@ -151,19 +181,55 @@ public class ModificarDatosController {
 	@FXML
 	void limpiarDatos(ActionEvent event) {
 
-		nombreComic.setText("");
-		anioPublicacion.setText("");
-		nombreComicMod.setText("");
-		numeroComicMod.setText("");
-		nombreDibujante.setText("");
-		nombreEditorial.setText("");
-		nombreFirma.setText("");
-		nombreFormato.setText("");
-		nombreGuionista.setText("");
-		nombreProcedencia.setText("");
-		nombreVariante.setText("");
-		numeroComic.setText("");
+		//Campos de busqueda por parametro
 		idComic.setText("");
+		
+		nombreComic.setText("");
+		
+		anioPublicacion.setText("");
+		
+		nombreComic.setText("");
+		
+		numeroComic.setText("");
+		
+		nombreDibujante.setText("");
+		
+		nombreEditorial.setText("");
+		
+		nombreFirma.setText("");
+		
+		nombreFormato.setText("");
+		
+		nombreGuionista.setText("");
+		
+		nombreProcedencia.setText("");
+		
+		nombreVariante.setText("");
+		
+		numeroComic.setText("");
+		
+		//Campos de datos a modificar
+		idComicMod.setText("");
+
+		nombreComicMod.setText("");
+
+		numeroComicMod.setText("");
+
+		nombreVarianteMod.setText("");
+
+		nombreFirmaMod.setText("");
+
+		nombreEditorialMod.setText("");
+
+		nombreFormatoMod.setText("");
+
+		nombreProcedenciaMod.setText("");
+		
+		anioPublicacionMod.setText("");
+
+		nombreGuionistaMod.setText("");
+		
+		nombreDibujanteMod.setText("");
 	}
 
 	/**
@@ -172,7 +238,7 @@ public class ModificarDatosController {
 	 * @throws SQLException
 	 */
 	@FXML
-	void modificarDatos(ActionEvent event) {
+	void modificarDatos(ActionEvent event) throws SQLException {
 
 		modificacionDatos();
 	}
@@ -181,14 +247,18 @@ public class ModificarDatosController {
 	//// FUNCIONES////////////////////
 	/////////////////////////////////
 
-	public String[] camposComics() {
+	/**
+	 * 
+	 * @return
+	 */
+	public String[] camposComicsActuales() {
 		String campos[] = new String[11];
 
 		campos[0] = idComic.getText();
 
-		campos[1] = nombreComicMod.getText();
+		campos[1] = nombreComic.getText();
 
-		campos[2] = numeroComicMod.getText();
+		campos[2] = numeroComic.getText();
 
 		campos[3] = nombreVariante.getText();
 
@@ -211,88 +281,181 @@ public class ModificarDatosController {
 
 	/**
 	 * 
+	 * @return
 	 */
-	public void modificacionDatos() {
+	public String[] camposComicsModificar() {
+		String campos[] = new String[11];
+
+		campos[0] = idComicMod.getText();
+
+		campos[1] = nombreComicMod.getText();
+
+		campos[2] = numeroComicMod.getText();
+
+		campos[3] = nombreVarianteMod.getText();
+
+		campos[4] = nombreFirmaMod.getText();
+
+		campos[5] = nombreEditorialMod.getText();
+
+		campos[6] = nombreFormatoMod.getText();
+
+		campos[7] = nombreProcedenciaMod.getText();
+
+		campos[8] = anioPublicacionMod.getText();
+
+		campos[9] = nombreGuionistaMod.getText();
+
+		campos[10] = nombreDibujanteMod.getText();
+
+		return campos;
+	}
+
+	/**
+	 * @throws SQLException
+	 * 
+	 */
+	public void modificacionDatos() throws SQLException {
+
+		String nombre, numero, variante, firma, editorial, formato, procedencia, fecha, guionista, dibujante;
 
 		String sentenciaSQL = "UPDATE comicsbbdd set nomComic = ?,numComic = ?,nomVariante = ?,"
 				+ "Firma = ?,nomEditorial = ?,formato = ?,Procedencia = ?,anioPubli = ?,"
 				+ "nomGuionista = ?,nomDibujante = ? where ID = ?";
 
-		String datos[] = camposComics();
-		if (nav.alertaModificar()) {
-			if (datos[0].length() != 0) {
+		String datosActuales[] = camposComicsActuales();
+
+		String datosModificados[] = camposComicsModificar();
+
+		Comics comic = listaPorParametro();
+
+		if (alertaModificacion()) {
+			if (datosActuales[0].length() != 0) {
 				try {
 					PreparedStatement ps = null;
 
 					ps = DBManager.conexion().prepareStatement(sentenciaSQL);
-					ps.setString(1, datos[1]);
-					ps.setString(2, datos[2]);
-					if (datos[3].length() != 0) {
-						ps.setString(3, datos[3]);
+
+					if (datosModificados[1].length() != 0) {
+						ps.setString(1, datosModificados[1]);
+						nombre = datosModificados[1];
 					} else {
-						ps.setString(3, "No variante");
+						ps.setString(1, comic.getNombre());
+						nombre = comic.getNombre();
 					}
-					if (datos[4].length() != 0) {
-						ps.setString(4, datos[4]);
+					if (datosModificados[2].length() != 0) {
+						ps.setString(2, datosModificados[2]);
+						numero = datosModificados[2];
 					} else {
-						ps.setString(4, "No firmado");
+						ps.setString(2, comic.getNumero());
+						numero = comic.getNumero();
 					}
-					ps.setString(5, datos[5]);
-					ps.setString(6, datos[6]);
-					ps.setString(7, datos[7]);
-					ps.setString(8, datos[8]);
-					ps.setString(9, datos[9]);
-					ps.setString(10, datos[10]);
-					ps.setString(11, datos[0]);
+					if (datosModificados[3].length() != 0) {
+						ps.setString(3, datosModificados[3]);
+						variante = datosModificados[3];
+					} else {
+						ps.setString(3, comic.getVariante());
+						variante = comic.getVariante();
+					}
+					if (datosModificados[4].length() != 0) {
+						ps.setString(4, datosModificados[4]);
+						firma = datosModificados[4];
+					} else {
+						ps.setString(4, comic.getFirma());
+						firma = comic.getFirma();
+					}
+					if (datosModificados[5].length() != 0) {
+						ps.setString(5, datosModificados[5]);
+						editorial = datosModificados[5];
+					} else {
+						ps.setString(5, comic.getEditorial());
+						editorial = comic.getEditorial();
+					}
+					if (datosModificados[6].length() != 0) {
+						ps.setString(6, datosModificados[6]);
+						formato = datosModificados[6];
+					} else {
+						ps.setString(6, comic.getFormato());
+						formato = comic.getFormato();
+					}
+					if (datosModificados[7].length() != 0) {
+						ps.setString(7, datosModificados[7]);
+						procedencia = datosModificados[7];
+					} else {
+						ps.setString(7, comic.getProcedencia());
+						procedencia = comic.getProcedencia();
+					}
+					if (datosModificados[8].length() != 0) {
+						ps.setString(8, datosModificados[8]);
+						fecha = datosModificados[8];
+					} else {
+						ps.setString(8, comic.getFecha());
+						fecha = comic.getFecha();
+					}
+					if (datosModificados[9].length() != 0) {
+						ps.setString(9, datosModificados[9]);
+						guionista = datosModificados[9];
+					} else {
+						ps.setString(9, comic.getGuionista());
+						guionista = comic.getGuionista();
+					}
+					if (datosModificados[10].length() != 0) {
+						ps.setString(10, datosModificados[10]);
+						dibujante = datosModificados[10];
+					} else {
+						ps.setString(10, comic.getDibujante());
+						dibujante = comic.getDibujante();
+					}
+
+					if (datosModificados[0].length() != 0) {
+						ps.setString(11, datosModificados[0]);
+					} else {
+						pantallaInformativa.setStyle("-fx-background-color: #F53636");
+						idComicMod.setStyle("-fx-background-color: #F53636");
+						idMod.setStyle("-fx-background-color: #F53636");
+						pantallaInformativa.setText("ERROR. No ha puesto ningun \nID en la busqueda.");
+					}
 
 					if (ps.executeUpdate() == 1) {
 						pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-						pantallaInformativa.setText("Ha modificado correctamente: \n" + "\nNombre del comic: " + datos[1]
-								+ "\nNumero: " + datos[2] + "\nPortada variante: " + datos[3] + "\nFirma: " + datos[4]
-										+ "\nEditorial: " + datos[5] + "\nFormato: " + datos[6] + "\nProcedencia: "
-										+ datos[7] + "\nFecha de publicacion: " + datos[8] + "\nGuionista: " + datos[9]
-												+ "\nDibujante: " + datos[10]);
-					} else {
-						pantallaInformativa.setStyle("-fx-background-color: #F53636");
-						pantallaInformativa.setText("ERROR. Comic no modificado de forma correcta.");
+						pantallaInformativa.setText("Ha modificado correctamente: \n" + "\nNombre del comic: " + nombre
+								+ "\nNumero: " + numero + "\nPortada variante: " + variante + "\nFirma: " + firma
+								+ "\nEditorial: " + editorial + "\nFormato: " + formato + "\nProcedencia: "
+								+ procedencia + "\nFecha de publicacion: " + fecha + "\nGuionista: " + guionista
+								+ "\nDibujante: " + dibujante);
 					}
 				} catch (SQLException ex) {
 					System.out.println(ex);
 				}
-			} else {
-				pantallaInformativa.setStyle("-fx-background-color: #F53636");
-				pantallaInformativa.setText("ERROR. No ha puesto ningun \nID en la busqueda.");
 			}
-		} else {
-			pantallaInformativa.setStyle("-fx-background-color: #F53636");
-			pantallaInformativa.setText("ERROR. Se ha cancelado la modificacion.");
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * 
+	 * @param event
+	 * @throws SQLException
+	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
 
-		String id, nombreCom, numeroCom, varianteCom = "", firmaCom = "", editorialCom = "", formatoCom = "",
-				procedenciaCom = "", fechaCom = "", guionistaCom = "", dibujanteCom = "";
-
-		id = idComic.getText();
-
-		nombreCom = nombreComic.getText();
-
-		numeroCom = numeroComic.getText();
-		
-		Comics comic = new Comics(id, nombreCom,
-				numeroCom, varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom,
-				fechaCom, guionistaCom, dibujanteCom);
-
-		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(comic));
-
 		nombreColumnas();
+		listaPorParametro();
+	}
 
-		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
-				guionista, dibujante);
-		tablaBBDD.getItems().setAll(listComics);
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean alertaModificacion() {
+		if (nav.alertaModificar()) {
+			return true;
+		} else {
+			pantallaInformativa.setStyle("-fx-background-color: #F53636");
+			pantallaInformativa.setText("ERROR. Se ha cancelado la modificacion.");
+			return false;
+		}
+
 	}
 
 	/**
@@ -329,6 +492,34 @@ public class ModificarDatosController {
 		fecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
 		guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
 		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
+	}
+
+	/**
+	 * 
+	 * @return
+	 * @throws SQLException
+	 */
+	@SuppressWarnings("unchecked")
+	public Comics listaPorParametro() throws SQLException {
+		String datosComics[] = camposComicsActuales();
+
+		String id, nombreCom, numeroCom;
+
+		id = idComic.getText();
+
+		nombreCom = nombreComic.getText();
+
+		numeroCom = numeroComic.getText();
+
+		Comics comic = new Comics(id, nombreCom, numeroCom, datosComics[3], datosComics[4], datosComics[5],
+				datosComics[6], datosComics[7], datosComics[8], datosComics[9], datosComics[10]);
+
+		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(comic));
+		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+				guionista, dibujante);
+		tablaBBDD.getItems().setAll(listComics);
+
+		return comic;
 	}
 
 	/////////////////////////////////
