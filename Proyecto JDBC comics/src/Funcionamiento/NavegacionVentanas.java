@@ -166,6 +166,9 @@ public class NavegacionVentanas {
 		}
 	}
 
+	/*
+	 * 
+	 */
 	public void verModificarDatos() {
 
 		try {
@@ -206,6 +209,9 @@ public class NavegacionVentanas {
 		}
 	}
 	
+	/**
+	 * 
+	 */
 	public void verRecomendacion() {
 
 		try {
@@ -246,6 +252,9 @@ public class NavegacionVentanas {
 		}
 	}
 
+	/**
+	 * 
+	 */
 	public void verEliminarDatos() {
 
 		try {
@@ -286,6 +295,9 @@ public class NavegacionVentanas {
 		}
 	}
 	
+	/**
+	 * 
+	 */
 	public void verCrearBBDD() {
 
 		try {
@@ -345,6 +357,10 @@ public class NavegacionVentanas {
 		}
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public boolean alertaEliminar()
 	{
 		Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -361,6 +377,10 @@ public class NavegacionVentanas {
 		return false;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public boolean alertaModificar()
 	{
 		Alert alert = new Alert(AlertType.CONFIRMATION);
