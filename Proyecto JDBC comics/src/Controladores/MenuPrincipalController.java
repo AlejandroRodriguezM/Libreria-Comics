@@ -73,7 +73,7 @@ public class MenuPrincipalController {
 
 	@FXML
 	private Button botonbbdd;
-	
+
 	@FXML
 	private Button botonGuardarFichero;
 
@@ -91,12 +91,12 @@ public class MenuPrincipalController {
 
 	@FXML
 	private Button botonFrase;
-	
-    @FXML
-    private Button botonGuardarCSV;
-    
-    @FXML
-    private Button botonImportarCSV;
+
+	@FXML
+	private Button botonGuardarCSV;
+
+	@FXML
+	private Button botonImportarCSV;
 
 	@FXML
 	private TextField anioPublicacion;
@@ -219,7 +219,7 @@ public class MenuPrincipalController {
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
 		nombreColumnas();
 		listaPorParametro();
-		
+
 	}
 
 	/**
@@ -231,7 +231,7 @@ public class MenuPrincipalController {
 	@FXML
 	void verTodabbdd(ActionEvent event) throws SQLException {
 		nombreColumnas();
-		listaCompleta();
+		tablaBBDD(libreriaCompleta());
 	}
 
 	/////////////////////////////////
@@ -291,8 +291,6 @@ public class MenuPrincipalController {
 		myStage.close();
 	}
 
-
-
 	////////////////////////////
 	/// METODOS PARA EXPORTAR///
 	////////////////////////////
@@ -316,21 +314,21 @@ public class MenuPrincipalController {
 	 * @param event
 	 */
 	@FXML
-	 void exportCSV(ActionEvent event) {
+	void exportCSV(ActionEvent event) {
 
 		FileChooser fileChooser = new FileChooser();
 		File fichero = fileChooser.showSaveDialog(null);
 
 		makeExcel(fichero);
 	}
-	
-    @FXML
-    void importCSV(ActionEvent event) {
 
-    	prontInformacion.setStyle("-fx-background-color: #A0F52D");
+	@FXML
+	void importCSV(ActionEvent event) {
+
+		prontInformacion.setStyle("-fx-background-color: #A0F52D");
 		prontInformacion.setText("Funcion no implementada.");
-    	
-    }
+
+	}
 
 	// FUNCIONA SOLO EN LINUX
 	/**
@@ -347,7 +345,7 @@ public class MenuPrincipalController {
 	}
 
 	/////////////////////////////////
-	////FUNCIONES////////////////////
+	//// FUNCIONES////////////////////
 	/////////////////////////////////
 
 	/**
@@ -440,62 +438,64 @@ public class MenuPrincipalController {
 	 * 
 	 * @throws SQLException
 	 */
-	public void listaCompleta() throws SQLException {
-		
-		libreria(comic);
-	}
-
-	/**
-	 * 
-	 * @throws SQLException
-	 */
 	public void listaPorParametro() throws SQLException {
 		String datosComics[] = camposComics();
-		
-		Comics comic = new Comics(datosComics[0], datosComics[1],
-				datosComics[2], datosComics[3], datosComics[4], datosComics[5], datosComics[6], datosComics[7],
-				datosComics[8], datosComics[9], datosComics[10]);
 
-		libreria(comic);
+		Comics comic = new Comics(datosComics[0], datosComics[1], datosComics[2], datosComics[3], datosComics[4],
+				datosComics[5], datosComics[6], datosComics[7], datosComics[8], datosComics[9], datosComics[10]);
+
+		tablaBBDD(libreriaParametro(comic));
 	}
-	
+
 	/**
 	 * 
 	 * @param comic
 	 * @return
 	 * @throws SQLException
 	 */
-	//NOMBRE NO FINAL
-	@SuppressWarnings("unchecked")
-	public List<Comics> libreria(Comics comic) throws SQLException
-	{
+	public List<Comics> libreriaParametro(Comics comic) throws SQLException {
 		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(comic));
-		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
-				guionista, dibujante);
-		tablaBBDD.getItems().setAll(listComics);
-		
+
 		return listComics;
 	}
-	
+
+	/**
+	 * 
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<Comics> libreriaCompleta() throws SQLException {
+		List<Comics> listComics = FXCollections.observableArrayList(comic.verTodo());
+
+		return listComics;
+	}
+
+	/**
+	 * 
+	 * @param listaComics
+	 */
+	@SuppressWarnings("unchecked")
+	public void tablaBBDD(List<Comics> listaComics) {
+		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+				guionista, dibujante);
+		tablaBBDD.getItems().setAll(listaComics);
+	}
+
 	/**
 	 * 
 	 * @param fichero
 	 */
-	@SuppressWarnings("unchecked")
 	public void makeFile(File fichero) {
 		try {
 			if (fichero != null) {
 				fichero.createNewFile();
 
 				nombreColumnas();
-
-				List<Comics> listComics = FXCollections.observableArrayList(comic.verTodo());
-				tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia,
-						fecha, guionista, dibujante);
+				tablaBBDD(libreriaCompleta());
 
 				FileWriter guardarDatos = new FileWriter(fichero + ".txt");
-				for (int i = 0; i < listComics.size(); i++) {
-					guardarDatos.write(listComics.get(i) + "\n");
+				for (int i = 0; i < libreriaCompleta().size(); i++) {
+					guardarDatos.write(libreriaCompleta().get(i) + "\n");
 				}
 				guardarDatos.close();
 			} else {
@@ -559,8 +559,7 @@ public class MenuPrincipalController {
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();
 	}
-	
-	
+
 	/**
 	 * Permite salir completamente del programa.
 	 * 
