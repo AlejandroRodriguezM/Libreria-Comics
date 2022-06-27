@@ -347,7 +347,7 @@ public class MenuPrincipalController {
 	}
 
 	/////////////////////////////////
-	//// FUNCIONES////////////////////
+	////FUNCIONES////////////////////
 	/////////////////////////////////
 
 	/**
@@ -436,15 +436,19 @@ public class MenuPrincipalController {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * 
+	 * @throws SQLException
+	 */
 	public void listaCompleta() throws SQLException {
-		List<Comics> listComics = FXCollections.observableArrayList(comic.verTodo());
-		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
-				guionista, dibujante);
-		tablaBBDD.getItems().setAll(listComics);
+		
+		libreria(comic);
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * 
+	 * @throws SQLException
+	 */
 	public void listaPorParametro() throws SQLException {
 		String datosComics[] = camposComics();
 		
@@ -452,10 +456,25 @@ public class MenuPrincipalController {
 				datosComics[2], datosComics[3], datosComics[4], datosComics[5], datosComics[6], datosComics[7],
 				datosComics[8], datosComics[9], datosComics[10]);
 
+		libreria(comic);
+	}
+	
+	/**
+	 * 
+	 * @param comic
+	 * @return
+	 * @throws SQLException
+	 */
+	//NOMBRE NO FINAL
+	@SuppressWarnings("unchecked")
+	public List<Comics> libreria(Comics comic) throws SQLException
+	{
 		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(comic));
 		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante);
 		tablaBBDD.getItems().setAll(listComics);
+		
+		return listComics;
 	}
 	
 	/**
