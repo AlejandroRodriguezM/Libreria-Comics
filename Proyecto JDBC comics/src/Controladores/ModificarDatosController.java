@@ -129,8 +129,8 @@ public class ModificarDatosController {
 	@FXML
 	private TextField numeroComicMod;
 
-    @FXML
-    private TextArea pantallaInformativa;
+	@FXML
+	private TextArea pantallaInformativa;
 
 	@FXML
 	private Label idMod;
@@ -182,34 +182,34 @@ public class ModificarDatosController {
 	@FXML
 	void limpiarDatos(ActionEvent event) {
 
-		//Campos de busqueda por parametro
+		// Campos de busqueda por parametro
 		idComic.setText("");
-		
+
 		nombreComic.setText("");
-		
+
 		anioPublicacion.setText("");
-		
+
 		nombreComic.setText("");
-		
+
 		numeroComic.setText("");
-		
+
 		nombreDibujante.setText("");
-		
+
 		nombreEditorial.setText("");
-		
+
 		nombreFirma.setText("");
-		
+
 		nombreFormato.setText("");
-		
+
 		nombreGuionista.setText("");
-		
+
 		nombreProcedencia.setText("");
-		
+
 		nombreVariante.setText("");
-		
+
 		numeroComic.setText("");
-		
-		//Campos de datos a modificar
+
+		// Campos de datos a modificar
 		idComicMod.setText("");
 
 		nombreComicMod.setText("");
@@ -225,11 +225,11 @@ public class ModificarDatosController {
 		nombreFormatoMod.setText("");
 
 		nombreProcedenciaMod.setText("");
-		
+
 		anioPublicacionMod.setText("");
 
 		nombreGuionistaMod.setText("");
-		
+
 		nombreDibujanteMod.setText("");
 	}
 
@@ -328,7 +328,7 @@ public class ModificarDatosController {
 
 		String datosModificados[] = camposComicsModificar();
 
-		Comics comic = listaPorParametro();
+		listaPorParametro();
 
 		if (alertaModificacion()) {
 			if (datosActuales[0].length() != 0) {
@@ -445,6 +445,68 @@ public class ModificarDatosController {
 	}
 
 	/**
+	 * Muestra toda la base de datos.
+	 * 
+	 * @param event
+	 * @throws SQLException
+	 */
+	@FXML
+	void verTodabbdd(ActionEvent event) throws SQLException {
+
+		nombreColumnas();
+		tablaBBDD(libreriaCompleta());
+
+	}
+
+	/**
+	 * 
+	 * @return
+	 * @throws SQLException
+	 */
+	public void listaPorParametro() throws SQLException {
+		String datosComics[] = camposComicsActuales();
+
+		Comics comic = new Comics(datosComics[0], datosComics[1], datosComics[2], datosComics[3], datosComics[4],
+				datosComics[5], datosComics[6], datosComics[7], datosComics[8], datosComics[9], datosComics[10]);
+
+		tablaBBDD(libreriaParametro(comic));
+	}
+
+	/**
+	 * 
+	 * @param comic
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<Comics> libreriaParametro(Comics comic) throws SQLException {
+		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(comic));
+
+		return listComics;
+	}
+
+	/**
+	 * 
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<Comics> libreriaCompleta() throws SQLException {
+		List<Comics> listComics = FXCollections.observableArrayList(comic.verTodo());
+
+		return listComics;
+	}
+
+	/**
+	 * 
+	 * @param listaComics
+	 */
+	@SuppressWarnings("unchecked")
+	public void tablaBBDD(List<Comics> listaComics) {
+		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+				guionista, dibujante);
+		tablaBBDD.getItems().setAll(listaComics);
+	}
+
+	/**
 	 * 
 	 * @return
 	 */
@@ -456,25 +518,6 @@ public class ModificarDatosController {
 			pantallaInformativa.setText("ERROR. Se ha cancelado la modificacion.");
 			return false;
 		}
-	}
-
-	/**
-	 * Muestra toda la base de datos.
-	 * 
-	 * @param event
-	 * @throws SQLException
-	 */
-	@SuppressWarnings("unchecked")
-	@FXML
-	void verTodabbdd(ActionEvent event) throws SQLException {
-
-		nombreColumnas();
-
-		List<Comics> listComics = FXCollections.observableArrayList(comic.verTodo());
-		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
-				guionista, dibujante);
-		tablaBBDD.getItems().setAll(listComics);
-
 	}
 
 	/**
@@ -492,26 +535,6 @@ public class ModificarDatosController {
 		fecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
 		guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
 		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
-	}
-
-	/**
-	 * 
-	 * @return
-	 * @throws SQLException
-	 */
-	@SuppressWarnings("unchecked")
-	public Comics listaPorParametro() throws SQLException {
-		String datosComics[] = camposComicsActuales();
-
-		Comics comic = new Comics(datosComics[0], datosComics[1], datosComics[2], datosComics[3], datosComics[4], datosComics[5],
-				datosComics[6], datosComics[7], datosComics[8], datosComics[9], datosComics[10]);
-
-		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(comic));
-		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
-				guionista, dibujante);
-		tablaBBDD.getItems().setAll(listComics);
-
-		return comic;
 	}
 
 	/////////////////////////////////
