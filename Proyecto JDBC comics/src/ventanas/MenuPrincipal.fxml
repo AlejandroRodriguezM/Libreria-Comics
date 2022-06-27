@@ -74,13 +74,13 @@
       <TextField fx:id="nombreProcedencia" layoutX="125.0" layoutY="241.0" prefHeight="25.0" prefWidth="169.0" />
       <Button fx:id="BotonVentanaAniadir" layoutX="494.0" layoutY="144.0" mnemonicParsing="false" onAction="#ventanaAniadir" prefHeight="53.0" prefWidth="102.0" text="Añadir datos" />
       <Button fx:id="botonGuardarFichero" layoutX="330.0" layoutY="77.0" mnemonicParsing="false" onAction="#exportFichero" prefHeight="53.0" prefWidth="141.0" text="Guardar en un fichero" />
-      <Label fx:id="prontInformacion" layoutX="330.0" layoutY="267.0" prefHeight="147.0" prefWidth="263.0" wrapText="true">
+      <Label fx:id="prontInformacion" layoutX="818.0" layoutY="199.0" prefHeight="147.0" prefWidth="263.0" wrapText="true">
          <font>
             <Font size="21.0" />
          </font>
       </Label>
       <Button fx:id="botonBackupBBDD" layoutX="330.0" layoutY="206.0" mnemonicParsing="false" onAction="#exportarSQL" prefHeight="53.0" prefWidth="141.0" text="Exportar base de datos" />
-      <Button fx:id="botonGuardarExcel" layoutX="330.0" layoutY="144.0" mnemonicParsing="false" onAction="#exportExcel" prefHeight="53.0" prefWidth="141.0" text="Guardar en un excel" />
+      <Button fx:id="botonGuardarCSV" layoutX="330.0" layoutY="144.0" mnemonicParsing="false" onAction="#exportCSV" prefHeight="53.0" prefWidth="141.0" text="Exportar CSV" />
       <Button fx:id="BotonModificarComic" layoutX="494.0" layoutY="77.0" mnemonicParsing="false" onAction="#ventanaModificar" prefHeight="53.0" prefWidth="102.0" text="Modificar datos" />
       <Button fx:id="BotonEliminarComic" layoutX="494.0" layoutY="15.0" mnemonicParsing="false" onAction="#ventanaEliminar" prefHeight="53.0" prefWidth="102.0" text="Eliminar datos" />
       <TableView fx:id="tablaBBDD" layoutX="-1.0" layoutY="422.0" prefHeight="418.0" prefWidth="1104.0">
@@ -103,12 +103,13 @@
             <Font size="14.0" />
          </font></Label>
       <TextField fx:id="numeroID" layoutX="125.0" layoutY="14.0" prefHeight="25.0" prefWidth="169.0" />
-      <Label fx:id="prontFrases" alignment="TOP_LEFT" contentDisplay="CENTER" layoutX="787.0" layoutY="234.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="117.0" prefWidth="302.0" wrapText="true">
+      <Label fx:id="prontFrases" alignment="TOP_LEFT" contentDisplay="CENTER" layoutX="779.0" layoutY="19.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="117.0" prefWidth="302.0" wrapText="true">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
       <Button fx:id="botonFrase" layoutX="494.0" layoutY="208.0" mnemonicParsing="false" onAction="#fraseRandom" prefHeight="53.0" prefWidth="102.0" text="Frase random" />
       <Button fx:id="botonVerRecomendacion" layoutX="683.0" layoutY="359.0" mnemonicParsing="false" onAction="#ventanaRecomendar" prefHeight="53.0" prefWidth="182.0" text="No sabes que leer? Pulsa aqui!" />
+      <Button fx:id="botonImportarCSV" layoutX="330.0" layoutY="271.0" mnemonicParsing="false" onAction="#importCSV" prefHeight="53.0" prefWidth="141.0" text="Importar CSV" />
    </children>
 </Pane>
