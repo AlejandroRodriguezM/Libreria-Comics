@@ -6,8 +6,9 @@ import java.sql.SQLException;
 import java.util.List;
 
 import Controladores.ModificarDatosController;
-import Funcionamiento.Comics;
+import Funcionamiento.Comic;
 import Funcionamiento.DBManager;
+import Funcionamiento.Libreria;
 import Funcionamiento.NavegacionVentanas;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -74,7 +75,9 @@ public class VentanaModificarController {
 
 	ModificarDatosController datos = new ModificarDatosController();
 	
-	Comics comic = new Comics();
+	Comic comic = new Comic();
+	
+	Libreria libreria = new Libreria();
 
 	@FXML
 	void BotonLimpiarComic(ActionEvent event) {
@@ -84,7 +87,7 @@ public class VentanaModificarController {
 	@FXML
 	void modificarDatos(ActionEvent event) throws SQLException {
 
-		Comics comic = new Comics();
+		Comic comic = new Comic();
 		String id = "";
 //		String id = "",nombreCom = "", numeroCom = "", varianteCom = "", firmaCom = "", editorialCom = "", formatoCom = "", procedenciaCom = "", fechaCom = "",
 //				guionistaCom = "", dibujanteCom = "", sentenciaSQL;
@@ -95,7 +98,7 @@ public class VentanaModificarController {
 				+ "Firma = ?,nomEditorial = ?,formato = ?,Procedencia = ?,anioPubli = ?"
 				+ "nomGuionista = ?,nomDibujante = ? where ID = " + id;
 		
-		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(comic));
+		List<Comic> listComics = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
 
 		pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 		pantallaInformativa.setText(listComics.toString());
