@@ -86,7 +86,7 @@ public class IntroducirDatosController {
 
 	private static Connection conn = DBManager.conexion();
 
-	NavegacionVentanas nav = new NavegacionVentanas();
+	private NavegacionVentanas nav = new NavegacionVentanas();
 
 	/**
 	 * 

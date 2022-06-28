@@ -1,17 +1,17 @@
 package Controladores;
 
 /**
- * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
+ * Programa que permite el acceso a una base de datos de Comic. Mediante JDBC con mySql
  * Las ventanas graficas se realizan con JavaFX.
  * El programa permite:
  *  - Conectarse a la base de datos.
  *  - Ver la base de datos completa o parcial segun parametros introducidos.
  *  - Guardar el contenido de la base de datos en un fichero .txt y .xls
  *  - Copia de seguridad de la base de datos en formato .sql
- *  - Añadir comics a la base de datos.
- *  - Modificar comics de la base de datos.
- *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
- *  - Ver frases de personajes de comics
+ *  - Añadir Comic a la base de datos.
+ *  - Modificar Comic de la base de datos.
+ *  - Eliminar Comic de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
+ *  - Ver frases de personajes de Comic
  *  - Opcion de escoger algo para leer de forma aleatoria.
  *  
  *  Esta clase modifica los datos de un comic en concreto
@@ -28,8 +28,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
-import Funcionamiento.Comics;
+import Funcionamiento.Comic;
 import Funcionamiento.DBManager;
+import Funcionamiento.Libreria;
 import Funcionamiento.NavegacionVentanas;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -136,44 +137,46 @@ public class ModificarDatosController {
 	private Label idMod;
 
 	@FXML
-	public TableView<Comics> tablaBBDD;
+	public TableView<Comic> tablaBBDD;
 
 	@FXML
-	private TableColumn<Comics, String> ID;
+	private TableColumn<Comic, String> ID;
 
 	@FXML
-	private TableColumn<Comics, String> numero;
+	private TableColumn<Comic, String> numero;
 
 	@FXML
-	private TableColumn<Comics, String> procedencia;
+	private TableColumn<Comic, String> procedencia;
 
 	@FXML
-	private TableColumn<Comics, String> variante;
+	private TableColumn<Comic, String> variante;
 
 	@FXML
-	private TableColumn<Comics, String> dibujante;
+	private TableColumn<Comic, String> dibujante;
 
 	@FXML
-	private TableColumn<Comics, String> editorial;
+	private TableColumn<Comic, String> editorial;
 
 	@FXML
-	private TableColumn<Comics, String> fecha;
+	private TableColumn<Comic, String> fecha;
 
 	@FXML
-	private TableColumn<Comics, String> firma;
+	private TableColumn<Comic, String> firma;
 
 	@FXML
-	private TableColumn<Comics, String> formato;
+	private TableColumn<Comic, String> formato;
 
 	@FXML
-	private TableColumn<Comics, String> guionista;
+	private TableColumn<Comic, String> guionista;
 
 	@FXML
-	private TableColumn<Comics, String> nombre;
+	private TableColumn<Comic, String> nombre;
 
-	NavegacionVentanas nav = new NavegacionVentanas();
+	private NavegacionVentanas nav = new NavegacionVentanas();
+	
+	private Libreria libreria = new Libreria();
 
-	Comics comic = new Comics();
+	private Comic comic = new Comic();
 
 	/**
 	 *
@@ -252,7 +255,7 @@ public class ModificarDatosController {
 	 * 
 	 * @return
 	 */
-	public String[] camposComicsActuales() {
+	public String[] camposComicActuales() {
 		String campos[] = new String[11];
 
 		campos[0] = idComic.getText();
@@ -284,7 +287,7 @@ public class ModificarDatosController {
 	 * 
 	 * @return
 	 */
-	public String[] camposComicsModificar() {
+	public String[] camposComicModificar() {
 		String campos[] = new String[11];
 
 		campos[0] = idComicMod.getText();
@@ -320,13 +323,13 @@ public class ModificarDatosController {
 
 		String nombre, numero, variante, firma, editorial, formato, procedencia, fecha, guionista, dibujante;
 
-		String sentenciaSQL = "UPDATE comicsbbdd set nomComic = ?,numComic = ?,nomVariante = ?,"
+		String sentenciaSQL = "UPDATE Comicsbbdd set nomComic = ?,numComic = ?,nomVariante = ?,"
 				+ "Firma = ?,nomEditorial = ?,formato = ?,Procedencia = ?,anioPubli = ?,"
 				+ "nomGuionista = ?,nomDibujante = ? where ID = ?";
 
-		String datosActuales[] = camposComicsActuales();
+		String datosActuales[] = camposComicActuales();
 
-		String datosModificados[] = camposComicsModificar();
+		String datosModificados[] = camposComicModificar();
 
 		listaPorParametro();
 
@@ -464,10 +467,10 @@ public class ModificarDatosController {
 	 * @throws SQLException
 	 */
 	public void listaPorParametro() throws SQLException {
-		String datosComics[] = camposComicsActuales();
+		String datosComic[] = camposComicActuales();
 
-		Comics comic = new Comics(datosComics[0], datosComics[1], datosComics[2], datosComics[3], datosComics[4],
-				datosComics[5], datosComics[6], datosComics[7], datosComics[8], datosComics[9], datosComics[10]);
+		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
+				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10]);
 
 		tablaBBDD(libreriaParametro(comic));
 	}
@@ -478,10 +481,10 @@ public class ModificarDatosController {
 	 * @return
 	 * @throws SQLException
 	 */
-	public List<Comics> libreriaParametro(Comics comic) throws SQLException {
-		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(comic));
+	public List<Comic> libreriaParametro(Comic comic) throws SQLException {
+		List<Comic> listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
 
-		return listComics;
+		return listComic;
 	}
 
 	/**
@@ -489,21 +492,21 @@ public class ModificarDatosController {
 	 * @return
 	 * @throws SQLException
 	 */
-	public List<Comics> libreriaCompleta() throws SQLException {
-		List<Comics> listComics = FXCollections.observableArrayList(comic.verTodo());
+	public List<Comic> libreriaCompleta() throws SQLException {
+		List<Comic> listComic = FXCollections.observableArrayList(libreria.verTodo());
 
-		return listComics;
+		return listComic;
 	}
 
 	/**
 	 * 
-	 * @param listaComics
+	 * @param listaComic
 	 */
 	@SuppressWarnings("unchecked")
-	public void tablaBBDD(List<Comics> listaComics) {
+	public void tablaBBDD(List<Comic> listaComic) {
 		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante);
-		tablaBBDD.getItems().setAll(listaComics);
+		tablaBBDD.getItems().setAll(listaComic);
 	}
 
 	/**

@@ -1,17 +1,17 @@
 package Controladores;
 
 /**
- * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
+ * Programa que permite el acceso a una base de datos de Comic. Mediante JDBC con mySql
  * Las ventanas graficas se realizan con JavaFX.
  * El programa permite:
  *  - Conectarse a la base de datos.
  *  - Ver la base de datos completa o parcial segun parametros introducidos.
  *  - Guardar el contenido de la base de datos en un fichero .txt y .xls
  *  - Copia de seguridad de la base de datos en formato .sql
- *  - Añadir comics a la base de datos.
- *  - Modificar comics de la base de datos.
- *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
- *  - Ver frases de personajes de comics
+ *  - Añadir Comic a la base de datos.
+ *  - Modificar Comic de la base de datos.
+ *  - Eliminar Comic de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
+ *  - Ver frases de personajes de Comic
  *  - Opcion de escoger algo para leer de forma aleatoria
  *  
  *  Esta clase te permite ver un comic aleatorio de la base de datos.
@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Random;
 
-import Funcionamiento.Comics;
+import Funcionamiento.Libreria;
 import Funcionamiento.NavegacionVentanas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -49,7 +49,10 @@ public class RecomendacionesComic {
 	@FXML
 	private TextArea printComicRecomendado;
 
-	NavegacionVentanas nav = new NavegacionVentanas();
+	private NavegacionVentanas nav = new NavegacionVentanas();
+	
+	private Libreria libreria = new Libreria();
+
 
 	/**
 	 * 
@@ -73,15 +76,13 @@ public class RecomendacionesComic {
 
 		int n;
 
-		Comics comic = new Comics();
+		libreria.verTodo();
 
-		comic.verTodo();
-
-		n = (int) (Math.random() * r.nextInt(comic.verTodo().length));
+		n = (int) (Math.random() * r.nextInt(libreria.verTodo().length));
 
 		limpiarPront();
 		
-		return comic.verTodo()[n].toString();
+		return libreria.verTodo()[n].toString();
 		
 	}
 	
