@@ -374,37 +374,29 @@ public class MenuPrincipalController {
 	public void makeSQL(File fichero) {
 		if (fichero != null) {
 
-			if(Utilidades.isWindows())
-			{
+			if (Utilidades.isWindows()) {
 				backupWindows(fichero);
-			}
-			else
-			{
-				if(Utilidades.isUnix())
-				{
+			} else {
+				if (Utilidades.isUnix()) {
 					backupLinux(fichero);
-				}
-				else
-				{
+				} else {
 
 				}
 			}
 
 			System.out.println(Utilidades.os);
-			
+
 		} else {
 			prontInformacion.setStyle("-fx-background-color: #F53636");
 			prontInformacion.setText("ERROR. Base de datos \nexportada cancelada.");
 		}
 	}
 
-	public void backupLinux(File fichero)
-	{
+	public void backupLinux(File fichero) {
 		try {
 			fichero.createNewFile();
-			String mysqlCom = String.format("mysqldump -u%s -p%s %s", DBManager.DB_USER, DBManager.DB_PASS,
-					DBManager.DB_PORT);
-			String[] command = new String[] { "/bin/bash", "-c", mysqlCom };
+			String command[] = new String[] { "mysqldump", "-u" + DBManager.DB_USER, "-p" + DBManager.DB_PASS, "-B",
+					DBManager.DB_NAME, "--result-file=" + fichero };
 			ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
 			pb.redirectError(Redirect.INHERIT);
 			pb.redirectOutput(Redirect.to(fichero));
@@ -416,29 +408,28 @@ public class MenuPrincipalController {
 		}
 	}
 
-	public void backupWindows(File fichero)
-	{
-		 try {
-			 fichero.createNewFile();
+	public void backupWindows(File fichero) {
+		try {
+			fichero.createNewFile();
 
-				Process p = Runtime.getRuntime().exec("C:/Program Files/MySQL/MySQL Workbench 8.0 CE/mysqldump -u "
-						+ DBManager.DB_USER + " -p" + DBManager.DB_PASS + " " +  DBManager.DB_NAME);
+			Process p = Runtime.getRuntime().exec("C:/Program Files/MySQL/MySQL Workbench 8.0 CE/mysqldump -u "
+					+ DBManager.DB_USER + " -p" + DBManager.DB_PASS + " " + DBManager.DB_NAME);
 
-		      InputStream is = p.getInputStream();
-		      FileOutputStream fos = new FileOutputStream(fichero);
-		      byte[] buffer = new byte[1000];
+			InputStream is = p.getInputStream();
+			FileOutputStream fos = new FileOutputStream(fichero);
+			byte[] buffer = new byte[1000];
 
-		      int leido = is.read(buffer);
-		      while (leido > 0) {
-		         fos.write(buffer, 0, leido);
-		         leido = is.read(buffer);
-		      }
+			int leido = is.read(buffer);
+			while (leido > 0) {
+				fos.write(buffer, 0, leido);
+				leido = is.read(buffer);
+			}
 
-		      fos.close();
+			fos.close();
 
-		   } catch (Exception e) {
-		      e.printStackTrace();
-		   }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -546,7 +537,7 @@ public class MenuPrincipalController {
 
 				for (int i = 0; i < libreria.verTodo().length; i++) {
 					guardarDatos.write(libreriaCompleta().get(i) + "\n");
-					System.out.println(libreriaCompleta().get(i)+ "\n");
+					System.out.println(libreriaCompleta().get(i) + "\n");
 				}
 				prontInformacion.setStyle("-fx-background-color: #A0F52D");
 				prontInformacion.setText("Fichero creado correctamente");

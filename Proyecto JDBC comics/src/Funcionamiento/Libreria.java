@@ -25,7 +25,7 @@ public class Libreria extends Comic{
 	 */
 	public Comic[] verTodo() throws SQLException {
 
-		String sentenciaSql = "SELECT * from Comicsbbdd where estado = 'En posesion'";
+		String sentenciaSql = "SELECT * from comicsbbdd where estado = 'En posesion'";
 
 		Comic Comic[] = null;
 
@@ -175,7 +175,7 @@ public class Libreria extends Comic{
 	 * @throws SQLException
 	 */
 	public static void ordenarBBDD() throws SQLException {
-		String sql = "ALTER TABLE Comicsbbdd ORDER BY nomComic;";
+		String sql = "ALTER TABLE comicsbbdd ORDER BY nomComic;";
 		Statement st = conn.createStatement();
 		st.execute(sql);
 	}
