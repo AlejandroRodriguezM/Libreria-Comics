@@ -26,8 +26,10 @@ package Controladores;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ProcessBuilder.Redirect;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -40,6 +42,7 @@ import Funcionamiento.Comic;
 import Funcionamiento.DBManager;
 import Funcionamiento.Libreria;
 import Funcionamiento.NavegacionVentanas;
+import Funcionamiento.Utilidades;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -175,7 +178,7 @@ public class MenuPrincipalController {
 	private Label prontFrases;
 
 	private NavegacionVentanas nav = new NavegacionVentanas();
-	
+
 	private Libreria libreria = new Libreria();
 
 	private static Connection conn = DBManager.conexion();
@@ -370,25 +373,72 @@ public class MenuPrincipalController {
 	 */
 	public void makeSQL(File fichero) {
 		if (fichero != null) {
-			try {
-				fichero.createNewFile();
-				String mysqlCom = String.format("mysqldump -u%s -p%s %s", DBManager.DB_USER, DBManager.DB_PASS,
-						DBManager.DB_PORT);
-				String[] command = new String[] { "/bin/bash", "-c", mysqlCom };
-				ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
-				pb.redirectError(Redirect.INHERIT);
-				pb.redirectOutput(Redirect.to(fichero));
-				pb.start();
-				prontInformacion.setStyle("-fx-background-color: #A0F52D");
-				prontInformacion.setText("Base de datos exportada \ncorrectamente");
-			} catch (IOException e1) {
-				e1.printStackTrace();
+
+			if(Utilidades.isWindows())
+			{
+				backupWindows(fichero);
+			}
+			else
+			{
+				if(Utilidades.isUnix())
+				{
+					backupLinux(fichero);
+				}
+				else
+				{
+
+				}
 			}
 
+			System.out.println(Utilidades.os);
+			
 		} else {
 			prontInformacion.setStyle("-fx-background-color: #F53636");
 			prontInformacion.setText("ERROR. Base de datos \nexportada cancelada.");
 		}
+	}
+
+	public void backupLinux(File fichero)
+	{
+		try {
+			fichero.createNewFile();
+			String mysqlCom = String.format("mysqldump -u%s -p%s %s", DBManager.DB_USER, DBManager.DB_PASS,
+					DBManager.DB_PORT);
+			String[] command = new String[] { "/bin/bash", "-c", mysqlCom };
+			ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
+			pb.redirectError(Redirect.INHERIT);
+			pb.redirectOutput(Redirect.to(fichero));
+			pb.start();
+			prontInformacion.setStyle("-fx-background-color: #A0F52D");
+			prontInformacion.setText("Base de datos exportada \ncorrectamente");
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+	}
+
+	public void backupWindows(File fichero)
+	{
+		 try {
+			 fichero.createNewFile();
+
+				Process p = Runtime.getRuntime().exec("C:/Program Files/MySQL/MySQL Workbench 8.0 CE/mysqldump -u "
+						+ DBManager.DB_USER + " -p" + DBManager.DB_PASS + " " +  DBManager.DB_NAME);
+
+		      InputStream is = p.getInputStream();
+		      FileOutputStream fos = new FileOutputStream(fichero);
+		      byte[] buffer = new byte[1000];
+
+		      int leido = is.read(buffer);
+		      while (leido > 0) {
+		         fos.write(buffer, 0, leido);
+		         leido = is.read(buffer);
+		      }
+
+		      fos.close();
+
+		   } catch (Exception e) {
+		      e.printStackTrace();
+		   }
 	}
 
 	/**
@@ -493,9 +543,13 @@ public class MenuPrincipalController {
 				tablaBBDD(libreriaCompleta());
 
 				FileWriter guardarDatos = new FileWriter(fichero + ".txt");
-				for (int i = 0; i < libreriaCompleta().size(); i++) {
+
+				for (int i = 0; i < libreria.verTodo().length; i++) {
 					guardarDatos.write(libreriaCompleta().get(i) + "\n");
+					System.out.println(libreriaCompleta().get(i)+ "\n");
 				}
+				prontInformacion.setStyle("-fx-background-color: #A0F52D");
+				prontInformacion.setText("Fichero creado correctamente");
 				guardarDatos.close();
 			} else {
 				prontInformacion.setStyle("-fx-background-color: #F53636");

@@ -42,6 +42,7 @@ public class Programa extends Application {
 		try {
 			Parent root = FXMLLoader.load(getClass().getResource("/ventanas/AccesoBBDD.fxml"));
 			primaryStage.setScene(new Scene(root));
+			primaryStage.setResizable(false);
 			primaryStage.setTitle("Aplicacion bbdd comics"); // Titulo de la aplicacion.
 			primaryStage.show();
 			primaryStage.getIcons().add(new Image("/Icono/icon2.png"));
