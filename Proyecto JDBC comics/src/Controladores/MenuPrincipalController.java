@@ -446,7 +446,7 @@ public class MenuPrincipalController {
 				FileWriter guardarDatos = new FileWriter(fichero + ".txt");
 				prontInformacion.setStyle("-fx-background-color: #A0F52D");
 				prontInformacion.setText("Exportando datos. Porfavor espere.");
-	
+
 				for (int i = 0; i < libreria.verTodo().length; i++) {
 					guardarDatos.write(libreriaCompleta().get(i) + "\n");
 					System.out.println(libreriaCompleta().get(i) + "\n");
@@ -478,7 +478,7 @@ public class MenuPrincipalController {
 			pb.redirectError(Redirect.INHERIT);
 			pb.redirectOutput(Redirect.to(fichero));
 			pb.start();
-			
+
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}

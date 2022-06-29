@@ -208,7 +208,7 @@ public class NavegacionVentanas {
 			Logger.getLogger(MenuOpcionesController.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -294,7 +294,7 @@ public class NavegacionVentanas {
 			Logger.getLogger(MenuOpcionesController.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -358,41 +358,37 @@ public class NavegacionVentanas {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @return
 	 */
-	public boolean alertaEliminar()
-	{
+	public boolean alertaEliminar() {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
-		
+
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
 		stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
 		alert.setTitle("Eliminando . . .");
 		alert.setHeaderText("Estas apunto de eliminar datos.");
 		alert.setContentText("¿Estas seguro que quieres eliminar el comic?");
-		if (alert.showAndWait().get() == ButtonType.OK)
-		{
+		if (alert.showAndWait().get() == ButtonType.OK) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	/**
 	 * 
 	 * @return
 	 */
-	public boolean alertaModificar()
-	{
+	public boolean alertaModificar() {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
 		stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
 		alert.setTitle("Modificando . . .");
 		alert.setHeaderText("Estas apunto de modificar datos.");
 		alert.setContentText("¿Estas seguro que quieres modificar el comic?");
-		if (alert.showAndWait().get() == ButtonType.OK)
-		{
+		if (alert.showAndWait().get() == ButtonType.OK) {
 			return true;
 		}
 		return false;
