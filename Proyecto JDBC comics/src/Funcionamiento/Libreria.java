@@ -11,8 +11,9 @@ import java.util.List;
 
 public class Libreria extends Comic{
 	
-	private static List<Comic> listComics = new ArrayList<>();
-	private static List<Comic> FiltrolistComics = new ArrayList<>();
+	private static List<Comic> listaComics = new ArrayList<>();
+	private static List<Comic> listaCompleta = new ArrayList<>();
+	private static List<Comic> filtroComics = new ArrayList<>();
 
 	private static Connection conn = DBManager.conexion();
 	
@@ -33,46 +34,17 @@ public class Libreria extends Comic{
 
 		ResultSet rs = DBManager.getComic(sentenciaSql);
 
-		try {
-			do {
-				this.ID = rs.getString("ID");
-				this.nombre = rs.getString("nomComic");
-				this.numero = rs.getString("numComic");
-				this.variante = rs.getString("nomVariante");
-				this.firma = rs.getString("firma");
-				this.editorial = rs.getString("nomEditorial");
-				this.formato = rs.getString("formato");
-				this.procedencia = rs.getString("procedencia");
-				this.fecha = rs.getString("anioPubli");
-				this.guionista = rs.getString("nomGuionista");
-				this.dibujante = rs.getString("nomDibujante");
-				listComics.add(new Comic(this.ID, this.nombre, this.numero, this.variante, this.firma, this.editorial,
-						this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante));
-			} while (rs.next());
+		listaCompleta = listaDatos(rs);
 
-		} catch (Exception ex) {
-			System.out.println(ex);
-			// itself.
-		}
-
-		Comic = new Comic[listComics.size()];
-		Comic = listComics.toArray(Comic);
+		Comic = new Comic[listaCompleta.size()];
+		Comic = listaCompleta.toArray(Comic);
 		return Comic;
 	}
 	
 	/**
 	 * Devuelve datos de la base de datos segun el parametro.
 	 * 
-	 * @param nombreC
-	 * @param numeroC
-	 * @param varianteC
-	 * @param firmaC
-	 * @param editorialC
-	 * @param formatoC
-	 * @param procedenciaC
-	 * @param fechaC
-	 * @param guionistaC
-	 * @param dibujanteC
+	 * @param datos
 	 * @return
 	 * @throws SQLException
 	 */
@@ -154,41 +126,48 @@ public class Libreria extends Comic{
 			}
 			ResultSet rs = ps.executeQuery();
 
-			while (rs.next()) {
-
-				this.ID = rs.getString("ID");
-				this.nombre = rs.getString("nomComic");
-				this.numero = rs.getString("numComic");
-				this.variante = rs.getString("nomVariante");
-				this.firma = rs.getString("firma");
-				this.editorial = rs.getString("nomEditorial");
-				this.formato = rs.getString("formato");
-				this.procedencia = rs.getString("procedencia");
-				this.fecha = rs.getString("anioPubli");
-				this.guionista = rs.getString("nomGuionista");
-				this.dibujante = rs.getString("nomDibujante");
-				if (rs.getString("estado").equals("En posesion")) {
-					FiltrolistComics.add(
-							new Comic(this.ID, this.nombre, this.numero, this.variante, this.firma, this.editorial,
-									this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante));
-				}
-			}
-			rs.close();
+			filtroComics = listaDatos(rs);
+			
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
 
-		comic = new Comic[FiltrolistComics.size()];
-		comic = FiltrolistComics.toArray(comic);
+		comic = new Comic[filtroComics.size()];
+		comic = filtroComics.toArray(comic);
 		return comic;
+	}
+	
+	public List<Comic> listaDatos(ResultSet rs) throws SQLException
+	{
+		while (rs.next()) {
+
+			this.ID = rs.getString("ID");
+			this.nombre = rs.getString("nomComic");
+			this.numero = rs.getString("numComic");
+			this.variante = rs.getString("nomVariante");
+			this.firma = rs.getString("firma");
+			this.editorial = rs.getString("nomEditorial");
+			this.formato = rs.getString("formato");
+			this.procedencia = rs.getString("procedencia");
+			this.fecha = rs.getString("anioPubli");
+			this.guionista = rs.getString("nomGuionista");
+			this.dibujante = rs.getString("nomDibujante");
+			if (rs.getString("estado").equals("En posesion")) {
+				listaComics.add(
+						new Comic(this.ID, this.nombre, this.numero, this.variante, this.firma, this.editorial,
+								this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante));
+			}
+		}
+		rs.close();
+		return listaComics;
 	}
 
 	/**
 	 * Permite reiniciar la pantalla donde se muestran los datos
 	 */
-	public  void reiniciarBBDD() {
-		FiltrolistComics.clear();
-		listComics.clear();
+	public void reiniciarBBDD() {
+		filtroComics.clear();
+		listaCompleta.clear();
 	}
 
 	/**

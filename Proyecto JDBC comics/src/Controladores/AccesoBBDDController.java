@@ -256,7 +256,6 @@ public class AccesoBBDDController {
 		} else { // En caso contrario mostrara el siguiente mensaje
 			pass.setText(""); // Limpia el campo de la contraseña en caso de que isConnected sea false.
 			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
-			prontEstadoConexion.setFont(new Font("Arial", 22));
 			prontEstadoConexion.setText("ERROR. Los datos son \nincorrectos. Revise \nlos datos.");
 		}
 	}
@@ -276,7 +275,6 @@ public class AccesoBBDDController {
 			Funcionamiento.DBManager.close();
 		} else { // En caso contrario, mostrara el siguiente mensaje.
 			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
-			prontEstadoConexion.setFont(new Font("Arial", 22));
 			prontEstadoConexion.setText("ERROR. No se encuentra \nconectado a ninguna bbdd");
 		}
 	}

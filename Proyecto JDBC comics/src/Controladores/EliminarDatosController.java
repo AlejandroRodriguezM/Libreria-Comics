@@ -138,10 +138,10 @@ public class EliminarDatosController {
 	private TableColumn<Comic, String> nombre;
 
 	private NavegacionVentanas nav = new NavegacionVentanas();
-	
+
 	private Libreria libreria = new Libreria();
-	
-	
+
+
 
 	private static Connection conn = DBManager.conexion();
 
@@ -164,8 +164,8 @@ public class EliminarDatosController {
 	 */
 	@FXML
 	void eliminarDatos(ActionEvent event) throws SQLException { // Metodo que permite cambiar de estado un comic, para
-																// que se deje de mostrar en el programa, pero este
-																// sigue estando dentro de la bbdd
+		// que se deje de mostrar en el programa, pero este
+		// sigue estando dentro de la bbdd
 		deleteData();
 	}
 
@@ -198,7 +198,7 @@ public class EliminarDatosController {
 	 * Muestra las columnas especificas del fichero FXML
 	 */
 	private void nombreColumnas() { // Funcion que especifica el total de columnas de la bbdd se mostraran en la
-									// ventana
+		// ventana
 		ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
 		nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
 		numero.setCellValueFactory(new PropertyValueFactory<>("numero"));
@@ -281,20 +281,20 @@ public class EliminarDatosController {
 
 		try {
 			if (nav.alertaEliminar()) { // Llamada a metodo que permite lanzar una alerta. En caso de aceptarlo
-										// permitira lo siguiente.
+				// permitira lo siguiente.
 
 				List<Comic> listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic)); // Lista que
-																										// contiene toda
-																										// los Comic de
-																										// la base de
-																										// datos.
+				// contiene toda
+				// los Comic de
+				// la base de
+				// datos.
 				if (id.length() != 0) {
 					stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE,
 							ResultSet.CONCUR_UPDATABLE); // Permite leer y ejecutar la sentencia de MySql
 
 					stmt.setString(1, id);
 					if (stmt.executeUpdate() == 1) { // En caso de que el cambio de estado se haya realizado
-														// correctamente, mostrara lo siguiente
+						// correctamente, mostrara lo siguiente
 						pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 						pantallaInformativa.setText("Has eliminado correctamente: "
 								+ listComic.toString().replace("[", "").replace("]", ""));
