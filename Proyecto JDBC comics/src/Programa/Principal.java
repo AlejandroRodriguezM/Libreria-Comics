@@ -1,7 +1,7 @@
 package Programa;
 
 /**
- * Programa principal
+ * Programa principa
  * @author mrmis
  *
  */
