@@ -26,10 +26,8 @@ package Controladores;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.ProcessBuilder.Redirect;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -383,52 +381,11 @@ public class MenuPrincipalController {
 
 				}
 			}
-
-			System.out.println(Utilidades.os);
-
+			prontInformacion.setStyle("-fx-background-color: #A0F52D");
+			prontInformacion.setText("Base de datos exportada \ncorrectamente");
 		} else {
 			prontInformacion.setStyle("-fx-background-color: #F53636");
 			prontInformacion.setText("ERROR. Base de datos \nexportada cancelada.");
-		}
-	}
-
-	public void backupLinux(File fichero) {
-		try {
-			fichero.createNewFile();
-			String command[] = new String[] { "mysqldump", "-u" + DBManager.DB_USER, "-p" + DBManager.DB_PASS, "-B",
-					DBManager.DB_NAME, "--result-file=" + fichero };
-			ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
-			pb.redirectError(Redirect.INHERIT);
-			pb.redirectOutput(Redirect.to(fichero));
-			pb.start();
-			prontInformacion.setStyle("-fx-background-color: #A0F52D");
-			prontInformacion.setText("Base de datos exportada \ncorrectamente");
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-	}
-
-	public void backupWindows(File fichero) {
-		try {
-			fichero.createNewFile();
-
-			Process p = Runtime.getRuntime().exec("C:/Program Files/MySQL/MySQL Workbench 8.0 CE/mysqldump -u "
-					+ DBManager.DB_USER + " -p" + DBManager.DB_PASS + " " + DBManager.DB_NAME);
-
-			InputStream is = p.getInputStream();
-			FileOutputStream fos = new FileOutputStream(fichero);
-			byte[] buffer = new byte[1000];
-
-			int leido = is.read(buffer);
-			while (leido > 0) {
-				fos.write(buffer, 0, leido);
-				leido = is.read(buffer);
-			}
-
-			fos.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -470,6 +427,79 @@ public class MenuPrincipalController {
 
 		} catch (Exception e) {
 			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 
+	 * @param fichero
+	 */
+	public void makeFile(File fichero) {
+		try {
+			if (fichero != null) {
+				fichero.createNewFile();
+
+				nombreColumnas();
+				tablaBBDD(libreriaCompleta());
+
+				FileWriter guardarDatos = new FileWriter(fichero + ".txt");
+
+				for (int i = 0; i < libreria.verTodo().length; i++) {
+					guardarDatos.write(libreriaCompleta().get(i) + "\n");
+					System.out.println(libreriaCompleta().get(i) + "\n");
+				}
+				prontInformacion.setStyle("-fx-background-color: #A0F52D");
+				prontInformacion.setText("Fichero creado correctamente");
+				guardarDatos.close();
+			} else {
+				prontInformacion.setStyle("-fx-background-color: #F53636");
+				prontInformacion.setText("ERROR. Contenido de la bbdd \n cancelada.");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 
+	 * @param fichero
+	 */
+	public void backupLinux(File fichero) {
+		try {
+			fichero.createNewFile();
+			String command[] = new String[] { "mysqldump", "-u" + DBManager.DB_USER, "-p" + DBManager.DB_PASS, "-B",
+					DBManager.DB_NAME, "--result-file=" + fichero };
+			ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
+			pb.redirectError(Redirect.INHERIT);
+			pb.redirectOutput(Redirect.to(fichero));
+			pb.start();
+			
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+	}
+
+	/**
+	 * 
+	 * @param fichero
+	 */
+	public void backupWindows(File fichero) {
+		try {
+			fichero.createNewFile();
+
+			String mysqlDump = "C:/Program Files/MySQL/MySQL Workbench 8.0 CE/mysqldump";
+
+			String command[] = new String[] { mysqlDump, "-u" + DBManager.DB_USER, "-p" + DBManager.DB_PASS, "-B",
+					DBManager.DB_NAME, "--result-file=" + fichero };
+			ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
+			pb.redirectError(Redirect.INHERIT);
+			pb.redirectOutput(Redirect.to(fichero));
+			pb.start();
+
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -519,38 +549,6 @@ public class MenuPrincipalController {
 		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante);
 		tablaBBDD.getItems().setAll(listaComic);
-	}
-
-	/**
-	 * 
-	 * @param fichero
-	 */
-	public void makeFile(File fichero) {
-		try {
-			if (fichero != null) {
-				fichero.createNewFile();
-
-				nombreColumnas();
-				tablaBBDD(libreriaCompleta());
-
-				FileWriter guardarDatos = new FileWriter(fichero + ".txt");
-
-				for (int i = 0; i < libreria.verTodo().length; i++) {
-					guardarDatos.write(libreriaCompleta().get(i) + "\n");
-					System.out.println(libreriaCompleta().get(i) + "\n");
-				}
-				prontInformacion.setStyle("-fx-background-color: #A0F52D");
-				prontInformacion.setText("Fichero creado correctamente");
-				guardarDatos.close();
-			} else {
-				prontInformacion.setStyle("-fx-background-color: #F53636");
-				prontInformacion.setText("ERROR. Contenido de la bbdd \n cancelada.");
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 	}
 
 	/**
