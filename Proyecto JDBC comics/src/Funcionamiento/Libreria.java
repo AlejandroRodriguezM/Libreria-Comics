@@ -11,8 +11,8 @@ import java.util.List;
 
 public class Libreria extends Comic{
 	
-	private static List<Comic> listComic = new ArrayList<>();
-	private static List<Comic> FiltrolistComic = new ArrayList<>();
+	private static List<Comic> listComics = new ArrayList<>();
+	private static List<Comic> FiltrolistComics = new ArrayList<>();
 
 	private static Connection conn = DBManager.conexion();
 	
@@ -46,7 +46,7 @@ public class Libreria extends Comic{
 				this.fecha = rs.getString("anioPubli");
 				this.guionista = rs.getString("nomGuionista");
 				this.dibujante = rs.getString("nomDibujante");
-				listComic.add(new Comic(this.ID, this.nombre, this.numero, this.variante, this.firma, this.editorial,
+				listComics.add(new Comic(this.ID, this.nombre, this.numero, this.variante, this.firma, this.editorial,
 						this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante));
 			} while (rs.next());
 
@@ -55,8 +55,8 @@ public class Libreria extends Comic{
 			// itself.
 		}
 
-		Comic = new Comic[listComic.size()];
-		Comic = listComic.toArray(Comic);
+		Comic = new Comic[listComics.size()];
+		Comic = listComics.toArray(Comic);
 		return Comic;
 	}
 	
@@ -76,73 +76,73 @@ public class Libreria extends Comic{
 	 * @return
 	 * @throws SQLException
 	 */
-	public Comic[] filtadroBBDD(Comic comic) throws SQLException {
+	public Comic[] filtadroBBDD(Comic datos) throws SQLException {
 
 		reiniciarBBDD();
 		ordenarBBDD();
 
-		Comic Comic[] = null;
+		Comic comic[] = null;
 
 		ArrayList<String> strFilter = new ArrayList<>();
 
 		String connector = " WHERE ";
 		StringBuilder sql = new StringBuilder();
-		sql.append("SELECT * FROM Comicsbbdd");
+		sql.append("SELECT * FROM comicsbbdd");
 
-		if (this.ID.length() != 0 && ID != null) {
+		if (datos.ID.length() != 0 && ID != null) {
 			sql.append(connector).append("ID = ?");
 			connector = " AND ";
-			strFilter.add(ID);
+			strFilter.add(datos.ID);
 		}
-		if (this.nombre.length() != 0) {
+		if (datos.nombre.length() != 0) {
 			sql.append(connector).append("nomComic = ?");
 			connector = " AND ";
-			strFilter.add(this.nombre);
+			strFilter.add(datos.nombre);
 		}
-		if (this.numero.length() != 0) {
+		if (datos.numero.length() != 0) {
 			sql.append(connector).append("numComic = ?");
 			connector = " AND ";
-			strFilter.add(this.numero);
+			strFilter.add(datos.numero);
 		}
-		if (this.variante.length() != 0) {
+		if (datos.variante.length() != 0) {
 			sql.append(connector).append("nomVariante = ?");
 			connector = " AND ";
-			strFilter.add(this.variante);
+			strFilter.add(datos.variante);
 		}
-		if (this.firma.length() != 0) {
+		if (datos.firma.length() != 0) {
 			sql.append(connector).append("firma = ?");
 			connector = " AND ";
-			strFilter.add(this.firma);
+			strFilter.add(datos.firma);
 		}
-		if (this.editorial.length() != 0) {
+		if (datos.editorial.length() != 0) {
 			sql.append(connector).append("nomEditorial = ?");
 			connector = " AND ";
-			strFilter.add(this.editorial);
+			strFilter.add(datos.editorial);
 		}
-		if (this.formato.length() != 0) {
+		if (datos.formato.length() != 0) {
 			sql.append(connector).append("formato = ?");
 			connector = " AND ";
-			strFilter.add(this.formato);
+			strFilter.add(datos.formato);
 		}
-		if (this.procedencia.length() != 0) {
+		if (datos.procedencia.length() != 0) {
 			sql.append(connector).append("procedencia = ?");
 			connector = " AND ";
-			strFilter.add(this.procedencia);
+			strFilter.add(datos.procedencia);
 		}
-		if (this.fecha.length() != 0) {
+		if (datos.fecha.length() != 0) {
 			sql.append(connector).append("anioPubli = ?");
 			connector = " AND ";
-			strFilter.add(this.fecha);
+			strFilter.add(datos.fecha);
 		}
-		if (this.guionista.length() != 0) {
+		if (datos.guionista.length() != 0) {
 			sql.append(connector).append("nomGuionista = ?");
 			connector = " AND ";
-			strFilter.add(this.guionista);
+			strFilter.add(datos.guionista);
 		}
-		if (this.dibujante.length() != 0) {
+		if (datos.dibujante.length() != 0) {
 			sql.append(connector).append("nomDibujante = ?");
 			connector = " AND ";
-			strFilter.add(this.dibujante);
+			strFilter.add(datos.dibujante);
 		}
 		Collections.sort(strFilter);
 
@@ -168,7 +168,7 @@ public class Libreria extends Comic{
 				this.guionista = rs.getString("nomGuionista");
 				this.dibujante = rs.getString("nomDibujante");
 				if (rs.getString("estado").equals("En posesion")) {
-					FiltrolistComic.add(
+					FiltrolistComics.add(
 							new Comic(this.ID, this.nombre, this.numero, this.variante, this.firma, this.editorial,
 									this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante));
 				}
@@ -178,17 +178,17 @@ public class Libreria extends Comic{
 			ex.printStackTrace();
 		}
 
-		Comic = new Comic[FiltrolistComic.size()];
-		Comic = FiltrolistComic.toArray(Comic);
-		return Comic;
+		comic = new Comic[FiltrolistComics.size()];
+		comic = FiltrolistComics.toArray(comic);
+		return comic;
 	}
 
 	/**
 	 * Permite reiniciar la pantalla donde se muestran los datos
 	 */
-	public static void reiniciarBBDD() {
-		FiltrolistComic.clear();
-		listComic.clear();
+	public  void reiniciarBBDD() {
+		FiltrolistComics.clear();
+		listComics.clear();
 	}
 
 	/**
