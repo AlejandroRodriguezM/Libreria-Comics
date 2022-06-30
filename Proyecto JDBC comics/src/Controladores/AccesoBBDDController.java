@@ -8,7 +8,7 @@ import java.awt.Desktop;
  * El programa permite:
  *  - Conectarse a la base de datos.
  *  - Ver la base de datos completa o parcial segun parametros introducidos.
- *  - Guardar el contenido de la base de datos en un fichero .txt y .xls
+ *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
  *  - Copia de seguridad de la base de datos en formato .sql
  *  - Añadir comics a la base de datos.
  *  - Modificar comics de la base de datos.
@@ -18,7 +18,7 @@ import java.awt.Desktop;
  *
  *  Esta clase permite acceder a la base de datos introduciendo los diferentes datos que nos pide.
  *
- *  Version 2.3
+ *  Version 2.5
  *
  *  Por Alejandro Rodriguez
  *
@@ -110,7 +110,7 @@ public class AccesoBBDDController {
 	 */
 	@FXML
 	void accesoGitHub(ActionEvent event) throws IOException {
-		String url = "https://github.com/MisterioRojo/Proyecto-gui-bbdd/tree/V2.4";
+		String url = "https://github.com/MisterioRojo/Proyecto-gui-bbdd/tree/V2.5";
 
 		if (Desktop.isDesktopSupported()) {
 			java.awt.Desktop.getDesktop().browse(java.net.URI.create(url)); // Metodo que abre tu navegador por defecto

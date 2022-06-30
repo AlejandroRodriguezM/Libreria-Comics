@@ -73,14 +73,14 @@
          </font></Label>
       <TextField fx:id="nombreProcedencia" layoutX="125.0" layoutY="241.0" prefHeight="25.0" prefWidth="169.0" />
       <Button fx:id="BotonVentanaAniadir" layoutX="494.0" layoutY="144.0" mnemonicParsing="false" onAction="#ventanaAniadir" prefHeight="53.0" prefWidth="102.0" text="Añadir datos" />
-      <Button fx:id="botonGuardarFichero" layoutX="330.0" layoutY="77.0" mnemonicParsing="false" onAction="#exportFichero" prefHeight="53.0" prefWidth="141.0" text="Guardar en un fichero" />
+      <Button fx:id="botonGuardarFichero" layoutX="330.0" layoutY="77.0" mnemonicParsing="false" onAction="#exportFichero" prefHeight="53.0" prefWidth="141.0" text="Exportar txt" />
       <Label fx:id="prontInformacion" layoutX="818.0" layoutY="199.0" prefHeight="147.0" prefWidth="263.0" wrapText="true">
          <font>
             <Font size="21.0" />
          </font>
       </Label>
       <Button fx:id="botonBackupBBDD" layoutX="330.0" layoutY="206.0" mnemonicParsing="false" onAction="#exportarSQL" prefHeight="53.0" prefWidth="141.0" text="Exportar base de datos" />
-      <Button fx:id="botonGuardarCSV" layoutX="330.0" layoutY="144.0" mnemonicParsing="false" onAction="#exportCSV" prefHeight="53.0" prefWidth="141.0" text="Exportar CSV" />
+      <Button fx:id="botonGuardarCSV" layoutX="330.0" layoutY="144.0" mnemonicParsing="false" onAction="#exportCSV" prefHeight="53.0" prefWidth="141.0" text="Exportar Excel" />
       <Button fx:id="BotonModificarComic" layoutX="494.0" layoutY="77.0" mnemonicParsing="false" onAction="#ventanaModificar" prefHeight="53.0" prefWidth="102.0" text="Modificar datos" />
       <Button fx:id="BotonEliminarComic" layoutX="494.0" layoutY="15.0" mnemonicParsing="false" onAction="#ventanaEliminar" prefHeight="53.0" prefWidth="102.0" text="Eliminar datos" />
       <TableView fx:id="tablaBBDD" layoutX="-1.0" layoutY="422.0" prefHeight="418.0" prefWidth="1104.0">

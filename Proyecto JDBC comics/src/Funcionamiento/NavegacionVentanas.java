@@ -6,7 +6,7 @@ package Funcionamiento;
  * El programa permite:
  *  - Conectarse a la base de datos.
  *  - Ver la base de datos completa o parcial segun parametros introducidos.
- *  - Guardar el contenido de la base de datos en un fichero .txt y .xls
+ *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
  *  - Copia de seguridad de la base de datos en formato .sql
  *  - Añadir comics a la base de datos.
  *  - Modificar comics de la base de datos.
@@ -14,9 +14,9 @@ package Funcionamiento;
  *  - Ver frases de personajes de comics
  *  - Opcion de escoger algo para leer de forma aleatoria.
  *
- *  Esta clase permite navegar entre las diferentes ventanas de la base de datos.
+ *  Esta clase permite acceder a la base de datos introduciendo los diferentes datos que nos pide.
  *
- *  Version 2.3
+ *  Version 2.5
  *
  *  Por Alejandro Rodriguez
  *

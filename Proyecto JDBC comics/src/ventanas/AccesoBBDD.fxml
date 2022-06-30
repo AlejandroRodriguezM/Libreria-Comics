@@ -92,7 +92,7 @@
       </Label>
       <Button fx:id="botonCerrar" layoutX="163.0" layoutY="573.0" mnemonicParsing="false" onAction="#cerrarbbdd" prefHeight="54.0" prefWidth="118.0" text="Cerrar BBDD" />
       <Button fx:id="botonTwitter" layoutX="173.0" layoutY="763.0" mnemonicParsing="false" onAction="#accesoTwitter" text="Por @silverAlox" />
-      <Button fx:id="numeroVersion" layoutX="52.0" layoutY="763.0" mnemonicParsing="false" onAction="#accesoGitHub" text="Version 2.4" />
+      <Button fx:id="numeroVersion" layoutX="52.0" layoutY="763.0" mnemonicParsing="false" onAction="#accesoGitHub" text="Version 2.5" />
       <Button fx:id="botonSalir" layoutX="30.0" layoutY="700.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="54.0" prefWidth="118.0" text="Salir" />
       <Button fx:id="botonCrearBBDD" layoutX="160.0" layoutY="509.0" mnemonicParsing="false" onAction="#crearBBDD" prefHeight="54.0" prefWidth="118.0" text="Crear BBDD" />
       <Button fx:id="botonVerDDBB" layoutX="163.0" layoutY="635.0" mnemonicParsing="false" onAction="#verDBDisponibles" prefHeight="54.0" prefWidth="118.0" text="Ver bbdd" />
