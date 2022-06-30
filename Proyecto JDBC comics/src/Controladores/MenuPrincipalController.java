@@ -92,10 +92,10 @@ public class MenuPrincipalController {
 	private Button botonFrase;
 
 	@FXML
-	private Button botonGuardarCSV;
-
-	@FXML
 	private Button botonImportarCSV;
+	
+	@FXML
+	private Button botonGuardarCSV;
 
 	@FXML
 	private TextField anioPublicacion;
@@ -178,7 +178,7 @@ public class MenuPrincipalController {
 
 	private Excel excel = new Excel();
 
-	//	private static Connection conn = DBManager.conexion();
+	// private static Connection conn = DBManager.conexion();
 
 	/**
 	 *
@@ -411,14 +411,15 @@ public class MenuPrincipalController {
 	public void makeExcel(File fichero) {
 		try {
 
-			if (excel.crearExcel(fichero)) {
-				prontInformacion.setStyle("-fx-background-color: #A0F52D");
-				prontInformacion.setText("Fichero excel exportado de forma correcta");
-			} else {
-				prontInformacion.setStyle("-fx-background-color: #F53636");
-				prontInformacion.setText("ERROR. Fichero excel cancelado.");
+			if (fichero != null) {
+				if (excel.crearExcel(fichero)) {
+					prontInformacion.setStyle("-fx-background-color: #A0F52D");
+					prontInformacion.setText("Fichero excel exportado de forma correcta");
+				} else {
+					prontInformacion.setStyle("-fx-background-color: #F53636");
+					prontInformacion.setText("ERROR. Fichero excel cancelado.");
+				}
 			}
-
 		} catch (Exception e) {
 			System.out.println(e);
 			e.printStackTrace();
@@ -439,10 +440,6 @@ public class MenuPrincipalController {
 				tablaBBDD(libreriaPosesion());
 
 				FileWriter guardarDatos = new FileWriter(fichero);
-				prontInformacion.setStyle("-fx-background-color: #A0F52D");
-				prontInformacion.setText("Exportando datos. Porfavor espere.");
-
-				System.out.println("PRUEBA: " + libreria.verLibreriaCompleta().length);
 
 				for (int i = 0; i < libreria.verLibreriaCompleta().length; i++) {
 					guardarDatos.write(libreriaCompleta().get(i) + "\n");
