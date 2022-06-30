@@ -76,13 +76,13 @@ public class RecomendacionesComic {
 
 		int n;
 
-		libreria.verTodo();
+		libreria.verLibreria();
 
-		n = (int) (Math.random() * r.nextInt(libreria.verTodo().length));
+		n = (int) (Math.random() * r.nextInt(libreria.verLibreria().length));
 
 		limpiarPront();
 		
-		return libreria.verTodo()[n].toString();
+		return libreria.verLibreria()[n].toString();
 		
 	}
 	

@@ -39,10 +39,11 @@ public class Comic {
 	protected String fecha;
 	protected String guionista;
 	protected String dibujante;
+	protected String estado;
 
 	// Constructor
 	public Comic(String ID, String nombre, String numero, String variante, String firma, String editorial,
-			String formato, String procedencia, String fecha, String guionista, String dibujante) {
+			String formato, String procedencia, String fecha, String guionista, String dibujante, String estado) {
 		this.ID = ID;
 		this.nombre = nombre;
 		this.numero = numero;
@@ -54,6 +55,7 @@ public class Comic {
 		this.fecha = fecha;
 		this.guionista = guionista;
 		this.dibujante = dibujante;
+		this.estado = estado;
 	}
 
 	// Constructor
@@ -69,6 +71,7 @@ public class Comic {
 		this.fecha = "";
 		this.guionista = "";
 		this.dibujante = "";
+		this.estado = "";
 	}
 
 	// Getters y setters
@@ -117,6 +120,10 @@ public class Comic {
 		return dibujante;
 	}
 
+	public String getEstado() {
+		return estado;
+	}
+
 	public void setID(String ID) {
 		this.ID = ID;
 	}
@@ -160,6 +167,11 @@ public class Comic {
 	public void setDibujante(String dibujante) {
 		this.dibujante = dibujante;
 	}
+	
+
+	public void setEstado(String estado) {
+		this.estado = estado;
+	}
 
 	/**
 	 * 
@@ -194,7 +206,7 @@ public class Comic {
 	public String toString() {
 		return "\nNombre: " + nombre + "\nNumero: " + numero + "\nVariante: " + variante + "\nFirma: " + firma
 				+ "\nEditorial: " + editorial + "\nFormato: " + formato + "\nProcedencia: " + procedencia + "\nFecha: "
-				+ fecha + "\nGuionista: " + guionista + "\nDibujante: " + dibujante + "\n";
+				+ fecha + "\nGuionista: " + guionista + "\nDibujante: " + dibujante + "\nEstado" + estado ;
 	}
 
 }

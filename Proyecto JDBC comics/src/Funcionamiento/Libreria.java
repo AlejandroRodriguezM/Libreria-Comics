@@ -11,9 +11,10 @@ import java.util.List;
 
 public class Libreria extends Comic{
 	
-	private static List<Comic> listaComics = new ArrayList<>();
-	private static List<Comic> listaCompleta = new ArrayList<>();
-	private static List<Comic> filtroComics = new ArrayList<>();
+	public static List<Comic> listaComics = new ArrayList<>();
+	public static List<Comic> listaPosesion = new ArrayList<>();
+	public static List<Comic> listaCompleta = new ArrayList<>();
+	public static List<Comic> filtroComics = new ArrayList<>();
 
 	private static Connection conn = DBManager.conexion();
 	
@@ -23,9 +24,33 @@ public class Libreria extends Comic{
 	 * @return
 	 * @throws SQLException
 	 */
-	public Comic[] verTodo() throws SQLException {
+	public Comic[] verLibreria() throws SQLException {
 
 		String sentenciaSql = "SELECT * from comicsbbdd where estado = 'En posesion'";
+
+		Comic Comic[] = null;
+
+		ordenarBBDD();
+		reiniciarBBDD();
+
+		ResultSet rs = DBManager.getComic(sentenciaSql);
+
+		listaPosesion = listaDatos(rs);
+
+		Comic = new Comic[listaPosesion.size()];
+		Comic = listaPosesion.toArray(Comic);
+		return Comic;
+	}
+	
+	/**
+	 * Devuelve todos los datos de la base de datos.
+	 * 
+	 * @return
+	 * @throws SQLException
+	 */
+	public Comic[] verLibreriaCompleta() throws SQLException {
+
+		String sentenciaSql = "SELECT * from comicsbbdd";
 
 		Comic Comic[] = null;
 
@@ -155,7 +180,7 @@ public class Libreria extends Comic{
 			if (rs.getString("estado").equals("En posesion")) {
 				listaComics.add(
 						new Comic(this.ID, this.nombre, this.numero, this.variante, this.firma, this.editorial,
-								this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante));
+								this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante,""));
 			}
 		}
 		rs.close();

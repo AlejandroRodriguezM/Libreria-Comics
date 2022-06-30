@@ -470,7 +470,7 @@ public class ModificarDatosController {
 		String datosComic[] = camposComicActuales();
 
 		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
-				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10]);
+				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10],"");
 
 		tablaBBDD(libreriaParametro(comic));
 	}
@@ -493,7 +493,7 @@ public class ModificarDatosController {
 	 * @throws SQLException
 	 */
 	public List<Comic> libreriaCompleta() throws SQLException {
-		List<Comic> listComic = FXCollections.observableArrayList(libreria.verTodo());
+		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreria());
 
 		return listComic;
 	}

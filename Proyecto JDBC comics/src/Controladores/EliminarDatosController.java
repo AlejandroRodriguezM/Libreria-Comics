@@ -224,7 +224,7 @@ public class EliminarDatosController {
 		String datosComic[] = camposComics();
 
 		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
-				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10]);
+				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "");
 
 		tablaBBDD(libreriaParametro(comic));
 	}
@@ -247,7 +247,7 @@ public class EliminarDatosController {
 	 * @throws SQLException
 	 */
 	public List<Comic> libreriaCompleta() throws SQLException {
-		List<Comic> listComic = FXCollections.observableArrayList(libreria.verTodo());
+		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreria());
 
 		return listComic;
 	}
@@ -275,7 +275,7 @@ public class EliminarDatosController {
 		id = idComic.getText();
 
 		Comic comic = new Comic(id, nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom,
-				procedenciaCom, fechaCom, guionistaCom, dibujanteCom);
+				procedenciaCom, fechaCom, guionistaCom, dibujanteCom,"");
 
 		PreparedStatement stmt;
 

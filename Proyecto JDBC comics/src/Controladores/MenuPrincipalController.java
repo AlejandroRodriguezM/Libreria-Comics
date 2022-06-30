@@ -24,20 +24,17 @@ package Controladores;
  *  Twitter: @silverAlox
  */
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
 
 import Funcionamiento.Comic;
 import Funcionamiento.DBManager;
+import Funcionamiento.Excel;
 import Funcionamiento.Libreria;
 import Funcionamiento.NavegacionVentanas;
 import Funcionamiento.Utilidades;
@@ -178,35 +175,20 @@ public class MenuPrincipalController {
 	private NavegacionVentanas nav = new NavegacionVentanas();
 
 	private Libreria libreria = new Libreria();
+	
+	private Excel excel = new Excel();
 
-	private static Connection conn = DBManager.conexion();
+//	private static Connection conn = DBManager.conexion();
 
+	/**
+	 * 
+	 * @param event
+	 */
 	@FXML
 	void fraseRandom(ActionEvent event) {
 
 		prontFrases.setStyle("-fx-background-color: #D5D8D7");
 		prontFrases.setText(Comic.frasesComics());
-	}
-
-	/**
-	 * Limpia los campos de pantalla donde se escriben los datos.
-	 * 
-	 * @param event
-	 */
-	@FXML
-	void limpiarDatos(ActionEvent event) {
-
-		numeroID.setText("");
-		nombreComic.setText("");
-		numeroComic.setText("");
-		nombreVariante.setText("");
-		nombreFirma.setText("");
-		nombreEditorial.setText("");
-		nombreFormato.setText("");
-		procedencia.setText("");
-		anioPublicacion.setText("");
-		nombreDibujante.setText("");
-		nombreGuionista.setText("");
 	}
 
 	/**
@@ -322,6 +304,10 @@ public class MenuPrincipalController {
 		makeExcel(fichero);
 	}
 
+	/**
+	 * 
+	 * @param event
+	 */
 	@FXML
 	void importCSV(ActionEvent event) {
 
@@ -343,9 +329,30 @@ public class MenuPrincipalController {
 		makeSQL(fichero);
 
 	}
+	
+	/**
+	 * Limpia los campos de pantalla donde se escriben los datos.
+	 * 
+	 * @param event
+	 */
+	@FXML
+	void limpiarDatos(ActionEvent event) {
+
+		numeroID.setText("");
+		nombreComic.setText("");
+		numeroComic.setText("");
+		nombreVariante.setText("");
+		nombreFirma.setText("");
+		nombreEditorial.setText("");
+		nombreFormato.setText("");
+		procedencia.setText("");
+		anioPublicacion.setText("");
+		nombreDibujante.setText("");
+		nombreGuionista.setText("");
+	}
 
 	/////////////////////////////////
-	//// FUNCIONES////////////////////
+	////FUNCIONES////////////////////
 	/////////////////////////////////
 
 	/**
@@ -364,6 +371,10 @@ public class MenuPrincipalController {
 		guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
 		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
 	}
+	
+	/////////////////////////////////
+	////FUNCIONES CREACION FICHEROS//
+	/////////////////////////////////
 
 	/**
 	 * 
@@ -395,35 +406,17 @@ public class MenuPrincipalController {
 	 */
 	public void makeExcel(File fichero) {
 		try {
-			String query = "select * from Comicbbdd";
-			Statement statement = conn.createStatement();
-			ResultSet rs = statement.executeQuery(query);
-			BufferedWriter fw = new BufferedWriter(new FileWriter(fichero + ".xls"));
-			fw.write(
-					"ID,NomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante,estado");
-
-			while (rs.next()) {
-				String id = (rs.getString("ID"));
-				String nombre = (rs.getString("nomComic"));
-				String numero = (rs.getString("numComic"));
-				String variante = (rs.getString("nomVariante"));
-				String firma = (rs.getString("firma"));
-				String editorial = (rs.getString("nomEditorial"));
-				String formato = (rs.getString("formato"));
-				String procedencia = (rs.getString("procedencia"));
-				String fecha = (rs.getString("anioPubli"));
-				String guionista = (rs.getString("nomGuionista"));
-				String dibujante = (rs.getString("nomDibujante"));
-				String estado = (rs.getString("estado"));
-
-				String line = String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", id, nombre, numero, variante, firma,
-						editorial, formato, procedencia, fecha, guionista, dibujante, estado);
-
-				fw.newLine();
-				fw.write(line);
+			
+			if(excel.crearExcel(fichero))
+			{
+				prontInformacion.setStyle("-fx-background-color: #A0F52D");
+				prontInformacion.setText("Fichero excel exportado de forma correcta");
 			}
-			statement.close();
-			fw.close();
+			else
+			{
+				prontInformacion.setStyle("-fx-background-color: #F53636");
+				prontInformacion.setText("ERROR. Fichero excel cancelado.");
+			}
 
 		} catch (Exception e) {
 			System.out.println(e);
@@ -447,7 +440,7 @@ public class MenuPrincipalController {
 				prontInformacion.setStyle("-fx-background-color: #A0F52D");
 				prontInformacion.setText("Exportando datos. Porfavor espere.");
 
-				for (int i = 0; i < libreria.verTodo().length; i++) {
+				for (int i = 0; i < libreria.verLibreria().length; i++) {
 					guardarDatos.write(libreriaCompleta().get(i) + "\n");
 					System.out.println(libreriaCompleta().get(i) + "\n");
 				}
@@ -514,7 +507,7 @@ public class MenuPrincipalController {
 		String datosComic[] = camposComic();
 
 		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
-				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10]);
+				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10],"");
 
 		tablaBBDD(libreriaParametro(comic));
 	}
@@ -537,7 +530,7 @@ public class MenuPrincipalController {
 	 * @throws SQLException
 	 */
 	public List<Comic> libreriaCompleta() throws SQLException {
-		List<Comic> listComic = FXCollections.observableArrayList(libreria.verTodo());
+		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreria());
 
 		return listComic;
 	}
