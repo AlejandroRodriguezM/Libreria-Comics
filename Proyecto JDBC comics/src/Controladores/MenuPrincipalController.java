@@ -175,7 +175,7 @@ public class MenuPrincipalController {
 	private NavegacionVentanas nav = new NavegacionVentanas();
 
 	private Libreria libreria = new Libreria();
-	
+
 	private Excel excel = new Excel();
 
 //	private static Connection conn = DBManager.conexion();
@@ -286,6 +286,8 @@ public class MenuPrincipalController {
 	@FXML
 	void exportFichero(ActionEvent event) {
 		FileChooser fileChooser = new FileChooser();
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero bloc de notas", "*.txt"),
+				new FileChooser.ExtensionFilter("Fichero Word", "*.word"));
 		File fichero = fileChooser.showSaveDialog(null);
 
 		makeFile(fichero);
@@ -299,6 +301,8 @@ public class MenuPrincipalController {
 	void exportCSV(ActionEvent event) {
 
 		FileChooser fileChooser = new FileChooser();
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero Excel xlsx", "*.xlsx"),
+				new FileChooser.ExtensionFilter("Fichero Excel csv", "*.csv"));
 		File fichero = fileChooser.showSaveDialog(null);
 
 		makeExcel(fichero);
@@ -325,11 +329,12 @@ public class MenuPrincipalController {
 	void exportarSQL(ActionEvent event) {
 
 		FileChooser fileChooser = new FileChooser();
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero SQL", "*.sql"));
 		File fichero = fileChooser.showSaveDialog(null);
 		makeSQL(fichero);
 
 	}
-	
+
 	/**
 	 * Limpia los campos de pantalla donde se escriben los datos.
 	 * 
@@ -352,7 +357,7 @@ public class MenuPrincipalController {
 	}
 
 	/////////////////////////////////
-	////FUNCIONES////////////////////
+	//// FUNCIONES////////////////////
 	/////////////////////////////////
 
 	/**
@@ -371,9 +376,9 @@ public class MenuPrincipalController {
 		guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
 		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
 	}
-	
+
 	/////////////////////////////////
-	////FUNCIONES CREACION FICHEROS//
+	//// FUNCIONES CREACION FICHEROS//
 	/////////////////////////////////
 
 	/**
@@ -406,14 +411,11 @@ public class MenuPrincipalController {
 	 */
 	public void makeExcel(File fichero) {
 		try {
-			
-			if(excel.crearExcel(fichero))
-			{
+
+			if (excel.crearExcel(fichero)) {
 				prontInformacion.setStyle("-fx-background-color: #A0F52D");
 				prontInformacion.setText("Fichero excel exportado de forma correcta");
-			}
-			else
-			{
+			} else {
 				prontInformacion.setStyle("-fx-background-color: #F53636");
 				prontInformacion.setText("ERROR. Fichero excel cancelado.");
 			}
@@ -507,7 +509,7 @@ public class MenuPrincipalController {
 		String datosComic[] = camposComic();
 
 		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
-				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10],"");
+				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "");
 
 		tablaBBDD(libreriaParametro(comic));
 	}

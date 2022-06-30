@@ -165,7 +165,7 @@ public class Excel {
 		List<Comic> listaComics = Libreria.listaCompleta;
 
 		Workbook libro = new XSSFWorkbook();
-		Sheet hoja = libro.createSheet("Hoja 1");
+		Sheet hoja = libro.createSheet("Base de datos comics");
 
 		String[] encabezados = { "ID", "nomComic", "numComic", "nomVariante", "Firma", "nomEditor", "Formato",
 				"Procedencia", "anioPubli", "nomGuionista", "nomDibujante", "estado" };
