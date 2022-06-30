@@ -164,7 +164,7 @@ public class CrearBBDDController {
 
 	/**
 	 * Vuelve al menu inicial de conexion de la base de datos.
-	 * 
+	 *
 	 * @param event
 	 * @throws IOException
 	 */
@@ -180,7 +180,7 @@ public class CrearBBDDController {
 
 	/**
 	 * Permite salir completamente del programa.
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -194,7 +194,7 @@ public class CrearBBDDController {
 
 	/**
 	 * Al cerrar la ventana, carga la ventana del menu principal
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	public void closeWindows() throws IOException {

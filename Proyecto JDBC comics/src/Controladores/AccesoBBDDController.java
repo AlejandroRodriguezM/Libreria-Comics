@@ -15,13 +15,13 @@ import java.awt.Desktop;
  *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
  *  - Ver frases de personajes de comics
  *  - Opcion de escoger algo para leer de forma aleatoria.
- *  
+ *
  *  Esta clase permite acceder a la base de datos introduciendo los diferentes datos que nos pide.
- *  
+ *
  *  Version 2.3
- *  
+ *
  *  Por Alejandro Rodriguez
- *  
+ *
  *  Twitter: @silverAlox
  */
 
@@ -68,13 +68,13 @@ public class AccesoBBDDController {
 
 	@FXML
 	private Button botonCrearBBDD;
-	
+
 	@FXML
 	private Button numeroVersion;
 
 	@FXML
 	private Button botonVerDDBB;
-	
+
     @FXML
     private Button botonInformacion;
 
@@ -89,7 +89,7 @@ public class AccesoBBDDController {
 
 	@FXML
 	public TextField nombreBBDD;
-	
+
 	@FXML
 	public PasswordField pass;
 
@@ -104,7 +104,7 @@ public class AccesoBBDDController {
 
 	/**
 	 * Metodo de acceso a pagina web
-	 * 
+	 *
 	 * @param event
 	 * @throws IOException
 	 */
@@ -126,7 +126,7 @@ public class AccesoBBDDController {
 
 	/**
 	 * Metodo de acceso a pagina web
-	 * 
+	 *
 	 * @param event
 	 * @throws IOException
 	 */
@@ -147,7 +147,7 @@ public class AccesoBBDDController {
 
 	/**
 	 * Permite entrar dentro del menuPrincipal
-	 * 
+	 *
 	 * @param event
 	 * @throws InterruptedException
 	 * @throws IOException
@@ -192,10 +192,10 @@ public class AccesoBBDDController {
 			DatabaseMetaData meta = connection.getMetaData();
 			ResultSet res = meta.getCatalogs();
 
-			ArrayList<String> databases = new ArrayList<String>();
+			ArrayList<String> databases = new ArrayList<>();
 
 			while (res.next()) {
-				
+
 				if(!res.getString("TABLE_CAT").equals("information_schema") && !res.getString("TABLE_CAT").equals("mysql") && !res.getString("TABLE_CAT").equals("performance_schema"))
 				{
 					databases.add(res.getString("TABLE_CAT") + "\n");
@@ -212,19 +212,19 @@ public class AccesoBBDDController {
 			System.out.println(e);
 		}
 	}
-	
+
     @FXML
     void verInfo(ActionEvent event) {
 
     	prontInformacion.setStyle("-fx-background-color: #A0F52D");
 		prontInformacion.setText("Programa creado por Alejandro Rodriguez. Es un proyecto personal para probar conocimientos adquiridos durante el primer curso de DAW. Esta aplicacion solamente puede usarse con una tabla de una forma estructurada de una forma concreta. Esta aplicacion ha sido creada con la intencion de ser usada junto a una base de datos MySql. Si la aplicacion MySql workbench no se encuentra instalada. Esta aplicacion no funcionara. La pagina oficial donde se encuentra la aplicacion es: https://dev.mysql.com/downloads/workbench/");
-    	
+
     }
 
 
 	/**
 	 * Limpia los datos de los campos
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -234,10 +234,10 @@ public class AccesoBBDDController {
 		pass.setText("");
 		puertobbdd.setText("");
 	}
-	
+
 	/**
 	 * Envia los datos a la clase DBManager y permite conectarse a esta.
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -262,7 +262,7 @@ public class AccesoBBDDController {
 
 	/**
 	 * Cierra la bbdd
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -281,7 +281,7 @@ public class AccesoBBDDController {
 
 	/**
 	 * Funcion que permite mandar los datos a la clase DBManager
-	 * 
+	 *
 	 * @return
 	 */
 	public void envioDatosBBDD() { // Metodo que manda toda la informacion de los textField a la clase DBManager.
@@ -296,7 +296,7 @@ public class AccesoBBDDController {
 
 	/**
 	 * Permite salir completamente del programa.
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML

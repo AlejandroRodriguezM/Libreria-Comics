@@ -9,18 +9,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Libreria extends Comic{
-	
+public class Libreria extends Comic {
+
 	public static List<Comic> listaComics = new ArrayList<>();
 	public static List<Comic> listaPosesion = new ArrayList<>();
 	public static List<Comic> listaCompleta = new ArrayList<>();
 	public static List<Comic> filtroComics = new ArrayList<>();
 
 	private static Connection conn = DBManager.conexion();
-	
+
 	/**
 	 * Devuelve todos los datos de la base de datos.
-	 * 
+	 *
 	 * @return
 	 * @throws SQLException
 	 */
@@ -28,7 +28,7 @@ public class Libreria extends Comic{
 
 		String sentenciaSql = "SELECT * from comicsbbdd where estado = 'En posesion'";
 
-		Comic Comic[] = null;
+		Comic comic[] = null;
 
 		ordenarBBDD();
 		reiniciarBBDD();
@@ -37,14 +37,14 @@ public class Libreria extends Comic{
 
 		listaPosesion = listaDatos(rs);
 
-		Comic = new Comic[listaPosesion.size()];
-		Comic = listaPosesion.toArray(Comic);
-		return Comic;
+		comic = new Comic[listaPosesion.size()];
+		comic = listaPosesion.toArray(comic);
+		return comic;
 	}
-	
+
 	/**
 	 * Devuelve todos los datos de la base de datos.
-	 * 
+	 *
 	 * @return
 	 * @throws SQLException
 	 */
@@ -52,7 +52,7 @@ public class Libreria extends Comic{
 
 		String sentenciaSql = "SELECT * from comicsbbdd";
 
-		Comic Comic[] = null;
+		Comic comic[] = null;
 
 		ordenarBBDD();
 		reiniciarBBDD();
@@ -61,14 +61,14 @@ public class Libreria extends Comic{
 
 		listaCompleta = listaDatos(rs);
 
-		Comic = new Comic[listaCompleta.size()];
-		Comic = listaCompleta.toArray(Comic);
-		return Comic;
+		comic = new Comic[listaCompleta.size()];
+		comic = listaCompleta.toArray(comic);
+		return comic;
 	}
-	
+
 	/**
 	 * Devuelve datos de la base de datos segun el parametro.
-	 * 
+	 *
 	 * @param datos
 	 * @return
 	 * @throws SQLException
@@ -84,7 +84,7 @@ public class Libreria extends Comic{
 
 		String connector = " WHERE ";
 		StringBuilder sql = new StringBuilder();
-		sql.append("SELECT * FROM comicsbbdd");
+		sql.append("SELECT * FROM comicsbbdd where estado = 'En posesion'");
 
 		if (datos.ID.length() != 0 && ID != null) {
 			sql.append(connector).append("ID = ?");
@@ -138,7 +138,7 @@ public class Libreria extends Comic{
 		}
 		if (datos.dibujante.length() != 0) {
 			sql.append(connector).append("nomDibujante = ?");
-			connector = " AND ";
+//			connector = " AND ";
 			strFilter.add(datos.dibujante);
 		}
 		Collections.sort(strFilter);
@@ -146,13 +146,13 @@ public class Libreria extends Comic{
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql.toString());
 			for (int i = 0; i < strFilter.size();) {
-				Collections.sort(strFilter);
-				ps.setString(++i, strFilter.get(i - 1));
+				ps.setString(i, strFilter.get(i - 1));
 			}
 			ResultSet rs = ps.executeQuery();
 
+			rs.next();
 			filtroComics = listaDatos(rs);
-			
+
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
@@ -161,11 +161,9 @@ public class Libreria extends Comic{
 		comic = filtroComics.toArray(comic);
 		return comic;
 	}
-	
-	public List<Comic> listaDatos(ResultSet rs) throws SQLException
-	{
-		while (rs.next()) {
 
+	public List<Comic> listaDatos(ResultSet rs) throws SQLException {
+		do {
 			this.ID = rs.getString("ID");
 			this.nombre = rs.getString("nomComic");
 			this.numero = rs.getString("numComic");
@@ -177,13 +175,12 @@ public class Libreria extends Comic{
 			this.fecha = rs.getString("anioPubli");
 			this.guionista = rs.getString("nomGuionista");
 			this.dibujante = rs.getString("nomDibujante");
-			if (rs.getString("estado").equals("En posesion")) {
-				listaComics.add(
-						new Comic(this.ID, this.nombre, this.numero, this.variante, this.firma, this.editorial,
-								this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante,""));
-			}
-		}
-		rs.close();
+			this.estado = rs.getString("estado");
+
+			listaComics.add(new Comic(this.ID, this.nombre, this.numero, this.variante, this.firma, this.editorial,
+					this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante, this.estado));
+
+		} while (rs.next());
 		return listaComics;
 	}
 
@@ -192,11 +189,11 @@ public class Libreria extends Comic{
 	 */
 	public void reiniciarBBDD() {
 		filtroComics.clear();
-		listaCompleta.clear();
+		listaPosesion.clear();
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws SQLException
 	 */
 	public static void ordenarBBDD() throws SQLException {

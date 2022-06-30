@@ -27,8 +27,9 @@ public class Excel {
 	private String guionista;
 	private String dibujante;
 	private String estado;
-	
+
 	private Libreria libreria = new Libreria();
+	private Comic comic = new Comic();
 
 	public Excel(String id, String nombre, String numero, String variante, String firma, String editorial,
 			String formato, String procedencia, String fecha, String guionista, String dibujante, String estado) {
@@ -161,8 +162,8 @@ public class Excel {
 
 	public boolean crearExcel(File fichero) throws SQLException {
 
-		libreria.verLibreriaCompleta();
-		List<Comic> listaComics = Libreria.listaCompleta;
+		libreria.filtadroBBDD(comic);
+		List<Comic> listaComics = Libreria.filtroComics;
 
 		Workbook libro = new XSSFWorkbook();
 		Sheet hoja = libro.createSheet("Base de datos comics");
@@ -179,9 +180,8 @@ public class Excel {
 		}
 
 		indiceFila++;
-		for (int i = 0; i < listaComics.size(); i++) {
+		for (Comic comic : listaComics) {
 			fila = hoja.createRow(indiceFila);
-			Comic comic = listaComics.get(i);
 			fila.createCell(0).setCellValue(comic.getID());
 			fila.createCell(1).setCellValue(comic.getNombre());
 			fila.createCell(2).setCellValue(comic.getNumero());
@@ -203,7 +203,7 @@ public class Excel {
 		String ubicacion = directorioActual.getAbsolutePath();
 		String ubicacionArchivoSalida = ubicacion.substring(0, ubicacion.length() - 1);
 		FileOutputStream outputStream;
-		
+
 		try {
 			outputStream = new FileOutputStream(ubicacionArchivoSalida);
 			libro.write(outputStream);

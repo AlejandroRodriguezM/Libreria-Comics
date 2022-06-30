@@ -13,13 +13,13 @@ package Controladores;
  *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
  *  - Ver frases de personajes de comics
  *  - Opcion de escoger algo para leer de forma aleatoria
- *  
+ *
  *  Esta clase permite añadir comics en la base de datos.
- *  
+ *
  *  Version 2.3
- *  
+ *
  *  Por Alejandro Rodriguez
- *  
+ *
  *  Twitter: @silverAlox
  */
 
@@ -89,7 +89,7 @@ public class IntroducirDatosController {
 	private NavegacionVentanas nav = new NavegacionVentanas();
 
 	/**
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -109,17 +109,17 @@ public class IntroducirDatosController {
 	/**
 	 * Añade datos a la base de datos segun los parametros introducidos en los
 	 * textField
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
 	public void agregarDatos(ActionEvent event) {
-		
+
 		IntroducirDatos();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public String[] camposComics() {
@@ -147,18 +147,18 @@ public class IntroducirDatosController {
 
 		return campos;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public void IntroducirDatos()
 	{
 		DBManager.loadDriver();
-		
+
 		String sentenciaSQL = "insert into comicsbbdd(nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante) values (?,?,?,?,?,?,?,?,?,?)";
 
 		String datos[] = camposComics();
-		
+
 		try {
 			PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
 			statement.setString(1, datos[0]);
@@ -194,7 +194,7 @@ public class IntroducirDatosController {
 
 	/**
 	 * Permite volver al menu de conexion a la base de datos.
-	 * 
+	 *
 	 * @param event
 	 * @throws IOException
 	 */
@@ -209,7 +209,7 @@ public class IntroducirDatosController {
 
 	/**
 	 * Permite salir completamente del programa.
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -223,7 +223,7 @@ public class IntroducirDatosController {
 
 	/**
 	 * Al cerrar la ventana, se cargara la ventana de verBBDD
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	public void closeWindows() throws IOException {

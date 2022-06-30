@@ -13,13 +13,13 @@ package Controladores;
  *  - Eliminar Comic de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
  *  - Ver frases de personajes de Comic
  *  - Opcion de escoger algo para leer de forma aleatoria.
- *  
+ *
  *  Esta clase permite cambiar el estado de los Comic para que no se vean en el MenuPrincipal
- *  
+ *
  *  Version 2.3
- *  
+ *
  *  Por Alejandro Rodriguez
- *  
+ *
  *  Twitter: @silverAlox
  */
 
@@ -147,7 +147,7 @@ public class EliminarDatosController {
 
 
 	/**
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -158,7 +158,7 @@ public class EliminarDatosController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param event
 	 * @throws SQLException
 	 */
@@ -171,7 +171,7 @@ public class EliminarDatosController {
 
 	/**
 	 * Muestra la bbdd segun los parametros introducidos en los TextField
-	 * 
+	 *
 	 * @param event
 	 * @throws SQLException
 	 */
@@ -184,7 +184,7 @@ public class EliminarDatosController {
 
 	/**
 	 * Muestra toda la base de datos.
-	 * 
+	 *
 	 * @param event
 	 * @throws SQLException
 	 */
@@ -217,7 +217,7 @@ public class EliminarDatosController {
 	//////////////////////////
 
 	/**
-	 * 
+	 *
 	 * @throws SQLException
 	 */
 	public void listaPorParametro() throws SQLException {
@@ -230,7 +230,7 @@ public class EliminarDatosController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param comic
 	 * @return
 	 * @throws SQLException
@@ -242,7 +242,7 @@ public class EliminarDatosController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 * @throws SQLException
 	 */
@@ -253,7 +253,7 @@ public class EliminarDatosController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param listaComic
 	 */
 	@SuppressWarnings("unchecked")
@@ -264,7 +264,7 @@ public class EliminarDatosController {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public void deleteData() {
 		String id, nombreCom = "", numeroCom = "", varianteCom = "", firmaCom = "", editorialCom = "", formatoCom = "",
@@ -365,7 +365,7 @@ public class EliminarDatosController {
 
 	/**
 	 * Permite salir completamente del programa.
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -379,7 +379,7 @@ public class EliminarDatosController {
 
 	/**
 	 * Al cerrar la ventana, se cargara la ventana de verBBDD
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	public void closeWindows() throws IOException { // Metodo que permite cerrar el programa a la fuerza.

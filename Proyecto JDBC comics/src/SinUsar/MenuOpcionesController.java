@@ -1,12 +1,11 @@
 package SinUsar;
 
 import java.io.IOException;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import Controladores.IntroducirDatosController;
 import Controladores.AccesoBBDDController;
+import Controladores.IntroducirDatosController;
 import Controladores.MenuPrincipalController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -30,10 +29,10 @@ public class MenuOpcionesController{
 
     @FXML
     private Button botonVerBaseDatos;
-    
+
     @FXML
     protected Button botonVolver;
-    
+
     @FXML
     protected Button botonSalir;
 
@@ -80,7 +79,7 @@ public class MenuOpcionesController{
         } catch (IOException ex) {
             Logger.getLogger(AccesoBBDDController.class.getName()).log(Level.SEVERE, null, ex);
         }
-    	
+
     }
 
     @FXML
@@ -124,7 +123,7 @@ public class MenuOpcionesController{
 
     @FXML
     public void volverInicio(ActionEvent event) throws IOException {
-    	
+
 		 // Cargo la vista
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuPrincipal.fxml"));
 
@@ -148,25 +147,25 @@ public class MenuOpcionesController{
         // Ciero la ventana donde estoy
         Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
         myStage.close();
-        
+
         Funcionamiento.DBManager.close();
     }
-    
+
     @FXML
     public void salirPrograma(ActionEvent event) {
-    	
+
     	Alert alert = new Alert(AlertType.CONFIRMATION);
     	alert.setTitle("Saliendo");
     	alert.setHeaderText("Estas apunto de salir.");
     	alert.setContentText("¿Estas seguro que quieres salir?");
-    	
+
     	if(alert.showAndWait().get() == ButtonType.OK)
     	{
         	Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
             myStage.close();
     	}
     }
-    
+
     public void closeWindows() {
 
         try {

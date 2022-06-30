@@ -14,11 +14,11 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 
 public class VentanaModificarController {
@@ -74,9 +74,9 @@ public class VentanaModificarController {
 	NavegacionVentanas nav = new NavegacionVentanas();
 
 	ModificarDatosController datos = new ModificarDatosController();
-	
+
 	Comic comic = new Comic();
-	
+
 	Libreria libreria = new Libreria();
 
 	@FXML
@@ -93,11 +93,11 @@ public class VentanaModificarController {
 //				guionistaCom = "", dibujanteCom = "", sentenciaSQL;
 
 //		id = datos.devolverID();
-		
+
 		String sentenciaSQL = "UPDATE comicsbbdd set nomComic = ?,numComic = ?,nomVariante = ?,"
 				+ "Firma = ?,nomEditorial = ?,formato = ?,Procedencia = ?,anioPubli = ?"
 				+ "nomGuionista = ?,nomDibujante = ? where ID = " + id;
-		
+
 		List<Comic> listComics = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
 
 		pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
@@ -133,7 +133,7 @@ public class VentanaModificarController {
 			System.out.println(ex);
 		}
 	}
-	
+
 	public static String idComic(String id)
 	{
 		return id;
@@ -141,7 +141,7 @@ public class VentanaModificarController {
 
 	/**
 	 * Permite salir completamente del programa.
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -160,7 +160,7 @@ public class VentanaModificarController {
 
 	/**
 	 * Permite volver al menu de conexion a la base de datos.
-	 * 
+	 *
 	 * @param event
 	 * @throws IOException
 	 */

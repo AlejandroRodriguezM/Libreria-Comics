@@ -13,14 +13,14 @@ package Controladores;
  *  - Eliminar Comic de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
  *  - Ver frases de personajes de Comic
  *  - Opcion de escoger algo para leer de forma aleatoria
- *  
+ *
  *  Esta clase permite controlar todos los sub menus del programa, ademas permite exportar datos en diferentes formatos y hacer una base de datos.
  *  Tambien puede mostrar diferentes frases de personajes de Comic.
- *  
+ *
  *  Version 2.3
- *  
+ *
  *  Por Alejandro Rodriguez
- *  
+ *
  *  Twitter: @silverAlox
  */
 
@@ -178,10 +178,10 @@ public class MenuPrincipalController {
 
 	private Excel excel = new Excel();
 
-//	private static Connection conn = DBManager.conexion();
+	//	private static Connection conn = DBManager.conexion();
 
 	/**
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -193,7 +193,7 @@ public class MenuPrincipalController {
 
 	/**
 	 * Muestra la bbdd segun los parametros introducidos en los TextField
-	 * 
+	 *
 	 * @param event
 	 * @throws SQLException
 	 */
@@ -206,14 +206,14 @@ public class MenuPrincipalController {
 
 	/**
 	 * Muestra toda la base de datos.
-	 * 
+	 *
 	 * @param event
 	 * @throws SQLException
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) throws SQLException {
 		nombreColumnas();
-		tablaBBDD(libreriaCompleta());
+		tablaBBDD(libreriaPosesion());
 	}
 
 	/////////////////////////////////
@@ -222,7 +222,7 @@ public class MenuPrincipalController {
 
 	/**
 	 * Permite abrir y cargar la ventana para añadir datos.
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -235,7 +235,7 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -248,7 +248,7 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -261,7 +261,7 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -279,22 +279,21 @@ public class MenuPrincipalController {
 
 	/**
 	 * Guarda los datos de la base de datos en un fichero.
-	 * 
+	 *
 	 * @param event
 	 * @throws SQLException
 	 */
 	@FXML
 	void exportFichero(ActionEvent event) {
 		FileChooser fileChooser = new FileChooser();
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero bloc de notas", "*.txt"),
-				new FileChooser.ExtensionFilter("Fichero Word", "*.word"));
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero bloc de notas", "*.txt"));
 		File fichero = fileChooser.showSaveDialog(null);
 
 		makeFile(fichero);
 	}
 
 	/**
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -309,7 +308,7 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -322,7 +321,7 @@ public class MenuPrincipalController {
 
 	// FUNCIONA SOLO EN LINUX
 	/**
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -337,7 +336,7 @@ public class MenuPrincipalController {
 
 	/**
 	 * Limpia los campos de pantalla donde se escriben los datos.
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -361,7 +360,7 @@ public class MenuPrincipalController {
 	/////////////////////////////////
 
 	/**
-	 * 
+	 *
 	 */
 	private void nombreColumnas() {
 		ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
@@ -382,7 +381,7 @@ public class MenuPrincipalController {
 	/////////////////////////////////
 
 	/**
-	 * 
+	 *
 	 * @param fichero
 	 */
 	public void makeSQL(File fichero) {
@@ -406,7 +405,7 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param fichero
 	 */
 	public void makeExcel(File fichero) {
@@ -427,22 +426,25 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param fichero
 	 */
 	public void makeFile(File fichero) {
+
 		try {
 			if (fichero != null) {
 				fichero.createNewFile();
 
 				nombreColumnas();
-				tablaBBDD(libreriaCompleta());
+				tablaBBDD(libreriaPosesion());
 
-				FileWriter guardarDatos = new FileWriter(fichero + ".txt");
+				FileWriter guardarDatos = new FileWriter(fichero);
 				prontInformacion.setStyle("-fx-background-color: #A0F52D");
 				prontInformacion.setText("Exportando datos. Porfavor espere.");
 
-				for (int i = 0; i < libreria.verLibreria().length; i++) {
+				System.out.println("PRUEBA: " + libreria.verLibreriaCompleta().length);
+
+				for (int i = 0; i < libreria.verLibreriaCompleta().length; i++) {
 					guardarDatos.write(libreriaCompleta().get(i) + "\n");
 					System.out.println(libreriaCompleta().get(i) + "\n");
 				}
@@ -461,7 +463,7 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param fichero
 	 */
 	public void backupLinux(File fichero) {
@@ -480,7 +482,7 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param fichero
 	 */
 	public void backupWindows(File fichero) {
@@ -502,7 +504,7 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws SQLException
 	 */
 	public void listaPorParametro() throws SQLException {
@@ -515,7 +517,7 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param comic
 	 * @return
 	 * @throws SQLException
@@ -527,18 +529,29 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 * @throws SQLException
 	 */
-	public List<Comic> libreriaCompleta() throws SQLException {
+	public List<Comic> libreriaPosesion() throws SQLException {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreria());
 
 		return listComic;
 	}
 
 	/**
-	 * 
+	 *
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<Comic> libreriaCompleta() throws SQLException {
+		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaCompleta());
+
+		return listComic;
+	}
+
+	/**
+	 *
 	 * @param listaComic
 	 */
 	@SuppressWarnings("unchecked")
@@ -549,7 +562,7 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public String[] camposComic() {
@@ -586,7 +599,7 @@ public class MenuPrincipalController {
 
 	/**
 	 * Vuelve al menu inicial de conexion de la base de datos.
-	 * 
+	 *
 	 * @param event
 	 * @throws IOException
 	 */
@@ -601,7 +614,7 @@ public class MenuPrincipalController {
 
 	/**
 	 * Permite salir completamente del programa.
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -615,7 +628,7 @@ public class MenuPrincipalController {
 
 	/**
 	 * Al cerrar la ventana, carga la ventana del menu principal
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	public void closeWindows() throws IOException {

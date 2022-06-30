@@ -13,13 +13,13 @@ package Controladores;
  *  - Eliminar Comic de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
  *  - Ver frases de personajes de Comic
  *  - Opcion de escoger algo para leer de forma aleatoria
- *  
+ *
  *  Esta clase te permite ver un comic aleatorio de la base de datos.
- *  
+ *
  *  Version 2.3
- *  
+ *
  *  Por Alejandro Rodriguez
- *  
+ *
  *  Twitter: @silverAlox
  */
 
@@ -50,12 +50,12 @@ public class RecomendacionesComic {
 	private TextArea printComicRecomendado;
 
 	private NavegacionVentanas nav = new NavegacionVentanas();
-	
+
 	private Libreria libreria = new Libreria();
 
 
 	/**
-	 * 
+	 *
 	 * @param event
 	 * @throws SQLException
 	 */
@@ -64,9 +64,9 @@ public class RecomendacionesComic {
 
 		printComicRecomendado.setText(generarLectura());
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 * @throws SQLException
 	 */
@@ -81,13 +81,13 @@ public class RecomendacionesComic {
 		n = (int) (Math.random() * r.nextInt(libreria.verLibreria().length));
 
 		limpiarPront();
-		
+
 		return libreria.verLibreria()[n].toString();
-		
+
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public void limpiarPront()
 	{
@@ -95,7 +95,7 @@ public class RecomendacionesComic {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -109,7 +109,7 @@ public class RecomendacionesComic {
 
 	/**
 	 * Vuelve al menu inicial de conexion de la base de datos.
-	 * 
+	 *
 	 * @param event
 	 * @throws IOException
 	 */
@@ -124,7 +124,7 @@ public class RecomendacionesComic {
 
 	/**
 	 * Al cerrar la ventana, se cargara la ventana de verBBDD
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	public void closeWindows() throws IOException {

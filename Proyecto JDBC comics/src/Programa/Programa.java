@@ -13,13 +13,13 @@ package Programa;
  *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
  *  - Ver frases de personajes de comics
  *  - Opcion de escoger algo para leer de forma aleatoria.
- *  
+ *
  *  Esta clase es el programa principal donde se arranca el programa.
- *  
+ *
  *  Version 2.3
- *  
+ *
  *  Por Alejandro Rodriguez
- *  
+ *
  *  Twitter: @silverAlox
  */
 
@@ -38,6 +38,7 @@ public class Programa extends Application {
 	/**
 	 * Carga la ventana principal y arranca el programa.
 	 */
+	@Override
 	public void start(Stage primaryStage) throws IOException, SQLException {
 		try {
 			Parent root = FXMLLoader.load(getClass().getResource("/ventanas/AccesoBBDD.fxml"));

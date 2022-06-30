@@ -13,13 +13,13 @@ package Controladores;
  *  - Eliminar Comic de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
  *  - Ver frases de personajes de Comic
  *  - Opcion de escoger algo para leer de forma aleatoria.
- *  
+ *
  *  Esta clase modifica los datos de un comic en concreto
- *  
+ *
  *  Version 2.3
- *  
+ *
  *  Por Alejandro Rodriguez
- *  
+ *
  *  Twitter: @silverAlox
  */
 
@@ -173,7 +173,7 @@ public class ModificarDatosController {
 	private TableColumn<Comic, String> nombre;
 
 	private NavegacionVentanas nav = new NavegacionVentanas();
-	
+
 	private Libreria libreria = new Libreria();
 
 	private Comic comic = new Comic();
@@ -252,7 +252,7 @@ public class ModificarDatosController {
 	/////////////////////////////////
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public String[] camposComicActuales() {
@@ -284,7 +284,7 @@ public class ModificarDatosController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public String[] camposComicModificar() {
@@ -317,7 +317,7 @@ public class ModificarDatosController {
 
 	/**
 	 * @throws SQLException
-	 * 
+	 *
 	 */
 	public void modificacionDatos() throws SQLException {
 
@@ -436,7 +436,7 @@ public class ModificarDatosController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param event
 	 * @throws SQLException
 	 */
@@ -449,7 +449,7 @@ public class ModificarDatosController {
 
 	/**
 	 * Muestra toda la base de datos.
-	 * 
+	 *
 	 * @param event
 	 * @throws SQLException
 	 */
@@ -462,7 +462,7 @@ public class ModificarDatosController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 * @throws SQLException
 	 */
@@ -476,7 +476,7 @@ public class ModificarDatosController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param comic
 	 * @return
 	 * @throws SQLException
@@ -488,7 +488,7 @@ public class ModificarDatosController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 * @throws SQLException
 	 */
@@ -499,7 +499,7 @@ public class ModificarDatosController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param listaComic
 	 */
 	@SuppressWarnings("unchecked")
@@ -510,7 +510,7 @@ public class ModificarDatosController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean alertaModificacion() {
@@ -565,7 +565,7 @@ public class ModificarDatosController {
 
 	/**
 	 * Permite salir completamente del programa.
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -579,7 +579,7 @@ public class ModificarDatosController {
 
 	/**
 	 * Al cerrar la ventana, se cargara la ventana de verBBDD
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	public void closeWindows() throws IOException {

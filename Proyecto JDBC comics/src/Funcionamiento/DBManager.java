@@ -13,13 +13,13 @@ package Funcionamiento;
  *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
  *  - Ver frases de personajes de comics
  *  - Opcion de escoger algo para leer de forma aleatoria.
- *  
+ *
  *  Esta clase permite la conexion a la base de datos, en este caso, MySql
- *  
+ *
  *  Version 2.3
- *  
+ *
  *  Por Alejandro Rodriguez
- *  
+ *
  *  Twitter: @silverAlox
  */
 
@@ -39,7 +39,7 @@ public class DBManager {
 	private static Connection conn = null;
 
 	public static String DB_USER = "";
-	public static String DB_PASS = ""; 
+	public static String DB_PASS = "";
 	public static String DB_PORT = "";
 	public static String DB_NAME = "";
 	public static String DB_HOST = "localhost";
@@ -65,7 +65,7 @@ public class DBManager {
 	 * @return true si la conexión existe y es válida, false en caso contrario
 	 */
 	public static boolean isConnected() {
-		
+
 		try {
 			if (conn != null && conn.isValid(0)) {
 				return true;
@@ -82,7 +82,7 @@ public class DBManager {
 	/**
 	 * Devuelve un objeto Connection en caso de que la conexion sea correcta, datos
 	 * introducidos por parametro
-	 * 
+	 *
 	 * @param numeroPuerto
 	 * @param nombreBBDD
 	 * @param nombreUsuario
@@ -97,9 +97,31 @@ public class DBManager {
 		DB_PASS = datos[3];
 	}
 
+//	/**
+//	 * Devuelve un objeto Connection en caso de que la conexion sea correcta.
+//	 *
+//	 * @param numeroPuerto
+//	 * @param nombreBBDD
+//	 * @param nombreUsuario
+//	 * @param contraBBDD
+//	 * @return
+//	 */
+//	public static Connection conexion() {
+//
+//		String DB_HOST = "localhost";
+//		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
+//		try {
+//			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+//			return conn;
+//		} catch (SQLException ex) {
+//			System.out.println(ex);
+//			return null;
+//		}
+//	}
+
 	/**
 	 * Devuelve un objeto Connection en caso de que la conexion sea correcta.
-	 * 
+	 *
 	 * @param numeroPuerto
 	 * @param nombreBBDD
 	 * @param nombreUsuario
@@ -109,9 +131,9 @@ public class DBManager {
 	public static Connection conexion() {
 
 		String DB_HOST = "localhost";
-		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
+		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + 3306 + "/" + "comics" + "?serverTimezone=UTC";
 		try {
-			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+			conn = DriverManager.getConnection(DB_URL, "root", "1234");
 			return conn;
 		} catch (SQLException ex) {
 			System.out.println(ex);
@@ -134,7 +156,7 @@ public class DBManager {
 
 	/**
 	 * Devuelve un objeto ResultSet para realizar una sentencia en la bbdd
-	 * 
+	 *
 	 * @param sentenciaSQL
 	 * @return
 	 * @throws SQLException

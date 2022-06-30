@@ -13,13 +13,13 @@ package Funcionamiento;
  *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
  *  - Ver frases de personajes de comics
  *  - Opcion de escoger algo para leer de forma aleatoria.
- *  
+ *
  *  Esta clase permite navegar entre las diferentes ventanas de la base de datos.
- *  
+ *
  *  Version 2.3
- *  
+ *
  *  Por Alejandro Rodriguez
- *  
+ *
  *  Twitter: @silverAlox
  */
 
@@ -41,8 +41,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.image.Image;
 import javafx.scene.control.ButtonType;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class NavegacionVentanas {
@@ -83,7 +83,7 @@ public class NavegacionVentanas {
 
 	/**
 	 * Metodo que carga y muestra de la base de datos.
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	public void verMenuPrincipal() throws IOException {
@@ -167,7 +167,7 @@ public class NavegacionVentanas {
 	}
 
 	/*
-	 * 
+	 *
 	 */
 	public void verModificarDatos() {
 
@@ -210,7 +210,7 @@ public class NavegacionVentanas {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public void verRecomendacion() {
 
@@ -253,7 +253,7 @@ public class NavegacionVentanas {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public void verEliminarDatos() {
 
@@ -296,7 +296,7 @@ public class NavegacionVentanas {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public void verCrearBBDD() {
 
@@ -340,7 +340,7 @@ public class NavegacionVentanas {
 
 	/**
 	 * Permite salir completamente del programa.
-	 * 
+	 *
 	 * @param event
 	 */
 	public boolean salirPrograma(ActionEvent event) {
@@ -360,7 +360,7 @@ public class NavegacionVentanas {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean alertaEliminar() {
@@ -378,7 +378,7 @@ public class NavegacionVentanas {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean alertaModificar() {
