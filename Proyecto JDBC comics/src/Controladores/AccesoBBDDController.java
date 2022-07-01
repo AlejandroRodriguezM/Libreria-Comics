@@ -202,7 +202,6 @@ public class AccesoBBDDController {
 
 			nav.verMenuPrincipal(); // Llamada a metodo de la clase NavegacionVentanas. Permite cargar y mostrar el
 			// menu principal
-			envioDatosBBDD();
 
 			Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
 			myStage.close();

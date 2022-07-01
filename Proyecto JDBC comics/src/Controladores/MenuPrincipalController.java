@@ -31,9 +31,9 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
+import Funcionamiento.BaseDeDatos;
 import Funcionamiento.Comic;
 import Funcionamiento.DBManager;
-import Funcionamiento.Excel;
 import Funcionamiento.Libreria;
 import Funcionamiento.NavegacionVentanas;
 import Funcionamiento.Utilidades;
@@ -92,7 +92,7 @@ public class MenuPrincipalController {
 
 	@FXML
 	private Button botonImportarCSV;
-	
+
 	@FXML
 	private Button botonGuardarCSV;
 
@@ -175,7 +175,11 @@ public class MenuPrincipalController {
 
 	private Libreria libreria = new Libreria();
 
-	private Excel excel = new Excel();
+	private BaseDeDatos db= new BaseDeDatos();
+
+//	private DBManager dbmanager = new DBManager();
+
+//	private Connection conn =dbmanager.conexion();
 
 	/**
 	 *
@@ -196,7 +200,7 @@ public class MenuPrincipalController {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
-		
+
 		nombreColumnas();
 		listaPorParametro();
 
@@ -308,12 +312,17 @@ public class MenuPrincipalController {
 	/**
 	 *
 	 * @param event
+	 * @throws SQLException 
+	 * @throws IOException 
 	 */
 	@FXML
 	void importCSV(ActionEvent event) {
 
-		prontInformacion.setStyle("-fx-background-color: #A0F52D");
-		prontInformacion.setText("Funcion no implementada.");
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero CSV", "*.csv"));
+		File fichero = fileChooser.showOpenDialog(null);
+
+		importCSV(fichero);
 
 	}
 
@@ -410,16 +419,44 @@ public class MenuPrincipalController {
 		try {
 
 			if (fichero != null) {
-				if (excel.crearExcel(fichero)) {
+				if (db.crearExcel(fichero)) {
 					prontInformacion.setStyle("-fx-background-color: #A0F52D");
 					prontInformacion.setText("Fichero excel exportado de forma correcta");
 				} else {
 					prontInformacion.setStyle("-fx-background-color: #F53636");
-					prontInformacion.setText("ERROR. Fichero excel cancelado.");
+					prontInformacion.setText("ERROR. No se ha podido exportar correctamente.");
 				}
 			}
+			else {
+				prontInformacion.setStyle("-fx-background-color: #F53636");
+				prontInformacion.setText("ERROR. Se ha cancelado la exportacion.");
+			}
 		} catch (Exception e) {
-			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 *
+	 * @param fichero
+	 */
+	public void importCSV(File fichero) {
+		try {
+
+			if (fichero != null) {
+				if (db.importarCVD(fichero)) {
+					prontInformacion.setStyle("-fx-background-color: #A0F52D");
+					prontInformacion.setText("Fichero CSV importado de forma correcta");
+				} else {
+					prontInformacion.setStyle("-fx-background-color: #F53636");
+					prontInformacion.setText("ERROR. No se ha podido importar correctamente.");
+				}
+			}
+			else {
+				prontInformacion.setStyle("-fx-background-color: #F53636");
+				prontInformacion.setText("ERROR. Se ha cancelado la importacion.");
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

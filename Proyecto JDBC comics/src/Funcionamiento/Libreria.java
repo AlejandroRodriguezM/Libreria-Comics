@@ -49,7 +49,7 @@ public class Libreria extends Comic {
 	 * @return
 	 * @throws SQLException
 	 */
-	public Comic[] verLibreria() throws SQLException {
+	public Comic[] verLibreria() {
 
 		String sentenciaSql = "SELECT * from comicsbbdd where estado = 'En posesion'";
 
@@ -58,12 +58,20 @@ public class Libreria extends Comic {
 		ordenarBBDD();
 		reiniciarBBDD();
 
-		ResultSet rs = DBManager.getComic(sentenciaSql);
+		ResultSet rs;
 
-		listaPosesion = listaDatos(rs);
+		try {
+			rs = DBManager.getComic(sentenciaSql);
+			listaPosesion = listaDatos(rs);
 
-		comic = new Comic[listaPosesion.size()];
-		comic = listaPosesion.toArray(comic);
+			comic = new Comic[listaPosesion.size()];
+			comic = listaPosesion.toArray(comic);
+
+		} catch (SQLException e) {
+			System.out.println("ERROR");		
+		}
+
+
 		return comic;
 	}
 
@@ -73,7 +81,7 @@ public class Libreria extends Comic {
 	 * @return
 	 * @throws SQLException
 	 */
-	public Comic[] verLibreriaCompleta() throws SQLException {
+	public Comic[] verLibreriaCompleta() {
 
 		String sentenciaSql = "SELECT * from comicsbbdd";
 
@@ -82,12 +90,16 @@ public class Libreria extends Comic {
 		ordenarBBDD();
 		reiniciarBBDD();
 
-		ResultSet rs = DBManager.getComic(sentenciaSql);
+		ResultSet rs;
+		try {
+			rs = DBManager.getComic(sentenciaSql);
+			listaCompleta = listaDatos(rs);
+			comic = new Comic[listaCompleta.size()];
+			comic = listaCompleta.toArray(comic);
+		} catch (SQLException e) {
+			System.out.println("ERROR");		
 
-		listaCompleta = listaDatos(rs);
-
-		comic = new Comic[listaCompleta.size()];
-		comic = listaCompleta.toArray(comic);
+		}
 		return comic;
 	}
 
@@ -163,7 +175,7 @@ public class Libreria extends Comic {
 		}
 		if (datos.dibujante.length() != 0) {
 			sql.append(connector).append("nomDibujante = ?");
-//			connector = " AND ";
+			//			connector = " AND ";
 			strFilter.add(datos.dibujante);
 		}
 		Collections.sort(strFilter);
@@ -188,7 +200,9 @@ public class Libreria extends Comic {
 	}
 
 	public List<Comic> listaDatos(ResultSet rs) throws SQLException {
+
 		do {
+
 			this.ID = rs.getString("ID");
 			this.nombre = rs.getString("nomComic");
 			this.numero = rs.getString("numComic");
@@ -221,10 +235,16 @@ public class Libreria extends Comic {
 	 *
 	 * @throws SQLException
 	 */
-	public void ordenarBBDD() throws SQLException {
+	public void ordenarBBDD()  {
 		String sql = "ALTER TABLE comicsbbdd ORDER BY nomComic;";
-		Statement st = conn.createStatement();
-		st.execute(sql);
+		Statement st;
+		try {
+			st = conn.createStatement();
+			st.execute(sql);
+		} catch (SQLException e) {
+			System.out.println("ERROR");
+		}
+
 	}
 
 }

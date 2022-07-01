@@ -267,15 +267,12 @@ public class EliminarDatosController {
 	 *
 	 */
 	public void deleteData() {
-		String id, nombreCom = "", numeroCom = "", varianteCom = "", firmaCom = "", editorialCom = "", formatoCom = "",
-				procedenciaCom = "", fechaCom = "", guionistaCom = "", dibujanteCom = "", sentenciaSQL;
+		String id, sentenciaSQL;
 
 		sentenciaSQL = "UPDATE Comicsbbdd set estado = 'Vendido' where ID = ?";
 
 		id = idComic.getText();
 
-		Comic comic = new Comic(id, nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom,
-				procedenciaCom, fechaCom, guionistaCom, dibujanteCom,"");
 
 		PreparedStatement stmt;
 
@@ -283,7 +280,7 @@ public class EliminarDatosController {
 			if (nav.alertaEliminar()) { // Llamada a metodo que permite lanzar una alerta. En caso de aceptarlo
 				// permitira lo siguiente.
 
-				List<Comic> listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic)); // Lista que
+				List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaCompleta()); // Lista que
 				// contiene toda
 				// los Comic de
 				// la base de

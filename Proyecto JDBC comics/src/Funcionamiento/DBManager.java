@@ -68,6 +68,7 @@ public class DBManager {
 
 		try {
 			if (conn != null && conn.isValid(0)) {
+				
 				return true;
 			}
 		} catch (SQLException ex) {
@@ -129,11 +130,9 @@ public class DBManager {
 	public Connection conexion() {
 
 		String DB_HOST = "localhost";
-		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + 3306 + "/" + "comics" + "?serverTimezone=UTC";
+		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + 3306 + "/" + "prueba1" + "?serverTimezone=UTC";
 		try {
 			conn = DriverManager.getConnection(DB_URL, "root", "1234");
-			
-			System.out.println(isConnected());
 			
 			return conn;
 		} catch (SQLException ex) {
