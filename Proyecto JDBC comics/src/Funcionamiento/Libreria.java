@@ -105,7 +105,7 @@ public class Libreria extends Comic {
 
 	/**
 	 * Devuelve datos de la base de datos segun el parametro.
-	 *
+	 * 
 	 * @param datos
 	 * @return
 	 * @throws SQLException
@@ -119,7 +119,7 @@ public class Libreria extends Comic {
 
 		ArrayList<String> strFilter = new ArrayList<>();
 
-		String connector = " WHERE ";
+		String connector = " AND ";
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT * FROM comicsbbdd where estado = 'En posesion'");
 
@@ -175,23 +175,21 @@ public class Libreria extends Comic {
 		}
 		if (datos.dibujante.length() != 0) {
 			sql.append(connector).append("nomDibujante = ?");
-			//			connector = " AND ";
+			connector = " AND ";
 			strFilter.add(datos.dibujante);
 		}
-		Collections.sort(strFilter);
 
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql.toString());
 			for (int i = 0; i < strFilter.size();) {
-				ps.setString(i, strFilter.get(i - 1));
+				ps.setString(++i, strFilter.get(i - 1));
 			}
 			ResultSet rs = ps.executeQuery();
-
 			rs.next();
 			filtroComics = listaDatos(rs);
 
 		} catch (SQLException ex) {
-			System.out.println("ERROR. FILTRADO");
+			ex.printStackTrace();
 		}
 
 		comic = new Comic[filtroComics.size()];
@@ -202,7 +200,6 @@ public class Libreria extends Comic {
 	public List<Comic> listaDatos(ResultSet rs) {
 
 		try {
-
 			if(rs != null)
 			{
 				do {
@@ -226,7 +223,7 @@ public class Libreria extends Comic {
 				} while (rs.next());
 			}
 		} catch (SQLException e) {
-			System.out.println("A");
+			System.out.println(e);
 		}
 		return listaComics;
 	}
