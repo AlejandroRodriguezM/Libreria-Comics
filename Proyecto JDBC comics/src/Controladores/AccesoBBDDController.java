@@ -36,6 +36,7 @@ import java.util.ArrayList;
 
 import Funcionamiento.DBManager;
 import Funcionamiento.NavegacionVentanas;
+import Funcionamiento.Utilidades;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -112,14 +113,13 @@ public class AccesoBBDDController {
 	void accesoGitHub(ActionEvent event) throws IOException {
 		String url = "https://github.com/MisterioRojo/Proyecto-gui-bbdd/tree/V2.5";
 
-		if (Desktop.isDesktopSupported()) {
-			java.awt.Desktop.getDesktop().browse(java.net.URI.create(url)); // Metodo que abre tu navegador por defecto
-			// y muestra la url que se encuentra en el
-			// String
+		if (Utilidades.isWindows()) {
+			accesoGitHubWindows(url);
 		} else {
-			Desktop desktop = Desktop.getDesktop();
-			if (!desktop.isSupported(Desktop.Action.BROWSE)) {
-				desktop.browse(URI.create(url));
+			if (Utilidades.isUnix()) {
+				accesoGitHubLinux(url);
+			} else {
+
 			}
 		}
 	}
@@ -134,15 +134,59 @@ public class AccesoBBDDController {
 	void accesoTwitter(ActionEvent event) throws IOException {
 		String url = "https://twitter.com/home";
 
-		if (Desktop.isDesktopSupported()) {
-			java.awt.Desktop.getDesktop().browse(java.net.URI.create(url)); // Metodo que abre tu navegador por defecto
-			// y muestra la url que se encuentra en el // String
+		if (Utilidades.isWindows()) {
+			accesoTwitterWindows(url);
 		} else {
-			Desktop desktop = Desktop.getDesktop();
-			if (!desktop.isSupported(Desktop.Action.BROWSE)) {
-				desktop.browse(URI.create(url));
+			if (Utilidades.isUnix()) {
+				accesoTwitterLinux(url);
+			} else {
+
 			}
 		}
+	}
+	
+	public void accesoGitHubLinux(String url) throws IOException
+	{
+		Runtime rt = Runtime.getRuntime();
+		String[] browsers = { "google-chrome", "firefox", "mozilla", "epiphany", "konqueror",
+		                                 "netscape", "opera", "links", "lynx" };
+		 
+		StringBuffer cmd = new StringBuffer();
+		for (int i = 0; i < browsers.length; i++)
+		    if(i == 0)
+		        cmd.append(String.format(    "%s \"%s\"", browsers[i], url));
+		    else
+		        cmd.append(String.format(" || %s \"%s\"", browsers[i], url)); 
+		    // If the first didn't work, try the next browser and so on
+
+		rt.exec(new String[] { "sh", "-c", cmd.toString() });
+	}
+	
+	public void accesoGitHubWindows(String url) throws IOException
+	{
+		java.awt.Desktop.getDesktop().browse(java.net.URI.create(url)); // Metodo que abre tu navegador por defecto
+	}
+	
+	public void accesoTwitterLinux(String url) throws IOException
+	{
+		Runtime rt = Runtime.getRuntime();
+		String[] browsers = { "google-chrome", "firefox", "mozilla", "epiphany", "konqueror",
+		                                 "netscape", "opera", "links", "lynx" };
+		 
+		StringBuffer cmd = new StringBuffer();
+		for (int i = 0; i < browsers.length; i++)
+		    if(i == 0)
+		        cmd.append(String.format(    "%s \"%s\"", browsers[i], url));
+		    else
+		        cmd.append(String.format(" || %s \"%s\"", browsers[i], url)); 
+		    // If the first didn't work, try the next browser and so on
+
+		rt.exec(new String[] { "sh", "-c", cmd.toString() });
+	}
+	
+	public void accesoTwitterWindows(String url) throws IOException
+	{
+		java.awt.Desktop.getDesktop().browse(java.net.URI.create(url)); // Metodo que abre tu navegador por defecto
 	}
 
 	/**
