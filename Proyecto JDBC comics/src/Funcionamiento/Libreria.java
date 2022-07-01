@@ -197,6 +197,26 @@ public class Libreria extends Comic {
 		return comic;
 	}
 
+	public Comic comicDatos(String id)
+	{
+
+		Comic comic = new Comic();
+
+		String sentenciaSQL = "select * from comicsbbdd where ID = " + id;
+
+		ResultSet rs;
+
+		try {
+			rs = DBManager.getComic(sentenciaSQL);
+			comic = datosIndividual(rs);
+
+		} catch (SQLException e) {
+			System.out.println("ERROR");		
+		}
+
+		return comic;
+	}
+
 	public List<Comic> listaDatos(ResultSet rs) {
 
 		try {
@@ -226,6 +246,38 @@ public class Libreria extends Comic {
 			System.out.println(e);
 		}
 		return listaComics;
+	}
+
+	public Comic datosIndividual(ResultSet rs) {
+		Comic comic = new Comic();
+
+		try {
+			if(rs != null)
+			{
+				do {
+
+					this.ID = rs.getString("ID");
+					this.nombre = rs.getString("nomComic");
+					this.numero = rs.getString("numComic");
+					this.variante = rs.getString("nomVariante");
+					this.firma = rs.getString("firma");
+					this.editorial = rs.getString("nomEditorial");
+					this.formato = rs.getString("formato");
+					this.procedencia = rs.getString("procedencia");
+					this.fecha = rs.getString("anioPubli");
+					this.guionista = rs.getString("nomGuionista");
+					this.dibujante = rs.getString("nomDibujante");
+					this.estado = rs.getString("estado");
+
+					comic = new Comic(this.ID, this.nombre, this.numero, this.variante, this.firma, this.editorial,
+							this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante, this.estado);
+
+				} while (rs.next());
+			}
+		} catch (SQLException e) {
+			System.out.println(e);
+		}
+		return comic;
 	}
 
 	/**
