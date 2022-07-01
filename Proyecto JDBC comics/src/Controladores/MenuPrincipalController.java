@@ -177,46 +177,10 @@ public class MenuPrincipalController {
 
 	private BaseDeDatos db= new BaseDeDatos();
 
-//	private DBManager dbmanager = new DBManager();
+	//	private DBManager dbmanager = new DBManager();
 
-//	private Connection conn =dbmanager.conexion();
+	//	private Connection conn =dbmanager.conexion();
 
-	/**
-	 *
-	 * @param event
-	 */
-	@FXML
-	void fraseRandom(ActionEvent event) {
-
-		prontFrases.setStyle("-fx-background-color: #D5D8D7");
-		prontFrases.setText(Comic.frasesComics());
-	}
-
-	/**
-	 * Muestra la bbdd segun los parametros introducidos en los TextField
-	 *
-	 * @param event
-	 * @throws SQLException
-	 */
-	@FXML
-	void mostrarPorParametro(ActionEvent event) throws SQLException {
-
-		nombreColumnas();
-		listaPorParametro();
-
-	}
-
-	/**
-	 * Muestra toda la base de datos.
-	 *
-	 * @param event
-	 * @throws SQLException
-	 */
-	@FXML
-	void verTodabbdd(ActionEvent event) throws SQLException {
-		nombreColumnas();
-		tablaBBDD(libreriaPosesion());
-	}
 
 	/////////////////////////////////
 	//// METODOS LLAMADA A VENTANAS//
@@ -275,9 +239,64 @@ public class MenuPrincipalController {
 		myStage.close();
 	}
 
+	/**
+	 *
+	 * @param event
+	 */
+	@FXML
+	void fraseRandom(ActionEvent event) {
+
+		prontFrases.setStyle("-fx-background-color: #D5D8D7");
+		prontFrases.setText(Comic.frasesComics());
+	}
+
+	/**
+	 * Muestra la bbdd segun los parametros introducidos en los TextField
+	 *
+	 * @param event
+	 * @throws SQLException
+	 */
+	@FXML
+	void mostrarPorParametro(ActionEvent event) {
+
+		nombreColumnas();
+		listaPorParametro();
+
+	}
+
+	/**
+	 * Muestra toda la base de datos.
+	 *
+	 * @param event
+	 * @throws SQLException
+	 */
+	@FXML
+	void verTodabbdd(ActionEvent event) {
+		nombreColumnas();
+		tablaBBDD(libreriaPosesion());
+	}
+
+
 	////////////////////////////
 	/// METODOS PARA EXPORTAR///
 	////////////////////////////
+
+	/**
+	 *
+	 * @param event
+	 * @throws SQLException 
+	 * @throws IOException 
+	 */
+	@FXML
+	void importCSV(ActionEvent event) {
+
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero CSV", "*.csv"));
+		File fichero = fileChooser.showOpenDialog(null);
+
+		importCSV(fichero);
+
+	}
 
 	/**
 	 * Guarda los datos de la base de datos en un fichero.
@@ -309,24 +328,6 @@ public class MenuPrincipalController {
 		makeExcel(fichero);
 	}
 
-	/**
-	 *
-	 * @param event
-	 * @throws SQLException 
-	 * @throws IOException 
-	 */
-	@FXML
-	void importCSV(ActionEvent event) {
-
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero CSV", "*.csv"));
-		File fichero = fileChooser.showOpenDialog(null);
-
-		importCSV(fichero);
-
-	}
-
-	// FUNCIONA SOLO EN LINUX
 	/**
 	 *
 	 * @param event
@@ -366,8 +367,9 @@ public class MenuPrincipalController {
 	//// FUNCIONES////////////////////
 	/////////////////////////////////
 
+
 	/**
-	 *
+	 * 
 	 */
 	private void nombreColumnas() {
 		ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
@@ -435,7 +437,7 @@ public class MenuPrincipalController {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 *
 	 * @param fichero
@@ -539,7 +541,7 @@ public class MenuPrincipalController {
 	 *
 	 * @throws SQLException
 	 */
-	public void listaPorParametro() throws SQLException {
+	public void listaPorParametro() {
 		String datosComic[] = camposComic();
 
 		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
@@ -554,10 +556,16 @@ public class MenuPrincipalController {
 	 * @return
 	 * @throws SQLException
 	 */
-	public List<Comic> libreriaParametro(Comic comic) throws SQLException {
+	public List<Comic> libreriaParametro(Comic comic) {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
 
+		if(listComic.size() == 0)
+		{
+			prontInformacion.setStyle("-fx-background-color: #F53636");
+			prontInformacion.setText("ERROR. No hay ningun dato en la base de datos");
+		}
 		return listComic;
+		
 	}
 
 	/**
@@ -565,8 +573,14 @@ public class MenuPrincipalController {
 	 * @return
 	 * @throws SQLException
 	 */
-	public List<Comic> libreriaPosesion() throws SQLException {
+	public List<Comic> libreriaPosesion() {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreria());
+		
+		if(listComic.size() == 0)
+		{
+			prontInformacion.setStyle("-fx-background-color: #F53636");
+			prontInformacion.setText("ERROR. No hay ningun dato en la base de datos");
+		}
 
 		return listComic;
 	}
@@ -578,6 +592,12 @@ public class MenuPrincipalController {
 	 */
 	public List<Comic> libreriaCompleta() throws SQLException {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaCompleta());
+		
+		if(listComic.size() == 0)
+		{
+			prontInformacion.setStyle("-fx-background-color: #F53636");
+			prontInformacion.setText("ERROR. No hay ningun dato en la base de datos");
+		}
 
 		return listComic;
 	}

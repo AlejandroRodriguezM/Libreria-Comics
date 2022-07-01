@@ -60,9 +60,10 @@ public class RecomendacionesComic {
 	 * @throws SQLException
 	 */
 	@FXML
-	void eligePorMi(ActionEvent event) throws SQLException {
+	void eligePorMi(ActionEvent event) {
 
 		printComicRecomendado.setText(generarLectura());
+		
 	}
 
 	/**
@@ -70,20 +71,27 @@ public class RecomendacionesComic {
 	 * @return
 	 * @throws SQLException
 	 */
-	public String generarLectura() throws SQLException
+	public String generarLectura()
 	{
 		Random r = new Random();
 
 		int n;
-
-		libreria.verLibreria();
-
-		n = (int) (Math.random() * r.nextInt(libreria.verLibreria().length));
-
+		
 		limpiarPront();
+		
+		if(libreria.verLibreria().length != 0)
+		{
+			limpiarPront();
+			n = (int) (Math.random() * r.nextInt(libreria.verLibreria().length));
+			return libreria.verLibreria()[n].toString();
+		}
+		else
+		{
+			printComicRecomendado.setText("ERROR. No hay ningun dato en la base de datos");
+			printComicRecomendado.setStyle("-fx-background-color: #F53636");
+		}
 
-		return libreria.verLibreria()[n].toString();
-
+		return "";
 	}
 
 	/**

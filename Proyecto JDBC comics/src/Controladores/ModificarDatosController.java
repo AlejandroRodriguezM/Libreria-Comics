@@ -486,10 +486,16 @@ public class ModificarDatosController {
 	 * @return
 	 * @throws SQLException
 	 */
-	public List<Comic> libreriaParametro(Comic comic) throws SQLException {
+	public List<Comic> libreriaParametro(Comic comic) {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
 
+		if(listComic.size() == 0)
+		{
+			pantallaInformativa.setStyle("-fx-background-color: #F53636");
+			pantallaInformativa.setText("ERROR. No hay ningun dato en la base de datos");
+		}
 		return listComic;
+		
 	}
 
 	/**
@@ -497,11 +503,19 @@ public class ModificarDatosController {
 	 * @return
 	 * @throws SQLException
 	 */
-	public List<Comic> libreriaCompleta() throws SQLException {
+	public List<Comic> libreriaCompleta() {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreria());
+		
+		if(listComic.size() == 0)
+		{
+			pantallaInformativa.setStyle("-fx-background-color: #F53636");
+			pantallaInformativa.setText("ERROR. No hay ningun dato en la base de datos");
+		}
 
 		return listComic;
 	}
+	
+	
 
 	/**
 	 *

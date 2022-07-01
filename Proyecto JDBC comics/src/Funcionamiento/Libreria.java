@@ -110,7 +110,7 @@ public class Libreria extends Comic {
 	 * @return
 	 * @throws SQLException
 	 */
-	public Comic[] filtadroBBDD(Comic datos) throws SQLException {
+	public Comic[] filtadroBBDD(Comic datos) {
 
 		reiniciarBBDD();
 		ordenarBBDD();
@@ -191,7 +191,7 @@ public class Libreria extends Comic {
 			filtroComics = listaDatos(rs);
 
 		} catch (SQLException ex) {
-			ex.printStackTrace();
+			System.out.println("ERROR. FILTRADO");
 		}
 
 		comic = new Comic[filtroComics.size()];
@@ -199,27 +199,35 @@ public class Libreria extends Comic {
 		return comic;
 	}
 
-	public List<Comic> listaDatos(ResultSet rs) throws SQLException {
+	public List<Comic> listaDatos(ResultSet rs) {
 
-		do {
+		try {
 
-			this.ID = rs.getString("ID");
-			this.nombre = rs.getString("nomComic");
-			this.numero = rs.getString("numComic");
-			this.variante = rs.getString("nomVariante");
-			this.firma = rs.getString("firma");
-			this.editorial = rs.getString("nomEditorial");
-			this.formato = rs.getString("formato");
-			this.procedencia = rs.getString("procedencia");
-			this.fecha = rs.getString("anioPubli");
-			this.guionista = rs.getString("nomGuionista");
-			this.dibujante = rs.getString("nomDibujante");
-			this.estado = rs.getString("estado");
+			if(rs != null)
+			{
+				do {
 
-			listaComics.add(new Comic(this.ID, this.nombre, this.numero, this.variante, this.firma, this.editorial,
-					this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante, this.estado));
+					this.ID = rs.getString("ID");
+					this.nombre = rs.getString("nomComic");
+					this.numero = rs.getString("numComic");
+					this.variante = rs.getString("nomVariante");
+					this.firma = rs.getString("firma");
+					this.editorial = rs.getString("nomEditorial");
+					this.formato = rs.getString("formato");
+					this.procedencia = rs.getString("procedencia");
+					this.fecha = rs.getString("anioPubli");
+					this.guionista = rs.getString("nomGuionista");
+					this.dibujante = rs.getString("nomDibujante");
+					this.estado = rs.getString("estado");
 
-		} while (rs.next());
+					listaComics.add(new Comic(this.ID, this.nombre, this.numero, this.variante, this.firma, this.editorial,
+							this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante, this.estado));
+
+				} while (rs.next());
+			}
+		} catch (SQLException e) {
+			System.out.println("A");
+		}
 		return listaComics;
 	}
 

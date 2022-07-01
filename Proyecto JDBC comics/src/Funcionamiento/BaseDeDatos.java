@@ -27,7 +27,7 @@ public class BaseDeDatos extends Excel{
 	
 	public boolean importarCVD(File fichero)
 	{
-		String sql = "INSERT INTO comicsbbdd(ID,nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante,estado) values (?,?,?,?,?,?,?,?,?,?,?,?)";
+		String sql = "INSERT INTO comicsbbdd(id,nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante,estado) values (?,?,?,?,?,?,?,?,?,?,?,?)";
 
 		try {
 			PreparedStatement statement = conn.prepareStatement(sql);
