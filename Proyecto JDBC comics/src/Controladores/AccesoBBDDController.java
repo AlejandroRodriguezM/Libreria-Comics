@@ -1,7 +1,5 @@
 package Controladores;
 
-import java.awt.Desktop;
-
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  * Las ventanas graficas se realizan con JavaFX.
@@ -26,7 +24,6 @@ import java.awt.Desktop;
  */
 
 import java.io.IOException;
-import java.net.URI;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -101,7 +98,8 @@ public class AccesoBBDDController {
 	public TextField usuario;
 
 
-	NavegacionVentanas nav = new NavegacionVentanas();
+	private NavegacionVentanas nav = new NavegacionVentanas();
+	private DBManager dbmanager = new DBManager();
 
 	/**
 	 * Metodo de acceso a pagina web
@@ -291,7 +289,7 @@ public class AccesoBBDDController {
 		// base de datos sea correcto y funcione
 		envioDatosBBDD(); // Llamada a metodo que manda los datos de los textField de la ventana hacia la
 		// clase DBManager.
-		DBManager.conexion(); // Llamada a metodo que permite conectar con la base de datos.
+		dbmanager.conexion(); // Llamada a metodo que permite conectar con la base de datos.
 
 		if (Funcionamiento.DBManager.isConnected()) { // Siempre que la base de datos se haya conectado de forma
 			// correcta, mostrara el siguiente mensaje

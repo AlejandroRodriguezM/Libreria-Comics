@@ -177,8 +177,6 @@ public class MenuPrincipalController {
 
 	private Excel excel = new Excel();
 
-	// private static Connection conn = DBManager.conexion();
-
 	/**
 	 *
 	 * @param event
@@ -198,6 +196,7 @@ public class MenuPrincipalController {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
+		
 		nombreColumnas();
 		listaPorParametro();
 

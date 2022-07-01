@@ -39,7 +39,9 @@ public class Libreria extends Comic {
 	public static List<Comic> listaCompleta = new ArrayList<>();
 	public static List<Comic> filtroComics = new ArrayList<>();
 
-	private static Connection conn = DBManager.conexion();
+	private DBManager dbmanager = new DBManager();
+
+	private Connection conn = dbmanager.conexion();
 
 	/**
 	 * Devuelve todos los datos de la base de datos.
@@ -219,7 +221,7 @@ public class Libreria extends Comic {
 	 *
 	 * @throws SQLException
 	 */
-	public static void ordenarBBDD() throws SQLException {
+	public void ordenarBBDD() throws SQLException {
 		String sql = "ALTER TABLE comicsbbdd ORDER BY nomComic;";
 		Statement st = conn.createStatement();
 		st.execute(sql);

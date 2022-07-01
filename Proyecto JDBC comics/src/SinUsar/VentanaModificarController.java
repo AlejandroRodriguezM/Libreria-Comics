@@ -1,6 +1,7 @@
 package SinUsar;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
@@ -78,6 +79,10 @@ public class VentanaModificarController {
 	Comic comic = new Comic();
 
 	Libreria libreria = new Libreria();
+	
+	private DBManager dbmanager = new DBManager();
+
+	private Connection conn =dbmanager.conexion();
 
 	@FXML
 	void BotonLimpiarComic(ActionEvent event) {
@@ -106,7 +111,7 @@ public class VentanaModificarController {
 		try {
 			PreparedStatement ps = null;
 
-			ps = DBManager.conexion().prepareStatement(sentenciaSQL);
+			ps = conn.prepareStatement(sentenciaSQL);
 			ps.setString(1, nombreComic.getText());
 			ps.setString(2, numeroComic.getText());
 			if (nombreVariante.getText().length() != 0) {

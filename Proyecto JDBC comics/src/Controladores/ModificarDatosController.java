@@ -24,6 +24,7 @@ package Controladores;
  */
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
@@ -177,6 +178,10 @@ public class ModificarDatosController {
 	private Libreria libreria = new Libreria();
 
 	private Comic comic = new Comic();
+	
+	private DBManager dbmanager = new DBManager();
+
+	private Connection conn =dbmanager.conexion();
 
 	/**
 	 *
@@ -338,7 +343,7 @@ public class ModificarDatosController {
 				try {
 					PreparedStatement ps = null;
 
-					ps = DBManager.conexion().prepareStatement(sentenciaSQL);
+					ps = conn.prepareStatement(sentenciaSQL);
 
 					if (datosModificados[1].length() != 0) {
 						ps.setString(1, datosModificados[1]);
