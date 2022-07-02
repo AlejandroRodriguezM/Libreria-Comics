@@ -446,7 +446,7 @@ public class MenuPrincipalController {
 		try {
 
 			if (fichero != null) {
-				if (db.importarCVD(fichero)) {
+				if (db.importarCSV(fichero)) {
 					prontInformacion.setStyle("-fx-background-color: #A0F52D");
 					prontInformacion.setText("Fichero CSV importado de forma correcta");
 				} else {

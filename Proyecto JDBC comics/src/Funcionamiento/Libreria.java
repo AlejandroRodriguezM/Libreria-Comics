@@ -29,7 +29,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Libreria extends Comic {
@@ -39,9 +38,7 @@ public class Libreria extends Comic {
 	public static List<Comic> listaCompleta = new ArrayList<>();
 	public static List<Comic> filtroComics = new ArrayList<>();
 
-	private DBManager dbmanager = new DBManager();
-
-	private Connection conn = dbmanager.conexion();
+	private Connection conn = DBManager.conexion();
 
 	/**
 	 * Devuelve todos los datos de la base de datos.

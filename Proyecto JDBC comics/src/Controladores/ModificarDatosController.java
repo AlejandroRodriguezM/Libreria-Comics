@@ -179,9 +179,7 @@ public class ModificarDatosController {
 
 	private Comic comic = new Comic();
 
-	private DBManager dbmanager = new DBManager();
-
-	private Connection conn = dbmanager.conexion();
+	private Connection conn = DBManager.conexion();
 
 	/**
 	 *

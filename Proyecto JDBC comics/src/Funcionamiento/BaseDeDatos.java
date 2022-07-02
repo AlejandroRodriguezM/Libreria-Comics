@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -19,15 +20,12 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class BaseDeDatos extends Excel{
 	
-	private DBManager dbmanager = new DBManager();
-
-	private Connection conn = dbmanager.conexion();
-	
 	private Libreria libreria = new Libreria();
+	private Connection conn = DBManager.conexion();
 	
-	public boolean importarCVD(File fichero)
+	public boolean importarCSV(File fichero)
 	{
-		String sql = "INSERT INTO comicsbbdd(id,nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante,estado) values (?,?,?,?,?,?,?,?,?,?,?,?)";
+		String sql = "INSERT INTO comicsbbdd(ID,nomComic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,anioPubli,nomGuionista,nomDibujante,estado) values (?,?,?,?,?,?,?,?,?,?,?,?)";
 
 		try {
 			PreparedStatement statement = conn.prepareStatement(sql);
@@ -93,7 +91,8 @@ public class BaseDeDatos extends Excel{
 		Sheet hoja;
 		Workbook libro;
 		String encabezado;
-		String[] encabezados = { "ID", "nomComic", "numComic", "nomVariante", "Firma", "nomEditor", "Formato",
+		
+		String[] encabezados = { "ID", "nomComic", "numComic", "nomVariante", "Firma", "nomEditorial", "Formato",
 				"Procedencia", "anioPubli", "nomGuionista", "nomDibujante", "estado" };
 		int indiceFila = 0;
 		
@@ -103,6 +102,7 @@ public class BaseDeDatos extends Excel{
 		List<Comic> listaComics = Libreria.listaCompleta;
 
 		libro = new XSSFWorkbook();
+		
 		hoja = libro.createSheet("Base de datos comics");
 
 		fila = hoja.createRow(indiceFila);
