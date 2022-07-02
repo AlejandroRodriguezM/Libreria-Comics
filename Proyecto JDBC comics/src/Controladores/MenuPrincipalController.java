@@ -321,8 +321,7 @@ public class MenuPrincipalController {
 	void exportCSV(ActionEvent event) {
 
 		FileChooser fileChooser = new FileChooser();
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero Excel xlsx", "*.xlsx"),
-				new FileChooser.ExtensionFilter("Fichero Excel csv", "*.csv"));
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero Excel xlsx", "*.xlsx"));
 		File fichero = fileChooser.showSaveDialog(null);
 
 		makeExcel(fichero);

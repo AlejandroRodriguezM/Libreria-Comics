@@ -84,9 +84,7 @@ public class IntroducirDatosController {
 	@FXML
 	private TextField numeroComic;
 
-	private DBManager dbmanager = new DBManager();
-
-	private Connection conn =dbmanager.conexion();
+	private Connection conn =DBManager.conexion();
 
 	private NavegacionVentanas nav = new NavegacionVentanas();
 

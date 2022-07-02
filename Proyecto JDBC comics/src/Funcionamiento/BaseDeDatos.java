@@ -2,16 +2,18 @@ package Funcionamiento;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.List;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -19,10 +21,10 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class BaseDeDatos extends Excel{
-	
+
 	private Libreria libreria = new Libreria();
 	private Connection conn = DBManager.conexion();
-	
+
 	public boolean importarCSV(File fichero)
 	{
 		String sql = "INSERT INTO comicsbbdd(ID,nomComic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,anioPubli,nomGuionista,nomDibujante,estado) values (?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -82,7 +84,7 @@ public class BaseDeDatos extends Excel{
 		}
 		return false;
 	}
-	
+
 	public boolean crearExcel(File fichero) throws SQLException, IOException {
 
 		FileOutputStream outputStream;
@@ -91,18 +93,18 @@ public class BaseDeDatos extends Excel{
 		Sheet hoja;
 		Workbook libro;
 		String encabezado;
-		
+
 		String[] encabezados = { "ID", "nomComic", "numComic", "nomVariante", "Firma", "nomEditorial", "Formato",
 				"Procedencia", "anioPubli", "nomGuionista", "nomDibujante", "estado" };
 		int indiceFila = 0;
-		
+
 		fichero.createNewFile();
-		
+
 		libreria.verLibreriaCompleta();
 		List<Comic> listaComics = Libreria.listaCompleta;
 
 		libro = new XSSFWorkbook();
-		
+
 		hoja = libro.createSheet("Base de datos comics");
 
 		fila = hoja.createRow(indiceFila);
@@ -110,6 +112,7 @@ public class BaseDeDatos extends Excel{
 			encabezado = encabezados[i];
 			celda = fila.createCell(i);
 			celda.setCellValue(encabezado);
+			celda.getStringCellValue().getBytes(Charset.forName("UTF-8"));
 		}
 
 		indiceFila++;
@@ -134,8 +137,11 @@ public class BaseDeDatos extends Excel{
 		try {
 			outputStream = new FileOutputStream(fichero);
 			libro.write(outputStream);
+
+
 			libro.close();
 			outputStream.close();
+			createCSV(fichero);
 			return true;
 		} catch (FileNotFoundException ex) {
 			System.out.println(ex);
@@ -144,6 +150,63 @@ public class BaseDeDatos extends Excel{
 		}
 		return false;
 	}
-	
 
+	public void createCSV(File fichero) throws IOException
+	{
+		// For storing data into CSV files
+		StringBuffer data = new StringBuffer();
+
+		try {
+			// Creating input stream
+			FileInputStream fis = new FileInputStream(fichero);
+
+			Workbook workbook = new XSSFWorkbook(fis);
+
+			// Get first sheet from the workbook
+			Sheet sheet = workbook.getSheetAt(0);
+
+			// Iterate through each rows from first sheet
+			Iterator<Row> rowIterator = sheet.iterator();
+
+			while (rowIterator.hasNext()) {
+				Row row = rowIterator.next();
+				// For each row, iterate through each columns
+				Iterator<Cell> cellIterator = row.cellIterator();
+				while (cellIterator.hasNext()) {
+
+					Cell cell = cellIterator.next();
+
+					switch (cell.getCellType()) {
+					case BOOLEAN:
+						data.append(cell.getBooleanCellValue() + ";");
+						break;
+
+					case NUMERIC:
+						data.append(cell.getNumericCellValue() + ";");
+						break;
+
+					case STRING:
+						data.append(cell.getStringCellValue() + ";");
+						break;
+
+					case BLANK:
+						data.append("" + ";");
+						break;
+
+					default:
+						data.append(cell + ";");
+					}
+				}
+				data.append('\n');
+			}
+
+			FileOutputStream fos = new FileOutputStream(fichero.getAbsolutePath().substring(0,fichero.getAbsolutePath().lastIndexOf(".")) + ".csv");
+			fos.write(data.toString().getBytes());
+			fos.close();
+			workbook.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

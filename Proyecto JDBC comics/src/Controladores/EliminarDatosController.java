@@ -141,9 +141,7 @@ public class EliminarDatosController {
 
 	private Libreria libreria = new Libreria();
 
-	private DBManager dbmanager = new DBManager();
-
-	private Connection conn =dbmanager.conexion();
+	private Connection conn =DBManager.conexion();
 
 
 	/**

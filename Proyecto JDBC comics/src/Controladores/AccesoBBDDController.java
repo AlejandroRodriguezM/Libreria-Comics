@@ -97,9 +97,7 @@ public class AccesoBBDDController {
 	@FXML
 	public TextField usuario;
 
-
 	private NavegacionVentanas nav = new NavegacionVentanas();
-	private DBManager dbmanager = new DBManager();
 
 	/**
 	 * Metodo de acceso a pagina web
@@ -288,7 +286,7 @@ public class AccesoBBDDController {
 		// base de datos sea correcto y funcione
 		envioDatosBBDD(); // Llamada a metodo que manda los datos de los textField de la ventana hacia la
 		// clase DBManager.
-		dbmanager.conexion(); // Llamada a metodo que permite conectar con la base de datos.
+		DBManager.conexion(); // Llamada a metodo que permite conectar con la base de datos.
 
 		if (Funcionamiento.DBManager.isConnected()) { // Siempre que la base de datos se haya conectado de forma
 			// correcta, mostrara el siguiente mensaje
