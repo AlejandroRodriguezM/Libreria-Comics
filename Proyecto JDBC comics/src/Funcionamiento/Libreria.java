@@ -113,74 +113,12 @@ public class Libreria extends Comic {
 		ordenarBBDD();
 
 		Comic comic[] = null;
-
-		ArrayList<String> strFilter = new ArrayList<>();
-
-		String connector = " AND ";
-		StringBuilder sql = new StringBuilder();
-		sql.append("SELECT * FROM comicsbbdd where estado = 'En posesion'");
-
-		if (datos.ID.length() != 0 && ID != null) {
-			sql.append(connector).append("ID = ?");
-			connector = " AND ";
-			strFilter.add(datos.ID);
-		}
-		if (datos.nombre.length() != 0) {
-			sql.append(connector).append("nomComic = ?");
-			connector = " AND ";
-			strFilter.add(datos.nombre);
-		}
-		if (datos.numero.length() != 0) {
-			sql.append(connector).append("numComic = ?");
-			connector = " AND ";
-			strFilter.add(datos.numero);
-		}
-		if (datos.variante.length() != 0) {
-			sql.append(connector).append("nomVariante = ?");
-			connector = " AND ";
-			strFilter.add(datos.variante);
-		}
-		if (datos.firma.length() != 0) {
-			sql.append(connector).append("firma = ?");
-			connector = " AND ";
-			strFilter.add(datos.firma);
-		}
-		if (datos.editorial.length() != 0) {
-			sql.append(connector).append("nomEditorial = ?");
-			connector = " AND ";
-			strFilter.add(datos.editorial);
-		}
-		if (datos.formato.length() != 0) {
-			sql.append(connector).append("formato = ?");
-			connector = " AND ";
-			strFilter.add(datos.formato);
-		}
-		if (datos.procedencia.length() != 0) {
-			sql.append(connector).append("procedencia = ?");
-			connector = " AND ";
-			strFilter.add(datos.procedencia);
-		}
-		if (datos.fecha.length() != 0) {
-			sql.append(connector).append("anioPubli = ?");
-			connector = " AND ";
-			strFilter.add(datos.fecha);
-		}
-		if (datos.guionista.length() != 0) {
-			sql.append(connector).append("nomGuionista = ?");
-			connector = " AND ";
-			strFilter.add(datos.guionista);
-		}
-		if (datos.dibujante.length() != 0) {
-			sql.append(connector).append("nomDibujante = ?");
-			connector = " AND ";
-			strFilter.add(datos.dibujante);
-		}
+		
+		String sql = datosConcatenados(datos);
 
 		try {
-			PreparedStatement ps = conn.prepareStatement(sql.toString());
-			for (int i = 0; i < strFilter.size();) {
-				ps.setString(++i, strFilter.get(i - 1));
-			}
+			PreparedStatement ps = conn.prepareStatement(sql);
+
 			ResultSet rs = ps.executeQuery();
 			rs.next();
 			filtroComics = listaDatos(rs);
@@ -193,10 +131,73 @@ public class Libreria extends Comic {
 		comic = filtroComics.toArray(comic);
 		return comic;
 	}
+	
+	/**
+	 * 
+	 * @param datos
+	 * @return
+	 */
+	public String datosConcatenados(Comic datos)
+	{
+		String connector = " AND ";
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT * FROM comicsbbdd where estado = 'En posesion'");
 
+		if (datos.ID.length() != 0 && ID != null) {
+			sql.append(connector).append("ID = ?");
+			connector = " AND ";
+		}
+		if (datos.nombre.length() != 0) {
+			sql.append(connector).append("nomComic like'%" + datos.getNombre() + "%'");
+			connector = " AND ";
+		}
+		if (datos.numero.length() != 0) {
+			sql.append(connector).append("numComic like'%" + datos.getNumero() + "%'");
+			connector = " AND ";
+		}
+		if (datos.variante.length() != 0) {
+			sql.append(connector).append("nomVariante like'%" + datos.getVariante() + "%'");
+			connector = " AND ";
+		}
+		if (datos.firma.length() != 0) {
+			sql.append(connector).append("firma like'%" + datos.getFirma() + "%'");
+			connector = " AND ";
+		}
+		if (datos.editorial.length() != 0) {
+			sql.append(connector).append("nomEditorial like'%" + datos.getEditorial() + "%'");
+			connector = " AND ";
+		}
+		if (datos.formato.length() != 0) {
+			sql.append(connector).append("formato like'%" + datos.getFormato() + "%'");
+			connector = " AND ";
+		}
+		if (datos.procedencia.length() != 0) {
+			sql.append(connector).append("procedencia like'%" + datos.getProcedencia() + "%'");
+			connector = " AND ";
+		}
+		if (datos.fecha.length() != 0) {
+			sql.append(connector).append("anioPubli like'%" + datos.getFecha() + "%'");
+			connector = " AND ";
+		}
+		if (datos.guionista.length() != 0) {
+			sql.append(connector).append("nomGuionista like'%" + datos.getGuionista() + "%'");
+			connector = " AND ";
+		}
+		if (datos.dibujante.length() != 0) {
+			sql.append(connector).append("nomDibujante like'%" + datos.getDibujante() + "%'");
+			connector = " AND ";
+		}
+		
+		return sql.toString();
+	}
+
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public Comic comicDatos(String id)
 	{
-
 		Comic comic = new Comic();
 
 		String sentenciaSQL = "select * from comicsbbdd where ID = " + id;
@@ -208,7 +209,7 @@ public class Libreria extends Comic {
 			comic = datosIndividual(rs);
 
 		} catch (SQLException e) {
-			System.out.println("ERROR");		
+			System.out.println(e);		
 		}
 
 		return comic;
