@@ -96,28 +96,6 @@ public class DBManager {
 		DB_PASS = datos[3];
 	}
 
-//	/**
-//	 * Devuelve un objeto Connection en caso de que la conexion sea correcta.
-//	 *
-//	 * @param numeroPuerto
-//	 * @param nombreBBDD
-//	 * @param nombreUsuario
-//	 * @param contraBBDD
-//	 * @return
-//	 */
-//	public static Connection conexion() {
-//
-//		String DB_HOST = "localhost";
-//		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
-//		try {
-//			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
-//			return conn;
-//		} catch (SQLException ex) {
-//			System.out.println(ex);
-//			return null;
-//		}
-//	}
-
 	/**
 	 * Devuelve un objeto Connection en caso de que la conexion sea correcta.
 	 *
@@ -130,16 +108,38 @@ public class DBManager {
 	public static Connection conexion() {
 
 		String DB_HOST = "localhost";
-		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + 3306 + "/" + "comics" + "?serverTimezone=UTC";
+		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
 		try {
-			conn = DriverManager.getConnection(DB_URL, "root", "1234");
-			
+			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
 			return conn;
 		} catch (SQLException ex) {
 			System.out.println(ex);
 			return null;
 		}
 	}
+
+//	/**
+//	 * Devuelve un objeto Connection en caso de que la conexion sea correcta.
+//	 *
+//	 * @param numeroPuerto
+//	 * @param nombreBBDD
+//	 * @param nombreUsuario
+//	 * @param contraBBDD
+//	 * @return
+//	 */
+//	public static Connection conexion() {
+//
+//		String DB_HOST = "localhost";
+//		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + 3306 + "/" + "comics" + "?serverTimezone=UTC";
+//		try {
+//			conn = DriverManager.getConnection(DB_URL, "root", "1234");
+//			
+//			return conn;
+//		} catch (SQLException ex) {
+//			System.out.println(ex);
+//			return null;
+//		}
+//	}
 
 	/**
 	 * Cierra la conexión con la base de datos

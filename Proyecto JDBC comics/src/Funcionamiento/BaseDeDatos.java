@@ -110,6 +110,7 @@ public class BaseDeDatos extends Excel{
 		return 0;
 	}
 	
+	//NO FUNCIONA
 	public boolean borrarContenidoTabla()
 	{
 		Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -129,10 +130,12 @@ public class BaseDeDatos extends Excel{
 			alert.setContentText("¿De verdad de verdad quieres borrarlo todo?");
 			if (alert.showAndWait().get() == ButtonType.OK) {
 				try {
-					PreparedStatement statement = conn.prepareStatement("delete from comicsbbdd;");
-					statement = conn.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");
+					System.out.println(DBManager.isConnected());
+					PreparedStatement statement1 = conn.prepareStatement("delete from comicsbbdd");
+					PreparedStatement statement2 = conn.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");
 					
-					statement.executeUpdate();
+					statement1.executeUpdate();
+					statement2.executeUpdate();
 					return true;
 				} catch (SQLException e) {
 					e.printStackTrace();

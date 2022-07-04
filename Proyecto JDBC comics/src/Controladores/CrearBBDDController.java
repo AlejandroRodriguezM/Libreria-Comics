@@ -26,6 +26,7 @@ package Controladores;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -158,12 +159,15 @@ public class CrearBBDDController {
 				+ "estado enum('En posesion','Vendido') DEFAULT 'En posesion'" + ",PRIMARY KEY (`ID`)) "
 				+ "ENGINE=InnoDB AUTO_INCREMENT=320 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;";
 
-		Statement statement;
+		Statement statement1;
+		PreparedStatement statement2;
 		Connection connection = DriverManager.getConnection(DB_URL, userBBDD.getText(),passBBDD.getText());
 		try {
 
-			statement = connection.createStatement();
-			statement.executeUpdate(sentenciaSQL);
+			statement1 = connection.createStatement();
+			statement1.executeUpdate(sentenciaSQL);
+			statement2 = connection.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");
+			statement2.executeUpdate();
 
 		}
 		catch (SQLException e ) {

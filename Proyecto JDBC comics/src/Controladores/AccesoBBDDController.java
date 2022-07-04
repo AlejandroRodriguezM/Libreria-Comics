@@ -150,7 +150,7 @@ public class AccesoBBDDController {
 		StringBuffer cmd = new StringBuffer();
 		for (int i = 0; i < browsers.length; i++)
 		    if(i == 0)
-		        cmd.append(String.format(    "%s \"%s\"", browsers[i], url));
+		        cmd.append(String.format("%s \"%s\"", browsers[i], url));
 		    else
 		        cmd.append(String.format(" || %s \"%s\"", browsers[i], url)); 
 		    // If the first didn't work, try the next browser and so on
