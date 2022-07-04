@@ -111,5 +111,6 @@
       <Button fx:id="botonFrase" layoutX="494.0" layoutY="208.0" mnemonicParsing="false" onAction="#fraseRandom" prefHeight="53.0" prefWidth="102.0" text="Frase random" />
       <Button fx:id="botonVerRecomendacion" layoutX="683.0" layoutY="359.0" mnemonicParsing="false" onAction="#ventanaRecomendar" prefHeight="53.0" prefWidth="182.0" text="No sabes que leer? Pulsa aqui!" />
       <Button fx:id="botonImportarCSV" layoutX="330.0" layoutY="271.0" mnemonicParsing="false" onAction="#importCSV" prefHeight="53.0" prefWidth="141.0" text="Importar CSV" />
+      <Button fx:id="botonDelete" layoutX="494.0" layoutY="271.0" mnemonicParsing="false" onAction="#borrarContenidoTabla" prefHeight="53.0" prefWidth="102.0" text="Eliminar BBDD" />
    </children>
 </Pane>

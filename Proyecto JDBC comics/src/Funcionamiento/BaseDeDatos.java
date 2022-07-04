@@ -10,7 +10,9 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Iterator;
 import java.util.List;
 
@@ -19,6 +21,12 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
 
 public class BaseDeDatos extends Excel{
 
@@ -36,12 +44,12 @@ public class BaseDeDatos extends Excel{
 			String lineText = null;
 
 			int count = 0;
-
+			int j = countRows();
 			lineReader.readLine(); // skip header line
 
 			while ((lineText = lineReader.readLine()) != null) {
 				String[] data = lineText.split(";");
-				String id = data[0];
+				String id = Integer.toString(j);
 				String nombre = data[1];
 				String numero = data[2];
 				String variante = data[3];
@@ -85,6 +93,61 @@ public class BaseDeDatos extends Excel{
 		return false;
 	}
 
+	public int countRows() {
+
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM comicsbbdd");
+
+		    int total = -1;
+
+		    total = rs.getRow();
+
+		    return total;
+		} catch (SQLException e) {
+		    e.printStackTrace();
+		}
+		return 0;
+	}
+	
+	public boolean borrarContenidoTabla()
+	{
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.getIcons().add(new Image("/Icono/exit.png")); // To add an icon
+		alert.setTitle("Borrado");
+		alert.setHeaderText("Estas a punto de borrar el contenido.");
+		alert.setContentText("¿Estas seguro que quieres borrarlo todo?");
+
+		if (alert.showAndWait().get() == ButtonType.OK) {
+			
+			Alert alert2 = new Alert(AlertType.CONFIRMATION);
+			Stage stage2 = (Stage) alert2.getDialogPane().getScene().getWindow();
+			stage2.getIcons().add(new Image("/Icono/exit.png")); // To add an icon
+			alert.setTitle("Borrado");
+			alert.setHeaderText("¿Estas seguro?.");
+			alert.setContentText("¿De verdad de verdad quieres borrarlo todo?");
+			if (alert.showAndWait().get() == ButtonType.OK) {
+				try {
+					PreparedStatement statement = conn.prepareStatement("delete from comicsbbdd;");
+					statement = conn.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");
+					
+					statement.executeUpdate();
+					return true;
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			else
+			{
+				return false;
+			}
+		} else {
+			return false;
+		}
+		return false;
+	}
+
 	public boolean crearExcel(File fichero) throws SQLException, IOException {
 
 		FileOutputStream outputStream;
@@ -118,7 +181,7 @@ public class BaseDeDatos extends Excel{
 		indiceFila++;
 		for (Comic comic : listaComics) {
 			fila = hoja.createRow(indiceFila);
-			fila.createCell(0).setCellValue(comic.getID());
+			fila.createCell(0).setCellValue("");
 			fila.createCell(1).setCellValue(comic.getNombre());
 			fila.createCell(2).setCellValue(comic.getNumero());
 			fila.createCell(3).setCellValue(comic.getVariante());

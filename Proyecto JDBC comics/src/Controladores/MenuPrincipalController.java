@@ -95,6 +95,9 @@ public class MenuPrincipalController {
 
 	@FXML
 	private Button botonGuardarCSV;
+	
+    @FXML
+    private Button botonDelete;
 
 	@FXML
 	private TextField anioPublicacion;
@@ -361,6 +364,21 @@ public class MenuPrincipalController {
 		nombreDibujante.setText("");
 		nombreGuionista.setText("");
 	}
+	
+    @FXML
+    void borrarContenidoTabla(ActionEvent event) {
+
+    	if(db.borrarContenidoTabla())
+    	{
+    		prontInformacion.setStyle("-fx-background-color: #A0F52D");
+			prontInformacion.setText("Has borrado correctamente el contenido de la base de datos.");
+    	}
+    	else
+    	{
+    		prontInformacion.setStyle("-fx-background-color: #F53636");
+			prontInformacion.setText("Has cancelado el borrado de la base de datos.");
+    	}
+    }
 
 	/////////////////////////////////
 	//// FUNCIONES////////////////////

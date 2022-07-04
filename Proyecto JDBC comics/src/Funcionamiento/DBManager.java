@@ -130,7 +130,7 @@ public class DBManager {
 	public static Connection conexion() {
 
 		String DB_HOST = "localhost";
-		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + 3306 + "/" + "prueba1" + "?serverTimezone=UTC";
+		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + 3306 + "/" + "comics" + "?serverTimezone=UTC";
 		try {
 			conn = DriverManager.getConnection(DB_URL, "root", "1234");
 			
