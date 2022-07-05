@@ -188,7 +188,7 @@ public class IntroducirDatosController {
 				prontDatos.setText("Se ha encontrado un error. No ha sido posible añadir el comic a la base de datos.");
 			}
 		} catch (SQLException ex) {
-			System.err.println("Error al insertar un comic" + ex);
+			nav.alertaException(ex.toString());
 		}
 	}
 

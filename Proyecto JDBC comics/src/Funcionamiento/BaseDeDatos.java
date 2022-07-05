@@ -32,6 +32,7 @@ public class BaseDeDatos extends Excel{
 
 	private Libreria libreria = new Libreria();
 	private Connection conn = DBManager.conexion();
+	private NavegacionVentanas nav = new NavegacionVentanas();
 
 	public boolean importarCSV(File fichero)
 	{
@@ -87,8 +88,8 @@ public class BaseDeDatos extends Excel{
 			return true;
 
 		}
-		catch (Exception exception){
-			exception.printStackTrace();
+		catch (Exception e){
+			nav.alertaException(e.toString());
 		}
 		return false;
 	}
@@ -105,7 +106,7 @@ public class BaseDeDatos extends Excel{
 
 		    return total;
 		} catch (SQLException e) {
-		    e.printStackTrace();
+			nav.alertaException(e.toString());
 		}
 		return 0;
 	}
@@ -138,7 +139,7 @@ public class BaseDeDatos extends Excel{
 					statement2.executeUpdate();
 					return true;
 				} catch (SQLException e) {
-					e.printStackTrace();
+					nav.alertaException(e.toString());
 				}
 			}
 			else
@@ -210,9 +211,9 @@ public class BaseDeDatos extends Excel{
 			createCSV(fichero);
 			return true;
 		} catch (FileNotFoundException ex) {
-			System.out.println(ex);
+			nav.alertaException(ex.toString());
 		} catch (IOException ex) {
-			System.out.println("Error de IOException");
+			nav.alertaException(ex.toString());
 		}
 		return false;
 	}
@@ -272,7 +273,7 @@ public class BaseDeDatos extends Excel{
 			workbook.close();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			nav.alertaException(e.toString());
 		}
 	}
 }

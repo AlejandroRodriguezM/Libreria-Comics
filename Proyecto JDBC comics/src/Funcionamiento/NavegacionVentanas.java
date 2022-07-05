@@ -24,8 +24,6 @@ package Funcionamiento;
  */
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import Controladores.AccesoBBDDController;
 import Controladores.CrearBBDDController;
@@ -34,7 +32,7 @@ import Controladores.IntroducirDatosController;
 import Controladores.MenuPrincipalController;
 import Controladores.ModificarDatosController;
 import Controladores.RecomendacionesComic;
-import SinUsar.MenuOpcionesController;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -47,9 +45,7 @@ import javafx.stage.Stage;
 
 public class NavegacionVentanas {
 
-	/**
-	 * Metodo que carga y muestra la ventana del menu principal
-	 */
+
 	public void verAccesoBBDD() {
 
 		try {
@@ -77,15 +73,11 @@ public class NavegacionVentanas {
 			stage.setOnCloseRequest(e -> controlador.closeWindows());
 
 		} catch (IOException ex) {
-			Logger.getLogger(MenuOpcionesController.class.getName()).log(Level.SEVERE, null, ex);
+			alertaException(ex.toString());
 		}
 	}
 
-	/**
-	 * Metodo que carga y muestra de la base de datos.
-	 *
-	 * @throws IOException
-	 */
+
 	public void verMenuPrincipal() throws IOException {
 
 		try {
@@ -101,6 +93,7 @@ public class NavegacionVentanas {
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
 			Stage stage = new Stage();
+			stage.setResizable(false);
 			stage.setTitle("Menu principal"); // Titulo de la aplicacion.
 			stage.getIcons().add(new Image("/Icono/icon2.png"));
 
@@ -119,13 +112,11 @@ public class NavegacionVentanas {
 			});
 
 		} catch (IOException ex) {
-			Logger.getLogger(MenuOpcionesController.class.getName()).log(Level.SEVERE, null, ex);
+			alertaException(ex.toString());
 		}
 	}
 
-	/**
-	 * Metodo que carga y llama a la ventana de aÃ±adir comics
-	 */
+
 	public void verIntroducirDatos() {
 
 		try {
@@ -141,6 +132,7 @@ public class NavegacionVentanas {
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
 			Stage stage = new Stage();
+			stage.setResizable(false);
 			stage.setTitle("Introducir datos"); // Titulo de la aplicacion.
 			stage.getIcons().add(new Image("/Icono/icon2.png"));
 
@@ -162,13 +154,11 @@ public class NavegacionVentanas {
 			stage.show();
 
 		} catch (IOException ex) {
-			Logger.getLogger(MenuOpcionesController.class.getName()).log(Level.SEVERE, null, ex);
+			alertaException(ex.toString());
 		}
 	}
 
-	/*
-	 *
-	 */
+
 	public void verModificarDatos() {
 
 		try {
@@ -184,6 +174,7 @@ public class NavegacionVentanas {
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
 			Stage stage = new Stage();
+			stage.setResizable(false);
 			stage.setTitle("Modificar datos"); // Titulo de la aplicacion.
 			stage.getIcons().add(new Image("/Icono/icon2.png"));
 
@@ -205,13 +196,11 @@ public class NavegacionVentanas {
 			stage.show();
 
 		} catch (IOException ex) {
-			Logger.getLogger(MenuOpcionesController.class.getName()).log(Level.SEVERE, null, ex);
+			alertaException(ex.toString());
 		}
 	}
 
-	/**
-	 *
-	 */
+
 	public void verRecomendacion() {
 
 		try {
@@ -227,6 +216,7 @@ public class NavegacionVentanas {
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
 			Stage stage = new Stage();
+			stage.setResizable(false);
 			stage.setTitle("Recomendaciones"); // Titulo de la aplicacion.
 			stage.getIcons().add(new Image("/Icono/icon2.png"));
 
@@ -248,13 +238,11 @@ public class NavegacionVentanas {
 			stage.show();
 
 		} catch (IOException ex) {
-			Logger.getLogger(MenuOpcionesController.class.getName()).log(Level.SEVERE, null, ex);
+			alertaException(ex.toString());
 		}
 	}
 
-	/**
-	 *
-	 */
+
 	public void verEliminarDatos() {
 
 		try {
@@ -270,6 +258,7 @@ public class NavegacionVentanas {
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
 			Stage stage = new Stage();
+			stage.setResizable(false);
 			stage.setTitle("Eliminar comics"); // Titulo de la aplicacion.
 			stage.getIcons().add(new Image("/Icono/icon2.png"));
 
@@ -279,25 +268,25 @@ public class NavegacionVentanas {
 
 			// Indico que debe hacer al cerrar
 			stage.setOnCloseRequest(e -> {
-				try {
-					controlador.closeWindows();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+		
+			try {
+				controlador.closeWindows();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				alertaException(e1.toString());
+			}
+				
 			});
 
 			stage.setScene(scene);
 			stage.show();
 
 		} catch (IOException ex) {
-			Logger.getLogger(MenuOpcionesController.class.getName()).log(Level.SEVERE, null, ex);
+			alertaException(ex.toString());
 		}
 	}
 
-	/**
-	 *
-	 */
+
 	public void verCrearBBDD() {
 
 		try {
@@ -313,6 +302,7 @@ public class NavegacionVentanas {
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
 			Stage stage = new Stage();
+			stage.setResizable(false);
 			stage.setTitle("Menu de creacion"); // Titulo de la aplicacion.
 			stage.getIcons().add(new Image("/Icono/icon2.png"));
 
@@ -326,7 +316,7 @@ public class NavegacionVentanas {
 					controlador.closeWindows();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					alertaException(e1.toString());
 				}
 			});
 
@@ -334,23 +324,20 @@ public class NavegacionVentanas {
 			stage.show();
 
 		} catch (IOException ex) {
-			Logger.getLogger(MenuOpcionesController.class.getName()).log(Level.SEVERE, null, ex);
+			alertaException(ex.toString());
 		}
 	}
 
-	/**
-	 * Permite salir completamente del programa.
-	 *
-	 * @param event
-	 */
+
 	public boolean salirPrograma(ActionEvent event) {
 
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.setResizable(false);
 		stage.getIcons().add(new Image("/Icono/exit.png")); // To add an icon
 		alert.setTitle("Saliendo");
 		alert.setHeaderText("Estas apunto de salir.");
-		alert.setContentText("Â¿Estas seguro que quieres salir?");
+		alert.setContentText("¿Estas seguro que quieres salir?");
 
 		if (alert.showAndWait().get() == ButtonType.OK) {
 			return true;
@@ -359,38 +346,43 @@ public class NavegacionVentanas {
 		}
 	}
 
-	/**
-	 *
-	 * @return
-	 */
+
 	public boolean alertaEliminar() {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
 		stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
+		stage.setResizable(false);
 		alert.setTitle("Eliminando . . .");
 		alert.setHeaderText("Estas apunto de eliminar datos.");
-		alert.setContentText("Â¿Estas seguro que quieres eliminar el comic?");
+		alert.setContentText("¿Estas seguro que quieres eliminar el comic?");
 		if (alert.showAndWait().get() == ButtonType.OK) {
 			return true;
 		}
 		return false;
 	}
 
-	/**
-	 *
-	 * @return
-	 */
+
 	public boolean alertaModificar() {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
 		stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
+		stage.setResizable(false);
 		alert.setTitle("Modificando . . .");
 		alert.setHeaderText("Estas apunto de modificar datos.");
-		alert.setContentText("Â¿Estas seguro que quieres modificar el comic?");
+		alert.setContentText("¿Estas seguro que quieres modificar el comic?");
 		if (alert.showAndWait().get() == ButtonType.OK) {
 			return true;
 		}
 		return false;
+	}
+
+
+	public void alertaException(String excepcion)
+	{
+		Platform.runLater(() -> {
+			Alert dialog = new Alert(AlertType.ERROR, excepcion, ButtonType.OK);
+			dialog.show();
+		});
 	}
 }

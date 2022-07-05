@@ -248,7 +248,7 @@ public class AccesoBBDDController {
 
 		} catch (SQLException e) {
 
-			System.out.println(e);
+			nav.alertaException(e.toString());
 		}
 	}
 

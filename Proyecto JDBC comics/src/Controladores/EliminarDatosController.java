@@ -277,15 +277,13 @@ public class EliminarDatosController {
 	 *
 	 */
 	public void deleteData() {
-		String id, nombreCom = "", numeroCom = "", varianteCom = "", firmaCom = "", editorialCom = "", formatoCom = "",
-				procedenciaCom = "", fechaCom = "", guionistaCom = "", dibujanteCom = "", sentenciaSQL;
+		String id, sentenciaSQL;
 
 		sentenciaSQL = "UPDATE Comicsbbdd set estado = 'Vendido' where ID = ?";
 
 		id = idComic.getText();
 
-		Comic comic = new Comic(id, nombreCom, numeroCom, varianteCom, firmaCom, editorialCom, formatoCom,
-				procedenciaCom, fechaCom, guionistaCom, dibujanteCom,"");
+		Comic comic = libreria.comicDatos(id);
 
 		PreparedStatement stmt;
 
@@ -293,11 +291,6 @@ public class EliminarDatosController {
 			if (nav.alertaEliminar()) { // Llamada a metodo que permite lanzar una alerta. En caso de aceptarlo
 				// permitira lo siguiente.
 
-				List<Comic> listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic)); // Lista que
-				// contiene toda
-				// los Comic de
-				// la base de
-				// datos.
 				if (id.length() != 0) {
 					stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE,
 							ResultSet.CONCUR_UPDATABLE); // Permite leer y ejecutar la sentencia de MySql
@@ -307,7 +300,7 @@ public class EliminarDatosController {
 						// correctamente, mostrara lo siguiente
 						pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 						pantallaInformativa.setText("Has eliminado correctamente: "
-								+ listComic.toString().replace("[", "").replace("]", ""));
+								+ comic.toString().replace("[", "").replace("]", ""));
 					} else { // En caso contrario mostrara lo siguiente
 						pantallaInformativa.setStyle("-fx-background-color: #F53636");
 						pantallaInformativa.setText("ERROR. ID desconocido.");
@@ -318,7 +311,7 @@ public class EliminarDatosController {
 				pantallaInformativa.setText("Borrado cancelado.");
 			}
 		} catch (SQLException ex) {
-			System.err.println(ex);
+			nav.alertaException(ex.toString());
 		}
 	}
 

@@ -451,7 +451,7 @@ public class MenuPrincipalController {
 				prontInformacion.setText("ERROR. Se ha cancelado la exportacion.");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			nav.alertaException(e.toString());
 		}
 	}
 
@@ -476,7 +476,7 @@ public class MenuPrincipalController {
 				prontInformacion.setText("ERROR. Se ha cancelado la importacion.");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			nav.alertaException(e.toString());
 		}
 	}
 
@@ -507,9 +507,9 @@ public class MenuPrincipalController {
 				prontInformacion.setText("ERROR. Contenido de la bbdd \n cancelada.");
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			nav.alertaException(e.toString());
 		} catch (SQLException e) {
-			e.printStackTrace();
+			nav.alertaException(e.toString());
 		}
 	}
 
@@ -527,8 +527,8 @@ public class MenuPrincipalController {
 			pb.redirectOutput(Redirect.to(fichero));
 			pb.start();
 
-		} catch (IOException e1) {
-			e1.printStackTrace();
+		} catch (IOException e) {
+			nav.alertaException(e.toString());
 		}
 	}
 
@@ -550,7 +550,7 @@ public class MenuPrincipalController {
 			pb.start();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			nav.alertaException(e.toString());
 		}
 	}
 

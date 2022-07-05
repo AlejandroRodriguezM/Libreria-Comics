@@ -26,6 +26,7 @@ package Programa;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import Funcionamiento.NavegacionVentanas;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -34,6 +35,8 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class Programa extends Application {
+	
+	private NavegacionVentanas nav = new NavegacionVentanas();
 
 	/**
 	 * Carga la ventana principal y arranca el programa.
@@ -49,7 +52,7 @@ public class Programa extends Application {
 			primaryStage.getIcons().add(new Image("/Icono/icon2.png"));
 
 		} catch (IOException e) {
-			System.out.println(e.getMessage());
+			nav.alertaException(e.toString());
 		}
 	}
 

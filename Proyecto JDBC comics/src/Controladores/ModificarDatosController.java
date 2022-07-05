@@ -430,7 +430,7 @@ public class ModificarDatosController {
 							+ dibujante);
 				}
 			} catch (SQLException ex) {
-				System.out.println(ex);
+				nav.alertaException(ex.toString());
 			}
 		}
 	}

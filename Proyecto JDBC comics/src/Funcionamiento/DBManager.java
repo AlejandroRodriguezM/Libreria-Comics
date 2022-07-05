@@ -35,8 +35,9 @@ import java.sql.SQLException;
 
 public class DBManager {
 
-	// Conexión a la base de datos
+	// Conexion a la base de datos
 	private static Connection conn = null;
+	private static NavegacionVentanas nav = new NavegacionVentanas();
 
 	public static String DB_USER = "";
 	public static String DB_PASS = "";
@@ -72,7 +73,7 @@ public class DBManager {
 				return true;
 			}
 		} catch (SQLException ex) {
-			System.out.println(ex);
+			nav.alertaException(ex.toString());
 			return false;
 		}
 		return false;
@@ -113,7 +114,7 @@ public class DBManager {
 			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
 			return conn;
 		} catch (SQLException ex) {
-			System.out.println(ex);
+			nav.alertaException(ex.toString());
 			return null;
 		}
 	}
@@ -136,7 +137,7 @@ public class DBManager {
 //			
 //			return conn;
 //		} catch (SQLException ex) {
-//			System.out.println(ex);
+//			nav.alertaException(ex.toString());
 //			return null;
 //		}
 //	}
@@ -176,7 +177,7 @@ public class DBManager {
 			return rs;
 
 		} catch (NullPointerException ex) {
-			System.err.println("ERROR. No se puede mostrar porque no hay clientes.");
+			nav.alertaException(ex.toString());
 		}
 		return null;
 	}

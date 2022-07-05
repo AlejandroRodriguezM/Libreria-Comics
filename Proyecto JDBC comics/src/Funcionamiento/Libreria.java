@@ -39,6 +39,7 @@ public class Libreria extends Comic {
 	public static List<Comic> filtroComics = new ArrayList<>();
 
 	private Connection conn = DBManager.conexion();
+	private NavegacionVentanas nav = new NavegacionVentanas();
 
 	/**
 	 * Devuelve todos los datos de la base de datos.
@@ -144,7 +145,7 @@ public class Libreria extends Comic {
 		sql.append("SELECT * FROM comicsbbdd where estado = 'En posesion'");
 
 		if (datos.ID.length() != 0 && ID != null) {
-			sql.append(connector).append("ID = ?");
+			sql.append(connector).append("ID like'%" + datos.getID() + "%'");
 			connector = " AND ";
 		}
 		if (datos.nombre.length() != 0) {
@@ -209,7 +210,7 @@ public class Libreria extends Comic {
 			comic = datosIndividual(rs);
 
 		} catch (SQLException e) {
-			System.out.println(e);		
+			nav.alertaException(e.toString());
 		}
 
 		return comic;
@@ -241,7 +242,7 @@ public class Libreria extends Comic {
 				} while (rs.next());
 			}
 		} catch (SQLException e) {
-			System.out.println(e);
+			nav.alertaException(e.toString());
 		}
 		return listaComics;
 	}
@@ -273,7 +274,7 @@ public class Libreria extends Comic {
 				} while (rs.next());
 			}
 		} catch (SQLException e) {
-			System.out.println(e);
+			nav.alertaException(e.toString());
 		}
 		return comic;
 	}
@@ -297,7 +298,7 @@ public class Libreria extends Comic {
 			st = conn.createStatement();
 			st.execute(sql);
 		} catch (SQLException e) {
-			System.out.println("ERROR");
+			nav.alertaException(e.toString());
 		}
 
 	}

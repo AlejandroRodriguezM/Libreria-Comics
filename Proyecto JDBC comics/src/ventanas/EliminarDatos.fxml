@@ -20,7 +20,7 @@
          </image>
       </ImageView>
       <Line endX="460.5" endY="-6.5" layoutX="-148.0" layoutY="13.0" startX="460.5" startY="359.0" />
-      <TableView fx:id="tablaBBDD" layoutY="387.0" prefHeight="359.0" prefWidth="1061.0">
+      <TableView fx:id="tablaBBDD" layoutY="387.0" prefHeight="359.0" prefWidth="1062.0">
          <columns>
             <TableColumn fx:id="ID" prefWidth="53.0" text="ID" />
             <TableColumn fx:id="nombre" prefWidth="110.0" text="Nombre" />

@@ -101,7 +101,7 @@ public class CrearBBDDController {
 
 		} catch (SQLException e) {
 
-			System.out.println(e);
+			nav.alertaException(e.toString());
 		}
 	}
 
@@ -135,7 +135,7 @@ public class CrearBBDDController {
 
 		} catch (SQLException e) {
 
-			System.out.println(e);
+			nav.alertaException(e.toString());
 		}
 		prontInformativo.setStyle("-fx-background-color: #DD370F");
 		prontInformativo.setText("ERROR. Ya existe una base de datos llamada: " + nombreBBDD.getText());
@@ -171,7 +171,7 @@ public class CrearBBDDController {
 
 		}
 		catch (SQLException e ) {
-			e.printStackTrace();
+			nav.alertaException(e.toString());
 		}
 
 	}
