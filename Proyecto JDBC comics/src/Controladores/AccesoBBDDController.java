@@ -8,7 +8,7 @@ package Controladores;
  *  - Ver la base de datos completa o parcial segun parametros introducidos.
  *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
  *  - Copia de seguridad de la base de datos en formato .sql
- *  - AÃ±adir comics a la base de datos.
+ *  - Añadir comics a la base de datos.
  *  - Modificar comics de la base de datos.
  *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
  *  - Ver frases de personajes de comics
@@ -73,14 +73,14 @@ public class AccesoBBDDController {
 	@FXML
 	private Button botonVerDDBB;
 
-    @FXML
-    private Button botonInformacion;
+	@FXML
+	private Button botonInformacion;
 
-    @FXML
-    private Label prontEstadoConexion;
+	@FXML
+	private Label prontEstadoConexion;
 
-    @FXML
-    private TextArea prontInformacion;
+	@FXML
+	private TextArea prontInformacion;
 
 	@FXML
 	private TextArea informacion;
@@ -100,13 +100,12 @@ public class AccesoBBDDController {
 	private NavegacionVentanas nav = new NavegacionVentanas();
 
 	/**
-	 * Metodo de acceso a pagina web
-	 *
+	 * Funcion para abrir el navegador y acceder a la URL
+	 * 
 	 * @param event
-	 * @throws IOException
 	 */
 	@FXML
-	void accesoGitHub(ActionEvent event) throws IOException {
+	void accesoGitHub(ActionEvent event) {
 		String url = "https://github.com/MisterioRojo/Proyecto-gui-bbdd/tree/V2.5";
 
 		if (Utilidades.isWindows()) {
@@ -115,19 +114,18 @@ public class AccesoBBDDController {
 			if (Utilidades.isUnix()) {
 				accesoGitHubLinux(url);
 			} else {
-
+				//No creada funcion para mac
 			}
 		}
 	}
 
 	/**
-	 * Metodo de acceso a pagina web
-	 *
+	 * Funcion para abrir el navegador y acceder a la URL
+	 * 
 	 * @param event
-	 * @throws IOException
 	 */
 	@FXML
-	void accesoTwitter(ActionEvent event) throws IOException {
+	void accesoTwitter(ActionEvent event) {
 		String url = "https://twitter.com/home";
 
 		if (Utilidades.isWindows()) {
@@ -136,64 +134,87 @@ public class AccesoBBDDController {
 			if (Utilidades.isUnix()) {
 				accesoTwitterLinux(url);
 			} else {
-
+				//No creada funcion para mac
 			}
 		}
 	}
-	
-	public void accesoGitHubLinux(String url) throws IOException
-	{
+
+	/**
+	 * 
+	 * @param url
+	 */
+	public void accesoGitHubLinux(String url) {
 		Runtime rt = Runtime.getRuntime();
-		String[] browsers = { "google-chrome", "firefox", "mozilla", "epiphany", "konqueror",
-		                                 "netscape", "opera", "links", "lynx" };
-		 
+		String[] browsers = { "google-chrome", "firefox", "mozilla", "epiphany", "konqueror", "netscape", "opera",
+				"links", "lynx" };
+
 		StringBuffer cmd = new StringBuffer();
 		for (int i = 0; i < browsers.length; i++)
-		    if(i == 0)
-		        cmd.append(String.format("%s \"%s\"", browsers[i], url));
-		    else
-		        cmd.append(String.format(" || %s \"%s\"", browsers[i], url)); 
-		    // If the first didn't work, try the next browser and so on
+			if (i == 0)
+				cmd.append(String.format("%s \"%s\"", browsers[i], url));
+			else
+				cmd.append(String.format(" || %s \"%s\"", browsers[i], url));
 
-		rt.exec(new String[] { "sh", "-c", cmd.toString() });
-	}
-	
-	public void accesoGitHubWindows(String url) throws IOException
-	{
-		java.awt.Desktop.getDesktop().browse(java.net.URI.create(url)); // Metodo que abre tu navegador por defecto
-	}
-	
-	public void accesoTwitterLinux(String url) throws IOException
-	{
-		Runtime rt = Runtime.getRuntime();
-		String[] browsers = { "google-chrome", "firefox", "mozilla", "epiphany", "konqueror",
-		                                 "netscape", "opera", "links", "lynx" };
-		 
-		StringBuffer cmd = new StringBuffer();
-		for (int i = 0; i < browsers.length; i++)
-		    if(i == 0)
-		        cmd.append(String.format(    "%s \"%s\"", browsers[i], url));
-		    else
-		        cmd.append(String.format(" || %s \"%s\"", browsers[i], url)); 
-		    // If the first didn't work, try the next browser and so on
-
-		rt.exec(new String[] { "sh", "-c", cmd.toString() });
-	}
-	
-	public void accesoTwitterWindows(String url) throws IOException
-	{
-		java.awt.Desktop.getDesktop().browse(java.net.URI.create(url)); // Metodo que abre tu navegador por defecto
+		try {
+			rt.exec(new String[] { "sh", "-c", cmd.toString() });
+		} catch (IOException e) {
+			nav.alertaException("Error: No funciona el boton \n" + e.toString());
+		}
 	}
 
 	/**
-	 * Permite entrar dentro del menuPrincipal
-	 *
+	 * 
+	 * @param url
+	 */
+	public void accesoGitHubWindows(String url) {
+		try {
+			java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
+		} catch (IOException e) {
+			nav.alertaException("Error: No funciona el boton \n" + e.toString());
+		}
+	}
+
+	/**
+	 * 
+	 * @param url
+	 */
+	public void accesoTwitterLinux(String url) {
+		Runtime rt = Runtime.getRuntime();
+		String[] browsers = { "google-chrome", "firefox", "mozilla", "epiphany", "konqueror", "netscape", "opera",
+				"links", "lynx" };
+
+		StringBuffer cmd = new StringBuffer();
+		for (int i = 0; i < browsers.length; i++)
+			if (i == 0)
+				cmd.append(String.format("%s \"%s\"", browsers[i], url));
+			else
+				cmd.append(String.format(" || %s \"%s\"", browsers[i], url));
+
+		try {
+			rt.exec(new String[] { "sh", "-c", cmd.toString() });
+		} catch (IOException e) {
+			nav.alertaException("Error: No funciona el boton \n" +e.toString());
+		}
+	}
+
+	/**
+	 * 
+	 * @param url
+	 */
+	public void accesoTwitterWindows(String url) {
+		try {
+			java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
+		} catch (IOException e) {
+			nav.alertaException("Error: No funciona el boton \n" +e.toString());
+		}
+	}
+
+	/**
+	 * 
 	 * @param event
-	 * @throws InterruptedException
-	 * @throws IOException
 	 */
 	@FXML
-	void entrarMenu(ActionEvent event) throws InterruptedException, IOException {
+	void entrarMenu(ActionEvent event) {
 
 		if (Funcionamiento.DBManager.isConnected()) { // Siempre que el metodo de la clase DBManager sea true, permitira
 			// acceder al menu principal
@@ -206,10 +227,14 @@ public class AccesoBBDDController {
 		} else { // En caso contrario mostrara el siguiente mensaje.
 			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
 			prontEstadoConexion.setFont(new Font("Arial", 25));
-			prontEstadoConexion.setText("Conectate a la bbdd \nantes de continuar");
+			prontEstadoConexion.setText("Conectate a la bbdd antes de continuar");
 		}
 	}
 
+	/**
+	 * 
+	 * @param event
+	 */
 	@FXML
 	void crearBBDD(ActionEvent event) {
 
@@ -220,6 +245,10 @@ public class AccesoBBDDController {
 
 	}
 
+	/**
+	 * 
+	 * @param event
+	 */
 	@FXML
 	void verDBDisponibles(ActionEvent event) {
 
@@ -235,8 +264,9 @@ public class AccesoBBDDController {
 
 			while (res.next()) {
 
-				if(!res.getString("TABLE_CAT").equals("information_schema") && !res.getString("TABLE_CAT").equals("mysql") && !res.getString("TABLE_CAT").equals("performance_schema"))
-				{
+				if (!res.getString("TABLE_CAT").equals("information_schema")
+						&& !res.getString("TABLE_CAT").equals("mysql")
+						&& !res.getString("TABLE_CAT").equals("performance_schema")) {
 					databases.add(res.getString("TABLE_CAT") + "\n");
 				}
 			}
@@ -252,14 +282,18 @@ public class AccesoBBDDController {
 		}
 	}
 
-    @FXML
-    void verInfo(ActionEvent event) {
+	/**
+	 * 
+	 * @param event
+	 */
+	@FXML
+	void verInfo(ActionEvent event) {
 
-    	prontInformacion.setStyle("-fx-background-color: #A0F52D");
-		prontInformacion.setText("Programa creado por Alejandro Rodriguez. Es un proyecto personal para probar conocimientos adquiridos durante el primer curso de DAW. Esta aplicacion solamente puede usarse con una tabla de una forma estructurada de una forma concreta. Esta aplicacion ha sido creada con la intencion de ser usada junto a una base de datos MySql. Si la aplicacion MySql workbench no se encuentra instalada. Esta aplicacion no funcionara. La pagina oficial donde se encuentra la aplicacion es: https://dev.mysql.com/downloads/workbench/");
+		prontInformacion.setStyle("-fx-background-color: #A0F52D");
+		prontInformacion.setText(
+				"Programa creado por Alejandro Rodriguez. Es un proyecto personal para probar conocimientos adquiridos durante el primer curso de DAW. Esta aplicacion solamente puede usarse con una tabla de una forma estructurada de una forma concreta. Esta aplicacion ha sido creada con la intencion de ser usada junto a una base de datos MySql. Si la aplicacion MySql workbench no se encuentra instalada. Esta aplicacion no funcionara. La pagina oficial donde se encuentra la aplicacion es: https://dev.mysql.com/downloads/workbench/");
 
-    }
-
+	}
 
 	/**
 	 * Limpia los datos de los campos
@@ -329,8 +363,7 @@ public class AccesoBBDDController {
 		datos[1] = nombreBBDD.getText();
 		datos[2] = usuario.getText();
 		datos[3] = pass.getText();
-		DBManager.datosBBDD(datos); // llamada a metodo que permite mandar los datos de los TextField a la clase
-		// DBManager
+		DBManager.datosBBDD(datos); 
 	}
 
 	/**
@@ -350,8 +383,7 @@ public class AccesoBBDDController {
 	/**
 	 * Cierra el programa a la fuerza correctamente.
 	 */
-	public void closeWindows() { // Metodo que permite cerrar completamente el programa en caso de cerrar a la
-		// fuerza.
+	public void closeWindows() { // Metodo que permite cerrar completamente el programa en caso de cerrar a la // fuerza.
 		Stage myStage = (Stage) this.botonEnviar.getScene().getWindow();
 		myStage.close();
 	}

@@ -101,7 +101,7 @@ public class CrearBBDDController {
 
 		} catch (SQLException e) {
 
-			nav.alertaException(e.toString());
+			nav.alertaException("No se ha podido crear la base de datos: \n" + e.toString());
 		}
 	}
 

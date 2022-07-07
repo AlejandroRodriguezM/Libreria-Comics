@@ -97,6 +97,6 @@
       <Button fx:id="botonCrearBBDD" layoutX="160.0" layoutY="509.0" mnemonicParsing="false" onAction="#crearBBDD" prefHeight="54.0" prefWidth="118.0" text="Crear BBDD" />
       <Button fx:id="botonVerDDBB" layoutX="163.0" layoutY="635.0" mnemonicParsing="false" onAction="#verDBDisponibles" prefHeight="54.0" prefWidth="118.0" text="Ver bbdd" />
       <Button fx:id="botonInformacion" layoutX="163.0" layoutY="700.0" mnemonicParsing="false" onAction="#verInfo" prefHeight="54.0" prefWidth="118.0" text="Información" />
-      <TextArea fx:id="prontInformacion" editable="false" layoutX="14.0" layoutY="10.0" prefHeight="96.0" prefWidth="290.0" text="Programa pensado para organizar una base de datos alojada en MySql Workbench. Aplicacion creada por Alejandro Rodriguez.&#10;Para poder acceder a la base de datos, necesita rellenar los siguientes campos." wrapText="true" />
+      <TextArea fx:id="prontInformacion" editable="false" layoutX="15.0" layoutY="9.0" prefHeight="96.0" prefWidth="290.0" text="Ingresa los datos para poder acceder. En caso de no tener una base de datos, puedes crearla abajo en el boton &quot;Crear BBDD&quot;. Tienes mas información en el boton información. Tambien si quereis seguirme en mi tuiter o ver mis proyectos, pinchen los botones de abajo. Larga vida al comic!" wrapText="true" />
    </children>
 </Pane>

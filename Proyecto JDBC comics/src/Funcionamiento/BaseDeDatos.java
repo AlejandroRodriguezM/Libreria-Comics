@@ -152,7 +152,7 @@ public class BaseDeDatos extends Excel{
 		return false;
 	}
 
-	public boolean crearExcel(File fichero) throws SQLException, IOException {
+	public boolean crearExcel(File fichero) throws IOException {
 
 		FileOutputStream outputStream;
 		Cell celda;
@@ -165,7 +165,9 @@ public class BaseDeDatos extends Excel{
 				"Procedencia", "anioPubli", "nomGuionista", "nomDibujante", "estado" };
 		int indiceFila = 0;
 
+
 		fichero.createNewFile();
+
 
 		libreria.verLibreriaCompleta();
 		List<Comic> listaComics = Libreria.listaCompleta;

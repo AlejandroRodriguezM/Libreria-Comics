@@ -78,7 +78,7 @@ public class NavegacionVentanas {
 	}
 
 
-	public void verMenuPrincipal() throws IOException {
+	public void verMenuPrincipal() {
 
 		try {
 			// Cargo la vista

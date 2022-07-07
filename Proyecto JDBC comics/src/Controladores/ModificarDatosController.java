@@ -324,15 +324,11 @@ public class ModificarDatosController {
 	 */
 	public void modificacionDatos() {
 
-		String nombre = "", numero = "", variante = "", firma = "", editorial = "", formato = "", procedencia = "", fecha = "", guionista = "", dibujante = "";
-
 		String sentenciaSQL = "UPDATE Comicsbbdd set nomComic = ?,numComic = ?,nomVariante = ?,"
 				+ "Firma = ?,nomEditorial = ?,formato = ?,Procedencia = ?,anioPubli = ?,"
 				+ "nomGuionista = ?,nomDibujante = ? where ID = ?";
 
-		String datosModificados[] = camposComicModificar();
-
-		comic = libreria.comicDatos(datosModificados[0]);
+		comic = libreria.comicDatos(idComicMod.getText());
 
 		if (alertaModificacion()) {
 
@@ -341,79 +337,9 @@ public class ModificarDatosController {
 
 				ps = conn.prepareStatement(sentenciaSQL);
 
-				if (datosModificados[0].length() != 0) {
-					ps.setString(11, datosModificados[0]);
-					if (datosModificados[1].length() != 0) {
-						ps.setString(1, datosModificados[1]);
-						nombre = datosModificados[1];
-					} else {
-						nombre = comic.getNombre();
-						ps.setString(1, nombre);
-					}
-					if (datosModificados[2].length() != 0) {
-						ps.setString(2, datosModificados[2]);
-						numero = datosModificados[2];
-					} else {
-						numero = comic.getNumero();
-						ps.setString(2, numero);
-					}
-					if (datosModificados[3].length() != 0) {
-						ps.setString(3, datosModificados[3]);
-						variante = datosModificados[3];
-					} else {
-						variante = comic.getVariante();
-						ps.setString(3, variante);
-					}
-					if (datosModificados[4].length() != 0) {
-						ps.setString(4, datosModificados[4]);
-						firma = datosModificados[4];
-					} else {
-						firma = comic.getFirma();
-						ps.setString(4, firma);
-					}
-					if (datosModificados[5].length() != 0) {
-						ps.setString(5, datosModificados[5]);
-						editorial = datosModificados[5];
-					} else {
-						editorial = comic.getEditorial();
-						ps.setString(5, editorial);
-					}
-					if (datosModificados[6].length() != 0) {
-						ps.setString(6, datosModificados[6]);
-						formato = datosModificados[6];
-					} else {
-						formato = comic.getFormato();
-						ps.setString(6, formato);
-					}
-					if (datosModificados[7].length() != 0) {
-						ps.setString(7, datosModificados[7]);
-						procedencia = datosModificados[7];
-					} else {
-						procedencia = comic.getProcedencia();
-						ps.setString(7, procedencia);
-					}
-					if (datosModificados[8].length() != 0) {
-						ps.setString(8, datosModificados[8]);
-						fecha = datosModificados[8];
-					} else {
-						fecha = comic.getFecha();
-						ps.setString(8, fecha);
-					}
-					if (datosModificados[9].length() != 0) {
-						ps.setString(9, datosModificados[9]);
-						guionista = datosModificados[9];
-					} else {
-						guionista = comic.getGuionista();
-						ps.setString(9, guionista);
-					}
-					if (datosModificados[10].length() != 0) {
-						ps.setString(10, datosModificados[10]);
-						dibujante = datosModificados[10];
-					} else {
-						dibujante = comic.getDibujante();
-						ps.setString(10, dibujante);
-					}
-
+				if (idComicMod.getText().length() != 0) {
+					ps.setString(11, idComicMod.getText());
+					ComicBorrar(ps);
 				} else {
 					pantallaInformativa.setStyle("-fx-background-color: #F53636");
 					idComicMod.setStyle("-fx-background-color: #F53636");
@@ -423,16 +349,97 @@ public class ModificarDatosController {
 
 				if (ps.executeUpdate() == 1) {
 					pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-					pantallaInformativa.setText("Ha modificado correctamente: \n" + "\nNombre del comic: " + nombre
-							+ "\nNumero: " + numero + "\nPortada variante: " + variante + "\nFirma: " + firma
-							+ "\nEditorial: " + editorial + "\nFormato: " + formato + "\nProcedencia: " + procedencia
-							+ "\nFecha de publicacion: " + fecha + "\nGuionista: " + guionista + "\nDibujante: "
-							+ dibujante);
+					pantallaInformativa.setText("Ha modificado correctamente: " + comic.toString());
 				}
 			} catch (SQLException ex) {
 				nav.alertaException(ex.toString());
 			}
 		}
+	}
+
+	public Comic ComicBorrar(PreparedStatement ps) {
+		
+		String nombre = "", numero = "", variante = "", firma = "", editorial = "", formato = "", procedencia = "",
+				fecha = "", guionista = "", dibujante = "";
+
+		String datosModificados[] = camposComicModificar();
+
+		try {
+			if (datosModificados[1].length() != 0) {
+				ps.setString(1, datosModificados[1]);
+				nombre = datosModificados[1];
+			} else {
+				nombre = comic.getNombre();
+				ps.setString(1, nombre);
+			}
+			if (datosModificados[2].length() != 0) {
+				ps.setString(2, datosModificados[2]);
+				numero = datosModificados[2];
+			} else {
+				numero = comic.getNumero();
+				ps.setString(2, numero);
+			}
+			if (datosModificados[3].length() != 0) {
+				ps.setString(3, datosModificados[3]);
+				variante = datosModificados[3];
+			} else {
+				variante = comic.getVariante();
+				ps.setString(3, variante);
+			}
+			if (datosModificados[4].length() != 0) {
+				ps.setString(4, datosModificados[4]);
+				firma = datosModificados[4];
+			} else {
+				firma = comic.getFirma();
+				ps.setString(4, firma);
+			}
+			if (datosModificados[5].length() != 0) {
+				ps.setString(5, datosModificados[5]);
+				editorial = datosModificados[5];
+			} else {
+				editorial = comic.getEditorial();
+				ps.setString(5, editorial);
+			}
+			if (datosModificados[6].length() != 0) {
+				ps.setString(6, datosModificados[6]);
+				formato = datosModificados[6];
+			} else {
+				formato = comic.getFormato();
+				ps.setString(6, formato);
+			}
+			if (datosModificados[7].length() != 0) {
+				ps.setString(7, datosModificados[7]);
+				procedencia = datosModificados[7];
+			} else {
+				procedencia = comic.getProcedencia();
+				ps.setString(7, procedencia);
+			}
+			if (datosModificados[8].length() != 0) {
+				ps.setString(8, datosModificados[8]);
+				fecha = datosModificados[8];
+			} else {
+				fecha = comic.getFecha();
+				ps.setString(8, fecha);
+			}
+			if (datosModificados[9].length() != 0) {
+				ps.setString(9, datosModificados[9]);
+				guionista = datosModificados[9];
+			} else {
+				guionista = comic.getGuionista();
+				ps.setString(9, guionista);
+			}
+			if (datosModificados[10].length() != 0) {
+				ps.setString(10, datosModificados[10]);
+				dibujante = datosModificados[10];
+			} else {
+				dibujante = comic.getDibujante();
+				ps.setString(10, dibujante);
+			}
+		} catch (SQLException ex) {
+			nav.alertaException(ex.toString());
+		}
+
+		return comic;
 	}
 
 	/**

@@ -508,8 +508,6 @@ public class MenuPrincipalController {
 			}
 		} catch (IOException e) {
 			nav.alertaException(e.toString());
-		} catch (SQLException e) {
-			nav.alertaException(e.toString());
 		}
 	}
 
@@ -607,7 +605,7 @@ public class MenuPrincipalController {
 	 * @return
 	 * @throws SQLException
 	 */
-	public List<Comic> libreriaCompleta() throws SQLException {
+	public List<Comic> libreriaCompleta()  {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaCompleta());
 		
 		if(listComic.size() == 0)
