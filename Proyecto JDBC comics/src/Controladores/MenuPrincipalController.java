@@ -1,5 +1,7 @@
 package Controladores;
 
+import java.awt.TextArea;
+
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  * Las ventanas graficas se realizan con JavaFX.
@@ -171,8 +173,8 @@ public class MenuPrincipalController {
 	@FXML
 	private Label prontInformacion;
 
-	@FXML
-	private Label prontFrases;
+    @FXML
+    private Label prontFrases;
 
 	private NavegacionVentanas nav = new NavegacionVentanas();
 
@@ -249,7 +251,7 @@ public class MenuPrincipalController {
 	@FXML
 	void fraseRandom(ActionEvent event) {
 
-		prontFrases.setStyle("-fx-background-color: #D5D8D7");
+		prontFrases.setStyle("-fx-background-color: #D3D3D3");
 		prontFrases.setText(Comic.frasesComics());
 	}
 
