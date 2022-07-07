@@ -376,6 +376,20 @@ public class NavegacionVentanas {
 		}
 		return false;
 	}
+	
+	public boolean alertaInsertar() {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
+		stage.setResizable(false);
+		alert.setTitle("Insertando . . .");
+		alert.setHeaderText("Estas apunto de introducir datos.");
+		alert.setContentText("¿Estas seguro que quieres introducir el comic?");
+		if (alert.showAndWait().get() == ButtonType.OK) {
+			return true;
+		}
+		return false;
+	}
 
 
 	public void alertaException(String excepcion)

@@ -1,5 +1,6 @@
 package Controladores;
 
+
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  * Las ventanas graficas se realizan con JavaFX.
@@ -27,23 +28,34 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 
+import Funcionamiento.Comic;
 import Funcionamiento.DBManager;
+import Funcionamiento.Libreria;
 import Funcionamiento.NavegacionVentanas;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 public class IntroducirDatosController {
 
 	@FXML
-	private Button botonAniadirBBDD;
+	private Button botonLimpiarComic;
 
 	@FXML
-	private Button botonLimpiarComic;
+	private Button botonIntroducir;
+
+	@FXML
+	private Button botonMostrarParametro;
 
 	@FXML
 	private Button botonSalir;
@@ -51,42 +63,119 @@ public class IntroducirDatosController {
 	@FXML
 	private Button botonVolver;
 
-    @FXML
-    private TextArea prontDatos;
+	@FXML
+	private Button botonbbdd;
 
 	@FXML
-	private TextField anioPublicacion;
+	private TextArea pantallaInformativa;
 
 	@FXML
-	private TextField nombreComic;
+	private TextField idParametro;
 
 	@FXML
-	private TextField nombreDibujante;
+	private TextField nombreParametro;
 
 	@FXML
-	private TextField nombreEditorial;
+	private TextField numeroParametro;
 
 	@FXML
-	private TextField nombreFirma;
+	private TextField varianteParametro;
 
 	@FXML
-	private TextField nombreFormato;
+	private TextField firmaParametro;
 
 	@FXML
-	private TextField nombreGuionista;
+	private TextField editorialParametro;
 
 	@FXML
-	private TextField nombreProcedencia;
+	private TextField formatoParametro;
 
 	@FXML
-	private TextField nombreVariante;
+	private TextField procedenciaParametro;
 
 	@FXML
-	private TextField numeroComic;
+	private TextField fechaParametro;
 
-	private Connection conn =DBManager.conexion();
+	@FXML
+	private TextField guionistaParametro;
+
+	@FXML
+	private TextField dibujanteParametro;
+
+	@FXML
+	private TextField nombreAni;
+
+	@FXML
+	private TextField numeroAni;
+
+	@FXML
+	private TextField varianteAni;
+
+	@FXML
+	private TextField firmaAni;
+
+	@FXML
+	private TextField editorialAni;
+
+	@FXML
+	private TextField formatoAni;
+
+	@FXML
+	private TextField procedenciaAni;
+
+	@FXML
+	private TextField fechaAni;
+
+	@FXML
+	private TextField guionistaAni;
+
+	@FXML
+	private TextField dibujanteAni;
+
+	@FXML
+	private Label idMod;
+
+	@FXML
+	public TableView<Comic> tablaBBDD;
+
+	@FXML
+	private TableColumn<Comic, String> ID;
+
+	@FXML
+	private TableColumn<Comic, String> numero;
+
+	@FXML
+	private TableColumn<Comic, String> procedencia;
+
+	@FXML
+	private TableColumn<Comic, String> variante;
+
+	@FXML
+	private TableColumn<Comic, String> dibujante;
+
+	@FXML
+	private TableColumn<Comic, String> editorial;
+
+	@FXML
+	private TableColumn<Comic, String> fecha;
+
+	@FXML
+	private TableColumn<Comic, String> firma;
+
+	@FXML
+	private TableColumn<Comic, String> formato;
+
+	@FXML
+	private TableColumn<Comic, String> guionista;
+
+	@FXML
+	private TableColumn<Comic, String> nombre;
+
+	private Connection conn = DBManager.conexion();
 
 	private NavegacionVentanas nav = new NavegacionVentanas();
+
+	private Libreria libreria = new Libreria();
 
 	/**
 	 *
@@ -94,16 +183,51 @@ public class IntroducirDatosController {
 	 */
 	@FXML
 	void limpiarDatos(ActionEvent event) {
-		nombreComic.setText("");
-		numeroComic.setText("");
-		nombreVariante.setText("");
-		nombreFirma.setText("");
-		nombreEditorial.setText("");
-		nombreFormato.setText("");
-		anioPublicacion.setText("");
-		anioPublicacion.setText("");
-		nombreDibujante.setText("");
-		nombreGuionista.setText("");
+
+		// Campos de busqueda por parametro
+		idParametro.setText("");
+
+		nombreParametro.setText("");
+
+		numeroParametro.setText("");
+
+		varianteParametro.setText("");
+
+		firmaParametro.setText("");
+
+		editorialParametro.setText("");
+
+		formatoParametro.setText("");
+
+		procedenciaParametro.setText("");
+
+		fechaParametro.setText("");
+
+		guionistaParametro.setText("");
+
+		dibujanteParametro.setText("");
+
+		// Campos de datos a modificar
+
+		nombreAni.setText("");
+
+		numeroAni.setText("");
+
+		nombreAni.setText("");
+
+		firmaAni.setText("");
+
+		editorialAni.setText("");
+
+		formatoAni.setText("");
+
+		procedenciaAni.setText("");
+
+		fechaAni.setText("");
+
+		guionistaAni.setText("");
+
+		dibujanteAni.setText("");
 	}
 
 	/**
@@ -115,49 +239,18 @@ public class IntroducirDatosController {
 	@FXML
 	public void agregarDatos(ActionEvent event) {
 
-		IntroducirDatos();
-	}
-
-	/**
-	 *
-	 * @return
-	 */
-	public String[] camposComics() {
-		String campos[] = new String[10];
-
-		campos[0] = nombreComic.getText();
-
-		campos[1] = numeroComic.getText();
-
-		campos[2] = nombreVariante.getText();
-
-		campos[3] = nombreFirma.getText();
-
-		campos[4] = nombreEditorial.getText();
-
-		campos[5] = nombreFormato.getText();
-
-		campos[6] = nombreProcedencia.getText();
-
-		campos[7] = anioPublicacion.getText();
-
-		campos[8] = nombreGuionista.getText();
-
-		campos[9] = nombreDibujante.getText();
-
-		return campos;
+		introducirDatos();
 	}
 
 	/**
 	 *
 	 */
-	public void IntroducirDatos()
-	{
+	public void introducirDatos() {
 		DBManager.loadDriver();
 
 		String sentenciaSQL = "insert into comicsbbdd(nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante) values (?,?,?,?,?,?,?,?,?,?)";
 
-		String datos[] = camposComics();
+		String datos[] = camposComicIntroducir();
 
 		try {
 			PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
@@ -178,18 +271,191 @@ public class IntroducirDatosController {
 			statement.setString(10, datos[9]);
 
 			if (statement.executeUpdate() == 1) {
-				prontDatos.setText("Comic aÃ±adido correctamente!" + "\nNombre del comic: " + datos[0]
-						+ "\nNumero: " + datos[1] + "\nPortada variante: " + datos[2] + "\nFirma: " + datos[3]
-						+ "\nEditorial: " + datos[4] + "\nFormato: " + datos[5] + "\nProcedencia: "
-						+ datos[6] + "\nFecha de publicacion: " + datos[7] + "\nGuionista: " + datos[8]
-						+ "\nDibujante: " + datos[9]);
-				statement.close();
+				if(nav.alertaInsertar())
+				{
+					pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
+					pantallaInformativa.setText("Comic añadido correctamente!" + "\nNombre del comic: " + datos[0]
+							+ "\nNumero: " + datos[1] + "\nPortada variante: " + datos[2] + "\nFirma: " + datos[3]
+							+ "\nEditorial: " + datos[4] + "\nFormato: " + datos[5] + "\nProcedencia: " + datos[6]
+							+ "\nFecha de publicacion: " + datos[7] + "\nGuionista: " + datos[8] + "\nDibujante: "
+							+ datos[9]);
+					statement.close();
+				}
+				else { // Si se cancela el borra del comic, saltara el siguiente mensaje.
+					pantallaInformativa.setStyle("-fx-background-color: #F53636");
+					pantallaInformativa.setText("Insertado cancelado..");
+				}
+
 			} else {
-				prontDatos.setText("Se ha encontrado un error. No ha sido posible aÃ±adir el comic a la base de datos.");
+				pantallaInformativa.setStyle("-fx-background-color: #F53636");
+				pantallaInformativa
+						.setText("Se ha encontrado un error. No ha sido posible añdir el comic a la base de datos.");
 			}
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
 		}
+	}
+
+	/**
+	 *
+	 * @param event
+	 * @throws SQLException
+	 */
+	@FXML
+	void mostrarPorParametro(ActionEvent event) {
+
+		nombreColumnas();
+		listaPorParametro();
+	}
+
+	/**
+	 * Muestra toda la base de datos.
+	 *
+	 * @param event
+	 * @throws SQLException
+	 */
+	@FXML
+	void verTodabbdd(ActionEvent event) throws SQLException {
+
+		nombreColumnas();
+		tablaBBDD(libreriaCompleta());
+
+	}
+
+	/**
+	 *
+	 * @return
+	 * @throws SQLException
+	 */
+	public void listaPorParametro() {
+		String datosComic[] = camposComicActuales();
+
+		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
+				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "");
+
+		tablaBBDD(libreriaParametro(comic));
+	}
+
+	/**
+	 *
+	 * @param comic
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<Comic> libreriaParametro(Comic comic) {
+		List<Comic> listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
+
+		if (listComic.size() == 0) {
+			pantallaInformativa.setStyle("-fx-background-color: #F53636");
+			pantallaInformativa.setText("ERROR. No hay ningun dato en la base de datos");
+		}
+		return listComic;
+	}
+
+	/**
+	 *
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<Comic> libreriaCompleta() {
+		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreria());
+
+		if (listComic.size() == 0) {
+			pantallaInformativa.setStyle("-fx-background-color: #F53636");
+			pantallaInformativa.setText("ERROR. No hay ningun dato en la base de datos");
+		}
+
+		return listComic;
+	}
+
+	/**
+	 *
+	 * @param listaComic
+	 */
+	@SuppressWarnings("unchecked")
+	public void tablaBBDD(List<Comic> listaComic) {
+		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+				guionista, dibujante);
+		tablaBBDD.getItems().setAll(listaComic);
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public String[] camposComicActuales() {
+		String campos[] = new String[11];
+
+		campos[0] = idParametro.getText();
+
+		campos[1] = nombreParametro.getText();
+
+		campos[2] = numeroParametro.getText();
+
+		campos[3] = varianteParametro.getText();
+
+		campos[4] = firmaParametro.getText();
+
+		campos[5] = editorialParametro.getText();
+
+		campos[6] = formatoParametro.getText();
+
+		campos[7] = procedenciaParametro.getText();
+
+		campos[8] = fechaParametro.getText();
+
+		campos[9] = guionistaParametro.getText();
+		
+		campos[9] = dibujanteParametro.getText();
+
+		return campos;
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public String[] camposComicIntroducir() {
+		String campos[] = new String[10];
+
+		campos[0] = nombreAni.getText();
+
+		campos[1] = numeroAni.getText();
+
+		campos[2] = varianteAni.getText();
+
+		campos[3] = firmaAni.getText();
+
+		campos[4] = editorialAni.getText();
+
+		campos[5] = formatoAni.getText();
+
+		campos[6] = procedenciaAni.getText();
+
+		campos[7] = fechaAni.getText();
+
+		campos[8] = guionistaAni.getText();
+
+		campos[9] = dibujanteAni.getText();
+
+		return campos;
+	}
+
+	/**
+	 *
+	 */
+	private void nombreColumnas() {
+		ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
+		nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+		numero.setCellValueFactory(new PropertyValueFactory<>("numero"));
+		variante.setCellValueFactory(new PropertyValueFactory<>("variante"));
+		firma.setCellValueFactory(new PropertyValueFactory<>("firma"));
+		editorial.setCellValueFactory(new PropertyValueFactory<>("editorial"));
+		formato.setCellValueFactory(new PropertyValueFactory<>("formato"));
+		procedencia.setCellValueFactory(new PropertyValueFactory<>("procedencia"));
+		fecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+		guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
+		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
 	}
 
 	/**

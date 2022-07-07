@@ -355,6 +355,10 @@ public class ModificarDatosController {
 				nav.alertaException(ex.toString());
 			}
 		}
+		else { // Si se cancela el borra del comic, saltara el siguiente mensaje.
+			pantallaInformativa.setStyle("-fx-background-color: #F53636");
+			pantallaInformativa.setText("Modificacion cancelada.");
+		}
 	}
 
 	public Comic ComicBorrar(PreparedStatement ps) {
