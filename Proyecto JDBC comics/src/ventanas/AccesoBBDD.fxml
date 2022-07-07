@@ -59,7 +59,7 @@
       </ImageView>
       <ImageView fitHeight="409.0" fitWidth="315.0" layoutY="218.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../imagenes/FVe-YDjVIAYCW9j.jpg" />
+            <Image url="@../imagenes/Fondo%20AccederBBDD.jpg" />
          </image>
       </ImageView>
       <TextField fx:id="nombreBBDD" layoutX="76.0" layoutY="142.0" />

@@ -224,7 +224,7 @@ public class CrearBBDDController {
 	 *
 	 * @throws IOException
 	 */
-	public void closeWindows() throws IOException {
+	public void closeWindows() {
 
 		nav.verAccesoBBDD();
 

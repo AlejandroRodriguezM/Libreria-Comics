@@ -103,12 +103,7 @@ public class NavegacionVentanas {
 
 			// Indico que debe hacer al cerrar
 			stage.setOnCloseRequest(e -> {
-				try {
-					controlador.closeWindows();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				controlador.closeWindows();
 			});
 
 		} catch (IOException ex) {
@@ -142,12 +137,7 @@ public class NavegacionVentanas {
 
 			// Indico que debe hacer al cerrar
 			stage.setOnCloseRequest(e -> {
-				try {
-					controlador.closeWindows();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				controlador.closeWindows();
 			});
 
 			stage.setScene(scene);
@@ -184,12 +174,9 @@ public class NavegacionVentanas {
 
 			// Indico que debe hacer al cerrar
 			stage.setOnCloseRequest(e -> {
-				try {
-					controlador.closeWindows();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+		
+			controlador.closeWindows();
+				
 			});
 
 			stage.setScene(scene);
@@ -226,12 +213,7 @@ public class NavegacionVentanas {
 
 			// Indico que debe hacer al cerrar
 			stage.setOnCloseRequest(e -> {
-				try {
-					controlador.closeWindows();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				controlador.closeWindows();
 			});
 
 			stage.setScene(scene);
@@ -269,12 +251,7 @@ public class NavegacionVentanas {
 			// Indico que debe hacer al cerrar
 			stage.setOnCloseRequest(e -> {
 		
-			try {
-				controlador.closeWindows();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				alertaException(e1.toString());
-			}
+			controlador.closeWindows();
 				
 			});
 
@@ -312,12 +289,7 @@ public class NavegacionVentanas {
 
 			// Indico que debe hacer al cerrar
 			stage.setOnCloseRequest(e -> {
-				try {
-					controlador.closeWindows();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					alertaException(e1.toString());
-				}
+				controlador.closeWindows();
 			});
 
 			stage.setScene(scene);

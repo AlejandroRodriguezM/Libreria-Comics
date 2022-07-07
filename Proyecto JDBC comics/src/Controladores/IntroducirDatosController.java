@@ -315,7 +315,7 @@ public class IntroducirDatosController {
 	 * @throws SQLException
 	 */
 	@FXML
-	void verTodabbdd(ActionEvent event) throws SQLException {
+	void verTodabbdd(ActionEvent event) {
 
 		nombreColumnas();
 		tablaBBDD(libreriaCompleta());
@@ -465,7 +465,7 @@ public class IntroducirDatosController {
 	 * @throws IOException
 	 */
 	@FXML
-	void volverMenu(ActionEvent event) throws IOException {
+	void volverMenu(ActionEvent event) {
 
 		nav.verMenuPrincipal();
 
@@ -492,7 +492,7 @@ public class IntroducirDatosController {
 	 *
 	 * @throws IOException
 	 */
-	public void closeWindows() throws IOException {
+	public void closeWindows() {
 
 		nav.verMenuPrincipal();
 

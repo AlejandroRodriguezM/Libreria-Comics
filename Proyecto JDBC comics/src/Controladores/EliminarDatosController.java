@@ -385,7 +385,7 @@ public class EliminarDatosController {
 	 *
 	 * @throws IOException
 	 */
-	public void closeWindows() throws IOException { // Metodo que permite cerrar el programa a la fuerza.
+	public void closeWindows() { // Metodo que permite cerrar el programa a la fuerza.
 
 		nav.verMenuPrincipal(); // Llamada a metodo que carga y muestra la ventana de MenuPrincipal
 

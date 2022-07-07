@@ -602,7 +602,7 @@ public class ModificarDatosController {
 	 *
 	 * @throws IOException
 	 */
-	public void closeWindows() throws IOException {
+	public void closeWindows() {
 
 		nav.verMenuPrincipal();
 

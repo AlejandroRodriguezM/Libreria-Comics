@@ -121,7 +121,7 @@ public class RecomendacionesComic {
 	 * @param event
 	 * @throws IOException
 	 */
-	public void volverMenu(ActionEvent event) throws IOException {
+	public void volverMenu(ActionEvent event) {
 
 		nav.verMenuPrincipal();
 
@@ -135,7 +135,7 @@ public class RecomendacionesComic {
 	 *
 	 * @throws IOException
 	 */
-	public void closeWindows() throws IOException {
+	public void closeWindows() {
 
 		nav.verMenuPrincipal();
 
