@@ -1,7 +1,5 @@
 package Controladores;
 
-import java.awt.TextArea;
-
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  * Las ventanas graficas se realizan con JavaFX.
@@ -374,6 +372,7 @@ public class MenuPrincipalController {
     	{
     		prontInformacion.setStyle("-fx-background-color: #A0F52D");
 			prontInformacion.setText("Has borrado correctamente el contenido de la base de datos.");
+			tablaBBDD.getItems().clear();
     	}
     	else
     	{

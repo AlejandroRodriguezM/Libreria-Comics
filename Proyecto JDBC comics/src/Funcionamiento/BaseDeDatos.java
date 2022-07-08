@@ -28,14 +28,13 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-public class BaseDeDatos extends Excel{
+public class BaseDeDatos extends Excel {
 
 	private Libreria libreria = new Libreria();
 	private Connection conn = DBManager.conexion();
 	private NavegacionVentanas nav = new NavegacionVentanas();
 
-	public boolean importarCSV(File fichero)
-	{
+	public boolean importarCSV(File fichero) {
 		String sql = "INSERT INTO comicsbbdd(ID,nomComic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,anioPubli,nomGuionista,nomDibujante,estado) values (?,?,?,?,?,?,?,?,?,?,?,?)";
 
 		try {
@@ -54,14 +53,14 @@ public class BaseDeDatos extends Excel{
 				String nombre = data[1];
 				String numero = data[2];
 				String variante = data[3];
-				String firma =data[4];
-				String editorial =data[5];
-				String formato =data[6];
-				String procedencia =data[7];
-				String fecha =data[8];
-				String guionista =data[9];
-				String dibujante =data[10];
-				String estado =data[11];
+				String firma = data[4];
+				String editorial = data[5];
+				String formato = data[6];
+				String procedencia = data[7];
+				String fecha = data[8];
+				String guionista = data[9];
+				String dibujante = data[10];
+				String estado = data[11];
 
 				statement.setString(1, id);
 				statement.setString(2, nombre);
@@ -87,9 +86,9 @@ public class BaseDeDatos extends Excel{
 			statement.executeBatch();
 			return true;
 
-		}
-		catch (Exception e){
+		} catch (Exception e) {
 			nav.alertaException(e.toString());
+			e.printStackTrace();
 		}
 		return false;
 	}
@@ -100,20 +99,22 @@ public class BaseDeDatos extends Excel{
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM comicsbbdd");
 
-		    int total = -1;
+			int total = -1;
 
-		    total = rs.getRow();
+			total = rs.getRow();
 
-		    return total;
+			return total;
 		} catch (SQLException e) {
 			nav.alertaException(e.toString());
 		}
 		return 0;
 	}
-	
-	//NO FUNCIONA
-	public boolean borrarContenidoTabla()
-	{
+
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean borrarContenidoTabla() {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
 		stage.getIcons().add(new Image("/Icono/exit.png")); // To add an icon
@@ -122,7 +123,7 @@ public class BaseDeDatos extends Excel{
 		alert.setContentText("¿Estas seguro que quieres borrarlo todo?");
 
 		if (alert.showAndWait().get() == ButtonType.OK) {
-			
+
 			Alert alert2 = new Alert(AlertType.CONFIRMATION);
 			Stage stage2 = (Stage) alert2.getDialogPane().getScene().getWindow();
 			stage2.getIcons().add(new Image("/Icono/exit.png")); // To add an icon
@@ -131,19 +132,17 @@ public class BaseDeDatos extends Excel{
 			alert.setContentText("¿De verdad de verdad quieres borrarlo todo?");
 			if (alert.showAndWait().get() == ButtonType.OK) {
 				try {
-					System.out.println(DBManager.isConnected());
 					PreparedStatement statement1 = conn.prepareStatement("delete from comicsbbdd");
 					PreparedStatement statement2 = conn.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");
-					
+
 					statement1.executeUpdate();
 					statement2.executeUpdate();
+					libreria.reiniciarBBDD();
 					return true;
 				} catch (SQLException e) {
 					nav.alertaException(e.toString());
 				}
-			}
-			else
-			{
+			} else {
 				return false;
 			}
 		} else {
@@ -165,9 +164,7 @@ public class BaseDeDatos extends Excel{
 				"Procedencia", "anioPubli", "nomGuionista", "nomDibujante", "estado" };
 		int indiceFila = 0;
 
-
 		fichero.createNewFile();
-
 
 		libreria.verLibreriaCompleta();
 		List<Comic> listaComics = Libreria.listaCompleta;
@@ -207,7 +204,6 @@ public class BaseDeDatos extends Excel{
 			outputStream = new FileOutputStream(fichero);
 			libro.write(outputStream);
 
-
 			libro.close();
 			outputStream.close();
 			createCSV(fichero);
@@ -220,8 +216,7 @@ public class BaseDeDatos extends Excel{
 		return false;
 	}
 
-	public void createCSV(File fichero) throws IOException
-	{
+	public void createCSV(File fichero) throws IOException {
 		// For storing data into CSV files
 		StringBuffer data = new StringBuffer();
 
@@ -269,7 +264,8 @@ public class BaseDeDatos extends Excel{
 				data.append('\n');
 			}
 
-			FileOutputStream fos = new FileOutputStream(fichero.getAbsolutePath().substring(0,fichero.getAbsolutePath().lastIndexOf(".")) + ".csv");
+			FileOutputStream fos = new FileOutputStream(
+					fichero.getAbsolutePath().substring(0, fichero.getAbsolutePath().lastIndexOf(".")) + ".csv");
 			fos.write(data.toString().getBytes());
 			fos.close();
 			workbook.close();
