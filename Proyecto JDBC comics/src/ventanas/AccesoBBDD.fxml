@@ -70,7 +70,7 @@
       <Button fx:id="botonAccesobbdd" layoutX="30.0" layoutY="573.0" mnemonicParsing="false" onAction="#entrarMenu" prefHeight="54.0" prefWidth="118.0" text="Entrar al menu" />
       <Button fx:id="botonLimpiar" layoutX="30.0" layoutY="635.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="54.0" prefWidth="118.0" text="Limpiar" />
       <Button fx:id="botonSalir" layoutX="30.0" layoutY="700.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="54.0" prefWidth="118.0" text="Salir" />
-      <Button fx:id="botonCrearBBDD" layoutX="160.0" layoutY="509.0" mnemonicParsing="false" onAction="#crearBBDD" prefHeight="54.0" prefWidth="118.0" text="Crear BBDD" />
+      <Button fx:id="botonCrearBBDD" layoutX="162.0" layoutY="509.0" mnemonicParsing="false" onAction="#crearBBDD" prefHeight="54.0" prefWidth="118.0" text="Crear BBDD" />
       <Button fx:id="botonCerrar" layoutX="163.0" layoutY="573.0" mnemonicParsing="false" onAction="#cerrarbbdd" prefHeight="54.0" prefWidth="118.0" text="Cerrar BBDD" />
       <Button fx:id="botonVerDDBB" layoutX="163.0" layoutY="635.0" mnemonicParsing="false" onAction="#verDBDisponibles" prefHeight="54.0" prefWidth="118.0" text="Ver bbdd" />
       <Button fx:id="botonInformacion" layoutX="163.0" layoutY="700.0" mnemonicParsing="false" onAction="#verInfo" prefHeight="54.0" prefWidth="118.0" text="Información" />
