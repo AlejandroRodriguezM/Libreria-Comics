@@ -106,7 +106,7 @@ public class AccesoBBDDController {
 	 */
 	@FXML
 	void accesoGitHub(ActionEvent event) {
-		String url = "https://github.com/MisterioRojo/Proyecto-gui-bbdd/tree/V2.5";
+		String url = "https://github.com/MisterioRojo/Proyecto-gui-bbdd/tree/V2.6";
 
 		if (Utilidades.isWindows()) {
 			accesoGitHubWindows(url);
