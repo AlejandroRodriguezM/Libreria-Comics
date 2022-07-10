@@ -105,7 +105,7 @@
             <TableColumn id="nombre" fx:id="dibujante" prefWidth="137.0" text="Dibujante" />
          </columns>
       </TableView>
-      <TextArea fx:id="prontInfo" layoutX="883.0" layoutY="260.0" opacity="0.0" prefHeight="94.0" prefWidth="206.0" wrapText="true" />
+      <TextArea fx:id="prontInfo" layoutX="857.0" layoutY="237.0" opacity="0.0" prefHeight="117.0" prefWidth="232.0" wrapText="true" />
       <TextArea fx:id="prontFrases" editable="false" layoutX="841.0" layoutY="14.0" opacity="0.0" prefHeight="94.0" prefWidth="245.0" wrapText="true">
          <font>
             <Font name="Comic Sans MS" size="15.0" />

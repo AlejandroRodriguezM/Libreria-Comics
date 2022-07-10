@@ -28,6 +28,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class BaseDeDatos extends Excel {
@@ -330,8 +331,12 @@ public class BaseDeDatos extends Excel {
 	public void backupWindows(File fichero) {
 		try {
 			fichero.createNewFile();
+			
+			FileChooser fileChooser = new FileChooser();
+			File directorio = fileChooser.showOpenDialog(null);
 
-			String mysqlDump = "C:/Program Files/MySQL/MySQL Workbench 8.0 CE/mysqldump";
+//			String mysqlDump = "C:/Program Files/MySQL/MySQL Workbench 8.0 CE/mysqldump";
+			String mysqlDump = directorio.getAbsolutePath();
 
 			String command[] = new String[] { mysqlDump, "-u" + DBManager.DB_USER, "-p" + DBManager.DB_PASS, "-B",
 					DBManager.DB_NAME,"--routines=true", "--result-file=" + fichero };

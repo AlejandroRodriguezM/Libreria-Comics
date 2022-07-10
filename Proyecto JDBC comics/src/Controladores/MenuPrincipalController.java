@@ -407,23 +407,27 @@ public class MenuPrincipalController {
 		String procedimiento2;
 		String procedimiento3;
 		String procedimiento4;
-		int numGrapas, numTomos, numUsa, numEsp;
+		String procedimiento5;
+		int numGrapas, numTomos, numUsa, numEsp, total;
 
 		procedimiento1 = "call numeroGrapas()";
 		procedimiento2 = "call numeroTomos()";
 		procedimiento3 = "call numeroSpain()";
 		procedimiento4 = "call numeroUSA()";
+		procedimiento5 = "call total()";
 
 		try {
 			Statement st1 = conn.createStatement();
 			Statement st2 = conn.createStatement();
 			Statement st3 = conn.createStatement();
 			Statement st4 = conn.createStatement();
+			Statement st5 = conn.createStatement();
 
 			ResultSet rs1 = st1.executeQuery(procedimiento1);
 			ResultSet rs2 = st2.executeQuery(procedimiento2);
 			ResultSet rs3 = st3.executeQuery(procedimiento3);
 			ResultSet rs4 = st4.executeQuery(procedimiento4);
+			ResultSet rs5 = st5.executeQuery(procedimiento5);
 
 			if (rs1.next()) {
 				numGrapas = rs1.getInt(1);
@@ -445,15 +449,22 @@ public class MenuPrincipalController {
 			} else {
 				numUsa = 0;
 			}
+			if (rs5.next()) {
+				total = rs5.getInt(1);
+			} else {
+				total = 0;
+			}
 
 			prontInfo.setOpacity(1);
-			prontInfo.setText("Numero de grapas: " + numGrapas + "\n" + "Numero de tomos: " + numTomos + "\n"
-					+ "Numeros de comics en Español: " + numEsp + "\n" + "Numero de comics en USA: " + numUsa);
+			prontInfo.setText("Numero de grapas: " + numGrapas + "\nNumero de tomos: " + numTomos
+					+ "\nNumeros de comics en Español: " + numEsp + "\nNumero de comics en USA: " + numUsa + "\nTotal: "
+					+ total);
 
 			rs1.close();
 			rs2.close();
 			rs3.close();
 			rs4.close();
+			rs5.close();
 
 		} catch (SQLException e) {
 			nav.alertaException(e.toString());

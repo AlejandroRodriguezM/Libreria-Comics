@@ -174,6 +174,9 @@ public class CrearBBDDController {
 
 			statement3.execute("CREATE PROCEDURE numeroSpain()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
 					+ "WHERE Procedencia = 'España';\n" + "END");
+			
+			statement3.execute("CREATE PROCEDURE total()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd;\n"
+					+ "END");
 
 		} catch (SQLException e) {
 			nav.alertaException(e.toString());
