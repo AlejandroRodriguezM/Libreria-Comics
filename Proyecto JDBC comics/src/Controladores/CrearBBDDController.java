@@ -74,8 +74,7 @@ public class CrearBBDDController {
 	@FXML
 	void crearBBDD(ActionEvent event) throws SQLException {
 
-		if(checkDatabase())
-		{
+		if (checkDatabase()) {
 			createDataBase();
 			createTable();
 			prontInformativo.setStyle("-fx-background-color: #A0F52D");
@@ -105,14 +104,12 @@ public class CrearBBDDController {
 		}
 	}
 
-	public boolean checkDatabase()
-	{
+	public boolean checkDatabase() {
 		boolean exists;
 		String DB_HOST = "localhost";
 
-		String sentenciaSQL = "SELECT COUNT(*)"
-				+ "FROM information_schema.tables "
-				+ "WHERE table_schema = '" + nombreBBDD.getText() + "';";
+		String sentenciaSQL = "SELECT COUNT(*)" + "FROM information_schema.tables " + "WHERE table_schema = '"
+				+ nombreBBDD.getText() + "';";
 
 		String url = "jdbc:mysql://" + DB_HOST + ":" + puertoBBDD.getText() + "?serverTimezone=UTC";
 
@@ -121,17 +118,15 @@ public class CrearBBDDController {
 
 			Connection connection = DriverManager.getConnection(url, userBBDD.getText(), passBBDD.getText());
 
-			statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-					ResultSet.CONCUR_UPDATABLE);
+			statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 			ResultSet rs = statement.executeQuery(sentenciaSQL);
 			rs.next();
 
 			exists = rs.getInt("COUNT(*)") < 1;
 
-			if(exists) {
+			if (exists) {
 				return true;
 			}
-
 
 		} catch (SQLException e) {
 
@@ -142,35 +137,45 @@ public class CrearBBDDController {
 		return false;
 	}
 
-	public void createTable() throws SQLException
-	{
+	public void createTable() throws SQLException {
 
 		String DB_HOST = "localhost";
-		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + puertoBBDD.getText() + "/" + nombreBBDD.getText() + "?serverTimezone=UTC";
+		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + puertoBBDD.getText() + "/" + nombreBBDD.getText()
+				+ "?serverTimezone=UTC";
 
-
-		String sentenciaSQL = "CREATE TABLE "
-				+ " comicsbbdd ( ID int NOT NULL AUTO_INCREMENT," + "nomComic varchar(150) NOT NULL,"
-				+ "numComic varchar(150) NOT NULL," + "nomVariante varchar(150) NOT NULL,"
-				+ "Firma varchar(150) NOT NULL," + "nomEditorial varchar(150) NOT NULL,"
-				+ "Formato varchar(150) NOT NULL," + "Procedencia varchar(150) NOT NULL,"
-				+ "anioPubli varchar(150) NOT NULL," + "nomGuionista varchar(150) NOT NULL,"
-				+ "nomDibujante varchar(150) NOT NULL,"
+		String sentenciaSQL = "CREATE TABLE " + " comicsbbdd ( ID int NOT NULL AUTO_INCREMENT,"
+				+ "nomComic varchar(150) NOT NULL," + "numComic varchar(150) NOT NULL,"
+				+ "nomVariante varchar(150) NOT NULL," + "Firma varchar(150) NOT NULL,"
+				+ "nomEditorial varchar(150) NOT NULL," + "Formato varchar(150) NOT NULL,"
+				+ "Procedencia varchar(150) NOT NULL," + "anioPubli varchar(150) NOT NULL,"
+				+ "nomGuionista varchar(300) NOT NULL," + "nomDibujante varchar(300) NOT NULL,"
 				+ "estado enum('En posesion','Vendido') DEFAULT 'En posesion'" + ",PRIMARY KEY (`ID`)) "
 				+ "ENGINE=InnoDB AUTO_INCREMENT=320 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;";
 
 		Statement statement1;
 		PreparedStatement statement2;
-		Connection connection = DriverManager.getConnection(DB_URL, userBBDD.getText(),passBBDD.getText());
+		Statement statement3;
+		Connection connection = DriverManager.getConnection(DB_URL, userBBDD.getText(), passBBDD.getText());
 		try {
 
 			statement1 = connection.createStatement();
 			statement1.executeUpdate(sentenciaSQL);
 			statement2 = connection.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");
 			statement2.executeUpdate();
+			statement3 = connection.createStatement();
+			statement3.execute("CREATE PROCEDURE numeroGrapas()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
+					+ "WHERE Formato = 'Grapa';\n" + "END");
 
-		}
-		catch (SQLException e ) {
+			statement3.execute("CREATE PROCEDURE numeroTomos()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
+					+ "WHERE Formato = 'Tomo';\n" + "END");
+
+			statement3.execute("CREATE PROCEDURE numeroUSA()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
+					+ "WHERE Procedencia = 'USA';\n" + "END");
+
+			statement3.execute("CREATE PROCEDURE numeroSpain()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
+					+ "WHERE Procedencia = 'España';\n" + "END");
+
+		} catch (SQLException e) {
 			nav.alertaException(e.toString());
 		}
 
@@ -196,14 +201,13 @@ public class CrearBBDDController {
 	 * @throws IOException
 	 */
 	@FXML
-	public void volverMenu(ActionEvent event) throws IOException {
+	public void volverMenu(ActionEvent event) {
 
 		nav.verAccesoBBDD();
 
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();
 	}
-
 
 	/**
 	 * Permite salir completamente del programa.
@@ -230,7 +234,6 @@ public class CrearBBDDController {
 
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();
-
 
 	}
 }

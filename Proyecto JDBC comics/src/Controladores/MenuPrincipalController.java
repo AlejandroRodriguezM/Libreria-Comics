@@ -27,7 +27,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,14 +39,13 @@ import Funcionamiento.Comic;
 import Funcionamiento.DBManager;
 import Funcionamiento.Libreria;
 import Funcionamiento.NavegacionVentanas;
-import Funcionamiento.Utilidades;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
@@ -95,9 +97,12 @@ public class MenuPrincipalController {
 
 	@FXML
 	private Button botonGuardarCSV;
-	
-    @FXML
-    private Button botonDelete;
+
+	@FXML
+	private Button botonDelete;
+
+	@FXML
+	private Button botonEstadistica;
 
 	@FXML
 	private TextField anioPublicacion;
@@ -169,21 +174,18 @@ public class MenuPrincipalController {
 	public TableView<Comic> tablaBBDD;
 
 	@FXML
-	private Label prontInformacion;
+	private TextArea prontInfo;
 
-    @FXML
-    private Label prontFrases;
+	@FXML
+	private TextArea prontFrases;
 
 	private NavegacionVentanas nav = new NavegacionVentanas();
 
 	private Libreria libreria = new Libreria();
 
-	private BaseDeDatos db= new BaseDeDatos();
+	private BaseDeDatos db = new BaseDeDatos();
 
-	//	private DBManager dbmanager = new DBManager();
-
-	//	private Connection conn =dbmanager.conexion();
-
+	private Connection conn = DBManager.conexion();
 
 	/////////////////////////////////
 	//// METODOS LLAMADA A VENTANAS//
@@ -249,7 +251,7 @@ public class MenuPrincipalController {
 	@FXML
 	void fraseRandom(ActionEvent event) {
 
-		prontFrases.setStyle("-fx-background-color: #D3D3D3");
+		prontFrases.setOpacity(1);
 		prontFrases.setText(Comic.frasesComics());
 	}
 
@@ -279,7 +281,6 @@ public class MenuPrincipalController {
 		tablaBBDD(libreriaPosesion());
 	}
 
-
 	////////////////////////////
 	/// METODOS PARA EXPORTAR///
 	////////////////////////////
@@ -287,8 +288,8 @@ public class MenuPrincipalController {
 	/**
 	 *
 	 * @param event
-	 * @throws SQLException 
-	 * @throws IOException 
+	 * @throws SQLException
+	 * @throws IOException
 	 */
 	@FXML
 	void importCSV(ActionEvent event) {
@@ -340,7 +341,16 @@ public class MenuPrincipalController {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero SQL", "*.sql"));
 		File fichero = fileChooser.showSaveDialog(null);
-		makeSQL(fichero);
+
+		if (db.makeSQL(fichero)) {
+			prontInfo.setOpacity(1);
+			prontInfo.setStyle("-fx-background-color: #A0F52D");
+			prontInfo.setText("Base de datos exportada \ncorrectamente");
+		} else {
+			prontInfo.setOpacity(1);
+			prontInfo.setStyle("-fx-background-color: #F53636");
+			prontInfo.setText("ERROR. Base de datos \nexportada cancelada.");
+		}
 
 	}
 
@@ -364,27 +374,91 @@ public class MenuPrincipalController {
 		nombreDibujante.setText("");
 		nombreGuionista.setText("");
 	}
-	
-    @FXML
-    void borrarContenidoTabla(ActionEvent event) {
 
-    	if(db.borrarContenidoTabla())
-    	{
-    		prontInformacion.setStyle("-fx-background-color: #A0F52D");
-			prontInformacion.setText("Has borrado correctamente el contenido de la base de datos.");
+	@FXML
+	void borrarContenidoTabla(ActionEvent event) {
+
+		if (db.borrarContenidoTabla()) {
+			prontInfo.setOpacity(1);
+			prontInfo.setStyle("-fx-background-color: #A0F52D");
+			prontInfo.setText("Has borrado correctamente el contenido de la base de datos.");
 			tablaBBDD.getItems().clear();
-    	}
-    	else
-    	{
-    		prontInformacion.setStyle("-fx-background-color: #F53636");
-			prontInformacion.setText("Has cancelado el borrado de la base de datos.");
-    	}
-    }
+		} else {
+			prontInfo.setOpacity(1);
+			prontInfo.setStyle("-fx-background-color: #F53636");
+			prontInfo.setText("Has cancelado el borrado de la base de datos.");
+		}
+	}
+
+	@FXML
+	void verEstadistica(ActionEvent event) {
+		procedimientosEstadistica();
+	}
 
 	/////////////////////////////////
 	//// FUNCIONES////////////////////
 	/////////////////////////////////
 
+	/**
+	 * 
+	 */
+	public void procedimientosEstadistica() {
+		String procedimiento1;
+		String procedimiento2;
+		String procedimiento3;
+		String procedimiento4;
+		int numGrapas, numTomos, numUsa, numEsp;
+
+		procedimiento1 = "call numeroGrapas()";
+		procedimiento2 = "call numeroTomos()";
+		procedimiento3 = "call numeroSpain()";
+		procedimiento4 = "call numeroUSA()";
+
+		try {
+			Statement st1 = conn.createStatement();
+			Statement st2 = conn.createStatement();
+			Statement st3 = conn.createStatement();
+			Statement st4 = conn.createStatement();
+
+			ResultSet rs1 = st1.executeQuery(procedimiento1);
+			ResultSet rs2 = st2.executeQuery(procedimiento2);
+			ResultSet rs3 = st3.executeQuery(procedimiento3);
+			ResultSet rs4 = st4.executeQuery(procedimiento4);
+
+			if (rs1.next()) {
+				numGrapas = rs1.getInt(1);
+			} else {
+				numGrapas = 0;
+			}
+			if (rs2.next()) {
+				numTomos = rs2.getInt(1);
+			} else {
+				numTomos = 0;
+			}
+			if (rs3.next()) {
+				numEsp = rs3.getInt(1);
+			} else {
+				numEsp = 0;
+			}
+			if (rs4.next()) {
+				numUsa = rs4.getInt(1);
+			} else {
+				numUsa = 0;
+			}
+
+			prontInfo.setOpacity(1);
+			prontInfo.setText("Numero de grapas: " + numGrapas + "\n" + "Numero de tomos: " + numTomos + "\n"
+					+ "Numeros de comics en Español: " + numEsp + "\n" + "Numero de comics en USA: " + numUsa);
+
+			rs1.close();
+			rs2.close();
+			rs3.close();
+			rs4.close();
+
+		} catch (SQLException e) {
+			nav.alertaException(e.toString());
+		}
+	}
 
 	/**
 	 * 
@@ -411,45 +485,23 @@ public class MenuPrincipalController {
 	 *
 	 * @param fichero
 	 */
-	public void makeSQL(File fichero) {
-		if (fichero != null) {
-
-			if (Utilidades.isWindows()) {
-				backupWindows(fichero);
-			} else {
-				if (Utilidades.isUnix()) {
-					backupLinux(fichero);
-				} else {
-
-				}
-			}
-			prontInformacion.setStyle("-fx-background-color: #A0F52D");
-			prontInformacion.setText("Base de datos exportada \ncorrectamente");
-		} else {
-			prontInformacion.setStyle("-fx-background-color: #F53636");
-			prontInformacion.setText("ERROR. Base de datos \nexportada cancelada.");
-		}
-	}
-
-	/**
-	 *
-	 * @param fichero
-	 */
 	public void makeExcel(File fichero) {
 		try {
 
 			if (fichero != null) {
 				if (db.crearExcel(fichero)) {
-					prontInformacion.setStyle("-fx-background-color: #A0F52D");
-					prontInformacion.setText("Fichero excel exportado de forma correcta");
+					prontInfo.setOpacity(1);
+					prontInfo.setStyle("-fx-background-color: #A0F52D");
+					prontInfo.setText("Fichero excel exportado de forma correcta");
 				} else {
-					prontInformacion.setStyle("-fx-background-color: #F53636");
-					prontInformacion.setText("ERROR. No se ha podido exportar correctamente.");
+					prontInfo.setOpacity(1);
+					prontInfo.setStyle("-fx-background-color: #F53636");
+					prontInfo.setText("ERROR. No se ha podido exportar correctamente.");
 				}
-			}
-			else {
-				prontInformacion.setStyle("-fx-background-color: #F53636");
-				prontInformacion.setText("ERROR. Se ha cancelado la exportacion.");
+			} else {
+				prontInfo.setOpacity(1);
+				prontInfo.setStyle("-fx-background-color: #F53636");
+				prontInfo.setText("ERROR. Se ha cancelado la exportacion.");
 			}
 		} catch (Exception e) {
 			nav.alertaException(e.toString());
@@ -465,16 +517,18 @@ public class MenuPrincipalController {
 
 			if (fichero != null) {
 				if (db.importarCSV(fichero)) {
-					prontInformacion.setStyle("-fx-background-color: #A0F52D");
-					prontInformacion.setText("Fichero CSV importado de forma correcta");
+					prontInfo.setOpacity(1);
+					prontInfo.setStyle("-fx-background-color: #A0F52D");
+					prontInfo.setText("Fichero CSV importado de forma correcta");
 				} else {
-					prontInformacion.setStyle("-fx-background-color: #F53636");
-					prontInformacion.setText("ERROR. No se ha podido importar correctamente.");
+					prontInfo.setOpacity(1);
+					prontInfo.setStyle("-fx-background-color: #F53636");
+					prontInfo.setText("ERROR. No se ha podido importar correctamente.");
 				}
-			}
-			else {
-				prontInformacion.setStyle("-fx-background-color: #F53636");
-				prontInformacion.setText("ERROR. Se ha cancelado la importacion.");
+			} else {
+				prontInfo.setOpacity(1);
+				prontInfo.setStyle("-fx-background-color: #F53636");
+				prontInfo.setText("ERROR. Se ha cancelado la importacion.");
 			}
 		} catch (Exception e) {
 			nav.alertaException(e.toString());
@@ -500,12 +554,14 @@ public class MenuPrincipalController {
 					guardarDatos.write(libreriaCompleta().get(i) + "\n");
 					System.out.println(libreriaCompleta().get(i) + "\n");
 				}
-				prontInformacion.setStyle("-fx-background-color: #A0F52D");
-				prontInformacion.setText("Fichero creado correctamente");
+				prontInfo.setOpacity(1);
+				prontInfo.setStyle("-fx-background-color: #A0F52D");
+				prontInfo.setText("Fichero creado correctamente");
 				guardarDatos.close();
 			} else {
-				prontInformacion.setStyle("-fx-background-color: #F53636");
-				prontInformacion.setText("ERROR. Contenido de la bbdd \n cancelada.");
+				prontInfo.setOpacity(1);
+				prontInfo.setStyle("-fx-background-color: #F53636");
+				prontInfo.setText("ERROR. Contenido de la bbdd \n cancelada.");
 			}
 		} catch (IOException e) {
 			nav.alertaException(e.toString());
@@ -575,13 +631,12 @@ public class MenuPrincipalController {
 	public List<Comic> libreriaParametro(Comic comic) {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
 
-		if(listComic.size() == 0)
-		{
-			prontInformacion.setStyle("-fx-background-color: #F53636");
-			prontInformacion.setText("ERROR. No hay ningun dato en la base de datos");
+		if (listComic.size() == 0) {
+			prontInfo.setStyle("-fx-background-color: #F53636");
+			prontInfo.setText("ERROR. No hay ningun dato en la base de datos");
 		}
 		return listComic;
-		
+
 	}
 
 	/**
@@ -591,11 +646,10 @@ public class MenuPrincipalController {
 	 */
 	public List<Comic> libreriaPosesion() {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreria());
-		
-		if(listComic.size() == 0)
-		{
-			prontInformacion.setStyle("-fx-background-color: #F53636");
-			prontInformacion.setText("ERROR. No hay ningun dato en la base de datos");
+
+		if (listComic.size() == 0) {
+			prontInfo.setStyle("-fx-background-color: #F53636");
+			prontInfo.setText("ERROR. No hay ningun dato en la base de datos");
 		}
 
 		return listComic;
@@ -606,13 +660,12 @@ public class MenuPrincipalController {
 	 * @return
 	 * @throws SQLException
 	 */
-	public List<Comic> libreriaCompleta()  {
+	public List<Comic> libreriaCompleta() {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaCompleta());
-		
-		if(listComic.size() == 0)
-		{
-			prontInformacion.setStyle("-fx-background-color: #F53636");
-			prontInformacion.setText("ERROR. No hay ningun dato en la base de datos");
+
+		if (listComic.size() == 0) {
+			prontInfo.setStyle("-fx-background-color: #F53636");
+			prontInfo.setText("ERROR. No hay ningun dato en la base de datos");
 		}
 
 		return listComic;

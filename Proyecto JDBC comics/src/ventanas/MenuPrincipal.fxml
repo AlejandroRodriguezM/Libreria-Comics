@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -80,6 +81,7 @@
       <Button fx:id="botonGuardarCSV" layoutX="330.0" layoutY="144.0" mnemonicParsing="false" onAction="#exportCSV" prefHeight="53.0" prefWidth="141.0" text="Exportar Excel" />
       <Button fx:id="botonBackupBBDD" layoutX="330.0" layoutY="206.0" mnemonicParsing="false" onAction="#exportarSQL" prefHeight="53.0" prefWidth="141.0" text="Exportar base de datos" />
       <Button fx:id="botonImportarCSV" layoutX="330.0" layoutY="271.0" mnemonicParsing="false" onAction="#importCSV" prefHeight="53.0" prefWidth="141.0" text="Importar CSV" />
+      <Button fx:id="botonEstadistica" layoutX="330.0" layoutY="339.0" mnemonicParsing="false" onAction="#verEstadistica" prefHeight="53.0" prefWidth="141.0" text="Ver estadistica" />
       <Button fx:id="BotonEliminarComic" layoutX="494.0" layoutY="15.0" mnemonicParsing="false" onAction="#ventanaEliminar" prefHeight="53.0" prefWidth="102.0" text="Eliminar datos" />
       <Button fx:id="BotonModificarComic" layoutX="494.0" layoutY="77.0" mnemonicParsing="false" onAction="#ventanaModificar" prefHeight="53.0" prefWidth="102.0" text="Modificar datos" />
       <Button fx:id="botonFrase" layoutX="494.0" layoutY="208.0" mnemonicParsing="false" onAction="#fraseRandom" prefHeight="53.0" prefWidth="102.0" text="Frase random" />
@@ -88,16 +90,6 @@
       <Button fx:id="botonVerRecomendacion" layoutX="683.0" layoutY="359.0" mnemonicParsing="false" onAction="#ventanaRecomendar" prefHeight="53.0" prefWidth="182.0" text="No sabes que leer? Pulsa aqui!" />
       <Button fx:id="botonVolver" layoutX="874.0" layoutY="359.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="53.0" prefWidth="102.0" text="Volver al menu" />
       <Button fx:id="botonSalir" layoutX="990.0" layoutY="359.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="53.0" prefWidth="99.0" text="Salir" />
-      <Label fx:id="prontInformacion" layoutX="818.0" layoutY="199.0" prefHeight="147.0" prefWidth="263.0" wrapText="true">
-         <font>
-            <Font size="21.0" />
-         </font>
-      </Label>
-      <Label fx:id="prontFrases" alignment="TOP_LEFT" layoutX="828.0" layoutY="8.0" prefHeight="124.0" prefWidth="263.0" wrapText="true">
-         <font>
-            <Font name="Comic Sans MS" size="15.0" />
-         </font>
-      </Label>
       <TableView fx:id="tablaBBDD" layoutX="-1.0" layoutY="422.0" prefHeight="418.0" prefWidth="1104.0">
          <columns>
             <TableColumn fx:id="ID" prefWidth="64.0" text="ID" />
@@ -113,5 +105,11 @@
             <TableColumn id="nombre" fx:id="dibujante" prefWidth="137.0" text="Dibujante" />
          </columns>
       </TableView>
+      <TextArea fx:id="prontInfo" layoutX="883.0" layoutY="260.0" opacity="0.0" prefHeight="94.0" prefWidth="206.0" wrapText="true" />
+      <TextArea fx:id="prontFrases" editable="false" layoutX="841.0" layoutY="14.0" opacity="0.0" prefHeight="94.0" prefWidth="245.0" wrapText="true">
+         <font>
+            <Font name="Comic Sans MS" size="15.0" />
+         </font>
+      </TextArea>
    </children>
 </Pane>

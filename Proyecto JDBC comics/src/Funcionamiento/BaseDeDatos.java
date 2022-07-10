@@ -7,12 +7,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.ProcessBuilder.Redirect;
 import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -23,8 +25,8 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
@@ -35,7 +37,8 @@ public class BaseDeDatos extends Excel {
 	private NavegacionVentanas nav = new NavegacionVentanas();
 
 	public boolean importarCSV(File fichero) {
-		String sql = "INSERT INTO comicsbbdd(ID,nomComic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,anioPubli,nomGuionista,nomDibujante,estado) values (?,?,?,?,?,?,?,?,?,?,?,?)";
+		String sql = "INSERT INTO comicsbbdd(ID,nomComic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,anioPubli,nomGuionista,nomDibujante,estado)"
+				+ " values (?,?,?,?,?,?,?,?,?,?,?,?)";
 
 		try {
 			PreparedStatement statement = conn.prepareStatement(sql);
@@ -45,7 +48,7 @@ public class BaseDeDatos extends Excel {
 
 			int count = 0;
 			int j = countRows();
-			lineReader.readLine(); // skip header line
+			lineReader.readLine();
 
 			while ((lineText = lineReader.readLine()) != null) {
 				String[] data = lineText.split(";");
@@ -88,16 +91,15 @@ public class BaseDeDatos extends Excel {
 
 		} catch (Exception e) {
 			nav.alertaException(e.toString());
-			e.printStackTrace();
 		}
 		return false;
 	}
 
 	public int countRows() {
-
+		String sql = "SELECT COUNT(*) FROM comicsbbdd";
 		try {
 			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM comicsbbdd");
+			ResultSet rs = stmt.executeQuery(sql);
 
 			int total = -1;
 
@@ -118,7 +120,7 @@ public class BaseDeDatos extends Excel {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
 		stage.getIcons().add(new Image("/Icono/exit.png")); // To add an icon
-		alert.setTitle("Borrado");
+		alert.setTitle("Borrando . . .");
 		alert.setHeaderText("Estas a punto de borrar el contenido.");
 		alert.setContentText("¿Estas seguro que quieres borrarlo todo?");
 
@@ -127,8 +129,8 @@ public class BaseDeDatos extends Excel {
 			Alert alert2 = new Alert(AlertType.CONFIRMATION);
 			Stage stage2 = (Stage) alert2.getDialogPane().getScene().getWindow();
 			stage2.getIcons().add(new Image("/Icono/exit.png")); // To add an icon
-			alert.setTitle("Borrado");
-			alert.setHeaderText("¿Estas seguro?.");
+			alert.setTitle("Borrando . . .");
+			alert.setHeaderText("¿Estas seguro?");
 			alert.setContentText("¿De verdad de verdad quieres borrarlo todo?");
 			if (alert.showAndWait().get() == ButtonType.OK) {
 				try {
@@ -217,6 +219,7 @@ public class BaseDeDatos extends Excel {
 	}
 
 	public void createCSV(File fichero) throws IOException {
+
 		// For storing data into CSV files
 		StringBuffer data = new StringBuffer();
 
@@ -269,6 +272,73 @@ public class BaseDeDatos extends Excel {
 			fos.write(data.toString().getBytes());
 			fos.close();
 			workbook.close();
+
+		} catch (Exception e) {
+			nav.alertaException(e.toString());
+		}
+	}
+
+	/////////////////////////////////
+	//// FUNCIONES CREACION FICHEROS//
+	/////////////////////////////////
+
+	/**
+	 *
+	 * @param fichero
+	 */
+	public boolean makeSQL(File fichero) {
+		if (fichero != null) {
+
+			if (Utilidades.isWindows()) {
+				backupWindows(fichero);
+				return true;
+			} else {
+				if (Utilidades.isUnix()) {
+					backupLinux(fichero);
+					return true;
+				} else {
+
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 *
+	 * @param fichero
+	 */
+	public void backupLinux(File fichero) {
+		try {
+			fichero.createNewFile();
+			String command[] = new String[] { "mysqldump", "-u" + DBManager.DB_USER, "-p" + DBManager.DB_PASS, "-B",
+					DBManager.DB_NAME, "--result-file=" + fichero };
+			ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
+			pb.redirectError(Redirect.INHERIT);
+			pb.redirectOutput(Redirect.to(fichero));
+			pb.start();
+
+		} catch (IOException e) {
+			nav.alertaException(e.toString());
+		}
+	}
+
+	/**
+	 *
+	 * @param fichero
+	 */
+	public void backupWindows(File fichero) {
+		try {
+			fichero.createNewFile();
+
+			String mysqlDump = "C:/Program Files/MySQL/MySQL Workbench 8.0 CE/mysqldump";
+
+			String command[] = new String[] { mysqlDump, "-u" + DBManager.DB_USER, "-p" + DBManager.DB_PASS, "-B",
+					DBManager.DB_NAME, "--result-file=" + fichero };
+			ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
+			pb.redirectError(Redirect.INHERIT);
+			pb.redirectOutput(Redirect.to(fichero));
+			pb.start();
 
 		} catch (Exception e) {
 			nav.alertaException(e.toString());
