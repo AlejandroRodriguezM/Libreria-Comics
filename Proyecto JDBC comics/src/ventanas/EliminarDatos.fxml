@@ -113,6 +113,6 @@
          </font>
       </Label>
       <Line endX="100.0" startX="-100.0" />
-      <TextArea fx:id="pantallaInformativa" editable="false" layoutX="787.0" layoutY="16.0" prefHeight="203.0" prefWidth="251.0" style="-fx-background-color: transparent;" wrapText="true" />
+      <TextArea fx:id="pantallaInformativa" editable="false" layoutX="787.0" layoutY="16.0" opacity="0.0" prefHeight="203.0" prefWidth="251.0" style="-fx-background-color: transparent;" wrapText="true" />
    </children>
 </Pane>

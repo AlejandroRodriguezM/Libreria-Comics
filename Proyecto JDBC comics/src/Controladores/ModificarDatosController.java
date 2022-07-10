@@ -341,6 +341,7 @@ public class ModificarDatosController {
 					ps.setString(11, idComicMod.getText());
 					ComicBorrar(ps);
 				} else {
+					pantallaInformativa.setOpacity(1);
 					pantallaInformativa.setStyle("-fx-background-color: #F53636");
 					idComicMod.setStyle("-fx-background-color: #F53636");
 					idMod.setStyle("-fx-background-color: #F53636");
@@ -348,6 +349,7 @@ public class ModificarDatosController {
 				}
 
 				if (ps.executeUpdate() == 1) {
+					pantallaInformativa.setOpacity(1);
 					pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 					pantallaInformativa.setText("Ha modificado correctamente: " + comic.toString());
 				}
@@ -356,6 +358,7 @@ public class ModificarDatosController {
 			}
 		}
 		else { // Si se cancela el borra del comic, saltara el siguiente mensaje.
+			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #F53636");
 			pantallaInformativa.setText("Modificacion cancelada.");
 		}
@@ -496,6 +499,7 @@ public class ModificarDatosController {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
 
 		if (listComic.size() == 0) {
+			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #F53636");
 			pantallaInformativa.setText("ERROR. No hay ningun dato en la base de datos");
 		}
@@ -511,6 +515,7 @@ public class ModificarDatosController {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreria());
 
 		if (listComic.size() == 0) {
+			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #F53636");
 			pantallaInformativa.setText("ERROR. No hay ningun dato en la base de datos");
 		}
@@ -537,6 +542,7 @@ public class ModificarDatosController {
 		if (nav.alertaModificar()) {
 			return true;
 		} else {
+			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #F53636");
 			pantallaInformativa.setText("ERROR. Se ha cancelado la modificacion.");
 			return false;

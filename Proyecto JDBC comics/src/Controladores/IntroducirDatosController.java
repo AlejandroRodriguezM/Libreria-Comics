@@ -273,6 +273,7 @@ public class IntroducirDatosController {
 			if (statement.executeUpdate() == 1) {
 				if(nav.alertaInsertar())
 				{
+					pantallaInformativa.setOpacity(1);
 					pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 					pantallaInformativa.setText("Comic añadido correctamente!" + "\nNombre del comic: " + datos[0]
 							+ "\nNumero: " + datos[1] + "\nPortada variante: " + datos[2] + "\nFirma: " + datos[3]
@@ -282,11 +283,13 @@ public class IntroducirDatosController {
 					statement.close();
 				}
 				else { // Si se cancela el borra del comic, saltara el siguiente mensaje.
+					pantallaInformativa.setOpacity(1);
 					pantallaInformativa.setStyle("-fx-background-color: #F53636");
 					pantallaInformativa.setText("Insertado cancelado..");
 				}
 
 			} else {
+				pantallaInformativa.setOpacity(1);
 				pantallaInformativa.setStyle("-fx-background-color: #F53636");
 				pantallaInformativa
 						.setText("Se ha encontrado un error. No ha sido posible añdir el comic a la base de datos.");
@@ -346,6 +349,7 @@ public class IntroducirDatosController {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
 
 		if (listComic.size() == 0) {
+			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #F53636");
 			pantallaInformativa.setText("ERROR. No hay ningun dato en la base de datos");
 		}
@@ -361,6 +365,7 @@ public class IntroducirDatosController {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreria());
 
 		if (listComic.size() == 0) {
+			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #F53636");
 			pantallaInformativa.setText("ERROR. No hay ningun dato en la base de datos");
 		}

@@ -238,6 +238,7 @@ public class EliminarDatosController {
 
 		if(listComic.size() == 0)
 		{
+			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #F53636");
 			pantallaInformativa.setText("ERROR. No hay ningun dato en la base de datos");
 		}
@@ -255,6 +256,7 @@ public class EliminarDatosController {
 		
 		if(listComic.size() == 0)
 		{
+			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #F53636");
 			pantallaInformativa.setText("ERROR. No hay ningun dato en la base de datos");
 		}
@@ -298,10 +300,12 @@ public class EliminarDatosController {
 					stmt.setString(1, id);
 					if (stmt.executeUpdate() == 1) { // En caso de que el cambio de estado se haya realizado
 						// correctamente, mostrara lo siguiente
+						pantallaInformativa.setOpacity(1);
 						pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 						pantallaInformativa.setText("Has eliminado correctamente: "
 								+ comic.toString().replace("[", "").replace("]", ""));
 					} else { // En caso contrario mostrara lo siguiente
+						pantallaInformativa.setOpacity(1);
 						pantallaInformativa.setStyle("-fx-background-color: #F53636");
 						pantallaInformativa.setText("ERROR. ID desconocido.");
 					}
