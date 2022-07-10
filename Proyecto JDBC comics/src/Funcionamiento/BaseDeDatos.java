@@ -312,7 +312,7 @@ public class BaseDeDatos extends Excel {
 		try {
 			fichero.createNewFile();
 			String command[] = new String[] { "mysqldump", "-u" + DBManager.DB_USER, "-p" + DBManager.DB_PASS, "-B",
-					DBManager.DB_NAME, "--result-file=" + fichero };
+					DBManager.DB_NAME,"--routines=true", "--result-file=" + fichero };
 			ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
 			pb.redirectError(Redirect.INHERIT);
 			pb.redirectOutput(Redirect.to(fichero));
@@ -334,7 +334,7 @@ public class BaseDeDatos extends Excel {
 			String mysqlDump = "C:/Program Files/MySQL/MySQL Workbench 8.0 CE/mysqldump";
 
 			String command[] = new String[] { mysqlDump, "-u" + DBManager.DB_USER, "-p" + DBManager.DB_PASS, "-B",
-					DBManager.DB_NAME, "--result-file=" + fichero };
+					DBManager.DB_NAME,"--routines=true", "--result-file=" + fichero };
 			ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
 			pb.redirectError(Redirect.INHERIT);
 			pb.redirectOutput(Redirect.to(fichero));
