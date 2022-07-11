@@ -401,7 +401,7 @@ public class MenuPrincipalController {
 
 	@FXML
 	void comprarComic(ActionEvent event) {
-
+		 verPagina();
 	}
 
 	/////////////////////////////////

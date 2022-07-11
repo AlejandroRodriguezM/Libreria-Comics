@@ -87,7 +87,7 @@
       <Button fx:id="botonFrase" layoutX="494.0" layoutY="208.0" mnemonicParsing="false" onAction="#fraseRandom" prefHeight="53.0" prefWidth="102.0" text="Frase random" />
       <Button fx:id="BotonVentanaAniadir" layoutX="494.0" layoutY="144.0" mnemonicParsing="false" onAction="#ventanaAniadir" prefHeight="53.0" prefWidth="102.0" text="Añadir datos" />
       <Button fx:id="botonDelete" layoutX="494.0" layoutY="271.0" mnemonicParsing="false" onAction="#borrarContenidoTabla" prefHeight="53.0" prefWidth="102.0" text="Eliminar BBDD" />
-      <Button fx:id="botonVerRecomendacion" layoutX="683.0" layoutY="359.0" mnemonicParsing="false" onAction="#ventanaRecomendar" prefHeight="53.0" prefWidth="182.0" text="No sabes que leer? Pulsa aqui!" />
+      <Button fx:id="botonVerRecomendacion" layoutX="875.0" layoutY="291.0" mnemonicParsing="false" onAction="#ventanaRecomendar" prefHeight="53.0" prefWidth="211.0" text="No sabes que leer? Pulsa aqui!" />
       <Button fx:id="botonVolver" layoutX="874.0" layoutY="359.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="53.0" prefWidth="102.0" text="Volver al menu" />
       <Button fx:id="botonSalir" layoutX="990.0" layoutY="359.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="53.0" prefWidth="99.0" text="Salir" />
       <TableView fx:id="tablaBBDD" layoutX="-1.0" layoutY="422.0" prefHeight="418.0" prefWidth="1104.0">
@@ -105,11 +105,12 @@
             <TableColumn id="nombre" fx:id="dibujante" prefWidth="137.0" text="Dibujante" />
          </columns>
       </TableView>
-      <TextArea fx:id="prontInfo" layoutX="857.0" layoutY="237.0" opacity="0.0" prefHeight="117.0" prefWidth="232.0" wrapText="true" />
+      <TextArea fx:id="prontInfo" layoutX="854.0" layoutY="123.0" opacity="0.0" prefHeight="117.0" prefWidth="232.0" wrapText="true" />
       <TextArea fx:id="prontFrases" editable="false" layoutX="841.0" layoutY="14.0" opacity="0.0" prefHeight="94.0" prefWidth="245.0" wrapText="true">
          <font>
             <Font name="Comic Sans MS" size="15.0" />
          </font>
       </TextArea>
+      <Button fx:id="botonCompra" layoutX="719.0" layoutY="359.0" mnemonicParsing="false" onAction="#comprarComic" prefHeight="53.0" prefWidth="141.0" text="Donde comprar comics" />
    </children>
 </Pane>
