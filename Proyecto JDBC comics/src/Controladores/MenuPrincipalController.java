@@ -39,6 +39,7 @@ import Funcionamiento.Comic;
 import Funcionamiento.ConexionBBDD;
 import Funcionamiento.Libreria;
 import Funcionamiento.NavegacionVentanas;
+import Funcionamiento.Utilidades;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -103,6 +104,9 @@ public class MenuPrincipalController {
 
 	@FXML
 	private Button botonEstadistica;
+
+	@FXML
+	private Button botonCompra;
 
 	@FXML
 	private TextField anioPublicacion;
@@ -395,9 +399,68 @@ public class MenuPrincipalController {
 		procedimientosEstadistica();
 	}
 
+	@FXML
+	void comprarComic(ActionEvent event) {
+
+	}
+
 	/////////////////////////////////
 	//// FUNCIONES////////////////////
 	/////////////////////////////////
+
+	public void verPagina()
+	{
+		String url1 = "https://www.radarcomics.com/es/";
+		String url2 = "https://www.panini.es/shp_esp_es/comics.html";
+
+		if (Utilidades.isWindows()) {
+			accesoCompraWindows(url1);
+			accesoCompraWindows(url2);
+		} else {
+			if (Utilidades.isUnix()) {
+				accesoCompraLinux(url1);
+				accesoCompraLinux(url2);
+			} else {
+				// No creada funcion para mac
+			}
+		}
+	}
+
+	/**
+	 *
+	 * @param url
+	 */
+	public void accesoCompraLinux(String url) {
+		Runtime rt = Runtime.getRuntime();
+		String[] browsers = { "google-chrome", "firefox", "mozilla", "epiphany", "konqueror", "netscape", "opera",
+				"links", "lynx" };
+
+		StringBuffer cmd = new StringBuffer();
+		for (int i = 0; i < browsers.length; i++) {
+			if (i == 0) {
+				cmd.append(String.format("%s \"%s\"", browsers[i], url));
+			} else {
+				cmd.append(String.format(" || %s \"%s\"", browsers[i], url));
+			}
+		}
+		try {
+			rt.exec(new String[] { "sh", "-c", cmd.toString() });
+		} catch (IOException e) {
+			nav.alertaException("Error: No funciona el boton \n" + e.toString());
+		}
+	}
+
+	/**
+	 *
+	 * @param url
+	 */
+	public void accesoCompraWindows(String url) {
+		try {
+			java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
+		} catch (IOException e) {
+			nav.alertaException("Error: No funciona el boton \n" + e.toString());
+		}
+	}
 
 	/**
 	 *
