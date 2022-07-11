@@ -33,7 +33,7 @@ import java.sql.SQLException;
  * Por Alejandro Rodriguez Mena
  */
 
-public class DBManager {
+public class ConexionBBDD {
 
 	// Conexion a la base de datos
 	private static Connection conn = null;
@@ -61,7 +61,7 @@ public class DBManager {
 	}
 
 	/**
-	 * Comprueba la conexión y muestra su estado por pantalla
+	 * Comprueba la conexion y muestra su estado por pantalla
 	 *
 	 * @return true si la conexión existe y es válida, false en caso contrario
 	 */
@@ -69,7 +69,7 @@ public class DBManager {
 
 		try {
 			if (conn != null && conn.isValid(0)) {
-				
+
 				return true;
 			}
 		} catch (SQLException ex) {
@@ -134,7 +134,7 @@ public class DBManager {
 //		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + 3306 + "/" + "comics" + "?serverTimezone=UTC";
 //		try {
 //			conn = DriverManager.getConnection(DB_URL, "root", "1234");
-//			
+//
 //			return conn;
 //		} catch (SQLException ex) {
 //			nav.alertaException(ex.toString());
@@ -143,7 +143,7 @@ public class DBManager {
 //	}
 
 	/**
-	 * Cierra la conexión con la base de datos
+	 * Cierra la conexion con la base de datos
 	 */
 	public static void close() {
 		try {
@@ -162,7 +162,7 @@ public class DBManager {
 	 * @return
 	 * @throws SQLException
 	 */
-	public static ResultSet getComic(String sentenciaSQL) throws SQLException {
+	public static ResultSet getComic(String sentenciaSQL) {
 		try {
 			// Realizamos la consulta SQL
 			PreparedStatement stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -177,6 +177,8 @@ public class DBManager {
 			return rs;
 
 		} catch (NullPointerException ex) {
+			nav.alertaException(ex.toString());
+		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
 		}
 		return null;

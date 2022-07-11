@@ -72,7 +72,7 @@ public class CrearBBDDController {
 	NavegacionVentanas nav = new NavegacionVentanas();
 
 	@FXML
-	void crearBBDD(ActionEvent event) throws SQLException {
+	void crearBBDD(ActionEvent event) {
 
 		if (checkDatabase()) {
 			createDataBase();
@@ -137,7 +137,7 @@ public class CrearBBDDController {
 		return false;
 	}
 
-	public void createTable() throws SQLException {
+	public void createTable() {
 
 		String DB_HOST = "localhost";
 		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + puertoBBDD.getText() + "/" + nombreBBDD.getText()
@@ -155,9 +155,9 @@ public class CrearBBDDController {
 		Statement statement1;
 		PreparedStatement statement2;
 		Statement statement3;
-		Connection connection = DriverManager.getConnection(DB_URL, userBBDD.getText(), passBBDD.getText());
-		try {
 
+		try {
+			Connection connection = DriverManager.getConnection(DB_URL, userBBDD.getText(), passBBDD.getText());
 			statement1 = connection.createStatement();
 			statement1.executeUpdate(sentenciaSQL);
 			statement2 = connection.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");
@@ -174,9 +174,8 @@ public class CrearBBDDController {
 
 			statement3.execute("CREATE PROCEDURE numeroSpain()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
 					+ "WHERE Procedencia = 'España';\n" + "END");
-			
-			statement3.execute("CREATE PROCEDURE total()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd;\n"
-					+ "END");
+
+			statement3.execute("CREATE PROCEDURE total()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd;\n" + "END");
 
 		} catch (SQLException e) {
 			nav.alertaException(e.toString());

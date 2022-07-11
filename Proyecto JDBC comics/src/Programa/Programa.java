@@ -35,7 +35,7 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class Programa extends Application {
-	
+
 	private NavegacionVentanas nav = new NavegacionVentanas();
 
 	/**

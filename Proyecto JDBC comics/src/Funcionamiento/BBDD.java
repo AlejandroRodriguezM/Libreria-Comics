@@ -31,10 +31,10 @@ import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-public class BaseDeDatos extends Excel {
+public class BBDD extends Excel {
 
 	private Libreria libreria = new Libreria();
-	private Connection conn = DBManager.conexion();
+	private Connection conn = ConexionBBDD.conexion();
 	private NavegacionVentanas nav = new NavegacionVentanas();
 
 	public boolean importarCSV(File fichero) {
@@ -114,7 +114,7 @@ public class BaseDeDatos extends Excel {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean borrarContenidoTabla() {
@@ -312,8 +312,8 @@ public class BaseDeDatos extends Excel {
 	public void backupLinux(File fichero) {
 		try {
 			fichero.createNewFile();
-			String command[] = new String[] { "mysqldump", "-u" + DBManager.DB_USER, "-p" + DBManager.DB_PASS, "-B",
-					DBManager.DB_NAME,"--routines=true", "--result-file=" + fichero };
+			String command[] = new String[] { "mysqldump", "-u" + ConexionBBDD.DB_USER, "-p" + ConexionBBDD.DB_PASS,
+					"-B", ConexionBBDD.DB_NAME, "--routines=true", "--result-file=" + fichero };
 			ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
 			pb.redirectError(Redirect.INHERIT);
 			pb.redirectOutput(Redirect.to(fichero));
@@ -331,15 +331,15 @@ public class BaseDeDatos extends Excel {
 	public void backupWindows(File fichero) {
 		try {
 			fichero.createNewFile();
-			
+
 			FileChooser fileChooser = new FileChooser();
 			File directorio = fileChooser.showOpenDialog(null);
 
 //			String mysqlDump = "C:/Program Files/MySQL/MySQL Workbench 8.0 CE/mysqldump";
 			String mysqlDump = directorio.getAbsolutePath();
 
-			String command[] = new String[] { mysqlDump, "-u" + DBManager.DB_USER, "-p" + DBManager.DB_PASS, "-B",
-					DBManager.DB_NAME,"--routines=true", "--result-file=" + fichero };
+			String command[] = new String[] { mysqlDump, "-u" + ConexionBBDD.DB_USER, "-p" + ConexionBBDD.DB_PASS, "-B",
+					ConexionBBDD.DB_NAME, "--routines=true", "--result-file=" + fichero };
 			ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
 			pb.redirectError(Redirect.INHERIT);
 			pb.redirectOutput(Redirect.to(fichero));

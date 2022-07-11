@@ -31,7 +31,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import Funcionamiento.DBManager;
+import Funcionamiento.ConexionBBDD;
 import Funcionamiento.NavegacionVentanas;
 import Funcionamiento.Utilidades;
 import javafx.event.ActionEvent;
@@ -101,7 +101,7 @@ public class AccesoBBDDController {
 
 	/**
 	 * Funcion para abrir el navegador y acceder a la URL
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -114,19 +114,19 @@ public class AccesoBBDDController {
 			if (Utilidades.isUnix()) {
 				accesoGitHubLinux(url);
 			} else {
-				//No creada funcion para mac
+				// No creada funcion para mac
 			}
 		}
 	}
 
 	/**
 	 * Funcion para abrir el navegador y acceder a la URL
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
 	void accesoTwitter(ActionEvent event) {
-		String url = "https://twitter.com/home";
+		String url = "https://twitter.com/SilverAlox";
 
 		if (Utilidades.isWindows()) {
 			accesoTwitterWindows(url);
@@ -134,13 +134,13 @@ public class AccesoBBDDController {
 			if (Utilidades.isUnix()) {
 				accesoTwitterLinux(url);
 			} else {
-				//No creada funcion para mac
+				// No creada funcion para mac
 			}
 		}
 	}
 
 	/**
-	 * 
+	 *
 	 * @param url
 	 */
 	public void accesoGitHubLinux(String url) {
@@ -149,12 +149,13 @@ public class AccesoBBDDController {
 				"links", "lynx" };
 
 		StringBuffer cmd = new StringBuffer();
-		for (int i = 0; i < browsers.length; i++)
-			if (i == 0)
+		for (int i = 0; i < browsers.length; i++) {
+			if (i == 0) {
 				cmd.append(String.format("%s \"%s\"", browsers[i], url));
-			else
+			} else {
 				cmd.append(String.format(" || %s \"%s\"", browsers[i], url));
-
+			}
+		}
 		try {
 			rt.exec(new String[] { "sh", "-c", cmd.toString() });
 		} catch (IOException e) {
@@ -163,7 +164,7 @@ public class AccesoBBDDController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param url
 	 */
 	public void accesoGitHubWindows(String url) {
@@ -175,7 +176,7 @@ public class AccesoBBDDController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param url
 	 */
 	public void accesoTwitterLinux(String url) {
@@ -184,39 +185,41 @@ public class AccesoBBDDController {
 				"links", "lynx" };
 
 		StringBuffer cmd = new StringBuffer();
-		for (int i = 0; i < browsers.length; i++)
-			if (i == 0)
+		for (int i = 0; i < browsers.length; i++) {
+			if (i == 0) {
 				cmd.append(String.format("%s \"%s\"", browsers[i], url));
-			else
+			} else {
 				cmd.append(String.format(" || %s \"%s\"", browsers[i], url));
-
+			}
+		}
 		try {
 			rt.exec(new String[] { "sh", "-c", cmd.toString() });
 		} catch (IOException e) {
-			nav.alertaException("Error: No funciona el boton \n" +e.toString());
+			nav.alertaException("Error: No funciona el boton \n" + e.toString());
 		}
 	}
 
 	/**
-	 * 
+	 *
 	 * @param url
 	 */
 	public void accesoTwitterWindows(String url) {
 		try {
 			java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
 		} catch (IOException e) {
-			nav.alertaException("Error: No funciona el boton \n" +e.toString());
+			nav.alertaException("Error: No funciona el boton \n" + e.toString());
 		}
 	}
 
 	/**
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
 	void entrarMenu(ActionEvent event) {
 
-		if (Funcionamiento.DBManager.isConnected()) { // Siempre que el metodo de la clase DBManager sea true, permitira
+		if (Funcionamiento.ConexionBBDD.isConnected()) { // Siempre que el metodo de la clase DBManager sea true,
+															// permitira
 			// acceder al menu principal
 
 			nav.verMenuPrincipal(); // Llamada a metodo de la clase NavegacionVentanas. Permite cargar y mostrar el
@@ -232,7 +235,7 @@ public class AccesoBBDDController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -246,13 +249,13 @@ public class AccesoBBDDController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
 	void verDBDisponibles(ActionEvent event) {
 
-		String url = "jdbc:mysql://" + DBManager.DB_HOST + ":" + puertobbdd.getText() + "?serverTimezone=UTC";
+		String url = "jdbc:mysql://" + ConexionBBDD.DB_HOST + ":" + puertobbdd.getText() + "?serverTimezone=UTC";
 
 		try {
 			Connection connection = DriverManager.getConnection(url, usuario.getText(), pass.getText());
@@ -283,7 +286,7 @@ public class AccesoBBDDController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -316,13 +319,14 @@ public class AccesoBBDDController {
 	@FXML
 	void enviarDatos(ActionEvent event) {
 
-		Funcionamiento.DBManager.loadDriver(); // Llamada a metodo que permite comprobar que el driver de conexion a la
+		Funcionamiento.ConexionBBDD.loadDriver(); // Llamada a metodo que permite comprobar que el driver de conexion a
+													// la
 		// base de datos sea correcto y funcione
 		envioDatosBBDD(); // Llamada a metodo que manda los datos de los textField de la ventana hacia la
 		// clase DBManager.
-		DBManager.conexion(); // Llamada a metodo que permite conectar con la base de datos.
+		ConexionBBDD.conexion(); // Llamada a metodo que permite conectar con la base de datos.
 
-		if (Funcionamiento.DBManager.isConnected()) { // Siempre que la base de datos se haya conectado de forma
+		if (Funcionamiento.ConexionBBDD.isConnected()) { // Siempre que la base de datos se haya conectado de forma
 			// correcta, mostrara el siguiente mensaje
 			prontEstadoConexion.setStyle("-fx-background-color: #A0F52D");
 			prontEstadoConexion.setText("Conectado");
@@ -341,11 +345,12 @@ public class AccesoBBDDController {
 	@FXML
 	void cerrarbbdd(ActionEvent event) {
 
-		if (Funcionamiento.DBManager.isConnected()) { // Siempre que el metodo isConnected sea true, permitira cerrar la
+		if (Funcionamiento.ConexionBBDD.isConnected()) { // Siempre que el metodo isConnected sea true, permitira cerrar
+															// la
 			// base de datos.
 			prontEstadoConexion.setText("BBDD Cerrada con exito.\nNo conectado.");
 			prontEstadoConexion.setStyle("-fx-background-color: #696969");
-			Funcionamiento.DBManager.close();
+			Funcionamiento.ConexionBBDD.close();
 		} else { // En caso contrario, mostrara el siguiente mensaje.
 			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
 			prontEstadoConexion.setText("ERROR. No se encuentra \nconectado a ninguna bbdd");
@@ -363,7 +368,7 @@ public class AccesoBBDDController {
 		datos[1] = nombreBBDD.getText();
 		datos[2] = usuario.getText();
 		datos[3] = pass.getText();
-		DBManager.datosBBDD(datos); 
+		ConexionBBDD.datosBBDD(datos);
 	}
 
 	/**
@@ -383,7 +388,8 @@ public class AccesoBBDDController {
 	/**
 	 * Cierra el programa a la fuerza correctamente.
 	 */
-	public void closeWindows() { // Metodo que permite cerrar completamente el programa en caso de cerrar a la // fuerza.
+	public void closeWindows() { // Metodo que permite cerrar completamente el programa en caso de cerrar a la //
+									// fuerza.
 		Stage myStage = (Stage) this.botonEnviar.getScene().getWindow();
 		myStage.close();
 	}

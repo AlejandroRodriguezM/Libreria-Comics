@@ -45,7 +45,6 @@ import javafx.stage.Stage;
 
 public class NavegacionVentanas {
 
-
 	public void verAccesoBBDD() {
 
 		try {
@@ -76,7 +75,6 @@ public class NavegacionVentanas {
 			alertaException(ex.toString());
 		}
 	}
-
 
 	public void verMenuPrincipal() {
 
@@ -110,7 +108,6 @@ public class NavegacionVentanas {
 			alertaException(ex.toString());
 		}
 	}
-
 
 	public void verIntroducirDatos() {
 
@@ -148,7 +145,6 @@ public class NavegacionVentanas {
 		}
 	}
 
-
 	public void verModificarDatos() {
 
 		try {
@@ -174,9 +170,9 @@ public class NavegacionVentanas {
 
 			// Indico que debe hacer al cerrar
 			stage.setOnCloseRequest(e -> {
-		
-			controlador.closeWindows();
-				
+
+				controlador.closeWindows();
+
 			});
 
 			stage.setScene(scene);
@@ -186,7 +182,6 @@ public class NavegacionVentanas {
 			alertaException(ex.toString());
 		}
 	}
-
 
 	public void verRecomendacion() {
 
@@ -224,7 +219,6 @@ public class NavegacionVentanas {
 		}
 	}
 
-
 	public void verEliminarDatos() {
 
 		try {
@@ -250,9 +244,9 @@ public class NavegacionVentanas {
 
 			// Indico que debe hacer al cerrar
 			stage.setOnCloseRequest(e -> {
-		
-			controlador.closeWindows();
-				
+
+				controlador.closeWindows();
+
 			});
 
 			stage.setScene(scene);
@@ -262,7 +256,6 @@ public class NavegacionVentanas {
 			alertaException(ex.toString());
 		}
 	}
-
 
 	public void verCrearBBDD() {
 
@@ -300,7 +293,6 @@ public class NavegacionVentanas {
 		}
 	}
 
-
 	public boolean salirPrograma(ActionEvent event) {
 
 		Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -318,7 +310,6 @@ public class NavegacionVentanas {
 		}
 	}
 
-
 	public boolean alertaEliminar() {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 
@@ -334,7 +325,6 @@ public class NavegacionVentanas {
 		return false;
 	}
 
-
 	public boolean alertaModificar() {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
@@ -348,7 +338,7 @@ public class NavegacionVentanas {
 		}
 		return false;
 	}
-	
+
 	public boolean alertaInsertar() {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
@@ -363,9 +353,7 @@ public class NavegacionVentanas {
 		return false;
 	}
 
-
-	public void alertaException(String excepcion)
-	{
+	public void alertaException(String excepcion) {
 		Platform.runLater(() -> {
 			Alert dialog = new Alert(AlertType.ERROR, excepcion, ButtonType.OK);
 			dialog.show();

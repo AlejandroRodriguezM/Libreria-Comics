@@ -34,9 +34,9 @@ import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
 
-import Funcionamiento.BaseDeDatos;
+import Funcionamiento.BBDD;
 import Funcionamiento.Comic;
-import Funcionamiento.DBManager;
+import Funcionamiento.ConexionBBDD;
 import Funcionamiento.Libreria;
 import Funcionamiento.NavegacionVentanas;
 import javafx.collections.FXCollections;
@@ -183,9 +183,9 @@ public class MenuPrincipalController {
 
 	private Libreria libreria = new Libreria();
 
-	private BaseDeDatos db = new BaseDeDatos();
+	private BBDD db = new BBDD();
 
-	private Connection conn = DBManager.conexion();
+	private Connection conn = ConexionBBDD.conexion();
 
 	/////////////////////////////////
 	//// METODOS LLAMADA A VENTANAS//
@@ -400,7 +400,7 @@ public class MenuPrincipalController {
 	/////////////////////////////////
 
 	/**
-	 * 
+	 *
 	 */
 	public void procedimientosEstadistica() {
 		String procedimiento1;
@@ -472,7 +472,7 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	private void nombreColumnas() {
 		ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
@@ -586,8 +586,8 @@ public class MenuPrincipalController {
 	public void backupLinux(File fichero) {
 		try {
 			fichero.createNewFile();
-			String command[] = new String[] { "mysqldump", "-u" + DBManager.DB_USER, "-p" + DBManager.DB_PASS, "-B",
-					DBManager.DB_NAME, "--result-file=" + fichero };
+			String command[] = new String[] { "mysqldump", "-u" + ConexionBBDD.DB_USER, "-p" + ConexionBBDD.DB_PASS,
+					"-B", ConexionBBDD.DB_NAME, "--result-file=" + fichero };
 			ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
 			pb.redirectError(Redirect.INHERIT);
 			pb.redirectOutput(Redirect.to(fichero));
@@ -608,8 +608,8 @@ public class MenuPrincipalController {
 
 			String mysqlDump = "C:/Program Files/MySQL/MySQL Workbench 8.0 CE/mysqldump";
 
-			String command[] = new String[] { mysqlDump, "-u" + DBManager.DB_USER, "-p" + DBManager.DB_PASS, "-B",
-					DBManager.DB_NAME, "--result-file=" + fichero };
+			String command[] = new String[] { mysqlDump, "-u" + ConexionBBDD.DB_USER, "-p" + ConexionBBDD.DB_PASS, "-B",
+					ConexionBBDD.DB_NAME, "--result-file=" + fichero };
 			ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
 			pb.redirectError(Redirect.INHERIT);
 			pb.redirectOutput(Redirect.to(fichero));
@@ -739,7 +739,7 @@ public class MenuPrincipalController {
 	public void volverMenu(ActionEvent event) throws IOException {
 
 		nav.verAccesoBBDD();
-		DBManager.close();
+		ConexionBBDD.close();
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();
 	}

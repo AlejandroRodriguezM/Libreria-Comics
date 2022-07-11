@@ -30,7 +30,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import Funcionamiento.Comic;
-import Funcionamiento.DBManager;
+import Funcionamiento.ConexionBBDD;
 import Funcionamiento.Libreria;
 import Funcionamiento.NavegacionVentanas;
 import javafx.collections.FXCollections;
@@ -179,7 +179,7 @@ public class ModificarDatosController {
 
 	private Comic comic = new Comic();
 
-	private Connection conn = DBManager.conexion();
+	private Connection conn = ConexionBBDD.conexion();
 
 	/**
 	 *
@@ -248,6 +248,8 @@ public class ModificarDatosController {
 	void modificarDatos(ActionEvent event) {
 
 		modificacionDatos();
+		libreria.ordenarBBDD();
+		libreria.reiniciarBBDD();
 	}
 
 	/////////////////////////////////
@@ -356,8 +358,7 @@ public class ModificarDatosController {
 			} catch (SQLException ex) {
 				nav.alertaException(ex.toString());
 			}
-		}
-		else { // Si se cancela el borra del comic, saltara el siguiente mensaje.
+		} else { // Si se cancela el borra del comic, saltara el siguiente mensaje.
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #F53636");
 			pantallaInformativa.setText("Modificacion cancelada.");
@@ -365,7 +366,7 @@ public class ModificarDatosController {
 	}
 
 	public Comic ComicBorrar(PreparedStatement ps) {
-		
+
 		String nombre = "", numero = "", variante = "", firma = "", editorial = "", formato = "", procedencia = "",
 				fecha = "", guionista = "", dibujante = "";
 

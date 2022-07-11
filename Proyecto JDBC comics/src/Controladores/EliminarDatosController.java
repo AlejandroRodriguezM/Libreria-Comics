@@ -31,7 +31,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import Funcionamiento.Comic;
-import Funcionamiento.DBManager;
+import Funcionamiento.ConexionBBDD;
 import Funcionamiento.Libreria;
 import Funcionamiento.NavegacionVentanas;
 import javafx.collections.FXCollections;
@@ -141,8 +141,7 @@ public class EliminarDatosController {
 
 	private Libreria libreria = new Libreria();
 
-	private Connection conn =DBManager.conexion();
-
+	private Connection conn = ConexionBBDD.conexion();
 
 	/**
 	 *
@@ -161,10 +160,12 @@ public class EliminarDatosController {
 	 * @throws SQLException
 	 */
 	@FXML
-	void eliminarDatos(ActionEvent event) throws SQLException { // Metodo que permite cambiar de estado un comic, para
+	void eliminarDatos(ActionEvent event) { // Metodo que permite cambiar de estado un comic, para
 		// que se deje de mostrar en el programa, pero este
 		// sigue estando dentro de la bbdd
 		deleteData();
+		libreria.ordenarBBDD();
+		libreria.reiniciarBBDD();
 	}
 
 	/**
@@ -174,7 +175,7 @@ public class EliminarDatosController {
 	 * @throws SQLException
 	 */
 	@FXML
-	void mostrarPorParametro(ActionEvent event) throws SQLException {
+	void mostrarPorParametro(ActionEvent event) {
 		nombreColumnas();
 		listaPorParametro();
 
@@ -218,7 +219,7 @@ public class EliminarDatosController {
 	 *
 	 * @throws SQLException
 	 */
-	public void listaPorParametro() throws SQLException {
+	public void listaPorParametro() {
 		String datosComic[] = camposComics();
 
 		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
@@ -226,7 +227,7 @@ public class EliminarDatosController {
 
 		tablaBBDD(libreriaParametro(comic));
 	}
-	
+
 	/**
 	 *
 	 * @param comic
@@ -236,14 +237,13 @@ public class EliminarDatosController {
 	public List<Comic> libreriaParametro(Comic comic) {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
 
-		if(listComic.size() == 0)
-		{
+		if (listComic.size() == 0) {
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #F53636");
 			pantallaInformativa.setText("ERROR. No hay ningun dato en la base de datos");
 		}
 		return listComic;
-		
+
 	}
 
 	/**
@@ -253,9 +253,8 @@ public class EliminarDatosController {
 	 */
 	public List<Comic> libreriaCompleta() {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreria());
-		
-		if(listComic.size() == 0)
-		{
+
+		if (listComic.size() == 0) {
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #F53636");
 			pantallaInformativa.setText("ERROR. No hay ningun dato en la base de datos");
@@ -302,8 +301,8 @@ public class EliminarDatosController {
 						// correctamente, mostrara lo siguiente
 						pantallaInformativa.setOpacity(1);
 						pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-						pantallaInformativa.setText("Has eliminado correctamente: "
-								+ comic.toString().replace("[", "").replace("]", ""));
+						pantallaInformativa.setText(
+								"Has eliminado correctamente: " + comic.toString().replace("[", "").replace("]", ""));
 					} else { // En caso contrario mostrara lo siguiente
 						pantallaInformativa.setOpacity(1);
 						pantallaInformativa.setStyle("-fx-background-color: #F53636");
@@ -358,7 +357,7 @@ public class EliminarDatosController {
 	 * @throws IOException
 	 */
 	@FXML
-	void volverMenu(ActionEvent event) throws IOException {
+	void volverMenu(ActionEvent event) {
 
 		nav.verMenuPrincipal();
 

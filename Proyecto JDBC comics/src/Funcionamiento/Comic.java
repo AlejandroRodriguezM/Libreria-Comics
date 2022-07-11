@@ -23,7 +23,6 @@ package Funcionamiento;
  *  Twitter: @silverAlox
  */
 
-
 import java.util.Random;
 
 public class Comic {
@@ -168,7 +167,6 @@ public class Comic {
 		this.dibujante = dibujante;
 	}
 
-
 	public void setEstado(String estado) {
 		this.estado = estado;
 	}
@@ -198,18 +196,17 @@ public class Comic {
 				"No tiene nada de malo sentir miedo, siempre y cuando no te dejes vencer\n-Capitan America",
 				"Cualquier sueño que merezca ser vivido es un sueño por el que merece la pena luchar \n-Charles Xavier",
 				"Tuviste una vida dura, ¿sabes quién más tuvo una vida dura? ¡Todo el mundo! \n-DeadPool",
-				"Planeamos días y días y cuando llega el momento, procedemos a improvisar \n-QuickSilver"};
+				"Planeamos días y días y cuando llega el momento, procedemos a improvisar \n-QuickSilver" };
 		n = (int) (Math.random() * r.nextInt(frases.length));
 
 		return frases[n];
 	}
 
-
 	@Override
 	public String toString() {
 		return "\nNombre: " + nombre + "\nNumero: " + numero + "\nVariante: " + variante + "\nFirma: " + firma
 				+ "\nEditorial: " + editorial + "\nFormato: " + formato + "\nProcedencia: " + procedencia + "\nFecha: "
-				+ fecha + "\nGuionista: " + guionista + "\nDibujante: " + dibujante + "\nEstado: " + estado ;
+				+ fecha + "\nGuionista: " + guionista + "\nDibujante: " + dibujante + "\nEstado: " + estado;
 	}
 
 }

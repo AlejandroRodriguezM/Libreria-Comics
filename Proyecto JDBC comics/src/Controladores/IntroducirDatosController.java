@@ -1,6 +1,5 @@
 package Controladores;
 
-
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  * Las ventanas graficas se realizan con JavaFX.
@@ -31,7 +30,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import Funcionamiento.Comic;
-import Funcionamiento.DBManager;
+import Funcionamiento.ConexionBBDD;
 import Funcionamiento.Libreria;
 import Funcionamiento.NavegacionVentanas;
 import javafx.collections.FXCollections;
@@ -171,7 +170,7 @@ public class IntroducirDatosController {
 	@FXML
 	private TableColumn<Comic, String> nombre;
 
-	private Connection conn = DBManager.conexion();
+	private Connection conn = ConexionBBDD.conexion();
 
 	private NavegacionVentanas nav = new NavegacionVentanas();
 
@@ -240,13 +239,15 @@ public class IntroducirDatosController {
 	public void agregarDatos(ActionEvent event) {
 
 		introducirDatos();
+		libreria.ordenarBBDD();
+		libreria.reiniciarBBDD();
 	}
 
 	/**
 	 *
 	 */
 	public void introducirDatos() {
-		DBManager.loadDriver();
+		ConexionBBDD.loadDriver();
 
 		String sentenciaSQL = "insert into comicsbbdd(nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante) values (?,?,?,?,?,?,?,?,?,?)";
 
@@ -271,8 +272,7 @@ public class IntroducirDatosController {
 			statement.setString(10, datos[9]);
 
 			if (statement.executeUpdate() == 1) {
-				if(nav.alertaInsertar())
-				{
+				if (nav.alertaInsertar()) {
 					pantallaInformativa.setOpacity(1);
 					pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 					pantallaInformativa.setText("Comic añadido correctamente!" + "\nNombre del comic: " + datos[0]
@@ -281,8 +281,7 @@ public class IntroducirDatosController {
 							+ "\nFecha de publicacion: " + datos[7] + "\nGuionista: " + datos[8] + "\nDibujante: "
 							+ datos[9]);
 					statement.close();
-				}
-				else { // Si se cancela el borra del comic, saltara el siguiente mensaje.
+				} else { // Si se cancela el borra del comic, saltara el siguiente mensaje.
 					pantallaInformativa.setOpacity(1);
 					pantallaInformativa.setStyle("-fx-background-color: #F53636");
 					pantallaInformativa.setText("Insertado cancelado..");
@@ -410,7 +409,7 @@ public class IntroducirDatosController {
 		campos[8] = fechaParametro.getText();
 
 		campos[9] = guionistaParametro.getText();
-		
+
 		campos[9] = dibujanteParametro.getText();
 
 		return campos;

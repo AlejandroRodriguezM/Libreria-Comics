@@ -38,7 +38,7 @@ public class Libreria extends Comic {
 	public static List<Comic> listaCompleta = new ArrayList<>();
 	public static List<Comic> filtroComics = new ArrayList<>();
 
-	private Connection conn = DBManager.conexion();
+	private Connection conn = ConexionBBDD.conexion();
 	private NavegacionVentanas nav = new NavegacionVentanas();
 
 	/**
@@ -58,17 +58,11 @@ public class Libreria extends Comic {
 
 		ResultSet rs;
 
-		try {
-			rs = DBManager.getComic(sentenciaSql);
-			listaPosesion = listaDatos(rs);
+		rs = ConexionBBDD.getComic(sentenciaSql);
+		listaPosesion = listaDatos(rs);
 
-			comic = new Comic[listaPosesion.size()];
-			comic = listaPosesion.toArray(comic);
-
-		} catch (SQLException e) {
-			nav.alertaException(e.toString());	
-		}
-
+		comic = new Comic[listaPosesion.size()];
+		comic = listaPosesion.toArray(comic);
 
 		return comic;
 	}
@@ -89,21 +83,16 @@ public class Libreria extends Comic {
 		reiniciarBBDD();
 
 		ResultSet rs;
-		try {
-			rs = DBManager.getComic(sentenciaSql);
-			listaCompleta = listaDatos(rs);
-			comic = new Comic[listaCompleta.size()];
-			comic = listaCompleta.toArray(comic);
-		} catch (SQLException e) {
-			nav.alertaException(e.toString());
-
-		}
+		rs = ConexionBBDD.getComic(sentenciaSql);
+		listaCompleta = listaDatos(rs);
+		comic = new Comic[listaCompleta.size()];
+		comic = listaCompleta.toArray(comic);
 		return comic;
 	}
 
 	/**
 	 * Devuelve datos de la base de datos segun el parametro.
-	 * 
+	 *
 	 * @param datos
 	 * @return
 	 * @throws SQLException
@@ -112,9 +101,9 @@ public class Libreria extends Comic {
 
 		reiniciarBBDD();
 		ordenarBBDD();
-		
+
 		Comic comic[] = null;
-		
+
 		String sql = datosConcatenados(datos);
 
 		try {
@@ -132,14 +121,13 @@ public class Libreria extends Comic {
 		comic = filtroComics.toArray(comic);
 		return comic;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param datos
 	 * @return
 	 */
-	public String datosConcatenados(Comic comic)
-	{
+	public String datosConcatenados(Comic comic) {
 		String connector = " AND ";
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT * FROM comicsbbdd where estado = 'En posesion'");
@@ -150,7 +138,7 @@ public class Libreria extends Comic {
 			connector = " AND ";
 		}
 		if (comic.getNombre().length() != 0) {
-			
+
 			sql.append(connector).append("nomComic like'%" + comic.getNombre() + "%'");
 			connector = " AND ";
 		}
@@ -190,30 +178,24 @@ public class Libreria extends Comic {
 			sql.append(connector).append("nomDibujante like'%" + comic.getDibujante() + "%'");
 			connector = " AND ";
 		}
-		
+
 		return sql.toString();
 	}
 
 	/**
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
-	public Comic comicDatos(String id)
-	{
+	public Comic comicDatos(String id) {
 		Comic comic = new Comic();
 
 		String sentenciaSQL = "select * from comicsbbdd where ID = " + id;
 
 		ResultSet rs;
 
-		try {
-			rs = DBManager.getComic(sentenciaSQL);
-			comic = datosIndividual(rs);
-
-		} catch (SQLException e) {
-			nav.alertaException(e.toString());
-		}
+		rs = ConexionBBDD.getComic(sentenciaSQL);
+		comic = datosIndividual(rs);
 
 		return comic;
 	}
@@ -221,8 +203,7 @@ public class Libreria extends Comic {
 	public List<Comic> listaDatos(ResultSet rs) {
 
 		try {
-			if(rs != null)
-			{
+			if (rs != null) {
 				do {
 
 					this.ID = rs.getString("ID");
@@ -238,8 +219,9 @@ public class Libreria extends Comic {
 					this.dibujante = rs.getString("nomDibujante");
 					this.estado = rs.getString("estado");
 
-					listaComics.add(new Comic(this.ID, this.nombre, this.numero, this.variante, this.firma, this.editorial,
-							this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante, this.estado));
+					listaComics.add(new Comic(this.ID, this.nombre, this.numero, this.variante, this.firma,
+							this.editorial, this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante,
+							this.estado));
 
 				} while (rs.next());
 			}
@@ -253,8 +235,7 @@ public class Libreria extends Comic {
 		Comic comic = new Comic();
 
 		try {
-			if(rs != null)
-			{
+			if (rs != null) {
 				do {
 
 					this.ID = rs.getString("ID");
@@ -293,7 +274,7 @@ public class Libreria extends Comic {
 	 *
 	 * @throws SQLException
 	 */
-	public void ordenarBBDD()  {
+	public void ordenarBBDD() {
 		String sql = "ALTER TABLE comicsbbdd ORDER BY nomComic;";
 		Statement st;
 		try {

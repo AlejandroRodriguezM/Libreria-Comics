@@ -17,7 +17,6 @@ public class Excel {
 
 	public Excel(String id, String nombre, String numero, String variante, String firma, String editorial,
 			String formato, String procedencia, String fecha, String guionista, String dibujante, String estado) {
-		super();
 		this.id = id;
 		this.nombre = nombre;
 		this.numero = numero;
@@ -144,6 +143,10 @@ public class Excel {
 		this.estado = estado;
 	}
 
-
-
+	@Override
+	public String toString() {
+		return "\nNombre: " + nombre + "\nNumero: " + numero + "\nVariante: " + variante + "\nFirma: " + firma
+				+ "\nEditorial: " + editorial + "\nFormato: " + formato + "\nProcedencia: " + procedencia + "\nFecha: "
+				+ fecha + "\nGuionista: " + guionista + "\nDibujante: " + dibujante + "\nEstado: " + estado;
+	}
 }

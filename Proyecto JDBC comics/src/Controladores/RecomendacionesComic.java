@@ -53,7 +53,6 @@ public class RecomendacionesComic {
 
 	private Libreria libreria = new Libreria();
 
-
 	/**
 	 *
 	 * @param event
@@ -63,7 +62,7 @@ public class RecomendacionesComic {
 	void eligePorMi(ActionEvent event) {
 
 		printComicRecomendado.setText(generarLectura());
-		
+
 	}
 
 	/**
@@ -71,22 +70,17 @@ public class RecomendacionesComic {
 	 * @return
 	 * @throws SQLException
 	 */
-	public String generarLectura()
-	{
+	public String generarLectura() {
 		Random r = new Random();
 
 		int n;
-		
+
 		limpiarPront();
-		
-		if(libreria.verLibreria().length != 0)
-		{
-			limpiarPront();
+
+		if (libreria.verLibreria().length != 0) {
 			n = (int) (Math.random() * r.nextInt(libreria.verLibreria().length));
 			return libreria.verLibreria()[n].toString();
-		}
-		else
-		{
+		} else {
 			printComicRecomendado.setText("ERROR. No hay ningun dato en la base de datos");
 			printComicRecomendado.setStyle("-fx-background-color: #F53636");
 		}
@@ -97,8 +91,7 @@ public class RecomendacionesComic {
 	/**
 	 *
 	 */
-	public void limpiarPront()
-	{
+	public void limpiarPront() {
 		printComicRecomendado.setText("");
 	}
 
