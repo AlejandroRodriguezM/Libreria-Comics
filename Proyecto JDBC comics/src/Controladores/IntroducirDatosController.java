@@ -227,6 +227,10 @@ public class IntroducirDatosController {
 		guionistaAni.setText("");
 
 		dibujanteAni.setText("");
+		
+		pantallaInformativa.setText(null);
+		
+		pantallaInformativa.setOpacity(0);
 	}
 
 	/**

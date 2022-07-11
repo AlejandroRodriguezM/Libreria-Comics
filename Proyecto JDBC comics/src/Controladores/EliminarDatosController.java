@@ -149,9 +149,21 @@ public class EliminarDatosController {
 	 */
 	@FXML
 	void limpiarDatos(ActionEvent event) { // Metodo que permite limpiar los datos de los diferentes campos
+		ID.setText("");
 		nombreComic.setText("");
 		numeroComic.setText("");
-		ID.setText("");
+		nombreComic.setText("");
+		numeroComic.setText("");
+		nombreVariante.setText("");
+		nombreFirma.setText("");
+		nombreEditorial.setText("");
+		nombreFormato.setText("");
+		procedencia.setText("");
+		anioPublicacion.setText("");
+		nombreDibujante.setText("");
+		nombreGuionista.setText("");
+		pantallaInformativa.setText(null);
+		pantallaInformativa.setOpacity(0);
 	}
 
 	/**

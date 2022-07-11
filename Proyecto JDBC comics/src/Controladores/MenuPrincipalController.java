@@ -377,6 +377,10 @@ public class MenuPrincipalController {
 		anioPublicacion.setText("");
 		nombreDibujante.setText("");
 		nombreGuionista.setText("");
+		prontInfo.setText(null);
+		prontFrases.setText(null);
+		prontInfo.setOpacity(0);
+		prontFrases.setOpacity(0);
 	}
 
 	@FXML
