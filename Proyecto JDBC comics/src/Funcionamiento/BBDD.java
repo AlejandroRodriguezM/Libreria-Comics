@@ -1,5 +1,28 @@
 package Funcionamiento;
 
+/**
+ * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
+ * Las ventanas graficas se realizan con JavaFX.
+ * El programa permite:
+ *  - Conectarse a la base de datos.
+ *  - Ver la base de datos completa o parcial segun parametros introducidos.
+ *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
+ *  - Copia de seguridad de la base de datos en formato .sql
+ *  - Introducir comics a la base de datos.
+ *  - Modificar comics de la base de datos.
+ *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
+ *  - Ver frases de personajes de comics
+ *  - Opcion de escoger algo para leer de forma aleatoria.
+ *
+ *  Esta clase permite realizar diferentes operaciones pertinentes a la base de datos
+ *
+ *  Version Final
+ *
+ *  Por Alejandro Rodriguez
+ *
+ *  Twitter: @silverAlox
+ */
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -132,7 +155,7 @@ public class BBDD extends Excel {
 		stage.getIcons().add(new Image("/Icono/exit.png")); 
 		alert.setTitle("Borrando . . .");
 		alert.setHeaderText("Estas a punto de borrar el contenido.");
-		alert.setContentText("¿Estas seguro que quieres borrarlo todo?");
+		alert.setContentText("Estas seguro que quieres borrarlo todo?");
 
 		if (alert.showAndWait().get() == ButtonType.OK) {
 
@@ -140,8 +163,8 @@ public class BBDD extends Excel {
 			Stage stage2 = (Stage) alert2.getDialogPane().getScene().getWindow();
 			stage2.getIcons().add(new Image("/Icono/exit.png")); // To add an icon
 			alert.setTitle("Borrando . . .");
-			alert.setHeaderText("¿Estas seguro?");
-			alert.setContentText("¿De verdad de verdad quieres borrarlo todo?");
+			alert.setHeaderText("Estas seguro?");
+			alert.setContentText("De verdad de verdad quieres borrarlo todo?");
 			if (alert.showAndWait().get() == ButtonType.OK) {
 				try {
 					PreparedStatement statement1 = conn.prepareStatement("delete from comicsbbdd");

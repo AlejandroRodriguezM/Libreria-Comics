@@ -1,5 +1,28 @@
 package Controladores;
 
+/**
+ * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
+ * Las ventanas graficas se realizan con JavaFX.
+ * El programa permite:
+ *  - Conectarse a la base de datos.
+ *  - Ver la base de datos completa o parcial segun parametros introducidos.
+ *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
+ *  - Copia de seguridad de la base de datos en formato .sql
+ *  - Introducir comics a la base de datos.
+ *  - Modificar comics de la base de datos.
+ *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
+ *  - Ver frases de personajes de comics
+ *  - Opcion de escoger algo para leer de forma aleatoria.
+ *
+ *  Esta clase permite acceder a la ventana de introducir datos a la base de datos.
+ *
+ *  Version Final
+ *
+ *  Por Alejandro Rodriguez
+ *
+ *  Twitter: @silverAlox
+ */
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -210,7 +233,7 @@ public class IntroducirDatosController {
 	}
 
 	/**
-	 * Añade datos a la base de datos segun los parametros introducidos en los
+	 * Aniade datos a la base de datos segun los parametros introducidos en los
 	 * textField
 	 *
 	 * @param event
@@ -251,7 +274,7 @@ public class IntroducirDatosController {
 				if (nav.alertaInsertar()) {
 					pantallaInformativa.setOpacity(1);
 					pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-					pantallaInformativa.setText("Comic añadido correctamente!" + "\nNombre del comic: " + datos[0]
+					pantallaInformativa.setText("Comic introducido correctamente!" + "\nNombre del comic: " + datos[0]
 							+ "\nNumero: " + datos[1] + "\nPortada variante: " + datos[2] + "\nFirma: " + datos[3]
 							+ "\nEditorial: " + datos[4] + "\nFormato: " + datos[5] + "\nProcedencia: " + datos[6]
 							+ "\nFecha de publicacion: " + datos[7] + "\nGuionista: " + datos[8] + "\nDibujante: "
@@ -263,11 +286,11 @@ public class IntroducirDatosController {
 					pantallaInformativa.setText("Insertado cancelado..");
 				}
 
-			} else { //En caso de no haber sido posible añadir el comic, se vera el siguiente mensaje.
+			} else { //En caso de no haber sido posible Introducir el comic, se vera el siguiente mensaje.
 				pantallaInformativa.setOpacity(1);
 				pantallaInformativa.setStyle("-fx-background-color: #F53636");
 				pantallaInformativa
-						.setText("Se ha encontrado un error. No ha sido posible añdir el comic a la base de datos.");
+						.setText("Se ha encontrado un error. No ha sido posible introducir el comic a la base de datos.");
 			}
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
@@ -388,7 +411,7 @@ public class IntroducirDatosController {
 	}
 
 	/** 
-	 * Devuelve un array con los datos de los TextField del comic a añadir
+	 * Devuelve un array con los datos de los TextField del comic a Introducir
 	 * @return
 	 */
 	public String[] camposComicIntroducir() {

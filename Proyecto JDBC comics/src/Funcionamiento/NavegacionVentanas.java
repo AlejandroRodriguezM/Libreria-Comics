@@ -8,7 +8,7 @@ package Funcionamiento;
  *  - Ver la base de datos completa o parcial segun parametros introducidos.
  *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
  *  - Copia de seguridad de la base de datos en formato .sql
- *  - Añadir comics a la base de datos.
+ *  - Introducir comics a la base de datos.
  *  - Modificar comics de la base de datos.
  *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
  *  - Ver frases de personajes de comics
@@ -327,7 +327,7 @@ public class NavegacionVentanas {
 		stage.getIcons().add(new Image("/Icono/exit.png")); // To add an icon
 		alert.setTitle("Saliendo");
 		alert.setHeaderText("Estas apunto de salir.");
-		alert.setContentText("¿Estas seguro que quieres salir?");
+		alert.setContentText(" Estas seguro que quieres salir?");
 
 		if (alert.showAndWait().get() == ButtonType.OK) {
 			return true;
@@ -348,7 +348,7 @@ public class NavegacionVentanas {
 		stage.setResizable(false);
 		alert.setTitle("Eliminando . . .");
 		alert.setHeaderText("Estas apunto de eliminar datos.");
-		alert.setContentText("¿Estas seguro que quieres eliminar el comic?");
+		alert.setContentText(" Estas seguro que quieres eliminar el comic?");
 		if (alert.showAndWait().get() == ButtonType.OK) {
 			return true;
 		}
@@ -366,7 +366,7 @@ public class NavegacionVentanas {
 		stage.setResizable(false);
 		alert.setTitle("Modificando . . .");
 		alert.setHeaderText("Estas apunto de modificar datos.");
-		alert.setContentText("¿Estas seguro que quieres modificar el comic?");
+		alert.setContentText(" Estas seguro que quieres modificar el comic?");
 		if (alert.showAndWait().get() == ButtonType.OK) {
 			return true;
 		}
@@ -384,7 +384,7 @@ public class NavegacionVentanas {
 		stage.setResizable(false);
 		alert.setTitle("Insertando . . .");
 		alert.setHeaderText("Estas apunto de introducir datos.");
-		alert.setContentText("¿Estas seguro que quieres introducir el comic?");
+		alert.setContentText(" Estas seguro que quieres introducir el comic?");
 		if (alert.showAndWait().get() == ButtonType.OK) {
 			return true;
 		}
