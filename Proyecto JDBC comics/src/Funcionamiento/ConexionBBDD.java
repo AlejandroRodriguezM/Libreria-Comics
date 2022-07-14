@@ -8,15 +8,15 @@ package Funcionamiento;
  *  - Ver la base de datos completa o parcial segun parametros introducidos.
  *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
  *  - Copia de seguridad de la base de datos en formato .sql
- *  - AÃ±adir comics a la base de datos.
+ *  - Añadir comics a la base de datos.
  *  - Modificar comics de la base de datos.
  *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
  *  - Ver frases de personajes de comics
  *  - Opcion de escoger algo para leer de forma aleatoria.
  *
- *  Esta clase permite acceder a la base de datos introduciendo los diferentes datos que nos pide.
+ *  Esta clase permite conectarse a la base de datos
  *
- *  Version 2.5
+ *  Version Final
  *
  *  Por Alejandro Rodriguez
  *
@@ -119,29 +119,6 @@ public class ConexionBBDD {
 		}
 	}
 
-//	/**
-//	 * Devuelve un objeto Connection en caso de que la conexion sea correcta.
-//	 *
-//	 * @param numeroPuerto
-//	 * @param nombreBBDD
-//	 * @param nombreUsuario
-//	 * @param contraBBDD
-//	 * @return
-//	 */
-//	public static Connection conexion() {
-//
-//		String DB_HOST = "localhost";
-//		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + 3306 + "/" + "comics" + "?serverTimezone=UTC";
-//		try {
-//			conn = DriverManager.getConnection(DB_URL, "root", "1234");
-//
-//			return conn;
-//		} catch (SQLException ex) {
-//			nav.alertaException(ex.toString());
-//			return null;
-//		}
-//	}
-
 	/**
 	 * Cierra la conexion con la base de datos
 	 */
@@ -160,7 +137,6 @@ public class ConexionBBDD {
 	 *
 	 * @param sentenciaSQL
 	 * @return
-	 * @throws SQLException
 	 */
 	public static ResultSet getComic(String sentenciaSQL) {
 		try {

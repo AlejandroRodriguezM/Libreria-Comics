@@ -8,15 +8,15 @@ package Controladores;
  *  - Ver la base de datos completa o parcial segun parametros introducidos.
  *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
  *  - Copia de seguridad de la base de datos en formato .sql
- *  - AÃ±adir comics a la base de datos.
+ *  - Añadir comics a la base de datos.
  *  - Modificar comics de la base de datos.
  *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
  *  - Ver frases de personajes de comics
  *  - Opcion de escoger algo para leer de forma aleatoria.
  *
- *  Esta clase permite acceder a la base de datos introduciendo los diferentes datos que nos pide.
+ *  Esta clase permite acceder a la ventana de eliminacion de comics de la base de datos
  *
- *  Version 2.5
+ *  Version Final
  *
  *  Por Alejandro Rodriguez
  *
@@ -228,7 +228,7 @@ public class EliminarDatosController {
 	//////////////////////////
 
 	/**
-	 *
+	 *Almacena los datos introducidos en los TextField
 	 * @throws SQLException
 	 */
 	public void listaPorParametro() {
@@ -241,7 +241,7 @@ public class EliminarDatosController {
 	}
 
 	/**
-	 *
+	 * Devuelve el comic buscado por parametros
 	 * @param comic
 	 * @return
 	 * @throws SQLException
@@ -259,7 +259,7 @@ public class EliminarDatosController {
 	}
 
 	/**
-	 *
+	 * Devuelto una lista con todos los comics existentes en la bbdd
 	 * @return
 	 * @throws SQLException
 	 */
@@ -276,7 +276,7 @@ public class EliminarDatosController {
 	}
 
 	/**
-	 *
+	 * Obtiene los datos de los comics de la base de datos y los devuelve en el textView
 	 * @param listaComic
 	 */
 	@SuppressWarnings("unchecked")
@@ -287,7 +287,7 @@ public class EliminarDatosController {
 	}
 
 	/**
-	 *
+	 * Funcion que permite cambiar de estado el comic a "Vendido" y hace que no se muestre en la bbdd
 	 */
 	public void deleteData() {
 		String id, sentenciaSQL;
@@ -296,7 +296,7 @@ public class EliminarDatosController {
 
 		id = idComic.getText();
 
-		Comic comic = libreria.comicDatos(id);
+		Comic comic = libreria.comicDatos(id); //Llamada de metodo que contiene el comic que se desea eliminar
 
 		PreparedStatement stmt;
 
@@ -330,6 +330,10 @@ public class EliminarDatosController {
 		}
 	}
 
+	/**
+	 * Funcion que devuelve un array que contiene los datos de los datos introducidos por parametro por TextField
+	 * @return
+	 */
 	public String[] camposComics() {
 		String campos[] = new String[11];
 

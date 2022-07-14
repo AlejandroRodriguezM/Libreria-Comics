@@ -1,29 +1,5 @@
 package Controladores;
 
-/**
- * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
- * Las ventanas graficas se realizan con JavaFX.
- * El programa permite:
- *  - Conectarse a la base de datos.
- *  - Ver la base de datos completa o parcial segun parametros introducidos.
- *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
- *  - Copia de seguridad de la base de datos en formato .sql
- *  - AÃ±adir comics a la base de datos.
- *  - Modificar comics de la base de datos.
- *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
- *  - Ver frases de personajes de comics
- *  - Opcion de escoger algo para leer de forma aleatoria.
- *
- *  Esta clase permite acceder a la base de datos introduciendo los diferentes datos que nos pide.
- *
- *  Version 2.5
- *
- *  Por Alejandro Rodriguez
- *
- *  Twitter: @silverAlox
- */
-
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -69,23 +45,35 @@ public class CrearBBDDController {
 	@FXML
 	private Label prontInformativo;
 
-	NavegacionVentanas nav = new NavegacionVentanas();
+	private NavegacionVentanas nav = new NavegacionVentanas();
 
+	private final String DB_HOST = "localhost";
+
+	private String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + puertoBBDD.getText() + "/" + nombreBBDD.getText()
+			+ "?serverTimezone=UTC";
+
+	/**
+	 * Metodo que permite llamada a metodos donde se crean la bbdd y las tablas y
+	 * procedimientos almacenados
+	 * 
+	 * @param event
+	 */
 	@FXML
 	void crearBBDD(ActionEvent event) {
 
 		if (checkDatabase()) {
 			createDataBase();
 			createTable();
+			createProcedure();
 			prontInformativo.setStyle("-fx-background-color: #A0F52D");
 			prontInformativo.setText("Base de datos: " + nombreBBDD.getText() + " creada correctamente.");
 		}
-
 	}
 
+	/**
+	 * 
+	 */
 	public void createDataBase() {
-
-		String DB_HOST = "localhost";
 
 		String sentenciaSQL = "CREATE DATABASE " + nombreBBDD.getText() + ";";
 
@@ -104,9 +92,12 @@ public class CrearBBDDController {
 		}
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public boolean checkDatabase() {
 		boolean exists;
-		String DB_HOST = "localhost";
 
 		String sentenciaSQL = "SELECT COUNT(*)" + "FROM information_schema.tables " + "WHERE table_schema = '"
 				+ nombreBBDD.getText() + "';";
@@ -137,11 +128,10 @@ public class CrearBBDDController {
 		return false;
 	}
 
+	/**
+	 * Se crean las tablas de la base de datos.
+	 */
 	public void createTable() {
-
-		String DB_HOST = "localhost";
-		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + puertoBBDD.getText() + "/" + nombreBBDD.getText()
-				+ "?serverTimezone=UTC";
 
 		String sentenciaSQL = "CREATE TABLE " + " comicsbbdd ( ID int NOT NULL AUTO_INCREMENT,"
 				+ "nomComic varchar(150) NOT NULL," + "numComic varchar(150) NOT NULL,"
@@ -154,7 +144,6 @@ public class CrearBBDDController {
 
 		Statement statement1;
 		PreparedStatement statement2;
-		Statement statement3;
 
 		try {
 			Connection connection = DriverManager.getConnection(DB_URL, userBBDD.getText(), passBBDD.getText());
@@ -162,27 +151,47 @@ public class CrearBBDDController {
 			statement1.executeUpdate(sentenciaSQL);
 			statement2 = connection.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");
 			statement2.executeUpdate();
-			statement3 = connection.createStatement();
-			statement3.execute("CREATE PROCEDURE numeroGrapas()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE Formato = 'Grapa';\n" + "END");
-
-			statement3.execute("CREATE PROCEDURE numeroTomos()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE Formato = 'Tomo';\n" + "END");
-
-			statement3.execute("CREATE PROCEDURE numeroUSA()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE Procedencia = 'USA';\n" + "END");
-
-			statement3.execute("CREATE PROCEDURE numeroSpain()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE Procedencia = 'España';\n" + "END");
-
-			statement3.execute("CREATE PROCEDURE total()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd;\n" + "END");
 
 		} catch (SQLException e) {
 			nav.alertaException(e.toString());
 		}
-
 	}
 
+	/**
+	 * Funcion que realiza la creacion de procedimientos almacenados.
+	 */
+	public void createProcedure() {
+		try {
+			Connection connection = DriverManager.getConnection(DB_URL, userBBDD.getText(), passBBDD.getText());
+			Statement statement;
+
+			statement = connection.createStatement();
+
+			// Creacion de diferentes procesos almacenados
+			statement.execute("CREATE PROCEDURE numeroGrapas()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
+					+ "WHERE Formato = 'Grapa';\n" + "END");
+
+			statement.execute("CREATE PROCEDURE numeroTomos()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
+					+ "WHERE Formato = 'Tomo';\n" + "END");
+
+			statement.execute("CREATE PROCEDURE numeroUSA()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
+					+ "WHERE Procedencia = 'USA';\n" + "END");
+
+			statement.execute("CREATE PROCEDURE numeroSpain()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
+					+ "WHERE Procedencia = 'España';\n" + "END");
+
+			statement.execute("CREATE PROCEDURE total()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd;\n" + "END");
+
+		} catch (SQLException e) {
+			nav.alertaException(e.toString());
+		}
+	}
+
+	/**
+	 * Limpia los datos en pantalla
+	 * 
+	 * @param event
+	 */
 	@FXML
 	void limpiarDatos(ActionEvent event) {
 
@@ -200,12 +209,11 @@ public class CrearBBDDController {
 	 * Vuelve al menu inicial de conexion de la base de datos.
 	 *
 	 * @param event
-	 * @throws IOException
 	 */
 	@FXML
 	public void volverMenu(ActionEvent event) {
 
-		nav.verAccesoBBDD();
+		nav.verAccesoBBDD(); // Llamada a metodo para abrir la ventana anterior
 
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();
@@ -228,11 +236,10 @@ public class CrearBBDDController {
 	/**
 	 * Al cerrar la ventana, carga la ventana del menu principal
 	 *
-	 * @throws IOException
 	 */
 	public void closeWindows() {
 
-		nav.verAccesoBBDD();
+		nav.verAccesoBBDD(); // Llamada a metodo para abrir la ventana anterior
 
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();

@@ -37,6 +37,11 @@ public class BBDD extends Excel {
 	private Connection conn = ConexionBBDD.conexion();
 	private NavegacionVentanas nav = new NavegacionVentanas();
 
+	/**
+	 * Funcion que permite importar ficheros CSV a la base de datos.
+	 * @param fichero
+	 * @return
+	 */
 	public boolean importarCSV(File fichero) {
 		String sql = "INSERT INTO comicsbbdd(ID,nomComic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,anioPubli,nomGuionista,nomDibujante,estado)"
 				+ " values (?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -96,6 +101,10 @@ public class BBDD extends Excel {
 		return false;
 	}
 
+	/**
+	 * Funcion que permite contar cuantas filas hay en la base de datos.
+	 * @return
+	 */
 	public int countRows() {
 		String sql = "SELECT COUNT(*) FROM comicsbbdd";
 		try {
@@ -114,13 +123,13 @@ public class BBDD extends Excel {
 	}
 
 	/**
-	 *
+	 * Funcion que permite borrar el contenido de la tabla de la base de datos.
 	 * @return
 	 */
 	public boolean borrarContenidoTabla() {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-		stage.getIcons().add(new Image("/Icono/exit.png")); // To add an icon
+		stage.getIcons().add(new Image("/Icono/exit.png")); 
 		alert.setTitle("Borrando . . .");
 		alert.setHeaderText("Estas a punto de borrar el contenido.");
 		alert.setContentText("¿Estas seguro que quieres borrarlo todo?");
@@ -154,7 +163,12 @@ public class BBDD extends Excel {
 		return false;
 	}
 
-	public boolean crearExcel(File fichero) throws IOException {
+	/**
+	 * Funcion que permite crear tanto un fichero XLSX cini un fichero CSV
+	 * @param fichero
+	 * @return
+	 */
+	public boolean crearExcel(File fichero) {
 
 		FileOutputStream outputStream;
 		Cell celda;
@@ -167,59 +181,66 @@ public class BBDD extends Excel {
 				"Procedencia", "anioPubli", "nomGuionista", "nomDibujante", "estado" };
 		int indiceFila = 0;
 
-		fichero.createNewFile();
+		try {
+			fichero.createNewFile();
+			libreria.verLibreriaCompleta();
+			List<Comic> listaComics = Libreria.listaCompleta;
 
-		libreria.verLibreriaCompleta();
-		List<Comic> listaComics = Libreria.listaCompleta;
+			libro = new XSSFWorkbook();
 
-		libro = new XSSFWorkbook();
+			hoja = libro.createSheet("Base de datos comics");
 
-		hoja = libro.createSheet("Base de datos comics");
-
-		fila = hoja.createRow(indiceFila);
-		for (int i = 0; i < encabezados.length; i++) {
-			encabezado = encabezados[i];
-			celda = fila.createCell(i);
-			celda.setCellValue(encabezado);
-			celda.getStringCellValue().getBytes(Charset.forName("UTF-8"));
-		}
-
-		indiceFila++;
-		for (Comic comic : listaComics) {
 			fila = hoja.createRow(indiceFila);
-			fila.createCell(0).setCellValue("");
-			fila.createCell(1).setCellValue(comic.getNombre());
-			fila.createCell(2).setCellValue(comic.getNumero());
-			fila.createCell(3).setCellValue(comic.getVariante());
-			fila.createCell(4).setCellValue(comic.getFirma());
-			fila.createCell(5).setCellValue(comic.getEditorial());
-			fila.createCell(6).setCellValue(comic.getFormato());
-			fila.createCell(7).setCellValue(comic.getProcedencia());
-			fila.createCell(8).setCellValue(comic.getFecha());
-			fila.createCell(9).setCellValue(comic.getGuionista());
-			fila.createCell(10).setCellValue(comic.getDibujante());
-			fila.createCell(11).setCellValue(comic.getEstado());
+			for (int i = 0; i < encabezados.length; i++) {
+				encabezado = encabezados[i];
+				celda = fila.createCell(i);
+				celda.setCellValue(encabezado);
+				celda.getStringCellValue().getBytes(Charset.forName("UTF-8"));
+			}
 
 			indiceFila++;
-		}
+			for (Comic comic : listaComics) {
+				fila = hoja.createRow(indiceFila);
+				fila.createCell(0).setCellValue("");
+				fila.createCell(1).setCellValue(comic.getNombre());
+				fila.createCell(2).setCellValue(comic.getNumero());
+				fila.createCell(3).setCellValue(comic.getVariante());
+				fila.createCell(4).setCellValue(comic.getFirma());
+				fila.createCell(5).setCellValue(comic.getEditorial());
+				fila.createCell(6).setCellValue(comic.getFormato());
+				fila.createCell(7).setCellValue(comic.getProcedencia());
+				fila.createCell(8).setCellValue(comic.getFecha());
+				fila.createCell(9).setCellValue(comic.getGuionista());
+				fila.createCell(10).setCellValue(comic.getDibujante());
+				fila.createCell(11).setCellValue(comic.getEstado());
 
-		try {
-			outputStream = new FileOutputStream(fichero);
-			libro.write(outputStream);
+				indiceFila++;
+			}
 
-			libro.close();
-			outputStream.close();
-			createCSV(fichero);
-			return true;
-		} catch (FileNotFoundException ex) {
-			nav.alertaException(ex.toString());
-		} catch (IOException ex) {
-			nav.alertaException(ex.toString());
+			try {
+				outputStream = new FileOutputStream(fichero);
+				libro.write(outputStream);
+
+				libro.close();
+				outputStream.close();
+				createCSV(fichero);
+				return true;
+			} catch (FileNotFoundException ex) {
+				nav.alertaException(ex.toString());
+			} catch (IOException ex) {
+				nav.alertaException(ex.toString());
+			}
+		} catch (IOException e) {
+			nav.alertaException(e.toString());
 		}
 		return false;
 	}
 
-	public void createCSV(File fichero) throws IOException {
+	/**
+	 * Funcion que permite crear un fichero CSV
+	 * @param fichero
+	 */
+	public void createCSV(File fichero) {
 
 		// For storing data into CSV files
 		StringBuffer data = new StringBuffer();
@@ -283,30 +304,9 @@ public class BBDD extends Excel {
 	//// FUNCIONES CREACION FICHEROS//
 	/////////////////////////////////
 
-	/**
-	 *
-	 * @param fichero
-	 */
-	public boolean makeSQL(File fichero) {
-		if (fichero != null) {
-
-			if (Utilidades.isWindows()) {
-				backupWindows(fichero);
-				return true;
-			} else {
-				if (Utilidades.isUnix()) {
-					backupLinux(fichero);
-					return true;
-				} else {
-
-				}
-			}
-		}
-		return false;
-	}
 
 	/**
-	 *
+	 * Funcion que crea una copia de seguridad de la base de datos siempre que el sistema operativo sea Linux
 	 * @param fichero
 	 */
 	public void backupLinux(File fichero) {
@@ -325,7 +325,7 @@ public class BBDD extends Excel {
 	}
 
 	/**
-	 *
+	 * Funcion que crea una copia de seguridad de la base de datos siempre que el sistema operativo sea Windows
 	 * @param fichero
 	 */
 	public void backupWindows(File fichero) {
@@ -335,7 +335,6 @@ public class BBDD extends Excel {
 			FileChooser fileChooser = new FileChooser();
 			File directorio = fileChooser.showOpenDialog(null);
 
-//			String mysqlDump = "C:/Program Files/MySQL/MySQL Workbench 8.0 CE/mysqldump";
 			String mysqlDump = directorio.getAbsolutePath();
 
 			String command[] = new String[] { mysqlDump, "-u" + ConexionBBDD.DB_USER, "-p" + ConexionBBDD.DB_PASS, "-B",

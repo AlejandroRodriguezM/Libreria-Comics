@@ -1,29 +1,5 @@
 package Controladores;
 
-/**
- * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
- * Las ventanas graficas se realizan con JavaFX.
- * El programa permite:
- *  - Conectarse a la base de datos.
- *  - Ver la base de datos completa o parcial segun parametros introducidos.
- *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
- *  - Copia de seguridad de la base de datos en formato .sql
- *  - Añadir comics a la base de datos.
- *  - Modificar comics de la base de datos.
- *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
- *  - Ver frases de personajes de comics
- *  - Opcion de escoger algo para leer de forma aleatoria.
- *
- *  Esta clase permite acceder a la base de datos introduciendo los diferentes datos que nos pide.
- *
- *  Version 2.5
- *
- *  Por Alejandro Rodriguez
- *
- *  Twitter: @silverAlox
- */
-
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -182,7 +158,7 @@ public class ModificarDatosController {
 	private Connection conn = ConexionBBDD.conexion();
 
 	/**
-	 *
+	 * Limpia todos los datos de los textField que hay en pantalla
 	 * @param event
 	 */
 	@FXML
@@ -244,9 +220,8 @@ public class ModificarDatosController {
 	}
 
 	/**
-	 *
+	 * Llamada a funcion que modifica los datos de 1 comic en la base de datos.
 	 * @param event
-	 * @throws SQLException
 	 */
 	@FXML
 	void modificarDatos(ActionEvent event) {
@@ -261,7 +236,7 @@ public class ModificarDatosController {
 	/////////////////////////////////
 
 	/**
-	 *
+	 * Devuelve un array con los datos de los TextField correspondientes a la los comics que se encuentran en la bbdd
 	 * @return
 	 */
 	public String[] camposComicActuales() {
@@ -293,7 +268,7 @@ public class ModificarDatosController {
 	}
 
 	/**
-	 *
+	 * Devuelve un array con los datos de los TextField correspondientes a la los comics se van a modificar
 	 * @return
 	 */
 	public String[] camposComicModificar() {
@@ -325,8 +300,7 @@ public class ModificarDatosController {
 	}
 
 	/**
-	 * @throws SQLException
-	 *
+	 * Funcion que modifica 1 comic de la base de datos con los parametros que queramos
 	 */
 	public void modificacionDatos() {
 
@@ -336,7 +310,7 @@ public class ModificarDatosController {
 
 		comic = libreria.comicDatos(idComicMod.getText());
 
-		if (alertaModificacion()) {
+		if (nav.alertaModificar()) { //Llamada a alerta
 
 			try {
 				PreparedStatement ps = null;
@@ -346,7 +320,7 @@ public class ModificarDatosController {
 				if (idComicMod.getText().length() != 0) {
 					ps.setString(11, idComicMod.getText());
 					ComicBorrar(ps);
-				} else {
+				} else { //Si no hay ID en los parametros, saltara el siguiente error
 					pantallaInformativa.setOpacity(1);
 					pantallaInformativa.setStyle("-fx-background-color: #F53636");
 					idComicMod.setStyle("-fx-background-color: #F53636");
@@ -354,7 +328,7 @@ public class ModificarDatosController {
 					pantallaInformativa.setText("ERROR. No ha puesto ningun \nID en la busqueda.");
 				}
 
-				if (ps.executeUpdate() == 1) {
+				if (ps.executeUpdate() == 1) { //Si se ha modificado correctamente, saltara el siguiente mensaje
 					pantallaInformativa.setOpacity(1);
 					pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 					pantallaInformativa.setText("Ha modificado correctamente: " + comic.toString());
@@ -369,6 +343,11 @@ public class ModificarDatosController {
 		}
 	}
 
+	/**
+	 * Devuelve un objeto Comic con los nuevos datos de un comic. En caso de tener el espacio en blanco, el valor del parametro sera el que tenia originalmente.
+	 * @param ps
+	 * @return
+	 */
 	public Comic ComicBorrar(PreparedStatement ps) {
 
 		String nombre = "", numero = "", variante = "", firma = "", editorial = "", formato = "", procedencia = "",
@@ -455,9 +434,8 @@ public class ModificarDatosController {
 	}
 
 	/**
-	 *
+	 * Muestra datos por parametro
 	 * @param event
-	 * @throws SQLException
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
@@ -470,7 +448,6 @@ public class ModificarDatosController {
 	 * Muestra toda la base de datos.
 	 *
 	 * @param event
-	 * @throws SQLException
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) throws SQLException {
@@ -481,9 +458,8 @@ public class ModificarDatosController {
 	}
 
 	/**
-	 *
+	 * Funcion que busca en el arrayList el o los comics que tengan coincidencia con los datos introducidos en el TextField
 	 * @return
-	 * @throws SQLException
 	 */
 	public void listaPorParametro() {
 		String datosComic[] = camposComicActuales();
@@ -495,10 +471,9 @@ public class ModificarDatosController {
 	}
 
 	/**
-	 *
+	 * Muestra los comics que coincidan con los parametros introducidos
 	 * @param comic
 	 * @return
-	 * @throws SQLException
 	 */
 	public List<Comic> libreriaParametro(Comic comic) {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
@@ -512,9 +487,8 @@ public class ModificarDatosController {
 	}
 
 	/**
-	 *
+	 * Muestra todos los comics de la base de datos
 	 * @return
-	 * @throws SQLException
 	 */
 	public List<Comic> libreriaCompleta() {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreria());
@@ -529,7 +503,7 @@ public class ModificarDatosController {
 	}
 
 	/**
-	 *
+	 * Obtiene los datos de los comics de la base de datos y los devuelve en el textView
 	 * @param listaComic
 	 */
 	@SuppressWarnings("unchecked")
@@ -540,22 +514,7 @@ public class ModificarDatosController {
 	}
 
 	/**
-	 *
-	 * @return
-	 */
-	public boolean alertaModificacion() {
-		if (nav.alertaModificar()) {
-			return true;
-		} else {
-			pantallaInformativa.setOpacity(1);
-			pantallaInformativa.setStyle("-fx-background-color: #F53636");
-			pantallaInformativa.setText("ERROR. Se ha cancelado la modificacion.");
-			return false;
-		}
-	}
-
-	/**
-	 *
+	 *  Permite dar valor a las celdas de la TableView
 	 */
 	private void nombreColumnas() {
 		ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
@@ -579,10 +538,9 @@ public class ModificarDatosController {
 	 * Permite volver al menu de conexion a la base de datos.
 	 *
 	 * @param event
-	 * @throws IOException
 	 */
 	@FXML
-	void volverMenu(ActionEvent event) throws IOException {
+	void volverMenu(ActionEvent event) {
 
 		nav.verMenuPrincipal();
 
@@ -611,7 +569,6 @@ public class ModificarDatosController {
 	/**
 	 * Al cerrar la ventana, se cargara la ventana de verBBDD
 	 *
-	 * @throws IOException
 	 */
 	public void closeWindows() {
 

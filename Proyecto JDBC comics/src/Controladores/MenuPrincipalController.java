@@ -8,15 +8,15 @@ package Controladores;
  *  - Ver la base de datos completa o parcial segun parametros introducidos.
  *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
  *  - Copia de seguridad de la base de datos en formato .sql
- *  - Añadir comics a la base de datos.
+ *  - A�adir comics a la base de datos.
  *  - Modificar comics de la base de datos.
  *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
  *  - Ver frases de personajes de comics
  *  - Opcion de escoger algo para leer de forma aleatoria.
  *
- *  Esta clase permite acceder a la base de datos introduciendo los diferentes datos que nos pide.
+ *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
  *
- *  Version 2.5
+ *  Version Final
  *
  *  Por Alejandro Rodriguez
  *
@@ -26,12 +26,10 @@ package Controladores;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.ProcessBuilder.Redirect;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 import java.util.List;
 
 import Funcionamiento.BBDD;
@@ -196,7 +194,7 @@ public class MenuPrincipalController {
 	/////////////////////////////////
 
 	/**
-	 * Permite abrir y cargar la ventana para añadir datos.
+	 * Permite abrir y cargar la ventana para IntroducirDatosController
 	 *
 	 * @param event
 	 */
@@ -210,7 +208,7 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 *
+	 * Permite el cambio de ventana a la ventana de EliminarDatosController
 	 * @param event
 	 */
 	@FXML
@@ -223,7 +221,7 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 *
+	 * Permite el cambio de ventana a la ventana de ModificarDatosController
 	 * @param event
 	 */
 	@FXML
@@ -236,7 +234,7 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 *
+	 * Permite el cambio de ventana a la ventana deRecomendacionesController
 	 * @param event
 	 */
 	@FXML
@@ -249,12 +247,11 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 *
+	 * Muestra en un textArea diferentes frases random de personajes de los comics.
 	 * @param event
 	 */
 	@FXML
 	void fraseRandom(ActionEvent event) {
-
 		prontFrases.setOpacity(1);
 		prontFrases.setText(Comic.frasesComics());
 	}
@@ -263,21 +260,17 @@ public class MenuPrincipalController {
 	 * Muestra la bbdd segun los parametros introducidos en los TextField
 	 *
 	 * @param event
-	 * @throws SQLException
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
-
 		nombreColumnas();
 		listaPorParametro();
-
 	}
 
 	/**
 	 * Muestra toda la base de datos.
 	 *
 	 * @param event
-	 * @throws SQLException
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) {
@@ -290,71 +283,61 @@ public class MenuPrincipalController {
 	////////////////////////////
 
 	/**
-	 *
+	 * Importa un fichero CSV compatible con el programa para copiar la informacion a la base de datos
 	 * @param event
-	 * @throws SQLException
-	 * @throws IOException
 	 */
 	@FXML
 	void importCSV(ActionEvent event) {
 
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero CSV", "*.csv"));
-		File fichero = fileChooser.showOpenDialog(null);
+		FileChooser fileChooser = new FileChooser(); //Permite escoger donde se encuentra el fichero
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero CSV", "*.csv")); //Permite escoger solamente ficheros cuya extension es CSV
+		File fichero = fileChooser.showOpenDialog(null); //Hace que el fileChooser sea solamente para abrir el fichero
 
 		importCSV(fichero);
 
 	}
 
 	/**
-	 * Guarda los datos de la base de datos en un fichero.
+	 * Guarda los datos de la base de datos en un fichero txt.
 	 *
 	 * @param event
-	 * @throws SQLException
 	 */
 	@FXML
 	void exportFichero(ActionEvent event) {
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero bloc de notas", "*.txt"));
-		File fichero = fileChooser.showSaveDialog(null);
+		FileChooser fileChooser = new FileChooser(); //Permite escoger donde se encuentra el fichero
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero bloc de notas", "*.txt"));  //Permite escoger solamente ficheros cuya extension es txt
+		File fichero = fileChooser.showSaveDialog(null); //Hace que el fileChooser sea solamente para guardar el fichero
 
 		makeFile(fichero);
 	}
 
 	/**
-	 *
+	 * Exporta un fichero CSV compatible con el programa que copia el contenido de la base de datos en un fichero CSV
 	 * @param event
 	 */
 	@FXML
 	void exportCSV(ActionEvent event) {
 
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero Excel xlsx", "*.xlsx"));
-		File fichero = fileChooser.showSaveDialog(null);
+		FileChooser fileChooser = new FileChooser(); //Permite escoger donde se encuentra el fichero
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero Excel xlsx", "*.xlsx"));  //Permite escoger solamente ficheros cuya extension es .xlsx
+		File fichero = fileChooser.showSaveDialog(null);  //Hace que el fileChooser sea solamente para guardar el fichero
 
 		makeExcel(fichero);
 	}
 
 	/**
-	 *
+	 * Exporta la base de datos en un fichero SQL
 	 * @param event
 	 */
 	@FXML
 	void exportarSQL(ActionEvent event) {
 
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero SQL", "*.sql"));
-		File fichero = fileChooser.showSaveDialog(null);
+		FileChooser fileChooser = new FileChooser(); //Permite escoger donde se encuentra el fichero
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero SQL", "*.sql")); //Permite escoger solamente ficheros cuya extension es .xlsx
+		File fichero = fileChooser.showSaveDialog(null); //Hace que el fileChooser sea solamente para guardar el fichero
 
-		if (db.makeSQL(fichero)) {
-			prontInfo.setOpacity(1);
-			prontInfo.setStyle("-fx-background-color: #A0F52D");
-			prontInfo.setText("Base de datos exportada \ncorrectamente");
-		} else {
-			prontInfo.setOpacity(1);
-			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("ERROR. Base de datos \nexportada cancelada.");
-		}
+		makeSQL(fichero);
+
 
 	}
 
@@ -383,6 +366,10 @@ public class MenuPrincipalController {
 		prontFrases.setOpacity(0);
 	}
 
+	/**
+	 * Borra el contenido de la base de datos, soltamente el contenido de las tablas.
+	 * @param event
+	 */
 	@FXML
 	void borrarContenidoTabla(ActionEvent event) {
 
@@ -398,32 +385,43 @@ public class MenuPrincipalController {
 		}
 	}
 
+	/**
+	 * Se llama a funcion que permite ver las estadisticas de la bbdd
+	 * @param event
+	 */
 	@FXML
 	void verEstadistica(ActionEvent event) {
 		procedimientosEstadistica();
 	}
 
+	/**
+	 * Se llama a funcion que permite abrir 2 direccionesd web junto al navegador predeterminado
+	 * @param event
+	 */
 	@FXML
 	void comprarComic(ActionEvent event) {
-		 verPagina();
+		verPagina();
 	}
 
 	/////////////////////////////////
 	//// FUNCIONES////////////////////
 	/////////////////////////////////
 
+	/**
+	 * Funcion que permite llamar al navegador predeterminado del sistema y abrir 2 paginas web.
+	 */
 	public void verPagina()
 	{
 		String url1 = "https://www.radarcomics.com/es/";
 		String url2 = "https://www.panini.es/shp_esp_es/comics.html";
 
 		if (Utilidades.isWindows()) {
-			accesoCompraWindows(url1);
-			accesoCompraWindows(url2);
+			accesoCompraWindows(url1); //Llamada a funcion
+			accesoCompraWindows(url2); //Llamada a funcion
 		} else {
 			if (Utilidades.isUnix()) {
-				accesoCompraLinux(url1);
-				accesoCompraLinux(url2);
+				accesoCompraLinux(url1); //Llamada a funcion
+				accesoCompraLinux(url2); //Llamada a funcion
 			} else {
 				// No creada funcion para mac
 			}
@@ -431,11 +429,26 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 *
+	 * Permite abrir las paginas web siempre que el sistema opertativo sea Linux
 	 * @param url
 	 */
 	public void accesoCompraLinux(String url) {
 		Runtime rt = Runtime.getRuntime();
+		StringBuffer cmd = navegador(url); //Llamada a funcion
+		
+		try {
+			rt.exec(new String[] { "sh", "-c", cmd.toString() });
+		} catch (IOException e) {
+			nav.alertaException("Error: No funciona el boton \n" + e.toString());
+		}
+	}
+
+	/**
+	 * Funcion que permite comprobar que navegadores tienes instalados en el sistema operativo linux y abre aquel que tengas en predeterminado.
+	 * @param url
+	 * @return
+	 */
+	public StringBuffer navegador(String url) {
 		String[] browsers = { "google-chrome", "firefox", "mozilla", "epiphany", "konqueror", "netscape", "opera",
 				"links", "lynx" };
 
@@ -447,15 +460,11 @@ public class MenuPrincipalController {
 				cmd.append(String.format(" || %s \"%s\"", browsers[i], url));
 			}
 		}
-		try {
-			rt.exec(new String[] { "sh", "-c", cmd.toString() });
-		} catch (IOException e) {
-			nav.alertaException("Error: No funciona el boton \n" + e.toString());
-		}
+		return cmd;
 	}
 
 	/**
-	 *
+	 * Funcion que abre navegador predeterminado junto a una web siempre que el sistema operativo sea windows
 	 * @param url
 	 */
 	public void accesoCompraWindows(String url) {
@@ -467,7 +476,7 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 *
+	 * Funcion que llamada a los procedimientos almacenados en la base de datos y muestra diferentes datos.
 	 */
 	public void procedimientosEstadistica() {
 		String procedimiento1;
@@ -490,12 +499,13 @@ public class MenuPrincipalController {
 			Statement st4 = conn.createStatement();
 			Statement st5 = conn.createStatement();
 
-			ResultSet rs1 = st1.executeQuery(procedimiento1);
-			ResultSet rs2 = st2.executeQuery(procedimiento2);
-			ResultSet rs3 = st3.executeQuery(procedimiento3);
-			ResultSet rs4 = st4.executeQuery(procedimiento4);
-			ResultSet rs5 = st5.executeQuery(procedimiento5);
+			ResultSet rs1 = st1.executeQuery(procedimiento1); //Executa el procedimiento almacenado
+			ResultSet rs2 = st2.executeQuery(procedimiento2); //Executa el procedimiento almacenado
+			ResultSet rs3 = st3.executeQuery(procedimiento3); //Executa el procedimiento almacenado
+			ResultSet rs4 = st4.executeQuery(procedimiento4); //Executa el procedimiento almacenado
+			ResultSet rs5 = st5.executeQuery(procedimiento5); //Executa el procedimiento almacenado
 
+			//Si no hay dato que comprobar, devolvera un 0
 			if (rs1.next()) {
 				numGrapas = rs1.getInt(1);
 			} else {
@@ -539,7 +549,7 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 *
+	 * Permite dar valor a las celdas de la TableView
 	 */
 	private void nombreColumnas() {
 		ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
@@ -560,23 +570,23 @@ public class MenuPrincipalController {
 	/////////////////////////////////
 
 	/**
-	 *
+	 * Funcion que compruba si se ha creado el fichero Excel y CSV
 	 * @param fichero
 	 */
 	public void makeExcel(File fichero) {
 		try {
 
 			if (fichero != null) {
-				if (db.crearExcel(fichero)) {
+				if (db.crearExcel(fichero)) { //Si el fichero XLSX y CSV se han creado se vera el siguiente mensaje
 					prontInfo.setOpacity(1);
 					prontInfo.setStyle("-fx-background-color: #A0F52D");
 					prontInfo.setText("Fichero excel exportado de forma correcta");
-				} else {
+				} else { //Si no se ha podido crear correctamente los ficheros se vera el siguiente mensaje
 					prontInfo.setOpacity(1);
 					prontInfo.setStyle("-fx-background-color: #F53636");
 					prontInfo.setText("ERROR. No se ha podido exportar correctamente.");
 				}
-			} else {
+			} else { //En caso de cancelar la creacion de los ficheros, se mostrara el siguiente mensaje.
 				prontInfo.setOpacity(1);
 				prontInfo.setStyle("-fx-background-color: #F53636");
 				prontInfo.setText("ERROR. Se ha cancelado la exportacion.");
@@ -587,23 +597,23 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 *
+	 * Funcion que compruba si se ha importado el fichero  CSV
 	 * @param fichero
 	 */
 	public void importCSV(File fichero) {
 		try {
 
 			if (fichero != null) {
-				if (db.importarCSV(fichero)) {
+				if (db.importarCSV(fichero)) { //Si se ha importado el fichero CSV correctamente, se vera el siguiente mensaje
 					prontInfo.setOpacity(1);
 					prontInfo.setStyle("-fx-background-color: #A0F52D");
 					prontInfo.setText("Fichero CSV importado de forma correcta");
-				} else {
+				} else { //Si no se ha podido crear importar el fichero se vera el siguiente mensaje
 					prontInfo.setOpacity(1);
 					prontInfo.setStyle("-fx-background-color: #F53636");
 					prontInfo.setText("ERROR. No se ha podido importar correctamente.");
 				}
-			} else {
+			} else { //En caso de cancelar la importacion del fichero, se mostrara el siguiente mensaje.
 				prontInfo.setOpacity(1);
 				prontInfo.setStyle("-fx-background-color: #F53636");
 				prontInfo.setText("ERROR. Se ha cancelado la importacion.");
@@ -614,7 +624,7 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 *
+	 * Funcion que compruba si se ha creado el fichero txt
 	 * @param fichero
 	 */
 	public void makeFile(File fichero) {
@@ -647,45 +657,35 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 *
+	 * Funcion crea el fichero SQL segun el sistema operativo en el que te encuentres.
 	 * @param fichero
 	 */
-	public void backupLinux(File fichero) {
-		try {
-			fichero.createNewFile();
-			String command[] = new String[] { "mysqldump", "-u" + ConexionBBDD.DB_USER, "-p" + ConexionBBDD.DB_PASS,
-					"-B", ConexionBBDD.DB_NAME, "--result-file=" + fichero };
-			ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
-			pb.redirectError(Redirect.INHERIT);
-			pb.redirectOutput(Redirect.to(fichero));
-			pb.start();
+	public void makeSQL(File fichero) {
+		if (fichero != null) {
 
-		} catch (IOException e) {
-			nav.alertaException(e.toString());
+			if (Utilidades.isWindows()) {
+				db.backupWindows(fichero); //Llamada a funcion
+				prontInfo.setOpacity(1);
+				prontInfo.setStyle("-fx-background-color: #A0F52D");
+				prontInfo.setText("Base de datos exportada \ncorrectamente");
+
+			} else {
+				if (Utilidades.isUnix()) {
+					db.backupLinux(fichero); //Llamada a funcion
+					prontInfo.setOpacity(1);
+					prontInfo.setStyle("-fx-background-color: #A0F52D");
+					prontInfo.setText("Base de datos exportada \ncorrectamente");
+				} 
+			}
+		}
+		else
+		{
+			prontInfo.setOpacity(1);
+			prontInfo.setStyle("-fx-background-color: #F53636");
+			prontInfo.setText("ERROR. Se ha cancelado la exportacion de la base de datos.");
 		}
 	}
 
-	/**
-	 *
-	 * @param fichero
-	 */
-	public void backupWindows(File fichero) {
-		try {
-			fichero.createNewFile();
-
-			String mysqlDump = "C:/Program Files/MySQL/MySQL Workbench 8.0 CE/mysqldump";
-
-			String command[] = new String[] { mysqlDump, "-u" + ConexionBBDD.DB_USER, "-p" + ConexionBBDD.DB_PASS, "-B",
-					ConexionBBDD.DB_NAME, "--result-file=" + fichero };
-			ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
-			pb.redirectError(Redirect.INHERIT);
-			pb.redirectOutput(Redirect.to(fichero));
-			pb.start();
-
-		} catch (Exception e) {
-			nav.alertaException(e.toString());
-		}
-	}
 
 	/**
 	 *
@@ -701,10 +701,9 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 *
+	 * Devuelve una lista de los comics cuyos datos han sido introducidos mediante parametros en los textField
 	 * @param comic
 	 * @return
-	 * @throws SQLException
 	 */
 	public List<Comic> libreriaParametro(Comic comic) {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
@@ -718,9 +717,8 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 *
+	 * Devuelve una lista con todos los comics de la base de datos que se encuentran "En posesion"
 	 * @return
-	 * @throws SQLException
 	 */
 	public List<Comic> libreriaPosesion() {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreria());
@@ -733,10 +731,9 @@ public class MenuPrincipalController {
 		return listComic;
 	}
 
-	/**
-	 *
+	/** 
+	 * Devuelve una lista con todos los comics de la base de datos.
 	 * @return
-	 * @throws SQLException
 	 */
 	public List<Comic> libreriaCompleta() {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaCompleta());
@@ -750,7 +747,7 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 *
+	 * Obtiene los datos de los comics de la base de datos y los devuelve en el textView
 	 * @param listaComic
 	 */
 	@SuppressWarnings("unchecked")
@@ -761,7 +758,7 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 *
+	 * Devuelve un array con los datos de los TextField correspondientes a la los comics que se encuentran en la bbdd
 	 * @return
 	 */
 	public String[] camposComic() {

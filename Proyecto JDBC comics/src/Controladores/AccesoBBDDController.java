@@ -16,7 +16,7 @@ package Controladores;
  *
  *  Esta clase permite acceder a la base de datos introduciendo los diferentes datos que nos pide.
  *
- *  Version 2.5
+ *  Version Final
  *
  *  Por Alejandro Rodriguez
  *
@@ -106,13 +106,13 @@ public class AccesoBBDDController {
 	 */
 	@FXML
 	void accesoGitHub(ActionEvent event) {
-		String url = "https://github.com/MisterioRojo/Proyecto-gui-bbdd/tree/V2.6";
+		String url = "https://github.com/MisterioRojo/Proyecto-gui-bbdd/tree/V.F";
 
 		if (Utilidades.isWindows()) {
-			accesoGitHubWindows(url);
+			accesoWebWindows(url); //Llamada a funcion
 		} else {
 			if (Utilidades.isUnix()) {
-				accesoGitHubLinux(url);
+				accesoWebLinux(url); //Llamada a funcion
 			} else {
 				// No creada funcion para mac
 			}
@@ -129,10 +129,10 @@ public class AccesoBBDDController {
 		String url = "https://twitter.com/SilverAlox";
 
 		if (Utilidades.isWindows()) {
-			accesoTwitterWindows(url);
+			accesoWebWindows(url); //Llamada a funcion
 		} else {
 			if (Utilidades.isUnix()) {
-				accesoTwitterLinux(url);
+				accesoWebLinux(url); //Llamada a funcion
 			} else {
 				// No creada funcion para mac
 			}
@@ -143,73 +143,51 @@ public class AccesoBBDDController {
 	 *
 	 * @param url
 	 */
-	public void accesoGitHubLinux(String url) {
-		Runtime rt = Runtime.getRuntime();
-		String[] browsers = { "google-chrome", "firefox", "mozilla", "epiphany", "konqueror", "netscape", "opera",
-				"links", "lynx" };
-
-		StringBuffer cmd = new StringBuffer();
-		for (int i = 0; i < browsers.length; i++) {
-			if (i == 0) {
-				cmd.append(String.format("%s \"%s\"", browsers[i], url));
-			} else {
-				cmd.append(String.format(" || %s \"%s\"", browsers[i], url));
-			}
-		}
-		try {
-			rt.exec(new String[] { "sh", "-c", cmd.toString() });
-		} catch (IOException e) {
-			nav.alertaException("Error: No funciona el boton \n" + e.toString());
-		}
-	}
-
-	/**
-	 *
-	 * @param url
-	 */
-	public void accesoGitHubWindows(String url) {
+	public void accesoWebWindows(String url) {
 		try {
 			java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
 		} catch (IOException e) {
 			nav.alertaException("Error: No funciona el boton \n" + e.toString());
 		}
 	}
-
+	
 	/**
-	 *
+	 * Funcion que permite abrir navegador y pagina web de GitHub en Linux
 	 * @param url
 	 */
-	public void accesoTwitterLinux(String url) {
+	public void accesoWebLinux(String url) {
 		Runtime rt = Runtime.getRuntime();
+
+		StringBuffer cmd = navegadores(url);
+		
+		try {
+			rt.exec(new String[] { "sh", "-c", cmd.toString() }); //Ejecuta el bucle y permite abrir el navegador que tengas principal
+		} catch (IOException e) {
+			nav.alertaException("Error: No funciona el boton \n" + e.toString());
+		}
+	}
+	
+	/**
+	 * 
+	 * @param url
+	 * @return
+	 */
+	public StringBuffer navegadores(String url)
+	{
 		String[] browsers = { "google-chrome", "firefox", "mozilla", "epiphany", "konqueror", "netscape", "opera",
 				"links", "lynx" };
-
+		
 		StringBuffer cmd = new StringBuffer();
-		for (int i = 0; i < browsers.length; i++) {
+		for (int i = 0; i < browsers.length; i++) { //Bucle que permite comprobar que navegador tienes como principal y lo abre.
 			if (i == 0) {
 				cmd.append(String.format("%s \"%s\"", browsers[i], url));
 			} else {
 				cmd.append(String.format(" || %s \"%s\"", browsers[i], url));
 			}
 		}
-		try {
-			rt.exec(new String[] { "sh", "-c", cmd.toString() });
-		} catch (IOException e) {
-			nav.alertaException("Error: No funciona el boton \n" + e.toString());
-		}
+		return cmd;
 	}
 
-	/**
-	 *
-	 * @param url
-	 */
-	public void accesoTwitterWindows(String url) {
-		try {
-			java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
-		} catch (IOException e) {
-			nav.alertaException("Error: No funciona el boton \n" + e.toString());
-		}
-	}
 
 	/**
 	 *
@@ -249,7 +227,7 @@ public class AccesoBBDDController {
 	}
 
 	/**
-	 *
+	 * Permite ver las bases de datos disponibles en MySql workbench
 	 * @param event
 	 */
 	@FXML
@@ -263,14 +241,15 @@ public class AccesoBBDDController {
 			DatabaseMetaData meta = connection.getMetaData();
 			ResultSet res = meta.getCatalogs();
 
-			ArrayList<String> databases = new ArrayList<>();
+			ArrayList<String> databases = new ArrayList<>(); //ArrayList que almacena el nombre de las bases de datos que hay en MySql Workbench
 
 			while (res.next()) {
 
 				if (!res.getString("TABLE_CAT").equals("information_schema")
 						&& !res.getString("TABLE_CAT").equals("mysql")
-						&& !res.getString("TABLE_CAT").equals("performance_schema")) {
-					databases.add(res.getString("TABLE_CAT") + "\n");
+						&& !res.getString("TABLE_CAT").equals("performance_schema")) //elimina las bases de datos que no se utilizaran en este programa
+					{
+					databases.add(res.getString("TABLE_CAT") + "\n"); 
 				}
 			}
 			res.close();
@@ -286,7 +265,7 @@ public class AccesoBBDDController {
 	}
 
 	/**
-	 *
+	 * Se ve informacion en el TextArea.
 	 * @param event
 	 */
 	@FXML

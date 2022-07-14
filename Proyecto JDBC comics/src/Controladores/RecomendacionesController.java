@@ -8,23 +8,21 @@ package Controladores;
  *  - Ver la base de datos completa o parcial segun parametros introducidos.
  *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
  *  - Copia de seguridad de la base de datos en formato .sql
- *  - AÃ±adir comics a la base de datos.
+ *  - Añadir comics a la base de datos.
  *  - Modificar comics de la base de datos.
  *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
  *  - Ver frases de personajes de comics
  *  - Opcion de escoger algo para leer de forma aleatoria.
  *
- *  Esta clase permite acceder a la base de datos introduciendo los diferentes datos que nos pide.
+ *  Esta clase permite acceder a la ventana que permite mostrar una recomendacion de comics.
  *
- *  Version 2.5
+ *  Version Final
  *
  *  Por Alejandro Rodriguez
  *
  *  Twitter: @silverAlox
  */
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Random;
 
 import Funcionamiento.Libreria;
@@ -54,9 +52,8 @@ public class RecomendacionesController {
 	private Libreria libreria = new Libreria();
 
 	/**
-	 *
+	 * Llama a funcion que genera una lectura recomendada
 	 * @param event
-	 * @throws SQLException
 	 */
 	@FXML
 	void eligePorMi(ActionEvent event) {
@@ -66,9 +63,8 @@ public class RecomendacionesController {
 	}
 
 	/**
-	 *
+	 * Funcion que devuelve un comic al azar de toda la base de datos.
 	 * @return
-	 * @throws SQLException
 	 */
 	public String generarLectura() {
 		Random r = new Random();
@@ -89,14 +85,14 @@ public class RecomendacionesController {
 	}
 
 	/**
-	 *
+	 * Se limpia el pront de informacion de la ventana
 	 */
 	public void limpiarPront() {
 		printComicRecomendado.setText("");
 	}
 
 	/**
-	 *
+	 * Permite salir completamente del programa.
 	 * @param event
 	 */
 	@FXML
@@ -112,7 +108,6 @@ public class RecomendacionesController {
 	 * Vuelve al menu inicial de conexion de la base de datos.
 	 *
 	 * @param event
-	 * @throws IOException
 	 */
 	public void volverMenu(ActionEvent event) {
 
@@ -126,7 +121,6 @@ public class RecomendacionesController {
 	/**
 	 * Al cerrar la ventana, se cargara la ventana de verBBDD
 	 *
-	 * @throws IOException
 	 */
 	public void closeWindows() {
 

@@ -1,29 +1,5 @@
 package Controladores;
 
-/**
- * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
- * Las ventanas graficas se realizan con JavaFX.
- * El programa permite:
- *  - Conectarse a la base de datos.
- *  - Ver la base de datos completa o parcial segun parametros introducidos.
- *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
- *  - Copia de seguridad de la base de datos en formato .sql
- *  - AÃ±adir comics a la base de datos.
- *  - Modificar comics de la base de datos.
- *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
- *  - Ver frases de personajes de comics
- *  - Opcion de escoger algo para leer de forma aleatoria.
- *
- *  Esta clase permite acceder a la base de datos introduciendo los diferentes datos que nos pide.
- *
- *  Version 2.5
- *
- *  Por Alejandro Rodriguez
- *
- *  Twitter: @silverAlox
- */
-
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -177,7 +153,7 @@ public class IntroducirDatosController {
 	private Libreria libreria = new Libreria();
 
 	/**
-	 *
+	 * Limpia todos los datos de los textField que hay en pantalla
 	 * @param event
 	 */
 	@FXML
@@ -234,7 +210,7 @@ public class IntroducirDatosController {
 	}
 
 	/**
-	 * AÃ±ade datos a la base de datos segun los parametros introducidos en los
+	 * Añade datos a la base de datos segun los parametros introducidos en los
 	 * textField
 	 *
 	 * @param event
@@ -259,15 +235,11 @@ public class IntroducirDatosController {
 
 		try {
 			PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
+			
 			statement.setString(1, datos[0]);
 			statement.setString(2, datos[1]);
 			statement.setString(3, datos[2]);
-
-			if (datos[3].length() != 0) {
-				statement.setString(4, datos[3]);
-			} else {
-				statement.setString(4, "No firmado");
-			}
+			statement.setString(4, datos[3]);
 			statement.setString(5, datos[4]);
 			statement.setString(6, datos[5]);
 			statement.setString(7, datos[6]);
@@ -275,7 +247,7 @@ public class IntroducirDatosController {
 			statement.setString(9, datos[8]);
 			statement.setString(10, datos[9]);
 
-			if (statement.executeUpdate() == 1) {
+			if (statement.executeUpdate() == 1) { //Sie el resultado del executeUpdate es 1, mostrara el mensaje correcto.
 				if (nav.alertaInsertar()) {
 					pantallaInformativa.setOpacity(1);
 					pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
@@ -291,7 +263,7 @@ public class IntroducirDatosController {
 					pantallaInformativa.setText("Insertado cancelado..");
 				}
 
-			} else {
+			} else { //En caso de no haber sido posible añadir el comic, se vera el siguiente mensaje.
 				pantallaInformativa.setOpacity(1);
 				pantallaInformativa.setStyle("-fx-background-color: #F53636");
 				pantallaInformativa
@@ -303,35 +275,33 @@ public class IntroducirDatosController {
 	}
 
 	/**
-	 *
+	 * Mostrara los comics o comic buscados por parametro
 	 * @param event
 	 * @throws SQLException
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
 
-		nombreColumnas();
-		listaPorParametro();
+		nombreColumnas(); //Llamada a funcion
+		listaPorParametro(); //Llamada a funcion
 	}
 
 	/**
 	 * Muestra toda la base de datos.
 	 *
 	 * @param event
-	 * @throws SQLException
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) {
 
-		nombreColumnas();
-		tablaBBDD(libreriaCompleta());
+		nombreColumnas(); //Llamada a funcion
+		tablaBBDD(libreriaCompleta()); //Llamada a funcion
 
 	}
 
 	/**
-	 *
+	 * Muestra los comics que coincidan con los parametros introducidos en los textField
 	 * @return
-	 * @throws SQLException
 	 */
 	public void listaPorParametro() {
 		String datosComic[] = camposComicActuales();
@@ -339,16 +309,15 @@ public class IntroducirDatosController {
 		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
 				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "");
 
-		tablaBBDD(libreriaParametro(comic));
+		tablaBBDD(busquedaParametro(comic));
 	}
 
 	/**
-	 *
+	 * Funcion que busca en el arrayList el o los comics que tengan coincidencia con los datos introducidos en el TextField
 	 * @param comic
 	 * @return
-	 * @throws SQLException
 	 */
-	public List<Comic> libreriaParametro(Comic comic) {
+	public List<Comic> busquedaParametro(Comic comic) {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
 
 		if (listComic.size() == 0) {
@@ -360,9 +329,8 @@ public class IntroducirDatosController {
 	}
 
 	/**
-	 *
+	 * Muestra todos los comics de la base de datos
 	 * @return
-	 * @throws SQLException
 	 */
 	public List<Comic> libreriaCompleta() {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreria());
@@ -377,7 +345,7 @@ public class IntroducirDatosController {
 	}
 
 	/**
-	 *
+	 * Obtiene los datos de los comics de la base de datos y los devuelve en el textView
 	 * @param listaComic
 	 */
 	@SuppressWarnings("unchecked")
@@ -388,7 +356,7 @@ public class IntroducirDatosController {
 	}
 
 	/**
-	 *
+	 * Devuelve un array con los datos de los TextField correspondientes a la los comics que se encuentran en la bbdd
 	 * @return
 	 */
 	public String[] camposComicActuales() {
@@ -419,8 +387,8 @@ public class IntroducirDatosController {
 		return campos;
 	}
 
-	/**
-	 *
+	/** 
+	 * Devuelve un array con los datos de los TextField del comic a añadir
 	 * @return
 	 */
 	public String[] camposComicIntroducir() {
@@ -450,7 +418,7 @@ public class IntroducirDatosController {
 	}
 
 	/**
-	 *
+	 * Permite dar valor a las celdas de la TableView
 	 */
 	private void nombreColumnas() {
 		ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
@@ -470,7 +438,6 @@ public class IntroducirDatosController {
 	 * Permite volver al menu de conexion a la base de datos.
 	 *
 	 * @param event
-	 * @throws IOException
 	 */
 	@FXML
 	void volverMenu(ActionEvent event) {
@@ -498,7 +465,6 @@ public class IntroducirDatosController {
 	/**
 	 * Al cerrar la ventana, se cargara la ventana de verBBDD
 	 *
-	 * @throws IOException
 	 */
 	public void closeWindows() {
 

@@ -45,7 +45,6 @@ public class Libreria extends Comic {
 	 * Devuelve todos los datos de la base de datos.
 	 *
 	 * @return
-	 * @throws SQLException
 	 */
 	public Comic[] verLibreria() {
 
@@ -71,7 +70,6 @@ public class Libreria extends Comic {
 	 * Devuelve todos los datos de la base de datos.
 	 *
 	 * @return
-	 * @throws SQLException
 	 */
 	public Comic[] verLibreriaCompleta() {
 
@@ -95,7 +93,6 @@ public class Libreria extends Comic {
 	 *
 	 * @param datos
 	 * @return
-	 * @throws SQLException
 	 */
 	public Comic[] filtadroBBDD(Comic datos) {
 
@@ -123,7 +120,7 @@ public class Libreria extends Comic {
 	}
 
 	/**
-	 *
+	 * Funcion que segun los datos introducir mediante parametros, concatenara las siguientes cadenas de texto. Sirve para hacer busqueda en una base de datos
 	 * @param datos
 	 * @return
 	 */
@@ -183,7 +180,7 @@ public class Libreria extends Comic {
 	}
 
 	/**
-	 *
+	 * Funcion que devuelve un comic cuya ID este como parametro de busqueda
 	 * @param id
 	 * @return
 	 */
@@ -200,6 +197,11 @@ public class Libreria extends Comic {
 		return comic;
 	}
 
+	/**
+	 *  Devuelve una lista con todos los datos de los comics de la base de datos
+	 * @param rs
+	 * @return
+	 */
 	public List<Comic> listaDatos(ResultSet rs) {
 
 		try {
@@ -231,6 +233,11 @@ public class Libreria extends Comic {
 		return listaComics;
 	}
 
+	/**
+	 * Devuelve solamente 1 comics de la base de datos.
+	 * @param rs
+	 * @return
+	 */
 	public Comic datosIndividual(ResultSet rs) {
 		Comic comic = new Comic();
 
@@ -271,8 +278,7 @@ public class Libreria extends Comic {
 	}
 
 	/**
-	 *
-	 * @throws SQLException
+	 * Ordena el contenido de la base de datos por nombre del comic.
 	 */
 	public void ordenarBBDD() {
 		String sql = "ALTER TABLE comicsbbdd ORDER BY nomComic;";
@@ -283,7 +289,5 @@ public class Libreria extends Comic {
 		} catch (SQLException e) {
 			nav.alertaException(e.toString());
 		}
-
 	}
-
 }

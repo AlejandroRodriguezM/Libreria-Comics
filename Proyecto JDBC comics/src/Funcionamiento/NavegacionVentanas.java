@@ -8,7 +8,7 @@ package Funcionamiento;
  *  - Ver la base de datos completa o parcial segun parametros introducidos.
  *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
  *  - Copia de seguridad de la base de datos en formato .sql
- *  - AÃ±adir comics a la base de datos.
+ *  - Añadir comics a la base de datos.
  *  - Modificar comics de la base de datos.
  *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
  *  - Ver frases de personajes de comics
@@ -16,7 +16,7 @@ package Funcionamiento;
  *
  *  Esta clase permite acceder a la base de datos introduciendo los diferentes datos que nos pide.
  *
- *  Version 2.5
+ *  Version Final
  *
  *  Por Alejandro Rodriguez
  *
@@ -45,6 +45,9 @@ import javafx.stage.Stage;
 
 public class NavegacionVentanas {
 
+	/**
+	 * Llamada a ventana para el acceso a la base de datos
+	 */
 	public void verAccesoBBDD() {
 
 		try {
@@ -76,6 +79,9 @@ public class NavegacionVentanas {
 		}
 	}
 
+	/**
+	 * Llamada a ventana para el menu principal
+	 */
 	public void verMenuPrincipal() {
 
 		try {
@@ -109,6 +115,9 @@ public class NavegacionVentanas {
 		}
 	}
 
+	/**
+	 * Llamada a ventana para el acceso a introducir datos a la base de datos
+	 */
 	public void verIntroducirDatos() {
 
 		try {
@@ -145,6 +154,9 @@ public class NavegacionVentanas {
 		}
 	}
 
+	/**
+	 * Llamada a ventana para el acceso a modificar datos a la base de datos
+	 */
 	public void verModificarDatos() {
 
 		try {
@@ -183,6 +195,9 @@ public class NavegacionVentanas {
 		}
 	}
 
+	/**
+	 * Llamada a ventana para el acceso comics recomendados
+	 */
 	public void verRecomendacion() {
 
 		try {
@@ -219,6 +234,9 @@ public class NavegacionVentanas {
 		}
 	}
 
+	/**
+	 * Llamada a ventana para el acceso a eliminar datos a la base de datos
+	 */
 	public void verEliminarDatos() {
 
 		try {
@@ -257,6 +275,9 @@ public class NavegacionVentanas {
 		}
 	}
 
+	/**
+	 * Llamada a ventana para el acceso a creacion de bases de datos
+	 */
 	public void verCrearBBDD() {
 
 		try {
@@ -293,6 +314,11 @@ public class NavegacionVentanas {
 		}
 	}
 
+	/**
+	 * Permite salir del programa completamente
+	 * @param event
+	 * @return
+	 */
 	public boolean salirPrograma(ActionEvent event) {
 
 		Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -310,6 +336,10 @@ public class NavegacionVentanas {
 		}
 	}
 
+	/**
+	 * Llama a una ventana de alarma para eliminar datos
+	 * @return
+	 */
 	public boolean alertaEliminar() {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 
@@ -325,6 +355,10 @@ public class NavegacionVentanas {
 		return false;
 	}
 
+	/**
+	 * Llama a una ventana de alarma que avisa si se va a modificar un dato
+	 * @return
+	 */
 	public boolean alertaModificar() {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
@@ -339,6 +373,10 @@ public class NavegacionVentanas {
 		return false;
 	}
 
+	/**
+	 * Llama a una ventana de alarma que avisa si se va a introducir un dato
+	 * @return
+	 */
 	public boolean alertaInsertar() {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
@@ -353,6 +391,10 @@ public class NavegacionVentanas {
 		return false;
 	}
 
+	/**
+	 * Llama a una ventana de alarma que avisa si hay una excepcion.
+	 * @param excepcion
+	 */
 	public void alertaException(String excepcion) {
 		Platform.runLater(() -> {
 			Alert dialog = new Alert(AlertType.ERROR, excepcion, ButtonType.OK);
