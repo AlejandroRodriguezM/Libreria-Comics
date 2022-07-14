@@ -72,8 +72,6 @@ public class CrearBBDDController {
 
 	private final String DB_HOST = "localhost";
 
-	private String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + puertoBBDD.getText() + "/" + nombreBBDD.getText()
-			+ "?serverTimezone=UTC";
 
 	/**
 	 * Metodo que permite llamada a metodos donde se crean la bbdd y las tablas y
@@ -156,6 +154,9 @@ public class CrearBBDDController {
 	 */
 	public void createTable() {
 
+		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + puertoBBDD.getText() + "/" + nombreBBDD.getText()
+		+ "?serverTimezone=UTC";
+		
 		String sentenciaSQL = "CREATE TABLE " + " comicsbbdd ( ID int NOT NULL AUTO_INCREMENT,"
 				+ "nomComic varchar(150) NOT NULL," + "numComic varchar(150) NOT NULL,"
 				+ "nomVariante varchar(150) NOT NULL," + "Firma varchar(150) NOT NULL,"
@@ -184,6 +185,10 @@ public class CrearBBDDController {
 	 * Funcion que realiza la creacion de procedimientos almacenados.
 	 */
 	public void createProcedure() {
+		
+		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + puertoBBDD.getText() + "/" + nombreBBDD.getText()
+		+ "?serverTimezone=UTC";
+		
 		try {
 			Connection connection = DriverManager.getConnection(DB_URL, userBBDD.getText(), passBBDD.getText());
 			Statement statement;

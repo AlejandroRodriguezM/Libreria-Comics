@@ -311,6 +311,7 @@ public class NavegacionVentanas {
 
 		} catch (IOException ex) {
 			alertaException(ex.toString());
+			ex.printStackTrace();
 		}
 	}
 
