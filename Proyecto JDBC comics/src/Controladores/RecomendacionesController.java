@@ -35,7 +35,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
-public class RecomendacionesComic {
+public class RecomendacionesController {
 
 	@FXML
 	private Button botonElegir;

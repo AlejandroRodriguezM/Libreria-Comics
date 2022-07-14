@@ -31,7 +31,7 @@ import Controladores.EliminarDatosController;
 import Controladores.IntroducirDatosController;
 import Controladores.MenuPrincipalController;
 import Controladores.ModificarDatosController;
-import Controladores.RecomendacionesComic;
+import Controladores.RecomendacionesController;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -193,7 +193,7 @@ public class NavegacionVentanas {
 			Parent root = loader.load();
 
 			// Obtengo el controlador
-			RecomendacionesComic controlador = loader.getController();
+			RecomendacionesController controlador = loader.getController();
 
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
