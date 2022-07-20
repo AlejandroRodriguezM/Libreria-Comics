@@ -1,5 +1,7 @@
 package Funcionamiento;
 
+import java.io.IOException;
+
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  * Las ventanas graficas se realizan con JavaFX.
@@ -27,6 +29,8 @@ import java.util.Locale;
 
 public class Utilidades {
 
+	private static NavegacionVentanas nav = new NavegacionVentanas();
+
 	public static String os = System.getProperty("os.name", "unknown").toLowerCase(Locale.ROOT);
 
 	public static boolean isWindows() {
@@ -39,6 +43,69 @@ public class Utilidades {
 
 	public static boolean isUnix() {
 		return os.contains("nux");
+	}
+
+	/**
+	 * Funcion que permite comprobar que navegadores tienes instalados en el sistema operativo linux y abre aquel que tengas en predeterminado.
+	 * @param url
+	 * @return
+	 */
+	public static StringBuffer navegador(String url) {
+		String[] browsers = { "google-chrome", "firefox", "mozilla", "epiphany", "konqueror", "netscape", "opera",
+				"links", "lynx" };
+
+		StringBuffer cmd = new StringBuffer();
+		for (int i = 0; i < browsers.length; i++) {
+			if (i == 0) {
+				cmd.append(String.format("%s \"%s\"", browsers[i], url));
+			} else {
+				cmd.append(String.format(" || %s \"%s\"", browsers[i], url));
+			}
+		}
+		return cmd;
+	}
+
+	/**
+	 * Funcion que permite abrir navegador y pagina web de GitHub en Windows
+	 * @param url
+	 */
+	public static void accesoWebWindows(String url) {
+		try {
+			java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
+		} catch (IOException e) {
+			nav.alertaException("Error: No funciona el boton \n" + e.toString());
+		}
+	}
+
+	/**
+	 * Funcion que permite abrir navegador y pagina web de GitHub en Linux
+	 * @param url
+	 */
+	public static void accesoWebLinux(String url) {
+		Runtime rt = Runtime.getRuntime();
+
+		StringBuffer cmd;
+		try {
+			cmd = Utilidades.navegador(url);
+			rt.exec(new String[] { "sh", "-c", cmd.toString() }); //Ejecuta el bucle y permite abrir el navegador que tengas principal
+		} catch (IOException e) {
+			nav.alertaException("Error: No funciona el boton \n" + e.toString());
+		}
+	}
+	
+	/**
+	 * Funcion que permite abrir navegador y pagina web de GitHub en Linux
+	 * @param url
+	 */
+	public static void accesoWebMac(String url) {
+		 Runtime runtime = Runtime.getRuntime();
+		    String[] args = { "osascript", "-e", "open location \"" + url + "\"" };
+		    try {
+		        runtime.exec(args);
+		    }
+		    catch (IOException e) {
+		    	nav.alertaException("Error: No funciona el boton \n" + e.toString());
+		    }
 	}
 
 }

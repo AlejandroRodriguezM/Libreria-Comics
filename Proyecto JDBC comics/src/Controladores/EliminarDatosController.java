@@ -1,29 +1,5 @@
 package Controladores;
 
-/**
- * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
- * Las ventanas graficas se realizan con JavaFX.
- * El programa permite:
- *  - Conectarse a la base de datos.
- *  - Ver la base de datos completa o parcial segun parametros introducidos.
- *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
- *  - Copia de seguridad de la base de datos en formato .sql
- *  - Introducir comics a la base de datos.
- *  - Modificar comics de la base de datos.
- *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
- *  - Ver frases de personajes de comics
- *  - Opcion de escoger algo para leer de forma aleatoria.
- *
- *  Esta clase permite acceder a la ventana de eliminacion de comics de la base de datos
- *
- *  Version Final
- *
- *  Por Alejandro Rodriguez
- *
- *  Twitter: @silverAlox
- */
-
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -237,16 +213,15 @@ public class EliminarDatosController {
 		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
 				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "");
 
-		tablaBBDD(libreriaParametro(comic));
+		tablaBBDD(busquedaParametro(comic));
 	}
 
 	/**
 	 * Devuelve el comic buscado por parametros
 	 * @param comic
 	 * @return
-	 * @throws SQLException
 	 */
-	public List<Comic> libreriaParametro(Comic comic) {
+	public List<Comic> busquedaParametro(Comic comic) {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
 
 		if (listComic.size() == 0) {
@@ -370,7 +345,6 @@ public class EliminarDatosController {
 	 * Permite volver al menu de conexion a la base de datos.
 	 *
 	 * @param event
-	 * @throws IOException
 	 */
 	@FXML
 	void volverMenu(ActionEvent event) {
@@ -402,7 +376,6 @@ public class EliminarDatosController {
 	/**
 	 * Al cerrar la ventana, se cargara la ventana de verBBDD
 	 *
-	 * @throws IOException
 	 */
 	public void closeWindows() { // Metodo que permite cerrar el programa a la fuerza.
 

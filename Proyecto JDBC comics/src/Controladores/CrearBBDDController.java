@@ -92,7 +92,7 @@ public class CrearBBDDController {
 	}
 
 	/**
-	 * 
+	 * Funcion que permite crear una base de datos MySql
 	 */
 	public void createDataBase() {
 
@@ -114,7 +114,7 @@ public class CrearBBDDController {
 	}
 
 	/**
-	 * 
+	 * Comprueba si existe una base de datos con el nombre de la base de datos a crear
 	 * @return
 	 */
 	public boolean checkDatabase() {
@@ -123,17 +123,9 @@ public class CrearBBDDController {
 		String sentenciaSQL = "SELECT COUNT(*)" + "FROM information_schema.tables " + "WHERE table_schema = '"
 				+ nombreBBDD.getText() + "';";
 
-		String url = "jdbc:mysql://" + DB_HOST + ":" + puertoBBDD.getText() + "?serverTimezone=UTC";
-
-		Statement statement;
 		try {
 
-			Connection connection = DriverManager.getConnection(url, userBBDD.getText(), passBBDD.getText());
-
-			statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-			ResultSet rs = statement.executeQuery(sentenciaSQL);
-			rs.next();
-
+			ResultSet rs = ejecucionSQL(sentenciaSQL);
 			exists = rs.getInt("COUNT(*)") < 1;
 
 			if (exists) {
@@ -147,6 +139,33 @@ public class CrearBBDDController {
 		prontInformativo.setStyle("-fx-background-color: #DD370F");
 		prontInformativo.setText("ERROR. Ya existe una base de datos llamada: " + nombreBBDD.getText());
 		return false;
+	}
+	
+	/**
+	 * 
+	 * @param sentenciaSQL
+	 * @return
+	 */
+	public ResultSet ejecucionSQL(String sentenciaSQL)
+	{
+		String url = "jdbc:mysql://" + DB_HOST + ":" + puertoBBDD.getText() + "?serverTimezone=UTC";
+		
+		Statement statement;
+		try {
+
+			Connection connection = DriverManager.getConnection(url, userBBDD.getText(), passBBDD.getText());
+
+			statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+			ResultSet rs = statement.executeQuery(sentenciaSQL);
+			rs.next();
+			
+			return rs;
+			
+		} catch (SQLException e) {
+
+			nav.alertaException(e.toString());
+		}
+		return null;
 	}
 
 	/**
@@ -198,6 +217,21 @@ public class CrearBBDDController {
 			// Creacion de diferentes procesos almacenados
 			statement.execute("CREATE PROCEDURE numeroGrapas()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
 					+ "WHERE Formato = 'Grapa';\n" + "END");
+			
+			statement.execute("CREATE PROCEDURE numeroMangas()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
+					+ "WHERE Formato = 'Manga';\n" + "END");
+			
+			statement.execute("CREATE PROCEDURE numeroDC()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
+					+ "WHERE nomEditorial = 'DC';\n" + "END");
+			
+			statement.execute("CREATE PROCEDURE numeroMarvel()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
+					+ "WHERE nomEditorial = 'Marvel';\n" + "END");
+			
+			statement.execute("CREATE PROCEDURE numeroDarkHorse()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
+					+ "WHERE nomEditorial = 'Dark Horse';\n" + "END");
+			
+			statement.execute("CREATE PROCEDURE numeroPanini()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
+					+ "WHERE nomEditorial = 'Panini';\n" + "END");
 
 			statement.execute("CREATE PROCEDURE numeroTomos()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
 					+ "WHERE Formato = 'Tomo';\n" + "END");

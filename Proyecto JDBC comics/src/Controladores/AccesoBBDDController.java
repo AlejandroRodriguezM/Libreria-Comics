@@ -1,29 +1,5 @@
 package Controladores;
 
-/**
- * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
- * Las ventanas graficas se realizan con JavaFX.
- * El programa permite:
- *  - Conectarse a la base de datos.
- *  - Ver la base de datos completa o parcial segun parametros introducidos.
- *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
- *  - Copia de seguridad de la base de datos en formato .sql
- *  - Introducir comics a la base de datos.
- *  - Modificar comics de la base de datos.
- *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
- *  - Ver frases de personajes de comics
- *  - Opcion de escoger algo para leer de forma aleatoria.
- *
- *  Esta clase permite acceder a la base de datos introduciendo los diferentes datos que nos pide.
- *
- *  Version Final
- *
- *  Por Alejandro Rodriguez
- *
- *  Twitter: @silverAlox
- */
-
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -75,6 +51,9 @@ public class AccesoBBDDController {
 
 	@FXML
 	private Button botonInformacion;
+	
+	@FXML
+	private Button botonDescargaBBDD;
 
 	@FXML
 	private Label prontEstadoConexion;
@@ -109,12 +88,12 @@ public class AccesoBBDDController {
 		String url = "https://github.com/MisterioRojo/Proyecto-gui-bbdd/tree/V.F";
 
 		if (Utilidades.isWindows()) {
-			accesoWebWindows(url); //Llamada a funcion
+			Utilidades.accesoWebWindows(url); // Llamada a funcion
 		} else {
 			if (Utilidades.isUnix()) {
-				accesoWebLinux(url); //Llamada a funcion
+				Utilidades.accesoWebLinux(url); // Llamada a funcion
 			} else {
-				// No creada funcion para mac
+				Utilidades.accesoWebMac(url);
 			}
 		}
 	}
@@ -129,80 +108,48 @@ public class AccesoBBDDController {
 		String url = "https://twitter.com/SilverAlox";
 
 		if (Utilidades.isWindows()) {
-			accesoWebWindows(url); //Llamada a funcion
+			Utilidades.accesoWebWindows(url); // Llamada a funcion
 		} else {
 			if (Utilidades.isUnix()) {
-				accesoWebLinux(url); //Llamada a funcion
+				Utilidades.accesoWebLinux(url); // Llamada a funcion
 			} else {
-				// No creada funcion para mac
+				Utilidades.accesoWebMac(url);
+			}
+		}
+	}
+	
+	/**
+	 * Funcion para abrir el navegador y acceder a la URL
+	 *
+	 * @param event
+	 */
+	@FXML
+	void accesoMySqlWorkbench(ActionEvent event) {
+		String url = "https://dev.mysql.com/downloads/windows/installer/8.0.html";
+
+		if (Utilidades.isWindows()) {
+			Utilidades.accesoWebWindows(url); // Llamada a funcion
+		} else {
+			if (Utilidades.isUnix()) {
+				Utilidades.accesoWebLinux(url); // Llamada a funcion
+			} else {
+				Utilidades.accesoWebMac(url);
 			}
 		}
 	}
 
 	/**
-	 *
-	 * @param url
-	 */
-	public void accesoWebWindows(String url) {
-		try {
-			java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
-		} catch (IOException e) {
-			nav.alertaException("Error: No funciona el boton \n" + e.toString());
-		}
-	}
-	
-	/**
-	 * Funcion que permite abrir navegador y pagina web de GitHub en Linux
-	 * @param url
-	 */
-	public void accesoWebLinux(String url) {
-		Runtime rt = Runtime.getRuntime();
-
-		StringBuffer cmd = navegadores(url);
-		
-		try {
-			rt.exec(new String[] { "sh", "-c", cmd.toString() }); //Ejecuta el bucle y permite abrir el navegador que tengas principal
-		} catch (IOException e) {
-			nav.alertaException("Error: No funciona el boton \n" + e.toString());
-		}
-	}
-	
-	/**
+	 * Funcion que permite el acceso a la ventana de menuPrincipal
 	 * 
-	 * @param url
-	 * @return
-	 */
-	public StringBuffer navegadores(String url)
-	{
-		String[] browsers = { "google-chrome", "firefox", "mozilla", "epiphany", "konqueror", "netscape", "opera",
-				"links", "lynx" };
-		
-		StringBuffer cmd = new StringBuffer();
-		for (int i = 0; i < browsers.length; i++) { //Bucle que permite comprobar que navegador tienes como principal y lo abre.
-			if (i == 0) {
-				cmd.append(String.format("%s \"%s\"", browsers[i], url));
-			} else {
-				cmd.append(String.format(" || %s \"%s\"", browsers[i], url));
-			}
-		}
-		return cmd;
-	}
-
-
-	/**
-	 *
 	 * @param event
 	 */
 	@FXML
 	void entrarMenu(ActionEvent event) {
 
 		if (Funcionamiento.ConexionBBDD.isConnected()) { // Siempre que el metodo de la clase DBManager sea true,
-															// permitira
-			// acceder al menu principal
-
+															// permitira acceder al menu principal
 			nav.verMenuPrincipal(); // Llamada a metodo de la clase NavegacionVentanas. Permite cargar y mostrar el
-			// menu principal
-
+									// menu principal
 			Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
 			myStage.close();
 		} else { // En caso contrario mostrara el siguiente mensaje.
@@ -213,7 +160,8 @@ public class AccesoBBDDController {
 	}
 
 	/**
-	 *
+	 * Funcion que permite entrar en la ventana de creacion de base de datos.
+	 * 
 	 * @param event
 	 */
 	@FXML
@@ -228,6 +176,7 @@ public class AccesoBBDDController {
 
 	/**
 	 * Permite ver las bases de datos disponibles en MySql workbench
+	 * 
 	 * @param event
 	 */
 	@FXML
@@ -241,15 +190,18 @@ public class AccesoBBDDController {
 			DatabaseMetaData meta = connection.getMetaData();
 			ResultSet res = meta.getCatalogs();
 
-			ArrayList<String> databases = new ArrayList<>(); //ArrayList que almacena el nombre de las bases de datos que hay en MySql Workbench
+			ArrayList<String> databases = new ArrayList<>(); // ArrayList que almacena el nombre de las bases de datos
+																// que hay en MySql Workbench
 
 			while (res.next()) {
 
 				if (!res.getString("TABLE_CAT").equals("information_schema")
 						&& !res.getString("TABLE_CAT").equals("mysql")
-						&& !res.getString("TABLE_CAT").equals("performance_schema")) //elimina las bases de datos que no se utilizaran en este programa
-					{
-					databases.add(res.getString("TABLE_CAT") + "\n"); 
+						&& !res.getString("TABLE_CAT").equals("performance_schema")) // elimina las bases de datos que
+																						// no se utilizaran en este
+																						// programa
+				{
+					databases.add(res.getString("TABLE_CAT") + "\n");
 				}
 			}
 			res.close();
@@ -266,6 +218,7 @@ public class AccesoBBDDController {
 
 	/**
 	 * Se ve informacion en el TextArea.
+	 * 
 	 * @param event
 	 */
 	@FXML

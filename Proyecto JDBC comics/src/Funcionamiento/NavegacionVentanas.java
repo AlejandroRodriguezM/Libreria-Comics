@@ -24,7 +24,6 @@ package Funcionamiento;
  */
 
 import java.io.IOException;
-
 import Controladores.AccesoBBDDController;
 import Controladores.CrearBBDDController;
 import Controladores.EliminarDatosController;
@@ -390,6 +389,36 @@ public class NavegacionVentanas {
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * Funcion que permite borrar el contenido de la tabla de la base de datos.
+	 * @return
+	 */
+	public boolean borrarContenidoTabla() {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.getIcons().add(new Image("/Icono/exit.png")); 
+		alert.setTitle("Borrando . . .");
+		alert.setHeaderText("Estas a punto de borrar el contenido.");
+		alert.setContentText("Estas seguro que quieres borrarlo todo?");
+
+		if (alert.showAndWait().get() == ButtonType.OK) {
+
+			Alert alert2 = new Alert(AlertType.CONFIRMATION);
+			Stage stage2 = (Stage) alert2.getDialogPane().getScene().getWindow();
+			stage2.getIcons().add(new Image("/Icono/exit.png")); // To add an icon
+			alert.setTitle("Borrando . . .");
+			alert.setHeaderText("Estas seguro?");
+			alert.setContentText("De verdad de verdad quieres borrarlo todo?");
+			if (alert.showAndWait().get() == ButtonType.OK) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
 	}
 
 	/**

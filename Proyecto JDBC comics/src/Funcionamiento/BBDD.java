@@ -23,36 +23,16 @@ package Funcionamiento;
  *  Twitter: @silverAlox
  */
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
-import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
-import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 
 public class BBDD extends Excel {
 
@@ -61,71 +41,8 @@ public class BBDD extends Excel {
 	private NavegacionVentanas nav = new NavegacionVentanas();
 
 	/**
-	 * Funcion que permite importar ficheros CSV a la base de datos.
-	 * @param fichero
-	 * @return
-	 */
-	public boolean importarCSV(File fichero) {
-		String sql = "INSERT INTO comicsbbdd(ID,nomComic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,anioPubli,nomGuionista,nomDibujante,estado)"
-				+ " values (?,?,?,?,?,?,?,?,?,?,?,?)";
-
-		try {
-			PreparedStatement statement = conn.prepareStatement(sql);
-			int batchSize = 20;
-			BufferedReader lineReader = new BufferedReader(new FileReader(fichero));
-			String lineText = null;
-
-			int count = 0;
-			int j = countRows();
-			lineReader.readLine();
-
-			while ((lineText = lineReader.readLine()) != null) {
-				String[] data = lineText.split(";");
-				String id = Integer.toString(j);
-				String nombre = data[1];
-				String numero = data[2];
-				String variante = data[3];
-				String firma = data[4];
-				String editorial = data[5];
-				String formato = data[6];
-				String procedencia = data[7];
-				String fecha = data[8];
-				String guionista = data[9];
-				String dibujante = data[10];
-				String estado = data[11];
-
-				statement.setString(1, id);
-				statement.setString(2, nombre);
-				statement.setString(3, numero);
-				statement.setString(4, variante);
-				statement.setString(5, firma);
-				statement.setString(6, editorial);
-				statement.setString(7, formato);
-				statement.setString(8, procedencia);
-				statement.setString(9, fecha);
-				statement.setString(10, guionista);
-				statement.setString(11, dibujante);
-				statement.setString(12, estado);
-
-				statement.addBatch();
-
-				if (count % batchSize == 0) {
-					statement.executeBatch();
-				}
-			}
-
-			lineReader.close();
-			statement.executeBatch();
-			return true;
-
-		} catch (Exception e) {
-			nav.alertaException(e.toString());
-		}
-		return false;
-	}
-
-	/**
 	 * Funcion que permite contar cuantas filas hay en la base de datos.
+	 * 
 	 * @return
 	 */
 	public int countRows() {
@@ -147,189 +64,36 @@ public class BBDD extends Excel {
 
 	/**
 	 * Funcion que permite borrar el contenido de la tabla de la base de datos.
+	 * 
 	 * @return
 	 */
 	public boolean borrarContenidoTabla() {
-		Alert alert = new Alert(AlertType.CONFIRMATION);
-		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-		stage.getIcons().add(new Image("/Icono/exit.png")); 
-		alert.setTitle("Borrando . . .");
-		alert.setHeaderText("Estas a punto de borrar el contenido.");
-		alert.setContentText("Estas seguro que quieres borrarlo todo?");
 
-		if (alert.showAndWait().get() == ButtonType.OK) {
-
-			Alert alert2 = new Alert(AlertType.CONFIRMATION);
-			Stage stage2 = (Stage) alert2.getDialogPane().getScene().getWindow();
-			stage2.getIcons().add(new Image("/Icono/exit.png")); // To add an icon
-			alert.setTitle("Borrando . . .");
-			alert.setHeaderText("Estas seguro?");
-			alert.setContentText("De verdad de verdad quieres borrarlo todo?");
-			if (alert.showAndWait().get() == ButtonType.OK) {
-				try {
-					PreparedStatement statement1 = conn.prepareStatement("delete from comicsbbdd");
-					PreparedStatement statement2 = conn.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");
-
-					statement1.executeUpdate();
-					statement2.executeUpdate();
-					libreria.reiniciarBBDD();
-					return true;
-				} catch (SQLException e) {
-					nav.alertaException(e.toString());
-				}
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
-		return false;
-	}
-
-	/**
-	 * Funcion que permite crear tanto un fichero XLSX cini un fichero CSV
-	 * @param fichero
-	 * @return
-	 */
-	public boolean crearExcel(File fichero) {
-
-		FileOutputStream outputStream;
-		Cell celda;
-		Row fila;
-		Sheet hoja;
-		Workbook libro;
-		String encabezado;
-
-		String[] encabezados = { "ID", "nomComic", "numComic", "nomVariante", "Firma", "nomEditorial", "Formato",
-				"Procedencia", "anioPubli", "nomGuionista", "nomDibujante", "estado" };
-		int indiceFila = 0;
-
-		try {
-			fichero.createNewFile();
-			libreria.verLibreriaCompleta();
-			List<Comic> listaComics = Libreria.listaCompleta;
-
-			libro = new XSSFWorkbook();
-
-			hoja = libro.createSheet("Base de datos comics");
-
-			fila = hoja.createRow(indiceFila);
-			for (int i = 0; i < encabezados.length; i++) {
-				encabezado = encabezados[i];
-				celda = fila.createCell(i);
-				celda.setCellValue(encabezado);
-				celda.getStringCellValue().getBytes(Charset.forName("UTF-8"));
-			}
-
-			indiceFila++;
-			for (Comic comic : listaComics) {
-				fila = hoja.createRow(indiceFila);
-				fila.createCell(0).setCellValue("");
-				fila.createCell(1).setCellValue(comic.getNombre());
-				fila.createCell(2).setCellValue(comic.getNumero());
-				fila.createCell(3).setCellValue(comic.getVariante());
-				fila.createCell(4).setCellValue(comic.getFirma());
-				fila.createCell(5).setCellValue(comic.getEditorial());
-				fila.createCell(6).setCellValue(comic.getFormato());
-				fila.createCell(7).setCellValue(comic.getProcedencia());
-				fila.createCell(8).setCellValue(comic.getFecha());
-				fila.createCell(9).setCellValue(comic.getGuionista());
-				fila.createCell(10).setCellValue(comic.getDibujante());
-				fila.createCell(11).setCellValue(comic.getEstado());
-
-				indiceFila++;
-			}
-
+		if (nav.borrarContenidoTabla()) {
 			try {
-				outputStream = new FileOutputStream(fichero);
-				libro.write(outputStream);
+				PreparedStatement statement1 = conn.prepareStatement("delete from comicsbbdd");
+				PreparedStatement statement2 = conn.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");
 
-				libro.close();
-				outputStream.close();
-				createCSV(fichero);
+				statement1.executeUpdate();
+				statement2.executeUpdate();
+				libreria.reiniciarBBDD();
 				return true;
-			} catch (FileNotFoundException ex) {
-				nav.alertaException(ex.toString());
-			} catch (IOException ex) {
-				nav.alertaException(ex.toString());
+			} catch (SQLException e) {
+				nav.alertaException(e.toString());
 			}
-		} catch (IOException e) {
-			nav.alertaException(e.toString());
 		}
+
 		return false;
-	}
-
-	/**
-	 * Funcion que permite crear un fichero CSV
-	 * @param fichero
-	 */
-	public void createCSV(File fichero) {
-
-		// For storing data into CSV files
-		StringBuffer data = new StringBuffer();
-
-		try {
-			// Creating input stream
-			FileInputStream fis = new FileInputStream(fichero);
-
-			Workbook workbook = new XSSFWorkbook(fis);
-
-			// Get first sheet from the workbook
-			Sheet sheet = workbook.getSheetAt(0);
-
-			// Iterate through each rows from first sheet
-			Iterator<Row> rowIterator = sheet.iterator();
-
-			while (rowIterator.hasNext()) {
-				Row row = rowIterator.next();
-				// For each row, iterate through each columns
-				Iterator<Cell> cellIterator = row.cellIterator();
-				while (cellIterator.hasNext()) {
-
-					Cell cell = cellIterator.next();
-
-					switch (cell.getCellType()) {
-					case BOOLEAN:
-						data.append(cell.getBooleanCellValue() + ";");
-						break;
-
-					case NUMERIC:
-						data.append(cell.getNumericCellValue() + ";");
-						break;
-
-					case STRING:
-						data.append(cell.getStringCellValue() + ";");
-						break;
-
-					case BLANK:
-						data.append("" + ";");
-						break;
-
-					default:
-						data.append(cell + ";");
-					}
-				}
-				data.append('\n');
-			}
-
-			FileOutputStream fos = new FileOutputStream(
-					fichero.getAbsolutePath().substring(0, fichero.getAbsolutePath().lastIndexOf(".")) + ".csv");
-			fos.write(data.toString().getBytes());
-			fos.close();
-			workbook.close();
-
-		} catch (Exception e) {
-			nav.alertaException(e.toString());
-		}
 	}
 
 	/////////////////////////////////
 	//// FUNCIONES CREACION FICHEROS//
 	/////////////////////////////////
 
-
 	/**
-	 * Funcion que crea una copia de seguridad de la base de datos siempre que el sistema operativo sea Linux
+	 * Funcion que crea una copia de seguridad de la base de datos siempre que el
+	 * sistema operativo sea Linux
+	 * 
 	 * @param fichero
 	 */
 	public void backupLinux(File fichero) {
@@ -348,14 +112,22 @@ public class BBDD extends Excel {
 	}
 
 	/**
-	 * Funcion que crea una copia de seguridad de la base de datos siempre que el sistema operativo sea Windows
+	 * Funcion que crea una copia de seguridad de la base de datos siempre que el
+	 * sistema operativo sea Windows
+	 * 
 	 * @param fichero
 	 */
 	public void backupWindows(File fichero) {
 		try {
 			fichero.createNewFile();
 
+			String pathMySql = "C:\\Program Files\\MySQL";
+
+			File path = new File(pathMySql);
+
 			FileChooser fileChooser = new FileChooser();
+			fileChooser.setInitialDirectory(path);
+
 			File directorio = fileChooser.showOpenDialog(null);
 
 			String mysqlDump = directorio.getAbsolutePath();
@@ -370,5 +142,135 @@ public class BBDD extends Excel {
 		} catch (Exception e) {
 			nav.alertaException(e.toString());
 		}
+	}
+
+	/**
+	 * Funcion que llamada a los procedimientos almacenados en la base de datos y
+	 * muestra diferentes datos.
+	 */
+	public String procedimientosEstadistica() {
+
+		int numGrapas, numTomos, numUsa, numEsp, numMarvel, numDC, numPanini, numDarkHorse, numMangas, total;
+
+		String procedimientos[] = { "call numeroGrapas()", "call numeroTomos()", "call numeroSpain()",
+				"call numeroUSA()", "call total()", "call numeroPanini()", "call numeroMarvel()", "call numeroDC()",
+				"call numeroDarkHorse()", "call numeroMangas()" };
+
+		try {
+
+			ResultSet rs1 = ejecucionSQL(procedimientos[0]); // Executa el procedimiento almacenado
+			ResultSet rs2 = ejecucionSQL(procedimientos[1]); // Executa el procedimiento almacenado
+			ResultSet rs3 = ejecucionSQL(procedimientos[2]); // Executa el procedimiento almacenado
+			ResultSet rs4 = ejecucionSQL(procedimientos[3]); // Executa el procedimiento almacenado
+			ResultSet rs5 = ejecucionSQL(procedimientos[4]); // Executa el procedimiento almacenado
+			ResultSet rs6 = ejecucionSQL(procedimientos[5]); // Executa el procedimiento almacenado
+			ResultSet rs7 = ejecucionSQL(procedimientos[6]); // Executa el procedimiento almacenado
+			ResultSet rs8 = ejecucionSQL(procedimientos[7]); // Executa el procedimiento almacenado
+			ResultSet rs9 = ejecucionSQL(procedimientos[8]); // Executa el procedimiento almacenado
+			ResultSet rs10 = ejecucionSQL(procedimientos[9]); // Executa el procedimiento almacenado
+
+			// Si no hay dato que comprobar, devolvera un 0
+			if (rs1.next()) {
+				numGrapas = rs1.getInt(1);
+			} else {
+				numGrapas = 0;
+			}
+			if (rs2.next()) {
+				numTomos = rs2.getInt(1);
+			} else {
+				numTomos = 0;
+			}
+			if (rs3.next()) {
+				numEsp = rs3.getInt(1);
+			} else {
+				numEsp = 0;
+			}
+			if (rs4.next()) {
+				numUsa = rs4.getInt(1);
+			} else {
+				numUsa = 0;
+			}
+			if (rs5.next()) {
+				total = rs5.getInt(1);
+			} else {
+				total = 0;
+			}
+			if (rs6.next()) {
+				numMarvel = rs6.getInt(1);
+			} else {
+				numMarvel = 0;
+			}
+			if (rs7.next()) {
+				numPanini = rs7.getInt(1);
+			} else {
+				numPanini = 0;
+			}
+			if (rs8.next()) {
+				numDC = rs8.getInt(1);
+			} else {
+				numDC = 0;
+			}
+			if (rs9.next()) {
+				numDarkHorse = rs9.getInt(1);
+			} else {
+				numDarkHorse = 0;
+			}
+			if (rs10.next()) {
+				numMangas = rs10.getInt(1);
+			} else {
+				numMangas = 0;
+			}
+
+			rs1.close();
+			rs2.close();
+			rs3.close();
+			rs4.close();
+			rs5.close();
+			rs6.close();
+			rs7.close();
+			rs8.close();
+			rs9.close();
+			rs10.close();
+
+			return "Numero de grapas: " + numGrapas + "\nNumero de tomos: " + numTomos
+					+ "\nNumeros de comics en Castellano: " + numEsp + "\nNumero de comics en USA: " + numUsa
+					+ "\nNumero de comics Marvel: " + numMarvel + "\nNumero de comics DC: " + numDC
+					+ "\nNumero de comics Dark horse: " + numDarkHorse + "\nNumero de comics de Panini: " + numPanini
+					+ "\nNumero de mangas: " + numMangas + "\nTotal: " + total;
+
+		} catch (SQLException e) {
+			nav.alertaException(e.toString());
+		}
+		return null;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public Statement declaracionSQL() {
+		Statement st;
+		try {
+			st = conn.createStatement();
+			return st;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param procedimiento
+	 * @return
+	 */
+	public ResultSet ejecucionSQL(String procedimiento) {
+		try {
+			ResultSet rs = declaracionSQL().executeQuery(procedimiento);
+			return rs;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

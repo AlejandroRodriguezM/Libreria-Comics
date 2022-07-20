@@ -26,15 +26,13 @@ package Controladores;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
 import Funcionamiento.BBDD;
 import Funcionamiento.Comic;
 import Funcionamiento.ConexionBBDD;
+import Funcionamiento.ExcelFuntions;
 import Funcionamiento.Libreria;
 import Funcionamiento.NavegacionVentanas;
 import Funcionamiento.Utilidades;
@@ -187,7 +185,7 @@ public class MenuPrincipalController {
 
 	private BBDD db = new BBDD();
 
-	private Connection conn = ConexionBBDD.conexion();
+	private ExcelFuntions excelFuntions = new ExcelFuntions();
 
 	/////////////////////////////////
 	//// METODOS LLAMADA A VENTANAS//
@@ -391,7 +389,8 @@ public class MenuPrincipalController {
 	 */
 	@FXML
 	void verEstadistica(ActionEvent event) {
-		procedimientosEstadistica();
+		prontInfo.setOpacity(1);
+		prontInfo.setText(db.procedimientosEstadistica());
 	}
 
 	/**
@@ -416,137 +415,20 @@ public class MenuPrincipalController {
 		String url2 = "https://www.panini.es/shp_esp_es/comics.html";
 
 		if (Utilidades.isWindows()) {
-			accesoCompraWindows(url1); //Llamada a funcion
-			accesoCompraWindows(url2); //Llamada a funcion
+			Utilidades.accesoWebWindows(url1); //Llamada a funcion
+			Utilidades.accesoWebWindows(url2); //Llamada a funcion
 		} else {
 			if (Utilidades.isUnix()) {
-				accesoCompraLinux(url1); //Llamada a funcion
-				accesoCompraLinux(url2); //Llamada a funcion
+				Utilidades.accesoWebLinux(url1); //Llamada a funcion
+				Utilidades.accesoWebLinux(url2); //Llamada a funcion
 			} else {
-				// No creada funcion para mac
+				Utilidades.accesoWebMac(url1);
+				Utilidades.accesoWebMac(url2);
 			}
 		}
 	}
 
-	/**
-	 * Permite abrir las paginas web siempre que el sistema opertativo sea Linux
-	 * @param url
-	 */
-	public void accesoCompraLinux(String url) {
-		Runtime rt = Runtime.getRuntime();
-		StringBuffer cmd = navegador(url); //Llamada a funcion
-		
-		try {
-			rt.exec(new String[] { "sh", "-c", cmd.toString() });
-		} catch (IOException e) {
-			nav.alertaException("Error: No funciona el boton \n" + e.toString());
-		}
-	}
-
-	/**
-	 * Funcion que permite comprobar que navegadores tienes instalados en el sistema operativo linux y abre aquel que tengas en predeterminado.
-	 * @param url
-	 * @return
-	 */
-	public StringBuffer navegador(String url) {
-		String[] browsers = { "google-chrome", "firefox", "mozilla", "epiphany", "konqueror", "netscape", "opera",
-				"links", "lynx" };
-
-		StringBuffer cmd = new StringBuffer();
-		for (int i = 0; i < browsers.length; i++) {
-			if (i == 0) {
-				cmd.append(String.format("%s \"%s\"", browsers[i], url));
-			} else {
-				cmd.append(String.format(" || %s \"%s\"", browsers[i], url));
-			}
-		}
-		return cmd;
-	}
-
-	/**
-	 * Funcion que abre navegador predeterminado junto a una web siempre que el sistema operativo sea windows
-	 * @param url
-	 */
-	public void accesoCompraWindows(String url) {
-		try {
-			java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
-		} catch (IOException e) {
-			nav.alertaException("Error: No funciona el boton \n" + e.toString());
-		}
-	}
-
-	/**
-	 * Funcion que llamada a los procedimientos almacenados en la base de datos y muestra diferentes datos.
-	 */
-	public void procedimientosEstadistica() {
-		String procedimiento1;
-		String procedimiento2;
-		String procedimiento3;
-		String procedimiento4;
-		String procedimiento5;
-		int numGrapas, numTomos, numUsa, numEsp, total;
-
-		procedimiento1 = "call numeroGrapas()";
-		procedimiento2 = "call numeroTomos()";
-		procedimiento3 = "call numeroSpain()";
-		procedimiento4 = "call numeroUSA()";
-		procedimiento5 = "call total()";
-
-		try {
-			Statement st1 = conn.createStatement();
-			Statement st2 = conn.createStatement();
-			Statement st3 = conn.createStatement();
-			Statement st4 = conn.createStatement();
-			Statement st5 = conn.createStatement();
-
-			ResultSet rs1 = st1.executeQuery(procedimiento1); //Executa el procedimiento almacenado
-			ResultSet rs2 = st2.executeQuery(procedimiento2); //Executa el procedimiento almacenado
-			ResultSet rs3 = st3.executeQuery(procedimiento3); //Executa el procedimiento almacenado
-			ResultSet rs4 = st4.executeQuery(procedimiento4); //Executa el procedimiento almacenado
-			ResultSet rs5 = st5.executeQuery(procedimiento5); //Executa el procedimiento almacenado
-
-			//Si no hay dato que comprobar, devolvera un 0
-			if (rs1.next()) {
-				numGrapas = rs1.getInt(1);
-			} else {
-				numGrapas = 0;
-			}
-			if (rs2.next()) {
-				numTomos = rs2.getInt(1);
-			} else {
-				numTomos = 0;
-			}
-			if (rs3.next()) {
-				numEsp = rs3.getInt(1);
-			} else {
-				numEsp = 0;
-			}
-			if (rs4.next()) {
-				numUsa = rs4.getInt(1);
-			} else {
-				numUsa = 0;
-			}
-			if (rs5.next()) {
-				total = rs5.getInt(1);
-			} else {
-				total = 0;
-			}
-
-			prontInfo.setOpacity(1);
-			prontInfo.setText("Numero de grapas: " + numGrapas + "\nNumero de tomos: " + numTomos
-					+ "\nNumeros de comics en Castellano: " + numEsp + "\nNumero de comics en USA: " + numUsa + "\nTotal: "
-					+ total);
-
-			rs1.close();
-			rs2.close();
-			rs3.close();
-			rs4.close();
-			rs5.close();
-
-		} catch (SQLException e) {
-			nav.alertaException(e.toString());
-		}
-	}
+	
 
 	/**
 	 * Permite dar valor a las celdas de la TableView
@@ -577,7 +459,7 @@ public class MenuPrincipalController {
 		try {
 
 			if (fichero != null) {
-				if (db.crearExcel(fichero)) { //Si el fichero XLSX y CSV se han creado se vera el siguiente mensaje
+				if (excelFuntions.crearExcel(fichero)) { //Si el fichero XLSX y CSV se han creado se vera el siguiente mensaje
 					prontInfo.setOpacity(1);
 					prontInfo.setStyle("-fx-background-color: #A0F52D");
 					prontInfo.setText("Fichero excel exportado de forma correcta");
@@ -604,7 +486,7 @@ public class MenuPrincipalController {
 		try {
 
 			if (fichero != null) {
-				if (db.importarCSV(fichero)) { //Si se ha importado el fichero CSV correctamente, se vera el siguiente mensaje
+				if (excelFuntions.importarCSV(fichero)) { //Si se ha importado el fichero CSV correctamente, se vera el siguiente mensaje
 					prontInfo.setOpacity(1);
 					prontInfo.setStyle("-fx-background-color: #A0F52D");
 					prontInfo.setText("Fichero CSV importado de forma correcta");
@@ -797,7 +679,6 @@ public class MenuPrincipalController {
 	 * Vuelve al menu inicial de conexion de la base de datos.
 	 *
 	 * @param event
-	 * @throws IOException
 	 */
 	@FXML
 	public void volverMenu(ActionEvent event) throws IOException {
@@ -825,7 +706,6 @@ public class MenuPrincipalController {
 	/**
 	 * Al cerrar la ventana, carga la ventana del menu principal
 	 *
-	 * @throws IOException
 	 */
 	public void closeWindows() {
 
