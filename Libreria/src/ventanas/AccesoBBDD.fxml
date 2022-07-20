@@ -10,8 +10,18 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="797.0" prefWidth="315.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.AccesoBBDDController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="834.0" prefWidth="315.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.AccesoBBDDController">
    <children>
+      <ImageView fitHeight="102.0" fitWidth="166.0" layoutX="150.0" layoutY="744.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imagenes/azul.jpg" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="102.0" fitWidth="166.0" layoutX="-1.0" layoutY="744.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imagenes/azul.jpg" />
+         </image>
+      </ImageView>
       <ImageView fitHeight="102.0" fitWidth="166.0" layoutX="150.0" layoutY="706.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagenes/azul.jpg" />
@@ -66,16 +76,16 @@
       <TextField fx:id="puertobbdd" layoutX="76.0" layoutY="198.0" />
       <TextField fx:id="usuario" layoutX="76.0" layoutY="254.0" />
       <PasswordField fx:id="pass" layoutX="76.0" layoutY="309.0" />
-      <Button fx:id="botonEnviar" layoutX="30.0" layoutY="451.0" mnemonicParsing="false" onAction="#enviarDatos" prefHeight="54.0" prefWidth="118.0" text="Conectar bbdd" />
-      <Button fx:id="botonAccesobbdd" layoutX="30.0" layoutY="514.0" mnemonicParsing="false" onAction="#entrarMenu" prefHeight="54.0" prefWidth="118.0" text="Entrar al menu" />
-      <Button fx:id="botonLimpiar" layoutX="29.0" layoutY="637.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="54.0" prefWidth="118.0" text="Limpiar" />
-      <Button fx:id="botonSalir" layoutX="30.0" layoutY="702.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="54.0" prefWidth="118.0" text="Salir" />
-      <Button fx:id="botonCrearBBDD" layoutX="163.0" layoutY="451.0" mnemonicParsing="false" onAction="#crearBBDD" prefHeight="54.0" prefWidth="118.0" text="Crear BBDD" />
-      <Button fx:id="botonCerrar" layoutX="163.0" layoutY="514.0" mnemonicParsing="false" onAction="#cerrarbbdd" prefHeight="54.0" prefWidth="118.0" text="Cerrar BBDD" />
-      <Button fx:id="botonVerDDBB" layoutX="166.0" layoutY="637.0" mnemonicParsing="false" onAction="#verDBDisponibles" prefHeight="54.0" prefWidth="118.0" text="Ver bbdd" />
-      <Button fx:id="botonInformacion" layoutX="166.0" layoutY="702.0" mnemonicParsing="false" onAction="#verInfo" prefHeight="54.0" prefWidth="118.0" text="Información" />
-      <Button fx:id="numeroVersion" layoutX="34.0" layoutY="765.0" mnemonicParsing="false" onAction="#accesoGitHub" text="Version Final" />
-      <Button fx:id="botonTwitter" layoutX="184.0" layoutY="765.0" mnemonicParsing="false" onAction="#accesoTwitter" text="Por @silverAlox" />
+      <Button fx:id="botonEnviar" layoutX="30.0" layoutY="483.0" mnemonicParsing="false" onAction="#enviarDatos" prefHeight="54.0" prefWidth="118.0" text="Conectar bbdd" />
+      <Button fx:id="botonAccesobbdd" layoutX="30.0" layoutY="546.0" mnemonicParsing="false" onAction="#entrarMenu" prefHeight="54.0" prefWidth="118.0" text="Entrar al menu" />
+      <Button fx:id="botonLimpiar" layoutX="29.0" layoutY="669.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="54.0" prefWidth="118.0" text="Limpiar" />
+      <Button fx:id="botonSalir" layoutX="30.0" layoutY="734.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="54.0" prefWidth="118.0" text="Salir" />
+      <Button fx:id="botonCrearBBDD" layoutX="163.0" layoutY="483.0" mnemonicParsing="false" onAction="#crearBBDD" prefHeight="54.0" prefWidth="118.0" text="Crear BBDD" />
+      <Button fx:id="botonCerrar" layoutX="163.0" layoutY="546.0" mnemonicParsing="false" onAction="#cerrarbbdd" prefHeight="54.0" prefWidth="118.0" text="Cerrar BBDD" />
+      <Button fx:id="botonVerDDBB" layoutX="166.0" layoutY="669.0" mnemonicParsing="false" onAction="#verDBDisponibles" prefHeight="54.0" prefWidth="118.0" text="Ver bbdd" />
+      <Button fx:id="botonInformacion" layoutX="166.0" layoutY="734.0" mnemonicParsing="false" onAction="#verInfo" prefHeight="54.0" prefWidth="118.0" text="Información" />
+      <Button fx:id="numeroVersion" layoutX="34.0" layoutY="797.0" mnemonicParsing="false" onAction="#accesoGitHub" text="Version Final" />
+      <Button fx:id="botonTwitter" layoutX="184.0" layoutY="797.0" mnemonicParsing="false" onAction="#accesoTwitter" text="Por @silverAlox" />
       <Label layoutX="54.0" layoutY="112.0" style="-fx-background-color: grey;" text="Nombre de la base de datos">
          <font>
             <Font size="15.0" />
@@ -93,8 +103,8 @@
             <Font size="15.0" />
          </font></Label>
       <TextArea fx:id="prontInformacion" editable="false" layoutX="8.0" layoutY="9.0" prefHeight="96.0" prefWidth="299.0" text="Ingresa los datos para poder acceder. En caso de no tener una base de datos, puedes crearla abajo en el boton &quot;Crear BBDD&quot;. Tienes mas información en el boton información. Tambien si quereis seguirme en mi tuiter o ver mis proyectos, pinchen los botones de abajo. Larga vida al comic!" wrapText="true" />
-      <Button fx:id="botonDescargaBBDD" layoutX="29.0" layoutY="575.0" mnemonicParsing="false" onAction="#accesoMySqlWorkbench" prefHeight="54.0" prefWidth="253.0" text="Pagina MySql Workbench" />
-      <Label fx:id="prontEstadoConexion" alignment="CENTER" layoutX="27.0" layoutY="340.0" prefHeight="105.0" prefWidth="256.0" style="-fx-background-color: #696969;" text="No conectado" wrapText="true">
+      <Button fx:id="botonDescargaBBDD" layoutX="29.0" layoutY="607.0" mnemonicParsing="false" onAction="#accesoMySqlWorkbench" prefHeight="54.0" prefWidth="253.0" text="Pagina MySql Workbench" />
+      <Label fx:id="prontEstadoConexion" alignment="CENTER" layoutX="27.0" layoutY="340.0" prefHeight="133.0" prefWidth="256.0" style="-fx-background-color: #696969;" text="No conectado" wrapText="true">
          <font>
             <Font size="26.0" />
          </font>

@@ -125,15 +125,19 @@ public class AccesoBBDDController {
 	 */
 	@FXML
 	void accesoMySqlWorkbench(ActionEvent event) {
-		String url = "https://dev.mysql.com/downloads/windows/installer/8.0.html";
+		String url1 = "https://dev.mysql.com/downloads/windows/installer/8.0.html";
+		String url2 = "https://www.youtube.com/watch?v=FvXQBKsp0OI&ab_channel=MisterioRojo";
 
 		if (Utilidades.isWindows()) {
-			Utilidades.accesoWebWindows(url); // Llamada a funcion
+			Utilidades.accesoWebWindows(url1); // Llamada a funcion
+			Utilidades.accesoWebWindows(url2); // Llamada a funcion
 		} else {
 			if (Utilidades.isUnix()) {
-				Utilidades.accesoWebLinux(url); // Llamada a funcion
+				Utilidades.accesoWebLinux(url1); // Llamada a funcion
+				Utilidades.accesoWebLinux(url2); // Llamada a funcion
 			} else {
-				Utilidades.accesoWebMac(url);
+				Utilidades.accesoWebMac(url1);
+				Utilidades.accesoWebMac(url2);
 			}
 		}
 	}
