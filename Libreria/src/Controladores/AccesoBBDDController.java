@@ -136,9 +136,9 @@ public class AccesoBBDDController {
 				Utilidades.accesoWebLinux(url1); // Llamada a funcion
 				Utilidades.accesoWebLinux(url2); // Llamada a funcion
 			} else {
-				Utilidades.accesoWebMac(url1);
-				Utilidades.accesoWebMac(url2);
-			}
+				Utilidades.accesoWebMac(url1); // Llamada a funcion
+				Utilidades.accesoWebMac(url2); // Llamada a funcion
+			} 
 		}
 	}
 
