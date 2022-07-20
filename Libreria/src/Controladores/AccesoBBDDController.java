@@ -205,7 +205,9 @@ public class AccesoBBDDController {
 																						// no se utilizaran en este
 																						// programa
 				{
-					databases.add(res.getString("TABLE_CAT") + "\n");
+					databases.add(res.getString("TABLE_CAT") + "\n"); // elimina las bases de datos que
+					// no se utilizaran en este
+					// programa
 				}
 			}
 			res.close();
