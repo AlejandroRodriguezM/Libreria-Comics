@@ -200,7 +200,6 @@ public class ExcelFuntions {
 
 			FileOutputStream fos = new FileOutputStream(
 					fichero.getAbsolutePath().substring(0, fichero.getAbsolutePath().lastIndexOf(".")) + ".csv");
-			fos.write(65001);
 			fos.write(data.toString().getBytes());
 			fos.close();
 			workbook.close();
