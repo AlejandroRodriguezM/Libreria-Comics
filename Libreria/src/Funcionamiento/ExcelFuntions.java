@@ -60,7 +60,7 @@ public class ExcelFuntions {
 		String sql = "INSERT INTO comicsbbdd(ID,nomComic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,anioPubli,nomGuionista,nomDibujante,estado)"
 				+ " values (?,?,?,?,?,?,?,?,?,?,?,?)";
 
-		if(lecturaCSV(fichero,sql))
+		if(lecturaCSV(fichero,sql)) //Llamada a funcion, en caso de devolver true, devolvera un true
 		{
 			return true;
 		}
