@@ -54,7 +54,7 @@ public class ExcelFuntions {
 	 * Funcion que permite importar ficheros CSV a la base de datos.
 	 * @param fichero
 	 * @return
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	public boolean importarCSV(File fichero) {
 		String sql = "INSERT INTO comicsbbdd(ID,nomComic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,anioPubli,nomGuionista,nomDibujante,estado)"
@@ -162,7 +162,7 @@ public class ExcelFuntions {
 			// Get first sheet from the workbook
 			Sheet sheet = workbook.getSheetAt(0);
 
-			
+
 			// Iterate through each rows from first sheet
 			Iterator<Row> rowIterator = sheet.iterator();
 
@@ -268,7 +268,7 @@ public class ExcelFuntions {
 			lineReader.close();
 			statement.executeBatch();
 			return true;
-			
+
 		} catch (FileNotFoundException e) {
 			nav.alertaException("Fichero no encontrado: " + e.toString());
 		}

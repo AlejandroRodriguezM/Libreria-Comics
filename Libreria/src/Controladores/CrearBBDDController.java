@@ -76,7 +76,7 @@ public class CrearBBDDController {
 	/**
 	 * Metodo que permite llamada a metodos donde se crean la bbdd y las tablas y
 	 * procedimientos almacenados
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -140,16 +140,16 @@ public class CrearBBDDController {
 		prontInformativo.setText("ERROR. Ya existe una base de datos llamada: " + nombreBBDD.getText());
 		return false;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param sentenciaSQL
 	 * @return
 	 */
 	public ResultSet ejecucionSQL(String sentenciaSQL)
 	{
 		String url = "jdbc:mysql://" + DB_HOST + ":" + puertoBBDD.getText() + "?serverTimezone=UTC";
-		
+
 		Statement statement;
 		try {
 
@@ -158,9 +158,9 @@ public class CrearBBDDController {
 			statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 			ResultSet rs = statement.executeQuery(sentenciaSQL);
 			rs.next();
-			
+
 			return rs;
-			
+
 		} catch (SQLException e) {
 
 			nav.alertaException(e.toString());
@@ -175,7 +175,7 @@ public class CrearBBDDController {
 
 		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + puertoBBDD.getText() + "/" + nombreBBDD.getText()
 		+ "?serverTimezone=UTC";
-		
+
 		String sentenciaSQL = "CREATE TABLE " + " comicsbbdd ( ID int NOT NULL AUTO_INCREMENT,"
 				+ "nomComic varchar(150) NOT NULL," + "numComic varchar(150) NOT NULL,"
 				+ "nomVariante varchar(150) NOT NULL," + "Firma varchar(150) NOT NULL,"
@@ -204,10 +204,10 @@ public class CrearBBDDController {
 	 * Funcion que realiza la creacion de procedimientos almacenados.
 	 */
 	public void createProcedure() {
-		
+
 		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + puertoBBDD.getText() + "/" + nombreBBDD.getText()
 		+ "?serverTimezone=UTC";
-		
+
 		try {
 			Connection connection = DriverManager.getConnection(DB_URL, userBBDD.getText(), passBBDD.getText());
 			Statement statement;
@@ -217,19 +217,19 @@ public class CrearBBDDController {
 			// Creacion de diferentes procesos almacenados
 			statement.execute("CREATE PROCEDURE numeroGrapas()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
 					+ "WHERE Formato = 'Grapa';\n" + "END");
-			
+
 			statement.execute("CREATE PROCEDURE numeroMangas()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
 					+ "WHERE Formato = 'Manga';\n" + "END");
-			
+
 			statement.execute("CREATE PROCEDURE numeroDC()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
 					+ "WHERE nomEditorial = 'DC';\n" + "END");
-			
+
 			statement.execute("CREATE PROCEDURE numeroMarvel()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
 					+ "WHERE nomEditorial = 'Marvel';\n" + "END");
-			
+
 			statement.execute("CREATE PROCEDURE numeroDarkHorse()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
 					+ "WHERE nomEditorial = 'Dark Horse';\n" + "END");
-			
+
 			statement.execute("CREATE PROCEDURE numeroPanini()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
 					+ "WHERE nomEditorial = 'Panini';\n" + "END");
 
@@ -240,7 +240,7 @@ public class CrearBBDDController {
 					+ "WHERE Procedencia = 'USA';\n" + "END");
 
 			statement.execute("CREATE PROCEDURE numeroSpain()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE Procedencia = 'España';\n" + "END");
+					+ "WHERE Procedencia = 'Espaï¿½a';\n" + "END");
 
 			statement.execute("CREATE PROCEDURE total()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd;\n" + "END");
 
@@ -251,7 +251,7 @@ public class CrearBBDDController {
 
 	/**
 	 * Limpia los datos en pantalla
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML

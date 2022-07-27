@@ -428,7 +428,7 @@ public class MenuPrincipalController {
 		}
 	}
 
-	
+
 
 	/**
 	 * Permite dar valor a las celdas de la TableView
@@ -557,7 +557,7 @@ public class MenuPrincipalController {
 					prontInfo.setOpacity(1);
 					prontInfo.setStyle("-fx-background-color: #A0F52D");
 					prontInfo.setText("Base de datos exportada \ncorrectamente");
-				} 
+				}
 			}
 		}
 		else
@@ -613,7 +613,7 @@ public class MenuPrincipalController {
 		return listComic;
 	}
 
-	/** 
+	/**
 	 * Devuelve una lista con todos los comics de la base de datos.
 	 * @return
 	 */

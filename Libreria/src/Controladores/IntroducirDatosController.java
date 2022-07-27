@@ -226,9 +226,9 @@ public class IntroducirDatosController {
 		guionistaAni.setText("");
 
 		dibujanteAni.setText("");
-		
+
 		pantallaInformativa.setText(null);
-		
+
 		pantallaInformativa.setOpacity(0);
 	}
 
@@ -258,7 +258,7 @@ public class IntroducirDatosController {
 
 		try {
 			PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
-			
+
 			statement.setString(1, datos[0]);
 			statement.setString(2, datos[1]);
 			statement.setString(3, datos[2]);
@@ -410,7 +410,7 @@ public class IntroducirDatosController {
 		return campos;
 	}
 
-	/** 
+	/**
 	 * Devuelve un array con los datos de los TextField del comic a Introducir
 	 * @return
 	 */

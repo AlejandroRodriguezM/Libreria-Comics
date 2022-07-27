@@ -236,9 +236,9 @@ public class ModificarDatosController {
 		nombreGuionistaMod.setText("");
 
 		nombreDibujanteMod.setText("");
-		
+
 		pantallaInformativa.setText(null);
-		
+
 		pantallaInformativa.setOpacity(0);
 	}
 

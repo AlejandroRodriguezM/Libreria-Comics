@@ -92,7 +92,7 @@ public class Utilidades {
 			nav.alertaException("Error: No funciona el boton \n" + e.toString());
 		}
 	}
-	
+
 	/**
 	 * Funcion que permite abrir navegador y pagina web de GitHub en Linux
 	 * @param url

@@ -32,6 +32,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
+
 import javafx.stage.FileChooser;
 
 public class BBDD extends Excel {
@@ -42,7 +43,7 @@ public class BBDD extends Excel {
 
 	/**
 	 * Funcion que permite contar cuantas filas hay en la base de datos.
-	 * 
+	 *
 	 * @return
 	 */
 	public int countRows() {
@@ -64,7 +65,7 @@ public class BBDD extends Excel {
 
 	/**
 	 * Funcion que permite borrar el contenido de la tabla de la base de datos.
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean borrarContenidoTabla() {
@@ -93,7 +94,7 @@ public class BBDD extends Excel {
 	/**
 	 * Funcion que crea una copia de seguridad de la base de datos siempre que el
 	 * sistema operativo sea Linux
-	 * 
+	 *
 	 * @param fichero
 	 */
 	public void backupLinux(File fichero) {
@@ -114,7 +115,7 @@ public class BBDD extends Excel {
 	/**
 	 * Funcion que crea una copia de seguridad de la base de datos siempre que el
 	 * sistema operativo sea Windows
-	 * 
+	 *
 	 * @param fichero
 	 */
 	public void backupWindows(File fichero) {
@@ -245,7 +246,7 @@ public class BBDD extends Excel {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public Statement declaracionSQL() {
@@ -260,7 +261,7 @@ public class BBDD extends Excel {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param procedimiento
 	 * @return
 	 */

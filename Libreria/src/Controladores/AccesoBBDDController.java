@@ -14,7 +14,7 @@ package Controladores;
  *  - Ver frases de personajes de comics
  *  - Opcion de escoger algo para leer de forma aleatoria.
  *
- *  Esta clase permite acceder al programa, es la 1º ventana del programa.
+ *  Esta clase permite acceder al programa, es la 1ï¿½ ventana del programa.
  *
  *  Version Final
  *
@@ -74,7 +74,7 @@ public class AccesoBBDDController {
 
 	@FXML
 	private Button botonInformacion;
-	
+
 	@FXML
 	private Button botonDescargaBBDD;
 
@@ -108,15 +108,19 @@ public class AccesoBBDDController {
 	 */
 	@FXML
 	void accesoGitHub(ActionEvent event) {
-		String url = "https://github.com/MisterioRojo/Proyecto-gui-bbdd/tree/V.F";
-
+		String url1 = "https://github.com/MisterioRojo/Proyecto-gui-bbdd/tree/V.F";
+		String url2 = "https://www.youtube.com/playlist?list=PL7MV626sbFp6EY0vP8gEEgrVCryitFXCM";
 		if (Utilidades.isWindows()) {
-			Utilidades.accesoWebWindows(url); // Llamada a funcion
+			Utilidades.accesoWebWindows(url1); // Llamada a funcion
+			Utilidades.accesoWebWindows(url2); // Llamada a funcion
 		} else {
 			if (Utilidades.isUnix()) {
-				Utilidades.accesoWebLinux(url); // Llamada a funcion
+				Utilidades.accesoWebLinux(url1); // Llamada a funcion
+				Utilidades.accesoWebLinux(url2); // Llamada a funcion
 			} else {
-				Utilidades.accesoWebMac(url);
+				Utilidades.accesoWebMac(url1);
+				Utilidades.accesoWebMac(url2);
+
 			}
 		}
 	}
@@ -140,7 +144,7 @@ public class AccesoBBDDController {
 			}
 		}
 	}
-	
+
 	/**
 	 * Funcion para abrir el navegador y acceder a la URL
 	 *
@@ -161,13 +165,13 @@ public class AccesoBBDDController {
 			} else {
 				Utilidades.accesoWebMac(url1); // Llamada a funcion
 				Utilidades.accesoWebMac(url2); // Llamada a funcion
-			} 
+			}
 		}
 	}
 
 	/**
 	 * Funcion que permite el acceso a la ventana de menuPrincipal
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -188,7 +192,7 @@ public class AccesoBBDDController {
 
 	/**
 	 * Funcion que permite entrar en la ventana de creacion de base de datos.
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -203,7 +207,7 @@ public class AccesoBBDDController {
 
 	/**
 	 * Permite ver las bases de datos disponibles en MySql workbench
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -247,7 +251,7 @@ public class AccesoBBDDController {
 
 	/**
 	 * Se ve informacion en el TextArea.
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML

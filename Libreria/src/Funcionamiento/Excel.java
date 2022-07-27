@@ -72,7 +72,7 @@ public class Excel {
 	}
 
 	//Getters y setters
-	
+
 	public String getId() {
 		return id;
 	}
