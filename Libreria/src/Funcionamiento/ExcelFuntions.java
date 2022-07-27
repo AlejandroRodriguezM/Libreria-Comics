@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -43,7 +44,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ExcelFuntions {
-	
+
 	private Libreria libreria = new Libreria();
 	private Connection conn = ConexionBBDD.conexion();
 	private NavegacionVentanas nav = new NavegacionVentanas();
@@ -53,66 +54,23 @@ public class ExcelFuntions {
 	 * Funcion que permite importar ficheros CSV a la base de datos.
 	 * @param fichero
 	 * @return
+	 * @throws SQLException 
 	 */
 	public boolean importarCSV(File fichero) {
 		String sql = "INSERT INTO comicsbbdd(ID,nomComic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,anioPubli,nomGuionista,nomDibujante,estado)"
 				+ " values (?,?,?,?,?,?,?,?,?,?,?,?)";
 
-		try {
-			PreparedStatement statement = conn.prepareStatement(sql);
-			int batchSize = 20;
-			BufferedReader lineReader = new BufferedReader(new FileReader(fichero));
-			String lineText = null;
-
-			int count = 0;
-			int j = db.countRows();
-			lineReader.readLine();
-
-			while ((lineText = lineReader.readLine()) != null) {
-				String[] data = lineText.split(";");
-				String id = Integer.toString(j);
-				String nombre = data[1];
-				String numero = data[2];
-				String variante = data[3];
-				String firma = data[4];
-				String editorial = data[5];
-				String formato = data[6];
-				String procedencia = data[7];
-				String fecha = data[8];
-				String guionista = data[9];
-				String dibujante = data[10];
-				String estado = data[11];
-
-				statement.setString(1, id);
-				statement.setString(2, nombre);
-				statement.setString(3, numero);
-				statement.setString(4, variante);
-				statement.setString(5, firma);
-				statement.setString(6, editorial);
-				statement.setString(7, formato);
-				statement.setString(8, procedencia);
-				statement.setString(9, fecha);
-				statement.setString(10, guionista);
-				statement.setString(11, dibujante);
-				statement.setString(12, estado);
-
-				statement.addBatch();
-
-				if (count % batchSize == 0) {
-					statement.executeBatch();
-				}
-			}
-
-			lineReader.close();
-			statement.executeBatch();
+		if(lecturaCSV(fichero,sql))
+		{
 			return true;
-
-		} catch (Exception e) {
-			nav.alertaException(e.toString());
 		}
-		return false;
+		else
+		{
+			return false;
+		}
+
 	}
-	
+
 	/**
 	 * Funcion que permite crear tanto un fichero XLSX cini un fichero CSV
 	 * @param fichero
@@ -204,6 +162,7 @@ public class ExcelFuntions {
 			// Get first sheet from the workbook
 			Sheet sheet = workbook.getSheetAt(0);
 
+			
 			// Iterate through each rows from first sheet
 			Iterator<Row> rowIterator = sheet.iterator();
 
@@ -241,6 +200,7 @@ public class ExcelFuntions {
 
 			FileOutputStream fos = new FileOutputStream(
 					fichero.getAbsolutePath().substring(0, fichero.getAbsolutePath().lastIndexOf(".")) + ".csv");
+			fos.write(65001);
 			fos.write(data.toString().getBytes());
 			fos.close();
 			workbook.close();
@@ -250,4 +210,81 @@ public class ExcelFuntions {
 		}
 	}
 
+	/**
+	 * Funcion que permite la lectura de un fichero CSV
+	 * @param fichero
+	 * @param sql
+	 * @return
+	 */
+	public boolean lecturaCSV(File fichero,String sql)
+	{
+
+		try {
+			PreparedStatement statement = conn.prepareStatement(sql);
+			int batchSize = 20;
+			BufferedReader lineReader = new BufferedReader(new FileReader(fichero));
+			String lineText = null;
+
+			int count = 0;
+			int j = db.countRows();
+			lineReader.readLine();
+
+			//Se leeran los datos hasta que no existan mas datos
+			while ((lineText = lineReader.readLine()) != null) {
+				String[] data = lineText.split(";");
+				String id = Integer.toString(j);
+				String nombre = data[1];
+				String numero = data[2];
+				String variante = data[3];
+				String firma = data[4];
+				String editorial = data[5];
+				String formato = data[6];
+				String procedencia = data[7];
+				String fecha = data[8];
+				String guionista = data[9];
+				String dibujante = data[10];
+				String estado = data[11];
+
+				statement.setString(1, id);
+				statement.setString(2, nombre);
+				statement.setString(3, numero);
+				statement.setString(4, variante);
+				statement.setString(5, firma);
+				statement.setString(6, editorial);
+				statement.setString(7, formato);
+				statement.setString(8, procedencia);
+				statement.setString(9, fecha);
+				statement.setString(10, guionista);
+				statement.setString(11, dibujante);
+				statement.setString(12, estado);
+
+				statement.addBatch();
+
+				if (count % batchSize == 0) {
+					statement.executeBatch();
+				}
+			}
+
+			lineReader.close();
+			statement.executeBatch();
+			return true;
+			
+		} catch (FileNotFoundException e) {
+			nav.alertaException("Fichero no encontrado: " + e.toString());
+		}
+		catch (SQLException e) {
+			try {
+				PreparedStatement statement1 = conn.prepareStatement("delete from comicsbbdd");
+				PreparedStatement statement2 = conn.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");
+				statement1.close();
+				statement2.close();
+				nav.alertaException("El formato del fichero .csv no es correcto: " + e.toString());
+			} catch (SQLException e1) {
+				nav.alertaException(e1.toString());
+			}
+		} catch (IOException e) {
+			nav.alertaException("El formato del fichero .csv no es correcto: " + e.toString());
+		}
+		return false;
+	}
 }
