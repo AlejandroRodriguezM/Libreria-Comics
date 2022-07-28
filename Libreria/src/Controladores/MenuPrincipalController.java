@@ -72,9 +72,6 @@ public class MenuPrincipalController {
 	private Button botonbbdd;
 
 	@FXML
-	private Button botonGuardarFichero;
-
-	@FXML
 	private Button BotonVentanaAniadir;
 
 	@FXML
@@ -296,20 +293,6 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * Guarda los datos de la base de datos en un fichero txt.
-	 *
-	 * @param event
-	 */
-	@FXML
-	void exportFichero(ActionEvent event) {
-		FileChooser fileChooser = new FileChooser(); //Permite escoger donde se encuentra el fichero
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero bloc de notas", "*.txt"));  //Permite escoger solamente ficheros cuya extension es txt
-		File fichero = fileChooser.showSaveDialog(null); //Hace que el fileChooser sea solamente para guardar el fichero
-
-		makeFile(fichero);
-	}
-
-	/**
 	 * Exporta un fichero CSV compatible con el programa que copia el contenido de la base de datos en un fichero CSV
 	 * @param event
 	 */
@@ -501,39 +484,6 @@ public class MenuPrincipalController {
 				prontInfo.setText("ERROR. Se ha cancelado la importacion.");
 			}
 		} catch (Exception e) {
-			nav.alertaException(e.toString());
-		}
-	}
-
-	/**
-	 * Funcion que compruba si se ha creado el fichero txt
-	 * @param fichero
-	 */
-	public void makeFile(File fichero) {
-
-		try {
-			if (fichero != null) {
-				fichero.createNewFile();
-
-				nombreColumnas();
-				tablaBBDD(libreriaPosesion());
-
-				FileWriter guardarDatos = new FileWriter(fichero);
-
-				for (int i = 0; i < libreria.verLibreriaCompleta().length; i++) {
-					guardarDatos.write(libreriaCompleta().get(i) + "\n");
-					System.out.println(libreriaCompleta().get(i) + "\n");
-				}
-				prontInfo.setOpacity(1);
-				prontInfo.setStyle("-fx-background-color: #A0F52D");
-				prontInfo.setText("Fichero creado correctamente");
-				guardarDatos.close();
-			} else {
-				prontInfo.setOpacity(1);
-				prontInfo.setStyle("-fx-background-color: #F53636");
-				prontInfo.setText("ERROR. Contenido de la bbdd \n cancelada.");
-			}
-		} catch (IOException e) {
 			nav.alertaException(e.toString());
 		}
 	}

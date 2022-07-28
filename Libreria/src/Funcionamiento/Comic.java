@@ -194,9 +194,9 @@ public class Comic {
 				"No son los dioses los que deciden si el hombre existe; son los hombres los que deciden si los dioses existen.\n-Thor",
 				"Un hombre sin esperanza es un hombre sin miedo.\n-Wilson Fisk",
 				"No tiene nada de malo sentir miedo, siempre y cuando no te dejes vencer\n-Capitan America",
-				"Cualquier sueño que merezca ser vivido es un sueño por el que merece la pena luchar \n-Charles Xavier",
-				"Tuviste una vida dura,  sabes quién más tuvo una vida dura? ¡Todo el mundo! \n-DeadPool",
-				"Planeamos días y días y cuando llega el momento, procedemos a improvisar \n-QuickSilver" };
+				"Cualquier sueno que merezca ser vivido es un sueï¿½o por el que merece la pena luchar \n-Charles Xavier",
+				"Tuviste una vida dura,  sabes quien mas tuvo una vida dura? Todo el mundo! \n-DeadPool",
+				"Planeamos dias y dias y cuando llega el momento, procedemos a improvisar \n-QuickSilver" };
 		n = (int) (Math.random() * r.nextInt(frases.length));
 
 		return frases[n];

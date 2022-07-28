@@ -411,7 +411,7 @@ public class IntroducirDatosController {
 	}
 
 	/**
-	 * Devuelve un array con los datos de los TextField del comic a Introducir
+	 * Devuelve un array con los datos de los TextField del comic a Introducir.
 	 * @return
 	 */
 	public String[] camposComicIntroducir() {
@@ -436,6 +436,24 @@ public class IntroducirDatosController {
 		campos[8] = guionistaAni.getText();
 
 		campos[9] = dibujanteAni.getText();
+
+		return comaPorGuion(campos);
+	}
+	
+	/**
+	 * Cambia una ',' por un guion '-'
+	 * @param campos
+	 * @return
+	 */
+	public String[] comaPorGuion(String [] campos)
+	{
+		for (int i = 0; i < campos.length; i++) {
+			
+			if(campos[i].contains(","))
+			{
+				campos[i] = campos[i].replace(",", "-");
+			}
+		}
 
 		return campos;
 	}
