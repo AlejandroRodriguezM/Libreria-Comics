@@ -541,7 +541,7 @@ public class MenuPrincipalController {
 
 		if (listComic.size() == 0) {
 			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("ERROR. No hay ningun dato en la base de datos");
+			prontInfo.setText("ERROR. No hay ningun dato escrito para poder realizar la busqueda");
 		}
 		return listComic;
 
@@ -556,7 +556,7 @@ public class MenuPrincipalController {
 
 		if (listComic.size() == 0) {
 			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("ERROR. No hay ningun dato en la base de datos");
+			prontInfo.setText("ERROR. La base de datos se encuentra vacia");
 		}
 
 		return listComic;
@@ -571,7 +571,7 @@ public class MenuPrincipalController {
 
 		if (listComic.size() == 0) {
 			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("ERROR. No hay ningun dato en la base de datos");
+			prontInfo.setText("ERROR. La base de datos se encuentra vacia");
 		}
 
 		return listComic;

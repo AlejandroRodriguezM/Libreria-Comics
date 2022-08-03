@@ -192,13 +192,14 @@ public class Libreria extends Comic {
 		ResultSet rs;
 
 		rs = ConexionBBDD.getComic(sentenciaSQL);
+		
 		comic = datosIndividual(rs);
 
 		return comic;
 	}
 
 	/**
-	 *  Devuelve una lista con todos los datos de los comics de la base de datos
+	 * Devuelve una lista con todos los datos de los comics de la base de datos
 	 * @param rs
 	 * @return
 	 */

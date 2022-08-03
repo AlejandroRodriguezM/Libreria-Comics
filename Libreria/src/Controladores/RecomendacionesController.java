@@ -71,11 +71,11 @@ public class RecomendacionesController {
 
 		int n;
 
-		limpiarPront();
+		limpiarPront(); //Llamada a funcion para limpiar las pantalla "TextArea"
 
 		if (libreria.verLibreria().length != 0) {
 			n = (int) (Math.random() * r.nextInt(libreria.verLibreria().length));
-			return libreria.verLibreria()[n].toString();
+			return libreria.verLibreria()[n].toString(); //Devuelve un comic de la lista de comics
 		} else {
 			printComicRecomendado.setText("ERROR. No hay ningun dato en la base de datos");
 			printComicRecomendado.setStyle("-fx-background-color: #F53636");
