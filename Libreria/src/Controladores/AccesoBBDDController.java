@@ -44,7 +44,9 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 /**
- * Esta clase sirve para acceder a la base de datos y poder realizar diferentes funciones.
+ * Esta clase sirve para acceder a la base de datos y poder realizar diferentes
+ * funciones.
+ * 
  * @author Alejandro Rodriguez
  */
 public class AccesoBBDDController {
@@ -175,6 +177,7 @@ public class AccesoBBDDController {
 
 	/**
 	 * Funcion que permite el acceso a la ventana de menuPrincipal
+	 * 
 	 * @param event
 	 */
 	@FXML
@@ -195,6 +198,7 @@ public class AccesoBBDDController {
 
 	/**
 	 * Funcion que permite entrar en la ventana de creacion de base de datos.
+	 * 
 	 * @param event
 	 */
 	@FXML
@@ -209,6 +213,7 @@ public class AccesoBBDDController {
 
 	/**
 	 * Permite ver las bases de datos disponibles en MySql workbench
+	 * 
 	 * @param event
 	 */
 	@FXML
@@ -252,6 +257,7 @@ public class AccesoBBDDController {
 
 	/**
 	 * Se ve informacion en el TextArea.
+	 * 
 	 * @param event
 	 */
 	@FXML
@@ -265,6 +271,7 @@ public class AccesoBBDDController {
 
 	/**
 	 * Limpia los datos de los campos
+	 * 
 	 * @param event
 	 */
 	@FXML
@@ -277,6 +284,7 @@ public class AccesoBBDDController {
 
 	/**
 	 * Envia los datos a la clase DBManager y permite conectarse a esta.
+	 * 
 	 * @param event
 	 */
 	@FXML
@@ -302,6 +310,7 @@ public class AccesoBBDDController {
 
 	/**
 	 * Cierra la bbdd
+	 * 
 	 * @param event
 	 */
 	@FXML
@@ -321,6 +330,7 @@ public class AccesoBBDDController {
 
 	/**
 	 * Funcion que permite mandar los datos a la clase DBManager
+	 * 
 	 * @return
 	 */
 	public void envioDatosBBDD() { // Metodo que manda toda la informacion de los textField a la clase DBManager.
@@ -334,6 +344,7 @@ public class AccesoBBDDController {
 
 	/**
 	 * Permite salir completamente del programa.
+	 * 
 	 * @param event
 	 */
 	@FXML

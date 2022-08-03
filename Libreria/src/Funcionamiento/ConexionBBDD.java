@@ -30,7 +30,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * Esta clase sirve para realizar la conexion y cerrado de conexion a la base de datos
+ * Esta clase sirve para realizar la conexion y cerrado de conexion a la base de
+ * datos
+ * 
  * @author Alejandro Rodriguez
  */
 public class ConexionBBDD {

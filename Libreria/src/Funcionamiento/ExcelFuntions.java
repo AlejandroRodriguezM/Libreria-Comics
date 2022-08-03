@@ -44,7 +44,9 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
- * Esta clase sirve para crear tanto los ficheros Excel como los ficheros CSV, la exportacion de estos o la importacion
+ * Esta clase sirve para crear tanto los ficheros Excel como los ficheros CSV,
+ * la exportacion de estos o la importacion
+ * 
  * @author Alejandro Rodriguez
  */
 public class ExcelFuntions {

@@ -47,6 +47,7 @@ import javafx.stage.Stage;
 
 /**
  * Esta clase sirve para modificar datos de forma individual de cada comic
+ * 
  * @author Alejandro Rodriguez
  */
 public class ModificarDatosController {
