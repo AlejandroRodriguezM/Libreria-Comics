@@ -177,6 +177,7 @@ public class IntroducirDatosController {
 
 	/**
 	 * Limpia todos los datos de los textField que hay en pantalla
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -270,7 +271,8 @@ public class IntroducirDatosController {
 			statement.setString(9, datos[8]);
 			statement.setString(10, datos[9]);
 
-			if (statement.executeUpdate() == 1) { //Sie el resultado del executeUpdate es 1, mostrara el mensaje correcto.
+			if (statement.executeUpdate() == 1) { // Sie el resultado del executeUpdate es 1, mostrara el mensaje
+													// correcto.
 				if (nav.alertaInsertar()) {
 					pantallaInformativa.setOpacity(1);
 					pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
@@ -286,11 +288,12 @@ public class IntroducirDatosController {
 					pantallaInformativa.setText("Insertado cancelado..");
 				}
 
-			} else { //En caso de no haber sido posible Introducir el comic, se vera el siguiente mensaje.
+			} else { // En caso de no haber sido posible Introducir el comic, se vera el siguiente
+						// mensaje.
 				pantallaInformativa.setOpacity(1);
 				pantallaInformativa.setStyle("-fx-background-color: #F53636");
-				pantallaInformativa
-						.setText("Se ha encontrado un error. No ha sido posible introducir el comic a la base de datos.");
+				pantallaInformativa.setText(
+						"Se ha encontrado un error. No ha sido posible introducir el comic a la base de datos.");
 			}
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
@@ -299,14 +302,15 @@ public class IntroducirDatosController {
 
 	/**
 	 * Mostrara los comics o comic buscados por parametro
+	 *
 	 * @param event
 	 * @throws SQLException
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
 
-		nombreColumnas(); //Llamada a funcion
-		listaPorParametro(); //Llamada a funcion
+		nombreColumnas(); // Llamada a funcion
+		listaPorParametro(); // Llamada a funcion
 	}
 
 	/**
@@ -317,13 +321,15 @@ public class IntroducirDatosController {
 	@FXML
 	void verTodabbdd(ActionEvent event) {
 
-		nombreColumnas(); //Llamada a funcion
-		tablaBBDD(libreriaCompleta()); //Llamada a funcion
+		nombreColumnas(); // Llamada a funcion
+		tablaBBDD(libreriaCompleta()); // Llamada a funcion
 
 	}
 
 	/**
-	 * Muestra los comics que coincidan con los parametros introducidos en los textField
+	 * Muestra los comics que coincidan con los parametros introducidos en los
+	 * textField
+	 *
 	 * @return
 	 */
 	public void listaPorParametro() {
@@ -336,7 +342,9 @@ public class IntroducirDatosController {
 	}
 
 	/**
-	 * Funcion que busca en el arrayList el o los comics que tengan coincidencia con los datos introducidos en el TextField
+	 * Funcion que busca en el arrayList el o los comics que tengan coincidencia con
+	 * los datos introducidos en el TextField
+	 *
 	 * @param comic
 	 * @return
 	 */
@@ -353,6 +361,7 @@ public class IntroducirDatosController {
 
 	/**
 	 * Muestra todos los comics de la base de datos
+	 *
 	 * @return
 	 */
 	public List<Comic> libreriaCompleta() {
@@ -368,7 +377,9 @@ public class IntroducirDatosController {
 	}
 
 	/**
-	 * Obtiene los datos de los comics de la base de datos y los devuelve en el textView
+	 * Obtiene los datos de los comics de la base de datos y los devuelve en el
+	 * textView
+	 *
 	 * @param listaComic
 	 */
 	@SuppressWarnings("unchecked")
@@ -379,7 +390,9 @@ public class IntroducirDatosController {
 	}
 
 	/**
-	 * Devuelve un array con los datos de los TextField correspondientes a la los comics que se encuentran en la bbdd
+	 * Devuelve un array con los datos de los TextField correspondientes a la los
+	 * comics que se encuentran en la bbdd
+	 *
 	 * @return
 	 */
 	public String[] camposComicActuales() {
@@ -412,6 +425,7 @@ public class IntroducirDatosController {
 
 	/**
 	 * Devuelve un array con los datos de los TextField del comic a Introducir.
+	 *
 	 * @return
 	 */
 	public String[] camposComicIntroducir() {
@@ -439,18 +453,17 @@ public class IntroducirDatosController {
 
 		return comaPorGuion(campos);
 	}
-	
+
 	/**
 	 * Cambia una ',' por un guion '-'
+	 *
 	 * @param campos
 	 * @return
 	 */
-	public String[] comaPorGuion(String [] campos)
-	{
+	public String[] comaPorGuion(String[] campos) {
 		for (int i = 0; i < campos.length; i++) {
-			
-			if(campos[i].contains(","))
-			{
+
+			if (campos[i].contains(",")) {
 				campos[i] = campos[i].replace(",", "-");
 			}
 		}

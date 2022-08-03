@@ -173,6 +173,7 @@ public class Comic {
 
 	/**
 	 * Frases de personajes de comics
+	 *
 	 * @return
 	 */
 	public static String frasesComics() {

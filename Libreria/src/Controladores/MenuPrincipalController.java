@@ -203,6 +203,7 @@ public class MenuPrincipalController {
 
 	/**
 	 * Permite el cambio de ventana a la ventana de EliminarDatosController
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -216,6 +217,7 @@ public class MenuPrincipalController {
 
 	/**
 	 * Permite el cambio de ventana a la ventana de ModificarDatosController
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -229,6 +231,7 @@ public class MenuPrincipalController {
 
 	/**
 	 * Permite el cambio de ventana a la ventana deRecomendacionesController
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -242,6 +245,7 @@ public class MenuPrincipalController {
 
 	/**
 	 * Muestra en un textArea diferentes frases random de personajes de los comics.
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -277,47 +281,72 @@ public class MenuPrincipalController {
 	////////////////////////////
 
 	/**
-	 * Importa un fichero CSV compatible con el programa para copiar la informacion a la base de datos
+	 * Importa un fichero CSV compatible con el programa para copiar la informacion
+	 * a la base de datos
+	 *
 	 * @param event
 	 */
 	@FXML
 	void importCSV(ActionEvent event) {
 
-		FileChooser fileChooser = new FileChooser(); //Permite escoger donde se encuentra el fichero
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero CSV", "*.csv")); //Permite escoger solamente ficheros cuya extension es CSV
-		File fichero = fileChooser.showOpenDialog(null); //Hace que el fileChooser sea solamente para abrir el fichero
+		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero CSV", "*.csv")); // Permite
+																											// escoger
+																											// solamente
+																											// ficheros
+																											// cuya
+																											// extension
+																											// es CSV
+		File fichero = fileChooser.showOpenDialog(null); // Hace que el fileChooser sea solamente para abrir el fichero
 
 		importCSV(fichero);
 
 	}
 
 	/**
-	 * Exporta un fichero CSV compatible con el programa que copia el contenido de la base de datos en un fichero CSV
+	 * Exporta un fichero CSV compatible con el programa que copia el contenido de
+	 * la base de datos en un fichero CSV
+	 *
 	 * @param event
 	 */
 	@FXML
 	void exportCSV(ActionEvent event) {
 
-		FileChooser fileChooser = new FileChooser(); //Permite escoger donde se encuentra el fichero
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero Excel xlsx", "*.xlsx"));  //Permite escoger solamente ficheros cuya extension es .xlsx
-		File fichero = fileChooser.showSaveDialog(null);  //Hace que el fileChooser sea solamente para guardar el fichero
+		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero Excel xlsx", "*.xlsx")); // Permite
+																													// escoger
+																													// solamente
+																													// ficheros
+																													// cuya
+																													// extension
+																													// es
+																													// .xlsx
+		File fichero = fileChooser.showSaveDialog(null); // Hace que el fileChooser sea solamente para guardar el
+															// fichero
 
 		makeExcel(fichero);
 	}
 
 	/**
 	 * Exporta la base de datos en un fichero SQL
+	 *
 	 * @param event
 	 */
 	@FXML
 	void exportarSQL(ActionEvent event) {
 
-		FileChooser fileChooser = new FileChooser(); //Permite escoger donde se encuentra el fichero
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero SQL", "*.sql")); //Permite escoger solamente ficheros cuya extension es .xlsx
-		File fichero = fileChooser.showSaveDialog(null); //Hace que el fileChooser sea solamente para guardar el fichero
+		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero SQL", "*.sql")); // Permite
+																											// escoger
+																											// solamente
+																											// ficheros
+																											// cuya
+																											// extension
+																											// es .xlsx
+		File fichero = fileChooser.showSaveDialog(null); // Hace que el fileChooser sea solamente para guardar el
+															// fichero
 
 		makeSQL(fichero);
-
 
 	}
 
@@ -347,7 +376,9 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * Borra el contenido de la base de datos, soltamente el contenido de las tablas.
+	 * Borra el contenido de la base de datos, soltamente el contenido de las
+	 * tablas.
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -367,6 +398,7 @@ public class MenuPrincipalController {
 
 	/**
 	 * Se llama a funcion que permite ver las estadisticas de la bbdd
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -376,7 +408,9 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * Se llama a funcion que permite abrir 2 direccionesd web junto al navegador predeterminado
+	 * Se llama a funcion que permite abrir 2 direccionesd web junto al navegador
+	 * predeterminado
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -389,28 +423,26 @@ public class MenuPrincipalController {
 	/////////////////////////////////
 
 	/**
-	 * Funcion que permite llamar al navegador predeterminado del sistema y abrir 2 paginas web.
+	 * Funcion que permite llamar al navegador predeterminado del sistema y abrir 2
+	 * paginas web.
 	 */
-	public void verPagina()
-	{
+	public void verPagina() {
 		String url1 = "https://www.radarcomics.com/es/";
 		String url2 = "https://www.panini.es/shp_esp_es/comics.html";
 
 		if (Utilidades.isWindows()) {
-			Utilidades.accesoWebWindows(url1); //Llamada a funcion
-			Utilidades.accesoWebWindows(url2); //Llamada a funcion
+			Utilidades.accesoWebWindows(url1); // Llamada a funcion
+			Utilidades.accesoWebWindows(url2); // Llamada a funcion
 		} else {
 			if (Utilidades.isUnix()) {
-				Utilidades.accesoWebLinux(url1); //Llamada a funcion
-				Utilidades.accesoWebLinux(url2); //Llamada a funcion
+				Utilidades.accesoWebLinux(url1); // Llamada a funcion
+				Utilidades.accesoWebLinux(url2); // Llamada a funcion
 			} else {
 				Utilidades.accesoWebMac(url1);
 				Utilidades.accesoWebMac(url2);
 			}
 		}
 	}
-
-
 
 	/**
 	 * Permite dar valor a las celdas de la TableView
@@ -435,22 +467,26 @@ public class MenuPrincipalController {
 
 	/**
 	 * Funcion que compruba si se ha creado el fichero Excel y CSV
+	 *
 	 * @param fichero
 	 */
 	public void makeExcel(File fichero) {
 		try {
 
 			if (fichero != null) {
-				if (excelFuntions.crearExcel(fichero)) { //Si el fichero XLSX y CSV se han creado se vera el siguiente mensaje
+				if (excelFuntions.crearExcel(fichero)) { // Si el fichero XLSX y CSV se han creado se vera el siguiente
+															// mensaje
 					prontInfo.setOpacity(1);
 					prontInfo.setStyle("-fx-background-color: #A0F52D");
 					prontInfo.setText("Fichero excel exportado de forma correcta");
-				} else { //Si no se ha podido crear correctamente los ficheros se vera el siguiente mensaje
+				} else { // Si no se ha podido crear correctamente los ficheros se vera el siguiente
+							// mensaje
 					prontInfo.setOpacity(1);
 					prontInfo.setStyle("-fx-background-color: #F53636");
 					prontInfo.setText("ERROR. No se ha podido exportar correctamente.");
 				}
-			} else { //En caso de cancelar la creacion de los ficheros, se mostrara el siguiente mensaje.
+			} else { // En caso de cancelar la creacion de los ficheros, se mostrara el siguiente
+						// mensaje.
 				prontInfo.setOpacity(1);
 				prontInfo.setStyle("-fx-background-color: #F53636");
 				prontInfo.setText("ERROR. Se ha cancelado la exportacion.");
@@ -461,23 +497,26 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * Funcion que compruba si se ha importado el fichero  CSV
+	 * Funcion que compruba si se ha importado el fichero CSV
+	 *
 	 * @param fichero
 	 */
 	public void importCSV(File fichero) {
 		try {
 
 			if (fichero != null) {
-				if (excelFuntions.importarCSV(fichero)) { //Si se ha importado el fichero CSV correctamente, se vera el siguiente mensaje
+				if (excelFuntions.importarCSV(fichero)) { // Si se ha importado el fichero CSV correctamente, se vera el
+															// siguiente mensaje
 					prontInfo.setOpacity(1);
 					prontInfo.setStyle("-fx-background-color: #A0F52D");
 					prontInfo.setText("Fichero CSV importado de forma correcta");
-				} else { //Si no se ha podido crear importar el fichero se vera el siguiente mensaje
+				} else { // Si no se ha podido crear importar el fichero se vera el siguiente mensaje
 					prontInfo.setOpacity(1);
 					prontInfo.setStyle("-fx-background-color: #F53636");
 					prontInfo.setText("ERROR. No se ha podido importar correctamente.");
 				}
-			} else { //En caso de cancelar la importacion del fichero, se mostrara el siguiente mensaje.
+			} else { // En caso de cancelar la importacion del fichero, se mostrara el siguiente
+						// mensaje.
 				prontInfo.setOpacity(1);
 				prontInfo.setStyle("-fx-background-color: #F53636");
 				prontInfo.setText("ERROR. Se ha cancelado la importacion.");
@@ -488,35 +527,34 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * Funcion crea el fichero SQL segun el sistema operativo en el que te encuentres.
+	 * Funcion crea el fichero SQL segun el sistema operativo en el que te
+	 * encuentres.
+	 *
 	 * @param fichero
 	 */
 	public void makeSQL(File fichero) {
 		if (fichero != null) {
 
 			if (Utilidades.isWindows()) {
-				db.backupWindows(fichero); //Llamada a funcion
+				db.backupWindows(fichero); // Llamada a funcion
 				prontInfo.setOpacity(1);
 				prontInfo.setStyle("-fx-background-color: #A0F52D");
 				prontInfo.setText("Base de datos exportada \ncorrectamente");
 
 			} else {
 				if (Utilidades.isUnix()) {
-					db.backupLinux(fichero); //Llamada a funcion
+					db.backupLinux(fichero); // Llamada a funcion
 					prontInfo.setOpacity(1);
 					prontInfo.setStyle("-fx-background-color: #A0F52D");
 					prontInfo.setText("Base de datos exportada \ncorrectamente");
 				}
 			}
-		}
-		else
-		{
+		} else {
 			prontInfo.setOpacity(1);
 			prontInfo.setStyle("-fx-background-color: #F53636");
 			prontInfo.setText("ERROR. Se ha cancelado la exportacion de la base de datos.");
 		}
 	}
-
 
 	/**
 	 *
@@ -532,7 +570,9 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * Devuelve una lista de los comics cuyos datos han sido introducidos mediante parametros en los textField
+	 * Devuelve una lista de los comics cuyos datos han sido introducidos mediante
+	 * parametros en los textField
+	 *
 	 * @param comic
 	 * @return
 	 */
@@ -548,7 +588,9 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * Devuelve una lista con todos los comics de la base de datos que se encuentran "En posesion"
+	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
+	 * "En posesion"
+	 *
 	 * @return
 	 */
 	public List<Comic> libreriaPosesion() {
@@ -564,6 +606,7 @@ public class MenuPrincipalController {
 
 	/**
 	 * Devuelve una lista con todos los comics de la base de datos.
+	 *
 	 * @return
 	 */
 	public List<Comic> libreriaCompleta() {
@@ -578,7 +621,9 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * Obtiene los datos de los comics de la base de datos y los devuelve en el textView
+	 * Obtiene los datos de los comics de la base de datos y los devuelve en el
+	 * textView
+	 *
 	 * @param listaComic
 	 */
 	@SuppressWarnings("unchecked")
@@ -589,7 +634,9 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * Devuelve un array con los datos de los TextField correspondientes a la los comics que se encuentran en la bbdd
+	 * Devuelve un array con los datos de los TextField correspondientes a la los
+	 * comics que se encuentran en la bbdd
+	 *
 	 * @return
 	 */
 	public String[] camposComic() {

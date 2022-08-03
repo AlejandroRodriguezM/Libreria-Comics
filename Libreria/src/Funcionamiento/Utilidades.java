@@ -46,7 +46,9 @@ public class Utilidades {
 	}
 
 	/**
-	 * Funcion que permite comprobar que navegadores tienes instalados en el sistema operativo linux y abre aquel que tengas en predeterminado.
+	 * Funcion que permite comprobar que navegadores tienes instalados en el sistema
+	 * operativo linux y abre aquel que tengas en predeterminado.
+	 *
 	 * @param url
 	 * @return
 	 */
@@ -67,6 +69,7 @@ public class Utilidades {
 
 	/**
 	 * Funcion que permite abrir navegador y pagina web de GitHub en Windows
+	 *
 	 * @param url
 	 */
 	public static void accesoWebWindows(String url) {
@@ -79,6 +82,7 @@ public class Utilidades {
 
 	/**
 	 * Funcion que permite abrir navegador y pagina web de GitHub en Linux
+	 *
 	 * @param url
 	 */
 	public static void accesoWebLinux(String url) {
@@ -87,7 +91,8 @@ public class Utilidades {
 		StringBuffer cmd;
 		try {
 			cmd = Utilidades.navegador(url);
-			rt.exec(new String[] { "sh", "-c", cmd.toString() }); //Ejecuta el bucle y permite abrir el navegador que tengas principal
+			rt.exec(new String[] { "sh", "-c", cmd.toString() }); // Ejecuta el bucle y permite abrir el navegador que
+																	// tengas principal
 		} catch (IOException e) {
 			nav.alertaException("Error: No funciona el boton \n" + e.toString());
 		}
@@ -95,17 +100,17 @@ public class Utilidades {
 
 	/**
 	 * Funcion que permite abrir navegador y pagina web de GitHub en Linux
+	 *
 	 * @param url
 	 */
 	public static void accesoWebMac(String url) {
-		 Runtime runtime = Runtime.getRuntime();
-		    String[] args = { "osascript", "-e", "open location \"" + url + "\"" };
-		    try {
-		        runtime.exec(args);
-		    }
-		    catch (IOException e) {
-		    	nav.alertaException("Error: No funciona el boton \n" + e.toString());
-		    }
+		Runtime runtime = Runtime.getRuntime();
+		String[] args = { "osascript", "-e", "open location \"" + url + "\"" };
+		try {
+			runtime.exec(args);
+		} catch (IOException e) {
+			nav.alertaException("Error: No funciona el boton \n" + e.toString());
+		}
 	}
 
 }

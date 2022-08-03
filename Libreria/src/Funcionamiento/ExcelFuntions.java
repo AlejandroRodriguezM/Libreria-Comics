@@ -52,6 +52,7 @@ public class ExcelFuntions {
 
 	/**
 	 * Funcion que permite importar ficheros CSV a la base de datos.
+	 *
 	 * @param fichero
 	 * @return
 	 * @throws SQLException
@@ -60,12 +61,10 @@ public class ExcelFuntions {
 		String sql = "INSERT INTO comicsbbdd(ID,nomComic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,anioPubli,nomGuionista,nomDibujante,estado)"
 				+ " values (?,?,?,?,?,?,?,?,?,?,?,?)";
 
-		if(lecturaCSV(fichero,sql)) //Llamada a funcion, en caso de devolver true, devolvera un true
+		if (lecturaCSV(fichero, sql)) // Llamada a funcion, en caso de devolver true, devolvera un true
 		{
 			return true;
-		}
-		else
-		{
+		} else {
 			return false;
 		}
 
@@ -73,6 +72,7 @@ public class ExcelFuntions {
 
 	/**
 	 * Funcion que permite crear tanto un fichero XLSX cini un fichero CSV
+	 *
 	 * @param fichero
 	 * @return
 	 */
@@ -146,6 +146,7 @@ public class ExcelFuntions {
 
 	/**
 	 * Funcion que permite crear un fichero CSV
+	 *
 	 * @param fichero
 	 */
 	public void createCSV(File fichero) {
@@ -161,7 +162,6 @@ public class ExcelFuntions {
 
 			// Get first sheet from the workbook
 			Sheet sheet = workbook.getSheetAt(0);
-
 
 			// Iterate through each rows from first sheet
 			Iterator<Row> rowIterator = sheet.iterator();
@@ -211,12 +211,12 @@ public class ExcelFuntions {
 
 	/**
 	 * Funcion que permite la lectura de un fichero CSV
+	 *
 	 * @param fichero
 	 * @param sql
 	 * @return
 	 */
-	public boolean lecturaCSV(File fichero,String sql)
-	{
+	public boolean lecturaCSV(File fichero, String sql) {
 
 		try {
 			PreparedStatement statement = conn.prepareStatement(sql);
@@ -228,7 +228,7 @@ public class ExcelFuntions {
 			int j = db.countRows();
 			lineReader.readLine();
 
-			//Se leeran los datos hasta que no existan mas datos
+			// Se leeran los datos hasta que no existan mas datos
 			while ((lineText = lineReader.readLine()) != null) {
 				String[] data = lineText.split(";");
 				String id = Integer.toString(j);
@@ -270,8 +270,7 @@ public class ExcelFuntions {
 
 		} catch (FileNotFoundException e) {
 			nav.alertaException("Fichero no encontrado: " + e.toString());
-		}
-		catch (SQLException e) {
+		} catch (SQLException e) {
 			try {
 				PreparedStatement statement1 = conn.prepareStatement("delete from comicsbbdd");
 				PreparedStatement statement2 = conn.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");

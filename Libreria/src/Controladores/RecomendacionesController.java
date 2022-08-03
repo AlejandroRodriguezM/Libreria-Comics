@@ -53,6 +53,7 @@ public class RecomendacionesController {
 
 	/**
 	 * Llama a funcion que genera una lectura recomendada
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -64,6 +65,7 @@ public class RecomendacionesController {
 
 	/**
 	 * Funcion que devuelve un comic al azar de toda la base de datos.
+	 *
 	 * @return
 	 */
 	public String generarLectura() {
@@ -71,11 +73,11 @@ public class RecomendacionesController {
 
 		int n;
 
-		limpiarPront(); //Llamada a funcion para limpiar las pantalla "TextArea"
+		limpiarPront(); // Llamada a funcion para limpiar las pantalla "TextArea"
 
 		if (libreria.verLibreria().length != 0) {
 			n = (int) (Math.random() * r.nextInt(libreria.verLibreria().length));
-			return libreria.verLibreria()[n].toString(); //Devuelve un comic de la lista de comics
+			return libreria.verLibreria()[n].toString(); // Devuelve un comic de la lista de comics
 		} else {
 			printComicRecomendado.setText("ERROR. No hay ningun dato en la base de datos");
 			printComicRecomendado.setStyle("-fx-background-color: #F53636");
@@ -93,6 +95,7 @@ public class RecomendacionesController {
 
 	/**
 	 * Permite salir completamente del programa.
+	 *
 	 * @param event
 	 */
 	@FXML

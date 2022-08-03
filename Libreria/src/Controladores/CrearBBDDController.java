@@ -72,7 +72,6 @@ public class CrearBBDDController {
 
 	private final String DB_HOST = "localhost";
 
-
 	/**
 	 * Metodo que permite llamada a metodos donde se crean la bbdd y las tablas y
 	 * procedimientos almacenados
@@ -114,7 +113,9 @@ public class CrearBBDDController {
 	}
 
 	/**
-	 * Comprueba si existe una base de datos con el nombre de la base de datos a crear
+	 * Comprueba si existe una base de datos con el nombre de la base de datos a
+	 * crear
+	 *
 	 * @return
 	 */
 	public boolean checkDatabase() {
@@ -146,8 +147,7 @@ public class CrearBBDDController {
 	 * @param sentenciaSQL
 	 * @return
 	 */
-	public ResultSet ejecucionSQL(String sentenciaSQL)
-	{
+	public ResultSet ejecucionSQL(String sentenciaSQL) {
 		String url = "jdbc:mysql://" + DB_HOST + ":" + puertoBBDD.getText() + "?serverTimezone=UTC";
 
 		Statement statement;
@@ -174,7 +174,7 @@ public class CrearBBDDController {
 	public void createTable() {
 
 		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + puertoBBDD.getText() + "/" + nombreBBDD.getText()
-		+ "?serverTimezone=UTC";
+				+ "?serverTimezone=UTC";
 
 		String sentenciaSQL = "CREATE TABLE " + " comicsbbdd ( ID int NOT NULL AUTO_INCREMENT,"
 				+ "nomComic varchar(150) NOT NULL," + "numComic varchar(150) NOT NULL,"
@@ -206,7 +206,7 @@ public class CrearBBDDController {
 	public void createProcedure() {
 
 		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + puertoBBDD.getText() + "/" + nombreBBDD.getText()
-		+ "?serverTimezone=UTC";
+				+ "?serverTimezone=UTC";
 
 		try {
 			Connection connection = DriverManager.getConnection(DB_URL, userBBDD.getText(), passBBDD.getText());

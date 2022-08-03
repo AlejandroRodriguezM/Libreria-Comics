@@ -25,9 +25,7 @@ package Controladores;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +46,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 public class ModificarDatosController {
-	
+
 	public static List<Comic> comicModicado = new ArrayList<>();
 
 	@FXML
@@ -187,6 +185,7 @@ public class ModificarDatosController {
 
 	/**
 	 * Limpia todos los datos de los textField que hay en pantalla
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -244,17 +243,20 @@ public class ModificarDatosController {
 
 		pantallaInformativa.setText(null);
 
+		idComicMod.setStyle(null);
+
 		pantallaInformativa.setOpacity(0);
 	}
 
 	/**
 	 * Llamada a funcion que modifica los datos de 1 comic en la base de datos.
+	 *
 	 * @param event
 	 */
 	@FXML
 	void modificarDatos(ActionEvent event) {
 
-		modificacionDatos(); //Llamada a funcion que modificara el contenido de un comic especifico.
+		modificacionDatos(); // Llamada a funcion que modificara el contenido de un comic especifico.
 		libreria.reiniciarBBDD();
 	}
 
@@ -263,7 +265,9 @@ public class ModificarDatosController {
 	/////////////////////////////////
 
 	/**
-	 * Devuelve un array con los datos de los TextField correspondientes a la los comics que se encuentran en la bbdd
+	 * Devuelve un array con los datos de los TextField correspondientes a la los
+	 * comics que se encuentran en la bbdd
+	 *
 	 * @return
 	 */
 	public String[] camposComicActuales() {
@@ -295,7 +299,9 @@ public class ModificarDatosController {
 	}
 
 	/**
-	 * Devuelve un array con los datos de los TextField correspondientes a la los comics se van a modificar
+	 * Devuelve un array con los datos de los TextField correspondientes a la los
+	 * comics se van a modificar
+	 *
 	 * @return
 	 */
 	public String[] camposComicModificar() {
@@ -327,17 +333,18 @@ public class ModificarDatosController {
 	}
 
 	/**
-	 * Funcion que modifica 1 comic de la base de datos con los parametros que introduzcamos en los campos.
+	 * Funcion que modifica 1 comic de la base de datos con los parametros que
+	 * introduzcamos en los campos.
 	 */
 	public void modificacionDatos() {
 
 		String sentenciaSQL = "UPDATE comicsbbdd set nomComic = ?,numComic = ?,nomVariante = ?,"
 				+ "Firma = ?,nomEditorial = ?,formato = ?,Procedencia = ?,anioPubli = ?,"
 				+ "nomGuionista = ?,nomDibujante = ? where ID = ?";
-		
-		if (nav.alertaModificar()) { //Llamada a alerta
 
-			comprobarCambio(sentenciaSQL);
+		if (nav.alertaModificar()) { // Llamada a alerta de modificacion
+
+			comprobarCambio(sentenciaSQL); // Llamada a funcion que permite comprobar el cambio realizado en el comic
 
 		} else { // Si se cancela el borra del comic, saltara el siguiente mensaje.
 			pantallaInformativa.setOpacity(1);
@@ -348,79 +355,65 @@ public class ModificarDatosController {
 
 	/**
 	 * Funcion que comprueba si existe el ID introducido
+	 *
 	 * @param ps
 	 * @return
 	 */
-	public void comprobarCambio(String sentenciaSQL)
-	{
-		
+	public void comprobarCambio(String sentenciaSQL) {
 		try {
 			PreparedStatement ps = null;
 			ps = conn.prepareStatement(sentenciaSQL);
-			if(chechID())
+			if (comprobarID()) // Comprueba si la ID introducida existe en la base de datos
 			{
 				comic = libreria.comicDatos(idComicMod.getText());
 				ps.setString(11, idComicMod.getText());
-				comicModificar(ps);
+				comicModificar(ps); // Llama a funcion que permite cambiar los datos del comic
 
-				if (ps.executeUpdate() == 1) { //Si se ha modificado correctamente, saltara el siguiente mensaje
+				if (ps.executeUpdate() == 1) { // Si se ha modificado correctamente, saltara el siguiente mensaje
 					pantallaInformativa.setOpacity(1);
 					pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 					pantallaInformativa.setText("Ha modificado correctamente: " + comicModicado.toString());
 				}
 			}
-		}
-		catch (SQLException ex) {
+		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
-			ex.printStackTrace();
 		}
 	}
 
 	/**
 	 * Comprueba que el ID introducido existe
+	 *
 	 * @return
 	 */
-	public boolean chechID()
-	{
+	public boolean comprobarID() {
 		String identificador = idComicMod.getText();
-		String sentenciaSQL = "select * from comicsbbdd where ID = " + identificador;
 
-		if (identificador.length() != 0) {
-
-			try {
-				Statement consultaID = conn.createStatement();
-				ResultSet rs = consultaID.executeQuery(sentenciaSQL);
-				
-				if(rs.next())
-				{
-					return true;
-				}
-				else
-				{
-					pantallaInformativa.setOpacity(1);
-					pantallaInformativa.setStyle("-fx-background-color: #F53636");
-					pantallaInformativa.setText("No existe el " + identificador + " en la base de datos.");
-					return false;
-				}
-				
-			} catch (SQLException e) {
-				nav.alertaException("No existe el " + identificador + " en la base de datos.");
+		if (identificador.length() != 0) { // Si has introducido ID a la hora de realizar la modificacion, permitira lo
+											// siguiente
+			if (libreria.chechID(idComicMod.getText())) {
+				return true;
+			} else // En caso contrario lanzara el siguiente mensaje en pantalla
+			{
+				pantallaInformativa.setOpacity(1);
+				pantallaInformativa.setStyle("-fx-background-color: #F53636");
+				pantallaInformativa.setText("No existe el " + identificador + " en la base de datos.");
+				return false;
 			}
-		}
-		else
-		{
+		} else {
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #F53636");
 			idComicMod.setStyle("-fx-background-color: #F53636");
 			idMod.setStyle("-fx-background-color: #F53636");
 			pantallaInformativa.setText("ERROR. No ha puesto ningun \nID en la busqueda.");
+			return false;
 		}
 
-		return false;
 	}
 
 	/**
-	 * Devuelve un objeto Comic con los nuevos datos de un comic. En caso de tener el espacio en blanco, el valor del parametro sera el que tenia originalmente.
+	 * Devuelve un objeto Comic con los nuevos datos de un comic. En caso de tener
+	 * el espacio en blanco, el valor del parametro sera el que tenia originalmente.
+	 *
 	 * @param ps
 	 * @return
 	 */
@@ -432,7 +425,7 @@ public class ModificarDatosController {
 		String datosModificados[] = camposComicModificar();
 
 		comicModicado.clear();
-		
+
 		try {
 			if (datosModificados[1].length() != 0) {
 				ps.setString(1, datosModificados[1]);
@@ -504,10 +497,11 @@ public class ModificarDatosController {
 				dibujante = comic.getDibujante();
 				ps.setString(10, dibujante);
 			}
-			
-			Comic comic = new Comic("",nombre,numero,variante,firma,editorial,formato,procedencia,fecha,guionista,dibujante,"");
+
+			Comic comic = new Comic("", nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+					guionista, dibujante, "");
 			comicModicado.add(comic);
-			
+
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
 		}
@@ -515,6 +509,7 @@ public class ModificarDatosController {
 
 	/**
 	 * Muestra datos por parametro
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -526,6 +521,7 @@ public class ModificarDatosController {
 
 	/**
 	 * Muestra toda la base de datos.
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -537,26 +533,35 @@ public class ModificarDatosController {
 	}
 
 	/**
-	 * Funcion que busca en el arrayList el o los comics que tengan coincidencia con los datos introducidos en el TextField
+	 * Funcion que busca en el arrayList el o los comics que tengan coincidencia con
+	 * los datos introducidos en el TextField
+	 *
 	 * @return
 	 */
 	public void listaPorParametro() {
-		String datosComic[] = camposComicActuales(); //Contiene los datos por parametro del comic a buscar
+		String datosComic[] = camposComicActuales(); // Contiene los datos por parametro del comic a buscar
 
 		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
 				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "");
 
-		tablaBBDD(libreriaParametro(comic)); //Funcion que muestra en la tabla el comic que coincida con los datos del objeto Comic creado, en caso de existir lo muestra.
+		tablaBBDD(libreriaParametro(comic)); // Funcion que muestra en la tabla el comic que coincida con los datos del
+												// objeto Comic creado, en caso de existir lo muestra.
 	}
 
 	/**
 	 * Muestra los comics que coincidan con los parametros introducidos
+	 *
 	 * @param comic
 	 * @return
 	 */
 	public List<Comic> libreriaParametro(Comic comic) {
 
-		List<Comic> listaComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic)); //Muestra en la pantalla de muestra de comics el comic o comics filtrados por parametro
+		List<Comic> listaComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic)); // Muestra en la
+																									// pantalla de
+																									// muestra de comics
+																									// el comic o comics
+																									// filtrados por
+																									// parametro
 
 		checkList(listaComic);
 
@@ -565,23 +570,28 @@ public class ModificarDatosController {
 
 	/**
 	 * Muestra todos los comics de la base de datos
+	 *
 	 * @return
 	 */
 	public List<Comic> libreriaCompleta() {
-		List<Comic> listaComic = FXCollections.observableArrayList(libreria.verLibreria()); //Muestra en la pantalla el total de comics que se encuentran en la base de datos.
+		List<Comic> listaComic = FXCollections.observableArrayList(libreria.verLibreria()); // Muestra en la pantalla el
+																							// total de comics que se
+																							// encuentran en la base de
+																							// datos.
 
-		checkList(listaComic); //Llamada a funcion para comprobar si existe algun dato en la lista.
+		checkList(listaComic); // Llamada a funcion para comprobar si existe algun dato en la lista.
 
 		return listaComic;
 	}
 
 	/**
 	 * Comprueba si la lista de comics contiene o no algun dato
+	 *
 	 * @param listaComic
 	 */
-	//Funcion que comprueba si existe algun dato relacionado con la busqueda por parametro del comic
-	private void checkList(List<Comic> listaComic)
-	{
+	// Funcion que comprueba si existe algun dato relacionado con la busqueda por
+	// parametro del comic
+	private void checkList(List<Comic> listaComic) {
 		if (listaComic.size() == 0) {
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #F53636");
@@ -590,7 +600,9 @@ public class ModificarDatosController {
 	}
 
 	/**
-	 * Obtiene los datos de los comics de la base de datos y los devuelve en el textView
+	 * Obtiene los datos de los comics de la base de datos y los devuelve en el
+	 * textView
+	 *
 	 * @param listaComic
 	 */
 	@SuppressWarnings("unchecked")
@@ -601,7 +613,7 @@ public class ModificarDatosController {
 	}
 
 	/**
-	 *  Permite dar valor a las celdas de la TableView
+	 * Permite dar valor a las celdas de la TableView
 	 */
 	private void nombreColumnas() {
 		ID.setCellValueFactory(new PropertyValueFactory<>("ID"));

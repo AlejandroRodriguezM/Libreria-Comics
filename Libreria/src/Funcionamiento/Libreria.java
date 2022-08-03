@@ -120,7 +120,9 @@ public class Libreria extends Comic {
 	}
 
 	/**
-	 * Funcion que segun los datos introducir mediante parametros, concatenara las siguientes cadenas de texto. Sirve para hacer busqueda en una base de datos
+	 * Funcion que segun los datos introducir mediante parametros, concatenara las
+	 * siguientes cadenas de texto. Sirve para hacer busqueda en una base de datos
+	 *
 	 * @param datos
 	 * @return
 	 */
@@ -180,26 +182,8 @@ public class Libreria extends Comic {
 	}
 
 	/**
-	 * Funcion que devuelve un comic cuya ID este como parametro de busqueda
-	 * @param id
-	 * @return
-	 */
-	public Comic comicDatos(String id) {
-		Comic comic = new Comic();
-
-		String sentenciaSQL = "select * from comicsbbdd where ID = " + id;
-
-		ResultSet rs;
-
-		rs = ConexionBBDD.getComic(sentenciaSQL);
-		
-		comic = datosIndividual(rs);
-
-		return comic;
-	}
-
-	/**
 	 * Devuelve una lista con todos los datos de los comics de la base de datos
+	 *
 	 * @param rs
 	 * @return
 	 */
@@ -236,6 +220,7 @@ public class Libreria extends Comic {
 
 	/**
 	 * Devuelve solamente 1 comics de la base de datos.
+	 *
 	 * @param rs
 	 * @return
 	 */
@@ -290,5 +275,57 @@ public class Libreria extends Comic {
 		} catch (SQLException e) {
 			nav.alertaException(e.toString());
 		}
+	}
+
+	/**
+	 * Funcion que devuelve un comic cuya ID este como parametro de busqueda
+	 *
+	 * @param id
+	 * @return
+	 */
+	public Comic comicDatos(String identificador) {
+		Comic comic = new Comic();
+
+		String sentenciaSQL = "select * from comicsbbdd where ID = " + identificador;
+
+		ResultSet rs;
+
+		rs = ConexionBBDD.getComic(sentenciaSQL);
+
+		comic = datosIndividual(rs);
+
+		return comic;
+	}
+
+	/**
+	 * Comprueba que el ID introducido existe
+	 *
+	 * @return
+	 */
+	public boolean chechID(String identificador) {
+		String sentenciaSQL = "select * from comicsbbdd where ID = " + identificador;
+
+		if (identificador.length() != 0) { // Si has introducido ID a la hora de realizar la modificacion, permitira lo
+											// siguiente
+
+			try {
+				Statement consultaID = conn.createStatement();
+				ResultSet rs = consultaID.executeQuery(sentenciaSQL); // Realiza la consulta en la base de datos con la
+																		// sentencia de seleccionar datos de un comic
+																		// segun su ID
+
+				if (rs.next()) // En caso de existir el dato, devolvera true
+				{
+					return true;
+				} else {
+					return false;
+				}
+
+			} catch (SQLException e) {
+				nav.alertaException("No existe el " + identificador + " en la base de datos.");
+			}
+		}
+
+		return false;
 	}
 }

@@ -204,7 +204,8 @@ public class EliminarDatosController {
 	//////////////////////////
 
 	/**
-	 *Almacena los datos introducidos en los TextField
+	 * Almacena los datos introducidos en los TextField
+	 *
 	 * @throws SQLException
 	 */
 	public void listaPorParametro() {
@@ -218,6 +219,7 @@ public class EliminarDatosController {
 
 	/**
 	 * Devuelve el comic buscado por parametros
+	 *
 	 * @param comic
 	 * @return
 	 */
@@ -235,6 +237,7 @@ public class EliminarDatosController {
 
 	/**
 	 * Devuelto una lista con todos los comics existentes en la bbdd
+	 *
 	 * @return
 	 * @throws SQLException
 	 */
@@ -251,7 +254,9 @@ public class EliminarDatosController {
 	}
 
 	/**
-	 * Obtiene los datos de los comics de la base de datos y los devuelve en el textView
+	 * Obtiene los datos de los comics de la base de datos y los devuelve en el
+	 * textView
+	 *
 	 * @param listaComic
 	 */
 	@SuppressWarnings("unchecked")
@@ -262,7 +267,8 @@ public class EliminarDatosController {
 	}
 
 	/**
-	 * Funcion que permite cambiar de estado el comic a "Vendido" y hace que no se muestre en la bbdd
+	 * Funcion que permite cambiar de estado el comic a "Vendido" y hace que no se
+	 * muestre en la bbdd
 	 */
 	public void deleteData() {
 		String id, sentenciaSQL;
@@ -271,7 +277,7 @@ public class EliminarDatosController {
 
 		id = idComic.getText();
 
-		Comic comic = libreria.comicDatos(id); //Llamada de metodo que contiene el comic que se desea eliminar
+		Comic comic = libreria.comicDatos(id); // Llamada de metodo que contiene el comic que se desea eliminar
 
 		PreparedStatement stmt;
 
@@ -306,7 +312,9 @@ public class EliminarDatosController {
 	}
 
 	/**
-	 * Funcion que devuelve un array que contiene los datos de los datos introducidos por parametro por TextField
+	 * Funcion que devuelve un array que contiene los datos de los datos
+	 * introducidos por parametro por TextField
+	 *
 	 * @return
 	 */
 	public String[] camposComics() {
