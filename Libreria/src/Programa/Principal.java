@@ -1,5 +1,7 @@
 package Programa;
 
+import Controladores.VentanaPrincipalController;
+
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC
  * con mySql Las ventanas graficas se realizan con JavaFX. El programa permite:
@@ -22,11 +24,16 @@ package Programa;
  * Twitter: @silverAlox
  */
 
+/**
+ * 
+ * @author mrmis
+ *
+ */
 public class Principal {
 
 	public static void main(String[] args) {
 
-		Programa.main(args);
+		VentanaPrincipalController.main(args);
 
 	}
 

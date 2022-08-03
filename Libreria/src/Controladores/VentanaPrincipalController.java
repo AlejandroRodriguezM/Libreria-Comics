@@ -1,4 +1,4 @@
-package Programa;
+package Controladores;
 
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
@@ -34,7 +34,11 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-public class Programa extends Application {
+/**
+ * Esta clase es donde se ejecuta la ventana principal del programa.
+ * @author Alejandro Rodriguez
+ */
+public class VentanaPrincipalController extends Application {
 
 	private NavegacionVentanas nav = new NavegacionVentanas();
 

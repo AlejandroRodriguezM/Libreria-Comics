@@ -43,6 +43,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+/**
+ * Esta clase sirve para acceder a la base de datos y poder realizar diferentes funciones.
+ * @author Alejandro Rodriguez
+ */
 public class AccesoBBDDController {
 
 	@FXML

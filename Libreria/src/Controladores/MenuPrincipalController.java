@@ -47,6 +47,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+/**
+ * Esta clase sirve viajar a las diferentes ventanas del programa, asi como realizar diferentes diferentes funciones.
+ * @author Alejandro Rodriguez
+ */
 public class MenuPrincipalController {
 
 	@FXML

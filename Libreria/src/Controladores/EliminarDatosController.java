@@ -21,6 +21,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
+/**
+ * Esta clase sirve para eliminar datos. No elimna los datos, realiza la funcion de cambiar el dato de "estado" de "En posesion" a "Vendido"
+ * @author Alejandro Rodriguez
+ */
 public class EliminarDatosController {
 
 	@FXML

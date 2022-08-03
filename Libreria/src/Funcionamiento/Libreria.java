@@ -31,6 +31,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Esta clase sirve para realizar las diferentes operaciones en la base de datos que tenga que ver con la libreria de comics
+ * @author Alejandro Rodriguez
+ */
 public class Libreria extends Comic {
 
 	public static List<Comic> listaComics = new ArrayList<>();

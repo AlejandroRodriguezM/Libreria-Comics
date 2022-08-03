@@ -33,6 +33,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
+/**
+ * Esta clase sirve para visualizar de forma aleatoria un comic de la base de datos para poder leer
+ * @author Alejandro Rodriguez
+ */
 public class RecomendacionesController {
 
 	@FXML

@@ -39,6 +39,10 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+/**
+ * Esta clase sirve para crear una base de datos MySql
+ * @author Alejandro Rodriguez
+ */
 public class CrearBBDDController {
 
 	@FXML

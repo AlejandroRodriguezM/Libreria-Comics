@@ -35,7 +35,11 @@ import java.util.Arrays;
 
 import javafx.stage.FileChooser;
 
-public class BBDD extends Excel {
+/**
+ * Esta clase sirve para realizar diferentes operaciones que tengan que ver con la base de datos.
+ * @author Alejandro Rodriguez
+ */
+public class BBDD {
 
 	private Libreria libreria = new Libreria();
 	private Connection conn = ConexionBBDD.conexion();
@@ -249,7 +253,7 @@ public class BBDD extends Excel {
 	 *
 	 * @return
 	 */
-	public Statement declaracionSQL() {
+	private Statement declaracionSQL() {
 		Statement st;
 		try {
 			st = conn.createStatement();

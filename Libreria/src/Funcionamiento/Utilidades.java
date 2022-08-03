@@ -27,6 +27,10 @@ import java.io.IOException;
 
 import java.util.Locale;
 
+/**
+ * Esta clase sirve para realizar diferentes funciones realizanas con la comprobacion del sistema operativo que ejecuta este programa, al igual que comprobar cual es tu navegador principal de internet 
+ * @author Alejandro Rodriguez
+ */
 public class Utilidades {
 
 	private static NavegacionVentanas nav = new NavegacionVentanas();

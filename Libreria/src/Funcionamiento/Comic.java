@@ -25,6 +25,10 @@ package Funcionamiento;
 
 import java.util.Random;
 
+/**
+ * Esta clase objeto sirve para dar forma al comic que estara dentro de la base de datos.
+ * @author Alejandro Rodriguez
+ */
 public class Comic {
 
 	protected String ID;
