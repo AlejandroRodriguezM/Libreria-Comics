@@ -25,7 +25,6 @@ package Controladores;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 
 import Funcionamiento.BBDD;
@@ -50,7 +49,7 @@ import javafx.stage.Stage;
 /**
  * Esta clase sirve viajar a las diferentes ventanas del programa, asi como
  * realizar diferentes diferentes funciones.
- * 
+ *
  * @author Alejandro Rodriguez
  */
 public class MenuPrincipalController {
@@ -138,6 +137,9 @@ public class MenuPrincipalController {
 
 	@FXML
 	private TextField numeroComic;
+
+	@FXML
+	private TextField busquedaGeneral;
 
 	@FXML
 	private TableColumn<Comic, String> dibujante;
@@ -564,7 +566,6 @@ public class MenuPrincipalController {
 
 	/**
 	 *
-	 * @throws SQLException
 	 */
 	public void listaPorParametro() {
 		String datosComic[] = camposComic();
@@ -572,7 +573,7 @@ public class MenuPrincipalController {
 		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
 				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "");
 
-		tablaBBDD(libreriaParametro(comic));
+		tablaBBDD(busquedaParametro(comic));
 	}
 
 	/**
@@ -582,15 +583,23 @@ public class MenuPrincipalController {
 	 * @param comic
 	 * @return
 	 */
-	public List<Comic> libreriaParametro(Comic comic) {
-		List<Comic> listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
+	public List<Comic> busquedaParametro(Comic comic) {
 
-		if (listComic.size() == 0) {
-			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("ERROR. No hay ningun dato escrito para poder realizar la busqueda");
+		List<Comic> listComic;
+
+		if (busquedaGeneral.getText().length() != 0) {
+			listComic = FXCollections.observableArrayList(libreria.verBusquedaGeneral(busquedaGeneral.getText()));
+			busquedaGeneral.setText(null);
+		} else {
+			listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
+
+			if (listComic.size() == 0) {
+				prontInfo.setStyle("-fx-background-color: #F53636");
+				prontInfo.setText("ERROR. No hay ningun dato escrito para poder realizar la busqueda");
+			}
 		}
-		return listComic;
 
+		return listComic;
 	}
 
 	/**

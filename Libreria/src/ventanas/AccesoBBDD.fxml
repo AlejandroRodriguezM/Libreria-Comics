@@ -77,14 +77,14 @@
       <TextField fx:id="usuario" layoutX="76.0" layoutY="254.0" />
       <PasswordField fx:id="pass" layoutX="76.0" layoutY="309.0" />
       <Button fx:id="botonEnviar" layoutX="30.0" layoutY="483.0" mnemonicParsing="false" onAction="#enviarDatos" prefHeight="54.0" prefWidth="118.0" text="Conectar bbdd" />
-      <Button fx:id="botonAccesobbdd" layoutX="30.0" layoutY="546.0" mnemonicParsing="false" onAction="#entrarMenu" prefHeight="54.0" prefWidth="118.0" text="Entrar al menu" />
+      <Button fx:id="botonAccesobbdd" layoutX="30.0" layoutY="545.0" mnemonicParsing="false" onAction="#entrarMenu" prefHeight="54.0" prefWidth="118.0" text="Entrar al menu" />
       <Button fx:id="botonLimpiar" layoutX="29.0" layoutY="669.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="54.0" prefWidth="118.0" text="Limpiar" />
       <Button fx:id="botonSalir" layoutX="30.0" layoutY="734.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="54.0" prefWidth="118.0" text="Salir" />
       <Button fx:id="botonCrearBBDD" layoutX="163.0" layoutY="483.0" mnemonicParsing="false" onAction="#crearBBDD" prefHeight="54.0" prefWidth="118.0" text="Crear BBDD" />
-      <Button fx:id="botonCerrar" layoutX="163.0" layoutY="546.0" mnemonicParsing="false" onAction="#cerrarbbdd" prefHeight="54.0" prefWidth="118.0" text="Cerrar BBDD" />
+      <Button fx:id="botonCerrar" layoutX="163.0" layoutY="545.0" mnemonicParsing="false" onAction="#cerrarbbdd" prefHeight="54.0" prefWidth="118.0" text="Cerrar BBDD" />
       <Button fx:id="botonVerDDBB" layoutX="166.0" layoutY="669.0" mnemonicParsing="false" onAction="#verDBDisponibles" prefHeight="54.0" prefWidth="118.0" text="Ver bbdd" />
       <Button fx:id="botonInformacion" layoutX="166.0" layoutY="734.0" mnemonicParsing="false" onAction="#verInfo" prefHeight="54.0" prefWidth="118.0" text="Información" />
-      <Button fx:id="numeroVersion" layoutX="34.0" layoutY="797.0" mnemonicParsing="false" onAction="#accesoGitHub" text="Version Final" />
+      <Button fx:id="numeroVersion" layoutX="29.0" layoutY="797.0" mnemonicParsing="false" onAction="#accesoGitHub" text="Version Final" />
       <Button fx:id="botonTwitter" layoutX="184.0" layoutY="797.0" mnemonicParsing="false" onAction="#accesoTwitter" text="Por @silverAlox" />
       <Label layoutX="54.0" layoutY="112.0" style="-fx-background-color: grey;" text="Nombre de la base de datos">
          <font>

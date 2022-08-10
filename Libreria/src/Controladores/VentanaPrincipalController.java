@@ -36,7 +36,7 @@ import javafx.stage.Stage;
 
 /**
  * Esta clase es donde se ejecuta la ventana principal del programa.
- * 
+ *
  * @author Alejandro Rodriguez
  */
 public class VentanaPrincipalController extends Application {

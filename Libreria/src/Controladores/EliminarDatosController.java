@@ -24,7 +24,7 @@ import javafx.stage.Stage;
 /**
  * Esta clase sirve para eliminar datos. No elimna los datos, realiza la funcion
  * de cambiar el dato de "estado" de "En posesion" a "Vendido"
- * 
+ *
  * @author Alejandro Rodriguez
  */
 public class EliminarDatosController {
@@ -79,6 +79,9 @@ public class EliminarDatosController {
 
 	@FXML
 	private TextField nombreDibujante;
+
+	@FXML
+	private TextField busquedaGeneral;
 
 	@FXML
 	private TextArea pantallaInformativa;
@@ -158,7 +161,6 @@ public class EliminarDatosController {
 		// que se deje de mostrar en el programa, pero este
 		// sigue estando dentro de la bbdd
 		deleteData();
-		libreria.ordenarBBDD();
 		libreria.reiniciarBBDD();
 	}
 
@@ -230,13 +232,20 @@ public class EliminarDatosController {
 	 * @return
 	 */
 	public List<Comic> busquedaParametro(Comic comic) {
-		List<Comic> listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
+		List<Comic> listComic;
 
-		if (listComic.size() == 0) {
-			pantallaInformativa.setOpacity(1);
-			pantallaInformativa.setStyle("-fx-background-color: #F53636");
-			pantallaInformativa.setText("ERROR. No hay ningun dato en la base de datos");
+		if (busquedaGeneral.getText().length() != 0) {
+			listComic = FXCollections.observableArrayList(libreria.verBusquedaGeneral(busquedaGeneral.getText()));
+			busquedaGeneral.setText(null);
+		} else {
+			listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
+			if (listComic.size() == 0) {
+				pantallaInformativa.setOpacity(1);
+				pantallaInformativa.setStyle("-fx-background-color: #F53636");
+				pantallaInformativa.setText("ERROR. No hay ningun dato en la base de datos");
+			}
 		}
+
 		return listComic;
 
 	}

@@ -45,7 +45,7 @@ import javafx.stage.Stage;
 
 /**
  * Esta clase sirve para cambiar entre ventanas graficas
- * 
+ *
  * @author Alejandro Rodriguez
  */
 public class NavegacionVentanas {

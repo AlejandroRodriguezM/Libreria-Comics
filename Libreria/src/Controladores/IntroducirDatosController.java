@@ -46,7 +46,7 @@ import javafx.stage.Stage;
 
 /**
  * Esta clase sirve para introducir datos a la base de datos
- * 
+ *
  * @author Alejandro Rodriguez
  */
 public class IntroducirDatosController {
@@ -134,6 +134,9 @@ public class IntroducirDatosController {
 
 	@FXML
 	private TextField dibujanteAni;
+
+	@FXML
+	private TextField busquedaGeneral;
 
 	@FXML
 	private Label idMod;
@@ -248,7 +251,6 @@ public class IntroducirDatosController {
 	public void agregarDatos(ActionEvent event) {
 
 		introducirDatos();
-		libreria.ordenarBBDD();
 		libreria.reiniciarBBDD();
 	}
 
@@ -354,13 +356,20 @@ public class IntroducirDatosController {
 	 * @return
 	 */
 	public List<Comic> busquedaParametro(Comic comic) {
-		List<Comic> listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
+		List<Comic> listComic;
 
-		if (listComic.size() == 0) {
-			pantallaInformativa.setOpacity(1);
-			pantallaInformativa.setStyle("-fx-background-color: #F53636");
-			pantallaInformativa.setText("ERROR. No hay ningun dato en la base de datos");
+		if (busquedaGeneral.getText().length() != 0) {
+			listComic = FXCollections.observableArrayList(libreria.verBusquedaGeneral(busquedaGeneral.getText()));
+			busquedaGeneral.setText(null);
+		} else {
+			listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
+			if (listComic.size() == 0) {
+				pantallaInformativa.setOpacity(1);
+				pantallaInformativa.setStyle("-fx-background-color: #F53636");
+				pantallaInformativa.setText("ERROR. No hay ningun dato en la base de datos");
+			}
 		}
+
 		return listComic;
 	}
 

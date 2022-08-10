@@ -38,7 +38,7 @@ import javafx.stage.FileChooser;
 /**
  * Esta clase sirve para realizar diferentes operaciones que tengan que ver con
  * la base de datos.
- * 
+ *
  * @author Alejandro Rodriguez
  */
 public class BBDD {

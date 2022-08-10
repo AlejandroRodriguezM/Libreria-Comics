@@ -47,7 +47,7 @@ import javafx.stage.Stage;
 
 /**
  * Esta clase sirve para modificar datos de forma individual de cada comic
- * 
+ *
  * @author Alejandro Rodriguez
  */
 public class ModificarDatosController {
@@ -137,6 +137,9 @@ public class ModificarDatosController {
 
 	@FXML
 	private TextField numeroComicMod;
+
+	@FXML
+	private TextField busquedaGeneral;
 
 	@FXML
 	private TextArea pantallaInformativa;
@@ -549,7 +552,7 @@ public class ModificarDatosController {
 		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
 				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "");
 
-		tablaBBDD(libreriaParametro(comic)); // Funcion que muestra en la tabla el comic que coincida con los datos del
+		tablaBBDD(busquedaParametro(comic)); // Funcion que muestra en la tabla el comic que coincida con los datos del
 												// objeto Comic creado, en caso de existir lo muestra.
 	}
 
@@ -559,16 +562,22 @@ public class ModificarDatosController {
 	 * @param comic
 	 * @return
 	 */
-	public List<Comic> libreriaParametro(Comic comic) {
+	public List<Comic> busquedaParametro(Comic comic) {
 
-		List<Comic> listaComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic)); // Muestra en la
-																									// pantalla de
-																									// muestra de comics
-																									// el comic o comics
-																									// filtrados por
-																									// parametro
+		List<Comic> listaComic;
 
-		checkList(listaComic);
+		if (busquedaGeneral.getText().length() != 0) {
+			listaComic = FXCollections.observableArrayList(libreria.verBusquedaGeneral(busquedaGeneral.getText()));
+			busquedaGeneral.setText(null);
+		} else {
+			listaComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic)); // Muestra en la pantalla el
+			// total de comics que se
+			// encuentran en la base de
+			// datos segun los parametros introducidos
+
+			comprobarLista(listaComic);
+
+		}
 
 		return listaComic;
 	}
@@ -579,25 +588,24 @@ public class ModificarDatosController {
 	 * @return
 	 */
 	public List<Comic> libreriaCompleta() {
+
 		List<Comic> listaComic = FXCollections.observableArrayList(libreria.verLibreria()); // Muestra en la pantalla el
 																							// total de comics que se
 																							// encuentran en la base de
 																							// datos.
-
-		checkList(listaComic); // Llamada a funcion para comprobar si existe algun dato en la lista.
+		comprobarLista(listaComic);
 
 		return listaComic;
+
 	}
 
 	/**
-	 * Comprueba si la lista de comics contiene o no algun dato
 	 *
 	 * @param listaComic
 	 */
-	// Funcion que comprueba si existe algun dato relacionado con la busqueda por
-	// parametro del comic
-	private void checkList(List<Comic> listaComic) {
-		if (listaComic.size() == 0) {
+	// Llamada a funcion para comprobar si existe algun dato en la lista.
+	public void comprobarLista(List<Comic> listaComic) {
+		if (libreria.checkList(listaComic)) {
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #F53636");
 			pantallaInformativa.setText("ERROR. No hay ningun dato en la base de datos");

@@ -25,7 +25,7 @@ import Controladores.VentanaPrincipalController;
  */
 
 /**
- * 
+ *
  * @author mrmis
  *
  */

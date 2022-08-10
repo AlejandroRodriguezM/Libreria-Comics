@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * Esta clase sirve para realizar las diferentes operaciones en la base de datos
  * que tenga que ver con la libreria de comics
- * 
+ *
  * @author Alejandro Rodriguez
  */
 public class Libreria extends Comic {
@@ -58,7 +58,6 @@ public class Libreria extends Comic {
 
 		Comic comic[] = null;
 
-		ordenarBBDD();
 		reiniciarBBDD();
 
 		ResultSet rs;
@@ -83,7 +82,6 @@ public class Libreria extends Comic {
 
 		Comic comic[] = null;
 
-		ordenarBBDD();
 		reiniciarBBDD();
 
 		ResultSet rs;
@@ -103,7 +101,6 @@ public class Libreria extends Comic {
 	public Comic[] filtadroBBDD(Comic datos) {
 
 		reiniciarBBDD();
-		ordenarBBDD();
 
 		Comic comic[] = null;
 
@@ -188,6 +185,142 @@ public class Libreria extends Comic {
 	}
 
 	/**
+	 * Funcion que permite hacer una busqueda general mediante 1 sola palabra, hace
+	 * una busqueda en ciertos identificadores de la tabla.
+	 *
+	 * @param sentencia
+	 * @return
+	 */
+	public Comic[] verBusquedaGeneral(String busquedaGeneral) {
+		Comic comic[] = null;
+
+		reiniciarBBDD();
+
+		String sql1 = datosGeneralesNombre(busquedaGeneral);
+		String sql2 = datosGeneralesVariante(busquedaGeneral);
+		String sql3 = datosGeneralesFirma(busquedaGeneral);
+		String sql4 = datosGeneralesGuionista(busquedaGeneral);
+		String sql5 = datosGeneralesDibujante(busquedaGeneral);
+		try {
+			PreparedStatement ps1 = conn.prepareStatement(sql1);
+			PreparedStatement ps2 = conn.prepareStatement(sql2);
+			PreparedStatement ps3 = conn.prepareStatement(sql3);
+			PreparedStatement ps4 = conn.prepareStatement(sql4);
+			PreparedStatement ps5 = conn.prepareStatement(sql5);
+
+			ResultSet rs1 = ps1.executeQuery();
+			ResultSet rs2 = ps2.executeQuery();
+			ResultSet rs3 = ps3.executeQuery();
+			ResultSet rs4 = ps4.executeQuery();
+			ResultSet rs5 = ps5.executeQuery();
+
+			if (rs1.next()) {
+				filtroComics = listaDatos(rs1);
+			}
+			if (rs2.next()) {
+				filtroComics = listaDatos(rs2);
+			}
+			if (rs3.next()) {
+				filtroComics = listaDatos(rs3);
+			}
+			if (rs4.next()) {
+				filtroComics = listaDatos(rs4);
+			}
+			if (rs5.next()) {
+				filtroComics = listaDatos(rs5);
+			}
+
+		} catch (SQLException ex) {
+			nav.alertaException(ex.toString());
+		}
+
+		comic = new Comic[filtroComics.size()];
+		comic = filtroComics.toArray(comic);
+		return comic;
+
+	}
+
+	/**
+	 * Funcion que hace una busqueda de un identificador en concreto de la tabla
+	 *
+	 * @param datos
+	 * @return
+	 */
+	public String datosGeneralesNombre(String busquedaGeneral) {
+		String connector = " AND ";
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT * FROM comicsbbdd where estado = 'En posesion'");
+
+		sql.append(connector).append("nomComic like'%" + busquedaGeneral + "%'");
+
+		return sql.toString();
+	}
+
+	/**
+	 * Funcion que hace una busqueda de un identificador en concreto de la tabla
+	 *
+	 * @param datos
+	 * @return
+	 */
+	public String datosGeneralesVariante(String busquedaGeneral) {
+		String connector = " AND ";
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT * FROM comicsbbdd where estado = 'En posesion'");
+
+		sql.append(connector).append("nomVariante like'%" + busquedaGeneral + "%'");
+
+		return sql.toString();
+	}
+
+	/**
+	 * Funcion que hace una busqueda de un identificador en concreto de la tabla
+	 *
+	 * @param datos
+	 * @return
+	 */
+	public String datosGeneralesFirma(String busquedaGeneral) {
+		String connector = " AND ";
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT * FROM comicsbbdd where estado = 'En posesion'");
+
+		sql.append(connector).append("firma like'%" + busquedaGeneral + "%'");
+
+		return sql.toString();
+	}
+
+	/**
+	 * Funcion que hace una busqueda de un identificador en concreto de la tabla
+	 *
+	 * @param datos
+	 * @return
+	 */
+	public String datosGeneralesGuionista(String busquedaGeneral) {
+		String connector = " AND ";
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT * FROM comicsbbdd where estado = 'En posesion'");
+
+		sql.append(connector).append("nomGuionista like'%" + busquedaGeneral + "%'");
+
+		return sql.toString();
+	}
+
+	/**
+	 * Funcion que hace una busqueda de un identificador en concreto de la tabla
+	 *
+	 * @param datos
+	 * @return
+	 */
+	public String datosGeneralesDibujante(String busquedaGeneral) {
+		String connector = " AND ";
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT * FROM comicsbbdd where estado = 'En posesion'");
+
+		sql.append(connector).append("nomDibujante like'%" + busquedaGeneral + "%'");
+
+		return sql.toString();
+	}
+
+	/**
 	 * Devuelve una lista con todos los datos de los comics de la base de datos
 	 *
 	 * @param rs
@@ -220,6 +353,7 @@ public class Libreria extends Comic {
 			}
 		} catch (SQLException e) {
 			nav.alertaException("Datos introducidos incorrectos.");
+			e.printStackTrace();
 		}
 		return listaComics;
 	}
@@ -262,25 +396,25 @@ public class Libreria extends Comic {
 	}
 
 	/**
+	 * Comprueba si la lista de comics contiene o no algun dato
+	 *
+	 * @param listaComic
+	 */
+	// Funcion que comprueba si existe algun dato relacionado con la busqueda por
+	// parametro del comic
+	public boolean checkList(List<Comic> listaComic) {
+		if (listaComic.size() == 0) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Permite reiniciar la pantalla donde se muestran los datos
 	 */
 	public void reiniciarBBDD() {
 		filtroComics.clear();
 		listaPosesion.clear();
-	}
-
-	/**
-	 * Ordena el contenido de la base de datos por nombre del comic.
-	 */
-	public void ordenarBBDD() {
-		String sql = "ALTER TABLE comicsbbdd ORDER BY nomComic;";
-		Statement st;
-		try {
-			st = conn.createStatement();
-			st.execute(sql);
-		} catch (SQLException e) {
-			nav.alertaException(e.toString());
-		}
 	}
 
 	/**
@@ -312,13 +446,13 @@ public class Libreria extends Comic {
 		String sentenciaSQL = "select * from comicsbbdd where ID = " + identificador;
 
 		if (identificador.length() != 0) { // Si has introducido ID a la hora de realizar la modificacion, permitira lo
-											// siguiente
+			// siguiente
 
 			try {
 				Statement consultaID = conn.createStatement();
 				ResultSet rs = consultaID.executeQuery(sentenciaSQL); // Realiza la consulta en la base de datos con la
-																		// sentencia de seleccionar datos de un comic
-																		// segun su ID
+				// sentencia de seleccionar datos de un comic
+				// segun su ID
 
 				if (rs.next()) // En caso de existir el dato, devolvera true
 				{

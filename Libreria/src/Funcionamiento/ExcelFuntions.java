@@ -46,7 +46,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 /**
  * Esta clase sirve para crear tanto los ficheros Excel como los ficheros CSV,
  * la exportacion de estos o la importacion
- * 
+ *
  * @author Alejandro Rodriguez
  */
 public class ExcelFuntions {
@@ -67,7 +67,7 @@ public class ExcelFuntions {
 		String sql = "INSERT INTO comicsbbdd(ID,nomComic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,anioPubli,nomGuionista,nomDibujante,estado)"
 				+ " values (?,?,?,?,?,?,?,?,?,?,?,?)";
 
-		if (lecturaCSV(fichero, sql)) // Llamada a funcion, en caso de devolver true, devolvera un true
+		if (comprobarCSV(fichero, sql)) // Llamada a funcion, en caso de devolver true, devolvera un true
 		{
 			return true;
 		} else {
@@ -216,18 +216,45 @@ public class ExcelFuntions {
 	}
 
 	/**
-	 * Funcion que permite la lectura de un fichero CSV
+	 * Funcion que permite comprobar el estado del fichero CSV, si es apto, permita
+	 * importarlo.
 	 *
 	 * @param fichero
 	 * @param sql
 	 * @return
 	 */
-	public boolean lecturaCSV(File fichero, String sql) {
+	public boolean comprobarCSV(File fichero, String sql) {
 
+		try {
+			BufferedReader lineReader = new BufferedReader(new FileReader(fichero));
+			lecturaCSV(sql, lineReader);
+
+			return true;
+		} catch (Exception e) {
+			try {
+				PreparedStatement statement1 = conn.prepareStatement("delete from comicsbbdd");
+				PreparedStatement statement2 = conn.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");
+				statement1.close();
+				statement2.close();
+				nav.alertaException("El formato del fichero .csv no es correcto: " + e.toString());
+			} catch (SQLException e1) {
+				nav.alertaException(e1.toString());
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Funcion que permite leer un fichero CSV
+	 *
+	 * @param sql
+	 * @param lineReader
+	 */
+	public void lecturaCSV(String sql, BufferedReader lineReader) {
 		try {
 			PreparedStatement statement = conn.prepareStatement(sql);
 			int batchSize = 20;
-			BufferedReader lineReader = new BufferedReader(new FileReader(fichero));
+
 			String lineText = null;
 
 			int count = 0;
@@ -236,6 +263,7 @@ public class ExcelFuntions {
 
 			// Se leeran los datos hasta que no existan mas datos
 			while ((lineText = lineReader.readLine()) != null) {
+
 				String[] data = lineText.split(";");
 				String id = Integer.toString(j);
 				String nombre = data[1];
@@ -272,23 +300,10 @@ public class ExcelFuntions {
 
 			lineReader.close();
 			statement.executeBatch();
-			return true;
-
-		} catch (FileNotFoundException e) {
-			nav.alertaException("Fichero no encontrado: " + e.toString());
 		} catch (SQLException e) {
-			try {
-				PreparedStatement statement1 = conn.prepareStatement("delete from comicsbbdd");
-				PreparedStatement statement2 = conn.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");
-				statement1.close();
-				statement2.close();
-				nav.alertaException("El formato del fichero .csv no es correcto: " + e.toString());
-			} catch (SQLException e1) {
-				nav.alertaException(e1.toString());
-			}
+			nav.alertaException(e.toString());
 		} catch (IOException e) {
-			nav.alertaException("El formato del fichero .csv no es correcto: " + e.toString());
+			nav.alertaException(e.toString());
 		}
-		return false;
 	}
 }
