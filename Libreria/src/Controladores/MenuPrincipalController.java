@@ -589,7 +589,7 @@ public class MenuPrincipalController {
 
 		if (busquedaGeneral.getText().length() != 0) {
 			listComic = FXCollections.observableArrayList(libreria.verBusquedaGeneral(busquedaGeneral.getText()));
-			busquedaGeneral.setText(null);
+			busquedaGeneral.setText("");
 		} else {
 			listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
 

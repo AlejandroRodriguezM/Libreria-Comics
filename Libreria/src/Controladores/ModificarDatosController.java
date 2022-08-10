@@ -568,7 +568,7 @@ public class ModificarDatosController {
 
 		if (busquedaGeneral.getText().length() != 0) {
 			listaComic = FXCollections.observableArrayList(libreria.verBusquedaGeneral(busquedaGeneral.getText()));
-			busquedaGeneral.setText(null);
+			busquedaGeneral.setText("");
 		} else {
 			listaComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic)); // Muestra en la pantalla el
 			// total de comics que se

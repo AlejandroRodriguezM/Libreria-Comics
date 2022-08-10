@@ -105,6 +105,8 @@ public class Libreria extends Comic {
 		Comic comic[] = null;
 
 		String sql = datosConcatenados(datos);
+		
+		filtroComics.clear();
 
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
@@ -120,6 +122,64 @@ public class Libreria extends Comic {
 		comic = new Comic[filtroComics.size()];
 		comic = filtroComics.toArray(comic);
 		return comic;
+	}
+	
+	/**
+	 * Funcion que permite hacer una busqueda general mediante 1 sola palabra, hace
+	 * una busqueda en ciertos identificadores de la tabla.
+	 *
+	 * @param sentencia
+	 * @return
+	 */
+	public Comic[] verBusquedaGeneral(String busquedaGeneral) {
+		Comic comic[] = null;
+
+		reiniciarBBDD();
+
+		filtroComics.clear();
+		
+		String sql1 = datosGeneralesNombre(busquedaGeneral);
+		String sql2 = datosGeneralesVariante(busquedaGeneral);
+		String sql3 = datosGeneralesFirma(busquedaGeneral);
+		String sql4 = datosGeneralesGuionista(busquedaGeneral);
+		String sql5 = datosGeneralesDibujante(busquedaGeneral);
+		try {
+			PreparedStatement ps1 = conn.prepareStatement(sql1);
+			PreparedStatement ps2 = conn.prepareStatement(sql2);
+			PreparedStatement ps3 = conn.prepareStatement(sql3);
+			PreparedStatement ps4 = conn.prepareStatement(sql4);
+			PreparedStatement ps5 = conn.prepareStatement(sql5);
+
+			ResultSet rs1 = ps1.executeQuery();
+			ResultSet rs2 = ps2.executeQuery();
+			ResultSet rs3 = ps3.executeQuery();
+			ResultSet rs4 = ps4.executeQuery();
+			ResultSet rs5 = ps5.executeQuery();
+
+			if (rs1.next()) {
+				filtroComics = listaDatos(rs1);
+			}
+			if (rs2.next()) {
+				filtroComics = listaDatos(rs2);
+			}
+			if (rs3.next()) {
+				filtroComics = listaDatos(rs3);
+			}
+			if (rs4.next()) {
+				filtroComics = listaDatos(rs4);
+			}
+			if (rs5.next()) {
+				filtroComics = listaDatos(rs5);
+			}
+
+		} catch (SQLException ex) {
+			nav.alertaException(ex.toString());
+		}
+
+		comic = new Comic[filtroComics.size()];
+		comic = filtroComics.toArray(comic);
+		return comic;
+
 	}
 
 	/**
@@ -184,61 +244,7 @@ public class Libreria extends Comic {
 		return sql.toString();
 	}
 
-	/**
-	 * Funcion que permite hacer una busqueda general mediante 1 sola palabra, hace
-	 * una busqueda en ciertos identificadores de la tabla.
-	 *
-	 * @param sentencia
-	 * @return
-	 */
-	public Comic[] verBusquedaGeneral(String busquedaGeneral) {
-		Comic comic[] = null;
-
-		reiniciarBBDD();
-
-		String sql1 = datosGeneralesNombre(busquedaGeneral);
-		String sql2 = datosGeneralesVariante(busquedaGeneral);
-		String sql3 = datosGeneralesFirma(busquedaGeneral);
-		String sql4 = datosGeneralesGuionista(busquedaGeneral);
-		String sql5 = datosGeneralesDibujante(busquedaGeneral);
-		try {
-			PreparedStatement ps1 = conn.prepareStatement(sql1);
-			PreparedStatement ps2 = conn.prepareStatement(sql2);
-			PreparedStatement ps3 = conn.prepareStatement(sql3);
-			PreparedStatement ps4 = conn.prepareStatement(sql4);
-			PreparedStatement ps5 = conn.prepareStatement(sql5);
-
-			ResultSet rs1 = ps1.executeQuery();
-			ResultSet rs2 = ps2.executeQuery();
-			ResultSet rs3 = ps3.executeQuery();
-			ResultSet rs4 = ps4.executeQuery();
-			ResultSet rs5 = ps5.executeQuery();
-
-			if (rs1.next()) {
-				filtroComics = listaDatos(rs1);
-			}
-			if (rs2.next()) {
-				filtroComics = listaDatos(rs2);
-			}
-			if (rs3.next()) {
-				filtroComics = listaDatos(rs3);
-			}
-			if (rs4.next()) {
-				filtroComics = listaDatos(rs4);
-			}
-			if (rs5.next()) {
-				filtroComics = listaDatos(rs5);
-			}
-
-		} catch (SQLException ex) {
-			nav.alertaException(ex.toString());
-		}
-
-		comic = new Comic[filtroComics.size()];
-		comic = filtroComics.toArray(comic);
-		return comic;
-
-	}
+	
 
 	/**
 	 * Funcion que hace una busqueda de un identificador en concreto de la tabla
