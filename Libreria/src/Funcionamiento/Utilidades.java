@@ -1,6 +1,9 @@
 package Funcionamiento;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
@@ -26,6 +29,8 @@ import java.io.IOException;
  */
 
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Esta clase sirve para realizar diferentes funciones realizanas con la
@@ -35,6 +40,8 @@ import java.util.Locale;
  * @author Alejandro Rodriguez
  */
 public class Utilidades {
+
+	public static List <Comic> listaLimpia = new ArrayList<Comic>();
 
 	private static NavegacionVentanas nav = new NavegacionVentanas();
 
@@ -99,7 +106,7 @@ public class Utilidades {
 		try {
 			cmd = Utilidades.navegador(url);
 			rt.exec(new String[] { "sh", "-c", cmd.toString() }); // Ejecuta el bucle y permite abrir el navegador que
-																	// tengas principal
+			// tengas principal
 		} catch (IOException e) {
 			nav.alertaException("Error: No funciona el boton \n" + e.toString());
 		}
@@ -120,4 +127,32 @@ public class Utilidades {
 		}
 	}
 
+	public static List<Comic> listaArreglada(List<Comic>listaComics) {
+
+		//Forma número 1 (Uso de Maps).
+		Map<String, Comic> mapComics = new HashMap<String, Comic>(listaComics.size());
+
+		//Aquí está la magia
+		for (Comic c : listaComics) {
+			mapComics.put(c.getID(), c);
+		}
+
+		//Agrego cada elemento del map a una nueva lista y muestro cada elemento.
+
+		for(Entry<String, Comic> c : mapComics.entrySet()) {
+
+			listaLimpia.add(c.getValue());
+
+			//			
+			//			Collections.sort(listaLimpia, new Comparator<Comic>() {
+			//			    @Override
+			//				public int compare(Comic o1, Comic o2) {
+			//			        return o1.getID().compareTo(o2.getID());
+			//			    }
+			//			});
+			//		}
+			
+		}
+		return listaLimpia;
+	}
 }

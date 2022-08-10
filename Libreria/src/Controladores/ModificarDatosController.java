@@ -537,7 +537,6 @@ public class ModificarDatosController {
 
 		nombreColumnas();
 		tablaBBDD(libreriaCompleta());
-
 	}
 
 	/**

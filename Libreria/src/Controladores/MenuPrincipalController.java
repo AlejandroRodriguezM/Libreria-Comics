@@ -588,6 +588,7 @@ public class MenuPrincipalController {
 		List<Comic> listComic;
 
 		if (busquedaGeneral.getText().length() != 0) {
+			listComic = FXCollections.observableArrayList();
 			listComic = FXCollections.observableArrayList(libreria.verBusquedaGeneral(busquedaGeneral.getText()));
 			busquedaGeneral.setText("");
 		} else {

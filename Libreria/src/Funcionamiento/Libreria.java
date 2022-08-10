@@ -105,16 +105,18 @@ public class Libreria extends Comic {
 		Comic comic[] = null;
 
 		String sql = datosConcatenados(datos);
-		
+
 		filtroComics.clear();
 
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
 
 			ResultSet rs = ps.executeQuery();
-			rs.next();
-			filtroComics = listaDatos(rs);
 
+			if(rs.next())
+			{
+				filtroComics = listaDatos(rs);
+			}
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
 		}
@@ -123,7 +125,7 @@ public class Libreria extends Comic {
 		comic = filtroComics.toArray(comic);
 		return comic;
 	}
-	
+
 	/**
 	 * Funcion que permite hacer una busqueda general mediante 1 sola palabra, hace
 	 * una busqueda en ciertos identificadores de la tabla.
@@ -132,17 +134,20 @@ public class Libreria extends Comic {
 	 * @return
 	 */
 	public Comic[] verBusquedaGeneral(String busquedaGeneral) {
-		Comic comic[] = null;
 
-		reiniciarBBDD();
-
-		filtroComics.clear();
-		
 		String sql1 = datosGeneralesNombre(busquedaGeneral);
 		String sql2 = datosGeneralesVariante(busquedaGeneral);
 		String sql3 = datosGeneralesFirma(busquedaGeneral);
 		String sql4 = datosGeneralesGuionista(busquedaGeneral);
 		String sql5 = datosGeneralesDibujante(busquedaGeneral);
+
+		Comic comic[] = null;
+
+		reiniciarBBDD();
+
+		filtroComics.clear();
+
+
 		try {
 			PreparedStatement ps1 = conn.prepareStatement(sql1);
 			PreparedStatement ps2 = conn.prepareStatement(sql2);
@@ -172,14 +177,19 @@ public class Libreria extends Comic {
 				filtroComics = listaDatos(rs5);
 			}
 
+			filtroComics = Utilidades.listaArreglada(filtroComics);
+
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
 		}
 
+		ordenarBBDD();
+		
 		comic = new Comic[filtroComics.size()];
+		
 		comic = filtroComics.toArray(comic);
-		return comic;
 
+		return comic;
 	}
 
 	/**
@@ -244,7 +254,7 @@ public class Libreria extends Comic {
 		return sql.toString();
 	}
 
-	
+
 
 	/**
 	 * Funcion que hace una busqueda de un identificador en concreto de la tabla
@@ -351,9 +361,13 @@ public class Libreria extends Comic {
 					this.dibujante = rs.getString("nomDibujante");
 					this.estado = rs.getString("estado");
 
-					listaComics.add(new Comic(this.ID, this.nombre, this.numero, this.variante, this.firma,
+					Comic comic = new Comic(this.ID, this.nombre, this.numero, this.variante, this.firma,
 							this.editorial, this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante,
-							this.estado));
+							this.estado);
+
+					listaComics.add(comic);
+
+
 
 				} while (rs.next());
 			}
@@ -361,6 +375,7 @@ public class Libreria extends Comic {
 			nav.alertaException("Datos introducidos incorrectos.");
 			e.printStackTrace();
 		}
+
 		return listaComics;
 	}
 
@@ -376,7 +391,6 @@ public class Libreria extends Comic {
 		try {
 			if (rs != null) {
 				do {
-
 					this.ID = rs.getString("ID");
 					this.nombre = rs.getString("nomComic");
 					this.numero = rs.getString("numComic");
@@ -445,7 +459,6 @@ public class Libreria extends Comic {
 
 	/**
 	 * Comprueba que el ID introducido existe
-	 *
 	 * @return
 	 */
 	public boolean chechID(String identificador) {
@@ -471,7 +484,22 @@ public class Libreria extends Comic {
 				nav.alertaException("No existe el " + identificador + " en la base de datos.");
 			}
 		}
-
 		return false;
+	}
+	
+	/**
+	 *
+
+	 */
+	public void ordenarBBDD() {
+		String sql = "SELECT * FROM comicsbbdd ORDER BY ID;";
+		Statement st;
+		try {
+			st = conn.createStatement();
+			st.execute(sql);
+		} catch (SQLException e) {
+			nav.alertaException(e.toString());
+		}
+
 	}
 }
