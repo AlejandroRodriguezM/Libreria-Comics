@@ -28,6 +28,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
+import Funcionamiento.BBDD;
 import Funcionamiento.Comic;
 import Funcionamiento.ConexionBBDD;
 import Funcionamiento.Libreria;
@@ -182,6 +183,8 @@ public class IntroducirDatosController {
 	private NavegacionVentanas nav = new NavegacionVentanas();
 
 	private Libreria libreria = new Libreria();
+	
+	private BBDD bd = new BBDD();
 
 	/**
 	 * Limpia todos los datos de los textField que hay en pantalla
@@ -278,33 +281,36 @@ public class IntroducirDatosController {
 			statement.setString(9, datos[8]);
 			statement.setString(10, datos[9]);
 
-			if (statement.executeUpdate() == 1) { // Sie el resultado del executeUpdate es 1, mostrara el mensaje
-													// correcto.
-				if (nav.alertaInsertar()) {
+			if (nav.alertaInsertar()) {
+				if (statement.executeUpdate() == 1) { // Sie el resultado del executeUpdate es 1, mostrara el mensaje
+					// correcto.
+					
 					pantallaInformativa.setOpacity(1);
 					pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 					pantallaInformativa.setText("Comic introducido correctamente!" + "\nNombre del comic: " + datos[0]
 							+ "\nNumero: " + datos[1] + "\nPortada variante: " + datos[2] + "\nFirma: " + datos[3]
-							+ "\nEditorial: " + datos[4] + "\nFormato: " + datos[5] + "\nProcedencia: " + datos[6]
-							+ "\nFecha de publicacion: " + datos[7] + "\nGuionista: " + datos[8] + "\nDibujante: "
-							+ datos[9]);
+									+ "\nEditorial: " + datos[4] + "\nFormato: " + datos[5] + "\nProcedencia: " + datos[6]
+											+ "\nFecha de publicacion: " + datos[7] + "\nGuionista: " + datos[8] + "\nDibujante: "
+											+ datos[9]);
 					statement.close();
-				} else { // Si se cancela el borra del comic, saltara el siguiente mensaje.
+
+				} 
+				else { // En caso de no haber sido posible Introducir el comic, se vera el siguiente
+					// mensaje.
 					pantallaInformativa.setOpacity(1);
 					pantallaInformativa.setStyle("-fx-background-color: #F53636");
-					pantallaInformativa.setText("Insertado cancelado..");
+					pantallaInformativa.setText(
+							"Se ha encontrado un error. No ha sido posible introducir el comic a la base de datos.");
 				}
-
-			} else { // En caso de no haber sido posible Introducir el comic, se vera el siguiente
-						// mensaje.
+			} else { // Si se cancela el borra del comic, saltara el siguiente mensaje.
 				pantallaInformativa.setOpacity(1);
 				pantallaInformativa.setStyle("-fx-background-color: #F53636");
-				pantallaInformativa.setText(
-						"Se ha encontrado un error. No ha sido posible introducir el comic a la base de datos.");
+				pantallaInformativa.setText("Insertado cancelado..");
 			}
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
 		}
+		bd.reloadID();
 	}
 
 	/**
@@ -315,7 +321,6 @@ public class IntroducirDatosController {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
-
 		nombreColumnas(); // Llamada a funcion
 		listaPorParametro(); // Llamada a funcion
 	}
@@ -327,7 +332,6 @@ public class IntroducirDatosController {
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) {
-
 		nombreColumnas(); // Llamada a funcion
 		tablaBBDD(libreriaCompleta()); // Llamada a funcion
 
