@@ -67,19 +67,13 @@ public class AccesoBBDDController {
 	private Button botonSalir;
 
 	@FXML
-	private Button botonTwitter;
-
-	@FXML
 	private Button botonCrearBBDD;
-
-	@FXML
-	private Button numeroVersion;
 
 	@FXML
 	private Button botonVerDDBB;
 
 	@FXML
-	private Button botonInformacion;
+	private Button botonSobreMi;
 
 	@FXML
 	private Button botonDescargaBBDD;
@@ -106,50 +100,6 @@ public class AccesoBBDDController {
 	public TextField usuario;
 
 	private NavegacionVentanas nav = new NavegacionVentanas();
-
-	/**
-	 * Funcion para abrir el navegador y acceder a la URL
-	 *
-	 * @param event
-	 */
-	@FXML
-	void accesoGitHub(ActionEvent event) {
-		String url1 = "https://github.com/MisterioRojo/Proyecto-gui-bbdd/tree/V.F";
-		String url2 = "https://www.youtube.com/playlist?list=PL7MV626sbFp6EY0vP8gEEgrVCryitFXCM";
-		if (Utilidades.isWindows()) {
-			Utilidades.accesoWebWindows(url1); // Llamada a funcion
-			Utilidades.accesoWebWindows(url2); // Llamada a funcion
-		} else {
-			if (Utilidades.isUnix()) {
-				Utilidades.accesoWebLinux(url1); // Llamada a funcion
-				Utilidades.accesoWebLinux(url2); // Llamada a funcion
-			} else {
-				Utilidades.accesoWebMac(url1);
-				Utilidades.accesoWebMac(url2);
-
-			}
-		}
-	}
-
-	/**
-	 * Funcion para abrir el navegador y acceder a la URL
-	 *
-	 * @param event
-	 */
-	@FXML
-	void accesoTwitter(ActionEvent event) {
-		String url = "https://twitter.com/SilverAlox";
-
-		if (Utilidades.isWindows()) {
-			Utilidades.accesoWebWindows(url); // Llamada a funcion
-		} else {
-			if (Utilidades.isUnix()) {
-				Utilidades.accesoWebLinux(url); // Llamada a funcion
-			} else {
-				Utilidades.accesoWebMac(url);
-			}
-		}
-	}
 
 	/**
 	 * Funcion para abrir el navegador y acceder a la URL
@@ -210,6 +160,19 @@ public class AccesoBBDDController {
 		myStage.close();
 
 	}
+	
+	/**
+	 * 
+	 * @param event
+	 */
+	@FXML
+	void verSobreMi(ActionEvent event) {
+
+		nav.verSobreMi();
+
+		Stage myStage = (Stage) this.botonSobreMi.getScene().getWindow();
+		myStage.close();
+	}
 
 	/**
 	 * Permite ver las bases de datos disponibles en MySql workbench
@@ -253,20 +216,6 @@ public class AccesoBBDDController {
 
 			nav.alertaException(e.toString());
 		}
-	}
-
-	/**
-	 * Se ve informacion en el TextArea.
-	 *
-	 * @param event
-	 */
-	@FXML
-	void verInfo(ActionEvent event) {
-
-		prontInformacion.setStyle("-fx-background-color: #A0F52D");
-		prontInformacion.setText(
-				"Programa creado por Alejandro Rodriguez. Es un proyecto personal para probar conocimientos adquiridos durante el primer curso de DAW. Esta aplicacion solamente puede usarse con una tabla de una forma estructurada de una forma concreta. Esta aplicacion ha sido creada con la intencion de ser usada junto a una base de datos MySql. Si la aplicacion MySql workbench no se encuentra instalada. Esta aplicacion no funcionara. La pagina oficial donde se encuentra la aplicacion es: https://dev.mysql.com/downloads/workbench/");
-
 	}
 
 	/**

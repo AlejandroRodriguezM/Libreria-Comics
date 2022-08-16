@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import Funcionamiento.BBDD;
 import Funcionamiento.Comic;
 import Funcionamiento.ConexionBBDD;
 import Funcionamiento.Libreria;
@@ -31,6 +32,9 @@ public class EliminarDatosController {
 
 	@FXML
 	private Button botonEliminar;
+	
+	@FXML
+	private Button botonVender;
 
 	@FXML
 	private Button botonLimpiarComic;
@@ -127,6 +131,8 @@ public class EliminarDatosController {
 	private Libreria libreria = new Libreria();
 
 	private Connection conn = ConexionBBDD.conexion();
+	
+	private BBDD bd = new BBDD();
 
 	/**
 	 *
@@ -154,13 +160,21 @@ public class EliminarDatosController {
 	/**
 	 *
 	 * @param event
-	 * @throws SQLException
 	 */
 	@FXML
-	void eliminarDatos(ActionEvent event) { // Metodo que permite cambiar de estado un comic, para
-		// que se deje de mostrar en el programa, pero este
-		// sigue estando dentro de la bbdd
-		deleteData();
+	void eliminarDatos(ActionEvent event) { 
+		deleteDataBBDD();
+		libreria.reiniciarBBDD();
+	}
+	
+	/**
+	 * Metodo que permite cambiar de estado un comic, para que se deje de mostrar en el 
+	 * programa, pero este sigue estando dentro de la bbdd
+	 * @param event
+	 */
+	@FXML
+	void ventaDatos(ActionEvent event) { // 
+		deleteDataSell();
 		libreria.reiniciarBBDD();
 	}
 
@@ -168,7 +182,6 @@ public class EliminarDatosController {
 	 * Muestra la bbdd segun los parametros introducidos en los TextField
 	 *
 	 * @param event
-	 * @throws SQLException
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
@@ -181,7 +194,6 @@ public class EliminarDatosController {
 	 * Muestra toda la base de datos.
 	 *
 	 * @param event
-	 * @throws SQLException
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) throws SQLException {
@@ -214,7 +226,6 @@ public class EliminarDatosController {
 	/**
 	 * Almacena los datos introducidos en los TextField
 	 *
-	 * @throws SQLException
 	 */
 	public void listaPorParametro() {
 		String datosComic[] = camposComics();
@@ -247,14 +258,12 @@ public class EliminarDatosController {
 		}
 
 		return listComic;
-
 	}
 
 	/**
 	 * Devuelto una lista con todos los comics existentes en la bbdd
 	 *
 	 * @return
-	 * @throws SQLException
 	 */
 	public List<Comic> libreriaCompleta() {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreria());
@@ -280,22 +289,18 @@ public class EliminarDatosController {
 				guionista, dibujante);
 		tablaBBDD.getItems().setAll(listaComic);
 	}
-
+	
 	/**
-	 * Funcion que permite cambiar de estado el comic a "Vendido" y hace que no se
-	 * muestre en la bbdd
+	 * 
+	 * @param id
+	 * @param sentenciaSQL
 	 */
-	public void deleteData() {
-		String id, sentenciaSQL;
-
-		sentenciaSQL = "UPDATE Comicsbbdd set estado = 'Vendido' where ID = ?";
-
-		id = idComic.getText();
-
-		Comic comic = libreria.comicDatos(id); // Llamada de metodo que contiene el comic que se desea eliminar
-
+	public void modifyDataBase(String id, String sentenciaSQL)
+	{
 		PreparedStatement stmt;
 
+		Comic comic = libreria.comicDatos(id); // Llamada de metodo que contiene el comic que se desea eliminar
+		
 		try {
 			if (nav.alertaEliminar()) { // Llamada a metodo que permite lanzar una alerta. En caso de aceptarlo
 				// permitira lo siguiente.
@@ -324,6 +329,37 @@ public class EliminarDatosController {
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
 		}
+	}
+
+	/**
+	 * Funcion que permite cambiar de estado el comic a "Vendido" y hace que no se
+	 * muestre en la bbdd
+	 */
+	public void deleteDataSell() {
+		String id, sentenciaSQL;
+
+		sentenciaSQL = "UPDATE Comicsbbdd set estado = 'Vendido' where ID = ?";
+
+		id = idComic.getText();
+
+		modifyDataBase(id,sentenciaSQL);
+		
+	}
+	
+	/**
+	 * 
+	 */
+	public void deleteDataBBDD() {
+		String id, sentenciaSQL;
+
+		sentenciaSQL = "DELETE from Comicsbbdd where ID = ?";
+
+		id = idComic.getText();
+
+		modifyDataBase(id,sentenciaSQL);
+		
+		bd.reloadID();
+		
 	}
 
 	/**

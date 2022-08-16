@@ -89,6 +89,27 @@ public class BBDD {
 				nav.alertaException(e.toString());
 			}
 		}
+		return false;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean reloadID() {
+
+		try {
+			PreparedStatement statement1 = conn.prepareStatement("ALTER TABLE comicsbbdd DROP ID, order by nomComic");
+			PreparedStatement statement2 = conn.prepareStatement("ALTER TABLE comicsbbdd ADD ID int NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST, order by nomComic");
+			PreparedStatement statement3 = conn.prepareStatement("ALTER TABLE comicsbbdd AUTO_INCREMENT = 1");
+			statement1.executeUpdate();
+			statement2.executeUpdate();
+			statement3.executeUpdate();
+			libreria.reiniciarBBDD();
+			return true;
+		} catch (SQLException e) {
+			nav.alertaException(e.toString());
+		}
 
 		return false;
 	}

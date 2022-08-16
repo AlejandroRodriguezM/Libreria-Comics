@@ -32,6 +32,7 @@ import Controladores.IntroducirDatosController;
 import Controladores.MenuPrincipalController;
 import Controladores.ModificarDatosController;
 import Controladores.RecomendacionesController;
+import Controladores.SobreMiController;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -319,6 +320,46 @@ public class NavegacionVentanas {
 			ex.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Llamada a ventana para el acceso a creacion de bases de datos
+	 */
+	public void verSobreMi() {
+
+		try {
+			// Cargo la vista
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/SobreMi.fxml"));
+
+			// Cargo el padre
+			Parent root = loader.load();
+
+			// Obtengo el controlador
+			SobreMiController controlador = loader.getController();
+
+			// Creo la scene y el stage
+			Scene scene = new Scene(root);
+			Stage stage = new Stage();
+			stage.setResizable(false);
+			stage.setTitle("Sobre mi"); // Titulo de la aplicacion.
+			stage.getIcons().add(new Image("/Icono/icon2.png"));
+
+			// Asocio el stage con el scene
+			stage.setScene(scene);
+			stage.show();
+
+			// Indico que debe hacer al cerrar
+			stage.setOnCloseRequest(e -> {
+				controlador.closeWindows();
+			});
+
+			stage.setScene(scene);
+			stage.show();
+
+		} catch (IOException ex) {
+			alertaException(ex.toString());
+			ex.printStackTrace();
+		}
+	}
 
 	/**
 	 * Permite salir del programa completamente
@@ -409,16 +450,15 @@ public class NavegacionVentanas {
 	public boolean borrarContenidoTabla() {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-		stage.getIcons().add(new Image("/Icono/exit.png"));
+		stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
 		alert.setTitle("Borrando . . .");
 		alert.setHeaderText("Estas a punto de borrar el contenido.");
 		alert.setContentText("Estas seguro que quieres borrarlo todo?");
-
 		if (alert.showAndWait().get() == ButtonType.OK) {
 
 			Alert alert2 = new Alert(AlertType.CONFIRMATION);
 			Stage stage2 = (Stage) alert2.getDialogPane().getScene().getWindow();
-			stage2.getIcons().add(new Image("/Icono/exit.png")); // To add an icon
+			stage2.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
 			alert.setTitle("Borrando . . .");
 			alert.setHeaderText("Estas seguro?");
 			alert.setContentText("De verdad de verdad quieres borrarlo todo?");
