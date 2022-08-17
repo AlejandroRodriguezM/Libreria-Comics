@@ -88,6 +88,9 @@ public class MenuPrincipalController {
 	private Button botonVerRecomendacion;
 
 	@FXML
+	private Button botonVerPuntuar;
+
+	@FXML
 	private Button botonFrase;
 
 	@FXML
@@ -104,6 +107,12 @@ public class MenuPrincipalController {
 
 	@FXML
 	private Button botonCompra;
+
+	@FXML
+	private Button botonVendidos;
+
+	@FXML
+	private Button botonPuntuacion;
 
 	@FXML
 	private TextField anioPublicacion;
@@ -142,6 +151,9 @@ public class MenuPrincipalController {
 	private TextField busquedaGeneral;
 
 	@FXML
+	private TableColumn<Comic, String> ID;
+
+	@FXML
 	private TableColumn<Comic, String> dibujante;
 
 	@FXML
@@ -163,9 +175,6 @@ public class MenuPrincipalController {
 	private TableColumn<Comic, String> nombre;
 
 	@FXML
-	private TableColumn<Comic, String> ID;
-
-	@FXML
 	private TableColumn<Comic, String> numero;
 
 	@FXML
@@ -173,6 +182,9 @@ public class MenuPrincipalController {
 
 	@FXML
 	private TableColumn<Comic, String> variante;
+
+	@FXML
+	private TableColumn<Comic, String> puntuacion;
 
 	@FXML
 	public TableView<Comic> tablaBBDD;
@@ -252,6 +264,20 @@ public class MenuPrincipalController {
 	}
 
 	/**
+	 *
+	 * @param event
+	 */
+	@FXML
+	void ventanaPuntuar(ActionEvent event) {
+
+		nav.verPuntuar();
+
+		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
+		myStage.close();
+
+	}
+
+	/**
 	 * Muestra en un textArea diferentes frases random de personajes de los comics.
 	 *
 	 * @param event
@@ -282,6 +308,26 @@ public class MenuPrincipalController {
 	void verTodabbdd(ActionEvent event) {
 		nombreColumnas();
 		tablaBBDD(libreriaPosesion());
+	}
+
+	/**
+	 *
+	 * @param event
+	 */
+	@FXML
+	void comicsPuntuacion(ActionEvent event) {
+		nombreColumnas();
+		tablaBBDD(libreriaPuntuacion());
+	}
+
+	/**
+	 *
+	 * @param event
+	 */
+	@FXML
+	void comicsVendidos(ActionEvent event) {
+		nombreColumnas();
+		tablaBBDD(libreriaVendidos());
 	}
 
 	////////////////////////////
@@ -381,6 +427,7 @@ public class MenuPrincipalController {
 		prontFrases.setText(null);
 		prontInfo.setOpacity(0);
 		prontFrases.setOpacity(0);
+
 	}
 
 	/**
@@ -416,7 +463,7 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * Se llama a funcion que permite abrir 2 direccionesd web junto al navegador
+	 * Se llama a funcion que permite abrir 2 direcciones web junto al navegador
 	 * predeterminado
 	 *
 	 * @param event
@@ -467,6 +514,7 @@ public class MenuPrincipalController {
 		fecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
 		guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
 		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
+		puntuacion.setCellValueFactory(new PropertyValueFactory<>("puntuacion"));
 	}
 
 	/////////////////////////////////
@@ -571,7 +619,7 @@ public class MenuPrincipalController {
 		String datosComic[] = camposComic();
 
 		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
-				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "");
+				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "", "");
 
 		tablaBBDD(busquedaParametro(comic));
 	}
@@ -621,6 +669,40 @@ public class MenuPrincipalController {
 	}
 
 	/**
+	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
+	 * "En posesion"
+	 *
+	 * @return
+	 */
+	public List<Comic> libreriaVendidos() {
+		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaVendidos());
+
+		if (listComic.size() == 0) {
+			prontInfo.setStyle("-fx-background-color: #F53636");
+			prontInfo.setText("ERROR. La base de datos se encuentra vacia");
+		}
+
+		return listComic;
+	}
+
+	/**
+	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
+	 * "En posesion"
+	 *
+	 * @return
+	 */
+	public List<Comic> libreriaPuntuacion() {
+		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaPuntuacion());
+
+		if (listComic.size() == 0) {
+			prontInfo.setStyle("-fx-background-color: #F53636");
+			prontInfo.setText("ERROR. La base de datos se encuentra vacia");
+		}
+
+		return listComic;
+	}
+
+	/**
 	 * Devuelve una lista con todos los comics de la base de datos.
 	 *
 	 * @return
@@ -645,7 +727,7 @@ public class MenuPrincipalController {
 	@SuppressWarnings("unchecked")
 	public void tablaBBDD(List<Comic> listaComic) {
 		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
-				guionista, dibujante);
+				guionista, dibujante, puntuacion);
 		tablaBBDD.getItems().setAll(listaComic);
 	}
 

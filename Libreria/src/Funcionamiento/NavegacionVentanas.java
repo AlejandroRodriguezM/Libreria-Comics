@@ -31,6 +31,7 @@ import Controladores.EliminarDatosController;
 import Controladores.IntroducirDatosController;
 import Controladores.MenuPrincipalController;
 import Controladores.ModificarDatosController;
+import Controladores.PuntuarDatosController;
 import Controladores.RecomendacionesController;
 import Controladores.SobreMiController;
 import javafx.application.Platform;
@@ -320,7 +321,7 @@ public class NavegacionVentanas {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Llamada a ventana para el acceso a creacion de bases de datos
 	 */
@@ -341,6 +342,46 @@ public class NavegacionVentanas {
 			Stage stage = new Stage();
 			stage.setResizable(false);
 			stage.setTitle("Sobre mi"); // Titulo de la aplicacion.
+			stage.getIcons().add(new Image("/Icono/icon2.png"));
+
+			// Asocio el stage con el scene
+			stage.setScene(scene);
+			stage.show();
+
+			// Indico que debe hacer al cerrar
+			stage.setOnCloseRequest(e -> {
+				controlador.closeWindows();
+			});
+
+			stage.setScene(scene);
+			stage.show();
+
+		} catch (IOException ex) {
+			alertaException(ex.toString());
+			ex.printStackTrace();
+		}
+	}
+
+	/**
+	 * Llamada a ventana para el acceso a creacion de bases de datos
+	 */
+	public void verPuntuar() {
+
+		try {
+			// Cargo la vista
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/PuntuarDatos.fxml"));
+
+			// Cargo el padre
+			Parent root = loader.load();
+
+			// Obtengo el controlador
+			PuntuarDatosController controlador = loader.getController();
+
+			// Creo la scene y el stage
+			Scene scene = new Scene(root);
+			Stage stage = new Stage();
+			stage.setResizable(false);
+			stage.setTitle("Puntuación de comic"); // Titulo de la aplicacion.
 			stage.getIcons().add(new Image("/Icono/icon2.png"));
 
 			// Asocio el stage con el scene

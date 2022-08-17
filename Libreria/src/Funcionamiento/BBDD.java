@@ -93,14 +93,15 @@ public class BBDD {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean reloadID() {
 
 		try {
 			PreparedStatement statement1 = conn.prepareStatement("ALTER TABLE comicsbbdd DROP ID, order by nomComic");
-			PreparedStatement statement2 = conn.prepareStatement("ALTER TABLE comicsbbdd ADD ID int NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST, order by nomComic");
+			PreparedStatement statement2 = conn.prepareStatement(
+					"ALTER TABLE comicsbbdd ADD ID int NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST, order by nomComic");
 			statement1.executeUpdate();
 			statement2.executeUpdate();
 			libreria.reiniciarBBDD();

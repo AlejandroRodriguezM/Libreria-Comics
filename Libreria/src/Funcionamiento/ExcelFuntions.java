@@ -64,8 +64,8 @@ public class ExcelFuntions {
 	 * @throws SQLException
 	 */
 	public boolean importarCSV(File fichero) {
-		String sql = "INSERT INTO comicsbbdd(ID,nomComic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,anioPubli,nomGuionista,nomDibujante,estado)"
-				+ " values (?,?,?,?,?,?,?,?,?,?,?,?)";
+		String sql = "INSERT INTO comicsbbdd(ID,nomComic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,anioPubli,nomGuionista,nomDibujante,puntuacion,estado)"
+				+ " values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 		if (comprobarCSV(fichero, sql)) // Llamada a funcion, en caso de devolver true, devolvera un true
 		{
@@ -92,7 +92,7 @@ public class ExcelFuntions {
 		String encabezado;
 
 		String[] encabezados = { "ID", "nomComic", "numComic", "nomVariante", "Firma", "nomEditorial", "Formato",
-				"Procedencia", "anioPubli", "nomGuionista", "nomDibujante", "estado" };
+				"Procedencia", "anioPubli", "nomGuionista", "nomDibujante", "puntuacion", "estado" };
 		int indiceFila = 0;
 
 		try {
@@ -126,7 +126,8 @@ public class ExcelFuntions {
 				fila.createCell(8).setCellValue(comic.getFecha());
 				fila.createCell(9).setCellValue(comic.getGuionista());
 				fila.createCell(10).setCellValue(comic.getDibujante());
-				fila.createCell(11).setCellValue(comic.getEstado());
+				fila.createCell(11).setCellValue(comic.getPuntuacion());
+				fila.createCell(12).setCellValue(comic.getEstado());
 
 				indiceFila++;
 			}
@@ -276,7 +277,8 @@ public class ExcelFuntions {
 				String fecha = data[8];
 				String guionista = data[9];
 				String dibujante = data[10];
-				String estado = data[11];
+				String puntuacion = data[11];
+				String estado = data[12];
 
 				statement.setString(1, id);
 				statement.setString(2, nombre);
@@ -289,7 +291,8 @@ public class ExcelFuntions {
 				statement.setString(9, fecha);
 				statement.setString(10, guionista);
 				statement.setString(11, dibujante);
-				statement.setString(12, estado);
+				statement.setString(12, puntuacion);
+				statement.setString(13, estado);
 
 				statement.addBatch();
 

@@ -32,7 +32,7 @@ public class EliminarDatosController {
 
 	@FXML
 	private Button botonEliminar;
-	
+
 	@FXML
 	private Button botonVender;
 
@@ -131,7 +131,7 @@ public class EliminarDatosController {
 	private Libreria libreria = new Libreria();
 
 	private Connection conn = ConexionBBDD.conexion();
-	
+
 	private BBDD bd = new BBDD();
 
 	/**
@@ -162,18 +162,19 @@ public class EliminarDatosController {
 	 * @param event
 	 */
 	@FXML
-	void eliminarDatos(ActionEvent event) { 
+	void eliminarDatos(ActionEvent event) {
 		deleteDataBBDD();
 		libreria.reiniciarBBDD();
 	}
-	
+
 	/**
-	 * Metodo que permite cambiar de estado un comic, para que se deje de mostrar en el 
-	 * programa, pero este sigue estando dentro de la bbdd
+	 * Metodo que permite cambiar de estado un comic, para que se deje de mostrar en
+	 * el programa, pero este sigue estando dentro de la bbdd
+	 *
 	 * @param event
 	 */
 	@FXML
-	void ventaDatos(ActionEvent event) { // 
+	void ventaDatos(ActionEvent event) { //
 		deleteDataSell();
 		libreria.reiniciarBBDD();
 	}
@@ -231,7 +232,7 @@ public class EliminarDatosController {
 		String datosComic[] = camposComics();
 
 		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
-				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "");
+				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "", "");
 
 		tablaBBDD(busquedaParametro(comic));
 	}
@@ -289,18 +290,17 @@ public class EliminarDatosController {
 				guionista, dibujante);
 		tablaBBDD.getItems().setAll(listaComic);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param id
 	 * @param sentenciaSQL
 	 */
-	public void modifyDataBase(String id, String sentenciaSQL)
-	{
+	public void modifyDataBase(String id, String sentenciaSQL) {
 		PreparedStatement stmt;
 
 		Comic comic = libreria.comicDatos(id); // Llamada de metodo que contiene el comic que se desea eliminar
-		
+
 		try {
 			if (nav.alertaEliminar()) { // Llamada a metodo que permite lanzar una alerta. En caso de aceptarlo
 				// permitira lo siguiente.
@@ -342,12 +342,12 @@ public class EliminarDatosController {
 
 		id = idComic.getText();
 
-		modifyDataBase(id,sentenciaSQL);
-		
+		modifyDataBase(id, sentenciaSQL);
+
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public void deleteDataBBDD() {
 		String id, sentenciaSQL;
@@ -356,10 +356,10 @@ public class EliminarDatosController {
 
 		id = idComic.getText();
 
-		modifyDataBase(id,sentenciaSQL);
-		
+		modifyDataBase(id, sentenciaSQL);
+
 		bd.reloadID();
-		
+
 	}
 
 	/**

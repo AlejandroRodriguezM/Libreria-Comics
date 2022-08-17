@@ -187,7 +187,8 @@ public class CrearBBDDController {
 				+ "nomEditorial varchar(150) NOT NULL," + "Formato varchar(150) NOT NULL,"
 				+ "Procedencia varchar(150) NOT NULL," + "anioPubli varchar(150) NOT NULL,"
 				+ "nomGuionista varchar(300) NOT NULL," + "nomDibujante varchar(300) NOT NULL,"
-				+ "estado enum('En posesion','Vendido') DEFAULT 'En posesion'" + ",PRIMARY KEY (`ID`)) "
+				+ "puntuacion varchar(300) NOT NULL," + "estado enum('En posesion','Vendido') DEFAULT 'En posesion'"
+				+ ",PRIMARY KEY (`ID`)) "
 				+ "ENGINE=InnoDB AUTO_INCREMENT=320 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;";
 
 		Statement statement1;

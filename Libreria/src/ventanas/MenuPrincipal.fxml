@@ -11,9 +11,9 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="875.0" prefWidth="1103.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.MenuPrincipalController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="877.0" prefWidth="1197.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.MenuPrincipalController">
    <children>
-      <ImageView fitHeight="469.0" fitWidth="1104.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="513.0" fitWidth="1197.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagenes/Fondo%20menu.jpg" />
          </image>
@@ -59,7 +59,7 @@
          <font>
             <Font size="14.0" />
          </font></Label>
-      <Label layoutX="14.0" layoutY="324.0" style="-fx-background-color: grey;" text="Dibujante">
+      <Label layoutX="14.0" layoutY="323.0" style="-fx-background-color: grey;" text="Dibujante">
          <font>
             <Font size="14.0" />
          </font></Label>
@@ -74,48 +74,58 @@
       <TextField fx:id="anioPublicacion" layoutX="138.0" layoutY="257.0" prefHeight="25.0" prefWidth="169.0" />
       <TextField fx:id="nombreGuionista" layoutX="139.0" layoutY="288.0" prefHeight="25.0" prefWidth="169.0" />
       <TextField fx:id="nombreDibujante" layoutX="140.0" layoutY="319.0" prefHeight="25.0" prefWidth="169.0" />
-      <Button fx:id="botonMostrarParametro" layoutX="14.0" layoutY="385.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="49.0" prefWidth="161.0" text="Mostrar segun parametros" />
-      <Button fx:id="botonLimpiar" layoutX="183.0" layoutY="386.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="49.0" prefWidth="111.0" text="Limpiar" />
-      <Button fx:id="botonbbdd" layoutX="328.0" layoutY="6.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="53.0" prefWidth="141.0" text="Ver todo" />
-      <Button fx:id="botonGuardarCSV" layoutX="328.0" layoutY="68.0" mnemonicParsing="false" onAction="#exportCSV" prefHeight="53.0" prefWidth="141.0" text="Exportar Excel" />
-      <Button fx:id="botonBackupBBDD" layoutX="328.0" layoutY="130.0" mnemonicParsing="false" onAction="#exportarSQL" prefHeight="53.0" prefWidth="141.0" text="Exportar base de datos" />
-      <Button fx:id="botonImportarCSV" layoutX="328.0" layoutY="192.0" mnemonicParsing="false" onAction="#importCSV" prefHeight="53.0" prefWidth="141.0" text="Importar CSV" />
-      <Button fx:id="botonEstadistica" layoutX="328.0" layoutY="255.0" mnemonicParsing="false" onAction="#verEstadistica" prefHeight="53.0" prefWidth="141.0" text="Ver estadistica" />
-      <Button fx:id="BotonEliminarComic" layoutX="492.0" layoutY="6.0" mnemonicParsing="false" onAction="#ventanaEliminar" prefHeight="53.0" prefWidth="102.0" text="Eliminar datos" />
-      <Button fx:id="BotonModificarComic" layoutX="492.0" layoutY="68.0" mnemonicParsing="false" onAction="#ventanaModificar" prefHeight="53.0" prefWidth="102.0" text="Modificar datos" />
-      <Button fx:id="botonFrase" layoutX="492.0" layoutY="193.0" mnemonicParsing="false" onAction="#fraseRandom" prefHeight="53.0" prefWidth="102.0" text="Frase random" />
-      <Button fx:id="BotonVentanaAniadir" layoutX="492.0" layoutY="131.0" mnemonicParsing="false" onAction="#ventanaAniadir" prefHeight="53.0" prefWidth="102.0" text="Añadir datos" />
-      <Button fx:id="botonDelete" layoutX="492.0" layoutY="254.0" mnemonicParsing="false" onAction="#borrarContenidoTabla" prefHeight="53.0" prefWidth="102.0" text="Eliminar BBDD" />
-      <Button fx:id="botonVerRecomendacion" layoutX="328.0" layoutY="318.0" mnemonicParsing="false" onAction="#ventanaRecomendar" prefHeight="53.0" prefWidth="141.0" text="No sabes que leer?" />
-      <Button fx:id="botonVolver" layoutX="877.0" layoutY="383.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="53.0" prefWidth="102.0" text="Volver al menu" />
-      <Button fx:id="botonSalir" layoutX="990.0" layoutY="383.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="53.0" prefWidth="99.0" text="Salir" />
-      <TableView fx:id="tablaBBDD" layoutX="-1.0" layoutY="442.0" prefHeight="433.0" prefWidth="1104.0">
+      <Button fx:id="botonMostrarParametro" layoutX="14.0" layoutY="381.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="49.0" prefWidth="161.0" text="Mostrar segun parametros" />
+      <Button fx:id="botonLimpiar" layoutX="183.0" layoutY="381.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="49.0" prefWidth="111.0" text="Limpiar" />
+      <Button fx:id="botonbbdd" layoutX="328.0" layoutY="8.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="53.0" prefWidth="141.0" text="Ver todo" />
+      <Button fx:id="botonGuardarCSV" layoutX="328.0" layoutY="131.0" mnemonicParsing="false" onAction="#exportCSV" prefHeight="53.0" prefWidth="141.0" text="Exportar Excel" />
+      <Button fx:id="botonBackupBBDD" layoutX="328.0" layoutY="193.0" mnemonicParsing="false" onAction="#exportarSQL" prefHeight="53.0" prefWidth="141.0" text="Exportar base de datos" />
+      <Button fx:id="botonImportarCSV" layoutX="328.0" layoutY="255.0" mnemonicParsing="false" onAction="#importCSV" prefHeight="53.0" prefWidth="141.0" text="Importar CSV" />
+      <Button fx:id="botonEstadistica" layoutX="328.0" layoutY="318.0" mnemonicParsing="false" onAction="#verEstadistica" prefHeight="53.0" prefWidth="141.0" text="Ver estadistica" />
+      <Button fx:id="BotonEliminarComic" layoutX="492.0" layoutY="70.0" mnemonicParsing="false" onAction="#ventanaEliminar" prefHeight="53.0" prefWidth="102.0" text="Eliminar Comic" />
+      <Button fx:id="BotonModificarComic" layoutX="492.0" layoutY="131.0" mnemonicParsing="false" onAction="#ventanaModificar" prefHeight="53.0" prefWidth="102.0" text="Modificar Comic">
+         <font>
+            <Font size="11.0" />
+         </font></Button>
+      <Button fx:id="botonFrase" layoutX="491.0" layoutY="318.0" mnemonicParsing="false" onAction="#fraseRandom" prefHeight="53.0" prefWidth="102.0" text="Frase random" />
+      <Button fx:id="BotonVentanaAniadir" layoutX="492.0" layoutY="193.0" mnemonicParsing="false" onAction="#ventanaAniadir" prefHeight="53.0" prefWidth="102.0" text="Añadir Comic" />
+      <Button fx:id="botonDelete" layoutX="328.0" layoutY="382.0" mnemonicParsing="false" onAction="#borrarContenidoTabla" prefHeight="49.0" prefWidth="141.0" text="Eliminar contenido BD" />
+      <Button fx:id="botonVerRecomendacion" layoutX="820.0" layoutY="380.0" mnemonicParsing="false" onAction="#ventanaRecomendar" prefHeight="53.0" prefWidth="141.0" text="No sabes que leer?" />
+      <Button fx:id="botonVolver" layoutX="975.0" layoutY="380.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="53.0" prefWidth="102.0" text="Volver al menu" />
+      <Button fx:id="botonSalir" layoutX="1088.0" layoutY="380.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="53.0" prefWidth="99.0" text="Salir" />
+      <TableView fx:id="tablaBBDD" layoutX="-1.0" layoutY="438.0" prefHeight="441.0" prefWidth="1198.0">
          <columns>
-            <TableColumn fx:id="ID" editable="false" prefWidth="64.0" text="ID" />
-            <TableColumn fx:id="nombre" editable="false" prefWidth="154.0" text="Nombre" />
-            <TableColumn id="nombre" fx:id="numero" editable="false" prefWidth="76.0" text="Numero" />
-            <TableColumn id="nombre" fx:id="variante" editable="false" prefWidth="111.0" text="Variante" />
-            <TableColumn id="nombre" fx:id="firma" editable="false" prefWidth="94.0" text="Firma" />
-            <TableColumn id="nombre" fx:id="editorial" editable="false" prefWidth="75.0" text="Editorial" />
-            <TableColumn id="nombre" fx:id="formato" editable="false" prefWidth="72.0" text="Formato" />
-            <TableColumn id="nombre" fx:id="procedencia" editable="false" prefWidth="102.0" text="Procedencia" />
-            <TableColumn id="nombre" fx:id="fecha" editable="false" prefWidth="66.0" text="Fecha" />
-            <TableColumn id="nombre" fx:id="guionista" editable="false" prefWidth="152.0" text="Guionista" />
-            <TableColumn id="nombre" fx:id="dibujante" editable="false" prefWidth="137.0" text="Dibujante" />
+            <TableColumn fx:id="ID" editable="false" prefWidth="47.0" text="ID" />
+            <TableColumn fx:id="nombre" editable="false" prefWidth="132.0" text="Nombre" />
+            <TableColumn id="nombre" fx:id="numero" editable="false" prefWidth="73.0" text="Numero" />
+            <TableColumn id="nombre" fx:id="variante" editable="false" prefWidth="95.0" text="Variante" />
+            <TableColumn id="nombre" fx:id="firma" editable="false" prefWidth="78.0" text="Firma" />
+            <TableColumn id="nombre" fx:id="editorial" editable="false" prefWidth="86.0" text="Editorial" />
+            <TableColumn id="nombre" fx:id="formato" editable="false" prefWidth="76.0" text="Formato" />
+            <TableColumn id="nombre" fx:id="procedencia" editable="false" prefWidth="113.0" text="Procedencia" />
+            <TableColumn id="nombre" fx:id="fecha" editable="false" prefWidth="75.0" text="Fecha" />
+            <TableColumn id="nombre" fx:id="guionista" editable="false" prefWidth="169.0" text="Guionista" />
+            <TableColumn id="nombre" fx:id="dibujante" editable="false" prefWidth="158.0" text="Dibujante" />
+            <TableColumn id="nombre" fx:id="puntuacion" editable="false" prefWidth="95.0" text="puntuacion" />
          </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
       </TableView>
-      <TextArea fx:id="prontInfo" layoutX="857.0" layoutY="242.0" opacity="0.0" prefHeight="117.0" prefWidth="232.0" wrapText="true" />
-      <TextArea fx:id="prontFrases" editable="false" layoutX="835.0" layoutY="14.0" opacity="0.0" prefHeight="94.0" prefWidth="245.0" wrapText="true">
+      <TextArea fx:id="prontInfo" layoutX="951.0" layoutY="242.0" opacity="0.0" prefHeight="117.0" prefWidth="232.0" wrapText="true" />
+      <TextArea fx:id="prontFrases" editable="false" layoutX="938.0" layoutY="12.0" opacity="0.0" prefHeight="94.0" prefWidth="245.0" wrapText="true">
          <font>
             <Font name="Comic Sans MS" size="15.0" />
          </font>
       </TextArea>
-      <Button fx:id="botonCompra" layoutX="492.0" layoutY="318.0" mnemonicParsing="false" onAction="#comprarComic" prefHeight="53.0" prefWidth="99.0" text="Paginas recomendadas" wrapText="true" />
+      <Button fx:id="botonCompra" layoutX="492.0" layoutY="382.0" mnemonicParsing="false" onAction="#comprarComic" prefHeight="49.0" prefWidth="99.0" text="Paginas recomendadas" wrapText="true" />
       <Label layoutX="15.0" layoutY="350.0" prefHeight="25.0" prefWidth="117.0" style="-fx-background-color: grey;" text="Busqueda general" wrapText="true">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
       <TextField fx:id="busquedaGeneral" layoutX="140.0" layoutY="350.0" prefHeight="25.0" prefWidth="169.0" />
+      <Button fx:id="botonVerPuntuar" layoutX="492.0" layoutY="256.0" mnemonicParsing="false" onAction="#ventanaPuntuar" prefHeight="53.0" prefWidth="102.0" text="Puntuar Comic" />
+      <Button fx:id="botonVendidos" layoutX="492.0" layoutY="8.0" mnemonicParsing="false" onAction="#comicsVendidos" prefHeight="53.0" prefWidth="102.0" text="Ver Vendidos" />
+      <Button fx:id="botonPuntuacion" layoutX="328.0" layoutY="70.0" mnemonicParsing="false" onAction="#comicsPuntuacion" prefHeight="53.0" prefWidth="141.0" text="Ver puntuaciones" />
    </children>
 </Pane>

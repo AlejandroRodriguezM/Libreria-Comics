@@ -10,31 +10,31 @@ import javafx.stage.Stage;
 
 public class SobreMiController {
 
-    @FXML
-    private Label TextoInfo;
-	
-    @FXML
-    private Button botonSalir;
+	@FXML
+	private Label TextoInfo;
 
-    @FXML
-    private Button botonTwitch;
+	@FXML
+	private Button botonSalir;
 
-    @FXML
-    private Button botonTwitter;
+	@FXML
+	private Button botonTwitch;
 
-    @FXML
-    private Button botonVolver;
+	@FXML
+	private Button botonTwitter;
 
-    @FXML
-    private Button botonYoutube;
+	@FXML
+	private Button botonVolver;
 
-    @FXML
-    private Button numeroVersion;
-    
+	@FXML
+	private Button botonYoutube;
+
+	@FXML
+	private Button numeroVersion;
+
 	private NavegacionVentanas nav = new NavegacionVentanas();
 
-    @FXML
-    void accesoGitHub(ActionEvent event) {
+	@FXML
+	void accesoGitHub(ActionEvent event) {
 
 		String url = "https://github.com/MisterioRojo/Proyecto-gui-bbdd/tree/V.F";
 		if (Utilidades.isWindows()) {
@@ -47,11 +47,11 @@ public class SobreMiController {
 
 			}
 		}
-    	
-    }
 
-    @FXML
-    void accesoTwitter(ActionEvent event) {
+	}
+
+	@FXML
+	void accesoTwitter(ActionEvent event) {
 
 		String url = "https://twitter.com/SilverAlox";
 
@@ -63,11 +63,11 @@ public class SobreMiController {
 			} else {
 				Utilidades.accesoWebMac(url);
 			}
-		}	
-    }
-    
-    @FXML
-    void accesoYoutube(ActionEvent event) {
+		}
+	}
+
+	@FXML
+	void accesoYoutube(ActionEvent event) {
 
 		String url = "https://www.youtube.com/playlist?list=PL7MV626sbFp6EY0vP8gEEgrVCryitFXCM";
 		if (Utilidades.isWindows()) {
@@ -80,10 +80,10 @@ public class SobreMiController {
 
 			}
 		}
-    }
-    
-    @FXML
-    void accesoTwitch(ActionEvent event) {
+	}
+
+	@FXML
+	void accesoTwitch(ActionEvent event) {
 
 		String url = "https://www.twitch.tv/misteriorojo";
 
@@ -95,8 +95,8 @@ public class SobreMiController {
 			} else {
 				Utilidades.accesoWebMac(url);
 			}
-		}	
-    }
+		}
+	}
 
 	/////////////////////////////////
 	//// METODO LLAMADA A VENTANA//

@@ -41,7 +41,7 @@ import java.util.Map.Entry;
  */
 public class Utilidades {
 
-	public static List <Comic> listaLimpia = new ArrayList<Comic>();
+	public static List<Comic> listaLimpia = new ArrayList<>();
 
 	private static NavegacionVentanas nav = new NavegacionVentanas();
 
@@ -127,31 +127,31 @@ public class Utilidades {
 		}
 	}
 
-	public static List<Comic> listaArreglada(List<Comic>listaComics) {
+	public static List<Comic> listaArreglada(List<Comic> listaComics) {
 
-		//Forma número 1 (Uso de Maps).
-		Map<String, Comic> mapComics = new HashMap<String, Comic>(listaComics.size());
+		// Forma número 1 (Uso de Maps).
+		Map<String, Comic> mapComics = new HashMap<>(listaComics.size());
 
-		//Aquí está la magia
+		// Aquí está la magia
 		for (Comic c : listaComics) {
 			mapComics.put(c.getID(), c);
 		}
 
-		//Agrego cada elemento del map a una nueva lista y muestro cada elemento.
+		// Agrego cada elemento del map a una nueva lista y muestro cada elemento.
 
-		for(Entry<String, Comic> c : mapComics.entrySet()) {
+		for (Entry<String, Comic> c : mapComics.entrySet()) {
 
 			listaLimpia.add(c.getValue());
 
-			//			
-			//			Collections.sort(listaLimpia, new Comparator<Comic>() {
-			//			    @Override
-			//				public int compare(Comic o1, Comic o2) {
-			//			        return o1.getID().compareTo(o2.getID());
-			//			    }
-			//			});
-			//		}
-			
+			//
+			// Collections.sort(listaLimpia, new Comparator<Comic>() {
+			// @Override
+			// public int compare(Comic o1, Comic o2) {
+			// return o1.getID().compareTo(o2.getID());
+			// }
+			// });
+			// }
+
 		}
 		return listaLimpia;
 	}

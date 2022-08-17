@@ -183,7 +183,7 @@ public class IntroducirDatosController {
 	private NavegacionVentanas nav = new NavegacionVentanas();
 
 	private Libreria libreria = new Libreria();
-	
+
 	private BBDD bd = new BBDD();
 
 	/**
@@ -216,6 +216,8 @@ public class IntroducirDatosController {
 		guionistaParametro.setText("");
 
 		dibujanteParametro.setText("");
+
+		busquedaGeneral.setText("");
 
 		// Campos de datos a modificar
 
@@ -284,19 +286,18 @@ public class IntroducirDatosController {
 			if (nav.alertaInsertar()) {
 				if (statement.executeUpdate() == 1) { // Sie el resultado del executeUpdate es 1, mostrara el mensaje
 					// correcto.
-					
+
 					pantallaInformativa.setOpacity(1);
 					pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 					pantallaInformativa.setText("Comic introducido correctamente!" + "\nNombre del comic: " + datos[0]
 							+ "\nNumero: " + datos[1] + "\nPortada variante: " + datos[2] + "\nFirma: " + datos[3]
-									+ "\nEditorial: " + datos[4] + "\nFormato: " + datos[5] + "\nProcedencia: " + datos[6]
-											+ "\nFecha de publicacion: " + datos[7] + "\nGuionista: " + datos[8] + "\nDibujante: "
-											+ datos[9]);
+							+ "\nEditorial: " + datos[4] + "\nFormato: " + datos[5] + "\nProcedencia: " + datos[6]
+							+ "\nFecha de publicacion: " + datos[7] + "\nGuionista: " + datos[8] + "\nDibujante: "
+							+ datos[9]);
 					statement.close();
 
-				} 
-				else { // En caso de no haber sido posible Introducir el comic, se vera el siguiente
-					// mensaje.
+				} else { // En caso de no haber sido posible Introducir el comic, se vera el siguiente
+							// mensaje.
 					pantallaInformativa.setOpacity(1);
 					pantallaInformativa.setStyle("-fx-background-color: #F53636");
 					pantallaInformativa.setText(
@@ -347,7 +348,7 @@ public class IntroducirDatosController {
 		String datosComic[] = camposComicActuales();
 
 		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
-				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "");
+				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "", "");
 
 		tablaBBDD(busquedaParametro(comic));
 	}
@@ -436,7 +437,7 @@ public class IntroducirDatosController {
 
 		campos[9] = guionistaParametro.getText();
 
-		campos[9] = dibujanteParametro.getText();
+		campos[10] = dibujanteParametro.getText();
 
 		return campos;
 	}

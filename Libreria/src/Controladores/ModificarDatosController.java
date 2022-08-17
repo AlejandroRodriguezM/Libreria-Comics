@@ -415,7 +415,6 @@ public class ModificarDatosController {
 			pantallaInformativa.setText("ERROR. No ha puesto ningun \nID en la busqueda.");
 			return false;
 		}
-
 	}
 
 	/**
@@ -507,7 +506,7 @@ public class ModificarDatosController {
 			}
 
 			Comic comic = new Comic("", nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
-					guionista, dibujante, "");
+					guionista, dibujante, "", "");
 			comicModicado.add(comic);
 
 		} catch (SQLException ex) {
@@ -549,7 +548,7 @@ public class ModificarDatosController {
 		String datosComic[] = camposComicActuales(); // Contiene los datos por parametro del comic a buscar
 
 		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
-				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "");
+				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "", "");
 
 		tablaBBDD(busquedaParametro(comic)); // Funcion que muestra en la tabla el comic que coincida con los datos del
 												// objeto Comic creado, en caso de existir lo muestra.
