@@ -168,9 +168,10 @@ public class PuntuarDatosController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		ObservableList<String> puntuaciones = FXCollections.observableArrayList("0/0","0.5/5", "1/5", "1.5/5", "2/5", "2.5/5",
+		ObservableList<String> puntuaciones = FXCollections.observableArrayList("","0/0","0.5/5", "1/5", "1.5/5", "2/5", "2.5/5",
 				"3/5", "3.5/5", "4/5", "4.5/5", "5/5");
 		puntuacionMenu.setItems(puntuaciones);
+		puntuacionMenu.getSelectionModel().selectFirst(); //Permite que no exista un valor null, escogiendo el primer valor, que se encuentra vacio, en caso de querer borrar la puntuacion.
 	}
 
 	/**

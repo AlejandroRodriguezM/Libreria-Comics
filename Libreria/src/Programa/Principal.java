@@ -24,11 +24,6 @@ import Controladores.VentanaPrincipalController;
  * Twitter: @silverAlox
  */
 
-/**
- *
- * @author mrmis
- *
- */
 public class Principal {
 
 	public static void main(String[] args) {

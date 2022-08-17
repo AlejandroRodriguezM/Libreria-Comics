@@ -311,7 +311,7 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 *
+	 * Funcion que al pulsar el boton de 'botonPuntuacion' se muestran aquellos comics que tienen una puntuacion
 	 * @param event
 	 */
 	@FXML
@@ -321,7 +321,7 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 *
+	 * Funcion que al pulsar el boton de 'botonVentas' se muestran aquellos comics que han sido vendidos
 	 * @param event
 	 */
 	@FXML
@@ -613,7 +613,7 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 *
+	 * Funcion que comprueba segun los datos escritos en los textArea, que comic estas buscando.
 	 */
 	public void listaPorParametro() {
 		String datosComic[] = camposComic();
