@@ -265,7 +265,7 @@ public class IntroducirDatosController {
 	public void introducirDatos() {
 		ConexionBBDD.loadDriver();
 
-		String sentenciaSQL = "insert into comicsbbdd(nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante) values (?,?,?,?,?,?,?,?,?,?)";
+		String sentenciaSQL = "insert into comicsbbdd(nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante,puntuacion) values (?,?,?,?,?,?,?,?,?,?,?)";
 
 		String datos[] = camposComicIntroducir();
 
@@ -282,6 +282,7 @@ public class IntroducirDatosController {
 			statement.setString(8, datos[7]);
 			statement.setString(9, datos[8]);
 			statement.setString(10, datos[9]);
+			statement.setString(11, "");
 
 			if (nav.alertaInsertar()) {
 				if (statement.executeUpdate() == 1) { // Sie el resultado del executeUpdate es 1, mostrara el mensaje

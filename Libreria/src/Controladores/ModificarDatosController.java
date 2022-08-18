@@ -14,7 +14,7 @@ package Controladores;
  *  - Ver frases de personajes de comics
  *  - Opcion de escoger algo para leer de forma aleatoria.
  *
- *  Esta clase permite acceder a la ventana para modificar datos.
+ *  Esta clase sirve para modificar datos de forma individual de cada comic
  *
  *  Version Final
  *
@@ -45,11 +45,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
-/**
- * Esta clase sirve para modificar datos de forma individual de cada comic
- *
- * @author Alejandro Rodriguez
- */
 public class ModificarDatosController {
 
 	public static List<Comic> comicModicado = new ArrayList<>();
