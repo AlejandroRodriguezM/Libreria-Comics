@@ -89,7 +89,7 @@ public class EliminarDatosController {
 
 	@FXML
 	private TextArea pantallaInformativa;
-	
+
 	@FXML
 	private TextField idComicTratar;
 

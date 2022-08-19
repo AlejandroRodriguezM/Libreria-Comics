@@ -315,7 +315,7 @@ public class MenuPrincipalController {
 	/**
 	 * Funcion que al pulsar el boton de 'botonPuntuacion' se muestran aquellos
 	 * comics que tienen una puntuacion
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -328,7 +328,7 @@ public class MenuPrincipalController {
 	/**
 	 * Funcion que al pulsar el boton de 'botonVentas' se muestran aquellos comics
 	 * que han sido vendidos
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -353,10 +353,10 @@ public class MenuPrincipalController {
 	void importCSV(ActionEvent event) {
 
 		String frase = "Fichero CSV";
-		
-		String formato = "*.csv"; 
 
-		File fichero = tratarFichero(frase,formato).showOpenDialog(null); //Llamada a funcion
+		String formato = "*.csv";
+
+		File fichero = tratarFichero(frase, formato).showOpenDialog(null); // Llamada a funcion
 
 		importCSV(fichero);
 	}
@@ -370,12 +370,11 @@ public class MenuPrincipalController {
 	@FXML
 	void exportCSV(ActionEvent event) {
 
-
 		String frase = "Fichero Excel xlsx";
 
-		String formato ="*.xlsx";
+		String formato = "*.xlsx";
 
-		File fichero = tratarFichero(frase,formato).showSaveDialog(null); //Llamada a funcion
+		File fichero = tratarFichero(frase, formato).showSaveDialog(null); // Llamada a funcion
 
 		makeExcel(fichero);
 	}
@@ -392,22 +391,23 @@ public class MenuPrincipalController {
 
 		String formato = "*.sql";
 
-		File fichero = tratarFichero(frase,formato).showSaveDialog(null); //Llamada a funcion
+		File fichero = tratarFichero(frase, formato).showSaveDialog(null); // Llamada a funcion
 
 		makeSQL(fichero);
 
 	}
 
 	/**
-	 * Funcion que abre una ventana que aceptara los formatos de archivos que le demos como parametro.
+	 * Funcion que abre una ventana que aceptara los formatos de archivos que le
+	 * demos como parametro.
+	 *
 	 * @param frase
 	 * @param formato
 	 * @return
 	 */
-	public FileChooser tratarFichero(String frase, String formato)
-	{
+	public FileChooser tratarFichero(String frase, String formato) {
 		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(frase, formato)); 
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(frase, formato));
 
 		return fileChooser;
 	}
@@ -653,6 +653,7 @@ public class MenuPrincipalController {
 			listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
 
 			if (listComic.size() == 0) {
+				prontInfo.setOpacity(1);
 				prontInfo.setStyle("-fx-background-color: #F53636");
 				prontInfo.setText("ERROR. No hay ningun dato escrito para poder realizar la busqueda");
 			}
@@ -671,6 +672,7 @@ public class MenuPrincipalController {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreria());
 
 		if (listComic.size() == 0) {
+			prontInfo.setOpacity(1);
 			prontInfo.setStyle("-fx-background-color: #F53636");
 			prontInfo.setText("ERROR. La base de datos se encuentra vacia");
 		}
@@ -688,6 +690,7 @@ public class MenuPrincipalController {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaVendidos());
 
 		if (listComic.size() == 0) {
+			prontInfo.setOpacity(1);
 			prontInfo.setStyle("-fx-background-color: #F53636");
 			prontInfo.setText("ERROR. La base de datos se encuentra vacia");
 		}
@@ -705,6 +708,7 @@ public class MenuPrincipalController {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaPuntuacion());
 
 		if (listComic.size() == 0) {
+			prontInfo.setOpacity(1);
 			prontInfo.setStyle("-fx-background-color: #F53636");
 			prontInfo.setText("ERROR. La base de datos se encuentra vacia");
 		}
@@ -721,6 +725,7 @@ public class MenuPrincipalController {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaCompleta());
 
 		if (listComic.size() == 0) {
+			prontInfo.setOpacity(1);
 			prontInfo.setStyle("-fx-background-color: #F53636");
 			prontInfo.setText("ERROR. La base de datos se encuentra vacia");
 		}

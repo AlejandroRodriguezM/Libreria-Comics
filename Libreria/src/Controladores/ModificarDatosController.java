@@ -249,7 +249,7 @@ public class ModificarDatosController {
 		idComicMod.setStyle(null);
 
 		pantallaInformativa.setOpacity(0);
-		
+
 		tablaBBDD.getItems().clear();
 	}
 

@@ -182,7 +182,7 @@ public class PuntuarDatosController implements Initializable {
 	/**
 	 * Funcion que permite que al pulsar el boton 'botonOpinion' se modifique el
 	 * dato "puntuacion" de un comic en concreto usando su ID"
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -213,7 +213,7 @@ public class PuntuarDatosController implements Initializable {
 
 	/**
 	 * Funcion que permite borrar la opinion de un comic
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -324,7 +324,7 @@ public class PuntuarDatosController implements Initializable {
 	/**
 	 * Funcion que permite modificar la puntuacion de un comic, siempre y cuando el
 	 * ID exista en la base de datos
-	 * 
+	 *
 	 * @param ps
 	 * @return
 	 */
@@ -344,7 +344,7 @@ public class PuntuarDatosController implements Initializable {
 
 	/**
 	 * Limpia los diferentes datos que se ven en pantalla
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -376,13 +376,13 @@ public class PuntuarDatosController implements Initializable {
 		busquedaGeneral.setText("");
 
 		idPuntuar.setText("");
-		
+
 		idPuntuar.setStyle(null);
 
 		pantallaInformativa.setText(null);
 
 		pantallaInformativa.setOpacity(0);
-		
+
 		tablaBBDD.getItems().clear();
 
 	}
@@ -414,7 +414,7 @@ public class PuntuarDatosController implements Initializable {
 	/**
 	 * Funcion que permite, que a la hora de pulsar el boton 'botonLeidos' se
 	 * muestren aquellos comics que tengan una puntuacion
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -503,6 +503,7 @@ public class PuntuarDatosController implements Initializable {
 			listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
 
 			if (listComic.size() == 0) {
+				pantallaInformativa.setOpacity(1);
 				pantallaInformativa.setStyle("-fx-background-color: #F53636");
 				pantallaInformativa.setText("ERROR. No hay ningun dato escrito para poder realizar la busqueda");
 			}

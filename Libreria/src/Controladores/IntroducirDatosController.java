@@ -244,7 +244,7 @@ public class IntroducirDatosController {
 		pantallaInformativa.setText(null);
 
 		pantallaInformativa.setOpacity(0);
-		
+
 		tablaBBDD.getItems().clear();
 	}
 
