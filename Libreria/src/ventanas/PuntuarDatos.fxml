@@ -31,8 +31,8 @@
       <TextField fx:id="guionistaParametro" layoutX="141.0" layoutY="289.0" prefHeight="25.0" prefWidth="138.0" />
       <TextField fx:id="dibujanteParametro" layoutX="141.0" layoutY="320.0" prefHeight="25.0" prefWidth="138.0" />
       <TextField fx:id="busquedaGeneral" layoutX="142.0" layoutY="351.0" prefHeight="25.0" prefWidth="138.0" />
-      <Button fx:id="botonbbdd" layoutX="294.0" layoutY="14.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="42.0" prefWidth="113.0" text="Ver toda la base de datos" wrapText="true" />
-      <Button fx:id="botonMostrarParametro" layoutX="422.0" layoutY="14.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="42.0" prefWidth="100.0" text="Mostrar segun parametros" wrapText="true" />
+      <Button fx:id="botonbbdd" layoutX="423.0" layoutY="18.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="42.0" prefWidth="100.0" text="Ver toda la base de datos" wrapText="true" />
+      <Button fx:id="botonMostrarParametro" layoutX="294.0" layoutY="17.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="42.0" prefWidth="113.0" text="Mostrar segun parametros" wrapText="true" />
       <Button fx:id="botonLeidos" layoutX="294.0" layoutY="66.0" mnemonicParsing="false" onAction="#verComicsLeidos" prefHeight="34.0" prefWidth="113.0" text="Ver Comics leidos" wrapText="true" />
       <Button fx:id="botonLimpiarComic" layoutX="422.0" layoutY="67.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="34.0" prefWidth="100.0" text="Limpiar datos" />
       <TextField fx:id="idPuntuar" layoutX="372.0" layoutY="109.0" prefHeight="25.0" prefWidth="102.0" />
@@ -81,7 +81,7 @@
             <Font size="14.0" />
          </font>
       </Label>
-      <TextArea fx:id="pantallaInformativa" editable="false" layoutX="903.0" layoutY="20.0" opacity="0.0" prefHeight="279.0" prefWidth="280.0" wrapText="true" />
+      <TextArea fx:id="pantallaInformativa" editable="false" layoutX="971.0" layoutY="17.0" opacity="0.0" prefHeight="202.0" prefWidth="210.0" wrapText="true" />
       <Label layoutX="18.0" layoutY="47.0" style="-fx-background-color: white;" text="Nombre" />
       <Label layoutX="17.0" layoutY="351.0" prefHeight="25.0" prefWidth="117.0" style="-fx-background-color: white;" text="Busqueda general" wrapText="true">
          <font>

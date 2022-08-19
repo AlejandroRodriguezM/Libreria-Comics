@@ -474,7 +474,7 @@ public class NavegacionVentanas {
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
 		stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
 		stage.setResizable(false);
-		alert.setTitle("Modificando . . .");
+		alert.setTitle("Borrando puntuacion . . .");
 		alert.setHeaderText("Estas apunto de borrar la puntuacion.");
 		alert.setContentText(" Estas seguro que borrar la puntuacion del comic?");
 		if (alert.showAndWait().get() == ButtonType.OK) {
@@ -493,7 +493,7 @@ public class NavegacionVentanas {
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
 		stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
 		stage.setResizable(false);
-		alert.setTitle("Modificando . . .");
+		alert.setTitle("Agregando puntuacion . . .");
 		alert.setHeaderText("Estas apunto de agregar la puntuacion.");
 		alert.setContentText(" Estas seguro que agregar la puntuacion del comic?");
 		if (alert.showAndWait().get() == ButtonType.OK) {

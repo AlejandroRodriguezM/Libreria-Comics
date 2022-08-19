@@ -256,7 +256,7 @@ public class PuntuarDatosController implements Initializable {
 				if (ps.executeUpdate() == 1) { // Si se ha modificado correctamente, saltara el siguiente mensaje
 					pantallaInformativa.setOpacity(1);
 					pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-					pantallaInformativa.setText("Opinion añadida con exito: " + comic.toString());
+					pantallaInformativa.setText("Opinion introducida con exito: " + comic.toString());
 				}
 			}
 		} catch (SQLException ex) {
@@ -285,7 +285,7 @@ public class PuntuarDatosController implements Initializable {
 				if (ps.executeUpdate() == 1) { // Si se ha modificado correctamente, saltara el siguiente mensaje
 					pantallaInformativa.setOpacity(1);
 					pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-					pantallaInformativa.setText("Opinion añadida con exito: " + comic.toString());
+					pantallaInformativa.setText("Opinion borrada con exito: " + comic.toString());
 				}
 			}
 		} catch (SQLException ex) {
