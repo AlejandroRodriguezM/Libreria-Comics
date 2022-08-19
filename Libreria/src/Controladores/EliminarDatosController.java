@@ -89,6 +89,9 @@ public class EliminarDatosController {
 
 	@FXML
 	private TextArea pantallaInformativa;
+	
+	@FXML
+	private TextField idComicTratar;
 
 	@FXML
 	public TableView<Comic> tablaBBDD;
@@ -156,6 +159,7 @@ public class EliminarDatosController {
 		pantallaInformativa.setText(null);
 		pantallaInformativa.setOpacity(0);
 		tablaBBDD.getItems().clear();
+		idComicTratar.setStyle(null);
 	}
 
 	/**
@@ -319,10 +323,12 @@ public class EliminarDatosController {
 						pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 						pantallaInformativa.setText(
 								"Has eliminado correctamente: " + comic.toString().replace("[", "").replace("]", ""));
+						idComicTratar.setStyle(null);
 					} else { // En caso contrario mostrara lo siguiente
 						pantallaInformativa.setOpacity(1);
 						pantallaInformativa.setStyle("-fx-background-color: #F53636");
 						pantallaInformativa.setText("ERROR. ID desconocido.");
+						idComicTratar.setStyle("-fx-background-color: red");
 					}
 				}
 			} else { // Si se cancela el borra del comic, saltara el siguiente mensaje.
@@ -343,7 +349,7 @@ public class EliminarDatosController {
 
 		sentenciaSQL = "UPDATE Comicsbbdd set estado = 'Vendido' where ID = ?";
 
-		id = idComic.getText();
+		id = idComicTratar.getText();
 
 		modifyDataBase(id, sentenciaSQL);
 
@@ -357,7 +363,7 @@ public class EliminarDatosController {
 
 		sentenciaSQL = "DELETE from Comicsbbdd where ID = ?";
 
-		id = idComic.getText();
+		id = idComicTratar.getText();
 
 		modifyDataBase(id, sentenciaSQL);
 

@@ -43,10 +43,10 @@
       <TextField fx:id="anioPublicacion" layoutX="136.0" layoutY="255.0" prefHeight="25.0" prefWidth="169.0" />
       <TextField fx:id="nombreGuionista" layoutX="136.0" layoutY="286.0" prefHeight="25.0" prefWidth="169.0" />
       <TextField fx:id="nombreDibujante" layoutX="136.0" layoutY="316.0" prefHeight="25.0" prefWidth="169.0" />
-      <Button fx:id="botonMostrarParametro" layoutX="329.0" layoutY="5.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="49.0" prefWidth="161.0" text="Mostrar segun parametros" />
-      <Button fx:id="botonbbdd" layoutX="329.0" layoutY="63.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="53.0" prefWidth="161.0" text="Ver toda la base de datos" />
-      <Button fx:id="botonEliminar" layoutX="329.0" layoutY="124.0" mnemonicParsing="false" onAction="#eliminarDatos" prefHeight="54.0" prefWidth="161.0" text="Eliminar comic de la bbdd" />
-      <Button fx:id="botonLimpiarComic" layoutX="329.0" layoutY="249.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="54.0" prefWidth="93.0" text="Limpiar datos" />
+      <Button fx:id="botonMostrarParametro" layoutX="320.0" layoutY="46.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="49.0" prefWidth="161.0" text="Mostrar segun parametros" />
+      <Button fx:id="botonbbdd" layoutX="320.0" layoutY="104.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="53.0" prefWidth="161.0" text="Ver toda la base de datos" />
+      <Button fx:id="botonEliminar" layoutX="320.0" layoutY="165.0" mnemonicParsing="false" onAction="#eliminarDatos" prefHeight="54.0" prefWidth="161.0" text="Eliminar comic de la bbdd" />
+      <Button fx:id="botonLimpiarComic" layoutX="320.0" layoutY="290.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="54.0" prefWidth="93.0" text="Limpiar datos" />
       <Button fx:id="botonVolver" layoutX="841.0" layoutY="315.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="54.0" prefWidth="93.0" text="Volver" />
       <Button fx:id="botonSalir" layoutX="961.0" layoutY="315.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="54.0" prefWidth="93.0" text="Salir" />
       <Label layoutX="10.0" layoutY="288.0" style="-fx-background-color: white;" text="Guionista">
@@ -106,9 +106,15 @@
          </font>
       </Label>
       <TextField fx:id="busquedaGeneral" layoutX="137.0" layoutY="349.0" prefHeight="25.0" prefWidth="169.0" />
-      <Button fx:id="botonVender" ellipsisString="" layoutX="329.0" layoutY="188.0" mnemonicParsing="false" onAction="#ventaDatos" prefHeight="54.0" prefWidth="161.0" text="Vender Comic de la bbdd" />
+      <Button fx:id="botonVender" ellipsisString="" layoutX="320.0" layoutY="229.0" mnemonicParsing="false" onAction="#ventaDatos" prefHeight="54.0" prefWidth="161.0" text="Vender Comic de la bbdd" />
       <TextField fx:id="idComic" layoutX="136.0" layoutY="6.0" prefHeight="25.0" prefWidth="169.0" />
       <Label layoutX="9.0" layoutY="9.0" style="-fx-background-color: white;" text="ID">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <TextField fx:id="idComicTratar" layoutX="451.0" layoutY="7.0" prefHeight="25.0" prefWidth="60.0" />
+      <Label layoutX="320.0" layoutY="9.0" style="-fx-background-color: white;" text="ID a eliminar/vender">
          <font>
             <Font size="14.0" />
          </font>

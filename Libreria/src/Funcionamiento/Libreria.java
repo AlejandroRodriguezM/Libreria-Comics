@@ -255,9 +255,9 @@ public class Libreria extends Comic {
 	 * @return
 	 */
 	public String datosConcatenados(Comic comic) {
-		String connector = " AND ";
+		String connector = " WHERE ";
 		StringBuilder sql = new StringBuilder();
-		sql.append("SELECT * FROM comicsbbdd where estado = 'En posesion'");
+		sql.append("SELECT * FROM comicsbbdd");
 
 		if (comic.getID().length() != 0) {
 

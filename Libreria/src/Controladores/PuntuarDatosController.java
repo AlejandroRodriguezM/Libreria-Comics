@@ -336,10 +336,7 @@ public class PuntuarDatosController implements Initializable {
 		try {
 			if (puntuacion.length() != 0) {
 				ps.setString(1, puntuacion);
-			} else {
-				ps.setString(1, "");
 			}
-
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
 		}
@@ -379,6 +376,8 @@ public class PuntuarDatosController implements Initializable {
 		busquedaGeneral.setText("");
 
 		idPuntuar.setText("");
+		
+		idPuntuar.setStyle(null);
 
 		pantallaInformativa.setText(null);
 
