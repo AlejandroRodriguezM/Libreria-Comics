@@ -187,6 +187,7 @@ public class EliminarDatosController {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
+		libreria.reiniciarBBDD();
 		nombreColumnas();
 		listaPorParametro();
 
@@ -199,6 +200,7 @@ public class EliminarDatosController {
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) throws SQLException {
+		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(libreriaCompleta());
 	}

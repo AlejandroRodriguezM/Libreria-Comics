@@ -325,6 +325,7 @@ public class IntroducirDatosController {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
+		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
 		listaPorParametro(); // Llamada a funcion
 	}
@@ -336,6 +337,7 @@ public class IntroducirDatosController {
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) {
+		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
 		tablaBBDD(libreriaCompleta()); // Llamada a funcion
 
@@ -348,6 +350,7 @@ public class IntroducirDatosController {
 	 * @return
 	 */
 	public void listaPorParametro() {
+		libreria.reiniciarBBDD();
 		String datosComic[] = camposComicActuales();
 
 		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],

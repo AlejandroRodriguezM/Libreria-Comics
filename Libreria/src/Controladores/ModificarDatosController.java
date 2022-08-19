@@ -518,7 +518,7 @@ public class ModificarDatosController {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
-
+		libreria.reiniciarBBDD();
 		nombreColumnas();
 		listaPorParametro();
 	}
@@ -530,7 +530,7 @@ public class ModificarDatosController {
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) throws SQLException {
-
+		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(libreriaCompleta());
 	}

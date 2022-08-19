@@ -395,6 +395,7 @@ public class PuntuarDatosController implements Initializable {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
+		libreria.reiniciarBBDD();
 		nombreColumnas();
 		listaPorParametro();
 	}
@@ -406,6 +407,7 @@ public class PuntuarDatosController implements Initializable {
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) {
+		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(libreriaPosesion());
 	}
@@ -418,6 +420,7 @@ public class PuntuarDatosController implements Initializable {
 	 */
 	@FXML
 	void verComicsLeidos(ActionEvent event) {
+		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(libreriaPuntuacion());
 	}
