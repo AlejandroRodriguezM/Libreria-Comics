@@ -465,6 +465,44 @@ public class NavegacionVentanas {
 	}
 
 	/**
+	 * Llama a una ventana de alarma que avisa si se va a modificar un dato
+	 *
+	 * @return
+	 */
+	public boolean alertaBorrarPuntuacion() {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
+		stage.setResizable(false);
+		alert.setTitle("Modificando . . .");
+		alert.setHeaderText("Estas apunto de borrar la puntuacion.");
+		alert.setContentText(" Estas seguro que borrar la puntuacion del comic?");
+		if (alert.showAndWait().get() == ButtonType.OK) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Llama a una ventana de alarma que avisa si se va a modificar un dato
+	 *
+	 * @return
+	 */
+	public boolean alertaAgregarPuntuacion() {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
+		stage.setResizable(false);
+		alert.setTitle("Modificando . . .");
+		alert.setHeaderText("Estas apunto de agregar la puntuacion.");
+		alert.setContentText(" Estas seguro que agregar la puntuacion del comic?");
+		if (alert.showAndWait().get() == ButtonType.OK) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Llama a una ventana de alarma que avisa si se va a introducir un dato
 	 *
 	 * @return

@@ -295,6 +295,7 @@ public class MenuPrincipalController {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
+		libreria.reiniciarBBDD();
 		nombreColumnas();
 		listaPorParametro();
 	}
@@ -306,26 +307,34 @@ public class MenuPrincipalController {
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) {
+		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(libreriaPosesion());
 	}
 
 	/**
-	 * Funcion que al pulsar el boton de 'botonPuntuacion' se muestran aquellos comics que tienen una puntuacion
+	 * Funcion que al pulsar el boton de 'botonPuntuacion' se muestran aquellos
+	 * comics que tienen una puntuacion
+	 * 
 	 * @param event
 	 */
 	@FXML
 	void comicsPuntuacion(ActionEvent event) {
+		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(libreriaPuntuacion());
 	}
 
 	/**
-	 * Funcion que al pulsar el boton de 'botonVentas' se muestran aquellos comics que han sido vendidos
+	 * Funcion que al pulsar el boton de 'botonVentas' se muestran aquellos comics
+	 * que han sido vendidos
+	 * 
 	 * @param event
 	 */
 	@FXML
 	void comicsVendidos(ActionEvent event) {
+
+		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(libreriaVendidos());
 	}
@@ -343,18 +352,13 @@ public class MenuPrincipalController {
 	@FXML
 	void importCSV(ActionEvent event) {
 
-		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero CSV", "*.csv")); // Permite
-																											// escoger
-																											// solamente
-																											// ficheros
-																											// cuya
-																											// extension
-																											// es CSV
-		File fichero = fileChooser.showOpenDialog(null); // Hace que el fileChooser sea solamente para abrir el fichero
+		String frase = "Fichero CSV";
+		
+		String formato = "*.csv"; 
+
+		File fichero = tratarFichero(frase,formato).showOpenDialog(null); //Llamada a funcion
 
 		importCSV(fichero);
-
 	}
 
 	/**
@@ -366,17 +370,12 @@ public class MenuPrincipalController {
 	@FXML
 	void exportCSV(ActionEvent event) {
 
-		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero Excel xlsx", "*.xlsx")); // Permite
-																													// escoger
-																													// solamente
-																													// ficheros
-																													// cuya
-																													// extension
-																													// es
-																													// .xlsx
-		File fichero = fileChooser.showSaveDialog(null); // Hace que el fileChooser sea solamente para guardar el
-															// fichero
+
+		String frase = "Fichero Excel xlsx";
+
+		String formato ="*.xlsx";
+
+		File fichero = tratarFichero(frase,formato).showSaveDialog(null); //Llamada a funcion
 
 		makeExcel(fichero);
 	}
@@ -389,19 +388,28 @@ public class MenuPrincipalController {
 	@FXML
 	void exportarSQL(ActionEvent event) {
 
-		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichero SQL", "*.sql")); // Permite
-																											// escoger
-																											// solamente
-																											// ficheros
-																											// cuya
-																											// extension
-																											// es .xlsx
-		File fichero = fileChooser.showSaveDialog(null); // Hace que el fileChooser sea solamente para guardar el
-															// fichero
+		String frase = "Fichero SQL";
+
+		String formato = "*.sql";
+
+		File fichero = tratarFichero(frase,formato).showSaveDialog(null); //Llamada a funcion
 
 		makeSQL(fichero);
 
+	}
+
+	/**
+	 * Funcion que abre una ventana que aceptara los formatos de archivos que le demos como parametro.
+	 * @param frase
+	 * @param formato
+	 * @return
+	 */
+	public FileChooser tratarFichero(String frase, String formato)
+	{
+		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(frase, formato)); 
+
+		return fileChooser;
 	}
 
 	/**
@@ -419,7 +427,7 @@ public class MenuPrincipalController {
 		nombreFirma.setText("");
 		nombreEditorial.setText("");
 		nombreFormato.setText("");
-		procedencia.setText("");
+		nombreProcedencia.setText("");
 		anioPublicacion.setText("");
 		nombreDibujante.setText("");
 		nombreGuionista.setText("");
@@ -427,6 +435,7 @@ public class MenuPrincipalController {
 		prontFrases.setText(null);
 		prontInfo.setOpacity(0);
 		prontFrases.setOpacity(0);
+		tablaBBDD.getItems().clear();
 
 	}
 
@@ -531,18 +540,18 @@ public class MenuPrincipalController {
 
 			if (fichero != null) {
 				if (excelFuntions.crearExcel(fichero)) { // Si el fichero XLSX y CSV se han creado se vera el siguiente
-															// mensaje
+					// mensaje
 					prontInfo.setOpacity(1);
 					prontInfo.setStyle("-fx-background-color: #A0F52D");
 					prontInfo.setText("Fichero excel exportado de forma correcta");
 				} else { // Si no se ha podido crear correctamente los ficheros se vera el siguiente
-							// mensaje
+					// mensaje
 					prontInfo.setOpacity(1);
 					prontInfo.setStyle("-fx-background-color: #F53636");
 					prontInfo.setText("ERROR. No se ha podido exportar correctamente.");
 				}
 			} else { // En caso de cancelar la creacion de los ficheros, se mostrara el siguiente
-						// mensaje.
+				// mensaje.
 				prontInfo.setOpacity(1);
 				prontInfo.setStyle("-fx-background-color: #F53636");
 				prontInfo.setText("ERROR. Se ha cancelado la exportacion.");
@@ -562,7 +571,7 @@ public class MenuPrincipalController {
 
 			if (fichero != null) {
 				if (excelFuntions.importarCSV(fichero)) { // Si se ha importado el fichero CSV correctamente, se vera el
-															// siguiente mensaje
+					// siguiente mensaje
 					prontInfo.setOpacity(1);
 					prontInfo.setStyle("-fx-background-color: #A0F52D");
 					prontInfo.setText("Fichero CSV importado de forma correcta");
@@ -572,7 +581,7 @@ public class MenuPrincipalController {
 					prontInfo.setText("ERROR. No se ha podido importar correctamente.");
 				}
 			} else { // En caso de cancelar la importacion del fichero, se mostrara el siguiente
-						// mensaje.
+				// mensaje.
 				prontInfo.setOpacity(1);
 				prontInfo.setStyle("-fx-background-color: #F53636");
 				prontInfo.setText("ERROR. Se ha cancelado la importacion.");
@@ -613,7 +622,8 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * Funcion que comprueba segun los datos escritos en los textArea, que comic estas buscando.
+	 * Funcion que comprueba segun los datos escritos en los textArea, que comic
+	 * estas buscando.
 	 */
 	public void listaPorParametro() {
 		String datosComic[] = camposComic();

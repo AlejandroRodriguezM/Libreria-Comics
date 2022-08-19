@@ -73,6 +73,9 @@ public class PuntuarDatosController implements Initializable {
 	private Button botonLeidos;
 
 	@FXML
+	private Button botonBorrarOpinion;
+
+	@FXML
 	private TextField busquedaGeneral;
 
 	@FXML
@@ -168,32 +171,38 @@ public class PuntuarDatosController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		ObservableList<String> puntuaciones = FXCollections.observableArrayList("","0/0","0.5/5", "1/5", "1.5/5", "2/5", "2.5/5",
-				"3/5", "3.5/5", "4/5", "4.5/5", "5/5");
+		ObservableList<String> puntuaciones = FXCollections.observableArrayList("0/0", "0.5/5", "1/5", "1.5/5", "2/5",
+				"2.5/5", "3/5", "3.5/5", "4/5", "4.5/5", "5/5");
 		puntuacionMenu.setItems(puntuaciones);
-		puntuacionMenu.getSelectionModel().selectFirst(); //Permite que no exista un valor null, escogiendo el primer valor, que se encuentra vacio, en caso de querer borrar la puntuacion.
+		puntuacionMenu.getSelectionModel().selectFirst(); // Permite que no exista un valor null, escogiendo el primer
+															// valor, que se encuentra vacio, en caso de querer borrar
+															// la puntuacion.
 	}
 
 	/**
-	 * Funcion que permite que al pulsar el boton 'botonOpinion' se modifique el dato "puntuacion" de un comic en concreto usando su ID"
+	 * Funcion que permite que al pulsar el boton 'botonOpinion' se modifique el
+	 * dato "puntuacion" de un comic en concreto usando su ID"
+	 * 
 	 * @param event
 	 */
 	@FXML
 	void agregarOpinion(ActionEvent event) {
 
-		insertarOpinion(); //Llamada a funcion
+		insertarOpinion(); // Llamada a funcion
 	}
 
 	/**
-	 * Funcion que permite insertar una puntuacion a un comic segun la ID introducida.
+	 * Funcion que permite insertar una puntuacion a un comic segun la ID
+	 * introducida.
 	 */
 	public void insertarOpinion() {
 
 		String sentenciaSQL = "UPDATE comicsbbdd set puntuacion = ? where ID = ?";
 
-		if (nav.alertaModificar()) { // Llamada a alerta de modificacion
+		if (nav.alertaAgregarPuntuacion()) { // Llamada a alerta de modificacion
 
-			comprobarOpinion(sentenciaSQL); // Llamada a funcion que permite comprobar el cambio realizado en el comic
+			comprobarOpinionInsertada(sentenciaSQL); // Llamada a funcion que permite comprobar el cambio realizado en
+														// el comic
 
 		} else { // Si se cancela la opinion del comic, saltara el siguiente mensaje.
 			pantallaInformativa.setOpacity(1);
@@ -203,20 +212,75 @@ public class PuntuarDatosController implements Initializable {
 	}
 
 	/**
+	 * Funcion que permite borrar la opinion de un comic
+	 * 
+	 * @param event
+	 */
+	@FXML
+	void borrarOpinion(ActionEvent event) {
+
+		String sentenciaSQL = "UPDATE comicsbbdd set puntuacion = '' where ID = ?";
+
+		if (nav.alertaBorrarPuntuacion()) { // Llamada a alerta de modificacion
+
+			comprobarOpinionBorrada(sentenciaSQL); // Llamada a funcion que permite comprobar el cambio realizado en el
+													// comic
+
+		} else { // Si se cancela la opinion del comic, saltara el siguiente mensaje.
+			pantallaInformativa.setOpacity(1);
+			pantallaInformativa.setStyle("-fx-background-color: #F53636");
+			pantallaInformativa.setText("Opinion cancelada.");
+		}
+
+	}
+
+	/**
 	 * Funcion que comprueba si la opinion se ha introducida correctamente
 	 *
 	 * @param ps
 	 * @return
 	 */
-	public void comprobarOpinion(String sentenciaSQL) {
+	public void comprobarOpinionInsertada(String sentenciaSQL) {
+
+		String identificador = idPuntuar.getText();
+
 		try {
 			PreparedStatement ps = null;
 			ps = conn.prepareStatement(sentenciaSQL);
 			if (comprobarID()) // Comprueba si la ID introducida existe en la base de datos
 			{
-				Comic comic = libreria.comicDatos(idPuntuar.getText());
+				Comic comic = libreria.comicDatos(identificador);
 				ps.setString(2, idPuntuar.getText());
-				comicModificar(ps); // Llama a funcion que permite añadir la opinion al comic
+				comicPuntuacion(ps); // Llama a funcion que permite añadir la opinion al comic
+
+				if (ps.executeUpdate() == 1) { // Si se ha modificado correctamente, saltara el siguiente mensaje
+					pantallaInformativa.setOpacity(1);
+					pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
+					pantallaInformativa.setText("Opinion añadida con exito: " + comic.toString());
+				}
+			}
+		} catch (SQLException ex) {
+			nav.alertaException(ex.toString());
+		}
+	}
+
+	/**
+	 * Funcion que comprueba si la opinion se ha introducida correctamente
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public void comprobarOpinionBorrada(String sentenciaSQL) {
+
+		String identificador = idPuntuar.getText();
+
+		try {
+			PreparedStatement ps = null;
+			ps = conn.prepareStatement(sentenciaSQL);
+			if (comprobarID()) // Comprueba si la ID introducida existe en la base de datos
+			{
+				Comic comic = libreria.comicDatos(identificador);
+				ps.setString(1, idPuntuar.getText());
 
 				if (ps.executeUpdate() == 1) { // Si se ha modificado correctamente, saltara el siguiente mensaje
 					pantallaInformativa.setOpacity(1);
@@ -239,7 +303,7 @@ public class PuntuarDatosController implements Initializable {
 
 		if (identificador.length() != 0) { // Si has introducido ID a la hora de realizar la modificacion, permitira lo
 											// siguiente
-			if (libreria.chechID(idPuntuar.getText())) {
+			if (libreria.chechID(identificador)) {
 				return true;
 			} else // En caso contrario lanzara el siguiente mensaje en pantalla
 			{
@@ -258,13 +322,16 @@ public class PuntuarDatosController implements Initializable {
 	}
 
 	/**
-	 * Funcion que permite modificar la puntuacion de un comic, siempre y cuando el ID exista en la base de datos
+	 * Funcion que permite modificar la puntuacion de un comic, siempre y cuando el
+	 * ID exista en la base de datos
+	 * 
 	 * @param ps
 	 * @return
 	 */
-	public void comicModificar(PreparedStatement ps) {
+	public void comicPuntuacion(PreparedStatement ps) {
 
-		String puntuacion = puntuacionMenu.getSelectionModel().getSelectedItem().toString(); //Toma el valor del menu "puntuacion"
+		String puntuacion = puntuacionMenu.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+																								// "puntuacion"
 
 		try {
 			if (puntuacion.length() != 0) {
@@ -280,6 +347,7 @@ public class PuntuarDatosController implements Initializable {
 
 	/**
 	 * Limpia los diferentes datos que se ven en pantalla
+	 * 
 	 * @param event
 	 */
 	@FXML
@@ -315,6 +383,8 @@ public class PuntuarDatosController implements Initializable {
 		pantallaInformativa.setText(null);
 
 		pantallaInformativa.setOpacity(0);
+		
+		tablaBBDD.getItems().clear();
 
 	}
 
@@ -341,7 +411,9 @@ public class PuntuarDatosController implements Initializable {
 	}
 
 	/**
-	 * Funcion que permite, que a la hora de pulsar el boton 'botonLeidos' se muestren aquellos comics que tengan una puntuacion
+	 * Funcion que permite, que a la hora de pulsar el boton 'botonLeidos' se
+	 * muestren aquellos comics que tengan una puntuacion
+	 * 
 	 * @param event
 	 */
 	@FXML
@@ -398,7 +470,8 @@ public class PuntuarDatosController implements Initializable {
 	}
 
 	/**
-	 * Funcion que comprueba segun los datos escritos en los textArea, que comic estas buscando.
+	 * Funcion que comprueba segun los datos escritos en los textArea, que comic
+	 * estas buscando.
 	 */
 	public void listaPorParametro() {
 		String datosComic[] = camposComic();

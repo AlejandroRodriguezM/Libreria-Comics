@@ -50,7 +50,7 @@ public class Libreria extends Comic {
 	private NavegacionVentanas nav = new NavegacionVentanas();
 
 	/**
-	 * Devuelve todos los datos de la base de datos.
+	 * Devuelve todos los datos de la base de datos que se encuentren en posesion
 	 *
 	 * @return
 	 */
@@ -76,7 +76,8 @@ public class Libreria extends Comic {
 	}
 
 	/**
-	 *
+	 * Funcion que permite guardar en un list el total de comics que se han vendido
+	 * 
 	 * @return
 	 */
 	public Comic[] verLibreriaVendidos() {
@@ -101,7 +102,9 @@ public class Libreria extends Comic {
 	}
 
 	/**
-	 *
+	 * Funcion que permite guardar en un list el total de comics que tengan
+	 * puntuacion
+	 * 
 	 * @return
 	 */
 	public Comic[] verLibreriaPuntuacion() {
@@ -126,7 +129,7 @@ public class Libreria extends Comic {
 	}
 
 	/**
-	 * Devuelve todos los datos de la base de datos.
+	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
 	 *
 	 * @return
 	 */
@@ -236,8 +239,6 @@ public class Libreria extends Comic {
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
 		}
-
-		ordenarBBDD();
 
 		comic = new Comic[filtroComics.size()];
 
@@ -488,6 +489,10 @@ public class Libreria extends Comic {
 	public void reiniciarBBDD() {
 		filtroComics.clear();
 		listaPosesion.clear();
+		listaComics.clear();
+		listaVendidos.clear();
+		listaPuntuacion.clear();
+		listaCompleta.clear();
 	}
 
 	/**
@@ -530,30 +535,12 @@ public class Libreria extends Comic {
 				if (rs.next()) // En caso de existir el dato, devolvera true
 				{
 					return true;
-				} else {
-					return false;
-				}
-
+				} 
+				
 			} catch (SQLException e) {
 				nav.alertaException("No existe el " + identificador + " en la base de datos.");
 			}
 		}
 		return false;
-	}
-
-	/**
-	 *
-
-	 */
-	public void ordenarBBDD() {
-		String sql = "SELECT * FROM comicsbbdd ORDER BY ID;";
-		Statement st;
-		try {
-			st = conn.createStatement();
-			st.execute(sql);
-		} catch (SQLException e) {
-			nav.alertaException(e.toString());
-		}
-
 	}
 }

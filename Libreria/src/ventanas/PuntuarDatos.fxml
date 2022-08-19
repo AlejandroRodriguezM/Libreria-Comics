@@ -110,5 +110,6 @@
          </columnResizePolicy>
       </TableView>
       <ComboBox fx:id="puntuacionMenu" layoutX="372.0" layoutY="138.0" prefHeight="25.0" prefWidth="102.0" />
+      <Button fx:id="botonBorrarOpinion" layoutX="294.0" layoutY="222.0" mnemonicParsing="false" onAction="#borrarOpinion" prefHeight="42.0" prefWidth="117.0" text="Borrar puntuación" />
    </children>
 </Pane>

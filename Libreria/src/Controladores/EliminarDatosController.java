@@ -149,12 +149,13 @@ public class EliminarDatosController {
 		nombreFirma.setText("");
 		nombreEditorial.setText("");
 		nombreFormato.setText("");
-		procedencia.setText("");
+		nombreProcedencia.setText("");
 		anioPublicacion.setText("");
 		nombreDibujante.setText("");
 		nombreGuionista.setText("");
 		pantallaInformativa.setText(null);
 		pantallaInformativa.setOpacity(0);
+		tablaBBDD.getItems().clear();
 	}
 
 	/**

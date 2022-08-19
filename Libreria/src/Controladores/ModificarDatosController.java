@@ -187,7 +187,7 @@ public class ModificarDatosController {
 	private Connection conn = ConexionBBDD.conexion();
 
 	/**
-	 * Limpia todos los datos de los textField que hay en pantalla
+	 * Limpia todos los datos en pantalla.
 	 *
 	 * @param event
 	 */
@@ -249,6 +249,8 @@ public class ModificarDatosController {
 		idComicMod.setStyle(null);
 
 		pantallaInformativa.setOpacity(0);
+		
+		tablaBBDD.getItems().clear();
 	}
 
 	/**
