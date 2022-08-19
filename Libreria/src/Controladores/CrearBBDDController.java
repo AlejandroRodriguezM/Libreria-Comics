@@ -246,10 +246,17 @@ public class CrearBBDDController {
 					+ "WHERE Procedencia = 'USA';\n" + "END");
 
 			statement.execute("CREATE PROCEDURE numeroSpain()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE Procedencia = 'Espa�a';\n" + "END");
+					+ "WHERE Procedencia = 'España';\n" + "END");
 
 			statement.execute("CREATE PROCEDURE total()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd;\n" + "END");
+			
+			statement.execute("CREATE PROCEDURE comicsLeidos()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n" + "WHERE puntuacion <> '';\n" + "END");
 
+			statement.execute("CREATE PROCEDURE comicsVendidos()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n" + "WHERE estado = 'Vendido';\n" + "END");
+
+			statement.execute("CREATE PROCEDURE comicsPosesion()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n" + "WHERE estado = 'En posesion';\n" + "END");
+
+			
 		} catch (SQLException e) {
 			nav.alertaException(e.toString());
 		}

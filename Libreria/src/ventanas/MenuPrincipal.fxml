@@ -63,19 +63,19 @@
          <font>
             <Font size="14.0" />
          </font></Label>
-      <TextField fx:id="numeroID" layoutX="137.0" layoutY="9.0" prefHeight="25.0" prefWidth="169.0" />
-      <TextField fx:id="nombreComic" layoutX="137.0" layoutY="40.0" prefHeight="25.0" prefWidth="169.0" />
-      <TextField fx:id="numeroComic" layoutX="137.0" layoutY="71.0" prefHeight="25.0" prefWidth="169.0" />
-      <TextField fx:id="nombreVariante" layoutX="137.0" layoutY="101.0" prefHeight="25.0" prefWidth="169.0" />
-      <TextField fx:id="nombreFirma" layoutX="137.0" layoutY="132.0" prefHeight="25.0" prefWidth="169.0" />
-      <TextField fx:id="nombreEditorial" layoutX="138.0" layoutY="163.0" prefHeight="25.0" prefWidth="169.0" />
-      <TextField fx:id="nombreFormato" layoutX="137.0" layoutY="194.0" prefHeight="25.0" prefWidth="169.0" />
-      <TextField fx:id="nombreProcedencia" layoutX="137.0" layoutY="226.0" prefHeight="25.0" prefWidth="169.0" />
-      <TextField fx:id="anioPublicacion" layoutX="138.0" layoutY="257.0" prefHeight="25.0" prefWidth="169.0" />
-      <TextField fx:id="nombreGuionista" layoutX="139.0" layoutY="288.0" prefHeight="25.0" prefWidth="169.0" />
-      <TextField fx:id="nombreDibujante" layoutX="140.0" layoutY="319.0" prefHeight="25.0" prefWidth="169.0" />
+      <TextField fx:id="numeroID" layoutX="139.0" layoutY="9.0" prefHeight="25.0" prefWidth="169.0" />
+      <TextField fx:id="nombreComic" layoutX="139.0" layoutY="40.0" prefHeight="25.0" prefWidth="169.0" />
+      <TextField fx:id="numeroComic" layoutX="139.0" layoutY="71.0" prefHeight="25.0" prefWidth="169.0" />
+      <TextField fx:id="nombreVariante" layoutX="139.0" layoutY="102.0" prefHeight="25.0" prefWidth="169.0" />
+      <TextField fx:id="nombreFirma" layoutX="139.0" layoutY="134.0" prefHeight="25.0" prefWidth="169.0" />
+      <TextField fx:id="nombreEditorial" layoutX="140.0" layoutY="165.0" prefHeight="25.0" prefWidth="169.0" />
+      <TextField fx:id="nombreFormato" layoutX="140.0" layoutY="196.0" prefHeight="25.0" prefWidth="169.0" />
+      <TextField fx:id="nombreProcedencia" layoutX="140.0" layoutY="227.0" prefHeight="25.0" prefWidth="169.0" />
+      <TextField fx:id="anioPublicacion" layoutX="140.0" layoutY="258.0" prefHeight="25.0" prefWidth="169.0" />
+      <TextField fx:id="nombreGuionista" layoutX="140.0" layoutY="289.0" prefHeight="25.0" prefWidth="169.0" />
+      <TextField fx:id="nombreDibujante" layoutX="140.0" layoutY="320.0" prefHeight="25.0" prefWidth="169.0" />
       <Button fx:id="botonMostrarParametro" layoutX="14.0" layoutY="381.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="49.0" prefWidth="161.0" text="Mostrar segun parametros" />
-      <Button fx:id="botonLimpiar" layoutX="183.0" layoutY="381.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="49.0" prefWidth="111.0" text="Limpiar" />
+      <Button fx:id="botonLimpiar" layoutX="183.0" layoutY="381.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="49.0" prefWidth="126.0" text="Limpiar" />
       <Button fx:id="botonbbdd" layoutX="328.0" layoutY="8.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="53.0" prefWidth="141.0" text="Ver todo" />
       <Button fx:id="botonGuardarCSV" layoutX="328.0" layoutY="131.0" mnemonicParsing="false" onAction="#exportCSV" prefHeight="53.0" prefWidth="141.0" text="Exportar Excel" />
       <Button fx:id="botonBackupBBDD" layoutX="328.0" layoutY="193.0" mnemonicParsing="false" onAction="#exportarSQL" prefHeight="53.0" prefWidth="141.0" text="Exportar base de datos" />
@@ -111,8 +111,8 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <TextArea fx:id="prontInfo" layoutX="951.0" layoutY="242.0" opacity="0.0" prefHeight="117.0" prefWidth="232.0" wrapText="true" />
-      <TextArea fx:id="prontFrases" editable="false" layoutX="938.0" layoutY="12.0" opacity="0.0" prefHeight="94.0" prefWidth="245.0" wrapText="true">
+      <TextArea fx:id="prontInfo" layoutX="951.0" layoutY="191.0" opacity="0.0" prefHeight="180.0" prefWidth="232.0" wrapText="true" />
+      <TextArea fx:id="prontFrases" editable="false" layoutX="905.0" layoutY="12.0" opacity="0.0" prefHeight="99.0" prefWidth="278.0" wrapText="true">
          <font>
             <Font name="Comic Sans MS" size="15.0" />
          </font>
@@ -123,7 +123,7 @@
             <Font size="14.0" />
          </font>
       </Label>
-      <TextField fx:id="busquedaGeneral" layoutX="140.0" layoutY="350.0" prefHeight="25.0" prefWidth="169.0" />
+      <TextField fx:id="busquedaGeneral" layoutX="140.0" layoutY="351.0" prefHeight="25.0" prefWidth="169.0" />
       <Button fx:id="botonVerPuntuar" layoutX="492.0" layoutY="256.0" mnemonicParsing="false" onAction="#ventanaPuntuar" prefHeight="53.0" prefWidth="102.0" text="Puntuar Comic" />
       <Button fx:id="botonVendidos" layoutX="492.0" layoutY="8.0" mnemonicParsing="false" onAction="#comicsVendidos" prefHeight="53.0" prefWidth="102.0" text="Ver Vendidos" />
       <Button fx:id="botonPuntuacion" layoutX="328.0" layoutY="70.0" mnemonicParsing="false" onAction="#comicsPuntuacion" prefHeight="53.0" prefWidth="141.0" text="Ver puntuaciones" />

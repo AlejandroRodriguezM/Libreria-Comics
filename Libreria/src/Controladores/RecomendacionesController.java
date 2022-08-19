@@ -64,6 +64,7 @@ public class RecomendacionesController {
 	 */
 	@FXML
 	void eligePorMi(ActionEvent event) {
+		printComicRecomendado.setOpacity(1);
 
 		printComicRecomendado.setText(generarLectura());
 

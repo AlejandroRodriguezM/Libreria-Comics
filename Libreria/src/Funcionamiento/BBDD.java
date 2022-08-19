@@ -177,11 +177,13 @@ public class BBDD {
 	 */
 	public String procedimientosEstadistica() {
 
-		int numGrapas, numTomos, numUsa, numEsp, numMarvel, numDC, numPanini, numDarkHorse, numMangas, total;
+		int numGrapas, numTomos, numUsa, numEsp, numMarvel, numDC, numPanini, numDarkHorse, numMangas, leidos, vendidos,
+				posesion, total;
 
 		String procedimientos[] = { "call numeroGrapas()", "call numeroTomos()", "call numeroSpain()",
 				"call numeroUSA()", "call total()", "call numeroPanini()", "call numeroMarvel()", "call numeroDC()",
-				"call numeroDarkHorse()", "call numeroMangas()" };
+				"call numeroDarkHorse()", "call numeroMangas()", "call comicsLeidos()", "call comicsVendidos()",
+				"call comicsPosesion()" };
 
 		try {
 
@@ -195,6 +197,9 @@ public class BBDD {
 			ResultSet rs8 = ejecucionSQL(procedimientos[7]); // Executa el procedimiento almacenado
 			ResultSet rs9 = ejecucionSQL(procedimientos[8]); // Executa el procedimiento almacenado
 			ResultSet rs10 = ejecucionSQL(procedimientos[9]); // Executa el procedimiento almacenado
+			ResultSet rs11 = ejecucionSQL(procedimientos[10]); // Executa el procedimiento almacenado
+			ResultSet rs12 = ejecucionSQL(procedimientos[11]); // Executa el procedimiento almacenado
+			ResultSet rs13 = ejecucionSQL(procedimientos[12]); // Executa el procedimiento almacenado
 
 			// Si no hay dato que comprobar, devolvera un 0
 			if (rs1.next()) {
@@ -247,6 +252,21 @@ public class BBDD {
 			} else {
 				numMangas = 0;
 			}
+			if (rs11.next()) {
+				leidos = rs11.getInt(1);
+			} else {
+				leidos = 0;
+			}
+			if (rs12.next()) {
+				vendidos = rs12.getInt(1);
+			} else {
+				vendidos = 0;
+			}
+			if (rs13.next()) {
+				posesion = rs13.getInt(1);
+			} else {
+				posesion = 0;
+			}
 
 			rs1.close();
 			rs2.close();
@@ -258,12 +278,16 @@ public class BBDD {
 			rs8.close();
 			rs9.close();
 			rs10.close();
+			rs11.close();
+			rs12.close();
+			rs13.close();
 
 			return "Numero de grapas: " + numGrapas + "\nNumero de tomos: " + numTomos
 					+ "\nNumeros de comics en Castellano: " + numEsp + "\nNumero de comics en USA: " + numUsa
 					+ "\nNumero de comics Marvel: " + numMarvel + "\nNumero de comics DC: " + numDC
 					+ "\nNumero de comics Dark horse: " + numDarkHorse + "\nNumero de comics de Panini: " + numPanini
-					+ "\nNumero de mangas: " + numMangas + "\nTotal: " + total;
+					+ "\nNumero de mangas: " + numMangas + "\nComics leidos: " + leidos + "\nComics vendidos: "
+					+ vendidos + "\nComics en posesion: " + posesion + "\nTotal: " + total;
 
 		} catch (SQLException e) {
 			nav.alertaException(e.toString());
@@ -272,7 +296,8 @@ public class BBDD {
 	}
 
 	/**
-	 *
+	 * Permite leer datos usando una query
+	 * 
 	 * @return
 	 */
 	private Statement declaracionSQL() {
@@ -287,7 +312,8 @@ public class BBDD {
 	}
 
 	/**
-	 *
+	 * Permite devolver datos de la base de datos segun la query en parametros
+	 * 
 	 * @param procedimiento
 	 * @return
 	 */
