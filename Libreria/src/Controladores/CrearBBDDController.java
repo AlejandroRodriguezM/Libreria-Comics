@@ -252,6 +252,8 @@ public class CrearBBDDController {
 			
 			statement.execute("CREATE PROCEDURE comicsLeidos()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n" + "WHERE puntuacion <> '';\n" + "END");
 
+			statement.execute("CREATE PROCEDURE comicsFirmados()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n" + "WHERE Firma <> '';\n" + "END");
+
 			statement.execute("CREATE PROCEDURE comicsVendidos()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n" + "WHERE estado = 'Vendido';\n" + "END");
 
 			statement.execute("CREATE PROCEDURE comicsPosesion()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n" + "WHERE estado = 'En posesion';\n" + "END");

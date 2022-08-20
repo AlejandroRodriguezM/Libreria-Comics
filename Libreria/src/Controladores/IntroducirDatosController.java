@@ -390,7 +390,7 @@ public class IntroducirDatosController {
 	 * @return
 	 */
 	public List<Comic> libreriaCompleta() {
-		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreria());
+		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaPosesion());
 
 		if (listComic.size() == 0) {
 			pantallaInformativa.setOpacity(1);

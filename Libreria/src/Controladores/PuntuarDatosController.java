@@ -519,7 +519,7 @@ public class PuntuarDatosController implements Initializable {
 	 * @return
 	 */
 	public List<Comic> libreriaPosesion() {
-		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreria());
+		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaPosesion());
 
 		if (listComic.size() == 0) {
 			pantallaInformativa.setStyle("-fx-background-color: #F53636");

@@ -113,6 +113,9 @@ public class MenuPrincipalController {
 
 	@FXML
 	private Button botonPuntuacion;
+	
+	@FXML
+	private Button botonFirmados;
 
 	@FXML
 	private TextField anioPublicacion;
@@ -337,6 +340,20 @@ public class MenuPrincipalController {
 		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(libreriaVendidos());
+	}
+	
+	/**
+	 * Funcion que al pulsar el boton de 'botonVentas' se muestran aquellos comics
+	 * que han sido vendidos
+	 *
+	 * @param event
+	 */
+	@FXML
+	void comicsFirmados(ActionEvent event) {
+
+		libreria.reiniciarBBDD();
+		nombreColumnas();
+		tablaBBDD(libreriaFirmados());
 	}
 
 	////////////////////////////
@@ -669,7 +686,7 @@ public class MenuPrincipalController {
 	 * @return
 	 */
 	public List<Comic> libreriaPosesion() {
-		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreria());
+		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaPosesion());
 
 		if (listComic.size() == 0) {
 			prontInfo.setOpacity(1);
@@ -706,6 +723,24 @@ public class MenuPrincipalController {
 	 */
 	public List<Comic> libreriaPuntuacion() {
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaPuntuacion());
+
+		if (listComic.size() == 0) {
+			prontInfo.setOpacity(1);
+			prontInfo.setStyle("-fx-background-color: #F53636");
+			prontInfo.setText("ERROR. La base de datos se encuentra vacia");
+		}
+
+		return listComic;
+	}
+	
+	/**
+	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
+	 * firmados
+	 *
+	 * @return
+	 */
+	public List<Comic> libreriaFirmados() {
+		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaFirmados());
 
 		if (listComic.size() == 0) {
 			prontInfo.setOpacity(1);

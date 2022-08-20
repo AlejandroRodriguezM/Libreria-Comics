@@ -41,8 +41,7 @@ public class Libreria extends Comic {
 
 	public static List<Comic> listaComics = new ArrayList<>();
 	public static List<Comic> listaPosesion = new ArrayList<>();
-	public static List<Comic> listaVendidos = new ArrayList<>();
-	public static List<Comic> listaPuntuacion = new ArrayList<>();
+	public static List<Comic> listaTratamiento = new ArrayList<>();
 	public static List<Comic> listaCompleta = new ArrayList<>();
 	public static List<Comic> filtroComics = new ArrayList<>();
 
@@ -50,11 +49,34 @@ public class Libreria extends Comic {
 	private NavegacionVentanas nav = new NavegacionVentanas();
 
 	/**
+	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
+	 *
+	 * @return
+	 */
+	public Comic[] verLibreriaCompleta() {
+
+		listaCompleta.clear();
+
+		String sentenciaSql = "SELECT * from comicsbbdd";
+
+		Comic comic[] = null;
+
+		reiniciarBBDD();
+
+		ResultSet rs;
+		rs = ConexionBBDD.getComic(sentenciaSql);
+		listaCompleta = listaDatos(rs);
+		comic = new Comic[listaCompleta.size()];
+		comic = listaCompleta.toArray(comic);
+		return comic;
+	}
+
+	/**
 	 * Devuelve todos los datos de la base de datos que se encuentren en posesion
 	 *
 	 * @return
 	 */
-	public Comic[] verLibreria() {
+	public Comic[] verLibreriaPosesion() {
 
 		listaPosesion.clear();
 
@@ -82,7 +104,7 @@ public class Libreria extends Comic {
 	 */
 	public Comic[] verLibreriaVendidos() {
 
-		listaVendidos.clear();
+		listaTratamiento.clear();
 
 		String sentenciaSql = "SELECT * from comicsbbdd where estado = 'Vendido'";
 
@@ -93,10 +115,34 @@ public class Libreria extends Comic {
 		ResultSet rs;
 
 		rs = ConexionBBDD.getComic(sentenciaSql);
-		listaVendidos = listaDatos(rs);
+		listaTratamiento = listaDatos(rs);
 
-		comic = new Comic[listaVendidos.size()];
-		comic = listaVendidos.toArray(comic);
+		comic = new Comic[listaTratamiento.size()];
+		comic = listaTratamiento.toArray(comic);
+
+		return comic;
+	}
+
+	/**
+	 * Funcion que permite guardar en un list el total de comics que se han vendido
+	 *
+	 * @return
+	 */
+	public Comic[] verLibreriaFirmados() {
+
+		listaTratamiento.clear();
+
+		String sentenciaSql = "SELECT * from comicsbbdd where Firma <> ''";
+
+		Comic comic[] = null;
+
+		ResultSet rs;
+
+		rs = ConexionBBDD.getComic(sentenciaSql);
+		listaTratamiento = listaDatos(rs);
+
+		comic = new Comic[listaTratamiento.size()];
+		comic = listaTratamiento.toArray(comic);
 
 		return comic;
 	}
@@ -109,7 +155,7 @@ public class Libreria extends Comic {
 	 */
 	public Comic[] verLibreriaPuntuacion() {
 
-		listaPuntuacion.clear();
+		listaTratamiento.clear();
 
 		String sentenciaSql = "SELECT * from comicsbbdd where puntuacion <>''";
 
@@ -120,34 +166,11 @@ public class Libreria extends Comic {
 		ResultSet rs;
 
 		rs = ConexionBBDD.getComic(sentenciaSql);
-		listaPuntuacion = listaDatos(rs);
+		listaTratamiento = listaDatos(rs);
 
-		comic = new Comic[listaPuntuacion.size()];
-		comic = listaPuntuacion.toArray(comic);
+		comic = new Comic[listaTratamiento.size()];
+		comic = listaTratamiento.toArray(comic);
 
-		return comic;
-	}
-
-	/**
-	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
-	 *
-	 * @return
-	 */
-	public Comic[] verLibreriaCompleta() {
-
-		listaCompleta.clear();
-
-		String sentenciaSql = "SELECT * from comicsbbdd";
-
-		Comic comic[] = null;
-
-		reiniciarBBDD();
-
-		ResultSet rs;
-		rs = ConexionBBDD.getComic(sentenciaSql);
-		listaCompleta = listaDatos(rs);
-		comic = new Comic[listaCompleta.size()];
-		comic = listaCompleta.toArray(comic);
 		return comic;
 	}
 
@@ -512,8 +535,6 @@ public class Libreria extends Comic {
 		filtroComics.clear();
 		listaPosesion.clear();
 		listaComics.clear();
-		listaVendidos.clear();
-		listaPuntuacion.clear();
 		listaCompleta.clear();
 	}
 

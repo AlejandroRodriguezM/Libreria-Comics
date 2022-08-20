@@ -584,13 +584,11 @@ public class ModificarDatosController {
 	 */
 	public List<Comic> libreriaCompleta() {
 
-		List<Comic> listaComic = FXCollections.observableArrayList(libreria.verLibreria()); // Muestra en la pantalla el
-																							// total de comics que se
-																							// encuentran en la base de
-																							// datos.
-		comprobarLista(listaComic);
+		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaPosesion());
+		
+		comprobarLista(listComic);
 
-		return listaComic;
+		return listComic;
 
 	}
 

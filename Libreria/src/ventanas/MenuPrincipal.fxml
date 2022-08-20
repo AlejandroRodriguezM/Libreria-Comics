@@ -79,15 +79,15 @@
       <Button fx:id="botonbbdd" layoutX="328.0" layoutY="8.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="53.0" prefWidth="141.0" text="Ver todo" />
       <Button fx:id="botonGuardarCSV" layoutX="328.0" layoutY="131.0" mnemonicParsing="false" onAction="#exportCSV" prefHeight="53.0" prefWidth="141.0" text="Exportar Excel" />
       <Button fx:id="botonBackupBBDD" layoutX="328.0" layoutY="193.0" mnemonicParsing="false" onAction="#exportarSQL" prefHeight="53.0" prefWidth="141.0" text="Exportar base de datos" />
-      <Button fx:id="botonImportarCSV" layoutX="328.0" layoutY="255.0" mnemonicParsing="false" onAction="#importCSV" prefHeight="53.0" prefWidth="141.0" text="Importar CSV" />
+      <Button fx:id="botonImportarCSV" layoutX="328.0" layoutY="256.0" mnemonicParsing="false" onAction="#importCSV" prefHeight="53.0" prefWidth="141.0" text="Importar CSV" />
       <Button fx:id="botonEstadistica" layoutX="328.0" layoutY="318.0" mnemonicParsing="false" onAction="#verEstadistica" prefHeight="53.0" prefWidth="141.0" text="Ver estadistica" />
-      <Button fx:id="BotonEliminarComic" layoutX="492.0" layoutY="70.0" mnemonicParsing="false" onAction="#ventanaEliminar" prefHeight="53.0" prefWidth="102.0" text="Eliminar Comic" />
-      <Button fx:id="BotonModificarComic" layoutX="492.0" layoutY="131.0" mnemonicParsing="false" onAction="#ventanaModificar" prefHeight="53.0" prefWidth="102.0" text="Modificar Comic">
+      <Button fx:id="BotonEliminarComic" layoutX="492.0" layoutY="131.0" mnemonicParsing="false" onAction="#ventanaEliminar" prefHeight="53.0" prefWidth="102.0" text="Eliminar Comic" />
+      <Button fx:id="BotonModificarComic" layoutX="492.0" layoutY="193.0" mnemonicParsing="false" onAction="#ventanaModificar" prefHeight="53.0" prefWidth="102.0" text="Modificar Comic">
          <font>
             <Font size="11.0" />
          </font></Button>
-      <Button fx:id="botonFrase" layoutX="491.0" layoutY="318.0" mnemonicParsing="false" onAction="#fraseRandom" prefHeight="53.0" prefWidth="102.0" text="Frase random" />
-      <Button fx:id="BotonVentanaAniadir" layoutX="492.0" layoutY="193.0" mnemonicParsing="false" onAction="#ventanaAniadir" prefHeight="53.0" prefWidth="102.0" text="Añadir Comic" />
+      <Button fx:id="botonFrase" layoutX="491.0" layoutY="382.0" mnemonicParsing="false" onAction="#fraseRandom" prefHeight="49.0" prefWidth="102.0" text="Frase random" />
+      <Button fx:id="BotonVentanaAniadir" layoutX="492.0" layoutY="255.0" mnemonicParsing="false" onAction="#ventanaAniadir" prefHeight="53.0" prefWidth="102.0" text="Añadir Comic" />
       <Button fx:id="botonDelete" layoutX="328.0" layoutY="382.0" mnemonicParsing="false" onAction="#borrarContenidoTabla" prefHeight="49.0" prefWidth="141.0" text="Eliminar contenido BD" />
       <Button fx:id="botonVerRecomendacion" layoutX="820.0" layoutY="380.0" mnemonicParsing="false" onAction="#ventanaRecomendar" prefHeight="53.0" prefWidth="141.0" text="No sabes que leer?" />
       <Button fx:id="botonVolver" layoutX="975.0" layoutY="380.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="53.0" prefWidth="102.0" text="Volver al menu" />
@@ -117,15 +117,16 @@
             <Font name="Comic Sans MS" size="15.0" />
          </font>
       </TextArea>
-      <Button fx:id="botonCompra" layoutX="492.0" layoutY="382.0" mnemonicParsing="false" onAction="#comprarComic" prefHeight="49.0" prefWidth="99.0" text="Paginas recomendadas" wrapText="true" />
+      <Button fx:id="botonCompra" layoutX="705.0" layoutY="381.0" mnemonicParsing="false" onAction="#comprarComic" prefHeight="49.0" prefWidth="102.0" text="Paginas recomendadas" wrapText="true" />
       <Label layoutX="15.0" layoutY="350.0" prefHeight="25.0" prefWidth="117.0" style="-fx-background-color: grey;" text="Busqueda general" wrapText="true">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
       <TextField fx:id="busquedaGeneral" layoutX="140.0" layoutY="351.0" prefHeight="25.0" prefWidth="169.0" />
-      <Button fx:id="botonVerPuntuar" layoutX="492.0" layoutY="256.0" mnemonicParsing="false" onAction="#ventanaPuntuar" prefHeight="53.0" prefWidth="102.0" text="Puntuar Comic" />
+      <Button fx:id="botonVerPuntuar" layoutX="492.0" layoutY="317.0" mnemonicParsing="false" onAction="#ventanaPuntuar" prefHeight="53.0" prefWidth="102.0" text="Puntuar Comic" />
       <Button fx:id="botonVendidos" layoutX="492.0" layoutY="8.0" mnemonicParsing="false" onAction="#comicsVendidos" prefHeight="53.0" prefWidth="102.0" text="Ver Vendidos" />
       <Button fx:id="botonPuntuacion" layoutX="328.0" layoutY="70.0" mnemonicParsing="false" onAction="#comicsPuntuacion" prefHeight="53.0" prefWidth="141.0" text="Ver puntuaciones" />
+      <Button fx:id="botonFirmados" layoutX="492.0" layoutY="70.0" mnemonicParsing="false" onAction="#comicsFirmados" prefHeight="53.0" prefWidth="102.0" text="Ver Firmados" />
    </children>
 </Pane>
