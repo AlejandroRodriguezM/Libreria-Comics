@@ -75,9 +75,9 @@ public class AccesoBBDDController {
 
 	@FXML
 	private RadioButton siOnline;
-	
-    @FXML
-    private Label etiquetaHost;
+
+	@FXML
+	private Label etiquetaHost;
 
 	private NavegacionVentanas nav = new NavegacionVentanas();
 
@@ -258,7 +258,7 @@ public class AccesoBBDDController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param event
 	 */
 	@FXML
@@ -282,20 +282,18 @@ public class AccesoBBDDController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public String selectorOnline() {
-		
-		if(siOnline.isSelected())
-		{
+
+		if (siOnline.isSelected()) {
 			etiquetaHost.setText("Nombre del host: ");
 			nombreHost.setDisable(false);
 			nombreHost.setOpacity(1);
 			return nombreHost.getText();
 		}
-		if(noOffline.isSelected())
-		{
+		if (noOffline.isSelected()) {
 			etiquetaHost.setText("Offline");
 			nombreHost.setDisable(true);
 			nombreHost.setOpacity(0);
@@ -303,8 +301,6 @@ public class AccesoBBDDController {
 		}
 		return "localhost";
 	}
-
-
 
 	/**
 	 * Permite salir completamente del programa.

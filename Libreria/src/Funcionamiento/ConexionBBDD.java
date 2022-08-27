@@ -29,12 +29,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-/**
- * Esta clase sirve para realizar la conexion y cerrado de conexion a la base de
- * datos
- *
- * @author Alejandro Rodriguez
- */
 public class ConexionBBDD {
 
 	// Conexion a la base de datos
@@ -46,6 +40,7 @@ public class ConexionBBDD {
 	public static String DB_PORT = "";
 	public static String DB_NAME = "";
 	public static String DB_HOST = "";
+	public static String DB_URL = "";
 
 	/**
 	 * Conecta el proyecto con el driver JBDC
@@ -111,11 +106,13 @@ public class ConexionBBDD {
 	 */
 	public static Connection conexion() {
 
-		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
+		DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
+
 		try {
 			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
 			return conn;
 		} catch (SQLException ex) {
+			ex.printStackTrace();
 			nav.alertaException(ex.toString());
 			return null;
 		}
@@ -161,5 +158,4 @@ public class ConexionBBDD {
 		}
 		return null;
 	}
-
 }

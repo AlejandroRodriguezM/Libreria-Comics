@@ -30,14 +30,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import Funcionamiento.ConexionBBDD;
 import Funcionamiento.NavegacionVentanas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 
 /**
@@ -69,12 +70,76 @@ public class CrearBBDDController {
 	private TextField puertoBBDD;
 
 	@FXML
+	private ToggleGroup estado;
+
+	@FXML
 	private PasswordField passBBDD;
+
+	@FXML
+	private PasswordField nombreHost;
 
 	@FXML
 	private Label prontInformativo;
 
+	@FXML
+	private Label etiquetaHost;
+
+	@FXML
+	private RadioButton noOffline;
+
+	@FXML
+	private RadioButton siOnline;
+
 	private NavegacionVentanas nav = new NavegacionVentanas();
+
+	public static String DB_USER = "";
+	public static String DB_PASS = "";
+	public static String DB_PORT = "";
+	public static String DB_NAME = "";
+	public static String DB_HOST = "";
+
+	/**
+	 * Devuelve un objeto Connection en caso de que la conexion sea correcta, datos
+	 * introducidos por parametro
+	 *
+	 * @param numeroPuerto
+	 * @param nombreBBDD
+	 * @param nombreUsuario
+	 * @param contraBBDD
+	 * @return
+	 */
+	public static void datosBBDD(String[] datos) {
+
+		DB_PORT = datos[0];
+		DB_NAME = datos[1];
+		DB_USER = datos[2];
+		DB_PASS = datos[3];
+		DB_HOST = datos[4];
+	}
+
+	/**
+	 * Funcion que permite mandar los datos a la clase DBManager
+	 *
+	 * @return
+	 */
+	public void envioDatosBBDD() { // Metodo que manda toda la informacion de los textField a la clase DBManager.
+		String datos[] = new String[5];
+		datos[0] = puertoBBDD.getText();
+		datos[1] = nombreBBDD.getText();
+		datos[2] = userBBDD.getText();
+		datos[3] = passBBDD.getText();
+		datos[4] = selectorOnline();
+		datosBBDD(datos);
+	}
+
+	/**
+	 *
+	 * @param event
+	 */
+	@FXML
+	void selectorBotonHost(ActionEvent event) {
+		selectorOnline();
+	}
 
 	/**
 	 * Metodo que permite llamada a metodos donde se crean la bbdd y las tablas y
@@ -101,11 +166,10 @@ public class CrearBBDDController {
 
 		String sentenciaSQL = "CREATE DATABASE " + nombreBBDD.getText() + ";";
 
-		String url = "jdbc:mysql://" + ConexionBBDD.DB_HOST + ":" + puertoBBDD.getText() + "?serverTimezone=UTC";
-
+		String url = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "?serverTimezone=UTC";
 		Statement statement;
 		try {
-			Connection connection = DriverManager.getConnection(url, userBBDD.getText(), passBBDD.getText());
+			Connection connection = DriverManager.getConnection(url, DB_USER, DB_PASS);
 
 			statement = connection.createStatement();
 			statement.executeUpdate(sentenciaSQL);
@@ -123,14 +187,17 @@ public class CrearBBDDController {
 	 * @return
 	 */
 	public boolean checkDatabase() {
-		boolean exists;
 
-		String sentenciaSQL = "SELECT COUNT(*)" + "FROM information_schema.tables " + "WHERE table_schema = '"
-				+ nombreBBDD.getText() + "';";
+		envioDatosBBDD();
+		boolean exists;
+		ResultSet rs;
+
+		String sentenciaSQL = "SELECT COUNT(*) " + "FROM information_schema.tables " + "WHERE table_schema = '"
+				+ DB_NAME + "';";
 
 		try {
 
-			ResultSet rs = ejecucionSQL(sentenciaSQL);
+			rs = ejecucionSQL(sentenciaSQL);
 			exists = rs.getInt("COUNT(*)") < 1;
 
 			if (exists) {
@@ -142,8 +209,29 @@ public class CrearBBDDController {
 			nav.alertaException(e.toString());
 		}
 		prontInformativo.setStyle("-fx-background-color: #DD370F");
-		prontInformativo.setText("ERROR. Ya existe una base de datos llamada: " + nombreBBDD.getText());
+		prontInformativo.setText("ERROR. Ya existe una base de datos llamada: " + DB_NAME);
 		return false;
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public String selectorOnline() {
+
+		if (siOnline.isSelected()) {
+			etiquetaHost.setText("Nombre del host: ");
+			nombreHost.setDisable(false);
+			nombreHost.setOpacity(1);
+			return nombreHost.getText();
+		}
+		if (noOffline.isSelected()) {
+			etiquetaHost.setText("Offline");
+			nombreHost.setDisable(true);
+			nombreHost.setOpacity(0);
+			return "localhost";
+		}
+		return "localhost";
 	}
 
 	/**
@@ -152,12 +240,15 @@ public class CrearBBDDController {
 	 * @return
 	 */
 	public ResultSet ejecucionSQL(String sentenciaSQL) {
-		String url = "jdbc:mysql://" + ConexionBBDD.DB_HOST + ":" + puertoBBDD.getText() + "?serverTimezone=UTC";
+
+		String url = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "?serverTimezone=UTC";
+
+		System.out.println(DB_PORT + DB_NAME + DB_USER + DB_PASS + DB_HOST);
 
 		Statement statement;
 		try {
 
-			Connection connection = DriverManager.getConnection(url, userBBDD.getText(), passBBDD.getText());
+			Connection connection = DriverManager.getConnection(url, DB_USER, DB_PASS);
 
 			statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 			ResultSet rs = statement.executeQuery(sentenciaSQL);
@@ -177,8 +268,7 @@ public class CrearBBDDController {
 	 */
 	public void createTable() {
 
-		String DB_URL = "jdbc:mysql://" + ConexionBBDD.DB_HOST + ":" + puertoBBDD.getText() + "/" + nombreBBDD.getText()
-				+ "?serverTimezone=UTC";
+		String url = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
 
 		String sentenciaSQL = "CREATE TABLE " + " comicsbbdd ( ID int NOT NULL AUTO_INCREMENT,"
 				+ "nomComic varchar(150) NOT NULL," + "numComic varchar(150) NOT NULL,"
@@ -194,7 +284,7 @@ public class CrearBBDDController {
 		PreparedStatement statement2;
 
 		try {
-			Connection connection = DriverManager.getConnection(DB_URL, userBBDD.getText(), passBBDD.getText());
+			Connection connection = DriverManager.getConnection(url, userBBDD.getText(), passBBDD.getText());
 			statement1 = connection.createStatement();
 			statement1.executeUpdate(sentenciaSQL);
 			statement2 = connection.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");
@@ -210,11 +300,10 @@ public class CrearBBDDController {
 	 */
 	public void createProcedure() {
 
-		String DB_URL = "jdbc:mysql://" + ConexionBBDD.DB_HOST + ":" + puertoBBDD.getText() + "/" + nombreBBDD.getText()
-				+ "?serverTimezone=UTC";
+		String url = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
 
 		try {
-			Connection connection = DriverManager.getConnection(DB_URL, userBBDD.getText(), passBBDD.getText());
+			Connection connection = DriverManager.getConnection(url, userBBDD.getText(), passBBDD.getText());
 			Statement statement;
 
 			statement = connection.createStatement();
@@ -248,16 +337,19 @@ public class CrearBBDDController {
 					+ "WHERE Procedencia = 'España';\n" + "END");
 
 			statement.execute("CREATE PROCEDURE total()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd;\n" + "END");
-			
-			statement.execute("CREATE PROCEDURE comicsLeidos()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n" + "WHERE puntuacion <> '';\n" + "END");
 
-			statement.execute("CREATE PROCEDURE comicsFirmados()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n" + "WHERE Firma <> '';\n" + "END");
+			statement.execute("CREATE PROCEDURE comicsLeidos()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
+					+ "WHERE puntuacion <> '';\n" + "END");
 
-			statement.execute("CREATE PROCEDURE comicsVendidos()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n" + "WHERE estado = 'Vendido';\n" + "END");
+			statement.execute("CREATE PROCEDURE comicsFirmados()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
+					+ "WHERE Firma <> '';\n" + "END");
 
-			statement.execute("CREATE PROCEDURE comicsPosesion()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n" + "WHERE estado = 'En posesion';\n" + "END");
+			statement.execute("CREATE PROCEDURE comicsVendidos()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
+					+ "WHERE estado = 'Vendido';\n" + "END");
 
-			
+			statement.execute("CREATE PROCEDURE comicsPosesion()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
+					+ "WHERE estado = 'En posesion';\n" + "END");
+
 		} catch (SQLException e) {
 			nav.alertaException(e.toString());
 		}

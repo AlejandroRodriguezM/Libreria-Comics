@@ -178,12 +178,12 @@ public class BBDD {
 	public String procedimientosEstadistica() {
 
 		int numGrapas, numTomos, numUsa, numEsp, numMarvel, numDC, numPanini, numDarkHorse, numMangas, leidos, vendidos,
-				posesion,firmados, total;
+				posesion, firmados, total;
 
 		String procedimientos[] = { "call numeroGrapas()", "call numeroTomos()", "call numeroSpain()",
 				"call numeroUSA()", "call total()", "call numeroPanini()", "call numeroMarvel()", "call numeroDC()",
 				"call numeroDarkHorse()", "call numeroMangas()", "call comicsLeidos()", "call comicsVendidos()",
-				"call comicsPosesion()","call comicsFirmados()" };
+				"call comicsPosesion()", "call comicsFirmados()" };
 
 		try {
 
@@ -294,7 +294,8 @@ public class BBDD {
 					+ "\nNumero de comics Marvel: " + numMarvel + "\nNumero de comics DC: " + numDC
 					+ "\nNumero de comics Dark horse: " + numDarkHorse + "\nNumero de comics de Panini: " + numPanini
 					+ "\nNumero de mangas: " + numMangas + "\nComics leidos: " + leidos + "\nComics vendidos: "
-					+ vendidos + "\nComics en posesion: " + posesion + "\nComics firmados: " + firmados +  "\nTotal: " + total;
+					+ vendidos + "\nComics en posesion: " + posesion + "\nComics firmados: " + firmados + "\nTotal: "
+					+ total;
 
 		} catch (SQLException e) {
 			nav.alertaException(e.toString());
@@ -304,13 +305,13 @@ public class BBDD {
 
 	/**
 	 * Permite leer datos usando una query
-	 * 
+	 *
 	 * @return
 	 */
 	private Statement declaracionSQL() {
 		Statement st;
 		try {
-			st = conn.createStatement();
+			st = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 			return st;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -320,7 +321,7 @@ public class BBDD {
 
 	/**
 	 * Permite devolver datos de la base de datos segun la query en parametros
-	 * 
+	 *
 	 * @param procedimiento
 	 * @return
 	 */
@@ -333,4 +334,5 @@ public class BBDD {
 		}
 		return null;
 	}
+
 }

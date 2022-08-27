@@ -113,7 +113,7 @@ public class MenuPrincipalController {
 
 	@FXML
 	private Button botonPuntuacion;
-	
+
 	@FXML
 	private Button botonFirmados;
 
@@ -341,7 +341,7 @@ public class MenuPrincipalController {
 		nombreColumnas();
 		tablaBBDD(libreriaVendidos());
 	}
-	
+
 	/**
 	 * Funcion que al pulsar el boton de 'botonVentas' se muestran aquellos comics
 	 * que han sido vendidos
@@ -732,7 +732,7 @@ public class MenuPrincipalController {
 
 		return listComic;
 	}
-	
+
 	/**
 	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
 	 * firmados
