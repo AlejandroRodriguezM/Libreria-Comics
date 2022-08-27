@@ -30,6 +30,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import Funcionamiento.ConexionBBDD;
 import Funcionamiento.NavegacionVentanas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -75,8 +76,6 @@ public class CrearBBDDController {
 
 	private NavegacionVentanas nav = new NavegacionVentanas();
 
-	private final String DB_HOST = "localhost";
-
 	/**
 	 * Metodo que permite llamada a metodos donde se crean la bbdd y las tablas y
 	 * procedimientos almacenados
@@ -102,7 +101,7 @@ public class CrearBBDDController {
 
 		String sentenciaSQL = "CREATE DATABASE " + nombreBBDD.getText() + ";";
 
-		String url = "jdbc:mysql://" + DB_HOST + ":" + puertoBBDD.getText() + "?serverTimezone=UTC";
+		String url = "jdbc:mysql://" + ConexionBBDD.DB_HOST + ":" + puertoBBDD.getText() + "?serverTimezone=UTC";
 
 		Statement statement;
 		try {
@@ -153,7 +152,7 @@ public class CrearBBDDController {
 	 * @return
 	 */
 	public ResultSet ejecucionSQL(String sentenciaSQL) {
-		String url = "jdbc:mysql://" + DB_HOST + ":" + puertoBBDD.getText() + "?serverTimezone=UTC";
+		String url = "jdbc:mysql://" + ConexionBBDD.DB_HOST + ":" + puertoBBDD.getText() + "?serverTimezone=UTC";
 
 		Statement statement;
 		try {
@@ -178,7 +177,7 @@ public class CrearBBDDController {
 	 */
 	public void createTable() {
 
-		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + puertoBBDD.getText() + "/" + nombreBBDD.getText()
+		String DB_URL = "jdbc:mysql://" + ConexionBBDD.DB_HOST + ":" + puertoBBDD.getText() + "/" + nombreBBDD.getText()
 				+ "?serverTimezone=UTC";
 
 		String sentenciaSQL = "CREATE TABLE " + " comicsbbdd ( ID int NOT NULL AUTO_INCREMENT,"
@@ -211,7 +210,7 @@ public class CrearBBDDController {
 	 */
 	public void createProcedure() {
 
-		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + puertoBBDD.getText() + "/" + nombreBBDD.getText()
+		String DB_URL = "jdbc:mysql://" + ConexionBBDD.DB_HOST + ":" + puertoBBDD.getText() + "/" + nombreBBDD.getText()
 				+ "?serverTimezone=UTC";
 
 		try {

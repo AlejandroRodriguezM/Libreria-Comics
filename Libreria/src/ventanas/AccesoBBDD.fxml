@@ -3,7 +3,9 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
@@ -11,12 +13,12 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="472.0" prefWidth="277.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.AccesoBBDDController">
    <children>
-      <ImageView fitHeight="103.0" fitWidth="277.0" layoutX="88.0" layoutY="369.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="151.0" fitWidth="277.0" layoutY="321.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagenes/azul.jpg" />
          </image>
       </ImageView>
-      <ImageView fitHeight="103.0" fitWidth="277.0" layoutY="369.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="151.0" fitWidth="277.0" layoutY="300.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagenes/azul.jpg" />
          </image>
@@ -41,7 +43,7 @@
             <Image url="@../imagenes/rojo.jpg" />
          </image>
       </ImageView>
-      <ImageView fitHeight="307.0" fitWidth="277.0" layoutY="70.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="307.0" fitWidth="277.0" layoutY="31.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagenes/Fondo%20AccederBBDD.jpg" />
          </image>
@@ -50,23 +52,45 @@
       <TextField fx:id="puertobbdd" layoutX="167.0" layoutY="44.0" prefHeight="25.0" prefWidth="103.0" />
       <TextField fx:id="usuario" layoutX="167.0" layoutY="76.0" prefHeight="25.0" prefWidth="103.0" />
       <PasswordField fx:id="pass" layoutX="167.0" layoutY="107.0" prefHeight="25.0" prefWidth="103.0" />
-      <Button fx:id="botonEnviar" layoutX="13.0" layoutY="145.0" mnemonicParsing="false" onAction="#enviarDatos" prefHeight="33.0" prefWidth="103.0" text="Conectar bbdd" />
-      <Button fx:id="botonAccesobbdd" layoutX="13.0" layoutY="189.0" mnemonicParsing="false" onAction="#entrarMenu" prefHeight="33.0" prefWidth="103.0" text="Entrar al menu" />
-      <Button fx:id="botonLimpiar" layoutX="13.0" layoutY="233.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="33.0" prefWidth="103.0" text="Limpiar" />
-      <Button fx:id="botonSalir" layoutX="200.0" layoutY="431.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="33.0" prefWidth="67.0" text="Salir" />
-      <Button fx:id="botonCrearBBDD" layoutX="165.0" layoutY="145.0" mnemonicParsing="false" onAction="#crearBBDD" prefHeight="33.0" prefWidth="103.0" text="Crear BBDD" />
-      <Button fx:id="botonCerrar" layoutX="165.0" layoutY="189.0" mnemonicParsing="false" onAction="#cerrarbbdd" prefHeight="33.0" prefWidth="103.0" text="Cerrar BBDD" />
-      <Button fx:id="botonVerDDBB" layoutX="165.0" layoutY="235.0" mnemonicParsing="false" onAction="#verDBDisponibles" prefHeight="33.0" prefWidth="103.0" text="Ver bbdd" />
-      <Button fx:id="botonSobreMi" layoutX="11.0" layoutY="431.0" mnemonicParsing="false" onAction="#verSobreMi" prefHeight="33.0" prefWidth="74.0" text="Sobre mi" />
-      <Label layoutX="5.0" layoutY="16.0" style="-fx-background-color: grey;" text="Nombre de la base de datos" />
-      <Label layoutX="7.0" layoutY="48.0" style="-fx-background-color: grey;" text="Puerto de la base de datos" />
-      <Label layoutX="6.0" layoutY="80.0" style="-fx-background-color: grey;" text="Nombre de usuario" />
-      <Label layoutX="7.0" layoutY="111.0" style="-fx-background-color: grey;" text="Contraseña de usuario" />
-      <Button fx:id="botonDescargaBBDD" layoutX="13.0" layoutY="276.0" mnemonicParsing="false" onAction="#accesoMySqlWorkbench" prefHeight="54.0" prefWidth="256.0" text="MySql Workbench" />
-      <Label fx:id="prontEstadoConexion" alignment="CENTER" layoutX="11.0" layoutY="340.0" prefHeight="82.0" prefWidth="256.0" style="-fx-background-color: #29B6CC;" text="Esperando entrada de datos" wrapText="true">
+      <RadioButton fx:id="siOnline" layoutX="169.0" layoutY="139.0" mnemonicParsing="false" onAction="#selectorBotonHost" selected="true" style="-fx-background-color: grey;" text="Si">
+         <toggleGroup>
+            <ToggleGroup fx:id="estado" />
+         </toggleGroup></RadioButton>
+      <RadioButton fx:id="noOffline" layoutX="232.0" layoutY="139.0" mnemonicParsing="false" onAction="#selectorBotonHost" style="-fx-background-color: grey;" text="No" toggleGroup="$estado" />
+      <Button fx:id="botonEnviar" layoutX="8.0" layoutY="196.0" mnemonicParsing="false" onAction="#enviarDatos" prefHeight="33.0" prefWidth="103.0" text="Conectar bbdd" />
+      <Button fx:id="botonAccesobbdd" layoutX="8.0" layoutY="234.0" mnemonicParsing="false" onAction="#entrarMenu" prefHeight="33.0" prefWidth="103.0" text="Entrar al menu" />
+      <Button fx:id="botonLimpiar" layoutX="8.0" layoutY="272.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="33.0" prefWidth="103.0" text="Limpiar" />
+      <Button fx:id="botonSalir" layoutX="199.0" layoutY="427.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="33.0" prefWidth="67.0" text="Salir" />
+      <Button fx:id="botonCrearBBDD" layoutX="165.0" layoutY="196.0" mnemonicParsing="false" onAction="#crearBBDD" prefHeight="33.0" prefWidth="105.0" text="Crear BBDD" />
+      <Button fx:id="botonCerrar" layoutX="167.0" layoutY="234.0" mnemonicParsing="false" onAction="#cerrarbbdd" prefHeight="33.0" prefWidth="103.0" text="Cerrar BBDD" />
+      <Button fx:id="botonSobreMi" layoutX="10.0" layoutY="427.0" mnemonicParsing="false" onAction="#verSobreMi" prefHeight="33.0" prefWidth="74.0" text="Sobre mi" />
+      <Label layoutX="7.0" layoutY="16.0" style="-fx-background-color: grey;" text="Nombre de la base de datos">
+         <font>
+            <Font name="Comic Sans MS" size="12.0" />
+         </font></Label>
+      <Label layoutX="9.0" layoutY="48.0" style="-fx-background-color: grey;" text="Puerto de la base de datos">
+         <font>
+            <Font name="Comic Sans MS" size="12.0" />
+         </font></Label>
+      <Label layoutX="8.0" layoutY="80.0" style="-fx-background-color: grey;" text="Nombre de usuario">
+         <font>
+            <Font name="Comic Sans MS" size="12.0" />
+         </font></Label>
+      <Label layoutX="9.0" layoutY="111.0" style="-fx-background-color: grey;" text="Contraseña de usuario">
+         <font>
+            <Font name="Comic Sans MS" size="12.0" />
+         </font></Label>
+      <Button fx:id="botonDescargaBBDD" layoutX="166.0" layoutY="273.0" mnemonicParsing="false" onAction="#accesoMySqlWorkbench" prefHeight="47.0" prefWidth="105.0" text="MySql Workbench" wrapText="true" />
+      <Label fx:id="prontEstadoConexion" alignment="CENTER" contentDisplay="TOP" layoutX="8.0" layoutY="335.0" prefHeight="82.0" prefWidth="262.0" style="-fx-background-color: #29B6CC;" text="Esperando entrada de datos" wrapText="true">
          <font>
             <Font name="Comic Sans MS" size="18.0" />
          </font>
       </Label>
+      <PasswordField fx:id="nombreHost" layoutX="167.0" layoutY="164.0" prefHeight="25.0" prefWidth="103.0" />
+      <Label fx:id="etiquetaHost" layoutX="11.0" layoutY="168.0" prefHeight="17.0" prefWidth="103.0" style="-fx-background-color: grey;" text="Nombre del host:" />
+      <Label layoutX="10.0" layoutY="139.0" style="-fx-background-color: grey;" text="Base de datos en servidor">
+         <font>
+            <Font name="Comic Sans MS" size="12.0" />
+         </font></Label>
    </children>
 </Pane>

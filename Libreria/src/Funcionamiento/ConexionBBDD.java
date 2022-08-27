@@ -45,7 +45,7 @@ public class ConexionBBDD {
 	public static String DB_PASS = "";
 	public static String DB_PORT = "";
 	public static String DB_NAME = "";
-	public static String DB_HOST = "localhost";
+	public static String DB_HOST = "";
 
 	/**
 	 * Conecta el proyecto con el driver JBDC
@@ -97,6 +97,7 @@ public class ConexionBBDD {
 		DB_NAME = datos[1];
 		DB_USER = datos[2];
 		DB_PASS = datos[3];
+		DB_HOST = datos[4];
 	}
 
 	/**
@@ -110,7 +111,6 @@ public class ConexionBBDD {
 	 */
 	public static Connection conexion() {
 
-		String DB_HOST = "localhost";
 		String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
 		try {
 			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);

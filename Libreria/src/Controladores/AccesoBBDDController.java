@@ -1,35 +1,5 @@
 package Controladores;
 
-/**
- * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
- * Las ventanas graficas se realizan con JavaFX.
- * El programa permite:
- *  - Conectarse a la base de datos.
- *  - Ver la base de datos completa o parcial segun parametros introducidos.
- *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
- *  - Copia de seguridad de la base de datos en formato .sql
- *  - Introducir comics a la base de datos.
- *  - Modificar comics de la base de datos.
- *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
- *  - Ver frases de personajes de comics
- *  - Opcion de escoger algo para leer de forma aleatoria.
- *
- *  Esta clase permite acceder al programa, es la 1� ventana del programa.
- *
- *  Version Final
- *
- *  Por Alejandro Rodriguez
- *
- *  Twitter: @silverAlox
- */
-
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-
 import Funcionamiento.ConexionBBDD;
 import Funcionamiento.NavegacionVentanas;
 import Funcionamiento.Utilidades;
@@ -38,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Font;
@@ -82,13 +53,13 @@ public class AccesoBBDDController {
 	private Label prontEstadoConexion;
 
 	@FXML
-	private TextArea prontInformacion;
-
-	@FXML
 	private TextArea informacion;
 
 	@FXML
 	public TextField nombreBBDD;
+
+	@FXML
+	private PasswordField nombreHost;
 
 	@FXML
 	public PasswordField pass;
@@ -98,6 +69,15 @@ public class AccesoBBDDController {
 
 	@FXML
 	public TextField usuario;
+
+	@FXML
+	private RadioButton noOffline;
+
+	@FXML
+	private RadioButton siOnline;
+	
+    @FXML
+    private Label etiquetaHost;
 
 	private NavegacionVentanas nav = new NavegacionVentanas();
 
@@ -134,9 +114,9 @@ public class AccesoBBDDController {
 	void entrarMenu(ActionEvent event) {
 
 		if (Funcionamiento.ConexionBBDD.isConnected()) { // Siempre que el metodo de la clase DBManager sea true,
-															// permitira acceder al menu principal
+			// permitira acceder al menu principal
 			nav.verMenuPrincipal(); // Llamada a metodo de la clase NavegacionVentanas. Permite cargar y mostrar el
-									// menu principal
+			// menu principal
 			Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
 			myStage.close();
 		} else { // En caso contrario mostrara el siguiente mensaje.
@@ -174,49 +154,49 @@ public class AccesoBBDDController {
 		myStage.close();
 	}
 
-	/**
-	 * Permite ver las bases de datos disponibles en MySql workbench
-	 *
-	 * @param event
-	 */
-	@FXML
-	void verDBDisponibles(ActionEvent event) {
-
-		String url = "jdbc:mysql://" + ConexionBBDD.DB_HOST + ":" + puertobbdd.getText() + "?serverTimezone=UTC";
-
-		try {
-			Connection connection = DriverManager.getConnection(url, usuario.getText(), pass.getText());
-
-			DatabaseMetaData meta = connection.getMetaData();
-			ResultSet res = meta.getCatalogs();
-
-			ArrayList<String> databases = new ArrayList<>(); // ArrayList que almacena el nombre de las bases de datos
-																// que hay en MySql Workbench
-
-			while (res.next()) {
-
-				if (!res.getString("TABLE_CAT").equals("information_schema")
-						&& !res.getString("TABLE_CAT").equals("mysql")
-						&& !res.getString("TABLE_CAT").equals("performance_schema")) // elimina las bases de datos que
-																						// no se utilizaran en este
-																						// programa
-				{
-					databases.add(res.getString("TABLE_CAT") + "\n"); // elimina las bases de datos que
-					// no se utilizaran en este
-					// programa
-				}
-			}
-			res.close();
-
-			prontInformacion.setStyle("-fx-background-color: #696969");
-			String bbddNames = databases.toString().replace("[", "").replace("]", "").replace(",", "").replace(" ", "");
-			prontInformacion.setText(bbddNames);
-
-		} catch (SQLException e) {
-
-			nav.alertaException(e.toString());
-		}
-	}
+//	/**
+//	 * Permite ver las bases de datos disponibles en MySql workbench
+//	 *
+//	 * @param event
+//	 */
+//	@FXML
+//	void verDBDisponibles(ActionEvent event) {
+//
+//		String url = "jdbc:mysql://" + ConexionBBDD.DB_HOST + ":" + puertobbdd.getText() + "?serverTimezone=UTC";
+//
+//		try {
+//			Connection connection = DriverManager.getConnection(url, usuario.getText(), pass.getText());
+//
+//			DatabaseMetaData meta = connection.getMetaData();
+//			ResultSet res = meta.getCatalogs();
+//
+//			ArrayList<String> databases = new ArrayList<>(); // ArrayList que almacena el nombre de las bases de datos
+//			// que hay en MySql Workbench
+//
+//			while (res.next()) {
+//
+//				if (!res.getString("TABLE_CAT").equals("information_schema")
+//						&& !res.getString("TABLE_CAT").equals("mysql")
+//						&& !res.getString("TABLE_CAT").equals("performance_schema")) // elimina las bases de datos que
+//					// no se utilizaran en este
+//					// programa
+//				{
+//					databases.add(res.getString("TABLE_CAT") + "\n"); // elimina las bases de datos que
+//					// no se utilizaran en este
+//					// programa
+//				}
+//			}
+//			res.close();
+//
+//			prontInformacion.setStyle("-fx-background-color: #696969");
+//			String bbddNames = databases.toString().replace("[", "").replace("]", "").replace(",", "").replace(" ", "");
+//			prontInformacion.setText(bbddNames);
+//
+//		} catch (SQLException e) {
+//
+//			nav.alertaException(e.toString());
+//		}
+//	}
 
 	/**
 	 * Limpia los datos de los campos
@@ -240,7 +220,7 @@ public class AccesoBBDDController {
 	void enviarDatos(ActionEvent event) {
 
 		Funcionamiento.ConexionBBDD.loadDriver(); // Llamada a metodo que permite comprobar que el driver de conexion a
-													// la
+		// la
 		// base de datos sea correcto y funcione
 		envioDatosBBDD(); // Llamada a metodo que manda los datos de los textField de la ventana hacia la
 		// clase DBManager.
@@ -253,7 +233,7 @@ public class AccesoBBDDController {
 		} else { // En caso contrario mostrara el siguiente mensaje
 			pass.setText(""); // Limpia el campo de la contraseña en caso de que isConnected sea false.
 			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
-			prontEstadoConexion.setText("ERROR. Los datos son \nincorrectos. Revise \nlos datos.");
+			prontEstadoConexion.setText("ERROR. Los datos son \nincorrectos. Revise los datos.");
 		}
 	}
 
@@ -266,15 +246,24 @@ public class AccesoBBDDController {
 	void cerrarbbdd(ActionEvent event) {
 
 		if (Funcionamiento.ConexionBBDD.isConnected()) { // Siempre que el metodo isConnected sea true, permitira cerrar
-															// la
+			// la
 			// base de datos.
-			prontEstadoConexion.setText("BBDD Cerrada con exito.\nNo conectado.");
+			prontEstadoConexion.setText("BBDD Cerrada con exito.\nEstado: Desconectado.");
 			prontEstadoConexion.setStyle("-fx-background-color: #696969");
 			Funcionamiento.ConexionBBDD.close();
 		} else { // En caso contrario, mostrara el siguiente mensaje.
 			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
-			prontEstadoConexion.setText("ERROR. No se encuentra \nconectado a ninguna bbdd");
+			prontEstadoConexion.setText("ERROR. No se encuentra conectado a ninguna bbdd");
 		}
+	}
+
+	/**
+	 * 
+	 * @param event
+	 */
+	@FXML
+	void selectorBotonHost(ActionEvent event) {
+		selectorOnline();
 	}
 
 	/**
@@ -283,13 +272,39 @@ public class AccesoBBDDController {
 	 * @return
 	 */
 	public void envioDatosBBDD() { // Metodo que manda toda la informacion de los textField a la clase DBManager.
-		String datos[] = new String[4];
+		String datos[] = new String[5];
 		datos[0] = puertobbdd.getText();
 		datos[1] = nombreBBDD.getText();
 		datos[2] = usuario.getText();
 		datos[3] = pass.getText();
+		datos[4] = selectorOnline();
 		ConexionBBDD.datosBBDD(datos);
 	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public String selectorOnline() {
+		
+		if(siOnline.isSelected())
+		{
+			etiquetaHost.setText("Nombre del host: ");
+			nombreHost.setDisable(false);
+			nombreHost.setOpacity(1);
+			return nombreHost.getText();
+		}
+		if(noOffline.isSelected())
+		{
+			etiquetaHost.setText("Offline");
+			nombreHost.setDisable(true);
+			nombreHost.setOpacity(0);
+			return "localhost";
+		}
+		return "localhost";
+	}
+
+
 
 	/**
 	 * Permite salir completamente del programa.
@@ -309,7 +324,7 @@ public class AccesoBBDDController {
 	 * Cierra el programa a la fuerza correctamente.
 	 */
 	public void closeWindows() { // Metodo que permite cerrar completamente el programa en caso de cerrar a la //
-									// fuerza.
+		// fuerza.
 		Stage myStage = (Stage) this.botonEnviar.getScene().getWindow();
 		myStage.close();
 	}

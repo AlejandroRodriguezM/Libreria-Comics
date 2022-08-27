@@ -347,7 +347,7 @@ public class EliminarDatosController {
 	public void deleteDataSell() {
 		String id, sentenciaSQL;
 
-		sentenciaSQL = "UPDATE Comicsbbdd set estado = 'Vendido' where ID = ?";
+		sentenciaSQL = "UPDATE comicsbbdd set estado = 'Vendido' where ID = ?";
 
 		id = idComicTratar.getText();
 
@@ -361,7 +361,7 @@ public class EliminarDatosController {
 	public void deleteDataBBDD() {
 		String id, sentenciaSQL;
 
-		sentenciaSQL = "DELETE from Comicsbbdd where ID = ?";
+		sentenciaSQL = "DELETE from comicsbbdd where ID = ?";
 
 		id = idComicTratar.getText();
 
