@@ -51,10 +51,10 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  */
 public class ExcelFuntions {
 
-	private Libreria libreria = new Libreria();
-	private Connection conn = ConexionBBDD.conexion();
-	private NavegacionVentanas nav = new NavegacionVentanas();
-	private BBDD db = new BBDD();
+	private static Libreria libreria = new Libreria();
+	private static Connection conn = ConexionBBDD.conexion();
+	private static NavegacionVentanas nav = new NavegacionVentanas();
+	private static BBDD db = new BBDD();
 
 	/**
 	 * Funcion que permite importar ficheros CSV a la base de datos.

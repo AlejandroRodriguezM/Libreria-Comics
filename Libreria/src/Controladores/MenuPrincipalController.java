@@ -55,10 +55,10 @@ import javafx.stage.Stage;
 public class MenuPrincipalController {
 
 	@FXML
-	private Button BotonEliminarComic;
+	private Button botonEliminarComic;
 
 	@FXML
-	private Button BotonModificarComic;
+	private Button botonModificarComic;
 
 	@FXML
 	private Button botonLimpiar;
@@ -76,13 +76,13 @@ public class MenuPrincipalController {
 	private Button botonbbdd;
 
 	@FXML
-	private Button BotonVentanaAniadir;
+	private Button botonVentanaAniadir;
 
 	@FXML
 	private Button botonBackupBBDD;
 
 	@FXML
-	private Button BotonVentanaEliminar;
+	private Button botonVentanaEliminar;
 
 	@FXML
 	private Button botonVerRecomendacion;
@@ -106,7 +106,7 @@ public class MenuPrincipalController {
 	private Button botonEstadistica;
 
 	@FXML
-	private Button botonCompra;
+	private Button botonEnVenta;
 
 	@FXML
 	private Button botonVendidos;
@@ -198,13 +198,13 @@ public class MenuPrincipalController {
 	@FXML
 	private TextArea prontFrases;
 
-	private NavegacionVentanas nav = new NavegacionVentanas();
+	private static NavegacionVentanas nav = new NavegacionVentanas();
 
-	private Libreria libreria = new Libreria();
+	private static  Libreria libreria = new Libreria();
 
-	private BBDD db = new BBDD();
+	private static BBDD db = new BBDD();
 
-	private ExcelFuntions excelFuntions = new ExcelFuntions();
+	private static ExcelFuntions excelFuntions = new ExcelFuntions();
 
 	/////////////////////////////////
 	//// METODOS LLAMADA A VENTANAS//
@@ -220,7 +220,7 @@ public class MenuPrincipalController {
 
 		nav.verIntroducirDatos();
 
-		Stage myStage = (Stage) this.BotonVentanaAniadir.getScene().getWindow();
+		Stage myStage = (Stage) this.botonVentanaAniadir.getScene().getWindow();
 		myStage.close();
 	}
 
@@ -234,7 +234,7 @@ public class MenuPrincipalController {
 
 		nav.verEliminarDatos();
 
-		Stage myStage = (Stage) this.BotonEliminarComic.getScene().getWindow();
+		Stage myStage = (Stage) this.botonEliminarComic.getScene().getWindow();
 		myStage.close();
 	}
 
@@ -248,7 +248,7 @@ public class MenuPrincipalController {
 
 		nav.verModificarDatos();
 
-		Stage myStage = (Stage) this.BotonModificarComic.getScene().getWindow();
+		Stage myStage = (Stage) this.botonModificarComic.getScene().getWindow();
 		myStage.close();
 	}
 
@@ -356,6 +356,20 @@ public class MenuPrincipalController {
 		tablaBBDD(libreriaFirmados());
 	}
 
+	/**
+	 * Funcion que al pulsar el boton de 'botonVentas' se muestran aquellos comics
+	 * que han sido vendidos
+	 *
+	 * @param event
+	 */
+	@FXML
+	void comicsEnVenta(ActionEvent event) {
+
+		libreria.reiniciarBBDD();
+		nombreColumnas();
+		tablaBBDD(libreriaEnVenta());
+	}
+
 	////////////////////////////
 	/// METODOS PARA EXPORTAR///
 	////////////////////////////
@@ -436,7 +450,10 @@ public class MenuPrincipalController {
 	 */
 	@FXML
 	void limpiarDatos(ActionEvent event) {
+		limpiezaDeDatos();
+	}
 
+	public void limpiezaDeDatos() {
 		numeroID.setText("");
 		nombreComic.setText("");
 		numeroComic.setText("");
@@ -453,7 +470,6 @@ public class MenuPrincipalController {
 		prontInfo.setOpacity(0);
 		prontFrases.setOpacity(0);
 		tablaBBDD.getItems().clear();
-
 	}
 
 	/**
@@ -488,42 +504,9 @@ public class MenuPrincipalController {
 		prontInfo.setText(db.procedimientosEstadistica());
 	}
 
-	/**
-	 * Se llama a funcion que permite abrir 2 direcciones web junto al navegador
-	 * predeterminado
-	 *
-	 * @param event
-	 */
-	@FXML
-	void comprarComic(ActionEvent event) {
-		verPagina();
-	}
-
 	/////////////////////////////////
 	//// FUNCIONES////////////////////
 	/////////////////////////////////
-
-	/**
-	 * Funcion que permite llamar al navegador predeterminado del sistema y abrir 2
-	 * paginas web.
-	 */
-	public void verPagina() {
-		String url1 = "https://www.radarcomics.com/es/";
-		String url2 = "https://www.panini.es/shp_esp_es/comics.html";
-
-		if (Utilidades.isWindows()) {
-			Utilidades.accesoWebWindows(url1); // Llamada a funcion
-			Utilidades.accesoWebWindows(url2); // Llamada a funcion
-		} else {
-			if (Utilidades.isUnix()) {
-				Utilidades.accesoWebLinux(url1); // Llamada a funcion
-				Utilidades.accesoWebLinux(url2); // Llamada a funcion
-			} else {
-				Utilidades.accesoWebMac(url1);
-				Utilidades.accesoWebMac(url2);
-			}
-		}
-	}
 
 	/**
 	 * Permite dar valor a las celdas de la TableView
@@ -659,7 +642,7 @@ public class MenuPrincipalController {
 	 * @return
 	 */
 	public List<Comic> busquedaParametro(Comic comic) {
-
+		limpiezaDeDatos();
 		List<Comic> listComic;
 
 		if (busquedaGeneral.getText().length() != 0) {
@@ -686,6 +669,7 @@ public class MenuPrincipalController {
 	 * @return
 	 */
 	public List<Comic> libreriaPosesion() {
+		limpiezaDeDatos();
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaPosesion());
 
 		if (listComic.size() == 0) {
@@ -704,12 +688,32 @@ public class MenuPrincipalController {
 	 * @return
 	 */
 	public List<Comic> libreriaVendidos() {
+		limpiezaDeDatos();
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaVendidos());
 
 		if (listComic.size() == 0) {
 			prontInfo.setOpacity(1);
 			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("ERROR. La base de datos se encuentra vacia");
+			prontInfo.setText("ERROR. No ha vendido ningun comic");
+		}
+
+		return listComic;
+	}
+
+	/**
+	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
+	 * "En posesion"
+	 *
+	 * @return
+	 */
+	public List<Comic> libreriaEnVenta() {
+		limpiezaDeDatos();
+		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaEnVenta());
+
+		if (listComic.size() == 0) {
+			prontInfo.setOpacity(1);
+			prontInfo.setStyle("-fx-background-color: #F53636");
+			prontInfo.setText("ERROR. No hay ningun comic en venta");
 		}
 
 		return listComic;
@@ -722,12 +726,13 @@ public class MenuPrincipalController {
 	 * @return
 	 */
 	public List<Comic> libreriaPuntuacion() {
+		limpiezaDeDatos();
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaPuntuacion());
 
 		if (listComic.size() == 0) {
 			prontInfo.setOpacity(1);
 			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("ERROR. La base de datos se encuentra vacia");
+			prontInfo.setText("ERROR. No hay ningun comic puntuado");
 		}
 
 		return listComic;
@@ -740,12 +745,13 @@ public class MenuPrincipalController {
 	 * @return
 	 */
 	public List<Comic> libreriaFirmados() {
+		limpiezaDeDatos();
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaFirmados());
 
 		if (listComic.size() == 0) {
 			prontInfo.setOpacity(1);
 			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("ERROR. La base de datos se encuentra vacia");
+			prontInfo.setText("ERROR. No hay ningun comic firmado");
 		}
 
 		return listComic;
@@ -757,6 +763,7 @@ public class MenuPrincipalController {
 	 * @return
 	 */
 	public List<Comic> libreriaCompleta() {
+		limpiezaDeDatos();
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaCompleta());
 
 		if (listComic.size() == 0) {

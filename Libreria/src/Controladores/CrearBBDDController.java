@@ -90,7 +90,7 @@ public class CrearBBDDController {
 	@FXML
 	private RadioButton siOnline;
 
-	private NavegacionVentanas nav = new NavegacionVentanas();
+	private static NavegacionVentanas nav = new NavegacionVentanas();
 
 	public static String DB_USER = "";
 	public static String DB_PASS = "";
@@ -272,12 +272,11 @@ public class CrearBBDDController {
 
 		String sentenciaSQL = "CREATE TABLE " + " comicsbbdd ( ID int NOT NULL AUTO_INCREMENT,"
 				+ "nomComic varchar(150) NOT NULL," + "numComic varchar(150) NOT NULL,"
-				+ "nomVariante varchar(150) NOT NULL," + "Firma varchar(150) NOT NULL,"
-				+ "nomEditorial varchar(150) NOT NULL," + "Formato varchar(150) NOT NULL,"
-				+ "Procedencia varchar(150) NOT NULL," + "anioPubli varchar(150) NOT NULL,"
+				+ "nomVariante varchar(150) NOT NULL," + "firma varchar(150) NOT NULL,"
+				+ "nomEditorial varchar(150) NOT NULL," + "formato varchar(150) NOT NULL,"
+				+ "procedencia varchar(150) NOT NULL," + "anioPubli varchar(150) NOT NULL,"
 				+ "nomGuionista varchar(300) NOT NULL," + "nomDibujante varchar(300) NOT NULL,"
-				+ "puntuacion varchar(300) NOT NULL," + "estado enum('En posesion','Vendido') DEFAULT 'En posesion'"
-				+ ",PRIMARY KEY (`ID`)) "
+				+ "puntuacion varchar(300) NOT NULL," + "estado varchar(300) NOT NULL," + "PRIMARY KEY (`ID`)) "
 				+ "ENGINE=InnoDB AUTO_INCREMENT=320 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;";
 
 		Statement statement1;

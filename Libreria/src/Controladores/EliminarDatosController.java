@@ -129,13 +129,13 @@ public class EliminarDatosController {
 	@FXML
 	private TableColumn<Comic, String> nombre;
 
-	private NavegacionVentanas nav = new NavegacionVentanas();
+	private static NavegacionVentanas nav = new NavegacionVentanas();
 
-	private Libreria libreria = new Libreria();
+	private static Libreria libreria = new Libreria();
 
-	private Connection conn = ConexionBBDD.conexion();
+	private static Connection conn = ConexionBBDD.conexion();
 
-	private BBDD bd = new BBDD();
+	private static BBDD bd = new BBDD();
 
 	/**
 	 *

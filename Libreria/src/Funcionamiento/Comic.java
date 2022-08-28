@@ -225,7 +225,8 @@ public class Comic {
 	public String toString() {
 		return "\nNombre: " + nombre + "\nNumero: " + numero + "\nVariante: " + variante + "\nFirma: " + firma
 				+ "\nEditorial: " + editorial + "\nFormato: " + formato + "\nProcedencia: " + procedencia + "\nFecha: "
-				+ fecha + "\nGuionista: " + guionista + "\nDibujante: " + dibujante;
+				+ fecha + "\nGuionista: " + guionista + "\nDibujante: " + dibujante + "\nPuntuacion: " + puntuacion 
+				+ "\nEstado: " + estado;
 	}
 
 }

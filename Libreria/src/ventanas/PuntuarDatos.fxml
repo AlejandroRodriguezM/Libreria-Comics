@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="825.0" prefWidth="1197.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.PuntuarDatosController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="749.0" prefWidth="1196.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.PuntuarDatosController">
    <children>
       <ImageView fitHeight="639.0" fitWidth="1205.0" layoutX="-7.0" layoutY="-5.0" pickOnBounds="true" preserveRatio="true">
          <image>
@@ -90,7 +90,7 @@
       </Label>
       <Label layoutX="294.0" layoutY="142.0" prefHeight="17.0" prefWidth="67.0" style="-fx-background-color: white;" text="Puntuación" />
       <Label layoutX="293.0" layoutY="112.0" prefHeight="17.0" prefWidth="67.0" style="-fx-background-color: white;" text="ID a Puntuar" />
-      <TableView fx:id="tablaBBDD" layoutY="388.0" prefHeight="437.0" prefWidth="1198.0">
+      <TableView fx:id="tablaBBDD" layoutY="388.0" prefHeight="361.0" prefWidth="1198.0">
          <columns>
             <TableColumn fx:id="ID" editable="false" prefWidth="43.0" text="ID" />
             <TableColumn fx:id="nombre" editable="false" prefWidth="157.0" text="Nombre" />

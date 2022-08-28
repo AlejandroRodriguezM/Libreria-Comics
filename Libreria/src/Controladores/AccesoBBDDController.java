@@ -79,7 +79,7 @@ public class AccesoBBDDController {
 	@FXML
 	private Label etiquetaHost;
 
-	private NavegacionVentanas nav = new NavegacionVentanas();
+	private static NavegacionVentanas nav = new NavegacionVentanas();
 
 	/**
 	 * Funcion para abrir el navegador y acceder a la URL

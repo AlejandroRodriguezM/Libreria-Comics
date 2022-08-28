@@ -43,9 +43,9 @@ import javafx.stage.FileChooser;
  */
 public class BBDD {
 
-	private Libreria libreria = new Libreria();
-	private Connection conn = ConexionBBDD.conexion();
-	private NavegacionVentanas nav = new NavegacionVentanas();
+	private static Libreria libreria = new Libreria();
+	private static Connection conn = ConexionBBDD.conexion();
+	private static NavegacionVentanas nav = new NavegacionVentanas();
 
 	/**
 	 * Funcion que permite contar cuantas filas hay en la base de datos.

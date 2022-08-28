@@ -53,9 +53,9 @@ public class RecomendacionesController {
 	@FXML
 	private TextArea printComicRecomendado;
 
-	private NavegacionVentanas nav = new NavegacionVentanas();
+	private static NavegacionVentanas nav = new NavegacionVentanas();
 
-	private Libreria libreria = new Libreria();
+	private static Libreria libreria = new Libreria();
 
 	/**
 	 * Llama a funcion que genera una lectura recomendada

@@ -35,5 +35,6 @@
          </image>
       </ImageView>
       <Label fx:id="TextoInfo" alignment="TOP_LEFT" cache="true" layoutX="7.0" layoutY="3.0" prefHeight="105.0" prefWidth="369.0" text="Programa creado por Alejandro Rodriguez. Es un proyecto personal para probar conocimientos adquiridos durante el primer curso de DAW. Esta aplicacion solamente puede usarse con una tabla de una forma estructurada de una forma concreta. Esta aplicacion ha sido creada con la intencion de ser usada junto a una base de datos MySql. " wrapText="true" />
+      <Button fx:id="botonCompra" layoutX="249.0" layoutY="107.0" mnemonicParsing="false" onAction="#comprarComic" prefHeight="43.0" prefWidth="102.0" text="Webs recomendadas" wrapText="true" />
    </children>
 </Pane>

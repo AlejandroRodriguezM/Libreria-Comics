@@ -31,7 +31,10 @@ public class SobreMiController {
 	@FXML
 	private Button numeroVersion;
 
-	private NavegacionVentanas nav = new NavegacionVentanas();
+	@FXML
+	private Button botonCompra;
+
+	private static NavegacionVentanas nav = new NavegacionVentanas();
 
 	@FXML
 	void accesoGitHub(ActionEvent event) {
@@ -94,6 +97,39 @@ public class SobreMiController {
 				Utilidades.accesoWebLinux(url); // Llamada a funcion
 			} else {
 				Utilidades.accesoWebMac(url);
+			}
+		}
+	}
+
+	/**
+	 * Se llama a funcion que permite abrir 2 direcciones web junto al navegador
+	 * predeterminado
+	 *
+	 * @param event
+	 */
+	@FXML
+	void comprarComic(ActionEvent event) {
+		verPagina();
+	}
+
+	/**
+	 * Funcion que permite llamar al navegador predeterminado del sistema y abrir 2
+	 * paginas web.
+	 */
+	public void verPagina() {
+		String url1 = "https://www.radarcomics.com/es/";
+		String url2 = "https://www.panini.es/shp_esp_es/comics.html";
+
+		if (Utilidades.isWindows()) {
+			Utilidades.accesoWebWindows(url1); // Llamada a funcion
+			Utilidades.accesoWebWindows(url2); // Llamada a funcion
+		} else {
+			if (Utilidades.isUnix()) {
+				Utilidades.accesoWebLinux(url1); // Llamada a funcion
+				Utilidades.accesoWebLinux(url2); // Llamada a funcion
+			} else {
+				Utilidades.accesoWebMac(url1);
+				Utilidades.accesoWebMac(url2);
 			}
 		}
 	}

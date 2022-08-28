@@ -1,5 +1,7 @@
 package Controladores;
 
+import java.net.URL;
+
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  * Las ventanas graficas se realizan con JavaFX.
@@ -27,6 +29,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import Funcionamiento.BBDD;
 import Funcionamiento.Comic;
@@ -34,9 +37,12 @@ import Funcionamiento.ConexionBBDD;
 import Funcionamiento.Libreria;
 import Funcionamiento.NavegacionVentanas;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -50,7 +56,7 @@ import javafx.stage.Stage;
  *
  * @author Alejandro Rodriguez
  */
-public class IntroducirDatosController {
+public class IntroducirDatosController implements Initializable {
 
 	@FXML
 	private Button botonLimpiarComic;
@@ -178,16 +184,33 @@ public class IntroducirDatosController {
 	@FXML
 	private TableColumn<Comic, String> nombre;
 
-	private Connection conn = ConexionBBDD.conexion();
+	@FXML
+	private ComboBox<String> estadoComic;
 
-	private NavegacionVentanas nav = new NavegacionVentanas();
+	private static Connection conn = ConexionBBDD.conexion();
 
-	private Libreria libreria = new Libreria();
+	private static NavegacionVentanas nav = new NavegacionVentanas();
 
-	private BBDD bd = new BBDD();
+	private static Libreria libreria = new Libreria();
+
+	private static BBDD bd = new BBDD();
 
 	/**
-	 * Limpia todos los datos de los textField que hay en pantalla
+	 * Funcion que permite hacer funcionar la lista de puntuacion.
+	 */
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+
+		ObservableList<String> situacionEstado = FXCollections.observableArrayList("En posesion", "Vendido",
+				"En venta");
+		estadoComic.setItems(situacionEstado);
+		estadoComic.getSelectionModel().selectFirst(); // Permite que no exista un valor null, escogiendo el primer
+														// valor, que se encuentra vacio, en caso de querer borrar
+														// la puntuacion.
+	}
+
+	/**
+	 * Metodo que limpia todos los datos de los textField que hay en pantalla
 	 *
 	 * @param event
 	 */
@@ -249,7 +272,7 @@ public class IntroducirDatosController {
 	}
 
 	/**
-	 * Aniade datos a la base de datos segun los parametros introducidos en los
+	 * Metodo que añade datos a la base de datos segun los parametros introducidos en los
 	 * textField
 	 *
 	 * @param event
@@ -262,12 +285,26 @@ public class IntroducirDatosController {
 	}
 
 	/**
+	 * Funcion que permite modificar el estado de un comic.
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public String estadoActual() {
+
+		String situacionEstado = estadoComic.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+																								// "puntuacion"
+		return situacionEstado;
+
+	}
+
+	/**
 	 *
 	 */
 	public void introducirDatos() {
 		ConexionBBDD.loadDriver();
 
-		String sentenciaSQL = "insert into comicsbbdd(nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante,puntuacion) values (?,?,?,?,?,?,?,?,?,?,?)";
+		String sentenciaSQL = "insert into comicsbbdd(nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante,puntuacion,estado) values (?,?,?,?,?,?,?,?,?,?,?,?)";
 
 		String datos[] = camposComicIntroducir();
 
@@ -285,6 +322,7 @@ public class IntroducirDatosController {
 			statement.setString(9, datos[8]);
 			statement.setString(10, datos[9]);
 			statement.setString(11, "");
+			statement.setString(12, datos[10]);
 
 			if (nav.alertaInsertar()) {
 				if (statement.executeUpdate() == 1) { // Sie el resultado del executeUpdate es 1, mostrara el mensaje
@@ -296,7 +334,7 @@ public class IntroducirDatosController {
 							+ "\nNumero: " + datos[1] + "\nPortada variante: " + datos[2] + "\nFirma: " + datos[3]
 							+ "\nEditorial: " + datos[4] + "\nFormato: " + datos[5] + "\nProcedencia: " + datos[6]
 							+ "\nFecha de publicacion: " + datos[7] + "\nGuionista: " + datos[8] + "\nDibujante: "
-							+ datos[9]);
+							+ datos[9] + "\nEstado: " + datos[10]);
 					statement.close();
 
 				} else { // En caso de no haber sido posible Introducir el comic, se vera el siguiente
@@ -318,7 +356,7 @@ public class IntroducirDatosController {
 	}
 
 	/**
-	 * Mostrara los comics o comic buscados por parametro
+	 * Metodo que mostrara los comics o comic buscados por parametro
 	 *
 	 * @param event
 	 * @throws SQLException
@@ -331,7 +369,7 @@ public class IntroducirDatosController {
 	}
 
 	/**
-	 * Muestra toda la base de datos.
+	 * Metodo que muestra toda la base de datos.
 	 *
 	 * @param event
 	 */
@@ -344,7 +382,7 @@ public class IntroducirDatosController {
 	}
 
 	/**
-	 * Muestra los comics que coincidan con los parametros introducidos en los
+	 * Funcion que muestra los comics que coincidan con los parametros introducidos en los
 	 * textField
 	 *
 	 * @return
@@ -385,7 +423,7 @@ public class IntroducirDatosController {
 	}
 
 	/**
-	 * Muestra todos los comics de la base de datos
+	 * Funcion que muestra todos los comics de la base de datos
 	 *
 	 * @return
 	 */
@@ -402,7 +440,7 @@ public class IntroducirDatosController {
 	}
 
 	/**
-	 * Obtiene los datos de los comics de la base de datos y los devuelve en el
+	 * funcion que obtiene los datos de los comics de la base de datos y los devuelve en el
 	 * textView
 	 *
 	 * @param listaComic
@@ -415,7 +453,7 @@ public class IntroducirDatosController {
 	}
 
 	/**
-	 * Devuelve un array con los datos de los TextField correspondientes a la los
+	 * Funcion que devuelve un array con los datos de los TextField correspondientes a la los
 	 * comics que se encuentran en la bbdd
 	 *
 	 * @return
@@ -449,12 +487,12 @@ public class IntroducirDatosController {
 	}
 
 	/**
-	 * Devuelve un array con los datos de los TextField del comic a Introducir.
+	 * Funcion que devuelve un array con los datos de los TextField del comic a Introducir.
 	 *
 	 * @return
 	 */
 	public String[] camposComicIntroducir() {
-		String campos[] = new String[10];
+		String campos[] = new String[11];
 
 		campos[0] = nombreAni.getText();
 
@@ -476,11 +514,13 @@ public class IntroducirDatosController {
 
 		campos[9] = dibujanteAni.getText();
 
+		campos[10] = estadoActual();
+
 		return comaPorGuion(campos);
 	}
 
 	/**
-	 * Cambia una ',' por un guion '-'
+	 * Funcion que cambia una ',' por un guion '-'
 	 *
 	 * @param campos
 	 * @return

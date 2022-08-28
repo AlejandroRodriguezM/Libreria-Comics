@@ -159,11 +159,11 @@ public class PuntuarDatosController implements Initializable {
 	@FXML
 	public TableView<Comic> tablaBBDD;
 
-	private Connection conn = ConexionBBDD.conexion();
+	private static Connection conn = ConexionBBDD.conexion();
 
-	private NavegacionVentanas nav = new NavegacionVentanas();
+	private static NavegacionVentanas nav = new NavegacionVentanas();
 
-	private Libreria libreria = new Libreria();
+	private static Libreria libreria = new Libreria();
 
 	/**
 	 * Funcion que permite hacer funcionar la lista de puntuacion.

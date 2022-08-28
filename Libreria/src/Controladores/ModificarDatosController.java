@@ -178,13 +178,13 @@ public class ModificarDatosController {
 	@FXML
 	private TableColumn<Comic, String> nombre;
 
-	private NavegacionVentanas nav = new NavegacionVentanas();
+	private static NavegacionVentanas nav = new NavegacionVentanas();
 
-	private Libreria libreria = new Libreria();
+	private static Libreria libreria = new Libreria();
 
-	private Comic comic = new Comic();
+	private static Comic comic = new Comic();
 
-	private Connection conn = ConexionBBDD.conexion();
+	private static Connection conn = ConexionBBDD.conexion();
 
 	/**
 	 * Limpia todos los datos en pantalla.

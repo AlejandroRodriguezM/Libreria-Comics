@@ -41,7 +41,7 @@ import javafx.stage.Stage;
  */
 public class VentanaPrincipalController extends Application {
 
-	private NavegacionVentanas nav = new NavegacionVentanas();
+	private static NavegacionVentanas nav = new NavegacionVentanas();
 
 	/**
 	 * Carga la ventana principal y arranca el programa.

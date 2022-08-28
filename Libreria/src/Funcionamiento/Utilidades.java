@@ -143,15 +143,6 @@ public class Utilidades {
 
 			listaLimpia.add(c.getValue());
 
-			//
-			// Collections.sort(listaLimpia, new Comparator<Comic>() {
-			// @Override
-			// public int compare(Comic o1, Comic o2) {
-			// return o1.getID().compareTo(o2.getID());
-			// }
-			// });
-			// }
-
 		}
 		return listaLimpia;
 	}
