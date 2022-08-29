@@ -1,5 +1,7 @@
 package Controladores;
 
+import java.net.URL;
+
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  * Las ventanas graficas se realizan con JavaFX.
@@ -28,15 +30,19 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import Funcionamiento.Comic;
 import Funcionamiento.ConexionBBDD;
 import Funcionamiento.Libreria;
 import Funcionamiento.NavegacionVentanas;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -45,7 +51,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
-public class ModificarDatosController {
+public class ModificarDatosController implements Initializable {
 
 	public static List<Comic> comicModicado = new ArrayList<>();
 
@@ -177,6 +183,9 @@ public class ModificarDatosController {
 
 	@FXML
 	private TableColumn<Comic, String> nombre;
+	
+	@FXML
+	private ComboBox<String> estadoComic;
 
 	private static NavegacionVentanas nav = new NavegacionVentanas();
 
@@ -186,6 +195,34 @@ public class ModificarDatosController {
 
 	private static Connection conn = ConexionBBDD.conexion();
 
+	/**
+	 * Funcion que permite hacer funcionar la lista de puntuacion.
+	 */
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+
+		ObservableList<String> situacionEstado = FXCollections.observableArrayList("En posesion", "Vendido",
+				"En venta");
+		estadoComic.setItems(situacionEstado);
+		estadoComic.getSelectionModel().selectFirst(); // Permite que no exista un valor null, escogiendo el primer
+														// valor, que se encuentra vacio, en caso de querer borrar
+														// la puntuacion.
+	}
+	
+	/**
+	 * Funcion que permite modificar el estado de un comic.
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public String estadoActual() {
+
+		String situacionEstado = estadoComic.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+																								// "puntuacion"
+		return situacionEstado;
+
+	}
+	
 	/**
 	 * Limpia todos los datos en pantalla.
 	 *
@@ -310,7 +347,7 @@ public class ModificarDatosController {
 	 * @return
 	 */
 	public String[] camposComicModificar() {
-		String campos[] = new String[11];
+		String campos[] = new String[12];
 
 		campos[0] = idComicMod.getText();
 
@@ -333,6 +370,8 @@ public class ModificarDatosController {
 		campos[9] = nombreGuionistaMod.getText();
 
 		campos[10] = nombreDibujanteMod.getText();
+		
+		campos[11] = estadoActual();
 
 		return campos;
 	}
@@ -345,7 +384,7 @@ public class ModificarDatosController {
 
 		String sentenciaSQL = "UPDATE comicsbbdd set nomComic = ?,numComic = ?,nomVariante = ?,"
 				+ "Firma = ?,nomEditorial = ?,formato = ?,Procedencia = ?,anioPubli = ?,"
-				+ "nomGuionista = ?,nomDibujante = ? where ID = ?";
+				+ "nomGuionista = ?,nomDibujante = ?,estado = ? where ID = ?";
 
 		if (nav.alertaModificar()) { // Llamada a alerta de modificacion
 
@@ -371,7 +410,7 @@ public class ModificarDatosController {
 			if (comprobarID()) // Comprueba si la ID introducida existe en la base de datos
 			{
 				comic = libreria.comicDatos(idComicMod.getText());
-				ps.setString(11, idComicMod.getText());
+				ps.setString(12, idComicMod.getText());
 				comicModificar(ps); // Llama a funcion que permite cambiar los datos del comic
 
 				if (ps.executeUpdate() == 1) { // Si se ha modificado correctamente, saltara el siguiente mensaje
@@ -424,7 +463,7 @@ public class ModificarDatosController {
 	public void comicModificar(PreparedStatement ps) {
 
 		String nombre = "", numero = "", variante = "", firma = "", editorial = "", formato = "", procedencia = "",
-				fecha = "", guionista = "", dibujante = "";
+				fecha = "", guionista = "", dibujante = "", estado = "";
 
 		String datosModificados[] = camposComicModificar();
 
@@ -501,9 +540,13 @@ public class ModificarDatosController {
 				dibujante = comic.getDibujante();
 				ps.setString(10, dibujante);
 			}
-
+			if (datosModificados[11].length() != 0) {
+				ps.setString(11, datosModificados[11]);
+				estado = datosModificados[11];
+			}
+			
 			Comic comic = new Comic("", nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
-					guionista, dibujante, "", "");
+					guionista, dibujante, estado, "");
 			comicModicado.add(comic);
 
 		} catch (SQLException ex) {
