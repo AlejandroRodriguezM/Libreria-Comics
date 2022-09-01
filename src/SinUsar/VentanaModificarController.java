@@ -94,8 +94,10 @@ public class VentanaModificarController {
 				+ "Firma = ?,nomEditorial = ?,formato = ?,Procedencia = ?,anioPubli = ?"
 				+ "nomGuionista = ?,nomDibujante = ? where ID = " + id;
 		
-		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(id,nombreCom, numeroCom,
-				varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom));
+		Comics comic = new Comics(id,nombreCom, numeroCom,
+				varianteCom, firmaCom, editorialCom, formatoCom, procedenciaCom, fechaCom, guionistaCom, dibujanteCom);
+		
+		List<Comics> listComics = FXCollections.observableArrayList(comic.filtadroBBDD(comic));
 
 		pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 		pantallaInformativa.setText(listComics.toString());
