@@ -128,5 +128,10 @@
       <Button fx:id="botonPuntuacion" layoutX="269.0" layoutY="195.0" mnemonicParsing="false" onAction="#comicsPuntuacion" prefHeight="43.0" prefWidth="75.0" text="Comics puntuados" wrapText="true" />
       <Button fx:id="botonFirmados" layoutX="358.0" layoutY="195.0" mnemonicParsing="false" onAction="#comicsFirmados" prefHeight="43.0" prefWidth="75.0" text="Comics Firmados" wrapText="true" />
       <Button fx:id="botonEnVenta" layoutX="358.0" layoutY="247.0" mnemonicParsing="false" onAction="#comicsEnVenta" prefHeight="43.0" prefWidth="75.0" text="Comics en venta" wrapText="true" />
+      <ImageView fx:id="imagencomic" fitHeight="275.0" fitWidth="200.0" layoutX="755.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../../Downloads/1.jpg" />
+         </image>
+      </ImageView>
    </children>
 </Pane>

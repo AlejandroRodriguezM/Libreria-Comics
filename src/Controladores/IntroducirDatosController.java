@@ -1,5 +1,12 @@
 package Controladores;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 
 /**
@@ -27,6 +34,7 @@ import java.net.URL;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -49,6 +57,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 /**
@@ -75,6 +86,9 @@ public class IntroducirDatosController implements Initializable {
 
 	@FXML
 	private Button botonbbdd;
+	
+    @FXML
+    private Button botonNuevaPortada;
 
 	@FXML
 	private TextArea pantallaInformativa;
@@ -186,6 +200,9 @@ public class IntroducirDatosController implements Initializable {
 
 	@FXML
 	private ComboBox<String> estadoComic;
+	
+	@FXML
+	private ImageView imagencomic;
 
 	private static Connection conn = ConexionBBDD.conexion();
 
@@ -270,6 +287,33 @@ public class IntroducirDatosController implements Initializable {
 
 		tablaBBDD.getItems().clear();
 	}
+	
+//	public void selectorImage()
+//	{
+//		String q="SELECT image FROM comicsbbdd where image = " + 
+//
+//		try {
+//			ResultSet rs = db.ejecucionSQL(q);
+//
+//			InputStream is= rs.getBinaryStream("image");
+//			OutputStream os=new FileOutputStream(new File("img.jpg"));
+//			byte [] content= new byte[1024];
+//			int size=0;
+//
+//			while ((size=is.read(content))!=-1){
+//
+//				os.write(content, 0, size);
+//			}
+//			os.close();
+//			is.close();
+//		} catch (IOException | SQLException e) {
+//			e.printStackTrace();
+//		}
+//
+//		javafx.scene.image.Image image1=new Image("file:img.jpg", imagencomic.getFitWidth(), imagencomic.getFitHeight(), true, true);
+//		imagencomic.setImage(image1);
+//		imagencomic.setPreserveRatio(true);
+//	}
 
 	/**
 	 * Metodo que añade datos a la base de datos segun los parametros introducidos en los
@@ -283,6 +327,42 @@ public class IntroducirDatosController implements Initializable {
 		introducirDatos();
 		libreria.reiniciarBBDD();
 	}
+	
+    @FXML
+    void nuevaPortada(ActionEvent event) {
+    	subirPortada();
+    }
+    
+	/**
+	 * Funcion que abre una ventana que aceptara los formatos de archivos que le
+	 * demos como parametro.
+	 *
+	 * @param frase
+	 * @param formato
+	 * @return
+	 */
+	public FileChooser tratarFichero(String frase, String formato) {
+		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(frase, formato));
+
+		return fileChooser;
+	}
+    
+    public FileInputStream subirPortada()
+    {
+    	String frase = "Subiendo portada";
+    	String formato = "*.jpg";
+    	
+    	try {
+    		File file = tratarFichero(frase, formato).showOpenDialog(null); // Llamada a funcion
+			FileInputStream input = new FileInputStream(file);
+			return input;
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+    }
 
 	/**
 	 * Funcion que permite modificar el estado de un comic.
@@ -304,7 +384,7 @@ public class IntroducirDatosController implements Initializable {
 	public void introducirDatos() {
 		ConexionBBDD.loadDriver();
 
-		String sentenciaSQL = "insert into comicsbbdd(nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante,puntuacion,estado) values (?,?,?,?,?,?,?,?,?,?,?,?)";
+		String sentenciaSQL = "insert into comicsbbdd(nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante,puntuacion,image,estado) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 		String datos[] = camposComicIntroducir();
 
@@ -322,7 +402,8 @@ public class IntroducirDatosController implements Initializable {
 			statement.setString(9, datos[8]);
 			statement.setString(10, datos[9]);
 			statement.setString(11, "");
-			statement.setString(12, datos[10]);
+			statement.setBlob(12, subirPortada());
+			statement.setString(13, datos[10]);
 
 			if (nav.alertaInsertar()) {
 				if (statement.executeUpdate() == 1) { // Sie el resultado del executeUpdate es 1, mostrara el mensaje
@@ -480,7 +561,7 @@ public class IntroducirDatosController implements Initializable {
 		campos[8] = fechaParametro.getText();
 
 		campos[9] = guionistaParametro.getText();
-
+		
 		campos[10] = dibujanteParametro.getText();
 
 		return campos;

@@ -24,7 +24,14 @@ package Controladores;
  */
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import Funcionamiento.BBDD;
@@ -43,6 +50,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -198,9 +207,12 @@ public class MenuPrincipalController {
 	@FXML
 	private TextArea prontFrases;
 
+	@FXML
+	private ImageView imagencomic;
+
 	private static NavegacionVentanas nav = new NavegacionVentanas();
 
-	private static  Libreria libreria = new Libreria();
+	private static Libreria libreria = new Libreria();
 
 	private static BBDD db = new BBDD();
 
@@ -299,6 +311,11 @@ public class MenuPrincipalController {
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
 		libreria.reiniciarBBDD();
+		
+		if(numeroID.getText().length() != 0)
+		{
+			selectorImage();
+		}
 		nombreColumnas();
 		listaPorParametro();
 	}
@@ -426,6 +443,43 @@ public class MenuPrincipalController {
 
 		makeSQL(fichero);
 
+	}
+
+	public void selectorImage()
+	{
+		Connection conn = ConexionBBDD.conexion();
+		
+		String sentenciaSQL = "SELECT * FROM comicsbbdd where ID = ?";
+
+		try {
+			
+			PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
+			statement.setString(1, numeroID.getText());
+			
+			ResultSet rs = statement.executeQuery();
+
+			while(rs.next())
+			{
+				InputStream is = rs.getBinaryStream("image");
+				OutputStream os = new FileOutputStream(new File("image.jpg"));
+				byte [] content= new byte[1024];
+				int size=0;
+
+				while ((size=is.read(content))!=-1){
+
+					os.write(content, 0, size);
+				}
+				
+				os.close();
+				is.close();
+			}
+			
+		} catch (IOException | SQLException e) {
+			e.printStackTrace();
+		}
+
+		Image image1=new Image("file:image.jpg",250,250,true,true);
+		imagencomic.setImage(image1);
 	}
 
 	/**
