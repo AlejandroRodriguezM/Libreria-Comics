@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="788.0" prefWidth="1197.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.MenuPrincipalController">
+   <children>
+      <ImageView fitHeight="513.0" fitWidth="1197.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imagenes/Fondo%20menu.jpg" />
+         </image>
+      </ImageView>
+      <Label layoutX="14.0" layoutY="11.0" style="-fx-background-color: grey;" text="ID">
+         <font>
+            <Font size="14.0" />
+         </font></Label>
+      <Label layoutX="270.0" layoutY="12.0" style="-fx-background-color: grey;" text="Nombre">
+         <font>
+            <Font size="14.0" />
+         </font></Label>
+      <Label layoutX="14.0" layoutY="39.0" style="-fx-background-color: grey;" text="Numero">
+         <font>
+            <Font size="14.0" />
+         </font></Label>
+      <Label layoutX="270.0" layoutY="39.0" style="-fx-background-color: grey;" text="Variante">
+         <font>
+            <Font size="14.0" />
+         </font></Label>
+      <Label layoutX="15.0" layoutY="69.0" prefHeight="17.0" prefWidth="36.0" style="-fx-background-color: grey;" text="Firma">
+         <font>
+            <Font size="14.0" />
+         </font></Label>
+      <Label layoutX="269.0" layoutY="70.0" style="-fx-background-color: grey;" text="Editorial">
+         <font>
+            <Font size="14.0" />
+         </font></Label>
+      <Label layoutX="13.0" layoutY="100.0" style="-fx-background-color: grey;" text="Formato">
+         <font>
+            <Font size="14.0" />
+         </font></Label>
+      <Label layoutX="269.0" layoutY="102.0" style="-fx-background-color: grey;" text="Procedencia">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Label layoutX="14.0" layoutY="130.0" style="-fx-background-color: grey;" text="Fecha publicacion">
+         <font>
+            <Font size="13.0" />
+         </font></Label>
+      <Label layoutX="269.0" layoutY="130.0" style="-fx-background-color: grey;" text="Guionista">
+         <font>
+            <Font size="14.0" />
+         </font></Label>
+      <Label layoutX="14.0" layoutY="161.0" style="-fx-background-color: grey;" text="Dibujante">
+         <font>
+            <Font size="14.0" />
+         </font></Label>
+      <TextField fx:id="numeroID" layoutX="125.0" layoutY="9.0" prefHeight="25.0" prefWidth="126.0" />
+      <TextField fx:id="nombreComic" layoutX="395.0" layoutY="9.0" prefHeight="25.0" prefWidth="126.0" />
+      <TextField fx:id="numeroComic" layoutX="125.0" layoutY="38.0" prefHeight="25.0" prefWidth="126.0" />
+      <TextField fx:id="nombreVariante" layoutX="395.0" layoutY="38.0" prefHeight="25.0" prefWidth="126.0" />
+      <TextField fx:id="nombreFirma" layoutX="126.0" layoutY="68.0" prefHeight="25.0" prefWidth="126.0" />
+      <TextField fx:id="nombreEditorial" layoutX="395.0" layoutY="68.0" prefHeight="25.0" prefWidth="126.0" />
+      <TextField fx:id="nombreFormato" layoutX="125.0" layoutY="98.0" prefHeight="25.0" prefWidth="126.0" />
+      <TextField fx:id="nombreProcedencia" layoutX="395.0" layoutY="97.0" prefHeight="25.0" prefWidth="126.0" />
+      <TextField fx:id="anioPublicacion" layoutX="126.0" layoutY="128.0" prefHeight="25.0" prefWidth="126.0" />
+      <TextField fx:id="nombreGuionista" layoutX="395.0" layoutY="127.0" prefHeight="25.0" prefWidth="126.0" />
+      <TextField fx:id="nombreDibujante" layoutX="126.0" layoutY="158.0" prefHeight="25.0" prefWidth="126.0" />
+      <Button fx:id="botonMostrarParametro" layoutX="537.0" layoutY="63.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="43.0" prefWidth="90.0" text="Mostrar por parametros" wrapText="true" />
+      <Button fx:id="botonLimpiar" layoutX="537.0" layoutY="118.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="25.0" prefWidth="90.0" text="Limpiar" />
+      <Button fx:id="botonbbdd" layoutX="537.0" layoutY="10.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="43.0" prefWidth="90.0" text="Ver todo" />
+      <Button fx:id="botonGuardarCSV" layoutX="14.0" layoutY="196.0" mnemonicParsing="false" onAction="#exportCSV" prefHeight="25.0" prefWidth="99.0" text="Exportar Excel" />
+      <Button fx:id="botonBackupBBDD" layoutX="14.0" layoutY="229.0" mnemonicParsing="false" onAction="#exportarSQL" prefHeight="25.0" prefWidth="99.0" text="Exportar BD" />
+      <Button fx:id="botonImportarCSV" layoutX="14.0" layoutY="264.0" mnemonicParsing="false" onAction="#importCSV" prefHeight="25.0" prefWidth="99.0" text="Importar CSV" />
+      <Button fx:id="botonEstadistica" alignment="TOP_LEFT" contentDisplay="CENTER" layoutX="14.0" layoutY="296.0" mnemonicParsing="false" onAction="#verEstadistica" prefHeight="25.0" prefWidth="99.0" text="Ver estadistica" />
+      <Button fx:id="botonEliminarComic" layoutX="127.0" layoutY="196.0" mnemonicParsing="false" onAction="#ventanaEliminar" prefHeight="25.0" prefWidth="99.0" text="Eliminar Comic" />
+      <Button fx:id="botonModificarComic" layoutX="127.0" layoutY="229.0" mnemonicParsing="false" onAction="#ventanaModificar" prefHeight="25.0" prefWidth="99.0" text="Modificar Comic">
+         <font>
+            <Font size="11.0" />
+         </font></Button>
+      <Button fx:id="botonFrase" layoutX="127.0" layoutY="327.0" mnemonicParsing="false" onAction="#fraseRandom" prefHeight="25.0" prefWidth="99.0" text="Frase random" />
+      <Button fx:id="botonVentanaAniadir" layoutX="127.0" layoutY="264.0" mnemonicParsing="false" onAction="#ventanaAniadir" prefHeight="25.0" prefWidth="99.0" text="Añadir Comic" />
+      <Button fx:id="botonDelete" layoutX="14.0" layoutY="327.0" mnemonicParsing="false" onAction="#borrarContenidoTabla" prefHeight="25.0" prefWidth="99.0" text="Eliminar BD" />
+      <Button fx:id="botonVerRecomendacion" layoutX="270.0" layoutY="296.0" mnemonicParsing="false" onAction="#ventanaRecomendar" prefHeight="43.0" prefWidth="75.0" text="Escoge lectura" wrapText="true" />
+      <Button fx:id="botonVolver" layoutX="1009.0" layoutY="320.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="32.0" prefWidth="102.0" text="Volver al menu" />
+      <Button fx:id="botonSalir" layoutX="1122.0" layoutY="321.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="32.0" prefWidth="68.0" text="Salir" />
+      <TableView fx:id="tablaBBDD" layoutX="-1.0" layoutY="359.0" prefHeight="429.0" prefWidth="1198.0">
+         <columns>
+            <TableColumn fx:id="ID" editable="false" prefWidth="47.0" text="ID" />
+            <TableColumn fx:id="nombre" editable="false" prefWidth="132.0" text="Nombre" />
+            <TableColumn id="nombre" fx:id="numero" editable="false" prefWidth="73.0" text="Numero" />
+            <TableColumn id="nombre" fx:id="variante" editable="false" prefWidth="95.0" text="Variante" />
+            <TableColumn id="nombre" fx:id="firma" editable="false" prefWidth="78.0" text="Firma" />
+            <TableColumn id="nombre" fx:id="editorial" editable="false" prefWidth="86.0" text="Editorial" />
+            <TableColumn id="nombre" fx:id="formato" editable="false" prefWidth="76.0" text="Formato" />
+            <TableColumn id="nombre" fx:id="procedencia" editable="false" prefWidth="113.0" text="Procedencia" />
+            <TableColumn id="nombre" fx:id="fecha" editable="false" prefWidth="75.0" text="Fecha" />
+            <TableColumn id="nombre" fx:id="guionista" editable="false" prefWidth="169.0" text="Guionista" />
+            <TableColumn id="nombre" fx:id="dibujante" editable="false" prefWidth="158.0" text="Dibujante" />
+            <TableColumn id="nombre" fx:id="puntuacion" editable="false" prefWidth="95.0" text="puntuacion" />
+         </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
+      <TextArea fx:id="prontInfo" layoutX="958.0" layoutY="119.0" opacity="0.0" prefHeight="180.0" prefWidth="232.0" wrapText="true" />
+      <TextArea fx:id="prontFrases" editable="false" layoutX="912.0" layoutY="12.0" opacity="0.0" prefHeight="99.0" prefWidth="278.0" wrapText="true">
+         <font>
+            <Font name="Comic Sans MS" size="15.0" />
+         </font>
+      </TextArea>
+      <Label layoutX="270.0" layoutY="158.0" prefHeight="25.0" prefWidth="117.0" style="-fx-background-color: grey;" text="Busqueda general" wrapText="true">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <TextField fx:id="busquedaGeneral" layoutX="395.0" layoutY="158.0" prefHeight="25.0" prefWidth="126.0" />
+      <Button fx:id="botonVerPuntuar" layoutX="127.0" layoutY="296.0" mnemonicParsing="false" onAction="#ventanaPuntuar" prefHeight="25.0" prefWidth="99.0" text="Puntuar Comic" />
+      <Button fx:id="botonVendidos" layoutX="269.0" layoutY="247.0" mnemonicParsing="false" onAction="#comicsVendidos" prefHeight="43.0" prefWidth="75.0" text="Comics vendidos" wrapText="true" />
+      <Button fx:id="botonPuntuacion" layoutX="269.0" layoutY="195.0" mnemonicParsing="false" onAction="#comicsPuntuacion" prefHeight="43.0" prefWidth="75.0" text="Comics puntuados" wrapText="true" />
+      <Button fx:id="botonFirmados" layoutX="358.0" layoutY="195.0" mnemonicParsing="false" onAction="#comicsFirmados" prefHeight="43.0" prefWidth="75.0" text="Comics Firmados" wrapText="true" />
+      <Button fx:id="botonEnVenta" layoutX="358.0" layoutY="247.0" mnemonicParsing="false" onAction="#comicsEnVenta" prefHeight="43.0" prefWidth="75.0" text="Comics en venta" wrapText="true" />
+   </children>
+</Pane>

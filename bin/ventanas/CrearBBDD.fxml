@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="267.0" prefWidth="598.0" style="-fx-background-color: DFA394;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.CrearBBDDController">
+   <children>
+      <ImageView fitHeight="299.0" fitWidth="480.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imagenes/Fondo%20crearBBDD1.png" />
+         </image>
+      </ImageView>
+      <TextField fx:id="userBBDD" layoutX="169.0" layoutY="4.0" />
+      <PasswordField fx:id="passBBDD" layoutX="169.0" layoutY="37.0" />
+      <TextField fx:id="puertoBBDD" layoutX="169.0" layoutY="75.0" />
+      <TextField fx:id="nombreBBDD" layoutX="169.0" layoutY="109.0" />
+      <RadioButton fx:id="siOnline" layoutX="169.0" layoutY="140.0" mnemonicParsing="false" onAction="#selectorBotonHost" selected="true" style="-fx-background-color: red;" text="Si" textFill="WHITE">
+         <toggleGroup>
+            <ToggleGroup fx:id="estado" />
+         </toggleGroup>
+      </RadioButton>
+      <RadioButton fx:id="noOffline" layoutX="232.0" layoutY="140.0" mnemonicParsing="false" onAction="#selectorBotonHost" style="-fx-background-color: red;" text="No" textFill="WHITE" toggleGroup="$estado" />
+      <PasswordField fx:id="nombreHost" layoutX="167.0" layoutY="165.0" prefHeight="25.0" prefWidth="150.0" />
+      <Button fx:id="botonCrearBBDD" layoutX="6.0" layoutY="202.0" mnemonicParsing="false" onAction="#crearBBDD" prefHeight="54.0" prefWidth="149.0" text="Crear base de datos" />
+      <Button fx:id="botonLimpiarDatos" layoutX="176.0" layoutY="202.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="54.0" prefWidth="85.0" text="Limpiar" />
+      <Label layoutX="8.0" layoutY="112.0" style="-fx-background-color: red;" text="Nombre de la base de datos" textFill="WHITE" />
+      <Label layoutX="8.0" layoutY="7.0" style="-fx-background-color: red;" text="Usuario" textFill="WHITE" />
+      <Label layoutX="8.0" layoutY="40.0" style="-fx-background-color: red;" text="Contraseña" textFill="#fffafa" />
+      <Label layoutX="8.0" layoutY="78.0" style="-fx-background-color: red;" text="Puerto" textFill="WHITE" />
+      <ImageView fitHeight="267.0" fitWidth="281.0" layoutX="318.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imagenes/fondoCrearBBDD.jpeg" />
+         </image>
+      </ImageView>
+      <Button fx:id="botonSalir" layoutX="507.0" layoutY="202.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="54.0" prefWidth="85.0" text="Salir" />
+      <Button fx:id="botonVolver" layoutX="401.0" layoutY="203.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="54.0" prefWidth="94.0" text="Volver" />
+      <Label fx:id="prontInformativo" alignment="TOP_LEFT" layoutX="352.0" layoutY="5.0" prefHeight="163.0" prefWidth="239.0" wrapText="true">
+         <font>
+            <Font size="18.0" />
+         </font></Label>
+      <Label fx:id="etiquetaHost" layoutX="10.0" layoutY="169.0" prefHeight="17.0" prefWidth="103.0" style="-fx-background-color: red;" text="Nombre del host:" textFill="WHITE" />
+      <Label layoutX="9.0" layoutY="140.0" style="-fx-background-color: red;" text="Base de datos en servidor" textFill="WHITE">
+         <font>
+            <Font name="Comic Sans MS" size="12.0" />
+         </font>
+      </Label>
+   </children>
+</Pane>
