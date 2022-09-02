@@ -42,9 +42,11 @@ import Funcionamiento.Libreria;
 import Funcionamiento.NavegacionVentanas;
 import Funcionamiento.Utilidades;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -52,6 +54,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -311,10 +314,10 @@ public class MenuPrincipalController {
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
 		libreria.reiniciarBBDD();
-		
+
 		if(numeroID.getText().length() != 0)
 		{
-			selectorImage();
+			selectorImage(numeroID.getText());
 		}
 		nombreColumnas();
 		listaPorParametro();
@@ -445,17 +448,17 @@ public class MenuPrincipalController {
 
 	}
 
-	public void selectorImage()
+	public void selectorImage(String ID)
 	{
 		Connection conn = ConexionBBDD.conexion();
-		
+
 		String sentenciaSQL = "SELECT * FROM comicsbbdd where ID = ?";
 
 		try {
-			
+
 			PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
-			statement.setString(1, numeroID.getText());
-			
+			statement.setString(1, ID);
+
 			ResultSet rs = statement.executeQuery();
 
 			while(rs.next())
@@ -469,11 +472,11 @@ public class MenuPrincipalController {
 
 					os.write(content, 0, size);
 				}
-				
+
 				os.close();
 				is.close();
 			}
-			
+
 		} catch (IOException | SQLException e) {
 			e.printStackTrace();
 		}
@@ -578,6 +581,22 @@ public class MenuPrincipalController {
 		guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
 		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
 		puntuacion.setCellValueFactory(new PropertyValueFactory<>("puntuacion"));
+	}
+
+	@FXML
+	void test(MouseEvent event) {
+
+		libreria.verLibreriaCompleta();
+		String ID;
+
+		Comic idRow;
+		
+		idRow = tablaBBDD.getSelectionModel().getSelectedItem();
+		
+		ID = idRow.getID();
+		
+		selectorImage(ID);
+
 	}
 
 	/////////////////////////////////
@@ -734,6 +753,7 @@ public class MenuPrincipalController {
 
 		return listComic;
 	}
+
 
 	/**
 	 * Devuelve una lista con todos los comics de la base de datos que se encuentran

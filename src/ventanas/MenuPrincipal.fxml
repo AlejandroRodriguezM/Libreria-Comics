@@ -92,7 +92,7 @@
       <Button fx:id="botonVerRecomendacion" layoutX="270.0" layoutY="296.0" mnemonicParsing="false" onAction="#ventanaRecomendar" prefHeight="43.0" prefWidth="75.0" text="Escoge lectura" wrapText="true" />
       <Button fx:id="botonVolver" layoutX="1009.0" layoutY="320.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="32.0" prefWidth="102.0" text="Volver al menu" />
       <Button fx:id="botonSalir" layoutX="1122.0" layoutY="321.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="32.0" prefWidth="68.0" text="Salir" />
-      <TableView fx:id="tablaBBDD" layoutX="-1.0" layoutY="359.0" prefHeight="429.0" prefWidth="1198.0">
+      <TableView fx:id="tablaBBDD" layoutX="-1.0" layoutY="359.0" onMouseClicked="#test" prefHeight="429.0" prefWidth="1198.0">
          <columns>
             <TableColumn fx:id="ID" editable="false" prefWidth="47.0" text="ID" />
             <TableColumn fx:id="nombre" editable="false" prefWidth="132.0" text="Nombre" />
@@ -128,10 +128,6 @@
       <Button fx:id="botonPuntuacion" layoutX="269.0" layoutY="195.0" mnemonicParsing="false" onAction="#comicsPuntuacion" prefHeight="43.0" prefWidth="75.0" text="Comics puntuados" wrapText="true" />
       <Button fx:id="botonFirmados" layoutX="358.0" layoutY="195.0" mnemonicParsing="false" onAction="#comicsFirmados" prefHeight="43.0" prefWidth="75.0" text="Comics Firmados" wrapText="true" />
       <Button fx:id="botonEnVenta" layoutX="358.0" layoutY="247.0" mnemonicParsing="false" onAction="#comicsEnVenta" prefHeight="43.0" prefWidth="75.0" text="Comics en venta" wrapText="true" />
-      <ImageView fx:id="imagencomic" fitHeight="275.0" fitWidth="200.0" layoutX="755.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../../Downloads/1.jpg" />
-         </image>
-      </ImageView>
+      <ImageView fx:id="imagencomic" fitHeight="275.0" fitWidth="200.0" layoutX="755.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true" />
    </children>
 </Pane>
