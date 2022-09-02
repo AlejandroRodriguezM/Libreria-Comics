@@ -183,7 +183,7 @@ public class ModificarDatosController implements Initializable {
 
 	@FXML
 	private TableColumn<Comic, String> nombre;
-	
+
 	@FXML
 	private ComboBox<String> estadoComic;
 
@@ -208,7 +208,7 @@ public class ModificarDatosController implements Initializable {
 														// valor, que se encuentra vacio, en caso de querer borrar
 														// la puntuacion.
 	}
-	
+
 	/**
 	 * Funcion que permite modificar el estado de un comic.
 	 *
@@ -222,7 +222,7 @@ public class ModificarDatosController implements Initializable {
 		return situacionEstado;
 
 	}
-	
+
 	/**
 	 * Limpia todos los datos en pantalla.
 	 *
@@ -370,7 +370,7 @@ public class ModificarDatosController implements Initializable {
 		campos[9] = nombreGuionistaMod.getText();
 
 		campos[10] = nombreDibujanteMod.getText();
-		
+
 		campos[11] = estadoActual();
 
 		return campos;
@@ -544,7 +544,7 @@ public class ModificarDatosController implements Initializable {
 				ps.setString(11, datosModificados[11]);
 				estado = datosModificados[11];
 			}
-			
+
 			Comic comic = new Comic("", nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 					guionista, dibujante, estado, "");
 			comicModicado.add(comic);
