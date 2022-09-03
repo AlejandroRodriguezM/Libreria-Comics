@@ -413,9 +413,8 @@ public class IntroducirDatosController implements Initializable {
 			if (datos[10].length() != 0) {
 				statement.setBinaryStream(12, direccionImagen(datos[10]));
 			} else {
-				//				direccionImagen.setText("./src/imagenes/sinPortada.jpg");
-				direccionImagen.setText("./src/imagenes/sinPortada.jpg");
-				statement.setBinaryStream(12, direccionImagen(datos[10]));
+				statement.setBinaryStream(12, direccionImagen("src/imagenes/sinPortada.jpg"));
+				datos[10] = "src/imagenes/sinPortada.jpg";
 			}
 			statement.setString(13, datos[11]);
 
@@ -451,8 +450,8 @@ public class IntroducirDatosController implements Initializable {
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
 		}
+		direccionImagen.setText("");
 		bd.reloadID();
-
 	}
 
 	/**
