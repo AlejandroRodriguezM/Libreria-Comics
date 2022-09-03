@@ -3,6 +3,7 @@ package Controladores;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 /**
@@ -351,7 +352,7 @@ public class IntroducirDatosController implements Initializable {
 		}
 	}
 
-	public FileInputStream direccionImagen(String direccion) {
+	public InputStream direccionImagen(String direccion) {
 		try {
 
 			if (direccion.length() != 0) {
@@ -359,7 +360,7 @@ public class IntroducirDatosController implements Initializable {
 
 				if(file != null)
 				{
-					FileInputStream input = new FileInputStream(direccion);
+					InputStream input = new FileInputStream(direccion);
 					return input;
 				}
 			}
@@ -413,8 +414,8 @@ public class IntroducirDatosController implements Initializable {
 			if (datos[10].length() != 0) {
 				statement.setBinaryStream(12, direccionImagen(datos[10]));
 			} else {
-				statement.setBinaryStream(12, direccionImagen("src/imagenes/sinPortada.jpg"));
-				datos[10] = "src/imagenes/sinPortada.jpg";
+				statement.setBinaryStream(12, direccionImagen("./imagenes/sinPortada.jpg"));
+				datos[10] = "./imagenes/sinPortada.jpg";
 			}
 			statement.setString(13, datos[11]);
 

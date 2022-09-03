@@ -448,6 +448,7 @@ public class MenuPrincipalController {
 	}
 
 	public void selectorImage(String ID) {
+		deleteImage();
 		Connection conn = ConexionBBDD.conexion();
 
 		String sentenciaSQL = "SELECT * FROM comicsbbdd where ID = ?";
@@ -460,18 +461,22 @@ public class MenuPrincipalController {
 			ResultSet rs = statement.executeQuery();
 
 			while (rs.next()) {
+
 				InputStream is = rs.getBinaryStream("image");
-				OutputStream os = new FileOutputStream(new File("image.jpg"));
-				byte[] content = new byte[1024];
-				int size = 0;
+				if(!rs.wasNull())
+				{
+					OutputStream os = new FileOutputStream(new File("image.jpg"));
+					byte[] content = new byte[1024];
+					int size = 0;
 
-				while ((size = is.read(content)) != -1) {
+					while ((size = is.read(content)) != -1) {
 
-					os.write(content, 0, size);
+						os.write(content, 0, size);
+					}
+
+					os.close();
+					is.close();
 				}
-
-				os.close();
-				is.close();
 			}
 
 		} catch (IOException | SQLException e) {
@@ -589,19 +594,21 @@ public class MenuPrincipalController {
 
 		Comic idRow;
 
+		idRow = tablaBBDD.getSelectionModel().getSelectedItem();
+
+		ID = idRow.getID();
+
+		selectorImage(ID);
+
+	}
+
+	public void deleteImage()
+	{
 		try {
-
-			idRow = tablaBBDD.getSelectionModel().getSelectedItem();
-
-			ID = idRow.getID();
-
-			selectorImage(ID);
-
 			Files.deleteIfExists(Paths.get("image.jpg"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	/////////////////////////////////
