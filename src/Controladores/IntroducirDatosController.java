@@ -414,8 +414,8 @@ public class IntroducirDatosController implements Initializable {
 			if (datos[10].length() != 0) {
 				statement.setBinaryStream(12, direccionImagen(datos[10]));
 			} else {
-				statement.setBinaryStream(12, direccionImagen("./imagenes/sinPortada.jpg"));
-				datos[10] = "./imagenes/sinPortada.jpg";
+				statement.setBinaryStream(12, direccionImagen("sinPortada.jpg"));
+				datos[10] = "sinPortada.jpg";
 			}
 			statement.setString(13, datos[11]);
 
