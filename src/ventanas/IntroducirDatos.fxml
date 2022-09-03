@@ -129,6 +129,6 @@
       <ImageView fx:id="imagencomic" fitHeight="275.0" fitWidth="200.0" layoutX="621.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true" />
       <Label layoutX="274.0" layoutY="339.0" style="-fx-background-color: white;" text="Portada" />
       <Button fx:id="botonNuevaPortada" layoutX="577.0" layoutY="335.0" mnemonicParsing="false" onAction="#nuevaPortada" text="..." />
-      <TextField fx:id="direccionImagen" editable="false" layoutX="421.0" layoutY="335.0" />
+      <TextField fx:id="direccionImagen" layoutX="421.0" layoutY="335.0" />
    </children>
 </Pane>

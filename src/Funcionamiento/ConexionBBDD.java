@@ -95,6 +95,29 @@ public class ConexionBBDD {
 		DB_HOST = datos[4];
 	}
 
+//	/**
+//	 * Devuelve un objeto Connection en caso de que la conexion sea correcta.
+//	 *
+//	 * @param numeroPuerto
+//	 * @param nombreBBDD
+//	 * @param nombreUsuario
+//	 * @param contraBBDD
+//	 * @return
+//	 */
+//	public static Connection conexion() {
+//
+//		DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
+//
+//		try {
+//			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+//			return conn;
+//		} catch (SQLException ex) {
+//			ex.printStackTrace();
+//			nav.alertaException(ex.toString());
+//			return null;
+//		}
+//	}
+	
 	/**
 	 * Devuelve un objeto Connection en caso de que la conexion sea correcta.
 	 *
@@ -106,10 +129,10 @@ public class ConexionBBDD {
 	 */
 	public static Connection conexion() {
 
-		DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
+		DB_URL = "jdbc:mysql://" + "localHost" + ":" + 3306 + "/" + "prueba" + "?serverTimezone=UTC";
 
 		try {
-			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+			conn = DriverManager.getConnection(DB_URL, "root", "1234");
 			return conn;
 		} catch (SQLException ex) {
 			ex.printStackTrace();
