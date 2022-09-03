@@ -1,10 +1,13 @@
 package Controladores;
 
+import java.awt.Desktop;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
 
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
@@ -35,6 +38,22 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javax.imageio.ImageIO;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
+
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.shape.Path;
 import Funcionamiento.BBDD;
 import Funcionamiento.Comic;
 import Funcionamiento.ConexionBBDD;
@@ -364,11 +383,13 @@ public class IntroducirDatosController implements Initializable {
 					return input;
 				}
 			}
-		} catch (IOException e) {
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
+
+
 
 	/**
 	 * Funcion que permite modificar el estado de un comic.
@@ -383,7 +404,6 @@ public class IntroducirDatosController implements Initializable {
 		return situacionEstado;
 
 	}
-
 
 
 	/**
@@ -414,8 +434,10 @@ public class IntroducirDatosController implements Initializable {
 			if (datos[10].length() != 0) {
 				statement.setBinaryStream(12, direccionImagen(datos[10]));
 			} else {
-				statement.setBinaryStream(12, direccionImagen("sinPortada.jpg"));
-				datos[10] = "sinPortada.jpg";
+				datos[10] = "/sinPortada.jpg";
+				InputStream fstream = this.getClass().getResourceAsStream("sinPortada.jpg");
+//				statement.setBinaryStream(12, direccionImagen(datos[10]));		
+				statement.setBinaryStream(12, fstream);	
 			}
 			statement.setString(13, datos[11]);
 
@@ -696,4 +718,10 @@ public class IntroducirDatosController implements Initializable {
 		myStage.close();
 
 	}
+
+
+
+
+
+
 }
