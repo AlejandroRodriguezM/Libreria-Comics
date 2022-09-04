@@ -415,6 +415,8 @@ public class IntroducirDatosController implements Initializable {
 		String sentenciaSQL = "insert into comicsbbdd(nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante,puntuacion,image,estado) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 		String datos[] = camposComicIntroducir();
+		
+		boolean portadaPredeterminada = false;
 
 		try {
 			PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
@@ -434,10 +436,10 @@ public class IntroducirDatosController implements Initializable {
 			if (datos[10].length() != 0) {
 				statement.setBinaryStream(12, direccionImagen(datos[10]));
 			} else {
-				datos[10] = "/sinPortada.jpg";
+				datos[10] = "sinPortada.jpg";
 				InputStream fstream = this.getClass().getResourceAsStream("sinPortada.jpg");
-//				statement.setBinaryStream(12, direccionImagen(datos[10]));		
 				statement.setBinaryStream(12, fstream);	
+				portadaPredeterminada = true;
 			}
 			statement.setString(13, datos[11]);
 
@@ -453,9 +455,18 @@ public class IntroducirDatosController implements Initializable {
 									+ "\nEditorial: " + datos[4] + "\nFormato: " + datos[5] + "\nProcedencia: " + datos[6]
 											+ "\nFecha de publicacion: " + datos[7] + "\nGuionista: " + datos[8] + "\nDibujante: "
 											+ datos[9] + "\nEstado: " + datos[11]);
-
-					Image imagex = new Image("file:" + datos[10], 250, 250, true, true);
-					imagencomic.setImage(imagex);
+					if(!portadaPredeterminada)
+					{
+						Image imagex = new Image("file:" + datos[10], 250, 250, true, true);
+						imagencomic.setImage(imagex);
+					}
+					else
+					{
+						InputStream fstream = this.getClass().getResourceAsStream("sinPortada.jpg");
+						Image imagex = new Image(fstream);
+						imagencomic.setImage(imagex);
+					}
+					
 					statement.close();
 
 				} else { // En caso de no haber sido posible Introducir el comic, se vera el siguiente
