@@ -522,6 +522,25 @@ public class NavegacionVentanas {
 	}
 
 	/**
+	 * Llama a una ventana de alarma que avisa si se va a introducir un dato
+	 *
+	 * @return
+	 */
+	public boolean alertaPortadaVacia() {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
+		stage.setResizable(false);
+		alert.setTitle("Insertando . . .");
+		alert.setHeaderText("Parece que te has olvidado de la portada.");
+		alert.setContentText(" Estas seguro que quieres introducir el comic sin portada??");
+		if (alert.showAndWait().get() == ButtonType.OK) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Funcion que permite borrar el contenido de la tabla de la base de datos.
 	 *
 	 * @return

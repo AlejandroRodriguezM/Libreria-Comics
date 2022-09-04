@@ -30,6 +30,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -55,6 +56,7 @@ public class ExcelFuntions {
 	private static Connection conn = ConexionBBDD.conexion();
 	private static NavegacionVentanas nav = new NavegacionVentanas();
 	private static BBDD db = new BBDD();
+	private static int ID = 0;
 
 	/**
 	 * Funcion que permite importar ficheros CSV a la base de datos.
@@ -64,8 +66,8 @@ public class ExcelFuntions {
 	 * @throws SQLException
 	 */
 	public boolean importarCSV(File fichero) {
-		String sql = "INSERT INTO comicsbbdd(ID,nomComic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,anioPubli,nomGuionista,nomDibujante,puntuacion,estado)"
-				+ " values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		String sql = "INSERT INTO comicsbbdd(ID,nomComic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,anioPubli,nomGuionista,nomDibujante,puntuacion,image,estado)"
+				+ " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 		if (comprobarCSV(fichero, sql)) // Llamada a funcion, en caso de devolver true, devolvera un true
 		{
@@ -73,7 +75,6 @@ public class ExcelFuntions {
 		} else {
 			return false;
 		}
-
 	}
 
 	/**
@@ -92,7 +93,7 @@ public class ExcelFuntions {
 		String encabezado;
 
 		String[] encabezados = { "ID", "nomComic", "numComic", "nomVariante", "Firma", "nomEditorial", "Formato",
-				"Procedencia", "anioPubli", "nomGuionista", "nomDibujante", "puntuacion", "estado" };
+				"Procedencia", "anioPubli", "nomGuionista", "nomDibujante", "puntuacion", "image", "estado" };
 		int indiceFila = 0;
 
 		try {
@@ -127,7 +128,8 @@ public class ExcelFuntions {
 				fila.createCell(9).setCellValue(comic.getGuionista());
 				fila.createCell(10).setCellValue(comic.getDibujante());
 				fila.createCell(11).setCellValue(comic.getPuntuacion());
-				fila.createCell(12).setCellValue(comic.getEstado());
+				fila.createCell(12).setCellValue(comic.getImagen());
+				fila.createCell(13).setCellValue(comic.getEstado());
 
 				indiceFila++;
 			}
@@ -135,7 +137,7 @@ public class ExcelFuntions {
 			try {
 				outputStream = new FileOutputStream(fichero);
 				libro.write(outputStream);
-
+				libreria.saveImageFromDataBase();
 				libro.close();
 				outputStream.close();
 				createCSV(fichero);
@@ -244,6 +246,29 @@ public class ExcelFuntions {
 		}
 		return false;
 	}
+	
+	public InputStream subirImagenes() {
+		try {
+
+			File directorio = new File("imagenes de la base de datos");
+			if(directorio.exists())
+			{
+				if (directorio != null) {
+					InputStream input = new FileInputStream(directorio.getAbsoluteFile().toString() + "/" + ID + ".jpg");
+					return input;
+				}
+			}
+			else
+			{
+				InputStream input = this.getClass().getResourceAsStream("sinPortada.jpg");
+				return input;
+			}
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 	/**
 	 * Funcion que permite leer un fichero CSV
@@ -264,7 +289,7 @@ public class ExcelFuntions {
 
 			// Se leeran los datos hasta que no existan mas datos
 			while ((lineText = lineReader.readLine()) != null) {
-
+				ID++;
 				String[] data = lineText.split(";");
 				String id = Integer.toString(j);
 				String nombre = data[1];
@@ -278,7 +303,7 @@ public class ExcelFuntions {
 				String guionista = data[9];
 				String dibujante = data[10];
 				String puntuacion = data[11];
-				String estado = data[12];
+				String estado = data[13];
 
 				statement.setString(1, id);
 				statement.setString(2, nombre);
@@ -292,7 +317,8 @@ public class ExcelFuntions {
 				statement.setString(10, guionista);
 				statement.setString(11, dibujante);
 				statement.setString(12, puntuacion);
-				statement.setString(13, estado);
+				statement.setBinaryStream(13, subirImagenes());
+				statement.setString(14, estado);
 
 				statement.addBatch();
 

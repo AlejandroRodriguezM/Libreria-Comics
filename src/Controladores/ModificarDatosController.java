@@ -1,5 +1,9 @@
 package Controladores;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.net.URL;
 
 /**
@@ -49,6 +53,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class ModificarDatosController implements Initializable {
@@ -72,6 +79,9 @@ public class ModificarDatosController implements Initializable {
 
 	@FXML
 	private Button botonbbdd;
+
+	@FXML
+	private Button botonNuevaPortada;
 
 	@FXML
 	private TextField anioPublicacion;
@@ -143,6 +153,9 @@ public class ModificarDatosController implements Initializable {
 	private TextField busquedaGeneral;
 
 	@FXML
+	private TextField direccionImagen;
+
+	@FXML
 	private TextArea pantallaInformativa;
 
 	@FXML
@@ -187,6 +200,9 @@ public class ModificarDatosController implements Initializable {
 	@FXML
 	private ComboBox<String> estadoComic;
 
+	@FXML
+	private ImageView imagencomic;
+
 	private static NavegacionVentanas nav = new NavegacionVentanas();
 
 	private static Libreria libreria = new Libreria();
@@ -205,8 +221,52 @@ public class ModificarDatosController implements Initializable {
 				"En venta");
 		estadoComic.setItems(situacionEstado);
 		estadoComic.getSelectionModel().selectFirst(); // Permite que no exista un valor null, escogiendo el primer
-														// valor, que se encuentra vacio, en caso de querer borrar
-														// la puntuacion.
+		// valor, que se encuentra vacio, en caso de querer borrar
+		// la puntuacion.
+	}
+
+	@FXML
+	void nuevaPortada(ActionEvent event) {
+		subirPortada();
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public FileChooser tratarFichero() {
+		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
+		fileChooser.getExtensionFilters()
+				.addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg", "*.png", "*.jpeg"));
+
+		return fileChooser;
+	}
+
+	public void subirPortada() {
+		File file = tratarFichero().showOpenDialog(null); // Llamada a funcion
+		if (file != null) {
+			direccionImagen.setText(file.getAbsolutePath().toString());
+		}
+	}
+
+	public InputStream direccionImagen(String direccion) {
+		try {
+
+			if (direccion.length() != 0) {
+				File file = new File(direccion);
+
+				if (file != null) {
+					InputStream input = new FileInputStream(direccion);
+					return input;
+				}
+			} else {
+				InputStream input = this.getClass().getResourceAsStream("sinPortada.jpg");
+				return input;
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	/**
@@ -217,8 +277,7 @@ public class ModificarDatosController implements Initializable {
 	 */
 	public String estadoActual() {
 
-		String situacionEstado = estadoComic.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
-																								// "puntuacion"
+		String situacionEstado = estadoComic.getSelectionModel().getSelectedItem().toString();
 		return situacionEstado;
 
 	}
@@ -288,6 +347,10 @@ public class ModificarDatosController implements Initializable {
 		pantallaInformativa.setOpacity(0);
 
 		tablaBBDD.getItems().clear();
+
+		direccionImagen.setText("");
+
+		imagencomic.setImage(null);
 	}
 
 	/**
@@ -347,7 +410,7 @@ public class ModificarDatosController implements Initializable {
 	 * @return
 	 */
 	public String[] camposComicModificar() {
-		String campos[] = new String[12];
+		String campos[] = new String[13];
 
 		campos[0] = idComicMod.getText();
 
@@ -371,7 +434,9 @@ public class ModificarDatosController implements Initializable {
 
 		campos[10] = nombreDibujanteMod.getText();
 
-		campos[11] = estadoActual();
+		campos[11] = direccionImagen.getText();
+
+		campos[12] = estadoActual();
 
 		return campos;
 	}
@@ -384,7 +449,7 @@ public class ModificarDatosController implements Initializable {
 
 		String sentenciaSQL = "UPDATE comicsbbdd set nomComic = ?,numComic = ?,nomVariante = ?,"
 				+ "Firma = ?,nomEditorial = ?,formato = ?,Procedencia = ?,anioPubli = ?,"
-				+ "nomGuionista = ?,nomDibujante = ?,estado = ? where ID = ?";
+				+ "nomGuionista = ?,nomDibujante = ?,image = ?,estado = ? where ID = ?";
 
 		if (nav.alertaModificar()) { // Llamada a alerta de modificacion
 
@@ -433,7 +498,7 @@ public class ModificarDatosController implements Initializable {
 		String identificador = idComicMod.getText();
 
 		if (identificador.length() != 0) { // Si has introducido ID a la hora de realizar la modificacion, permitira lo
-											// siguiente
+			// siguiente
 			if (libreria.chechID(idComicMod.getText())) {
 				return true;
 			} else // En caso contrario lanzara el siguiente mensaje en pantalla
@@ -469,7 +534,10 @@ public class ModificarDatosController implements Initializable {
 
 		comicModicado.clear();
 
+//		boolean portadaPredeterminada = false;
+
 		try {
+
 			if (datosModificados[1].length() != 0) {
 				ps.setString(1, datosModificados[1]);
 				nombre = datosModificados[1];
@@ -540,14 +608,25 @@ public class ModificarDatosController implements Initializable {
 				dibujante = comic.getDibujante();
 				ps.setString(10, dibujante);
 			}
+
 			if (datosModificados[11].length() != 0) {
-				ps.setString(11, datosModificados[11]);
-				estado = datosModificados[11];
+				ps.setBinaryStream(11, direccionImagen(datosModificados[11]));
+			} else {
+				ps.setBinaryStream(11, direccionImagen(datosModificados[11]));
+//				portadaPredeterminada = true;
 			}
+			if (datosModificados[12].length() != 0) {
+				ps.setString(12, datosModificados[12]);
+				estado = datosModificados[12];
+			}
+			ps.setString(13, datosModificados[0]);
 
 			Comic comic = new Comic("", nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
-					guionista, dibujante, estado, "");
+					guionista, dibujante, estado, "", "");
 			comicModicado.add(comic);
+
+			Image imagex = new Image(direccionImagen(datosModificados[11]));
+			imagencomic.setImage(imagex);
 
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
@@ -588,10 +667,10 @@ public class ModificarDatosController implements Initializable {
 		String datosComic[] = camposComicActuales(); // Contiene los datos por parametro del comic a buscar
 
 		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
-				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "", "");
+				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "", "", "");
 
 		tablaBBDD(busquedaParametro(comic)); // Funcion que muestra en la tabla el comic que coincida con los datos del
-												// objeto Comic creado, en caso de existir lo muestra.
+		// objeto Comic creado, en caso de existir lo muestra.
 	}
 
 	/**

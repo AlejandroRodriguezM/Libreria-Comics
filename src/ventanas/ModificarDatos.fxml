@@ -12,9 +12,9 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="740.0" prefWidth="1068.0" style="-fx-background-color: DFA394;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.ModificarDatosController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="759.0" prefWidth="1108.0" style="-fx-background-color: DFA394;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.ModificarDatosController">
    <children>
-      <ImageView fitHeight="512.0" fitWidth="1068.0" layoutY="-1.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="550.0" fitWidth="1108.0" layoutY="-1.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagenes/Fondo%20modificar%203.jpg" />
          </image>
@@ -40,28 +40,28 @@
       <TextField fx:id="anioPublicacionMod" layoutX="444.0" layoutY="241.0" />
       <TextField fx:id="nombreGuionistaMod" layoutX="444.0" layoutY="270.0" />
       <TextField fx:id="nombreDibujanteMod" layoutX="444.0" layoutY="299.0" />
-      <Button fx:id="botonModificar" layoutX="604.0" layoutY="8.0" mnemonicParsing="false" onAction="#modificarDatos" prefHeight="42.0" prefWidth="124.0" text="Modificar comic" />
-      <Button fx:id="botonLimpiarComic" layoutX="218.0" layoutY="369.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="25.0" prefWidth="93.0" text="Limpiar datos" />
-      <Button fx:id="botonVolver" layoutX="919.0" layoutY="371.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="33.0" prefWidth="65.0" text="Volver" />
-      <Button fx:id="botonSalir" layoutX="995.0" layoutY="371.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="33.0" prefWidth="65.0" text="Salir" />
+      <Button fx:id="botonModificar" layoutX="604.0" layoutY="8.0" mnemonicParsing="false" onAction="#modificarDatos" prefHeight="42.0" prefWidth="75.0" text="Modificar comic" wrapText="true" />
+      <Button fx:id="botonLimpiarComic" layoutX="604.0" layoutY="179.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="42.0" prefWidth="81.0" text="Limpiar datos" wrapText="true" />
+      <Button fx:id="botonVolver" layoutX="955.0" layoutY="364.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="33.0" prefWidth="65.0" text="Volver" />
+      <Button fx:id="botonSalir" layoutX="1034.0" layoutY="365.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="33.0" prefWidth="65.0" text="Salir" />
       <Label layoutX="11.0" layoutY="40.0" style="-fx-background-color: grey;" text="Nombre" />
       <Label layoutX="11.0" layoutY="69.0" style="-fx-background-color: grey;" text="Numero" />
-      <TableView fx:id="tablaBBDD" layoutX="-1.0" layoutY="417.0" prefHeight="323.0" prefWidth="1069.0">
+      <TableView fx:id="tablaBBDD" layoutX="-1.0" layoutY="403.0" prefHeight="356.0" prefWidth="1108.0">
          <columns>
-            <TableColumn fx:id="ID" prefWidth="126.0" text="ID" />
-            <TableColumn fx:id="nombre" prefWidth="126.0" text="Nombre" />
-            <TableColumn id="nombre" fx:id="numero" prefWidth="68.0" text="Numero" />
-            <TableColumn id="nombre" fx:id="variante" prefWidth="85.0" text="Variante" />
+            <TableColumn fx:id="ID" prefWidth="53.0" text="ID" />
+            <TableColumn fx:id="nombre" prefWidth="156.0" text="Nombre" />
+            <TableColumn id="nombre" fx:id="numero" prefWidth="65.0" text="Numero" />
+            <TableColumn id="nombre" fx:id="variante" prefWidth="131.0" text="Variante" />
             <TableColumn id="nombre" fx:id="firma" prefWidth="94.0" text="Firma" />
             <TableColumn id="nombre" fx:id="editorial" prefWidth="75.0" text="Editorial" />
             <TableColumn id="nombre" fx:id="formato" prefWidth="72.0" text="Formato" />
             <TableColumn id="nombre" fx:id="procedencia" prefWidth="102.0" text="Procedencia" />
             <TableColumn id="nombre" fx:id="fecha" prefWidth="66.0" text="Fecha" />
             <TableColumn id="nombre" fx:id="guionista" prefWidth="111.0" text="Guionista" />
-            <TableColumn id="nombre" fx:id="dibujante" prefWidth="143.0" text="Dibujante" />
+            <TableColumn id="nombre" fx:id="dibujante" prefWidth="182.0" text="Dibujante" />
          </columns>
       </TableView>
-      <Button fx:id="botonMostrarParametro" layoutX="96.0" layoutY="369.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="42.0" prefWidth="113.0" text="Mostrar segun parametros" wrapText="true" />
+      <Button fx:id="botonMostrarParametro" layoutX="604.0" layoutY="108.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="59.0" prefWidth="79.0" text="Mostrar segun parametros" wrapText="true" />
       <Label layoutX="309.0" layoutY="41.0" style="-fx-background-color: grey;" text="Nombre nuevo" />
       <Label layoutX="306.0" layoutY="276.0" style="-fx-background-color: grey;" text="Guionista nuevo" />
       <Label layoutX="305.0" layoutY="304.0" style="-fx-background-color: grey;" text="Dibujante nuevo" />
@@ -72,7 +72,7 @@
       <Label layoutX="309.0" layoutY="71.0" style="-fx-background-color: grey;" text="Numero nuevo" />
       <Label layoutX="309.0" layoutY="131.0" style="-fx-background-color: grey;" text="Firma nuevo" />
       <Label layoutX="308.0" layoutY="222.0" style="-fx-background-color: grey;" text="Procedencia nuevo" />
-      <Button fx:id="botonbbdd" layoutX="10.0" layoutY="369.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="25.0" prefWidth="75.0" text="Ver todo" wrapText="true" />
+      <Button fx:id="botonbbdd" layoutX="604.0" layoutY="58.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="42.0" prefWidth="75.0" text="Ver todo" wrapText="true" />
       <Label layoutX="11.0" layoutY="281.0" style="-fx-background-color: grey;" text="Guionista">
          <font>
             <Font size="14.0" />
@@ -114,7 +114,7 @@
          </font>
       </Label>
       <Label fx:id="idMod" layoutX="309.0" layoutY="12.0" style="-fx-background-color: grey;" text="ID" />
-      <TextArea fx:id="pantallaInformativa" editable="false" layoutX="823.0" layoutY="16.0" opacity="0.0" prefHeight="228.0" prefWidth="232.0" wrapText="true" />
+      <TextArea fx:id="pantallaInformativa" editable="false" layoutX="922.0" layoutY="14.0" opacity="0.0" prefHeight="246.0" prefWidth="175.0" wrapText="true" />
       <Label layoutX="10.0" layoutY="338.0" prefHeight="25.0" prefWidth="117.0" style="-fx-background-color: grey;" text="Busqueda general" wrapText="true">
          <font>
             <Font size="14.0" />
@@ -125,5 +125,9 @@
       <Label layoutX="12.0" layoutY="10.0" style="-fx-background-color: grey;" text="ID" />
       <Label layoutX="304.0" layoutY="333.0" style="-fx-background-color: grey;" text="Estado" />
       <ComboBox fx:id="estadoComic" layoutX="444.0" layoutY="330.0" prefHeight="25.0" prefWidth="149.0" />
+      <Label layoutX="303.0" layoutY="366.0" style="-fx-background-color: grey;" text="Portada" />
+      <Button fx:id="botonNuevaPortada" layoutX="604.0" layoutY="362.0" mnemonicParsing="false" onAction="#nuevaPortada" prefHeight="25.0" prefWidth="100.0" text="Buscar portada" />
+      <TextField fx:id="direccionImagen" editable="false" layoutX="444.0" layoutY="362.0" prefHeight="25.0" prefWidth="149.0" />
+      <ImageView fx:id="imagencomic" fitHeight="275.0" fitWidth="200.0" layoutX="704.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true" />
    </children>
 </Pane>

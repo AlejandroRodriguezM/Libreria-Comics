@@ -1,5 +1,10 @@
 package Funcionamiento;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.sql.Blob;
+
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  * Las ventanas graficas se realizan con JavaFX.
@@ -488,7 +493,7 @@ public class Libreria extends Comic {
 
 					Comic comic = new Comic(this.ID, this.nombre, this.numero, this.variante, this.firma,
 							this.editorial, this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante,
-							this.estado, this.puntuacion);
+							this.estado, this.puntuacion, "");
 
 					listaComics.add(comic);
 
@@ -530,7 +535,7 @@ public class Libreria extends Comic {
 
 					comic = new Comic(this.ID, this.nombre, this.numero, this.variante, this.firma, this.editorial,
 							this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante, this.estado,
-							this.puntuacion);
+							this.puntuacion, "");
 
 				} while (rs.next());
 			}
@@ -611,5 +616,28 @@ public class Libreria extends Comic {
 			}
 		}
 		return false;
+	}
+
+	public void saveImageFromDataBase() {
+		String sentenciaSQL = "SELECT * FROM comicsbbdd";
+
+		try {
+			PreparedStatement preparedStatement = conn.prepareStatement(sentenciaSQL);
+			ResultSet rs = preparedStatement.executeQuery();
+
+			while (rs.next()) {
+				String nombreImagen = rs.getString(1);
+				Blob imagenBlob = rs.getBlob(13);
+				File directorio = new File("imagenes de la base de datos");
+				directorio.mkdir();
+				FileOutputStream fileops = new FileOutputStream(
+						directorio.getAbsoluteFile().toString() + "/" + nombreImagen + ".jpg");
+				fileops.write(imagenBlob.getBytes(1, (int) imagenBlob.length()));
+				fileops.close();
+
+			}
+		} catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

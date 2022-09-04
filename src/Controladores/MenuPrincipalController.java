@@ -463,10 +463,10 @@ public class MenuPrincipalController {
 			while (rs.next()) {
 
 				InputStream is = rs.getBinaryStream("image");
-				if(!rs.wasNull())
-				{
+				if (!rs.wasNull()) {
 					OutputStream os = new FileOutputStream(new File("image.jpg"));
 					byte[] content = new byte[1024];
+
 					int size = 0;
 
 					while ((size = is.read(content)) != -1) {
@@ -485,6 +485,7 @@ public class MenuPrincipalController {
 
 		Image image1 = new Image("file:image.jpg", 250, 250, true, true);
 		imagencomic.setImage(image1);
+		deleteImage();
 	}
 
 	/**
@@ -602,8 +603,7 @@ public class MenuPrincipalController {
 
 	}
 
-	public void deleteImage()
-	{
+	public void deleteImage() {
 		try {
 			Files.deleteIfExists(Paths.get("image.jpg"));
 		} catch (IOException e) {
@@ -714,7 +714,7 @@ public class MenuPrincipalController {
 		String datosComic[] = camposComic();
 
 		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
-				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "", "");
+				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "", "", "");
 
 		tablaBBDD(busquedaParametro(comic));
 	}

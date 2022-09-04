@@ -1,13 +1,10 @@
 package Controladores;
 
-import java.awt.Desktop;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.Files;
 
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
@@ -38,22 +35,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import javax.imageio.ImageIO;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.net.URL;
-
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.shape.Path;
 import Funcionamiento.BBDD;
 import Funcionamiento.Comic;
 import Funcionamiento.ConexionBBDD;
@@ -304,34 +285,39 @@ public class IntroducirDatosController implements Initializable {
 		pantallaInformativa.setOpacity(0);
 
 		tablaBBDD.getItems().clear();
+
+		botonNuevaPortada.setStyle(null);
+
+		imagencomic.setImage(null);
 	}
 
-	//	public void selectorImage()
-	//	{
-	//		String q="SELECT image FROM comicsbbdd where image = " +
+	// public void selectorImage()
+	// {
+	// String q="SELECT image FROM comicsbbdd where image = " +
 	//
-	//		try {
-	//			ResultSet rs = db.ejecucionSQL(q);
+	// try {
+	// ResultSet rs = db.ejecucionSQL(q);
 	//
-	//			InputStream is= rs.getBinaryStream("image");
-	//			OutputStream os=new FileOutputStream(new File("img.jpg"));
-	//			byte [] content= new byte[1024];
-	//			int size=0;
+	// InputStream is= rs.getBinaryStream("image");
+	// OutputStream os=new FileOutputStream(new File("img.jpg"));
+	// byte [] content= new byte[1024];
+	// int size=0;
 	//
-	//			while ((size=is.read(content))!=-1){
+	// while ((size=is.read(content))!=-1){
 	//
-	//				os.write(content, 0, size);
-	//			}
-	//			os.close();
-	//			is.close();
-	//		} catch (IOException | SQLException e) {
-	//			e.printStackTrace();
-	//		}
+	// os.write(content, 0, size);
+	// }
+	// os.close();
+	// is.close();
+	// } catch (IOException | SQLException e) {
+	// e.printStackTrace();
+	// }
 	//
-	//		javafx.scene.image.Image image1=new Image("file:img.jpg", imagencomic.getFitWidth(), imagencomic.getFitHeight(), true, true);
-	//		imagencomic.setImage(image1);
-	//		imagencomic.setPreserveRatio(true);
-	//	}
+	// javafx.scene.image.Image image1=new Image("file:img.jpg",
+	// imagencomic.getFitWidth(), imagencomic.getFitHeight(), true, true);
+	// imagencomic.setImage(image1);
+	// imagencomic.setPreserveRatio(true);
+	// }
 
 	/**
 	 * Metodo que añade datos a la base de datos segun los parametros introducidos
@@ -358,15 +344,14 @@ public class IntroducirDatosController implements Initializable {
 	public FileChooser tratarFichero() {
 		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
 		fileChooser.getExtensionFilters()
-		.addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg", "*.png", "*.jpeg"));
+				.addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg", "*.png", "*.jpeg"));
 
 		return fileChooser;
 	}
 
 	public void subirPortada() {
 		File file = tratarFichero().showOpenDialog(null); // Llamada a funcion
-		if(file != null)
-		{
+		if (file != null) {
 			direccionImagen.setText(file.getAbsolutePath().toString());
 		}
 	}
@@ -377,19 +362,19 @@ public class IntroducirDatosController implements Initializable {
 			if (direccion.length() != 0) {
 				File file = new File(direccion);
 
-				if(file != null)
-				{
+				if (file != null) {
 					InputStream input = new FileInputStream(direccion);
 					return input;
 				}
+			} else {
+				InputStream input = this.getClass().getResourceAsStream("sinPortada.jpg");
+				return input;
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-
-
 
 	/**
 	 * Funcion que permite modificar el estado de un comic.
@@ -402,9 +387,7 @@ public class IntroducirDatosController implements Initializable {
 		String situacionEstado = estadoComic.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
 		// "puntuacion"
 		return situacionEstado;
-
 	}
-
 
 	/**
 	 *
@@ -415,8 +398,8 @@ public class IntroducirDatosController implements Initializable {
 		String sentenciaSQL = "insert into comicsbbdd(nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante,puntuacion,image,estado) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 		String datos[] = camposComicIntroducir();
-		
-		boolean portadaPredeterminada = false;
+
+//		boolean portadaPredeterminada = false;
 
 		try {
 			PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
@@ -437,9 +420,8 @@ public class IntroducirDatosController implements Initializable {
 				statement.setBinaryStream(12, direccionImagen(datos[10]));
 			} else {
 				datos[10] = "sinPortada.jpg";
-				InputStream fstream = this.getClass().getResourceAsStream("sinPortada.jpg");
-				statement.setBinaryStream(12, fstream);	
-				portadaPredeterminada = true;
+				statement.setBinaryStream(12, direccionImagen(""));
+//				portadaPredeterminada = true;
 			}
 			statement.setString(13, datos[11]);
 
@@ -452,21 +434,20 @@ public class IntroducirDatosController implements Initializable {
 					pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 					pantallaInformativa.setText("Comic introducido correctamente!" + "\nNombre del comic: " + datos[0]
 							+ "\nNumero: " + datos[1] + "\nPortada variante: " + datos[2] + "\nFirma: " + datos[3]
-									+ "\nEditorial: " + datos[4] + "\nFormato: " + datos[5] + "\nProcedencia: " + datos[6]
-											+ "\nFecha de publicacion: " + datos[7] + "\nGuionista: " + datos[8] + "\nDibujante: "
-											+ datos[9] + "\nEstado: " + datos[11]);
-					if(!portadaPredeterminada)
-					{
-						Image imagex = new Image("file:" + datos[10], 250, 250, true, true);
+							+ "\nEditorial: " + datos[4] + "\nFormato: " + datos[5] + "\nProcedencia: " + datos[6]
+							+ "\nFecha de publicacion: " + datos[7] + "\nGuionista: " + datos[8] + "\nDibujante: "
+							+ datos[9] + "\nEstado: " + datos[11]);
+//					if (!portadaPredeterminada) {
+						Image imagex = new Image(direccionImagen(datos[10]));
 						imagencomic.setImage(imagex);
-					}
-					else
-					{
-						InputStream fstream = this.getClass().getResourceAsStream("sinPortada.jpg");
-						Image imagex = new Image(fstream);
-						imagencomic.setImage(imagex);
-					}
-					
+//					}
+//					else
+//					{
+//						InputStream fstream = this.getClass().getResourceAsStream("sinPortada.jpg");
+//						Image imagex = new Image(fstream);
+//						imagencomic.setImage(imagex);
+//					}
+					botonNuevaPortada.setStyle(null);
 					statement.close();
 
 				} else { // En caso de no haber sido posible Introducir el comic, se vera el siguiente
@@ -525,7 +506,7 @@ public class IntroducirDatosController implements Initializable {
 		String datosComic[] = camposComicActuales();
 
 		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
-				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "", "");
+				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "", "", "");
 
 		tablaBBDD(busquedaParametro(comic));
 	}
@@ -729,10 +710,5 @@ public class IntroducirDatosController implements Initializable {
 		myStage.close();
 
 	}
-
-
-
-
-
 
 }

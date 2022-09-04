@@ -46,11 +46,12 @@ public class Comic {
 	protected String dibujante;
 	protected String estado;
 	protected String puntuacion;
+	protected String imagen;
 
 	// Constructor
 	public Comic(String ID, String nombre, String numero, String variante, String firma, String editorial,
 			String formato, String procedencia, String fecha, String guionista, String dibujante, String estado,
-			String puntuacion) {
+			String puntuacion, String imagen) {
 		this.ID = ID;
 		this.nombre = nombre;
 		this.numero = numero;
@@ -64,6 +65,7 @@ public class Comic {
 		this.dibujante = dibujante;
 		this.estado = estado;
 		this.puntuacion = puntuacion;
+		this.imagen = imagen;
 	}
 
 	// Constructor
@@ -81,6 +83,7 @@ public class Comic {
 		this.dibujante = "";
 		this.estado = "";
 		this.puntuacion = "";
+		this.imagen = "";
 	}
 
 	// Getters y setters
@@ -135,6 +138,14 @@ public class Comic {
 
 	public String getPuntuacion() {
 		return puntuacion;
+	}
+
+	public String getImagen() {
+		return imagen;
+	}
+
+	public void setImagen(String imagen) {
+		this.imagen = imagen;
 	}
 
 	public void setPuntuacion(String puntuacion) {
