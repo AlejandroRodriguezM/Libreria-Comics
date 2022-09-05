@@ -357,9 +357,7 @@ public class IntroducirDatosController implements Initializable {
 
 	public void subirPortada() {
 		File file = tratarFichero().showOpenDialog(null); // Llamada a funcion
-		if (file != null) {
-			direccionImagen.setText(file.getAbsolutePath().toString());
-		}
+		direccionImagen.setText(file.getAbsolutePath().toString());
 	}
 
 	public InputStream direccionImagen(String direccion) {
@@ -368,21 +366,20 @@ public class IntroducirDatosController implements Initializable {
 
 			if (direccion.length() != 0) {
 				File file = new File(direccion);
-				File tmp = getScaledImage(file);
 				if (file != null) {
+					File tmp = getScaledImage(file);
 					input = new FileInputStream(tmp);
 					return input;
-					
 				}
 			} else {
 				input = this.getClass().getResourceAsStream("sinPortada.jpg");
 				return input;
 			}
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
 
@@ -443,7 +440,7 @@ public class IntroducirDatosController implements Initializable {
 
 		String datos[] = camposComicIntroducir();
 
-		// boolean portadaPredeterminada = false;
+		InputStream portada = direccionImagen(datos[10]);
 
 		try {
 			PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
@@ -461,10 +458,9 @@ public class IntroducirDatosController implements Initializable {
 			statement.setString(11, "");
 
 			if (datos[10].length() != 0) {
-				statement.setBinaryStream(12, direccionImagen(datos[10]));
+				statement.setBinaryStream(12, portada);
 			} else {
-				statement.setBinaryStream(12, direccionImagen(""));
-				// portadaPredeterminada = true;
+				statement.setBinaryStream(12, portada);
 			}
 			statement.setString(13, datos[11]);
 
@@ -479,16 +475,10 @@ public class IntroducirDatosController implements Initializable {
 									+ "\nEditorial: " + datos[4] + "\nFormato: " + datos[5] + "\nProcedencia: " + datos[6]
 											+ "\nFecha de publicacion: " + datos[7] + "\nGuionista: " + datos[8] + "\nDibujante: "
 											+ datos[9] + "\nEstado: " + datos[11]);
-					// if (!portadaPredeterminada) {
-					Image imagex = new Image(direccionImagen(datos[10]));
+				
+					Image imagex = new Image(portada);
 					imagencomic.setImage(imagex);
-					// }
-					// else
-					// {
-					// InputStream fstream = this.getClass().getResourceAsStream("sinPortada.jpg");
-					// Image imagex = new Image(fstream);
-					// imagencomic.setImage(imagex);
-					// }
+
 					botonNuevaPortada.setStyle(null);
 					statement.close();
 
@@ -507,9 +497,16 @@ public class IntroducirDatosController implements Initializable {
 			}
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
+			ex.printStackTrace();
 		}
-
-//		deleteImage(datos[10]);
+		finally {
+			try {
+				portada.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		deleteImage(datos[10]);
 		direccionImagen.setText("");
 		bd.reloadID();
 	}
