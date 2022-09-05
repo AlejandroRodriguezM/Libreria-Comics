@@ -391,7 +391,7 @@ public class IntroducirDatosController implements Initializable {
 		try {
 
 			BufferedImage originalImage = ImageIO.read(file);
-			BufferedImage new_bi = new BufferedImage(anchura, altura, originalImage.getType());
+			BufferedImage new_bi = new BufferedImage(anchura, altura, BufferedImage.TYPE_INT_RGB);
 			File tmp = new File(file.getParentFile().toString() + "/tmp.jpg");
 			Graphics g = new_bi.getGraphics();
 			g.drawImage(originalImage, 0, 0, anchura, altura, null);

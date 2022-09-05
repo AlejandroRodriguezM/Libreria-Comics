@@ -464,7 +464,7 @@ public class MenuPrincipalController {
 
 				InputStream is = rs.getBinaryStream("image");
 				if (!rs.wasNull()) {
-					OutputStream os = new FileOutputStream(new File("image.jpg"));
+					OutputStream os = new FileOutputStream(new File("tmp.jpg"));
 					byte[] content = new byte[1024];
 
 					int size = 0;
@@ -483,7 +483,7 @@ public class MenuPrincipalController {
 			e.printStackTrace();
 		}
 
-		Image image1 = new Image("file:image.jpg", 250, 250, true, true);
+		Image image1 = new Image("file:tmp.jpg", 250, 250, true, true);
 		imagencomic.setImage(image1);
 		deleteImage();
 	}
