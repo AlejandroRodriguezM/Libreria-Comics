@@ -1,10 +1,14 @@
 package Controladores;
 
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
@@ -34,6 +38,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import javax.imageio.ImageIO;
 
 import Funcionamiento.BBDD;
 import Funcionamiento.Comic;
@@ -344,7 +350,7 @@ public class IntroducirDatosController implements Initializable {
 	public FileChooser tratarFichero() {
 		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
 		fileChooser.getExtensionFilters()
-				.addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg", "*.png", "*.jpeg"));
+		.addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg", "*.png", "*.jpeg"));
 
 		return fileChooser;
 	}
@@ -357,23 +363,61 @@ public class IntroducirDatosController implements Initializable {
 	}
 
 	public InputStream direccionImagen(String direccion) {
+		InputStream input = null;
 		try {
 
 			if (direccion.length() != 0) {
 				File file = new File(direccion);
-
+				File tmp = getScaledImage(file);
 				if (file != null) {
-					InputStream input = new FileInputStream(direccion);
+					input = new FileInputStream(tmp);
 					return input;
+					
 				}
 			} else {
-				InputStream input = this.getClass().getResourceAsStream("sinPortada.jpg");
+				input = this.getClass().getResourceAsStream("sinPortada.jpg");
 				return input;
 			}
-		} catch (FileNotFoundException e) {
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+
+	public File getScaledImage(File file) {
+
+		int anchura = 300;
+		int altura = 455;
+
+		try {
+
+			BufferedImage originalImage = ImageIO.read(file);
+			BufferedImage new_bi = new BufferedImage(anchura, altura, originalImage.getType());
+			File tmp = new File(file.getParentFile().toString() + "/tmp.jpg");
+			Graphics g = new_bi.getGraphics();
+			g.drawImage(originalImage, 0, 0, anchura, altura, null);
+
+			ImageIO.write(new_bi, "jpg", tmp);
+			return tmp;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public void deleteImage(String pathFichero) {
+
+		File original = new File(pathFichero);
+		File tmp = new File(original.toString());
+
+		try {
+			Files.deleteIfExists(Paths.get(tmp.getParentFile()+ "/tmp.jpg"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -399,7 +443,7 @@ public class IntroducirDatosController implements Initializable {
 
 		String datos[] = camposComicIntroducir();
 
-//		boolean portadaPredeterminada = false;
+		// boolean portadaPredeterminada = false;
 
 		try {
 			PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
@@ -419,9 +463,8 @@ public class IntroducirDatosController implements Initializable {
 			if (datos[10].length() != 0) {
 				statement.setBinaryStream(12, direccionImagen(datos[10]));
 			} else {
-				datos[10] = "sinPortada.jpg";
 				statement.setBinaryStream(12, direccionImagen(""));
-//				portadaPredeterminada = true;
+				// portadaPredeterminada = true;
 			}
 			statement.setString(13, datos[11]);
 
@@ -429,26 +472,26 @@ public class IntroducirDatosController implements Initializable {
 
 				if (statement.executeUpdate() == 1) { // Sie el resultado del executeUpdate es 1, mostrara el mensaje
 					// correcto.
-
 					pantallaInformativa.setOpacity(1);
 					pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 					pantallaInformativa.setText("Comic introducido correctamente!" + "\nNombre del comic: " + datos[0]
 							+ "\nNumero: " + datos[1] + "\nPortada variante: " + datos[2] + "\nFirma: " + datos[3]
-							+ "\nEditorial: " + datos[4] + "\nFormato: " + datos[5] + "\nProcedencia: " + datos[6]
-							+ "\nFecha de publicacion: " + datos[7] + "\nGuionista: " + datos[8] + "\nDibujante: "
-							+ datos[9] + "\nEstado: " + datos[11]);
-//					if (!portadaPredeterminada) {
-						Image imagex = new Image(direccionImagen(datos[10]));
-						imagencomic.setImage(imagex);
-//					}
-//					else
-//					{
-//						InputStream fstream = this.getClass().getResourceAsStream("sinPortada.jpg");
-//						Image imagex = new Image(fstream);
-//						imagencomic.setImage(imagex);
-//					}
+									+ "\nEditorial: " + datos[4] + "\nFormato: " + datos[5] + "\nProcedencia: " + datos[6]
+											+ "\nFecha de publicacion: " + datos[7] + "\nGuionista: " + datos[8] + "\nDibujante: "
+											+ datos[9] + "\nEstado: " + datos[11]);
+					// if (!portadaPredeterminada) {
+					Image imagex = new Image(direccionImagen(datos[10]));
+					imagencomic.setImage(imagex);
+					// }
+					// else
+					// {
+					// InputStream fstream = this.getClass().getResourceAsStream("sinPortada.jpg");
+					// Image imagex = new Image(fstream);
+					// imagencomic.setImage(imagex);
+					// }
 					botonNuevaPortada.setStyle(null);
 					statement.close();
+
 
 				} else { // En caso de no haber sido posible Introducir el comic, se vera el siguiente
 					// mensaje.
@@ -465,6 +508,8 @@ public class IntroducirDatosController implements Initializable {
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
 		}
+
+//		deleteImage(datos[10]);
 		direccionImagen.setText("");
 		bd.reloadID();
 	}

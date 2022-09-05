@@ -605,7 +605,7 @@ public class MenuPrincipalController {
 
 	public void deleteImage() {
 		try {
-			Files.deleteIfExists(Paths.get("image.jpg"));
+			Files.deleteIfExists(Paths.get("tmp.jpg"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
