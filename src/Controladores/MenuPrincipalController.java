@@ -36,13 +36,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import Funcionamiento.BBDD;
+
 import Funcionamiento.Comic;
-import Funcionamiento.ConexionBBDD;
-import Funcionamiento.ExcelFuntions;
-import Funcionamiento.Libreria;
-import Funcionamiento.NavegacionVentanas;
+import Funcionamiento.FuncionesBBDD;
+import Funcionamiento.FuncionesComicsBBDD;
+import Funcionamiento.FuncionesConexionBBDD;
+import Funcionamiento.FuncionesExcel;
 import Funcionamiento.Utilidades;
+import Funcionamiento.Ventanas;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -213,13 +214,13 @@ public class MenuPrincipalController {
 	@FXML
 	private ImageView imagencomic;
 
-	private static NavegacionVentanas nav = new NavegacionVentanas();
+	private static Ventanas nav = new Ventanas();
 
-	private static Libreria libreria = new Libreria();
+	private static FuncionesComicsBBDD libreria = new FuncionesComicsBBDD();
 
-	private static BBDD db = new BBDD();
+	private static FuncionesBBDD db = new FuncionesBBDD();
 
-	private static ExcelFuntions excelFuntions = new ExcelFuntions();
+	private static FuncionesExcel excelFuntions = new FuncionesExcel();
 
 	/////////////////////////////////
 	//// METODOS LLAMADA A VENTANAS//
@@ -449,7 +450,7 @@ public class MenuPrincipalController {
 
 	public void selectorImage(String ID) {
 		deleteImage();
-		Connection conn = ConexionBBDD.conexion();
+		Connection conn = FuncionesConexionBBDD.conexion();
 
 		String sentenciaSQL = "SELECT * FROM comicsbbdd where ID = ?";
 
@@ -920,7 +921,7 @@ public class MenuPrincipalController {
 	public void volverMenu(ActionEvent event) throws IOException {
 
 		nav.verAccesoBBDD();
-		ConexionBBDD.close();
+		FuncionesConexionBBDD.close();
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();
 	}
