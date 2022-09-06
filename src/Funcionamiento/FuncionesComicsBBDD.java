@@ -51,7 +51,7 @@ public class FuncionesComicsBBDD extends Comic {
 	public static List<Comic> filtroComics = new ArrayList<>();
 
 	private static Ventanas nav = new Ventanas();
-
+	private static Connection conn = null;
 	/**
 	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
 	 *
@@ -68,7 +68,7 @@ public class FuncionesComicsBBDD extends Comic {
 		reiniciarBBDD();
 
 		ResultSet rs;
-		rs = FuncionesConexionBBDD.getComic(sentenciaSql);
+		rs = obtenLibreria(sentenciaSql);
 		listaCompleta = listaDatos(rs);
 		comic = new Comic[listaCompleta.size()];
 		comic = listaCompleta.toArray(comic);
@@ -92,7 +92,7 @@ public class FuncionesComicsBBDD extends Comic {
 
 		ResultSet rs;
 
-		rs = FuncionesConexionBBDD.getComic(sentenciaSql);
+		rs = obtenLibreria(sentenciaSql);
 		listaPosesion = listaDatos(rs);
 
 		comic = new Comic[listaPosesion.size()];
@@ -118,7 +118,7 @@ public class FuncionesComicsBBDD extends Comic {
 
 		ResultSet rs;
 
-		rs = FuncionesConexionBBDD.getComic(sentenciaSql);
+		rs = obtenLibreria(sentenciaSql);
 		listaTratamiento = listaDatos(rs);
 
 		comic = new Comic[listaTratamiento.size()];
@@ -144,7 +144,7 @@ public class FuncionesComicsBBDD extends Comic {
 
 		ResultSet rs;
 
-		rs = FuncionesConexionBBDD.getComic(sentenciaSql);
+		rs = obtenLibreria(sentenciaSql);
 		listaTratamiento = listaDatos(rs);
 
 		comic = new Comic[listaTratamiento.size()];
@@ -168,7 +168,7 @@ public class FuncionesComicsBBDD extends Comic {
 
 		ResultSet rs;
 
-		rs = FuncionesConexionBBDD.getComic(sentenciaSql);
+		rs = obtenLibreria(sentenciaSql);
 		listaTratamiento = listaDatos(rs);
 
 		comic = new Comic[listaTratamiento.size()];
@@ -195,7 +195,7 @@ public class FuncionesComicsBBDD extends Comic {
 
 		ResultSet rs;
 
-		rs = FuncionesConexionBBDD.getComic(sentenciaSql);
+		rs = obtenLibreria(sentenciaSql);
 		listaTratamiento = listaDatos(rs);
 
 		comic = new Comic[listaTratamiento.size()];
@@ -550,8 +550,6 @@ public class FuncionesComicsBBDD extends Comic {
 	 *
 	 * @param listaComic
 	 */
-	// Funcion que comprueba si existe algun dato relacionado con la busqueda por
-	// parametro del comic
 	public boolean checkList(List<Comic> listaComic) {
 		if (listaComic.size() == 0) {
 			return true;
@@ -582,13 +580,13 @@ public class FuncionesComicsBBDD extends Comic {
 
 		ResultSet rs;
 
-		rs = FuncionesConexionBBDD.getComic(sentenciaSQL);
+		rs = obtenLibreria(sentenciaSQL);
 
 		comic = datosIndividual(rs);
 
 		return comic;
 	}
-
+	
 	/**
 	 * Comprueba que el ID introducido existe
 	 *
@@ -596,7 +594,7 @@ public class FuncionesComicsBBDD extends Comic {
 	 */
 	public boolean chechID(String identificador) {
 		String sentenciaSQL = "select * from comicsbbdd where ID = " + identificador;
-		Connection conn = FuncionesConexionBBDD.conexion();
+		conn = FuncionesConexionBBDD.conexion();
 		if (identificador.length() != 0) { // Si has introducido ID a la hora de realizar la modificacion, permitira lo
 			// siguiente
 
@@ -620,7 +618,7 @@ public class FuncionesComicsBBDD extends Comic {
 
 	public void saveImageFromDataBase() {
 		String sentenciaSQL = "SELECT * FROM comicsbbdd";
-		Connection conn = FuncionesConexionBBDD.conexion();
+		conn = FuncionesConexionBBDD.conexion();
 		try {
 			PreparedStatement preparedStatement = conn.prepareStatement(sentenciaSQL);
 			ResultSet rs = preparedStatement.executeQuery();
@@ -639,5 +637,89 @@ public class FuncionesComicsBBDD extends Comic {
 		} catch (SQLException | IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 *
+	 * @param id
+	 * @param sentenciaSQL
+	 */
+	public boolean modificarDatos(String id, String sentenciaSQL) {
+		PreparedStatement stmt;
+		FuncionesBBDD bd = new FuncionesBBDD();
+		Connection conn = FuncionesConexionBBDD.conexion();
+		try {
+			if(id.length() != 0)
+			{
+				stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE,
+						ResultSet.CONCUR_UPDATABLE); // Permite leer y ejecutar la sentencia de MySql
+
+				stmt.setString(1, id);
+				if(stmt.executeUpdate() == 1)
+				{
+					bd.reloadID();
+					return true;
+				}
+			}
+
+			return false;
+		} catch (SQLException ex) {
+			nav.alertaException(ex.toString());
+		}
+		return false;
+	}
+
+	/**
+	 * Funcion que permite cambiar de estado el comic a "Vendido" y hace que no se
+	 * muestre en la bbdd
+	 */
+	public void venderComicBBDD(String id) {
+		String sentenciaSQL;
+
+		sentenciaSQL = "UPDATE comicsbbdd set estado = 'Vendido' where ID = ?";
+
+		modificarDatos(id, sentenciaSQL);
+	}
+
+	/**
+	 *
+	 */
+	public void eliminarComicBBDD(String id) {
+		String sentenciaSQL;
+
+		sentenciaSQL = "DELETE from comicsbbdd where ID = ?";
+
+		modificarDatos(id, sentenciaSQL);
+	}
+	
+	/**
+	 * Devuelve un objeto ResultSet para realizar una sentencia en la bbdd
+	 *
+	 * @param sentenciaSQL
+	 * @return
+	 */
+	public ResultSet obtenLibreria(String sentenciaSQL) {
+		conn = FuncionesConexionBBDD.conexion();
+		try {
+			// Realizamos la consulta SQL
+			PreparedStatement stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+
+			ResultSet rs = stmt.executeQuery();
+			if (!rs.first()) {
+				return null;
+			}
+
+			// Todo bien, devolvemos el cliente
+			return rs;
+
+		} catch (NullPointerException ex) {
+			ex.printStackTrace();
+			nav.alertaException(ex.toString());
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			nav.alertaException(ex.toString());
+		}
+		return null;
 	}
 }

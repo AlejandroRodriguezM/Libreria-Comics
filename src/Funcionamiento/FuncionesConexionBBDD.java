@@ -25,8 +25,6 @@ package Funcionamiento;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class FuncionesConexionBBDD {
@@ -95,29 +93,6 @@ public class FuncionesConexionBBDD {
 		DB_HOST = datos[4];
 	}
 
-	/**
-	 * Devuelve un objeto Connection en caso de que la conexion sea correcta.
-	 *
-	 * @param numeroPuerto
-	 * @param nombreBBDD
-	 * @param nombreUsuario
-	 * @param contraBBDD
-	 * @return
-	 */
-	public static Connection conexion() {
-
-		DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
-
-		try {
-			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
-			return conn;
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			nav.alertaException(ex.toString());
-			return null;
-		}
-	}
-
 //	/**
 //	 * Devuelve un objeto Connection en caso de que la conexion sea correcta.
 //	 *
@@ -129,17 +104,38 @@ public class FuncionesConexionBBDD {
 //	 */
 //	public static Connection conexion() {
 //
-//		DB_URL = "jdbc:mysql://" + "localHost" + ":" + 3306 + "/" + "comics2" + "?serverTimezone=UTC";
+//		DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
 //
 //		try {
-//			conn = DriverManager.getConnection(DB_URL, "root", "1234");
+//			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
 //			return conn;
 //		} catch (SQLException ex) {
-//			ex.printStackTrace();
 //			nav.alertaException(ex.toString());
 //			return null;
 //		}
 //	}
+	
+	/**
+	 * Devuelve un objeto Connection en caso de que la conexion sea correcta.
+	 *
+	 * @param numeroPuerto
+	 * @param nombreBBDD
+	 * @param nombreUsuario
+	 * @param contraBBDD
+	 * @return
+	 */
+	public static Connection conexion() {
+
+		DB_URL = "jdbc:mysql://" + DB_HOST + ":" + 3306 + "/" + "comics2" + "?serverTimezone=UTC";
+
+		try {
+			conn = DriverManager.getConnection(DB_URL, "root", "1234");
+			return conn;
+		} catch (SQLException ex) {
+			nav.alertaException(ex.toString());
+			return null;
+		}
+	}
 
 	/**
 	 * Cierra la conexion con la base de datos
@@ -150,33 +146,5 @@ public class FuncionesConexionBBDD {
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
 		}
-	}
-
-	/**
-	 * Devuelve un objeto ResultSet para realizar una sentencia en la bbdd
-	 *
-	 * @param sentenciaSQL
-	 * @return
-	 */
-	public static ResultSet getComic(String sentenciaSQL) {
-		try {
-			// Realizamos la consulta SQL
-			PreparedStatement stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_UPDATABLE);
-
-			ResultSet rs = stmt.executeQuery();
-			if (!rs.first()) {
-				return null;
-			}
-
-			// Todo bien, devolvemos el cliente
-			return rs;
-
-		} catch (NullPointerException ex) {
-			nav.alertaException(ex.toString());
-		} catch (SQLException ex) {
-			nav.alertaException(ex.toString());
-		}
-		return null;
 	}
 }

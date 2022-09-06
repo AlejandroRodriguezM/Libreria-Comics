@@ -1,14 +1,9 @@
 package Controladores;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import Funcionamiento.FuncionesBBDD;
 import Funcionamiento.Comic;
-import Funcionamiento.FuncionesConexionBBDD;
 import Funcionamiento.FuncionesComicsBBDD;
 import Funcionamiento.Ventanas;
 import javafx.collections.FXCollections;
@@ -133,10 +128,6 @@ public class EliminarDatosController {
 
 	private static FuncionesComicsBBDD libreria = new FuncionesComicsBBDD();
 
-	private static Connection conn = FuncionesConexionBBDD.conexion();
-
-	private static FuncionesBBDD bd = new FuncionesBBDD();
-
 	/**
 	 *
 	 * @param event
@@ -168,7 +159,10 @@ public class EliminarDatosController {
 	 */
 	@FXML
 	void eliminarDatos(ActionEvent event) {
-		deleteDataBBDD();
+		
+		String ID = idComicTratar.getText();
+		modificarDatos(ID);
+		libreria.eliminarComicBBDD(ID);
 		libreria.reiniciarBBDD();
 	}
 
@@ -179,8 +173,10 @@ public class EliminarDatosController {
 	 * @param event
 	 */
 	@FXML
-	void ventaDatos(ActionEvent event) { //
-		deleteDataSell();
+	void ventaDatos(ActionEvent event) {
+		String ID = idComicTratar.getText();
+		modificarDatos(ID);
+		libreria.venderComicBBDD(ID);
 		libreria.reiniciarBBDD();
 	}
 
@@ -303,72 +299,32 @@ public class EliminarDatosController {
 	 * @param id
 	 * @param sentenciaSQL
 	 */
-	public void modifyDataBase(String id, String sentenciaSQL) {
-		PreparedStatement stmt;
-
-		Comic comic = libreria.comicDatos(id); // Llamada de metodo que contiene el comic que se desea eliminar
-
-		try {
-			if (nav.alertaEliminar()) { // Llamada a metodo que permite lanzar una alerta. En caso de aceptarlo
-				// permitira lo siguiente.
-
-				if (id.length() != 0) {
-					stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE,
-							ResultSet.CONCUR_UPDATABLE); // Permite leer y ejecutar la sentencia de MySql
-
-					stmt.setString(1, id);
-					if (stmt.executeUpdate() == 1) { // En caso de que el cambio de estado se haya realizado
-						// correctamente, mostrara lo siguiente
-						pantallaInformativa.setOpacity(1);
-						pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-						pantallaInformativa.setText(
-								"Has eliminado correctamente: " + comic.toString().replace("[", "").replace("]", ""));
-						idComicTratar.setStyle(null);
-					} else { // En caso contrario mostrara lo siguiente
-						pantallaInformativa.setOpacity(1);
-						pantallaInformativa.setStyle("-fx-background-color: #F53636");
-						pantallaInformativa.setText("ERROR. ID desconocido.");
-						idComicTratar.setStyle("-fx-background-color: red");
-					}
-				}
-			} else { // Si se cancela el borra del comic, saltara el siguiente mensaje.
-				pantallaInformativa.setStyle("-fx-background-color: #F53636");
-				pantallaInformativa.setText("Borrado cancelado.");
+	public boolean modificarDatos(String ID) {
+		if (nav.alertaEliminar()) {
+			if(ID.length() != 0) {
+				
+				Comic comic = libreria.comicDatos(ID); // Llamada de metodo que contiene el comic que se desea eliminar
+				
+				pantallaInformativa.setOpacity(1);
+				pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
+				pantallaInformativa.setText(
+						"Has eliminado correctamente: " + comic.toString().replace("[", "").replace("]", ""));
+				idComicTratar.setStyle(null);
+				return true;
 			}
-		} catch (SQLException ex) {
-			nav.alertaException(ex.toString());
+			else
+			{
+				pantallaInformativa.setOpacity(1);
+				pantallaInformativa.setStyle("-fx-background-color: #F53636");
+				pantallaInformativa.setText("ERROR. ID desconocido.");
+				idComicTratar.setStyle("-fx-background-color: red");
+				return false;
+			}
+		} else { // Si se cancela el borra del comic, saltara el siguiente mensaje.
+			pantallaInformativa.setStyle("-fx-background-color: #F53636");
+			pantallaInformativa.setText("Modificacion cancelada.");
+			return false;
 		}
-	}
-
-	/**
-	 * Funcion que permite cambiar de estado el comic a "Vendido" y hace que no se
-	 * muestre en la bbdd
-	 */
-	public void deleteDataSell() {
-		String id, sentenciaSQL;
-
-		sentenciaSQL = "UPDATE comicsbbdd set estado = 'Vendido' where ID = ?";
-
-		id = idComicTratar.getText();
-
-		modifyDataBase(id, sentenciaSQL);
-
-	}
-
-	/**
-	 *
-	 */
-	public void deleteDataBBDD() {
-		String id, sentenciaSQL;
-
-		sentenciaSQL = "DELETE from comicsbbdd where ID = ?";
-
-		id = idComicTratar.getText();
-
-		modifyDataBase(id, sentenciaSQL);
-
-		bd.reloadID();
-
 	}
 
 	/**
