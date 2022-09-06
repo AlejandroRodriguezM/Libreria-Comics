@@ -276,7 +276,7 @@ public class CrearBBDDController {
 				+ "nomEditorial varchar(150) NOT NULL," + "formato varchar(150) NOT NULL,"
 				+ "procedencia varchar(150) NOT NULL," + "anioPubli varchar(150) NOT NULL,"
 				+ "nomGuionista varchar(300) NOT NULL," + "nomDibujante varchar(300) NOT NULL,"
-				+ "puntuacion varchar(300) NOT NULL," + "image blob," + "estado varchar(300) NOT NULL,"
+				+ "puntuacion varchar(300) NOT NULL," + "portada blob," + "estado varchar(300) NOT NULL,"
 				+ "PRIMARY KEY (`ID`)) "
 				+ "ENGINE=InnoDB AUTO_INCREMENT=320 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;";
 
