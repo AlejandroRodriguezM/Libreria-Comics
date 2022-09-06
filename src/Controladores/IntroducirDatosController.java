@@ -357,7 +357,16 @@ public class IntroducirDatosController implements Initializable {
 
 	public void subirPortada() {
 		File file = tratarFichero().showOpenDialog(null); // Llamada a funcion
-		direccionImagen.setText(file.getAbsolutePath().toString());
+		if(file != null)
+		{
+			direccionImagen.setText(file.getAbsolutePath().toString());
+		}
+		else
+		{
+			pantallaInformativa.setOpacity(1);
+			pantallaInformativa.setStyle("-fx-background-color: #F53636");
+			pantallaInformativa.setText("Has cancelado la subida de portada.");
+		}
 	}
 
 	public InputStream direccionImagen(String direccion) {
@@ -399,7 +408,6 @@ public class IntroducirDatosController implements Initializable {
 			ImageIO.write(new_bi, "jpg", tmp);
 			return tmp;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -468,13 +476,13 @@ public class IntroducirDatosController implements Initializable {
 
 				if (statement.executeUpdate() == 1) { // Sie el resultado del executeUpdate es 1, mostrara el mensaje
 					// correcto.
+					
+					Comic comic = new Comic("",datos[0], datos[1], datos[2], datos[3], datos[4],
+							datos[5], datos[6], datos[7], datos[8], datos[9], datos[11], "Sin puntuar", "");
+					
 					pantallaInformativa.setOpacity(1);
 					pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-					pantallaInformativa.setText("Comic introducido correctamente!" + "\nNombre del comic: " + datos[0]
-							+ "\nNumero: " + datos[1] + "\nPortada variante: " + datos[2] + "\nFirma: " + datos[3]
-									+ "\nEditorial: " + datos[4] + "\nFormato: " + datos[5] + "\nProcedencia: " + datos[6]
-											+ "\nFecha de publicacion: " + datos[7] + "\nGuionista: " + datos[8] + "\nDibujante: "
-											+ datos[9] + "\nEstado: " + datos[11]);
+					pantallaInformativa.setText("Comic introducido correctamente!" + comic.toString());
 				
 					Image imagex = new Image(portada);
 					imagencomic.setImage(imagex);
@@ -545,10 +553,10 @@ public class IntroducirDatosController implements Initializable {
 	 */
 	public void listaPorParametro() {
 		libreria.reiniciarBBDD();
-		String datosComic[] = camposComicActuales();
+		String datos[] = camposComicActuales();
 
-		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
-				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "", "", "");
+		Comic comic = new Comic(datos[0], datos[1], datos[2], datos[3], datos[4],
+				datos[5], datos[6], datos[7], datos[8], datos[9], datos[10], "", "", "");
 
 		tablaBBDD(busquedaParametro(comic));
 	}
