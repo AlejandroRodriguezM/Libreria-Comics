@@ -25,8 +25,8 @@ package Controladores;
 
 import java.util.Random;
 
-import Funcionamiento.Libreria;
-import Funcionamiento.NavegacionVentanas;
+import Funcionamiento.FuncionesComicsBBDD;
+import Funcionamiento.Ventanas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -53,9 +53,9 @@ public class RecomendacionesController {
 	@FXML
 	private TextArea printComicRecomendado;
 
-	private static NavegacionVentanas nav = new NavegacionVentanas();
+	private static Ventanas nav = new Ventanas();
 
-	private static Libreria libreria = new Libreria();
+	private static FuncionesComicsBBDD libreria = new FuncionesComicsBBDD();
 
 	/**
 	 * Llama a funcion que genera una lectura recomendada

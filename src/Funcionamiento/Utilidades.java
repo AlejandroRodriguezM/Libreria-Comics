@@ -43,7 +43,7 @@ public class Utilidades {
 
 	public static List<Comic> listaLimpia = new ArrayList<>();
 
-	private static NavegacionVentanas nav = new NavegacionVentanas();
+	private static Ventanas nav = new Ventanas();
 
 	public static String os = System.getProperty("os.name", "unknown").toLowerCase(Locale.ROOT);
 

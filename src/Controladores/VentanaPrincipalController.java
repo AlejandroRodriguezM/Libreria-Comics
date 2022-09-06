@@ -26,7 +26,7 @@ package Controladores;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import Funcionamiento.NavegacionVentanas;
+import Funcionamiento.Ventanas;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -41,7 +41,7 @@ import javafx.stage.Stage;
  */
 public class VentanaPrincipalController extends Application {
 
-	private static NavegacionVentanas nav = new NavegacionVentanas();
+	private static Ventanas nav = new Ventanas();
 
 	/**
 	 * Carga la ventana principal y arranca el programa.

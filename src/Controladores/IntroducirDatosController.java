@@ -41,11 +41,11 @@ import java.util.ResourceBundle;
 
 import javax.imageio.ImageIO;
 
-import Funcionamiento.BBDD;
+import Funcionamiento.FuncionesBBDD;
 import Funcionamiento.Comic;
-import Funcionamiento.ConexionBBDD;
-import Funcionamiento.Libreria;
-import Funcionamiento.NavegacionVentanas;
+import Funcionamiento.FuncionesConexionBBDD;
+import Funcionamiento.FuncionesComicsBBDD;
+import Funcionamiento.Ventanas;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -209,13 +209,13 @@ public class IntroducirDatosController implements Initializable {
 	@FXML
 	private ImageView imagencomic;
 
-	private static Connection conn = ConexionBBDD.conexion();
+	private static Connection conn = FuncionesConexionBBDD.conexion();
 
-	private static NavegacionVentanas nav = new NavegacionVentanas();
+	private static Ventanas nav = new Ventanas();
 
-	private static Libreria libreria = new Libreria();
+	private static FuncionesComicsBBDD libreria = new FuncionesComicsBBDD();
 
-	private static BBDD bd = new BBDD();
+	private static FuncionesBBDD bd = new FuncionesBBDD();
 
 	/**
 	 * Funcion que permite hacer funcionar la lista de puntuacion.

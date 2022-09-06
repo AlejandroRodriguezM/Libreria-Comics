@@ -42,7 +42,7 @@ import java.util.List;
  *
  * @author Alejandro Rodriguez
  */
-public class Libreria extends Comic {
+public class FuncionesComicsBBDD extends Comic {
 
 	public static List<Comic> listaComics = new ArrayList<>();
 	public static List<Comic> listaPosesion = new ArrayList<>();
@@ -50,8 +50,7 @@ public class Libreria extends Comic {
 	public static List<Comic> listaCompleta = new ArrayList<>();
 	public static List<Comic> filtroComics = new ArrayList<>();
 
-	private static Connection conn = ConexionBBDD.conexion();
-	private static NavegacionVentanas nav = new NavegacionVentanas();
+	private static Ventanas nav = new Ventanas();
 
 	/**
 	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
@@ -69,7 +68,7 @@ public class Libreria extends Comic {
 		reiniciarBBDD();
 
 		ResultSet rs;
-		rs = ConexionBBDD.getComic(sentenciaSql);
+		rs = FuncionesConexionBBDD.getComic(sentenciaSql);
 		listaCompleta = listaDatos(rs);
 		comic = new Comic[listaCompleta.size()];
 		comic = listaCompleta.toArray(comic);
@@ -93,7 +92,7 @@ public class Libreria extends Comic {
 
 		ResultSet rs;
 
-		rs = ConexionBBDD.getComic(sentenciaSql);
+		rs = FuncionesConexionBBDD.getComic(sentenciaSql);
 		listaPosesion = listaDatos(rs);
 
 		comic = new Comic[listaPosesion.size()];
@@ -119,7 +118,7 @@ public class Libreria extends Comic {
 
 		ResultSet rs;
 
-		rs = ConexionBBDD.getComic(sentenciaSql);
+		rs = FuncionesConexionBBDD.getComic(sentenciaSql);
 		listaTratamiento = listaDatos(rs);
 
 		comic = new Comic[listaTratamiento.size()];
@@ -145,7 +144,7 @@ public class Libreria extends Comic {
 
 		ResultSet rs;
 
-		rs = ConexionBBDD.getComic(sentenciaSql);
+		rs = FuncionesConexionBBDD.getComic(sentenciaSql);
 		listaTratamiento = listaDatos(rs);
 
 		comic = new Comic[listaTratamiento.size()];
@@ -169,7 +168,7 @@ public class Libreria extends Comic {
 
 		ResultSet rs;
 
-		rs = ConexionBBDD.getComic(sentenciaSql);
+		rs = FuncionesConexionBBDD.getComic(sentenciaSql);
 		listaTratamiento = listaDatos(rs);
 
 		comic = new Comic[listaTratamiento.size()];
@@ -196,7 +195,7 @@ public class Libreria extends Comic {
 
 		ResultSet rs;
 
-		rs = ConexionBBDD.getComic(sentenciaSql);
+		rs = FuncionesConexionBBDD.getComic(sentenciaSql);
 		listaTratamiento = listaDatos(rs);
 
 		comic = new Comic[listaTratamiento.size()];
@@ -218,6 +217,7 @@ public class Libreria extends Comic {
 		Comic comic[] = null;
 
 		String sql = datosConcatenados(datos);
+		Connection conn = FuncionesConexionBBDD.conexion();
 
 		filtroComics.clear();
 
@@ -250,7 +250,7 @@ public class Libreria extends Comic {
 	 * @return
 	 */
 	public Comic[] verBusquedaGeneral(String busquedaGeneral) {
-
+		Connection conn = FuncionesConexionBBDD.conexion();
 		String sql1 = datosGeneralesNombre(busquedaGeneral);
 		String sql2 = datosGeneralesVariante(busquedaGeneral);
 		String sql3 = datosGeneralesFirma(busquedaGeneral);
@@ -582,7 +582,7 @@ public class Libreria extends Comic {
 
 		ResultSet rs;
 
-		rs = ConexionBBDD.getComic(sentenciaSQL);
+		rs = FuncionesConexionBBDD.getComic(sentenciaSQL);
 
 		comic = datosIndividual(rs);
 
@@ -596,7 +596,7 @@ public class Libreria extends Comic {
 	 */
 	public boolean chechID(String identificador) {
 		String sentenciaSQL = "select * from comicsbbdd where ID = " + identificador;
-
+		Connection conn = FuncionesConexionBBDD.conexion();
 		if (identificador.length() != 0) { // Si has introducido ID a la hora de realizar la modificacion, permitira lo
 			// siguiente
 
@@ -620,7 +620,7 @@ public class Libreria extends Comic {
 
 	public void saveImageFromDataBase() {
 		String sentenciaSQL = "SELECT * FROM comicsbbdd";
-
+		Connection conn = FuncionesConexionBBDD.conexion();
 		try {
 			PreparedStatement preparedStatement = conn.prepareStatement(sentenciaSQL);
 			ResultSet rs = preparedStatement.executeQuery();

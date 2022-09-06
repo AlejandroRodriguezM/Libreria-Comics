@@ -6,11 +6,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import Funcionamiento.BBDD;
+import Funcionamiento.FuncionesBBDD;
 import Funcionamiento.Comic;
-import Funcionamiento.ConexionBBDD;
-import Funcionamiento.Libreria;
-import Funcionamiento.NavegacionVentanas;
+import Funcionamiento.FuncionesConexionBBDD;
+import Funcionamiento.FuncionesComicsBBDD;
+import Funcionamiento.Ventanas;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -129,13 +129,13 @@ public class EliminarDatosController {
 	@FXML
 	private TableColumn<Comic, String> nombre;
 
-	private static NavegacionVentanas nav = new NavegacionVentanas();
+	private static Ventanas nav = new Ventanas();
 
-	private static Libreria libreria = new Libreria();
+	private static FuncionesComicsBBDD libreria = new FuncionesComicsBBDD();
 
-	private static Connection conn = ConexionBBDD.conexion();
+	private static Connection conn = FuncionesConexionBBDD.conexion();
 
-	private static BBDD bd = new BBDD();
+	private static FuncionesBBDD bd = new FuncionesBBDD();
 
 	/**
 	 *

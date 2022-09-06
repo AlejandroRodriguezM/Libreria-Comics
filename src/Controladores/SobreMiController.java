@@ -1,6 +1,6 @@
 package Controladores;
 
-import Funcionamiento.NavegacionVentanas;
+import Funcionamiento.Ventanas;
 import Funcionamiento.Utilidades;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -34,7 +34,7 @@ public class SobreMiController {
 	@FXML
 	private Button botonCompra;
 
-	private static NavegacionVentanas nav = new NavegacionVentanas();
+	private static Ventanas nav = new Ventanas();
 
 	@FXML
 	void accesoGitHub(ActionEvent event) {

@@ -30,7 +30,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import Funcionamiento.NavegacionVentanas;
+import Funcionamiento.Ventanas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -90,13 +90,13 @@ public class CrearBBDDController {
 	@FXML
 	private RadioButton siOnline;
 
-	private static NavegacionVentanas nav = new NavegacionVentanas();
+	private static Ventanas nav = new Ventanas();
 
-	public static String DB_USER = "";
-	public static String DB_PASS = "";
-	public static String DB_PORT = "";
-	public static String DB_NAME = "";
-	public static String DB_HOST = "";
+	public static String DB_USER;
+	public static String DB_PASS;
+	public static String DB_PORT;
+	public static String DB_NAME;
+	public static String DB_HOST;
 
 	/**
 	 * Devuelve un objeto Connection en caso de que la conexion sea correcta, datos
@@ -108,28 +108,13 @@ public class CrearBBDDController {
 	 * @param contraBBDD
 	 * @return
 	 */
-	public static void datosBBDD(String[] datos) {
+	public void datosBBDD() {
 
-		DB_PORT = datos[0];
-		DB_NAME = datos[1];
-		DB_USER = datos[2];
-		DB_PASS = datos[3];
-		DB_HOST = datos[4];
-	}
-
-	/**
-	 * Funcion que permite mandar los datos a la clase DBManager
-	 *
-	 * @return
-	 */
-	public void envioDatosBBDD() { // Metodo que manda toda la informacion de los textField a la clase DBManager.
-		String datos[] = new String[5];
-		datos[0] = puertoBBDD.getText();
-		datos[1] = nombreBBDD.getText();
-		datos[2] = userBBDD.getText();
-		datos[3] = passBBDD.getText();
-		datos[4] = selectorOnline();
-		datosBBDD(datos);
+		DB_PORT = puertoBBDD.getText();
+		DB_NAME = nombreBBDD.getText();
+		DB_USER = userBBDD.getText();
+		DB_PASS = passBBDD.getText();
+		DB_HOST = selectorOnline();
 	}
 
 	/**
@@ -149,13 +134,13 @@ public class CrearBBDDController {
 	 */
 	@FXML
 	void crearBBDD(ActionEvent event) {
-
+		datosBBDD();
 		if (checkDatabase()) {
 			createDataBase();
 			createTable();
 			createProcedure();
 			prontInformativo.setStyle("-fx-background-color: #A0F52D");
-			prontInformativo.setText("Base de datos: " + nombreBBDD.getText() + " creada correctamente.");
+			prontInformativo.setText("Base de datos: " + DB_NAME + " creada correctamente.");
 		}
 	}
 
@@ -164,7 +149,7 @@ public class CrearBBDDController {
 	 */
 	public void createDataBase() {
 
-		String sentenciaSQL = "CREATE DATABASE " + nombreBBDD.getText() + ";";
+		String sentenciaSQL = "CREATE DATABASE " + DB_NAME + ";";
 
 		String url = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "?serverTimezone=UTC";
 		Statement statement;
@@ -188,7 +173,6 @@ public class CrearBBDDController {
 	 */
 	public boolean checkDatabase() {
 
-		envioDatosBBDD();
 		boolean exists;
 		ResultSet rs;
 
@@ -243,8 +227,6 @@ public class CrearBBDDController {
 
 		String url = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "?serverTimezone=UTC";
 
-		System.out.println(DB_PORT + DB_NAME + DB_USER + DB_PASS + DB_HOST);
-
 		Statement statement;
 		try {
 
@@ -278,13 +260,13 @@ public class CrearBBDDController {
 				+ "nomGuionista varchar(300) NOT NULL," + "nomDibujante varchar(300) NOT NULL,"
 				+ "puntuacion varchar(300) NOT NULL," + "portada blob," + "estado varchar(300) NOT NULL,"
 				+ "PRIMARY KEY (`ID`)) "
-				+ "ENGINE=InnoDB AUTO_INCREMENT=320 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;";
+				+ "ENGINE=InnoDB AUTO_INCREMENT=320 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
 
 		Statement statement1;
 		PreparedStatement statement2;
 
 		try {
-			Connection connection = DriverManager.getConnection(url, userBBDD.getText(), passBBDD.getText());
+			Connection connection = DriverManager.getConnection(url, DB_USER, DB_PASS);
 			statement1 = connection.createStatement();
 			statement1.executeUpdate(sentenciaSQL);
 			statement2 = connection.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");

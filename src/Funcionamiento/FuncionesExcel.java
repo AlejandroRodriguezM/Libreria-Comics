@@ -50,12 +50,12 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  *
  * @author Alejandro Rodriguez
  */
-public class ExcelFuntions {
+public class FuncionesExcel {
 
-	private static Libreria libreria = new Libreria();
-	private static Connection conn = ConexionBBDD.conexion();
-	private static NavegacionVentanas nav = new NavegacionVentanas();
-	private static BBDD db = new BBDD();
+	private static FuncionesComicsBBDD libreria = new FuncionesComicsBBDD();
+	private static Connection conn = FuncionesConexionBBDD.conexion();
+	private static Ventanas nav = new Ventanas();
+	private static FuncionesBBDD db = new FuncionesBBDD();
 	private static int ID = 0;
 
 	/**
@@ -99,7 +99,7 @@ public class ExcelFuntions {
 		try {
 			fichero.createNewFile();
 			libreria.verLibreriaCompleta();
-			List<Comic> listaComics = Libreria.listaCompleta;
+			List<Comic> listaComics = FuncionesComicsBBDD.listaCompleta;
 
 			libro = new XSSFWorkbook();
 

@@ -41,11 +41,9 @@ import javafx.stage.FileChooser;
  *
  * @author Alejandro Rodriguez
  */
-public class BBDD {
+public class FuncionesBBDD {
 
-	private static Libreria libreria = new Libreria();
-	private static Connection conn = ConexionBBDD.conexion();
-	private static NavegacionVentanas nav = new NavegacionVentanas();
+	private static Ventanas nav = new Ventanas();
 
 	/**
 	 * Funcion que permite contar cuantas filas hay en la base de datos.
@@ -53,6 +51,7 @@ public class BBDD {
 	 * @return
 	 */
 	public int countRows() {
+		Connection conn = FuncionesConexionBBDD.conexion();
 		String sql = "SELECT COUNT(*) FROM comicsbbdd";
 		try {
 			Statement stmt = conn.createStatement();
@@ -75,7 +74,8 @@ public class BBDD {
 	 * @return
 	 */
 	public boolean borrarContenidoTabla() {
-
+		Connection conn = FuncionesConexionBBDD.conexion();
+		FuncionesComicsBBDD libreria = new FuncionesComicsBBDD();
 		if (nav.borrarContenidoTabla()) {
 			try {
 				PreparedStatement statement1 = conn.prepareStatement("delete from comicsbbdd");
@@ -97,7 +97,8 @@ public class BBDD {
 	 * @return
 	 */
 	public boolean reloadID() {
-
+		Connection conn = FuncionesConexionBBDD.conexion();
+		FuncionesComicsBBDD libreria = new FuncionesComicsBBDD();
 		try {
 			PreparedStatement statement1 = conn.prepareStatement("ALTER TABLE comicsbbdd DROP ID, order by nomComic");
 			PreparedStatement statement2 = conn.prepareStatement(
@@ -126,8 +127,8 @@ public class BBDD {
 	public void backupLinux(File fichero) {
 		try {
 			fichero.createNewFile();
-			String command[] = new String[] { "mysqldump", "-u" + ConexionBBDD.DB_USER, "-p" + ConexionBBDD.DB_PASS,
-					"-B", ConexionBBDD.DB_NAME, "--routines=true", "--result-file=" + fichero };
+			String command[] = new String[] { "mysqldump", "-u" + FuncionesConexionBBDD.DB_USER, "-p" + FuncionesConexionBBDD.DB_PASS,
+					"-B", FuncionesConexionBBDD.DB_NAME, "--routines=true", "--result-file=" + fichero };
 			ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
 			pb.redirectError(Redirect.INHERIT);
 			pb.redirectOutput(Redirect.to(fichero));
@@ -309,6 +310,7 @@ public class BBDD {
 	 * @return
 	 */
 	private Statement declaracionSQL() {
+		Connection conn = FuncionesConexionBBDD.conexion();
 		Statement st;
 		try {
 			st = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
