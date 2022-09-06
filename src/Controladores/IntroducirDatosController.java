@@ -33,17 +33,13 @@ import java.nio.file.Paths;
  *  Twitter: @silverAlox
  */
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.imageio.ImageIO;
 
-import Funcionamiento.FuncionesBBDD;
 import Funcionamiento.Comic;
-import Funcionamiento.FuncionesConexionBBDD;
 import Funcionamiento.FuncionesComicsBBDD;
 import Funcionamiento.Ventanas;
 import javafx.collections.FXCollections;
@@ -59,7 +55,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -209,13 +204,9 @@ public class IntroducirDatosController implements Initializable {
 	@FXML
 	private ImageView imagencomic;
 
-	private static Connection conn = FuncionesConexionBBDD.conexion();
-
 	private static Ventanas nav = new Ventanas();
-
-	private static FuncionesComicsBBDD libreria = new FuncionesComicsBBDD();
-
-	private static FuncionesBBDD bd = new FuncionesBBDD();
+	
+	private static FuncionesComicsBBDD libreria = null;
 
 	/**
 	 * Funcion que permite hacer funcionar la lista de puntuacion.
@@ -334,7 +325,8 @@ public class IntroducirDatosController implements Initializable {
 	@FXML
 	public void agregarDatos(ActionEvent event) {
 
-		insertarDatos();
+		libreria = new FuncionesComicsBBDD();
+		libreria.insertarDatos(camposComicIntroducir());
 		libreria.reiniciarBBDD();
 	}
 
@@ -355,6 +347,9 @@ public class IntroducirDatosController implements Initializable {
 		return fileChooser;
 	}
 
+	/**
+	 * 
+	 */
 	public void subirPortada() {
 		File file = tratarFichero().showOpenDialog(null); // Llamada a funcion
 		if (file != null) {
@@ -366,6 +361,11 @@ public class IntroducirDatosController implements Initializable {
 		}
 	}
 
+	/**
+	 * 
+	 * @param direccion
+	 * @return
+	 */
 	public InputStream direccionImagen(String direccion) {
 		InputStream input = null;
 		try {
@@ -389,6 +389,11 @@ public class IntroducirDatosController implements Initializable {
 		return null;
 	}
 
+	/**
+	 * 
+	 * @param file
+	 * @return
+	 */
 	public File getScaledImage(File file) {
 
 		int anchura = 300;
@@ -435,93 +440,95 @@ public class IntroducirDatosController implements Initializable {
 		return situacionEstado;
 	}
 
-	/**
-	 * Funcion que modifica 1 comic de la base de datos con los parametros que
-	 * introduzcamos en los campos.
-	 */
-	public void insertarDatos() {
-
-		String sentenciaSQL = "insert into comicsbbdd(nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante,puntuacion,image,estado) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
-
-		if (nav.alertaInsertar()) { // Llamada a alerta de modificacion
-
-			subidaBBDD(sentenciaSQL); // Llamada a funcion que permite comprobar el cambio realizado en el comic
-
-		} else { // Si se cancela el borra del comic, saltara el siguiente mensaje.
-			pantallaInformativa.setOpacity(1);
-			pantallaInformativa.setStyle("-fx-background-color: #F53636");
-			pantallaInformativa.setText("Insertado cancelado..");
-		}
-	}
-
-	/**
-	 *
-	 */
-	public void subidaBBDD(String sentenciaSQL) {
-
-		String datos[] = camposComicIntroducir();
-
-		InputStream portada = direccionImagen(datos[10]);
-
-		try {
-			PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
-
-			statement.setString(1, datos[0]);
-			statement.setString(2, datos[1]);
-			statement.setString(3, datos[2]);
-			statement.setString(4, datos[3]);
-			statement.setString(5, datos[4]);
-			statement.setString(6, datos[5]);
-			statement.setString(7, datos[6]);
-			statement.setString(8, datos[7]);
-			statement.setString(9, datos[8]);
-			statement.setString(10, datos[9]);
-			statement.setString(11, "");
-
-			if (datos[10].length() != 0) {
-				statement.setBinaryStream(12, portada);
-			} else {
-				statement.setBinaryStream(12, portada);
-			}
-			statement.setString(13, datos[11]);
-
-			if (statement.executeUpdate() == 1) { // Sie el resultado del executeUpdate es 1, mostrara el mensaje
-				// correcto.
-
-				Comic comic = new Comic("", datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6],
-						datos[7], datos[8], datos[9], datos[11], "Sin puntuar", "");
-
-				pantallaInformativa.setOpacity(1);
-				pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-				pantallaInformativa.setText("Comic introducido correctamente!" + comic.toString());
-
-				Image imagex = new Image(portada);
-				imagencomic.setImage(imagex);
-
-				botonNuevaPortada.setStyle(null);
-				statement.close();
-
-			} else { // En caso de no haber sido posible Introducir el comic, se vera el siguiente
-				// mensaje.
-				pantallaInformativa.setOpacity(1);
-				pantallaInformativa.setStyle("-fx-background-color: #F53636");
-				pantallaInformativa.setText(
-						"Se ha encontrado un error. No ha sido posible introducir el comic a la base de datos.");
-			}
-
-		} catch (SQLException ex) {
-			nav.alertaException(ex.toString());
-		} finally {
-			try {
-				portada.close();
-			} catch (IOException ex) {
-				nav.alertaException(ex.toString());
-			}
-		}
-		deleteImage(datos[10]);
-		direccionImagen.setText("");
-		bd.reloadID();
-	}
+//	/**
+//	 * Funcion que modifica 1 comic de la base de datos con los parametros que
+//	 * introduzcamos en los campos.
+//	 */
+//	public void insertarDatos() {
+//
+//		String sentenciaSQL = "insert into comicsbbdd(nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante,puntuacion,image,estado) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+//
+//		if (nav.alertaInsertar()) { // Llamada a alerta de modificacion
+//
+//			subidaBBDD(sentenciaSQL); // Llamada a funcion que permite comprobar el cambio realizado en el comic
+//
+//		} else { // Si se cancela el borra del comic, saltara el siguiente mensaje.
+//			pantallaInformativa.setOpacity(1);
+//			pantallaInformativa.setStyle("-fx-background-color: #F53636");
+//			pantallaInformativa.setText("Insertado cancelado..");
+//		}
+//	}
+//
+//	/**
+//	 *
+//	 */
+//	public void subidaBBDD(String sentenciaSQL) {
+//
+//		String datos[] = camposComicIntroducir();
+//
+//		InputStream portada = direccionImagen(datos[10]);
+//		
+//		FuncionesBBDD bd = new FuncionesBBDD();
+//
+//		try {
+//			PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
+//
+//			statement.setString(1, datos[0]);
+//			statement.setString(2, datos[1]);
+//			statement.setString(3, datos[2]);
+//			statement.setString(4, datos[3]);
+//			statement.setString(5, datos[4]);
+//			statement.setString(6, datos[5]);
+//			statement.setString(7, datos[6]);
+//			statement.setString(8, datos[7]);
+//			statement.setString(9, datos[8]);
+//			statement.setString(10, datos[9]);
+//			statement.setString(11, "");
+//
+//			if (datos[10].length() != 0) {
+//				statement.setBinaryStream(12, portada);
+//			} else {
+//				statement.setBinaryStream(12, portada);
+//			}
+//			statement.setString(13, datos[11]);
+//
+//			if (statement.executeUpdate() == 1) { // Sie el resultado del executeUpdate es 1, mostrara el mensaje
+//				// correcto.
+//
+//				Comic comic = new Comic("", datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6],
+//						datos[7], datos[8], datos[9], datos[11], "Sin puntuar", "");
+//
+//				pantallaInformativa.setOpacity(1);
+//				pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
+//				pantallaInformativa.setText("Comic introducido correctamente!" + comic.toString());
+//
+//				Image imagex = new Image(portada);
+//				imagencomic.setImage(imagex);
+//
+//				botonNuevaPortada.setStyle(null);
+//				statement.close();
+//
+//			} else { // En caso de no haber sido posible Introducir el comic, se vera el siguiente
+//				// mensaje.
+//				pantallaInformativa.setOpacity(1);
+//				pantallaInformativa.setStyle("-fx-background-color: #F53636");
+//				pantallaInformativa.setText(
+//						"Se ha encontrado un error. No ha sido posible introducir el comic a la base de datos.");
+//			}
+//
+//		} catch (SQLException ex) {
+//			nav.alertaException(ex.toString());
+//		} finally {
+//			try {
+//				portada.close();
+//			} catch (IOException ex) {
+//				nav.alertaException(ex.toString());
+//			}
+//		}
+//		deleteImage(datos[10]);
+//		direccionImagen.setText("");
+//		bd.reloadID();
+//	}
 
 	/**
 	 * Metodo que mostrara los comics o comic buscados por parametro
@@ -531,6 +538,8 @@ public class IntroducirDatosController implements Initializable {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
+
+		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
 		listaPorParametro(); // Llamada a funcion
@@ -543,6 +552,8 @@ public class IntroducirDatosController implements Initializable {
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) {
+
+		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
 		tablaBBDD(libreriaCompleta()); // Llamada a funcion
@@ -556,6 +567,8 @@ public class IntroducirDatosController implements Initializable {
 	 * @return
 	 */
 	public void listaPorParametro() {
+
+		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		String datos[] = camposComicActuales();
 
@@ -573,6 +586,8 @@ public class IntroducirDatosController implements Initializable {
 	 * @return
 	 */
 	public List<Comic> busquedaParametro(Comic comic) {
+
+		libreria = new FuncionesComicsBBDD();
 		List<Comic> listComic;
 
 		if (busquedaGeneral.getText().length() != 0) {
@@ -596,6 +611,8 @@ public class IntroducirDatosController implements Initializable {
 	 * @return
 	 */
 	public List<Comic> libreriaCompleta() {
+
+		libreria = new FuncionesComicsBBDD();
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaPosesion());
 
 		if (listComic.size() == 0) {

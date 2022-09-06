@@ -3,6 +3,7 @@ package Funcionamiento;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Blob;
 
 /**
@@ -36,6 +37,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import Controladores.IntroducirDatosController;
+
 /**
  * Esta clase sirve para realizar las diferentes operaciones en la base de datos
  * que tenga que ver con la libreria de comics
@@ -52,6 +55,7 @@ public class FuncionesComicsBBDD extends Comic {
 
 	private static Ventanas nav = new Ventanas();
 	private static Connection conn = null;
+	private static IntroducirDatosController introducirDatos = null;
 	/**
 	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
 	 *
@@ -721,5 +725,80 @@ public class FuncionesComicsBBDD extends Comic {
 			nav.alertaException(ex.toString());
 		}
 		return null;
+	}
+	
+	/**
+	 * Funcion que modifica 1 comic de la base de datos con los parametros que
+	 * introduzcamos en los campos.
+	 */
+	public void insertarDatos(String datos[]) {
+
+		introducirDatos = new IntroducirDatosController();
+		String sentenciaSQL = "insert into comicsbbdd(nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante,puntuacion,portada,estado) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+
+		if (nav.alertaInsertar()) { // Llamada a alerta de modificacion
+
+			subidaBBDD(sentenciaSQL,datos); // Llamada a funcion que permite comprobar el cambio realizado en el comic
+
+		} else { // Si se cancela el borra del comic, saltara el siguiente mensaje.
+		}
+	}
+
+	/**
+	 *
+	 */
+	public void subidaBBDD(String sentenciaSQL, String datos[]) {
+
+		introducirDatos = new IntroducirDatosController();
+		
+		InputStream portada = introducirDatos.direccionImagen(datos[10]);
+		
+		FuncionesBBDD bd = new FuncionesBBDD();
+		conn = FuncionesConexionBBDD.conexion();
+
+		try {
+			PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
+
+			statement.setString(1, datos[0]);
+			statement.setString(2, datos[1]);
+			statement.setString(3, datos[2]);
+			statement.setString(4, datos[3]);
+			statement.setString(5, datos[4]);
+			statement.setString(6, datos[5]);
+			statement.setString(7, datos[6]);
+			statement.setString(8, datos[7]);
+			statement.setString(9, datos[8]);
+			statement.setString(10, datos[9]);
+			statement.setString(11, "");
+
+			if (datos[10].length() != 0) {
+				statement.setBinaryStream(12, portada);
+			} else {
+				statement.setBinaryStream(12, portada);
+			}
+			statement.setString(13, datos[11]);
+
+			if (statement.executeUpdate() == 1) { // Si el resultado del executeUpdate es 1, mostrara el mensaje
+				// correcto.
+
+//				Comic comic = new Comic("", datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6],
+//						datos[7], datos[8], datos[9], datos[11], "Sin puntuar", "");
+				statement.close();
+
+			} else { 
+
+			}
+
+		} catch (SQLException ex) {
+			nav.alertaException(ex.toString());
+		} finally {
+			try {
+				portada.close();
+			} catch (IOException ex) {
+				nav.alertaException(ex.toString());
+			}
+		}
+		introducirDatos.deleteImage(datos[10]);
+		bd.reloadID();
 	}
 }
