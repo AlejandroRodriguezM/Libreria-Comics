@@ -462,7 +462,7 @@ public class MenuPrincipalController {
 
 			while (rs.next()) {
 
-				InputStream is = rs.getBinaryStream("image");
+				InputStream is = rs.getBinaryStream("portada");
 				if (!rs.wasNull()) {
 					OutputStream os = new FileOutputStream(new File("tmp.jpg"));
 					byte[] content = new byte[1024];
@@ -525,8 +525,8 @@ public class MenuPrincipalController {
 		anioPublicacion.setText("");
 		nombreDibujante.setText("");
 		nombreGuionista.setText("");
-		prontInfo.setText(null);
 		prontFrases.setText(null);
+		prontInfo.setText(null);
 		prontInfo.setOpacity(0);
 		prontFrases.setOpacity(0);
 		tablaBBDD.getItems().clear();
@@ -652,8 +652,8 @@ public class MenuPrincipalController {
 	 * @param fichero
 	 */
 	public void importCSV(File fichero) {
-		try {
 
+		try {
 			if (fichero != null) {
 				if (excelFuntions.importarCSV(fichero)) { // Si se ha importado el fichero CSV correctamente, se vera el
 					// siguiente mensaje

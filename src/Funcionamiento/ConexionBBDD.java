@@ -129,7 +129,7 @@ public class ConexionBBDD {
 	 */
 	public static Connection conexion() {
 
-		DB_URL = "jdbc:mysql://" + "localHost" + ":" + 3306 + "/" + "prueba" + "?serverTimezone=UTC";
+		DB_URL = "jdbc:mysql://" + "localHost" + ":" + 3306 + "/" + "comics2" + "?serverTimezone=UTC";
 
 		try {
 			conn = DriverManager.getConnection(DB_URL, "root", "1234");

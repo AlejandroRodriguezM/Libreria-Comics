@@ -243,24 +243,21 @@ public class ModificarDatosController implements Initializable {
 	public FileChooser tratarFichero() {
 		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
 		fileChooser.getExtensionFilters()
-		.addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg", "*.png", "*.jpeg"));
+				.addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg", "*.png", "*.jpeg"));
 
 		return fileChooser;
 	}
 
 	public void subirPortada() {
 		File file = tratarFichero().showOpenDialog(null); // Llamada a funcion
-		if(file != null)
-		{
+		if (file != null) {
 			direccionImagen.setText(file.getAbsolutePath().toString());
-		}
-		else
-		{
+		} else {
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #F53636");
 			pantallaInformativa.setText("Has cancelado la subida de portada.");
 		}
-		
+
 	}
 
 	public InputStream direccionImagen(String direccion) {
@@ -516,7 +513,6 @@ public class ModificarDatosController implements Initializable {
 				ps.setString(12, idComicMod.getText());
 				comicModificar(ps); // Llama a funcion que permite cambiar los datos del comic
 
-				
 			}
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
@@ -656,22 +652,21 @@ public class ModificarDatosController implements Initializable {
 			if (ps.executeUpdate() == 1) { // Si se ha modificado correctamente, saltara el siguiente mensaje
 				Comic comic = new Comic("", nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 						guionista, dibujante, estado, "", "");
-				
+
 				pantallaInformativa.setOpacity(1);
 				pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 				pantallaInformativa.setText("Ha modificado correctamente: " + comic.toString());
-				
+
 				Image imagex = new Image(portada);
 				imagencomic.setImage(imagex);
-				
+
 			}
 			ps.close();
 
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
 			ex.printStackTrace();
-		}
-		finally {
+		} finally {
 			try {
 				portada.close();
 			} catch (IOException e) {
@@ -689,7 +684,7 @@ public class ModificarDatosController implements Initializable {
 		File tmp = new File(original.toString());
 
 		try {
-			Files.deleteIfExists(Paths.get(tmp.getParentFile()+ "/tmp.jpg"));
+			Files.deleteIfExists(Paths.get(tmp.getParentFile() + "/tmp.jpg"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -728,8 +723,8 @@ public class ModificarDatosController implements Initializable {
 	public void listaPorParametro() {
 		String datos[] = camposComicActuales(); // Contiene los datos por parametro del comic a buscar
 
-		Comic comic = new Comic(datos[0], datos[1], datos[2], datos[3], datos[4],
-				datos[5], datos[6], datos[7], datos[8], datos[9], datos[10], "", "", "");
+		Comic comic = new Comic(datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
+				datos[8], datos[9], datos[10], "", "", "");
 
 		tablaBBDD(busquedaParametro(comic)); // Funcion que muestra en la tabla el comic que coincida con los datos del
 		// objeto Comic creado, en caso de existir lo muestra.

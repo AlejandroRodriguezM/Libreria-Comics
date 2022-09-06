@@ -159,7 +159,7 @@ public class BBDD {
 
 			String mysqlDump = directorio.getAbsolutePath();
 
-			String command[] = new String[] { mysqlDump, "-u" + "root", "-p" + "1234", "-B", "prueba", "--hex-blob",
+			String command[] = new String[] { mysqlDump, "-u" + "root", "-p" + "1234", "-B", "comics2", "--hex-blob",
 					"--routines=true", "--result-file=" + fichero };
 			ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
 			pb.redirectError(Redirect.INHERIT);

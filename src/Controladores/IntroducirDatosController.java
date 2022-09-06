@@ -350,19 +350,16 @@ public class IntroducirDatosController implements Initializable {
 	public FileChooser tratarFichero() {
 		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
 		fileChooser.getExtensionFilters()
-		.addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg", "*.png", "*.jpeg"));
+				.addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg", "*.png", "*.jpeg"));
 
 		return fileChooser;
 	}
 
 	public void subirPortada() {
 		File file = tratarFichero().showOpenDialog(null); // Llamada a funcion
-		if(file != null)
-		{
+		if (file != null) {
 			direccionImagen.setText(file.getAbsolutePath().toString());
-		}
-		else
-		{
+		} else {
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #F53636");
 			pantallaInformativa.setText("Has cancelado la subida de portada.");
@@ -419,7 +416,7 @@ public class IntroducirDatosController implements Initializable {
 		File tmp = new File(original.toString());
 
 		try {
-			Files.deleteIfExists(Paths.get(tmp.getParentFile()+ "/tmp.jpg"));
+			Files.deleteIfExists(Paths.get(tmp.getParentFile() + "/tmp.jpg"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -488,13 +485,11 @@ public class IntroducirDatosController implements Initializable {
 			}
 			statement.setString(13, datos[11]);
 
-
-
 			if (statement.executeUpdate() == 1) { // Sie el resultado del executeUpdate es 1, mostrara el mensaje
 				// correcto.
 
-				Comic comic = new Comic("",datos[0], datos[1], datos[2], datos[3], datos[4],
-						datos[5], datos[6], datos[7], datos[8], datos[9], datos[11], "Sin puntuar", "");
+				Comic comic = new Comic("", datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6],
+						datos[7], datos[8], datos[9], datos[11], "Sin puntuar", "");
 
 				pantallaInformativa.setOpacity(1);
 				pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
@@ -506,7 +501,6 @@ public class IntroducirDatosController implements Initializable {
 				botonNuevaPortada.setStyle(null);
 				statement.close();
 
-
 			} else { // En caso de no haber sido posible Introducir el comic, se vera el siguiente
 				// mensaje.
 				pantallaInformativa.setOpacity(1);
@@ -517,8 +511,7 @@ public class IntroducirDatosController implements Initializable {
 
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
-		}
-		finally {
+		} finally {
 			try {
 				portada.close();
 			} catch (IOException ex) {
@@ -566,8 +559,8 @@ public class IntroducirDatosController implements Initializable {
 		libreria.reiniciarBBDD();
 		String datos[] = camposComicActuales();
 
-		Comic comic = new Comic(datos[0], datos[1], datos[2], datos[3], datos[4],
-				datos[5], datos[6], datos[7], datos[8], datos[9], datos[10], "", "", "");
+		Comic comic = new Comic(datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
+				datos[8], datos[9], datos[10], "", "", "");
 
 		tablaBBDD(busquedaParametro(comic));
 	}
