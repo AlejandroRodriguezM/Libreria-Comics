@@ -334,7 +334,7 @@ public class IntroducirDatosController implements Initializable {
 	@FXML
 	public void agregarDatos(ActionEvent event) {
 
-		introducirDatos();
+		insertarDatos();
 		libreria.reiniciarBBDD();
 	}
 
@@ -439,12 +439,28 @@ public class IntroducirDatosController implements Initializable {
 	}
 
 	/**
-	 *
+	 * Funcion que modifica 1 comic de la base de datos con los parametros que
+	 * introduzcamos en los campos.
 	 */
-	public void introducirDatos() {
-		ConexionBBDD.loadDriver();
+	public void insertarDatos() {
 
 		String sentenciaSQL = "insert into comicsbbdd(nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante,puntuacion,image,estado) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+
+		if (nav.alertaInsertar()) { // Llamada a alerta de modificacion
+
+			subidaBBDD(sentenciaSQL); // Llamada a funcion que permite comprobar el cambio realizado en el comic
+
+		} else { // Si se cancela el borra del comic, saltara el siguiente mensaje.
+			pantallaInformativa.setOpacity(1);
+			pantallaInformativa.setStyle("-fx-background-color: #F53636");
+			pantallaInformativa.setText("Insertado cancelado..");
+		}
+	}
+
+	/**
+	 *
+	 */
+	public void subidaBBDD(String sentenciaSQL) {
 
 		String datos[] = camposComicIntroducir();
 
@@ -472,46 +488,41 @@ public class IntroducirDatosController implements Initializable {
 			}
 			statement.setString(13, datos[11]);
 
-			if (nav.alertaInsertar()) {
-
-				if (statement.executeUpdate() == 1) { // Sie el resultado del executeUpdate es 1, mostrara el mensaje
-					// correcto.
-					
-					Comic comic = new Comic("",datos[0], datos[1], datos[2], datos[3], datos[4],
-							datos[5], datos[6], datos[7], datos[8], datos[9], datos[11], "Sin puntuar", "");
-					
-					pantallaInformativa.setOpacity(1);
-					pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-					pantallaInformativa.setText("Comic introducido correctamente!" + comic.toString());
-				
-					Image imagex = new Image(portada);
-					imagencomic.setImage(imagex);
-
-					botonNuevaPortada.setStyle(null);
-					statement.close();
 
 
-				} else { // En caso de no haber sido posible Introducir el comic, se vera el siguiente
-					// mensaje.
-					pantallaInformativa.setOpacity(1);
-					pantallaInformativa.setStyle("-fx-background-color: #F53636");
-					pantallaInformativa.setText(
-							"Se ha encontrado un error. No ha sido posible introducir el comic a la base de datos.");
-				}
-			} else { // Si se cancela el borra del comic, saltara el siguiente mensaje.
+			if (statement.executeUpdate() == 1) { // Sie el resultado del executeUpdate es 1, mostrara el mensaje
+				// correcto.
+
+				Comic comic = new Comic("",datos[0], datos[1], datos[2], datos[3], datos[4],
+						datos[5], datos[6], datos[7], datos[8], datos[9], datos[11], "Sin puntuar", "");
+
+				pantallaInformativa.setOpacity(1);
+				pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
+				pantallaInformativa.setText("Comic introducido correctamente!" + comic.toString());
+
+				Image imagex = new Image(portada);
+				imagencomic.setImage(imagex);
+
+				botonNuevaPortada.setStyle(null);
+				statement.close();
+
+
+			} else { // En caso de no haber sido posible Introducir el comic, se vera el siguiente
+				// mensaje.
 				pantallaInformativa.setOpacity(1);
 				pantallaInformativa.setStyle("-fx-background-color: #F53636");
-				pantallaInformativa.setText("Insertado cancelado..");
+				pantallaInformativa.setText(
+						"Se ha encontrado un error. No ha sido posible introducir el comic a la base de datos.");
 			}
+
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
-			ex.printStackTrace();
 		}
 		finally {
 			try {
 				portada.close();
-			} catch (IOException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				nav.alertaException(ex.toString());
 			}
 		}
 		deleteImage(datos[10]);
