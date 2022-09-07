@@ -15,6 +15,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 /**
@@ -123,6 +125,9 @@ public class EliminarDatosController {
 
 	@FXML
 	private TableColumn<Comic, String> nombre;
+	
+	@FXML
+	private ImageView imagencomic;
 
 	private static Ventanas nav = new Ventanas();
 	private static FuncionesComicsBBDD libreria = null;
@@ -151,6 +156,25 @@ public class EliminarDatosController {
 		pantallaInformativa.setOpacity(0);
 		tablaBBDD.getItems().clear();
 		idComicTratar.setStyle(null);
+	}
+	
+
+	@FXML
+	void clickRaton(MouseEvent event) {
+		libreria = new FuncionesComicsBBDD();
+		libreria.verLibreriaCompleta();
+		utilidad = new Utilidades();
+		String ID;
+
+		Comic idRow;
+
+		idRow = tablaBBDD.getSelectionModel().getSelectedItem();
+
+		ID = idRow.getID();
+		
+		imagencomic.setImage(libreria.selectorImage(ID));
+		utilidad.deleteImage();
+
 	}
 
 	/**

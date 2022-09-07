@@ -45,6 +45,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 public class PuntuarDatosController implements Initializable {
@@ -156,6 +158,9 @@ public class PuntuarDatosController implements Initializable {
 
 	@FXML
 	public TableView<Comic> tablaBBDD;
+	
+	@FXML
+	private ImageView imagencomic;
 
 	private static Ventanas nav = new Ventanas();
 	private static FuncionesComicsBBDD libreria = null;
@@ -173,6 +178,24 @@ public class PuntuarDatosController implements Initializable {
 		puntuacionMenu.getSelectionModel().selectFirst(); // Permite que no exista un valor null, escogiendo el primer
 															// valor, que se encuentra vacio, en caso de querer borrar
 															// la puntuacion.
+	}
+	
+	@FXML
+	void clickRaton(MouseEvent event) {
+		libreria = new FuncionesComicsBBDD();
+		libreria.verLibreriaCompleta();
+		utilidad = new Utilidades();
+		String ID;
+
+		Comic idRow;
+
+		idRow = tablaBBDD.getSelectionModel().getSelectedItem();
+
+		ID = idRow.getID();
+		
+		imagencomic.setImage(libreria.selectorImage(ID));
+		utilidad.deleteImage();
+
 	}
 
 	/**

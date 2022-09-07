@@ -26,6 +26,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -188,6 +189,25 @@ public class ModificarDatosController implements Initializable {
 		estadoComic.getSelectionModel().selectFirst(); // Permite que no exista un valor null, escogiendo el primer
 		// valor, que se encuentra vacio, en caso de querer borrar
 		// la puntuacion.
+	}
+	
+
+	@FXML
+	void clickRaton(MouseEvent event) {
+		libreria = new FuncionesComicsBBDD();
+		libreria.verLibreriaCompleta();
+		utilidad = new Utilidades();
+		String ID;
+
+		Comic idRow;
+
+		idRow = tablaBBDD.getSelectionModel().getSelectedItem();
+
+		ID = idRow.getID();
+		
+		imagencomic.setImage(libreria.selectorImage(ID));
+		utilidad.deleteImage();
+
 	}
 	
 	/**

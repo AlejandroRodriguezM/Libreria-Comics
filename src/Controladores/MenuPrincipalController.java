@@ -24,18 +24,9 @@ package Controladores;
  */
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-
 
 import Funcionamiento.Comic;
 import Funcionamiento.FuncionesBBDD;
@@ -53,7 +44,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
@@ -466,47 +456,6 @@ public class MenuPrincipalController {
 
 	}
 
-	public void selectorImage(String ID) {
-		deleteImage();
-		Connection conn = FuncionesConexionBBDD.conexion();
-
-		String sentenciaSQL = "SELECT * FROM comicsbbdd where ID = ?";
-
-		try {
-
-			PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
-			statement.setString(1, ID);
-
-			ResultSet rs = statement.executeQuery();
-
-			while (rs.next()) {
-
-				InputStream is = rs.getBinaryStream("portada");
-				if (!rs.wasNull()) {
-					OutputStream os = new FileOutputStream(new File("tmp.jpg"));
-					byte[] content = new byte[1024];
-
-					int size = 0;
-
-					while ((size = is.read(content)) != -1) {
-
-						os.write(content, 0, size);
-					}
-
-					os.close();
-					is.close();
-				}
-			}
-
-		} catch (IOException | SQLException e) {
-			e.printStackTrace();
-		}
-
-		Image image1 = new Image("file:tmp.jpg", 250, 250, true, true);
-		imagencomic.setImage(image1);
-		deleteImage();
-	}
-
 	/**
 	 * Funcion que abre una ventana que aceptara los formatos de archivos que le
 	 * demos como parametro.
@@ -608,9 +557,10 @@ public class MenuPrincipalController {
 	}
 
 	@FXML
-	void test(MouseEvent event) {
+	void clickRaton(MouseEvent event) {
 		libreria = new FuncionesComicsBBDD();
 		libreria.verLibreriaCompleta();
+		utilidad = new Utilidades();
 		String ID;
 
 		Comic idRow;
@@ -618,18 +568,12 @@ public class MenuPrincipalController {
 		idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 
 		ID = idRow.getID();
-
-		selectorImage(ID);
+		
+		imagencomic.setImage(libreria.selectorImage(ID));
+		utilidad.deleteImage();
 
 	}
 
-	public void deleteImage() {
-		try {
-			Files.deleteIfExists(Paths.get("tmp.jpg"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
 
 	/////////////////////////////////
 	//// FUNCIONES CREACION FICHEROS//

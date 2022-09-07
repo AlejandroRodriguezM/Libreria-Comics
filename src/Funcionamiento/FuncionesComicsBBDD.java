@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Blob;
 
 /**
@@ -36,6 +37,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
+import javafx.scene.image.Image;
 
 /**
  * Esta clase sirve para realizar las diferentes operaciones en la base de datos
@@ -1053,5 +1056,51 @@ public class FuncionesComicsBBDD extends Comic {
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
 		}
+	}
+	
+	/**
+	 * 
+	 * @param ID
+	 * @return
+	 */
+	public Image selectorImage(String ID) {
+		conn = FuncionesConexionBBDD.conexion();
+
+		String sentenciaSQL = "SELECT * FROM comicsbbdd where ID = ?";
+
+		try {
+
+			PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
+			statement.setString(1, ID);
+
+			ResultSet rs = statement.executeQuery();
+
+			while (rs.next()) {
+
+				InputStream is = rs.getBinaryStream("portada");
+				if (!rs.wasNull()) {
+					OutputStream os = new FileOutputStream(new File("tmp.jpg"));
+					byte[] content = new byte[1024];
+
+					int size = 0;
+
+					while ((size = is.read(content)) != -1) {
+
+						os.write(content, 0, size);
+					}
+
+					os.close();
+					is.close();
+				}
+			}
+
+		} catch (IOException | SQLException e) {
+			e.printStackTrace();
+		}
+
+		Image imagen = new Image("file:tmp.jpg", 250, 250, true, true);
+		
+		return imagen;
+
 	}
 }
