@@ -450,6 +450,7 @@ public class ModificarDatosController implements Initializable {
 	 */
 	// Llamada a funcion para comprobar si existe algun dato en la lista.
 	public void comprobarLista(List<Comic> listaComic) {
+		libreria = new FuncionesComicsBBDD();
 		if (libreria.checkList(listaComic)) {
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #F53636");

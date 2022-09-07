@@ -55,6 +55,7 @@ public class Utilidades {
 	public static List<Comic> listaLimpia = new ArrayList<>();
 
 	private static Ventanas nav = new Ventanas();
+	private static FuncionesComicsBBDD libreria = null;
 
 	public static String os = System.getProperty("os.name", "unknown").toLowerCase(Locale.ROOT);
 
@@ -175,45 +176,7 @@ public class Utilidades {
 		return datos;
 	}
 	
-	/**
-	 * Funcion que muestra todos los comics de la base de datos
-	 *
-	 * @return
-	 */
-	public List<Comic> libreriaCompleta() {
 
-		FuncionesComicsBBDD libreria = new FuncionesComicsBBDD();
-		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaPosesion());
-
-		if (listComic.size() == 0) {
-
-			String excepcion = "No hay ningun comic guardado en la base de datos";
-			nav.alertaException(excepcion);
-		}
-
-		return listComic;
-	}
-	
-	/**
-	 * Funcion que busca en el arrayList el o los comics que tengan coincidencia con
-	 * los datos introducidos en el TextField
-	 *
-	 * @param comic
-	 * @return
-	 */
-	public List<Comic> busquedaParametro(Comic comic, String busquedaGeneral) {
-
-		FuncionesComicsBBDD libreria = new FuncionesComicsBBDD();
-		List<Comic> listComic;
-
-		if (busquedaGeneral.length() != 0) {
-			listComic = FXCollections.observableArrayList(libreria.verBusquedaGeneral(busquedaGeneral));
-		} else {
-			listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
-		}
-
-		return listComic;
-	}
 	
 	public void deleteImage(String pathFichero) {
 
@@ -279,5 +242,99 @@ public class Utilidades {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	/**
+	 * Funcion que muestra todos los comics de la base de datos
+	 *
+	 * @return
+	 */
+	public List<Comic> libreriaCompleta() {
+
+		libreria = new FuncionesComicsBBDD();
+		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaPosesion());
+
+		if (listComic.size() == 0) {
+
+			String excepcion = "No hay ningun comic guardado en la base de datos";
+			nav.alertaException(excepcion);
+		}
+
+		return listComic;
+	}
+	
+	/**
+	 * Funcion que busca en el arrayList el o los comics que tengan coincidencia con
+	 * los datos introducidos en el TextField
+	 *
+	 * @param comic
+	 * @return
+	 */
+	public List<Comic> busquedaParametro(Comic comic, String busquedaGeneral) {
+
+		libreria = new FuncionesComicsBBDD();
+		List<Comic> listComic;
+
+		if (busquedaGeneral.length() != 0) {
+			listComic = FXCollections.observableArrayList(libreria.verBusquedaGeneral(busquedaGeneral));
+		} else {
+			listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
+		}
+
+		return listComic;
+	}
+	
+	/**
+	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
+	 * "En posesion"
+	 *
+	 * @return
+	 */
+	public List<Comic> libreriaVendidos() {
+		libreria = new FuncionesComicsBBDD();
+		
+		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaVendidos());
+
+		return listComic;
+	}
+
+	/**
+	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
+	 * "En posesion"
+	 *
+	 * @return
+	 */
+	public List<Comic> libreriaEnVenta() {
+		libreria = new FuncionesComicsBBDD();
+		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaEnVenta());
+
+
+		return listComic;
+	}
+
+	/**
+	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
+	 * "En posesion"
+	 *
+	 * @return
+	 */
+	public List<Comic> libreriaPuntuacion() {
+		libreria = new FuncionesComicsBBDD();
+		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaPuntuacion());
+
+		return listComic;
+	}
+
+	/**
+	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
+	 * firmados
+	 *
+	 * @return
+	 */
+	public List<Comic> libreriaFirmados() {
+		libreria = new FuncionesComicsBBDD();
+		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaFirmados());
+
+		return listComic;
 	}
 }

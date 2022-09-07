@@ -310,21 +310,19 @@ public class MenuPrincipalController {
 	}
 
 	/**
-	 * Muestra la bbdd segun los parametros introducidos en los TextField
+	 * Metodo que mostrara los comics o comic buscados por parametro
 	 *
 	 * @param event
+	 * @throws SQLException
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
+		limpiezaDeDatos();
 		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
-
-		if (numeroID.getText().length() != 0) {
-			selectorImage(numeroID.getText());
-		}
-		nombreColumnas();
-		listaPorParametro();
-
+		nombreColumnas(); // Llamada a funcion
+		listaPorParametro(); // Llamada a funcion
+		busquedaGeneral.setText("");
 	}
 
 	/**
@@ -334,7 +332,7 @@ public class MenuPrincipalController {
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) {
-
+		limpiezaDeDatos();
 		utilidad = new Utilidades();
 		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
@@ -352,10 +350,13 @@ public class MenuPrincipalController {
 	 */
 	@FXML
 	void comicsPuntuacion(ActionEvent event) {
+		limpiezaDeDatos();
+		utilidad = new Utilidades();
 		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
-		tablaBBDD(libreriaPuntuacion());
+		tablaBBDD(utilidad.libreriaPuntuacion());
+		
 	}
 
 	/**
@@ -366,10 +367,13 @@ public class MenuPrincipalController {
 	 */
 	@FXML
 	void comicsVendidos(ActionEvent event) {
+		limpiezaDeDatos();
+		utilidad = new Utilidades();
 		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
-		tablaBBDD(libreriaVendidos());
+		tablaBBDD(utilidad.libreriaVendidos());
+		
 	}
 
 	/**
@@ -380,10 +384,12 @@ public class MenuPrincipalController {
 	 */
 	@FXML
 	void comicsFirmados(ActionEvent event) {
+		limpiezaDeDatos();
+		utilidad = new Utilidades();
 		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
-		tablaBBDD(libreriaFirmados());
+		tablaBBDD(utilidad.libreriaFirmados());
 	}
 
 	/**
@@ -394,10 +400,12 @@ public class MenuPrincipalController {
 	 */
 	@FXML
 	void comicsEnVenta(ActionEvent event) {
+		limpiezaDeDatos();
+		utilidad = new Utilidades();
 		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
-		tablaBBDD(libreriaEnVenta());
+		tablaBBDD(utilidad.libreriaEnVenta());
 	}
 
 	////////////////////////////
@@ -572,6 +580,7 @@ public class MenuPrincipalController {
 	 */
 	@FXML
 	void verEstadistica(ActionEvent event) {
+		db = new FuncionesBBDD();
 		prontInfo.setOpacity(1);
 		prontInfo.setText(db.procedimientosEstadistica());
 	}
@@ -694,6 +703,7 @@ public class MenuPrincipalController {
 	 * @param fichero
 	 */
 	public void makeSQL(File fichero) {
+		db = new FuncionesBBDD();
 		if (fichero != null) {
 
 			if (Utilidades.isWindows()) {
@@ -752,85 +762,7 @@ public class MenuPrincipalController {
 		return listComic;
 	}
 
-	/**
-	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
-	 * "En posesion"
-	 *
-	 * @return
-	 */
-	public List<Comic> libreriaVendidos() {
-		libreria = new FuncionesComicsBBDD();
-		limpiezaDeDatos();
-		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaVendidos());
-
-		if (listComic.size() == 0) {
-			prontInfo.setOpacity(1);
-			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("ERROR. No ha vendido ningun comic");
-		}
-
-		return listComic;
-	}
-
-	/**
-	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
-	 * "En posesion"
-	 *
-	 * @return
-	 */
-	public List<Comic> libreriaEnVenta() {
-		libreria = new FuncionesComicsBBDD();
-		limpiezaDeDatos();
-		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaEnVenta());
-
-		if (listComic.size() == 0) {
-			prontInfo.setOpacity(1);
-			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("ERROR. No hay ningun comic en venta");
-		}
-
-		return listComic;
-	}
-
-	/**
-	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
-	 * "En posesion"
-	 *
-	 * @return
-	 */
-	public List<Comic> libreriaPuntuacion() {
-		libreria = new FuncionesComicsBBDD();
-		limpiezaDeDatos();
-		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaPuntuacion());
-
-		if (listComic.size() == 0) {
-			prontInfo.setOpacity(1);
-			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("ERROR. No hay ningun comic puntuado");
-		}
-
-		return listComic;
-	}
-
-	/**
-	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
-	 * firmados
-	 *
-	 * @return
-	 */
-	public List<Comic> libreriaFirmados() {
-		libreria = new FuncionesComicsBBDD();
-		limpiezaDeDatos();
-		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaFirmados());
-
-		if (listComic.size() == 0) {
-			prontInfo.setOpacity(1);
-			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("ERROR. No hay ningun comic firmado");
-		}
-
-		return listComic;
-	}
+	
 
 	/**
 	 * Obtiene los datos de los comics de la base de datos y los devuelve en el

@@ -25,15 +25,13 @@ package Controladores;
  */
 
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
 import Funcionamiento.Comic;
-import Funcionamiento.FuncionesConexionBBDD;
 import Funcionamiento.FuncionesComicsBBDD;
+import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -159,11 +157,9 @@ public class PuntuarDatosController implements Initializable {
 	@FXML
 	public TableView<Comic> tablaBBDD;
 
-	private static Connection conn = FuncionesConexionBBDD.conexion();
-
 	private static Ventanas nav = new Ventanas();
-
-	private static FuncionesComicsBBDD libreria = new FuncionesComicsBBDD();
+	private static FuncionesComicsBBDD libreria = null;
+	private static Utilidades utilidad = null;
 
 	/**
 	 * Funcion que permite hacer funcionar la lista de puntuacion.
@@ -187,30 +183,12 @@ public class PuntuarDatosController implements Initializable {
 	 */
 	@FXML
 	void agregarPuntuacion(ActionEvent event) {
-
-		insertarPuntuacion(); // Llamada a funcion
+		libreria = new FuncionesComicsBBDD();
+		String ID = idPuntuar.getText();
+		libreria.actualizarPuntuacion(ID,comicPuntuacion()); // Llamada a funcion
+		datosOpinion("Opinion introducida con exito: ");
 	}
-
-	/**
-	 * Funcion que permite insertar una puntuacion a un comic segun la ID
-	 * introducida.
-	 */
-	public void insertarPuntuacion() {
-
-		String sentenciaSQL = "UPDATE comicsbbdd set puntuacion = ? where ID = ?";
-
-		if (nav.alertaAgregarPuntuacion()) { // Llamada a alerta de modificacion
-
-			comprobarOpinionInsertada(sentenciaSQL); // Llamada a funcion que permite comprobar el cambio realizado en
-														// el comic
-
-		} else { // Si se cancela la opinion del comic, saltara el siguiente mensaje.
-			pantallaInformativa.setOpacity(1);
-			pantallaInformativa.setStyle("-fx-background-color: #F53636");
-			pantallaInformativa.setText("Opinion cancelada.");
-		}
-	}
-
+	
 	/**
 	 * Funcion que permite borrar la opinion de un comic
 	 *
@@ -218,107 +196,17 @@ public class PuntuarDatosController implements Initializable {
 	 */
 	@FXML
 	void borrarPuntuacion(ActionEvent event) {
-
-		String sentenciaSQL = "UPDATE comicsbbdd set puntuacion = 'Sin puntuacion' where ID = ?";
-
-		if (nav.alertaBorrarPuntuacion()) { // Llamada a alerta de modificacion
-
-			comprobarOpinionBorrada(sentenciaSQL); // Llamada a funcion que permite comprobar el cambio realizado en el
-													// comic
-
-		} else { // Si se cancela la opinion del comic, saltara el siguiente mensaje.
-			pantallaInformativa.setOpacity(1);
-			pantallaInformativa.setStyle("-fx-background-color: #F53636");
-			pantallaInformativa.setText("Opinion cancelada.");
-		}
-
+		libreria = new FuncionesComicsBBDD();
+		String ID = idPuntuar.getText();
+		libreria.borrarPuntuacion(ID);
+		datosOpinion("Opinion borrada con exito: ");
 	}
-
-	/**
-	 * Funcion que comprueba si la opinion se ha introducida correctamente
-	 *
-	 * @param ps
-	 * @return
-	 */
-	public void comprobarOpinionInsertada(String sentenciaSQL) {
-
-		String identificador = idPuntuar.getText();
-
-		try {
-			PreparedStatement ps = null;
-			ps = conn.prepareStatement(sentenciaSQL);
-			if (comprobarID()) // Comprueba si la ID introducida existe en la base de datos
-			{
-				Comic comic = libreria.comicDatos(identificador);
-				ps.setString(2, idPuntuar.getText());
-				comicPuntuacion(ps); // Llama a funcion que permite añadir la opinion al comic
-
-				if (ps.executeUpdate() == 1) { // Si se ha modificado correctamente, saltara el siguiente mensaje
-					pantallaInformativa.setOpacity(1);
-					pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-					pantallaInformativa.setText("Opinion introducida con exito: " + comic.toString());
-				}
-			}
-		} catch (SQLException ex) {
-			nav.alertaException(ex.toString());
-		}
-	}
-
-	/**
-	 * Funcion que comprueba si la opinion se ha introducida correctamente
-	 *
-	 * @param ps
-	 * @return
-	 */
-	public void comprobarOpinionBorrada(String sentenciaSQL) {
-
-		String identificador = idPuntuar.getText();
-
-		try {
-			PreparedStatement ps = null;
-			ps = conn.prepareStatement(sentenciaSQL);
-			if (comprobarID()) // Comprueba si la ID introducida existe en la base de datos
-			{
-				Comic comic = libreria.comicDatos(identificador);
-				ps.setString(1, idPuntuar.getText());
-
-				if (ps.executeUpdate() == 1) { // Si se ha modificado correctamente, saltara el siguiente mensaje
-					pantallaInformativa.setOpacity(1);
-					pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-					pantallaInformativa.setText("Opinion borrada con exito: " + comic.toString());
-				}
-			}
-		} catch (SQLException ex) {
-			nav.alertaException(ex.toString());
-		}
-	}
-
-	/**
-	 * Comprueba que el ID introducido existe
-	 *
-	 * @return
-	 */
-	public boolean comprobarID() {
-		String identificador = idPuntuar.getText();
-
-		if (identificador.length() != 0) { // Si has introducido ID a la hora de realizar la modificacion, permitira lo
-											// siguiente
-			if (libreria.chechID(identificador)) {
-				return true;
-			} else // En caso contrario lanzara el siguiente mensaje en pantalla
-			{
-				pantallaInformativa.setOpacity(1);
-				pantallaInformativa.setStyle("-fx-background-color: #F53636");
-				pantallaInformativa.setText("No existe el " + identificador + " en la base de datos.");
-				return false;
-			}
-		} else {
-			pantallaInformativa.setOpacity(1);
-			pantallaInformativa.setStyle("-fx-background-color: #F53636");
-			idPuntuar.setStyle("-fx-background-color: #F53636");
-			pantallaInformativa.setText("ERROR. No ha puesto ningun \nID en la busqueda.");
-			return false;
-		}
+	
+	public void datosOpinion(String pantallaInfo)
+	{
+		pantallaInformativa.setOpacity(0);
+		pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
+		pantallaInformativa.setText(pantallaInfo + FuncionesComicsBBDD.listaTratamiento.toString().replace("[", "").replace("]", ""));
 	}
 
 	/**
@@ -328,17 +216,11 @@ public class PuntuarDatosController implements Initializable {
 	 * @param ps
 	 * @return
 	 */
-	public void comicPuntuacion(PreparedStatement ps) {
+	public String comicPuntuacion() {
 
 		String puntuacion = puntuacionMenu.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
 																								// "puntuacion"
-		try {
-			if (puntuacion.length() != 0) {
-				ps.setString(1, puntuacion);
-			}
-		} catch (SQLException ex) {
-			nav.alertaException(ex.toString());
-		}
+		return puntuacion;
 	}
 
 	/**
@@ -387,27 +269,35 @@ public class PuntuarDatosController implements Initializable {
 	}
 
 	/**
-	 * Muestra la bbdd segun los parametros introducidos en los TextField
+	 * Metodo que mostrara los comics o comic buscados por parametro
 	 *
 	 * @param event
+	 * @throws SQLException
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
+
+		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
-		nombreColumnas();
-		listaPorParametro();
+		nombreColumnas(); // Llamada a funcion
+		listaPorParametro(); // Llamada a funcion
+		busquedaGeneral.setText("");
 	}
 
 	/**
-	 * Muestra toda la base de datos.
+	 * Metodo que muestra toda la base de datos.
 	 *
 	 * @param event
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) {
+
+		utilidad = new Utilidades();
+		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
-		nombreColumnas();
-		tablaBBDD(libreriaPosesion());
+		nombreColumnas(); // Llamada a funcion
+		tablaBBDD(utilidad.libreriaCompleta()); // Llamada a funcion
+
 	}
 
 	/**
@@ -418,9 +308,11 @@ public class PuntuarDatosController implements Initializable {
 	 */
 	@FXML
 	void verComicsLeidos(ActionEvent event) {
+		utilidad = new Utilidades();
+		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
-		tablaBBDD(libreriaPuntuacion());
+		tablaBBDD(utilidad.libreriaPuntuacion());
 	}
 
 	/**
@@ -480,70 +372,10 @@ public class PuntuarDatosController implements Initializable {
 		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
 				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "", "", "");
 
-		tablaBBDD(busquedaParametro(comic));
+		tablaBBDD(utilidad.busquedaParametro(comic, busquedaGeneral.getText()));
+		busquedaGeneral.setText("");
 	}
 
-	/**
-	 * Devuelve una lista de los comics cuyos datos han sido introducidos mediante
-	 * parametros en los textField
-	 *
-	 * @param comic
-	 * @return
-	 */
-	public List<Comic> busquedaParametro(Comic comic) {
-
-		List<Comic> listComic;
-
-		if (busquedaGeneral.getText().length() != 0) {
-			listComic = FXCollections.observableArrayList();
-			listComic = FXCollections.observableArrayList(libreria.verBusquedaGeneral(busquedaGeneral.getText()));
-			busquedaGeneral.setText("");
-		} else {
-			listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
-
-			if (listComic.size() == 0) {
-				pantallaInformativa.setOpacity(1);
-				pantallaInformativa.setStyle("-fx-background-color: #F53636");
-				pantallaInformativa.setText("ERROR. No hay ningun dato escrito para poder realizar la busqueda");
-			}
-		}
-
-		return listComic;
-	}
-
-	/**
-	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
-	 * "En posesion"
-	 *
-	 * @return
-	 */
-	public List<Comic> libreriaPosesion() {
-		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaPosesion());
-
-		if (listComic.size() == 0) {
-			pantallaInformativa.setStyle("-fx-background-color: #F53636");
-			pantallaInformativa.setText("ERROR. La base de datos se encuentra vacia");
-		}
-
-		return listComic;
-	}
-
-	/**
-	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
-	 * "En posesion"
-	 *
-	 * @return
-	 */
-	public List<Comic> libreriaPuntuacion() {
-		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaPuntuacion());
-
-		if (listComic.size() == 0) {
-			pantallaInformativa.setStyle("-fx-background-color: #F53636");
-			pantallaInformativa.setText("ERROR. La base de datos se encuentra vacia");
-		}
-
-		return listComic;
-	}
 
 	/**
 	 * Permite dar valor a las celdas de la TableView

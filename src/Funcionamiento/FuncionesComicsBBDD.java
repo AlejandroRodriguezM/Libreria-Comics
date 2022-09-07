@@ -650,7 +650,7 @@ public class FuncionesComicsBBDD extends Comic {
 	 */
 	public boolean modificarDatos(String id, String sentenciaSQL) {
 		PreparedStatement stmt;
-		FuncionesBBDD bd = new FuncionesBBDD();
+		bd = new FuncionesBBDD();
 		Connection conn = FuncionesConexionBBDD.conexion();
 		try {
 			if(id.length() != 0)
@@ -736,20 +736,20 @@ public class FuncionesComicsBBDD extends Comic {
 		String sentenciaSQL = "insert into comicsbbdd(nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante,puntuacion,portada,estado) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 
-		subidaBBDD(sentenciaSQL,datos); // Llamada a funcion que permite comprobar el cambio realizado en el comic
+		subirComic(sentenciaSQL,datos); // Llamada a funcion que permite comprobar el cambio realizado en el comic
 
 	}
 
 	/**
 	 *
 	 */
-	public void subidaBBDD(String sentenciaSQL, String datos[]) {
+	public void subirComic(String sentenciaSQL, String datos[]) {
 
 		utilidad = new Utilidades();
 
 		InputStream portada = utilidad.direccionImagen(datos[10]);
 
-		FuncionesBBDD bd = new FuncionesBBDD();
+		bd = new FuncionesBBDD();
 		conn = FuncionesConexionBBDD.conexion();
 
 		try {
@@ -798,8 +798,16 @@ public class FuncionesComicsBBDD extends Comic {
 	 */
 	public boolean comprobarID(String ID) {
 
-		if (ID.length() != 0 && chechID(ID)) {
-			return true;
+		if (ID.length() != 0) {
+			if(chechID(ID))
+			{
+				return true;
+			}
+			else
+			{
+				nav.alertaException("La ID no existe");
+				return false; 
+			}
 		}
 		return false; 
 	}
@@ -828,7 +836,6 @@ public class FuncionesComicsBBDD extends Comic {
 			}
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
-			ex.printStackTrace();
 		}
 	}
 	
@@ -944,7 +951,6 @@ public class FuncionesComicsBBDD extends Comic {
 
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
-			ex.printStackTrace();
 		} finally {
 			try {
 				portada.close();
@@ -954,5 +960,98 @@ public class FuncionesComicsBBDD extends Comic {
 		}
 		utilidad.deleteImage(datos[11]);
 		bd.reloadID();
+	}
+	
+	/**
+	 * Funcion que permite insertar una puntuacion a un comic segun la ID
+	 * introducida.
+	 */
+	public void actualizarPuntuacion(String ID, String puntuacion) {
+
+		String sentenciaSQL = "UPDATE comicsbbdd set puntuacion = ? where ID = ?";
+
+		if (nav.alertaAgregarPuntuacion()) { // Llamada a alerta de modificacion
+
+			comprobarOpinionInsertada(sentenciaSQL,ID,puntuacion); // Llamada a funcion que permite comprobar el cambio realizado en
+														// el comic
+
+		} else { // Si se cancela la opinion del comic, saltara el siguiente mensaje.
+
+		}
+	}
+	
+	/**
+	 * Funcion que permite insertar una puntuacion a un comic segun la ID
+	 * introducida.
+	 */
+	public void borrarPuntuacion(String ID) {
+
+		String sentenciaSQL = "UPDATE comicsbbdd set puntuacion = 'Sin puntuacion' where ID = ?";
+
+		if (nav.alertaBorrarPuntuacion()) { // Llamada a alerta de modificacion
+
+			comprobarOpinionBorrada(sentenciaSQL,ID); // Llamada a funcion que permite comprobar el cambio realizado en el
+													// comic
+
+		} else { // Si se cancela la opinion del comic, saltara el siguiente mensaje.
+
+		}
+	}
+
+
+
+	/**
+	 * Funcion que comprueba si la opinion se ha introducida correctamente
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public void comprobarOpinionInsertada(String sentenciaSQL, String ID, String puntuacion) {
+
+		conn = FuncionesConexionBBDD.conexion();
+		listaTratamiento.clear();
+		try {
+			PreparedStatement ps = null;
+			ps = conn.prepareStatement(sentenciaSQL);
+			if (comprobarID(ID)) // Comprueba si la ID introducida existe en la base de datos
+			{
+				Comic comic = comicDatos(ID);
+				ps.setString(1, puntuacion);
+				ps.setString(2, ID);
+
+				if (ps.executeUpdate() == 1) { // Si se ha modificado correctamente, saltara el siguiente mensaje
+					listaTratamiento.add(comic);
+				}
+			}
+		} catch (SQLException ex) {
+			nav.alertaException(ex.toString());
+		}
+	}
+
+	/**
+	 * Funcion que comprueba si la opinion se ha introducida correctamente
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public void comprobarOpinionBorrada(String sentenciaSQL, String ID) {
+
+		conn = FuncionesConexionBBDD.conexion();
+		listaTratamiento.clear();
+		try {
+			PreparedStatement ps = null;
+			ps = conn.prepareStatement(sentenciaSQL);
+			if (comprobarID(ID)) // Comprueba si la ID introducida existe en la base de datos
+			{
+				Comic comic = comicDatos(ID);
+				ps.setString(1, ID);
+
+				if (ps.executeUpdate() == 1) { // Si se ha modificado correctamente, saltara el siguiente mensaje
+					listaTratamiento.add(comic);
+				}
+			}
+		} catch (SQLException ex) {
+			nav.alertaException(ex.toString());
+		}
 	}
 }

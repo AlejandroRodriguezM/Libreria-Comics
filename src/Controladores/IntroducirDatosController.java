@@ -199,7 +199,6 @@ public class IntroducirDatosController implements Initializable {
 	private ImageView imagencomic;
 
 	private static Ventanas nav = new Ventanas();
-
 	private static FuncionesComicsBBDD libreria = null;
 	private static Utilidades utilidad = null;
 
