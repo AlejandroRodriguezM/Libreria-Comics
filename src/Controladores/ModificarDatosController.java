@@ -190,7 +190,6 @@ public class ModificarDatosController implements Initializable {
 		// valor, que se encuentra vacio, en caso de querer borrar
 		// la puntuacion.
 	}
-	
 
 	@FXML
 	void clickRaton(MouseEvent event) {
@@ -204,12 +203,12 @@ public class ModificarDatosController implements Initializable {
 		idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 
 		ID = idRow.getID();
-		
+
 		imagencomic.setImage(libreria.selectorImage(ID));
 		utilidad.deleteImage();
 
 	}
-	
+
 	/**
 	 * Llamada a funcion que modifica los datos de 1 comic en la base de datos.
 	 *
@@ -217,6 +216,7 @@ public class ModificarDatosController implements Initializable {
 	 */
 	@FXML
 	void modificarDatos(ActionEvent event) {
+		imagencomic.setImage(null);
 		libreria = new FuncionesComicsBBDD();
 		modificacionComic(); // Llamada a funcion que modificara el contenido de un comic especifico.
 		libreria.reiniciarBBDD();
@@ -224,6 +224,7 @@ public class ModificarDatosController implements Initializable {
 
 	@FXML
 	void nuevaPortada(ActionEvent event) {
+		imagencomic.setImage(null);
 		subirPortada();
 	}
 
@@ -311,8 +312,6 @@ public class ModificarDatosController implements Initializable {
 		imagencomic.setImage(null);
 	}
 
-
-
 	/////////////////////////////////
 	//// FUNCIONES////////////////////
 	/////////////////////////////////
@@ -358,9 +357,9 @@ public class ModificarDatosController implements Initializable {
 	 * @return
 	 */
 	public String[] camposComicModificar() {
-		
+
 		Utilidades utilidad = new Utilidades();
-		
+
 		String campos[] = new String[13];
 
 		campos[0] = idComicMod.getText();
@@ -400,7 +399,7 @@ public class ModificarDatosController implements Initializable {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
-
+		imagencomic.setImage(null);
 		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
@@ -415,7 +414,7 @@ public class ModificarDatosController implements Initializable {
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) {
-
+		imagencomic.setImage(null);
 		utilidad = new Utilidades();
 		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
@@ -440,17 +439,17 @@ public class ModificarDatosController implements Initializable {
 		tablaBBDD(utilidad.busquedaParametro(comic, busquedaGeneral.getText()));
 		busquedaGeneral.setText("");
 	}
-	
+
 	public FileChooser tratarFichero() {
 		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
 		fileChooser.getExtensionFilters()
-		.addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg", "*.png", "*.jpeg"));
+				.addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg", "*.png", "*.jpeg"));
 
 		return fileChooser;
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public void subirPortada() {
 		File file = tratarFichero().showOpenDialog(null); // Llamada a funcion
@@ -462,7 +461,6 @@ public class ModificarDatosController implements Initializable {
 			pantallaInformativa.setText("Has cancelado la subida de portada.");
 		}
 	}
-
 
 	/**
 	 *
@@ -490,14 +488,14 @@ public class ModificarDatosController implements Initializable {
 				guionista, dibujante);
 		tablaBBDD.getItems().setAll(listaComic);
 	}
-	
+
 	/**
 	 *
 	 */
 	public boolean modificacionComic() {
 		libreria = new FuncionesComicsBBDD();
 		utilidad = new Utilidades();
-		
+
 		if (nav.alertaModificar()) {
 			String datos[] = camposComicModificar();
 			libreria.comprobarCambio(datos);
@@ -505,17 +503,14 @@ public class ModificarDatosController implements Initializable {
 			InputStream portada = utilidad.direccionImagen(direccionImagen.getText());
 			Image imagen = new Image(portada);
 			imagencomic.setImage(imagen);
-			
+
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-			pantallaInformativa.setText(
-					"Has modificado correctamente: " + FuncionesComicsBBDD.listaTratamiento.toString().replace("[", "").replace("]", ""));
+			pantallaInformativa.setText("Has modificado correctamente: "
+					+ FuncionesComicsBBDD.listaTratamiento.toString().replace("[", "").replace("]", ""));
 
-			
 			return true;
-		}
-		else
-		{
+		} else {
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #F53636");
 			pantallaInformativa.setText("Se ha cancelado la modificacion del comic.");

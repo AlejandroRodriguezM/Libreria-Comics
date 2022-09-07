@@ -331,7 +331,6 @@ public class MenuPrincipalController {
 
 	}
 
-
 	/**
 	 * Funcion que al pulsar el boton de 'botonPuntuacion' se muestran aquellos
 	 * comics que tienen una puntuacion
@@ -346,7 +345,7 @@ public class MenuPrincipalController {
 		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(utilidad.libreriaPuntuacion());
-		
+
 	}
 
 	/**
@@ -363,7 +362,7 @@ public class MenuPrincipalController {
 		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(utilidad.libreriaVendidos());
-		
+
 	}
 
 	/**
@@ -568,12 +567,11 @@ public class MenuPrincipalController {
 		idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 
 		ID = idRow.getID();
-		
+
 		imagencomic.setImage(libreria.selectorImage(ID));
 		utilidad.deleteImage();
 
 	}
-
 
 	/////////////////////////////////
 	//// FUNCIONES CREACION FICHEROS//
@@ -682,7 +680,7 @@ public class MenuPrincipalController {
 		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
 				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "", "", "");
 
-		tablaBBDD(utilidad.busquedaParametro(comic,busquedaGeneral.getText()));
+		tablaBBDD(utilidad.busquedaParametro(comic, busquedaGeneral.getText()));
 		busquedaGeneral.setText("");
 	}
 
@@ -705,8 +703,6 @@ public class MenuPrincipalController {
 
 		return listComic;
 	}
-
-	
 
 	/**
 	 * Obtiene los datos de los comics de la base de datos y los devuelve en el

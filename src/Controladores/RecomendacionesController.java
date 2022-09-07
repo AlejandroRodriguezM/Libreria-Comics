@@ -31,6 +31,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 /**
@@ -52,6 +53,9 @@ public class RecomendacionesController {
 
 	@FXML
 	private TextArea printComicRecomendado;
+
+	@FXML
+	private ImageView imagencomic;
 
 	private static Ventanas nav = new Ventanas();
 
@@ -79,11 +83,15 @@ public class RecomendacionesController {
 		Random r = new Random();
 
 		int n;
-
+		String ID;
 		limpiarPront(); // Llamada a funcion para limpiar las pantalla "TextArea"
 
 		if (libreria.verLibreriaPosesion().length != 0) {
 			n = (int) (Math.random() * r.nextInt(libreria.verLibreriaPosesion().length));
+
+			ID = libreria.verLibreriaPosesion()[n].getID();
+
+			imagencomic.setImage(libreria.selectorImage(ID));
 			return libreria.verLibreriaPosesion()[n].toString(); // Devuelve un comic de la lista de comics
 		} else {
 			printComicRecomendado.setText("ERROR. No hay ningun dato en la base de datos");

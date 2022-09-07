@@ -125,7 +125,7 @@ public class EliminarDatosController {
 
 	@FXML
 	private TableColumn<Comic, String> nombre;
-	
+
 	@FXML
 	private ImageView imagencomic;
 
@@ -156,8 +156,8 @@ public class EliminarDatosController {
 		pantallaInformativa.setOpacity(0);
 		tablaBBDD.getItems().clear();
 		idComicTratar.setStyle(null);
+		imagencomic.setImage(null);
 	}
-	
 
 	@FXML
 	void clickRaton(MouseEvent event) {
@@ -171,7 +171,7 @@ public class EliminarDatosController {
 		idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 
 		ID = idRow.getID();
-		
+
 		imagencomic.setImage(libreria.selectorImage(ID));
 		utilidad.deleteImage();
 
@@ -183,6 +183,7 @@ public class EliminarDatosController {
 	 */
 	@FXML
 	void eliminarDatos(ActionEvent event) {
+		imagencomic.setImage(null);
 		libreria = new FuncionesComicsBBDD();
 		String ID = idComicTratar.getText();
 		modificarDatos(ID);
@@ -198,6 +199,7 @@ public class EliminarDatosController {
 	 */
 	@FXML
 	void ventaDatos(ActionEvent event) {
+		imagencomic.setImage(null);
 		libreria = new FuncionesComicsBBDD();
 		String ID = idComicTratar.getText();
 		modificarDatos(ID);
@@ -213,7 +215,7 @@ public class EliminarDatosController {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
-
+		imagencomic.setImage(null);
 		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
@@ -228,7 +230,7 @@ public class EliminarDatosController {
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) {
-
+		imagencomic.setImage(null);
 		utilidad = new Utilidades();
 		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
@@ -236,8 +238,6 @@ public class EliminarDatosController {
 		tablaBBDD(utilidad.libreriaCompleta()); // Llamada a funcion
 
 	}
-	
-
 
 	/**
 	 * Muestra las columnas especificas del fichero FXML
@@ -272,7 +272,7 @@ public class EliminarDatosController {
 		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
 				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "", "", "");
 
-		tablaBBDD(utilidad.busquedaParametro(comic,busquedaGeneral.getText()));
+		tablaBBDD(utilidad.busquedaParametro(comic, busquedaGeneral.getText()));
 	}
 
 	/**
@@ -296,19 +296,17 @@ public class EliminarDatosController {
 	public boolean modificarDatos(String ID) {
 		libreria = new FuncionesComicsBBDD();
 		if (nav.alertaEliminar()) {
-			if(ID.length() != 0) {
-				
+			if (ID.length() != 0) {
+
 				Comic comic = libreria.comicDatos(ID); // Llamada de metodo que contiene el comic que se desea eliminar
-				
+
 				pantallaInformativa.setOpacity(1);
 				pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-				pantallaInformativa.setText(
-						"Has eliminado correctamente: " + comic.toString().replace("[", "").replace("]", ""));
+				pantallaInformativa
+						.setText("Has eliminado correctamente: " + comic.toString().replace("[", "").replace("]", ""));
 				idComicTratar.setStyle(null);
 				return true;
-			}
-			else
-			{
+			} else {
 				pantallaInformativa.setOpacity(1);
 				pantallaInformativa.setStyle("-fx-background-color: #F53636");
 				pantallaInformativa.setText("ERROR. ID desconocido.");

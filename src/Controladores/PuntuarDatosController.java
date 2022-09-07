@@ -158,7 +158,7 @@ public class PuntuarDatosController implements Initializable {
 
 	@FXML
 	public TableView<Comic> tablaBBDD;
-	
+
 	@FXML
 	private ImageView imagencomic;
 
@@ -179,7 +179,7 @@ public class PuntuarDatosController implements Initializable {
 															// valor, que se encuentra vacio, en caso de querer borrar
 															// la puntuacion.
 	}
-	
+
 	@FXML
 	void clickRaton(MouseEvent event) {
 		libreria = new FuncionesComicsBBDD();
@@ -192,7 +192,7 @@ public class PuntuarDatosController implements Initializable {
 		idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 
 		ID = idRow.getID();
-		
+
 		imagencomic.setImage(libreria.selectorImage(ID));
 		utilidad.deleteImage();
 
@@ -206,12 +206,13 @@ public class PuntuarDatosController implements Initializable {
 	 */
 	@FXML
 	void agregarPuntuacion(ActionEvent event) {
+		imagencomic.setImage(null);
 		libreria = new FuncionesComicsBBDD();
 		String ID = idPuntuar.getText();
-		libreria.actualizarPuntuacion(ID,comicPuntuacion()); // Llamada a funcion
+		libreria.actualizarPuntuacion(ID, comicPuntuacion()); // Llamada a funcion
 		datosOpinion("Opinion introducida con exito: ");
 	}
-	
+
 	/**
 	 * Funcion que permite borrar la opinion de un comic
 	 *
@@ -219,17 +220,18 @@ public class PuntuarDatosController implements Initializable {
 	 */
 	@FXML
 	void borrarPuntuacion(ActionEvent event) {
+		imagencomic.setImage(null);
 		libreria = new FuncionesComicsBBDD();
 		String ID = idPuntuar.getText();
 		libreria.borrarPuntuacion(ID);
 		datosOpinion("Opinion borrada con exito: ");
 	}
-	
-	public void datosOpinion(String pantallaInfo)
-	{
+
+	public void datosOpinion(String pantallaInfo) {
 		pantallaInformativa.setOpacity(0);
 		pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-		pantallaInformativa.setText(pantallaInfo + FuncionesComicsBBDD.listaTratamiento.toString().replace("[", "").replace("]", ""));
+		pantallaInformativa.setText(
+				pantallaInfo + FuncionesComicsBBDD.listaTratamiento.toString().replace("[", "").replace("]", ""));
 	}
 
 	/**
@@ -289,6 +291,7 @@ public class PuntuarDatosController implements Initializable {
 
 		tablaBBDD.getItems().clear();
 
+		imagencomic.setImage(null);
 	}
 
 	/**
@@ -299,7 +302,7 @@ public class PuntuarDatosController implements Initializable {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
-
+		imagencomic.setImage(null);
 		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
@@ -314,7 +317,7 @@ public class PuntuarDatosController implements Initializable {
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) {
-
+		imagencomic.setImage(null);
 		utilidad = new Utilidades();
 		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
@@ -331,6 +334,7 @@ public class PuntuarDatosController implements Initializable {
 	 */
 	@FXML
 	void verComicsLeidos(ActionEvent event) {
+		imagencomic.setImage(null);
 		utilidad = new Utilidades();
 		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
@@ -398,7 +402,6 @@ public class PuntuarDatosController implements Initializable {
 		tablaBBDD(utilidad.busquedaParametro(comic, busquedaGeneral.getText()));
 		busquedaGeneral.setText("");
 	}
-
 
 	/**
 	 * Permite dar valor a las celdas de la TableView

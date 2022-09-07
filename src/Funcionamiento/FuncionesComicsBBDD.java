@@ -656,14 +656,12 @@ public class FuncionesComicsBBDD extends Comic {
 		bd = new FuncionesBBDD();
 		Connection conn = FuncionesConexionBBDD.conexion();
 		try {
-			if(id.length() != 0)
-			{
+			if (id.length() != 0) {
 				stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE,
 						ResultSet.CONCUR_UPDATABLE); // Permite leer y ejecutar la sentencia de MySql
 
 				stmt.setString(1, id);
-				if(stmt.executeUpdate() == 1)
-				{
+				if (stmt.executeUpdate() == 1) {
 					bd.reloadID();
 					return true;
 				}
@@ -700,7 +698,7 @@ public class FuncionesComicsBBDD extends Comic {
 	}
 
 	/**
-	 * 
+	 *
 	 *
 	 * @param sentenciaSQL
 	 * @return
@@ -738,8 +736,7 @@ public class FuncionesComicsBBDD extends Comic {
 
 		String sentenciaSQL = "insert into comicsbbdd(nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante,puntuacion,portada,estado) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-
-		subirComic(sentenciaSQL,datos); // Llamada a funcion que permite comprobar el cambio realizado en el comic
+		subirComic(sentenciaSQL, datos); // Llamada a funcion que permite comprobar el cambio realizado en el comic
 
 	}
 
@@ -793,7 +790,7 @@ public class FuncionesComicsBBDD extends Comic {
 		utilidad.deleteImage(datos[10]);
 		bd.reloadID();
 	}
-	
+
 	/**
 	 * Comprueba que el ID introducido existe
 	 *
@@ -802,19 +799,16 @@ public class FuncionesComicsBBDD extends Comic {
 	public boolean comprobarID(String ID) {
 
 		if (ID.length() != 0) {
-			if(chechID(ID))
-			{
+			if (chechID(ID)) {
 				return true;
-			}
-			else
-			{
+			} else {
 				nav.alertaException("La ID no existe");
-				return false; 
+				return false;
 			}
 		}
-		return false; 
+		return false;
 	}
-	
+
 	/**
 	 * Funcion que comprueba si existe el ID introducido
 	 *
@@ -822,26 +816,26 @@ public class FuncionesComicsBBDD extends Comic {
 	 * @return
 	 */
 	public void comprobarCambio(String datos[]) {
-		
+
 		conn = FuncionesConexionBBDD.conexion();
 		String sentenciaSQL = "UPDATE comicsbbdd set nomComic = ?,numComic = ?,nomVariante = ?,"
 				+ "Firma = ?,nomEditorial = ?,formato = ?,Procedencia = ?,anioPubli = ?,"
 				+ "nomGuionista = ?,nomDibujante = ?,portada = ?,estado = ? where ID = ?";
-		
+
 		try {
 			PreparedStatement ps = null;
 			ps = conn.prepareStatement(sentenciaSQL);
 			if (comprobarID(datos[0])) // Comprueba si la ID introducida existe en la base de datos
 			{
 				ps.setString(12, datos[0]);
-				comicModificar(ps,datos); // Llama a funcion que permite cambiar los datos del comic
+				comicModificar(ps, datos); // Llama a funcion que permite cambiar los datos del comic
 
 			}
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
 		}
 	}
-	
+
 	/**
 	 * Devuelve un objeto Comic con los nuevos datos de un comic. En caso de tener
 	 * el espacio en blanco, el valor del parametro sera el que tenia originalmente.
@@ -855,7 +849,6 @@ public class FuncionesComicsBBDD extends Comic {
 		listaTratamiento.clear();
 		String nombre = "", numero = "", variante = "", firma = "", editorial = "", formato = "", procedencia = "",
 				fecha = "", guionista = "", dibujante = "", estado = "";
-
 
 		InputStream portada = utilidad.direccionImagen(datos[11]);
 		Comic comic = comicDatos(datos[0]);
@@ -948,7 +941,7 @@ public class FuncionesComicsBBDD extends Comic {
 						guionista, dibujante, estado, "", "");
 
 				listaTratamiento.add(comic);
-				
+
 			}
 			ps.close();
 
@@ -964,7 +957,7 @@ public class FuncionesComicsBBDD extends Comic {
 		utilidad.deleteImage(datos[11]);
 		bd.reloadID();
 	}
-	
+
 	/**
 	 * Funcion que permite insertar una puntuacion a un comic segun la ID
 	 * introducida.
@@ -975,14 +968,15 @@ public class FuncionesComicsBBDD extends Comic {
 
 		if (nav.alertaAgregarPuntuacion()) { // Llamada a alerta de modificacion
 
-			comprobarOpinionInsertada(sentenciaSQL,ID,puntuacion); // Llamada a funcion que permite comprobar el cambio realizado en
-														// el comic
+			comprobarOpinionInsertada(sentenciaSQL, ID, puntuacion); // Llamada a funcion que permite comprobar el
+																		// cambio realizado en
+			// el comic
 
 		} else { // Si se cancela la opinion del comic, saltara el siguiente mensaje.
 
 		}
 	}
-	
+
 	/**
 	 * Funcion que permite insertar una puntuacion a un comic segun la ID
 	 * introducida.
@@ -993,15 +987,14 @@ public class FuncionesComicsBBDD extends Comic {
 
 		if (nav.alertaBorrarPuntuacion()) { // Llamada a alerta de modificacion
 
-			comprobarOpinionBorrada(sentenciaSQL,ID); // Llamada a funcion que permite comprobar el cambio realizado en el
-													// comic
+			comprobarOpinionBorrada(sentenciaSQL, ID); // Llamada a funcion que permite comprobar el cambio realizado en
+														// el
+														// comic
 
 		} else { // Si se cancela la opinion del comic, saltara el siguiente mensaje.
 
 		}
 	}
-
-
 
 	/**
 	 * Funcion que comprueba si la opinion se ha introducida correctamente
@@ -1057,9 +1050,9 @@ public class FuncionesComicsBBDD extends Comic {
 			nav.alertaException(ex.toString());
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param ID
 	 * @return
 	 */
@@ -1099,7 +1092,7 @@ public class FuncionesComicsBBDD extends Comic {
 		}
 
 		Image imagen = new Image("file:tmp.jpg", 250, 250, true, true);
-		
+
 		return imagen;
 
 	}

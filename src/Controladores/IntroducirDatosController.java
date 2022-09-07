@@ -216,7 +216,6 @@ public class IntroducirDatosController implements Initializable {
 		// valor, que se encuentra vacio, en caso de querer borrar
 		// la puntuacion.
 	}
-	
 
 	@FXML
 	void clickRaton(MouseEvent event) {
@@ -230,7 +229,7 @@ public class IntroducirDatosController implements Initializable {
 		idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 
 		ID = idRow.getID();
-		
+
 		imagencomic.setImage(libreria.selectorImage(ID));
 		utilidad.deleteImage();
 
@@ -318,6 +317,7 @@ public class IntroducirDatosController implements Initializable {
 
 	@FXML
 	void nuevaPortada(ActionEvent event) {
+		imagencomic.setImage(null);
 		subirPortada();
 	}
 
@@ -328,13 +328,13 @@ public class IntroducirDatosController implements Initializable {
 	public FileChooser tratarFichero() {
 		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
 		fileChooser.getExtensionFilters()
-		.addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg", "*.png", "*.jpeg"));
+				.addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg", "*.png", "*.jpeg"));
 
 		return fileChooser;
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public void subirPortada() {
 		File file = tratarFichero().showOpenDialog(null); // Llamada a funcion
@@ -368,7 +368,7 @@ public class IntroducirDatosController implements Initializable {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
-
+		imagencomic.setImage(null);
 		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
@@ -383,7 +383,7 @@ public class IntroducirDatosController implements Initializable {
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) {
-
+		imagencomic.setImage(null);
 		utilidad = new Utilidades();
 		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
@@ -409,8 +409,6 @@ public class IntroducirDatosController implements Initializable {
 		busquedaGeneral.setText("");
 	}
 
-
-
 	/**
 	 * funcion que obtiene los datos de los comics de la base de datos y los
 	 * devuelve en el textView
@@ -433,28 +431,26 @@ public class IntroducirDatosController implements Initializable {
 		if (nav.alertaInsertar()) {
 			String datos[] = camposComicIntroducir();
 			libreria.insertarDatos(datos);
-			Comic comic = new Comic("", datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6],
-					datos[7], datos[8], datos[9], datos[11], "Sin puntuar", "");
+			Comic comic = new Comic("", datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
+					datos[8], datos[9], datos[11], "Sin puntuar", "");
 
 			InputStream portada = utilidad.direccionImagen(datos[10]);
 			Image imagen = new Image(portada);
 			imagencomic.setImage(imagen);
-			
+
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-			pantallaInformativa.setText(
-					"Has añadido correctamente: " + comic.toString().replace("[", "").replace("]", ""));
+			pantallaInformativa
+					.setText("Has añadido correctamente: " + comic.toString().replace("[", "").replace("]", ""));
 			return true;
-		}
-		else
-		{
+		} else {
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #F53636");
 			pantallaInformativa.setText("Se ha cancelado la subida del nuevo comic.");
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Funcion que devuelve un array con los datos de los TextField correspondientes
 	 * a la los comics que se encuentran en la bbdd
@@ -496,9 +492,9 @@ public class IntroducirDatosController implements Initializable {
 	 * @return
 	 */
 	public String[] camposComicIntroducir() {
-		
+
 		utilidad = new Utilidades();
-		
+
 		String campos[] = new String[12];
 
 		campos[0] = nombreAni.getText();

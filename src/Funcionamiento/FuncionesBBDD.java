@@ -127,8 +127,9 @@ public class FuncionesBBDD {
 	public void backupLinux(File fichero) {
 		try {
 			fichero.createNewFile();
-			String command[] = new String[] { "mysqldump", "-u" + FuncionesConexionBBDD.DB_USER, "-p" + FuncionesConexionBBDD.DB_PASS,
-					"-B", FuncionesConexionBBDD.DB_NAME, "--routines=true", "--result-file=" + fichero };
+			String command[] = new String[] { "mysqldump", "-u" + FuncionesConexionBBDD.DB_USER,
+					"-p" + FuncionesConexionBBDD.DB_PASS, "-B", FuncionesConexionBBDD.DB_NAME, "--routines=true",
+					"--result-file=" + fichero };
 			ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
 			pb.redirectError(Redirect.INHERIT);
 			pb.redirectOutput(Redirect.to(fichero));

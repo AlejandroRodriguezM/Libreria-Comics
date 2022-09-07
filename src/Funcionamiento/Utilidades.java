@@ -158,7 +158,7 @@ public class Utilidades {
 		}
 		return listaLimpia;
 	}
-	
+
 	/**
 	 * Funcion que cambia una ',' por un guion '-'
 	 *
@@ -175,9 +175,7 @@ public class Utilidades {
 
 		return datos;
 	}
-	
 
-	
 	public void deleteImage(String pathFichero) {
 
 		File original = new File(pathFichero);
@@ -189,9 +187,9 @@ public class Utilidades {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param direccion
 	 * @return
 	 */
@@ -219,7 +217,7 @@ public class Utilidades {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param file
 	 * @return
 	 */
@@ -243,7 +241,7 @@ public class Utilidades {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Funcion que muestra todos los comics de la base de datos
 	 *
@@ -262,7 +260,7 @@ public class Utilidades {
 
 		return listComic;
 	}
-	
+
 	/**
 	 * Funcion que busca en el arrayList el o los comics que tengan coincidencia con
 	 * los datos introducidos en el TextField
@@ -283,7 +281,7 @@ public class Utilidades {
 
 		return listComic;
 	}
-	
+
 	/**
 	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
 	 * "En posesion"
@@ -292,8 +290,12 @@ public class Utilidades {
 	 */
 	public List<Comic> libreriaVendidos() {
 		libreria = new FuncionesComicsBBDD();
-		
+
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaVendidos());
+		if (listComic.size() == 0) {
+			String excepcion = "No hay comics en vendidos";
+			nav.alertaException(excepcion);
+		}
 
 		return listComic;
 	}
@@ -308,7 +310,10 @@ public class Utilidades {
 		libreria = new FuncionesComicsBBDD();
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaEnVenta());
 
-
+		if (listComic.size() == 0) {
+			String excepcion = "No hay comics en venta";
+			nav.alertaException(excepcion);
+		}
 		return listComic;
 	}
 
@@ -321,7 +326,10 @@ public class Utilidades {
 	public List<Comic> libreriaPuntuacion() {
 		libreria = new FuncionesComicsBBDD();
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaPuntuacion());
-
+		if (listComic.size() == 0) {
+			String excepcion = "No hay comics puntuados";
+			nav.alertaException(excepcion);
+		}
 		return listComic;
 	}
 
@@ -334,7 +342,18 @@ public class Utilidades {
 	public List<Comic> libreriaFirmados() {
 		libreria = new FuncionesComicsBBDD();
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaFirmados());
-
+		if (listComic.size() == 0) {
+			String excepcion = "No hay comics firmados";
+			nav.alertaException(excepcion);
+		}
 		return listComic;
+	}
+
+	public void deleteImage() {
+		try {
+			Files.deleteIfExists(Paths.get("tmp.jpg"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

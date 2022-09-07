@@ -114,7 +114,7 @@ public class FuncionesConexionBBDD {
 //			return null;
 //		}
 //	}
-	
+
 	/**
 	 * Devuelve un objeto Connection en caso de que la conexion sea correcta.
 	 *
