@@ -1,14 +1,8 @@
 package Controladores;
 
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
@@ -37,10 +31,9 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import javax.imageio.ImageIO;
-
 import Funcionamiento.Comic;
 import Funcionamiento.FuncionesComicsBBDD;
+import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -55,6 +48,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -205,8 +199,9 @@ public class IntroducirDatosController implements Initializable {
 	private ImageView imagencomic;
 
 	private static Ventanas nav = new Ventanas();
-	
+
 	private static FuncionesComicsBBDD libreria = null;
+	private static Utilidades utilidad = null;
 
 	/**
 	 * Funcion que permite hacer funcionar la lista de puntuacion.
@@ -288,34 +283,6 @@ public class IntroducirDatosController implements Initializable {
 		imagencomic.setImage(null);
 	}
 
-	// public void selectorImage()
-	// {
-	// String q="SELECT image FROM comicsbbdd where image = " +
-	//
-	// try {
-	// ResultSet rs = db.ejecucionSQL(q);
-	//
-	// InputStream is= rs.getBinaryStream("image");
-	// OutputStream os=new FileOutputStream(new File("img.jpg"));
-	// byte [] content= new byte[1024];
-	// int size=0;
-	//
-	// while ((size=is.read(content))!=-1){
-	//
-	// os.write(content, 0, size);
-	// }
-	// os.close();
-	// is.close();
-	// } catch (IOException | SQLException e) {
-	// e.printStackTrace();
-	// }
-	//
-	// javafx.scene.image.Image image1=new Image("file:img.jpg",
-	// imagencomic.getFitWidth(), imagencomic.getFitHeight(), true, true);
-	// imagencomic.setImage(image1);
-	// imagencomic.setPreserveRatio(true);
-	// }
-
 	/**
 	 * Metodo que añade datos a la base de datos segun los parametros introducidos
 	 * en los textField
@@ -326,7 +293,7 @@ public class IntroducirDatosController implements Initializable {
 	public void agregarDatos(ActionEvent event) {
 
 		libreria = new FuncionesComicsBBDD();
-		libreria.insertarDatos(camposComicIntroducir());
+		subidaComic();
 		libreria.reiniciarBBDD();
 	}
 
@@ -342,7 +309,7 @@ public class IntroducirDatosController implements Initializable {
 	public FileChooser tratarFichero() {
 		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
 		fileChooser.getExtensionFilters()
-				.addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg", "*.png", "*.jpeg"));
+		.addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg", "*.png", "*.jpeg"));
 
 		return fileChooser;
 	}
@@ -362,72 +329,6 @@ public class IntroducirDatosController implements Initializable {
 	}
 
 	/**
-	 * 
-	 * @param direccion
-	 * @return
-	 */
-	public InputStream direccionImagen(String direccion) {
-		InputStream input = null;
-		try {
-
-			if (direccion.length() != 0) {
-				File file = new File(direccion);
-				if (file != null) {
-					File tmp = getScaledImage(file);
-					input = new FileInputStream(tmp);
-					return input;
-				}
-			} else {
-				input = this.getClass().getResourceAsStream("sinPortada.jpg");
-				return input;
-			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return null;
-	}
-
-	/**
-	 * 
-	 * @param file
-	 * @return
-	 */
-	public File getScaledImage(File file) {
-
-		int anchura = 300;
-		int altura = 455;
-
-		try {
-
-			BufferedImage originalImage = ImageIO.read(file);
-			BufferedImage new_bi = new BufferedImage(anchura, altura, BufferedImage.TYPE_INT_RGB);
-			File tmp = new File(file.getParentFile().toString() + "/tmp.jpg");
-			Graphics g = new_bi.getGraphics();
-			g.drawImage(originalImage, 0, 0, anchura, altura, null);
-
-			ImageIO.write(new_bi, "jpg", tmp);
-			return tmp;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	public void deleteImage(String pathFichero) {
-
-		File original = new File(pathFichero);
-		File tmp = new File(original.toString());
-
-		try {
-			Files.deleteIfExists(Paths.get(tmp.getParentFile() + "/tmp.jpg"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
 	 * Funcion que permite modificar el estado de un comic.
 	 *
 	 * @param ps
@@ -439,96 +340,6 @@ public class IntroducirDatosController implements Initializable {
 		// "puntuacion"
 		return situacionEstado;
 	}
-
-//	/**
-//	 * Funcion que modifica 1 comic de la base de datos con los parametros que
-//	 * introduzcamos en los campos.
-//	 */
-//	public void insertarDatos() {
-//
-//		String sentenciaSQL = "insert into comicsbbdd(nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante,puntuacion,image,estado) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
-//
-//		if (nav.alertaInsertar()) { // Llamada a alerta de modificacion
-//
-//			subidaBBDD(sentenciaSQL); // Llamada a funcion que permite comprobar el cambio realizado en el comic
-//
-//		} else { // Si se cancela el borra del comic, saltara el siguiente mensaje.
-//			pantallaInformativa.setOpacity(1);
-//			pantallaInformativa.setStyle("-fx-background-color: #F53636");
-//			pantallaInformativa.setText("Insertado cancelado..");
-//		}
-//	}
-//
-//	/**
-//	 *
-//	 */
-//	public void subidaBBDD(String sentenciaSQL) {
-//
-//		String datos[] = camposComicIntroducir();
-//
-//		InputStream portada = direccionImagen(datos[10]);
-//		
-//		FuncionesBBDD bd = new FuncionesBBDD();
-//
-//		try {
-//			PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
-//
-//			statement.setString(1, datos[0]);
-//			statement.setString(2, datos[1]);
-//			statement.setString(3, datos[2]);
-//			statement.setString(4, datos[3]);
-//			statement.setString(5, datos[4]);
-//			statement.setString(6, datos[5]);
-//			statement.setString(7, datos[6]);
-//			statement.setString(8, datos[7]);
-//			statement.setString(9, datos[8]);
-//			statement.setString(10, datos[9]);
-//			statement.setString(11, "");
-//
-//			if (datos[10].length() != 0) {
-//				statement.setBinaryStream(12, portada);
-//			} else {
-//				statement.setBinaryStream(12, portada);
-//			}
-//			statement.setString(13, datos[11]);
-//
-//			if (statement.executeUpdate() == 1) { // Sie el resultado del executeUpdate es 1, mostrara el mensaje
-//				// correcto.
-//
-//				Comic comic = new Comic("", datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6],
-//						datos[7], datos[8], datos[9], datos[11], "Sin puntuar", "");
-//
-//				pantallaInformativa.setOpacity(1);
-//				pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-//				pantallaInformativa.setText("Comic introducido correctamente!" + comic.toString());
-//
-//				Image imagex = new Image(portada);
-//				imagencomic.setImage(imagex);
-//
-//				botonNuevaPortada.setStyle(null);
-//				statement.close();
-//
-//			} else { // En caso de no haber sido posible Introducir el comic, se vera el siguiente
-//				// mensaje.
-//				pantallaInformativa.setOpacity(1);
-//				pantallaInformativa.setStyle("-fx-background-color: #F53636");
-//				pantallaInformativa.setText(
-//						"Se ha encontrado un error. No ha sido posible introducir el comic a la base de datos.");
-//			}
-//
-//		} catch (SQLException ex) {
-//			nav.alertaException(ex.toString());
-//		} finally {
-//			try {
-//				portada.close();
-//			} catch (IOException ex) {
-//				nav.alertaException(ex.toString());
-//			}
-//		}
-//		deleteImage(datos[10]);
-//		direccionImagen.setText("");
-//		bd.reloadID();
-//	}
 
 	/**
 	 * Metodo que mostrara los comics o comic buscados por parametro
@@ -543,6 +354,7 @@ public class IntroducirDatosController implements Initializable {
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
 		listaPorParametro(); // Llamada a funcion
+		busquedaGeneral.setText("");
 	}
 
 	/**
@@ -553,10 +365,11 @@ public class IntroducirDatosController implements Initializable {
 	@FXML
 	void verTodabbdd(ActionEvent event) {
 
+		utilidad = new Utilidades();
 		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
-		tablaBBDD(libreriaCompleta()); // Llamada a funcion
+		tablaBBDD(utilidad.libreriaCompleta()); // Llamada a funcion
 
 	}
 
@@ -567,62 +380,17 @@ public class IntroducirDatosController implements Initializable {
 	 * @return
 	 */
 	public void listaPorParametro() {
-
-		libreria = new FuncionesComicsBBDD();
-		libreria.reiniciarBBDD();
+		utilidad = new Utilidades();
 		String datos[] = camposComicActuales();
 
 		Comic comic = new Comic(datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
 				datos[8], datos[9], datos[10], "", "", "");
 
-		tablaBBDD(busquedaParametro(comic));
+		tablaBBDD(utilidad.busquedaParametro(comic, busquedaGeneral.getText()));
+		busquedaGeneral.setText("");
 	}
 
-	/**
-	 * Funcion que busca en el arrayList el o los comics que tengan coincidencia con
-	 * los datos introducidos en el TextField
-	 *
-	 * @param comic
-	 * @return
-	 */
-	public List<Comic> busquedaParametro(Comic comic) {
 
-		libreria = new FuncionesComicsBBDD();
-		List<Comic> listComic;
-
-		if (busquedaGeneral.getText().length() != 0) {
-			listComic = FXCollections.observableArrayList(libreria.verBusquedaGeneral(busquedaGeneral.getText()));
-			busquedaGeneral.setText("");
-		} else {
-			listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
-			if (listComic.size() == 0) {
-				pantallaInformativa.setOpacity(1);
-				pantallaInformativa.setStyle("-fx-background-color: #F53636");
-				pantallaInformativa.setText("ERROR. No hay ningun dato en la base de datos");
-			}
-		}
-
-		return listComic;
-	}
-
-	/**
-	 * Funcion que muestra todos los comics de la base de datos
-	 *
-	 * @return
-	 */
-	public List<Comic> libreriaCompleta() {
-
-		libreria = new FuncionesComicsBBDD();
-		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaPosesion());
-
-		if (listComic.size() == 0) {
-			pantallaInformativa.setOpacity(1);
-			pantallaInformativa.setStyle("-fx-background-color: #F53636");
-			pantallaInformativa.setText("ERROR. No hay ningun dato en la base de datos");
-		}
-
-		return listComic;
-	}
 
 	/**
 	 * funcion que obtiene los datos de los comics de la base de datos y los
@@ -638,13 +406,44 @@ public class IntroducirDatosController implements Initializable {
 	}
 
 	/**
+	 *
+	 */
+	public boolean subidaComic() {
+		libreria = new FuncionesComicsBBDD();
+		utilidad = new Utilidades();
+		if (nav.alertaInsertar()) {
+			String datos[] = camposComicIntroducir();
+			libreria.insertarDatos(datos);
+			Comic comic = new Comic("", datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6],
+					datos[7], datos[8], datos[9], datos[11], "Sin puntuar", "");
+
+			InputStream portada = utilidad.direccionImagen(datos[10]);
+			Image imagen = new Image(portada);
+			imagencomic.setImage(imagen);
+			
+			pantallaInformativa.setOpacity(1);
+			pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
+			pantallaInformativa.setText(
+					"Has añadido correctamente: " + comic.toString().replace("[", "").replace("]", ""));
+			return true;
+		}
+		else
+		{
+			pantallaInformativa.setOpacity(1);
+			pantallaInformativa.setStyle("-fx-background-color: #F53636");
+			pantallaInformativa.setText("Se ha cancelado la subida del nuevo comic.");
+			return false;
+		}
+	}
+	
+	/**
 	 * Funcion que devuelve un array con los datos de los TextField correspondientes
 	 * a la los comics que se encuentran en la bbdd
 	 *
 	 * @return
 	 */
 	public String[] camposComicActuales() {
-		String campos[] = new String[11];
+		String campos[] = new String[12];
 
 		campos[0] = idParametro.getText();
 
@@ -673,11 +472,14 @@ public class IntroducirDatosController implements Initializable {
 
 	/**
 	 * Funcion que devuelve un array con los datos de los TextField del comic a
-	 * Introducir.
+	 * introducir.
 	 *
 	 * @return
 	 */
 	public String[] camposComicIntroducir() {
+		
+		utilidad = new Utilidades();
+		
 		String campos[] = new String[12];
 
 		campos[0] = nombreAni.getText();
@@ -704,24 +506,7 @@ public class IntroducirDatosController implements Initializable {
 
 		campos[11] = estadoActual();
 
-		return comaPorGuion(campos);
-	}
-
-	/**
-	 * Funcion que cambia una ',' por un guion '-'
-	 *
-	 * @param campos
-	 * @return
-	 */
-	public String[] comaPorGuion(String[] campos) {
-		for (int i = 0; i < campos.length; i++) {
-
-			if (campos[i].contains(",")) {
-				campos[i] = campos[i].replace(",", "-");
-			}
-		}
-
-		return campos;
+		return utilidad.comaPorGuion(campos);
 	}
 
 	/**
@@ -779,7 +564,5 @@ public class IntroducirDatosController implements Initializable {
 
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();
-
 	}
-
 }

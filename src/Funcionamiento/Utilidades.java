@@ -1,6 +1,13 @@
 package Funcionamiento;
 
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +38,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.imageio.ImageIO;
+
+import javafx.collections.FXCollections;
 
 /**
  * Esta clase sirve para realizar diferentes funciones realizanas con la
@@ -145,5 +156,128 @@ public class Utilidades {
 
 		}
 		return listaLimpia;
+	}
+	
+	/**
+	 * Funcion que cambia una ',' por un guion '-'
+	 *
+	 * @param campos
+	 * @return
+	 */
+	public String[] comaPorGuion(String[] datos) {
+		for (int i = 0; i < datos.length; i++) {
+
+			if (datos[i].contains(",")) {
+				datos[i] = datos[i].replace(",", "-");
+			}
+		}
+
+		return datos;
+	}
+	
+	/**
+	 * Funcion que muestra todos los comics de la base de datos
+	 *
+	 * @return
+	 */
+	public List<Comic> libreriaCompleta() {
+
+		FuncionesComicsBBDD libreria = new FuncionesComicsBBDD();
+		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaPosesion());
+
+		if (listComic.size() == 0) {
+
+			String excepcion = "No hay ningun comic guardado en la base de datos";
+			nav.alertaException(excepcion);
+		}
+
+		return listComic;
+	}
+	
+	/**
+	 * Funcion que busca en el arrayList el o los comics que tengan coincidencia con
+	 * los datos introducidos en el TextField
+	 *
+	 * @param comic
+	 * @return
+	 */
+	public List<Comic> busquedaParametro(Comic comic, String busquedaGeneral) {
+
+		FuncionesComicsBBDD libreria = new FuncionesComicsBBDD();
+		List<Comic> listComic;
+
+		if (busquedaGeneral.length() != 0) {
+			listComic = FXCollections.observableArrayList(libreria.verBusquedaGeneral(busquedaGeneral));
+		} else {
+			listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
+		}
+
+		return listComic;
+	}
+	
+	public void deleteImage(String pathFichero) {
+
+		File original = new File(pathFichero);
+		File tmp = new File(original.toString());
+
+		try {
+			Files.deleteIfExists(Paths.get(tmp.getParentFile() + "/tmp.jpg"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 
+	 * @param direccion
+	 * @return
+	 */
+	public InputStream direccionImagen(String direccion) {
+		InputStream input = null;
+		try {
+
+			if (direccion.length() != 0) {
+				File file = new File(direccion);
+				if (file != null) {
+					File tmp = getScaledImage(file);
+					input = new FileInputStream(tmp);
+					return input;
+				}
+			} else {
+				input = this.getClass().getResourceAsStream("sinPortada.jpg");
+				return input;
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param file
+	 * @return
+	 */
+	public File getScaledImage(File file) {
+
+		int anchura = 300;
+		int altura = 455;
+
+		try {
+
+			BufferedImage originalImage = ImageIO.read(file);
+			BufferedImage new_bi = new BufferedImage(anchura, altura, BufferedImage.TYPE_INT_RGB);
+			File tmp = new File(file.getParentFile().toString() + "/tmp.jpg");
+			Graphics g = new_bi.getGraphics();
+			g.drawImage(originalImage, 0, 0, anchura, altura, null);
+
+			ImageIO.write(new_bi, "jpg", tmp);
+			return tmp;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

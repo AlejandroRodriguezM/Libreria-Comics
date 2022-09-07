@@ -1,50 +1,15 @@
 package Controladores;
 
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-/**
- * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
- * Las ventanas graficas se realizan con JavaFX.
- * El programa permite:
- *  - Conectarse a la base de datos.
- *  - Ver la base de datos completa o parcial segun parametros introducidos.
- *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
- *  - Copia de seguridad de la base de datos en formato .sql
- *  - Introducir comics a la base de datos.
- *  - Modificar comics de la base de datos.
- *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
- *  - Ver frases de personajes de comics
- *  - Opcion de escoger algo para leer de forma aleatoria.
- *
- *  Esta clase sirve para modificar datos de forma individual de cada comic
- *
- *  Version Final
- *
- *  Por Alejandro Rodriguez
- *
- *  Twitter: @silverAlox
- */
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import javax.imageio.ImageIO;
-
-import Funcionamiento.FuncionesBBDD;
 import Funcionamiento.Comic;
-import Funcionamiento.FuncionesConexionBBDD;
 import Funcionamiento.FuncionesComicsBBDD;
+import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -208,14 +173,8 @@ public class ModificarDatosController implements Initializable {
 	private ImageView imagencomic;
 
 	private static Ventanas nav = new Ventanas();
-
-	private static FuncionesComicsBBDD libreria = new FuncionesComicsBBDD();
-
-	private static Comic comic = new Comic();
-
-	private static Connection conn = FuncionesConexionBBDD.conexion();
-
-	private static FuncionesBBDD bd = new FuncionesBBDD();
+	private static FuncionesComicsBBDD libreria = null;
+	private static Utilidades utilidad = null;
 
 	/**
 	 * Funcion que permite hacer funcionar la lista de puntuacion.
@@ -230,78 +189,22 @@ public class ModificarDatosController implements Initializable {
 		// valor, que se encuentra vacio, en caso de querer borrar
 		// la puntuacion.
 	}
+	
+	/**
+	 * Llamada a funcion que modifica los datos de 1 comic en la base de datos.
+	 *
+	 * @param event
+	 */
+	@FXML
+	void modificarDatos(ActionEvent event) {
+		libreria = new FuncionesComicsBBDD();
+		modificacionComic(); // Llamada a funcion que modificara el contenido de un comic especifico.
+		libreria.reiniciarBBDD();
+	}
 
 	@FXML
 	void nuevaPortada(ActionEvent event) {
 		subirPortada();
-	}
-
-	/**
-	 *
-	 * @return
-	 */
-	public FileChooser tratarFichero() {
-		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
-		fileChooser.getExtensionFilters()
-				.addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg", "*.png", "*.jpeg"));
-
-		return fileChooser;
-	}
-
-	public void subirPortada() {
-		File file = tratarFichero().showOpenDialog(null); // Llamada a funcion
-		if (file != null) {
-			direccionImagen.setText(file.getAbsolutePath().toString());
-		} else {
-			pantallaInformativa.setOpacity(1);
-			pantallaInformativa.setStyle("-fx-background-color: #F53636");
-			pantallaInformativa.setText("Has cancelado la subida de portada.");
-		}
-
-	}
-
-	public InputStream direccionImagen(String direccion) {
-		InputStream input = null;
-		try {
-
-			if (direccion.length() != 0) {
-				File file = new File(direccion);
-				if (file != null) {
-					File tmp = getScaledImage(file);
-					input = new FileInputStream(tmp);
-					return input;
-				}
-			} else {
-				input = this.getClass().getResourceAsStream("sinPortada.jpg");
-				return input;
-			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return null;
-	}
-
-	public File getScaledImage(File file) {
-
-		int anchura = 300;
-		int altura = 455;
-
-		try {
-
-			BufferedImage originalImage = ImageIO.read(file);
-			BufferedImage new_bi = new BufferedImage(anchura, altura, BufferedImage.TYPE_INT_RGB);
-			File tmp = new File(file.getParentFile().toString() + "/tmp.jpg");
-			Graphics g = new_bi.getGraphics();
-			g.drawImage(originalImage, 0, 0, anchura, altura, null);
-
-			ImageIO.write(new_bi, "jpg", tmp);
-			return tmp;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 	/**
@@ -388,17 +291,7 @@ public class ModificarDatosController implements Initializable {
 		imagencomic.setImage(null);
 	}
 
-	/**
-	 * Llamada a funcion que modifica los datos de 1 comic en la base de datos.
-	 *
-	 * @param event
-	 */
-	@FXML
-	void modificarDatos(ActionEvent event) {
 
-		modificacionDatos(); // Llamada a funcion que modificara el contenido de un comic especifico.
-		libreria.reiniciarBBDD();
-	}
 
 	/////////////////////////////////
 	//// FUNCIONES////////////////////
@@ -445,6 +338,9 @@ public class ModificarDatosController implements Initializable {
 	 * @return
 	 */
 	public String[] camposComicModificar() {
+		
+		Utilidades utilidad = new Utilidades();
+		
 		String campos[] = new String[13];
 
 		campos[0] = idComicMod.getText();
@@ -473,303 +369,80 @@ public class ModificarDatosController implements Initializable {
 
 		campos[12] = estadoActual();
 
-		return campos;
+		return utilidad.comaPorGuion(campos);
 	}
 
 	/**
-	 * Funcion que modifica 1 comic de la base de datos con los parametros que
-	 * introduzcamos en los campos.
-	 */
-	public void modificacionDatos() {
-
-		String sentenciaSQL = "UPDATE comicsbbdd set nomComic = ?,numComic = ?,nomVariante = ?,"
-				+ "Firma = ?,nomEditorial = ?,formato = ?,Procedencia = ?,anioPubli = ?,"
-				+ "nomGuionista = ?,nomDibujante = ?,image = ?,estado = ? where ID = ?";
-
-		if (nav.alertaModificar()) { // Llamada a alerta de modificacion
-
-			comprobarCambio(sentenciaSQL); // Llamada a funcion que permite comprobar el cambio realizado en el comic
-
-		} else { // Si se cancela el borra del comic, saltara el siguiente mensaje.
-			pantallaInformativa.setOpacity(1);
-			pantallaInformativa.setStyle("-fx-background-color: #F53636");
-			pantallaInformativa.setText("Modificacion cancelada.");
-		}
-	}
-
-	/**
-	 * Funcion que comprueba si existe el ID introducido
-	 *
-	 * @param ps
-	 * @return
-	 */
-	public void comprobarCambio(String sentenciaSQL) {
-		try {
-			PreparedStatement ps = null;
-			ps = conn.prepareStatement(sentenciaSQL);
-			if (comprobarID()) // Comprueba si la ID introducida existe en la base de datos
-			{
-				comic = libreria.comicDatos(idComicMod.getText());
-				ps.setString(12, idComicMod.getText());
-				comicModificar(ps); // Llama a funcion que permite cambiar los datos del comic
-
-			}
-		} catch (SQLException ex) {
-			nav.alertaException(ex.toString());
-			ex.printStackTrace();
-		}
-	}
-
-	/**
-	 * Comprueba que el ID introducido existe
-	 *
-	 * @return
-	 */
-	public boolean comprobarID() {
-		String identificador = idComicMod.getText();
-
-		if (identificador.length() != 0) { // Si has introducido ID a la hora de realizar la modificacion, permitira lo
-			// siguiente
-			if (libreria.chechID(idComicMod.getText())) {
-				return true;
-			} else // En caso contrario lanzara el siguiente mensaje en pantalla
-			{
-				pantallaInformativa.setOpacity(1);
-				pantallaInformativa.setStyle("-fx-background-color: #F53636");
-				pantallaInformativa.setText("No existe el " + identificador + " en la base de datos.");
-				return false;
-			}
-		} else {
-			pantallaInformativa.setOpacity(1);
-			pantallaInformativa.setStyle("-fx-background-color: #F53636");
-			idComicMod.setStyle("-fx-background-color: #F53636");
-			idMod.setStyle("-fx-background-color: #F53636");
-			pantallaInformativa.setText("ERROR. No ha puesto ningun \nID en la busqueda.");
-			return false;
-		}
-	}
-
-	/**
-	 * Devuelve un objeto Comic con los nuevos datos de un comic. En caso de tener
-	 * el espacio en blanco, el valor del parametro sera el que tenia originalmente.
-	 *
-	 * @param ps
-	 * @return
-	 */
-	public void comicModificar(PreparedStatement ps) {
-
-		String nombre = "", numero = "", variante = "", firma = "", editorial = "", formato = "", procedencia = "",
-				fecha = "", guionista = "", dibujante = "", estado = "";
-
-		String datosModificados[] = camposComicModificar();
-
-		InputStream portada = direccionImagen(datosModificados[11]);
-
-		try {
-
-			if (datosModificados[1].length() != 0) {
-				ps.setString(1, datosModificados[1]);
-				nombre = datosModificados[1];
-			} else {
-				nombre = comic.getNombre();
-				ps.setString(1, nombre);
-			}
-			if (datosModificados[2].length() != 0) {
-				ps.setString(2, datosModificados[2]);
-				numero = datosModificados[2];
-			} else {
-				numero = comic.getNumero();
-				ps.setString(2, numero);
-			}
-			if (datosModificados[3].length() != 0) {
-				ps.setString(3, datosModificados[3]);
-				variante = datosModificados[3];
-			} else {
-				variante = comic.getVariante();
-				ps.setString(3, variante);
-			}
-			if (datosModificados[4].length() != 0) {
-				ps.setString(4, datosModificados[4]);
-				firma = datosModificados[4];
-			} else {
-				firma = comic.getFirma();
-				ps.setString(4, firma);
-			}
-			if (datosModificados[5].length() != 0) {
-				ps.setString(5, datosModificados[5]);
-				editorial = datosModificados[5];
-			} else {
-				editorial = comic.getEditorial();
-				ps.setString(5, editorial);
-			}
-			if (datosModificados[6].length() != 0) {
-				ps.setString(6, datosModificados[6]);
-				formato = datosModificados[6];
-			} else {
-				formato = comic.getFormato();
-				ps.setString(6, formato);
-			}
-			if (datosModificados[7].length() != 0) {
-				ps.setString(7, datosModificados[7]);
-				procedencia = datosModificados[7];
-			} else {
-				procedencia = comic.getProcedencia();
-				ps.setString(7, procedencia);
-			}
-			if (datosModificados[8].length() != 0) {
-				ps.setString(8, datosModificados[8]);
-				fecha = datosModificados[8];
-			} else {
-				fecha = comic.getFecha();
-				ps.setString(8, fecha);
-			}
-			if (datosModificados[9].length() != 0) {
-				ps.setString(9, datosModificados[9]);
-				guionista = datosModificados[9];
-			} else {
-				guionista = comic.getGuionista();
-				ps.setString(9, guionista);
-			}
-			if (datosModificados[10].length() != 0) {
-				ps.setString(10, datosModificados[10]);
-				dibujante = datosModificados[10];
-			} else {
-				dibujante = comic.getDibujante();
-				ps.setString(10, dibujante);
-			}
-
-			if (datosModificados[11].length() != 0) {
-				ps.setBinaryStream(11, portada);
-			} else {
-				ps.setBinaryStream(11, portada);
-			}
-			if (datosModificados[12].length() != 0) {
-				ps.setString(12, datosModificados[12]);
-				estado = datosModificados[12];
-			}
-			ps.setString(13, datosModificados[0]);
-
-			if (ps.executeUpdate() == 1) { // Si se ha modificado correctamente, saltara el siguiente mensaje
-				Comic comic = new Comic("", nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
-						guionista, dibujante, estado, "", "");
-
-				pantallaInformativa.setOpacity(1);
-				pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-				pantallaInformativa.setText("Ha modificado correctamente: " + comic.toString());
-
-				Image imagex = new Image(portada);
-				imagencomic.setImage(imagex);
-
-			}
-			ps.close();
-
-		} catch (SQLException ex) {
-			nav.alertaException(ex.toString());
-			ex.printStackTrace();
-		} finally {
-			try {
-				portada.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		deleteImage(datosModificados[11]);
-		direccionImagen.setText("");
-		bd.reloadID();
-	}
-
-	public void deleteImage(String pathFichero) {
-
-		File original = new File(pathFichero);
-		File tmp = new File(original.toString());
-
-		try {
-			Files.deleteIfExists(Paths.get(tmp.getParentFile() + "/tmp.jpg"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Muestra datos por parametro
+	 * Metodo que mostrara los comics o comic buscados por parametro
 	 *
 	 * @param event
+	 * @throws SQLException
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
+
+		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
-		nombreColumnas();
-		listaPorParametro();
+		nombreColumnas(); // Llamada a funcion
+		listaPorParametro(); // Llamada a funcion
+		busquedaGeneral.setText("");
 	}
 
 	/**
-	 * Muestra toda la base de datos.
+	 * Metodo que muestra toda la base de datos.
 	 *
 	 * @param event
 	 */
 	@FXML
-	void verTodabbdd(ActionEvent event) throws SQLException {
+	void verTodabbdd(ActionEvent event) {
+
+		utilidad = new Utilidades();
+		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
-		nombreColumnas();
-		tablaBBDD(libreriaCompleta());
+		nombreColumnas(); // Llamada a funcion
+		tablaBBDD(utilidad.libreriaCompleta()); // Llamada a funcion
+
 	}
 
 	/**
-	 * Funcion que busca en el arrayList el o los comics que tengan coincidencia con
-	 * los datos introducidos en el TextField
+	 * Funcion que muestra los comics que coincidan con los parametros introducidos
+	 * en los textField
 	 *
 	 * @return
 	 */
 	public void listaPorParametro() {
-		String datos[] = camposComicActuales(); // Contiene los datos por parametro del comic a buscar
+		utilidad = new Utilidades();
+		String datos[] = camposComicActuales();
 
 		Comic comic = new Comic(datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
 				datos[8], datos[9], datos[10], "", "", "");
 
-		tablaBBDD(busquedaParametro(comic)); // Funcion que muestra en la tabla el comic que coincida con los datos del
-		// objeto Comic creado, en caso de existir lo muestra.
+		tablaBBDD(utilidad.busquedaParametro(comic, busquedaGeneral.getText()));
+		busquedaGeneral.setText("");
+	}
+	
+	public FileChooser tratarFichero() {
+		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
+		fileChooser.getExtensionFilters()
+		.addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg", "*.png", "*.jpeg"));
+
+		return fileChooser;
 	}
 
 	/**
-	 * Muestra los comics que coincidan con los parametros introducidos
-	 *
-	 * @param comic
-	 * @return
+	 * 
 	 */
-	public List<Comic> busquedaParametro(Comic comic) {
-
-		List<Comic> listaComic;
-
-		if (busquedaGeneral.getText().length() != 0) {
-			listaComic = FXCollections.observableArrayList(libreria.verBusquedaGeneral(busquedaGeneral.getText()));
-			busquedaGeneral.setText("");
+	public void subirPortada() {
+		File file = tratarFichero().showOpenDialog(null); // Llamada a funcion
+		if (file != null) {
+			direccionImagen.setText(file.getAbsolutePath().toString());
 		} else {
-			listaComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic)); // Muestra en la pantalla el
-			// total de comics que se
-			// encuentran en la base de
-			// datos segun los parametros introducidos
-
-			comprobarLista(listaComic);
-
+			pantallaInformativa.setOpacity(1);
+			pantallaInformativa.setStyle("-fx-background-color: #F53636");
+			pantallaInformativa.setText("Has cancelado la subida de portada.");
 		}
-
-		return listaComic;
 	}
 
-	/**
-	 * Muestra todos los comics de la base de datos
-	 *
-	 * @return
-	 */
-	public List<Comic> libreriaCompleta() {
-
-		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaPosesion());
-
-		comprobarLista(listComic);
-
-		return listComic;
-
-	}
 
 	/**
 	 *
@@ -795,6 +468,38 @@ public class ModificarDatosController implements Initializable {
 		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante);
 		tablaBBDD.getItems().setAll(listaComic);
+	}
+	
+	/**
+	 *
+	 */
+	public boolean modificacionComic() {
+		libreria = new FuncionesComicsBBDD();
+		utilidad = new Utilidades();
+		
+		if (nav.alertaModificar()) {
+			String datos[] = camposComicModificar();
+			libreria.comprobarCambio(datos);
+
+			InputStream portada = utilidad.direccionImagen(direccionImagen.getText());
+			Image imagen = new Image(portada);
+			imagencomic.setImage(imagen);
+			
+			pantallaInformativa.setOpacity(1);
+			pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
+			pantallaInformativa.setText(
+					"Has modificado correctamente: " + FuncionesComicsBBDD.listaTratamiento.toString().replace("[", "").replace("]", ""));
+
+			
+			return true;
+		}
+		else
+		{
+			pantallaInformativa.setOpacity(1);
+			pantallaInformativa.setStyle("-fx-background-color: #F53636");
+			pantallaInformativa.setText("Se ha cancelado la modificacion del comic.");
+			return false;
+		}
 	}
 
 	/**

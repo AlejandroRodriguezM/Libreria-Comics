@@ -216,11 +216,13 @@ public class MenuPrincipalController {
 
 	private static Ventanas nav = new Ventanas();
 
-	private static FuncionesComicsBBDD libreria = new FuncionesComicsBBDD();
+	private static FuncionesComicsBBDD libreria = null;
 
-	private static FuncionesBBDD db = new FuncionesBBDD();
+	private static Utilidades utilidad = null;
 
-	private static FuncionesExcel excelFuntions = new FuncionesExcel();
+	private static FuncionesBBDD db = null;
+
+	private static FuncionesExcel excelFuntions = null;
 
 	/////////////////////////////////
 	//// METODOS LLAMADA A VENTANAS//
@@ -314,6 +316,7 @@ public class MenuPrincipalController {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
+		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 
 		if (numeroID.getText().length() != 0) {
@@ -321,19 +324,25 @@ public class MenuPrincipalController {
 		}
 		nombreColumnas();
 		listaPorParametro();
+
 	}
 
 	/**
-	 * Muestra toda la base de datos.
+	 * Metodo que muestra toda la base de datos.
 	 *
 	 * @param event
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) {
+
+		utilidad = new Utilidades();
+		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
-		nombreColumnas();
-		tablaBBDD(libreriaPosesion());
+		nombreColumnas(); // Llamada a funcion
+		tablaBBDD(utilidad.libreriaCompleta()); // Llamada a funcion
+
 	}
+
 
 	/**
 	 * Funcion que al pulsar el boton de 'botonPuntuacion' se muestran aquellos
@@ -343,6 +352,7 @@ public class MenuPrincipalController {
 	 */
 	@FXML
 	void comicsPuntuacion(ActionEvent event) {
+		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(libreriaPuntuacion());
@@ -356,7 +366,7 @@ public class MenuPrincipalController {
 	 */
 	@FXML
 	void comicsVendidos(ActionEvent event) {
-
+		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(libreriaVendidos());
@@ -370,7 +380,7 @@ public class MenuPrincipalController {
 	 */
 	@FXML
 	void comicsFirmados(ActionEvent event) {
-
+		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(libreriaFirmados());
@@ -384,7 +394,7 @@ public class MenuPrincipalController {
 	 */
 	@FXML
 	void comicsEnVenta(ActionEvent event) {
-
+		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(libreriaEnVenta());
@@ -542,7 +552,7 @@ public class MenuPrincipalController {
 	 */
 	@FXML
 	void borrarContenidoTabla(ActionEvent event) {
-
+		db = new FuncionesBBDD();
 		if (db.borrarContenidoTabla()) {
 			prontInfo.setOpacity(1);
 			prontInfo.setStyle("-fx-background-color: #A0F52D");
@@ -590,7 +600,7 @@ public class MenuPrincipalController {
 
 	@FXML
 	void test(MouseEvent event) {
-
+		libreria = new FuncionesComicsBBDD();
 		libreria.verLibreriaCompleta();
 		String ID;
 
@@ -622,8 +632,8 @@ public class MenuPrincipalController {
 	 * @param fichero
 	 */
 	public void makeExcel(File fichero) {
+		excelFuntions = new FuncionesExcel();
 		try {
-
 			if (fichero != null) {
 				if (excelFuntions.crearExcel(fichero)) { // Si el fichero XLSX y CSV se han creado se vera el siguiente
 					// mensaje
@@ -653,7 +663,7 @@ public class MenuPrincipalController {
 	 * @param fichero
 	 */
 	public void importCSV(File fichero) {
-
+		excelFuntions = new FuncionesExcel();
 		try {
 			if (fichero != null) {
 				if (excelFuntions.importarCSV(fichero)) { // Si se ha importado el fichero CSV correctamente, se vera el
@@ -712,40 +722,14 @@ public class MenuPrincipalController {
 	 * estas buscando.
 	 */
 	public void listaPorParametro() {
+		utilidad = new Utilidades();
 		String datosComic[] = camposComic();
 
 		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
 				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "", "", "");
 
-		tablaBBDD(busquedaParametro(comic));
-	}
-
-	/**
-	 * Devuelve una lista de los comics cuyos datos han sido introducidos mediante
-	 * parametros en los textField
-	 *
-	 * @param comic
-	 * @return
-	 */
-	public List<Comic> busquedaParametro(Comic comic) {
-		limpiezaDeDatos();
-		List<Comic> listComic;
-
-		if (busquedaGeneral.getText().length() != 0) {
-			listComic = FXCollections.observableArrayList();
-			listComic = FXCollections.observableArrayList(libreria.verBusquedaGeneral(busquedaGeneral.getText()));
-			busquedaGeneral.setText("");
-		} else {
-			listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
-
-			if (listComic.size() == 0) {
-				prontInfo.setOpacity(1);
-				prontInfo.setStyle("-fx-background-color: #F53636");
-				prontInfo.setText("ERROR. No hay ningun dato escrito para poder realizar la busqueda");
-			}
-		}
-
-		return listComic;
+		tablaBBDD(utilidad.busquedaParametro(comic,busquedaGeneral.getText()));
+		busquedaGeneral.setText("");
 	}
 
 	/**
@@ -755,6 +739,7 @@ public class MenuPrincipalController {
 	 * @return
 	 */
 	public List<Comic> libreriaPosesion() {
+		libreria = new FuncionesComicsBBDD();
 		limpiezaDeDatos();
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaPosesion());
 
@@ -774,6 +759,7 @@ public class MenuPrincipalController {
 	 * @return
 	 */
 	public List<Comic> libreriaVendidos() {
+		libreria = new FuncionesComicsBBDD();
 		limpiezaDeDatos();
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaVendidos());
 
@@ -793,6 +779,7 @@ public class MenuPrincipalController {
 	 * @return
 	 */
 	public List<Comic> libreriaEnVenta() {
+		libreria = new FuncionesComicsBBDD();
 		limpiezaDeDatos();
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaEnVenta());
 
@@ -812,6 +799,7 @@ public class MenuPrincipalController {
 	 * @return
 	 */
 	public List<Comic> libreriaPuntuacion() {
+		libreria = new FuncionesComicsBBDD();
 		limpiezaDeDatos();
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaPuntuacion());
 
@@ -831,6 +819,7 @@ public class MenuPrincipalController {
 	 * @return
 	 */
 	public List<Comic> libreriaFirmados() {
+		libreria = new FuncionesComicsBBDD();
 		limpiezaDeDatos();
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaFirmados());
 
@@ -838,24 +827,6 @@ public class MenuPrincipalController {
 			prontInfo.setOpacity(1);
 			prontInfo.setStyle("-fx-background-color: #F53636");
 			prontInfo.setText("ERROR. No hay ningun comic firmado");
-		}
-
-		return listComic;
-	}
-
-	/**
-	 * Devuelve una lista con todos los comics de la base de datos.
-	 *
-	 * @return
-	 */
-	public List<Comic> libreriaCompleta() {
-		limpiezaDeDatos();
-		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaCompleta());
-
-		if (listComic.size() == 0) {
-			prontInfo.setOpacity(1);
-			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("ERROR. La base de datos se encuentra vacia");
 		}
 
 		return listComic;

@@ -115,7 +115,7 @@
             <Font size="14.0" />
          </font>
       </Label>
-      <TextArea fx:id="pantallaInformativa" editable="false" layoutX="821.0" layoutY="9.0" opacity="0.0" prefHeight="228.0" prefWidth="232.0" wrapText="true" />
+      <TextArea fx:id="pantallaInformativa" editable="false" layoutX="847.0" layoutY="9.0" opacity="0.0" prefHeight="295.0" prefWidth="206.0" wrapText="true" />
       <TextField fx:id="nombreParametro" layoutX="135.0" layoutY="35.0" prefHeight="25.0" prefWidth="102.0" />
       <Label layoutX="10.0" layoutY="39.0" style="-fx-background-color: white;" text="Nombre" />
       <Label layoutX="11.0" layoutY="329.0" prefHeight="25.0" prefWidth="117.0" style="-fx-background-color: white;" text="Busqueda general" wrapText="true">

@@ -58,7 +58,7 @@ public class PuntuarDatosController implements Initializable {
 	private Button botonMostrarParametro;
 
 	@FXML
-	private Button botonOpinion;
+	private Button botonPuntuacion;
 
 	@FXML
 	private Button botonSalir;
@@ -73,7 +73,7 @@ public class PuntuarDatosController implements Initializable {
 	private Button botonLeidos;
 
 	@FXML
-	private Button botonBorrarOpinion;
+	private Button botonBorrarPuntuacion;
 
 	@FXML
 	private TextField busquedaGeneral;
@@ -186,16 +186,16 @@ public class PuntuarDatosController implements Initializable {
 	 * @param event
 	 */
 	@FXML
-	void agregarOpinion(ActionEvent event) {
+	void agregarPuntuacion(ActionEvent event) {
 
-		insertarOpinion(); // Llamada a funcion
+		insertarPuntuacion(); // Llamada a funcion
 	}
 
 	/**
 	 * Funcion que permite insertar una puntuacion a un comic segun la ID
 	 * introducida.
 	 */
-	public void insertarOpinion() {
+	public void insertarPuntuacion() {
 
 		String sentenciaSQL = "UPDATE comicsbbdd set puntuacion = ? where ID = ?";
 
@@ -217,9 +217,9 @@ public class PuntuarDatosController implements Initializable {
 	 * @param event
 	 */
 	@FXML
-	void borrarOpinion(ActionEvent event) {
+	void borrarPuntuacion(ActionEvent event) {
 
-		String sentenciaSQL = "UPDATE comicsbbdd set puntuacion = '' where ID = ?";
+		String sentenciaSQL = "UPDATE comicsbbdd set puntuacion = 'Sin puntuacion' where ID = ?";
 
 		if (nav.alertaBorrarPuntuacion()) { // Llamada a alerta de modificacion
 
@@ -332,7 +332,6 @@ public class PuntuarDatosController implements Initializable {
 
 		String puntuacion = puntuacionMenu.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
 																								// "puntuacion"
-
 		try {
 			if (puntuacion.length() != 0) {
 				ps.setString(1, puntuacion);

@@ -37,8 +37,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import Controladores.IntroducirDatosController;
-
 /**
  * Esta clase sirve para realizar las diferentes operaciones en la base de datos
  * que tenga que ver con la libreria de comics
@@ -55,7 +53,9 @@ public class FuncionesComicsBBDD extends Comic {
 
 	private static Ventanas nav = new Ventanas();
 	private static Connection conn = null;
-	private static IntroducirDatosController introducirDatos = null;
+	private static Utilidades utilidad = null;
+	private static FuncionesBBDD bd = null;
+
 	/**
 	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
 	 *
@@ -590,7 +590,7 @@ public class FuncionesComicsBBDD extends Comic {
 
 		return comic;
 	}
-	
+
 	/**
 	 * Comprueba que el ID introducido existe
 	 *
@@ -695,9 +695,9 @@ public class FuncionesComicsBBDD extends Comic {
 
 		modificarDatos(id, sentenciaSQL);
 	}
-	
+
 	/**
-	 * Devuelve un objeto ResultSet para realizar una sentencia en la bbdd
+	 * 
 	 *
 	 * @param sentenciaSQL
 	 * @return
@@ -726,22 +726,18 @@ public class FuncionesComicsBBDD extends Comic {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Funcion que modifica 1 comic de la base de datos con los parametros que
 	 * introduzcamos en los campos.
 	 */
 	public void insertarDatos(String datos[]) {
 
-		introducirDatos = new IntroducirDatosController();
 		String sentenciaSQL = "insert into comicsbbdd(nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante,puntuacion,portada,estado) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-		if (nav.alertaInsertar()) { // Llamada a alerta de modificacion
 
-			subidaBBDD(sentenciaSQL,datos); // Llamada a funcion que permite comprobar el cambio realizado en el comic
+		subidaBBDD(sentenciaSQL,datos); // Llamada a funcion que permite comprobar el cambio realizado en el comic
 
-		} else { // Si se cancela el borra del comic, saltara el siguiente mensaje.
-		}
 	}
 
 	/**
@@ -749,10 +745,10 @@ public class FuncionesComicsBBDD extends Comic {
 	 */
 	public void subidaBBDD(String sentenciaSQL, String datos[]) {
 
-		introducirDatos = new IntroducirDatosController();
-		
-		InputStream portada = introducirDatos.direccionImagen(datos[10]);
-		
+		utilidad = new Utilidades();
+
+		InputStream portada = utilidad.direccionImagen(datos[10]);
+
 		FuncionesBBDD bd = new FuncionesBBDD();
 		conn = FuncionesConexionBBDD.conexion();
 
@@ -780,15 +776,8 @@ public class FuncionesComicsBBDD extends Comic {
 
 			if (statement.executeUpdate() == 1) { // Si el resultado del executeUpdate es 1, mostrara el mensaje
 				// correcto.
-
-//				Comic comic = new Comic("", datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6],
-//						datos[7], datos[8], datos[9], datos[11], "Sin puntuar", "");
 				statement.close();
-
-			} else { 
-
 			}
-
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
 		} finally {
@@ -798,7 +787,172 @@ public class FuncionesComicsBBDD extends Comic {
 				nav.alertaException(ex.toString());
 			}
 		}
-		introducirDatos.deleteImage(datos[10]);
+		utilidad.deleteImage(datos[10]);
+		bd.reloadID();
+	}
+	
+	/**
+	 * Comprueba que el ID introducido existe
+	 *
+	 * @return
+	 */
+	public boolean comprobarID(String ID) {
+
+		if (ID.length() != 0 && chechID(ID)) {
+			return true;
+		}
+		return false; 
+	}
+	
+	/**
+	 * Funcion que comprueba si existe el ID introducido
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public void comprobarCambio(String datos[]) {
+		
+		conn = FuncionesConexionBBDD.conexion();
+		String sentenciaSQL = "UPDATE comicsbbdd set nomComic = ?,numComic = ?,nomVariante = ?,"
+				+ "Firma = ?,nomEditorial = ?,formato = ?,Procedencia = ?,anioPubli = ?,"
+				+ "nomGuionista = ?,nomDibujante = ?,portada = ?,estado = ? where ID = ?";
+		
+		try {
+			PreparedStatement ps = null;
+			ps = conn.prepareStatement(sentenciaSQL);
+			if (comprobarID(datos[0])) // Comprueba si la ID introducida existe en la base de datos
+			{
+				ps.setString(12, datos[0]);
+				comicModificar(ps,datos); // Llama a funcion que permite cambiar los datos del comic
+
+			}
+		} catch (SQLException ex) {
+			nav.alertaException(ex.toString());
+			ex.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Devuelve un objeto Comic con los nuevos datos de un comic. En caso de tener
+	 * el espacio en blanco, el valor del parametro sera el que tenia originalmente.
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public void comicModificar(PreparedStatement ps, String datos[]) {
+		utilidad = new Utilidades();
+		bd = new FuncionesBBDD();
+		listaTratamiento.clear();
+		String nombre = "", numero = "", variante = "", firma = "", editorial = "", formato = "", procedencia = "",
+				fecha = "", guionista = "", dibujante = "", estado = "";
+
+
+		InputStream portada = utilidad.direccionImagen(datos[11]);
+		Comic comic = comicDatos(datos[0]);
+		try {
+
+			if (datos[1].length() != 0) {
+				ps.setString(1, datos[1]);
+				nombre = datos[1];
+			} else {
+				nombre = comic.getNombre();
+				ps.setString(1, nombre);
+			}
+			if (datos[2].length() != 0) {
+				ps.setString(2, datos[2]);
+				numero = datos[2];
+			} else {
+				numero = comic.getNumero();
+				ps.setString(2, numero);
+			}
+			if (datos[3].length() != 0) {
+				ps.setString(3, datos[3]);
+				variante = datos[3];
+			} else {
+				variante = comic.getVariante();
+				ps.setString(3, variante);
+			}
+			if (datos[4].length() != 0) {
+				ps.setString(4, datos[4]);
+				firma = datos[4];
+			} else {
+				firma = comic.getFirma();
+				ps.setString(4, firma);
+			}
+			if (datos[5].length() != 0) {
+				ps.setString(5, datos[5]);
+				editorial = datos[5];
+			} else {
+				editorial = comic.getEditorial();
+				ps.setString(5, editorial);
+			}
+			if (datos[6].length() != 0) {
+				ps.setString(6, datos[6]);
+				formato = datos[6];
+			} else {
+				formato = comic.getFormato();
+				ps.setString(6, formato);
+			}
+			if (datos[7].length() != 0) {
+				ps.setString(7, datos[7]);
+				procedencia = datos[7];
+			} else {
+				procedencia = comic.getProcedencia();
+				ps.setString(7, procedencia);
+			}
+			if (datos[8].length() != 0) {
+				ps.setString(8, datos[8]);
+				fecha = datos[8];
+			} else {
+				fecha = comic.getFecha();
+				ps.setString(8, fecha);
+			}
+			if (datos[9].length() != 0) {
+				ps.setString(9, datos[9]);
+				guionista = datos[9];
+			} else {
+				guionista = comic.getGuionista();
+				ps.setString(9, guionista);
+			}
+			if (datos[10].length() != 0) {
+				ps.setString(10, datos[10]);
+				dibujante = datos[10];
+			} else {
+				dibujante = comic.getDibujante();
+				ps.setString(10, dibujante);
+			}
+
+			if (datos[11].length() != 0) {
+				ps.setBinaryStream(11, portada);
+			} else {
+				ps.setBinaryStream(11, portada);
+			}
+			if (datos[12].length() != 0) {
+				ps.setString(12, datos[12]);
+				estado = datos[12];
+			}
+			ps.setString(13, datos[0]);
+
+			if (ps.executeUpdate() == 1) { // Si se ha modificado correctamente, saltara el siguiente mensaje
+				comic = new Comic("", nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+						guionista, dibujante, estado, "", "");
+
+				listaTratamiento.add(comic);
+				
+			}
+			ps.close();
+
+		} catch (SQLException ex) {
+			nav.alertaException(ex.toString());
+			ex.printStackTrace();
+		} finally {
+			try {
+				portada.close();
+			} catch (IOException ex) {
+				nav.alertaException(ex.toString());
+			}
+		}
+		utilidad.deleteImage(datos[11]);
 		bd.reloadID();
 	}
 }

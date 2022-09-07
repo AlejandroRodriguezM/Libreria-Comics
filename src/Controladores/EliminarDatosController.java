@@ -5,8 +5,8 @@ import java.util.List;
 
 import Funcionamiento.Comic;
 import Funcionamiento.FuncionesComicsBBDD;
+import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
-import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -125,8 +125,8 @@ public class EliminarDatosController {
 	private TableColumn<Comic, String> nombre;
 
 	private static Ventanas nav = new Ventanas();
-
-	private static FuncionesComicsBBDD libreria = new FuncionesComicsBBDD();
+	private static FuncionesComicsBBDD libreria = null;
+	private static Utilidades utilidad = null;
 
 	/**
 	 *
@@ -159,7 +159,7 @@ public class EliminarDatosController {
 	 */
 	@FXML
 	void eliminarDatos(ActionEvent event) {
-		
+		libreria = new FuncionesComicsBBDD();
 		String ID = idComicTratar.getText();
 		modificarDatos(ID);
 		libreria.eliminarComicBBDD(ID);
@@ -174,6 +174,7 @@ public class EliminarDatosController {
 	 */
 	@FXML
 	void ventaDatos(ActionEvent event) {
+		libreria = new FuncionesComicsBBDD();
 		String ID = idComicTratar.getText();
 		modificarDatos(ID);
 		libreria.venderComicBBDD(ID);
@@ -181,29 +182,38 @@ public class EliminarDatosController {
 	}
 
 	/**
-	 * Muestra la bbdd segun los parametros introducidos en los TextField
+	 * Metodo que mostrara los comics o comic buscados por parametro
 	 *
 	 * @param event
+	 * @throws SQLException
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
-		libreria.reiniciarBBDD();
-		nombreColumnas();
-		listaPorParametro();
 
+		libreria = new FuncionesComicsBBDD();
+		libreria.reiniciarBBDD();
+		nombreColumnas(); // Llamada a funcion
+		listaPorParametro(); // Llamada a funcion
+		busquedaGeneral.setText("");
 	}
 
 	/**
-	 * Muestra toda la base de datos.
+	 * Metodo que muestra toda la base de datos.
 	 *
 	 * @param event
 	 */
 	@FXML
-	void verTodabbdd(ActionEvent event) throws SQLException {
+	void verTodabbdd(ActionEvent event) {
+
+		utilidad = new Utilidades();
+		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
-		nombreColumnas();
-		tablaBBDD(libreriaCompleta());
+		nombreColumnas(); // Llamada a funcion
+		tablaBBDD(utilidad.libreriaCompleta()); // Llamada a funcion
+
 	}
+	
+
 
 	/**
 	 * Muestra las columnas especificas del fichero FXML
@@ -232,53 +242,13 @@ public class EliminarDatosController {
 	 *
 	 */
 	public void listaPorParametro() {
+		utilidad = new Utilidades();
 		String datosComic[] = camposComics();
 
 		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
 				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "", "", "");
 
-		tablaBBDD(busquedaParametro(comic));
-	}
-
-	/**
-	 * Devuelve el comic buscado por parametros
-	 *
-	 * @param comic
-	 * @return
-	 */
-	public List<Comic> busquedaParametro(Comic comic) {
-		List<Comic> listComic;
-
-		if (busquedaGeneral.getText().length() != 0) {
-			listComic = FXCollections.observableArrayList(libreria.verBusquedaGeneral(busquedaGeneral.getText()));
-			busquedaGeneral.setText("");
-		} else {
-			listComic = FXCollections.observableArrayList(libreria.filtadroBBDD(comic));
-			if (listComic.size() == 0) {
-				pantallaInformativa.setOpacity(1);
-				pantallaInformativa.setStyle("-fx-background-color: #F53636");
-				pantallaInformativa.setText("ERROR. No hay ningun dato en la base de datos");
-			}
-		}
-
-		return listComic;
-	}
-
-	/**
-	 * Devuelto una lista con todos los comics existentes en la bbdd
-	 *
-	 * @return
-	 */
-	public List<Comic> libreriaCompleta() {
-		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaPosesion());
-
-		if (listComic.size() == 0) {
-			pantallaInformativa.setOpacity(1);
-			pantallaInformativa.setStyle("-fx-background-color: #F53636");
-			pantallaInformativa.setText("ERROR. No hay ningun dato en la base de datos");
-		}
-
-		return listComic;
+		tablaBBDD(utilidad.busquedaParametro(comic,busquedaGeneral.getText()));
 	}
 
 	/**
@@ -300,6 +270,7 @@ public class EliminarDatosController {
 	 * @param sentenciaSQL
 	 */
 	public boolean modificarDatos(String ID) {
+		libreria = new FuncionesComicsBBDD();
 		if (nav.alertaEliminar()) {
 			if(ID.length() != 0) {
 				
