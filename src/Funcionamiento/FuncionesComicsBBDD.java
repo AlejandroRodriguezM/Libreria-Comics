@@ -497,10 +497,11 @@ public class FuncionesComicsBBDD extends Comic {
 					this.dibujante = rs.getString("nomDibujante");
 					this.estado = rs.getString("estado");
 					this.puntuacion = rs.getString("puntuacion");
+					this.imagen = rs.getBinaryStream("portada");
 
 					Comic comic = new Comic(this.ID, this.nombre, this.numero, this.variante, this.firma,
 							this.editorial, this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante,
-							this.estado, this.puntuacion, "");
+							this.estado, this.puntuacion, this.imagen);
 
 					listaComics.add(comic);
 
@@ -539,10 +540,11 @@ public class FuncionesComicsBBDD extends Comic {
 					this.dibujante = rs.getString("nomDibujante");
 					this.estado = rs.getString("estado");
 					this.puntuacion = rs.getString("puntuacion");
+					this.imagen = rs.getBinaryStream("portada");
 
 					comic = new Comic(this.ID, this.nombre, this.numero, this.variante, this.firma, this.editorial,
 							this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante, this.estado,
-							this.puntuacion, "");
+							this.puntuacion, this.imagen);
 
 				} while (rs.next());
 			}
@@ -774,20 +776,18 @@ public class FuncionesComicsBBDD extends Comic {
 			}
 			statement.setString(13, datos[11]);
 
-			if (statement.executeUpdate() == 1) { // Si el resultado del executeUpdate es 1, mostrara el mensaje
-				// correcto.
-				statement.close();
-			}
+			statement.executeUpdate();
+			statement.close();
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
-		} finally {
+		}
+		finally {
 			try {
 				portada.close();
-			} catch (IOException ex) {
-				nav.alertaException(ex.toString());
+			} catch (IOException e) {
+				nav.alertaException(e.toString());
 			}
 		}
-		utilidad.deleteImage(datos[10]);
 		bd.reloadID();
 	}
 
@@ -934,11 +934,12 @@ public class FuncionesComicsBBDD extends Comic {
 				ps.setString(12, datos[12]);
 				estado = datos[12];
 			}
+			
 			ps.setString(13, datos[0]);
 
 			if (ps.executeUpdate() == 1) { // Si se ha modificado correctamente, saltara el siguiente mensaje
 				comic = new Comic("", nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
-						guionista, dibujante, estado, "", "");
+						guionista, dibujante, estado, "", null);
 
 				listaTratamiento.add(comic);
 
@@ -954,7 +955,6 @@ public class FuncionesComicsBBDD extends Comic {
 				nav.alertaException(ex.toString());
 			}
 		}
-		utilidad.deleteImage(datos[11]);
 		bd.reloadID();
 	}
 

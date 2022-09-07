@@ -128,7 +128,7 @@ public class FuncionesExcel {
 				fila.createCell(9).setCellValue(comic.getGuionista());
 				fila.createCell(10).setCellValue(comic.getDibujante());
 				fila.createCell(11).setCellValue(comic.getPuntuacion());
-				fila.createCell(12).setCellValue(comic.getImagen());
+				fila.createCell(12).setCellValue("");
 				fila.createCell(13).setCellValue(comic.getEstado());
 
 				indiceFila++;

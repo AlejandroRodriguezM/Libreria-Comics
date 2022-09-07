@@ -1,6 +1,7 @@
 package Controladores;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.sql.SQLException;
@@ -434,7 +435,7 @@ public class ModificarDatosController implements Initializable {
 		String datos[] = camposComicActuales();
 
 		Comic comic = new Comic(datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
-				datos[8], datos[9], datos[10], "", "", "");
+				datos[8], datos[9], datos[10], "", "", null);
 
 		tablaBBDD(utilidad.busquedaParametro(comic, busquedaGeneral.getText()));
 		busquedaGeneral.setText("");
@@ -509,6 +510,11 @@ public class ModificarDatosController implements Initializable {
 			pantallaInformativa.setText("Has modificado correctamente: "
 					+ FuncionesComicsBBDD.listaTratamiento.toString().replace("[", "").replace("]", ""));
 
+			try {
+				portada.close();
+			} catch (IOException e) {
+				nav.alertaException(e.toString());
+			}
 			return true;
 		} else {
 			pantallaInformativa.setOpacity(1);

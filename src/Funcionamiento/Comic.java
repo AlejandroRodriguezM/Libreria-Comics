@@ -1,5 +1,7 @@
 package Funcionamiento;
 
+import java.io.InputStream;
+
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  * Las ventanas graficas se realizan con JavaFX.
@@ -46,12 +48,12 @@ public class Comic {
 	protected String dibujante;
 	protected String estado;
 	protected String puntuacion;
-	protected String imagen;
+	protected InputStream imagen;
 
 	// Constructor
 	public Comic(String ID, String nombre, String numero, String variante, String firma, String editorial,
 			String formato, String procedencia, String fecha, String guionista, String dibujante, String estado,
-			String puntuacion, String imagen) {
+			String puntuacion, InputStream imagen) {
 		this.ID = ID;
 		this.nombre = nombre;
 		this.numero = numero;
@@ -83,7 +85,7 @@ public class Comic {
 		this.dibujante = "";
 		this.estado = "";
 		this.puntuacion = "";
-		this.imagen = "";
+		this.imagen = null;
 	}
 
 	// Getters y setters
@@ -140,16 +142,16 @@ public class Comic {
 		return puntuacion;
 	}
 
-	public String getImagen() {
+	public void setPuntuacion(String puntuacion) {
+		this.puntuacion = puntuacion;
+	}
+
+	public InputStream getImagen() {
 		return imagen;
 	}
 
-	public void setImagen(String imagen) {
+	public void setImagen(InputStream imagen) {
 		this.imagen = imagen;
-	}
-
-	public void setPuntuacion(String puntuacion) {
-		this.puntuacion = puntuacion;
 	}
 
 	public void setID(String ID) {

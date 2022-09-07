@@ -1,6 +1,7 @@
 package Controladores;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
@@ -313,12 +314,14 @@ public class IntroducirDatosController implements Initializable {
 		libreria = new FuncionesComicsBBDD();
 		subidaComic();
 		libreria.reiniciarBBDD();
+		direccionImagen.setText("");
 	}
 
 	@FXML
 	void nuevaPortada(ActionEvent event) {
 		imagencomic.setImage(null);
 		subirPortada();
+
 	}
 
 	/**
@@ -328,7 +331,7 @@ public class IntroducirDatosController implements Initializable {
 	public FileChooser tratarFichero() {
 		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
 		fileChooser.getExtensionFilters()
-				.addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg", "*.png", "*.jpeg"));
+		.addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg", "*.png", "*.jpeg"));
 
 		return fileChooser;
 	}
@@ -403,7 +406,7 @@ public class IntroducirDatosController implements Initializable {
 		String datos[] = camposComicActuales();
 
 		Comic comic = new Comic(datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
-				datos[8], datos[9], datos[10], "", "", "");
+				datos[8], datos[9], datos[10], "", "", null);
 
 		tablaBBDD(utilidad.busquedaParametro(comic, busquedaGeneral.getText()));
 		busquedaGeneral.setText("");
@@ -428,21 +431,30 @@ public class IntroducirDatosController implements Initializable {
 	public boolean subidaComic() {
 		libreria = new FuncionesComicsBBDD();
 		utilidad = new Utilidades();
+		String datos[] = camposComicIntroducir();
 		if (nav.alertaInsertar()) {
-			String datos[] = camposComicIntroducir();
-			libreria.insertarDatos(datos);
-			Comic comic = new Comic("", datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
-					datos[8], datos[9], datos[11], "Sin puntuar", "");
 
 			InputStream portada = utilidad.direccionImagen(datos[10]);
+			libreria.insertarDatos(datos);
+			Comic comic = new Comic("", datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
+					datos[8], datos[9], datos[11], "Sin puntuar", portada);
+
+
 			Image imagen = new Image(portada);
 			imagencomic.setImage(imagen);
 
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 			pantallaInformativa
-					.setText("Has añadido correctamente: " + comic.toString().replace("[", "").replace("]", ""));
+			.setText("Has añadido correctamente: " + comic.toString().replace("[", "").replace("]", ""));
+			try {
+				portada.close();
+				utilidad.deleteImage(datos[10]);
+			} catch (IOException e) {
+				nav.alertaException(e.toString());
+			}
 			return true;
+
 		} else {
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #F53636");
