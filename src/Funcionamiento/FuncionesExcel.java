@@ -280,18 +280,17 @@ public class FuncionesExcel {
 	 * @param lineReader
 	 */
 	public void lecturaCSV(String sql, BufferedReader lineReader) {
-		InputStream portada = null;
 		try {
 			PreparedStatement statement = conn.prepareStatement(sql);
 			db = new FuncionesBBDD();
 			int batchSize = 20;
 
 			String lineText = null;
-			
+
 			int count = 0;
 			int j = db.countRows();
 			lineReader.readLine();
-			
+			InputStream portada = subirImagenes();
 
 			// Se leeran los datos hasta que no existan mas datos
 			while ((lineText = lineReader.readLine()) != null) {
@@ -308,7 +307,6 @@ public class FuncionesExcel {
 				String guionista = data[9];
 				String dibujante = data[10];
 				String puntuacion = data[11];
-				portada = subirImagenes();
 				String estado = data[13];
 
 				statement.setString(1, id);
