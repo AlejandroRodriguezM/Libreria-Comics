@@ -55,7 +55,8 @@ public class FuncionesExcel {
 	private static FuncionesComicsBBDD libreria = new FuncionesComicsBBDD();
 	private static Connection conn = FuncionesConexionBBDD.conexion();
 	private static Ventanas nav = new Ventanas();
-	private static FuncionesBBDD db = new FuncionesBBDD();
+	private static FuncionesBBDD db = null;
+	private static Utilidades utilidad = null;
 	private static int ID = 0;
 
 	/**
@@ -251,11 +252,15 @@ public class FuncionesExcel {
 
 		ID++;
 		InputStream input;
+		utilidad = new Utilidades();
 		try {
 			File directorio = new File("imagenes de la base de datos");
 			File portada = new File(directorio.toString() + "/" + ID + ".jpg");
 			if (directorio.exists() && portada.exists()) {
-				input = new FileInputStream(directorio.getAbsoluteFile().toString() + "/" + ID + ".jpg");
+				File tmp = utilidad.getScaledImage(portada);
+				input = new FileInputStream(tmp);
+//				input = new FileInputStream(directorio.getAbsoluteFile().toString() + "\\" + ID + ".jpg");
+				
 				return input;
 			} else {
 				input = this.getClass().getResourceAsStream("sinPortada.jpg");
@@ -277,6 +282,7 @@ public class FuncionesExcel {
 	public void lecturaCSV(String sql, BufferedReader lineReader) {
 		try {
 			PreparedStatement statement = conn.prepareStatement(sql);
+			db = new FuncionesBBDD();
 			int batchSize = 20;
 
 			String lineText = null;
