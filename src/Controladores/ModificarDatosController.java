@@ -217,10 +217,12 @@ public class ModificarDatosController implements Initializable {
 	 */
 	@FXML
 	void modificarDatos(ActionEvent event) {
+		
 		imagencomic.setImage(null);
 		libreria = new FuncionesComicsBBDD();
 		modificacionComic(); // Llamada a funcion que modificara el contenido de un comic especifico.
 		libreria.reiniciarBBDD();
+		direccionImagen.setText("");
 	}
 
 	@FXML

@@ -232,7 +232,6 @@ public class FuncionesExcel {
 		try {
 			BufferedReader lineReader = new BufferedReader(new FileReader(fichero));
 			lecturaCSV(sql, lineReader);
-
 			return true;
 		} catch (Exception e) {
 			try {
@@ -240,6 +239,7 @@ public class FuncionesExcel {
 				PreparedStatement statement2 = conn.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");
 				statement1.close();
 				statement2.close();
+				
 				nav.alertaException("El formato del fichero .csv no es correcto: " + e.toString());
 			} catch (SQLException e1) {
 				nav.alertaException(e1.toString());
@@ -280,16 +280,18 @@ public class FuncionesExcel {
 	 * @param lineReader
 	 */
 	public void lecturaCSV(String sql, BufferedReader lineReader) {
+		InputStream portada = null;
 		try {
 			PreparedStatement statement = conn.prepareStatement(sql);
 			db = new FuncionesBBDD();
 			int batchSize = 20;
 
 			String lineText = null;
-
+			
 			int count = 0;
 			int j = db.countRows();
 			lineReader.readLine();
+			
 
 			// Se leeran los datos hasta que no existan mas datos
 			while ((lineText = lineReader.readLine()) != null) {
@@ -306,7 +308,7 @@ public class FuncionesExcel {
 				String guionista = data[9];
 				String dibujante = data[10];
 				String puntuacion = data[11];
-				InputStream portada = subirImagenes();
+				portada = subirImagenes();
 				String estado = data[13];
 
 				statement.setString(1, id);
@@ -333,6 +335,7 @@ public class FuncionesExcel {
 
 			lineReader.close();
 			statement.executeBatch();
+			portada.close();
 		} catch (SQLException e) {
 			nav.alertaException(e.toString());
 		} catch (IOException e) {
