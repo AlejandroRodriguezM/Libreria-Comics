@@ -290,7 +290,7 @@ public class FuncionesExcel {
 			int count = 0;
 			int j = db.countRows();
 			lineReader.readLine();
-			InputStream portada = subirImagenes();
+			InputStream portada = null;
 
 			// Se leeran los datos hasta que no existan mas datos
 			while ((lineText = lineReader.readLine()) != null) {
@@ -308,7 +308,7 @@ public class FuncionesExcel {
 				String dibujante = data[10];
 				String puntuacion = data[11];
 				String estado = data[13];
-
+				portada = subirImagenes();
 				statement.setString(1, id);
 				statement.setString(2, nombre);
 				statement.setString(3, numero);
