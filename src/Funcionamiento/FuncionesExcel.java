@@ -347,6 +347,7 @@ public class FuncionesExcel {
 			try {
 				portada.close();
 				utilidad.deleteImage(directorio.toString());
+				ID = 0;
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
