@@ -259,7 +259,6 @@ public class FuncionesExcel {
 			if (directorio.exists() && portada.exists()) {
 				File tmp = utilidad.getScaledImage(portada);
 				input = new FileInputStream(tmp);
-//				input = new FileInputStream(directorio.getAbsoluteFile().toString() + "\\" + ID + ".jpg");
 				
 				return input;
 			} else {
@@ -280,18 +279,20 @@ public class FuncionesExcel {
 	 * @param lineReader
 	 */
 	public void lecturaCSV(String sql, BufferedReader lineReader) {
+		File directorio = null;
+		InputStream portada = null;
 		try {
 			PreparedStatement statement = conn.prepareStatement(sql);
+			directorio = new File("imagenes de la base de datos"+ "/" + "temp.jpg");
 			db = new FuncionesBBDD();
 			int batchSize = 20;
-
+			utilidad = new Utilidades();
 			String lineText = null;
 
 			int count = 0;
 			int j = db.countRows();
 			lineReader.readLine();
-			InputStream portada = null;
-
+			
 			// Se leeran los datos hasta que no existan mas datos
 			while ((lineText = lineReader.readLine()) != null) {
 				String[] data = lineText.split(";");
@@ -329,15 +330,26 @@ public class FuncionesExcel {
 				if (count % batchSize == 0) {
 					statement.executeBatch();
 				}
+				portada.close();
 			}
 
 			lineReader.close();
 			statement.executeBatch();
 			portada.close();
+			utilidad.deleteImage(directorio.toString());
+			ID = 0;
 		} catch (SQLException e) {
 			nav.alertaException(e.toString());
 		} catch (IOException e) {
 			nav.alertaException(e.toString());
+		}
+		finally {
+			try {
+				portada.close();
+				utilidad.deleteImage(directorio.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

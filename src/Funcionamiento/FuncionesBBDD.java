@@ -161,7 +161,7 @@ public class FuncionesBBDD {
 
 			String mysqlDump = directorio.getAbsolutePath();
 
-			String command[] = new String[] { mysqlDump, "-u" + "root", "-p" + "1234", "-B", "comics2", "--hex-blob",
+			String command[] = new String[] { mysqlDump, "-u" + FuncionesConexionBBDD.DB_USER, "-p" + FuncionesConexionBBDD.DB_PASS, "-B", FuncionesConexionBBDD.DB_NAME, "--hex-blob",
 					"--routines=true", "--result-file=" + fichero };
 			ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
 			pb.redirectError(Redirect.INHERIT);
