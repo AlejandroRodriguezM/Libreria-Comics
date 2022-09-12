@@ -38,6 +38,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.collections.FXCollections;
 import javafx.scene.image.Image;
 
 /**
@@ -1094,6 +1095,106 @@ public class FuncionesComicsBBDD extends Comic {
 		Image imagen = new Image("file:tmp.jpg", 250, 250, true, true);
 
 		return imagen;
+	}
+	
+	/**
+	 * Funcion que muestra todos los comics de la base de datos
+	 *
+	 * @return
+	 */
+	public List<Comic> libreriaCompleta() {
 
+		List<Comic> listComic = FXCollections.observableArrayList(verLibreriaPosesion());
+
+		if (listComic.size() == 0) {
+
+			String excepcion = "No hay ningun comic guardado en la base de datos";
+			nav.alertaException(excepcion);
+		}
+
+		return listComic;
+	}
+
+	/**
+	 * Funcion que busca en el arrayList el o los comics que tengan coincidencia con
+	 * los datos introducidos en el TextField
+	 *
+	 * @param comic
+	 * @return
+	 */
+	public List<Comic> busquedaParametro(Comic comic, String busquedaGeneral) {
+
+		List<Comic> listComic;
+
+		if (busquedaGeneral.length() != 0) {
+			listComic = FXCollections.observableArrayList(verBusquedaGeneral(busquedaGeneral));
+		} else {
+			listComic = FXCollections.observableArrayList(filtadroBBDD(comic));
+		}
+
+		return listComic;
+	}
+
+	/**
+	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
+	 * "En posesion"
+	 *
+	 * @return
+	 */
+	public List<Comic> libreriaVendidos() {
+
+		List<Comic> listComic = FXCollections.observableArrayList(verLibreriaVendidos());
+		if (listComic.size() == 0) {
+			String excepcion = "No hay comics en vendidos";
+			nav.alertaException(excepcion);
+		}
+
+		return listComic;
+	}
+
+	/**
+	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
+	 * "En posesion"
+	 *
+	 * @return
+	 */
+	public List<Comic> libreriaEnVenta() {
+		List<Comic> listComic = FXCollections.observableArrayList(verLibreriaEnVenta());
+
+		if (listComic.size() == 0) {
+			String excepcion = "No hay comics en venta";
+			nav.alertaException(excepcion);
+		}
+		return listComic;
+	}
+
+	/**
+	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
+	 * "En posesion"
+	 *
+	 * @return
+	 */
+	public List<Comic> libreriaPuntuacion() {
+		List<Comic> listComic = FXCollections.observableArrayList(verLibreriaPuntuacion());
+		if (listComic.size() == 0) {
+			String excepcion = "No hay comics puntuados";
+			nav.alertaException(excepcion);
+		}
+		return listComic;
+	}
+
+	/**
+	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
+	 * firmados
+	 *
+	 * @return
+	 */
+	public List<Comic> libreriaFirmados() {
+		List<Comic> listComic = FXCollections.observableArrayList(verLibreriaFirmados());
+		if (listComic.size() == 0) {
+			String excepcion = "No hay comics firmados";
+			nav.alertaException(excepcion);
+		}
+		return listComic;
 	}
 }

@@ -222,7 +222,7 @@ public class EliminarDatosController {
 		listaPorParametro(); // Llamada a funcion
 		busquedaGeneral.setText("");
 	}
-
+	
 	/**
 	 * Metodo que muestra toda la base de datos.
 	 *
@@ -235,9 +235,28 @@ public class EliminarDatosController {
 		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
-		tablaBBDD(utilidad.libreriaCompleta()); // Llamada a funcion
+		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
 
 	}
+
+	/**
+	 * Funcion que muestra los comics que coincidan con los parametros introducidos
+	 * en los textField
+	 *
+	 * @return
+	 */
+	public void listaPorParametro() {
+		libreria = new FuncionesComicsBBDD();
+
+		String datos[] = camposComics();
+
+		Comic comic = new Comic(datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
+				datos[8], datos[9], datos[10], "", "", null);
+
+		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
+		busquedaGeneral.setText("");
+	}
+
 
 	/**
 	 * Muestra las columnas especificas del fichero FXML
@@ -261,19 +280,6 @@ public class EliminarDatosController {
 	//// FUNCIONES/////////////
 	//////////////////////////
 
-	/**
-	 * Almacena los datos introducidos en los TextField
-	 *
-	 */
-	public void listaPorParametro() {
-		utilidad = new Utilidades();
-		String datosComic[] = camposComics();
-
-		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
-				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "", "", null);
-
-		tablaBBDD(utilidad.busquedaParametro(comic, busquedaGeneral.getText()));
-	}
 
 	/**
 	 * Obtiene los datos de los comics de la base de datos y los devuelve en el

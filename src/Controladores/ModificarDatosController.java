@@ -422,7 +422,7 @@ public class ModificarDatosController implements Initializable {
 		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
-		tablaBBDD(utilidad.libreriaCompleta()); // Llamada a funcion
+		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
 
 	}
 
@@ -433,13 +433,14 @@ public class ModificarDatosController implements Initializable {
 	 * @return
 	 */
 	public void listaPorParametro() {
-		utilidad = new Utilidades();
+		libreria = new FuncionesComicsBBDD();
+
 		String datos[] = camposComicActuales();
 
 		Comic comic = new Comic(datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
 				datos[8], datos[9], datos[10], "", "", null);
 
-		tablaBBDD(utilidad.busquedaParametro(comic, busquedaGeneral.getText()));
+		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
 		busquedaGeneral.setText("");
 	}
 

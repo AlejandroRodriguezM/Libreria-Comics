@@ -307,7 +307,7 @@ public class MenuPrincipalController {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
-		limpiezaDeDatos();
+		imagencomic.setImage(null);
 		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
@@ -322,12 +322,11 @@ public class MenuPrincipalController {
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) {
-		limpiezaDeDatos();
-		utilidad = new Utilidades();
+		imagencomic.setImage(null);
 		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
-		tablaBBDD(utilidad.libreriaCompleta()); // Llamada a funcion
+		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
 
 	}
 
@@ -340,11 +339,10 @@ public class MenuPrincipalController {
 	@FXML
 	void comicsPuntuacion(ActionEvent event) {
 		limpiezaDeDatos();
-		utilidad = new Utilidades();
 		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
-		tablaBBDD(utilidad.libreriaPuntuacion());
+		tablaBBDD(libreria.libreriaPuntuacion());
 
 	}
 
@@ -357,11 +355,10 @@ public class MenuPrincipalController {
 	@FXML
 	void comicsVendidos(ActionEvent event) {
 		limpiezaDeDatos();
-		utilidad = new Utilidades();
 		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
-		tablaBBDD(utilidad.libreriaVendidos());
+		tablaBBDD(libreria.libreriaVendidos());
 
 	}
 
@@ -374,11 +371,10 @@ public class MenuPrincipalController {
 	@FXML
 	void comicsFirmados(ActionEvent event) {
 		limpiezaDeDatos();
-		utilidad = new Utilidades();
 		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
-		tablaBBDD(utilidad.libreriaFirmados());
+		tablaBBDD(libreria.libreriaFirmados());
 	}
 
 	/**
@@ -394,7 +390,7 @@ public class MenuPrincipalController {
 		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
-		tablaBBDD(utilidad.libreriaEnVenta());
+		tablaBBDD(libreria.libreriaEnVenta());
 	}
 
 	////////////////////////////
@@ -674,13 +670,14 @@ public class MenuPrincipalController {
 	 * estas buscando.
 	 */
 	public void listaPorParametro() {
-		utilidad = new Utilidades();
-		String datosComic[] = camposComic();
+		libreria = new FuncionesComicsBBDD();
 
-		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
-				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "", "", null);
+		String datos[] = camposComic();
 
-		tablaBBDD(utilidad.busquedaParametro(comic, busquedaGeneral.getText()));
+		Comic comic = new Comic(datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
+				datos[8], datos[9], datos[10], "", "", null);
+
+		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
 		busquedaGeneral.setText("");
 	}
 

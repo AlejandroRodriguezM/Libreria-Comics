@@ -322,7 +322,7 @@ public class PuntuarDatosController implements Initializable {
 		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
-		tablaBBDD(utilidad.libreriaCompleta()); // Llamada a funcion
+		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
 
 	}
 
@@ -339,7 +339,7 @@ public class PuntuarDatosController implements Initializable {
 		libreria = new FuncionesComicsBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
-		tablaBBDD(utilidad.libreriaPuntuacion());
+		tablaBBDD(libreria.libreriaPuntuacion());
 	}
 
 	/**
@@ -399,7 +399,7 @@ public class PuntuarDatosController implements Initializable {
 		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
 				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "", "", null);
 
-		tablaBBDD(utilidad.busquedaParametro(comic, busquedaGeneral.getText()));
+		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
 		busquedaGeneral.setText("");
 	}
 
