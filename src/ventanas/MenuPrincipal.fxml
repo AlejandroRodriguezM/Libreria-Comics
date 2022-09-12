@@ -111,8 +111,8 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <TextArea fx:id="prontInfo" layoutX="951.0" layoutY="105.0" opacity="0.0" prefHeight="180.0" prefWidth="232.0" wrapText="true" />
-      <TextArea fx:id="prontFrases" editable="false" layoutX="907.0" layoutY="8.0" opacity="0.0" prefHeight="85.0" prefWidth="278.0" wrapText="true">
+      <TextArea fx:id="prontInfo" layoutX="951.0" layoutY="121.0" opacity="0.0" prefHeight="180.0" prefWidth="232.0" wrapText="true" />
+      <TextArea fx:id="prontFrases" editable="false" layoutX="902.0" layoutY="7.0" opacity="0.0" prefHeight="105.0" prefWidth="285.0" wrapText="true">
          <font>
             <Font name="Comic Sans MS" size="15.0" />
          </font>
