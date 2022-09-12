@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import Funcionamiento.Comic;
-import Funcionamiento.FuncionesBBDD;
+import Funcionamiento.DBLibreriaManager;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import javafx.collections.FXCollections;
@@ -163,7 +163,7 @@ public class PuntuarDatosController implements Initializable {
 	private ImageView imagencomic;
 
 	private static Ventanas nav = new Ventanas();
-	private static FuncionesBBDD libreria = null;
+	private static DBLibreriaManager libreria = null;
 	private static Utilidades utilidad = null;
 
 	/**
@@ -182,7 +182,7 @@ public class PuntuarDatosController implements Initializable {
 
 	@FXML
 	void clickRaton(MouseEvent event) {
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 		libreria.verLibreriaCompleta();
 		utilidad = new Utilidades();
 		String ID;
@@ -207,7 +207,7 @@ public class PuntuarDatosController implements Initializable {
 	@FXML
 	void agregarPuntuacion(ActionEvent event) {
 		imagencomic.setImage(null);
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 		String ID = idPuntuar.getText();
 		libreria.actualizarPuntuacion(ID, comicPuntuacion()); // Llamada a funcion
 		datosOpinion("Opinion introducida con exito: ");
@@ -221,7 +221,7 @@ public class PuntuarDatosController implements Initializable {
 	@FXML
 	void borrarPuntuacion(ActionEvent event) {
 		imagencomic.setImage(null);
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 		String ID = idPuntuar.getText();
 		libreria.borrarPuntuacion(ID);
 		datosOpinion("Opinion borrada con exito: ");
@@ -231,7 +231,7 @@ public class PuntuarDatosController implements Initializable {
 		pantallaInformativa.setOpacity(0);
 		pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 		pantallaInformativa
-				.setText(pantallaInfo + FuncionesBBDD.listaTratamiento.toString().replace("[", "").replace("]", ""));
+				.setText(pantallaInfo + DBLibreriaManager.listaTratamiento.toString().replace("[", "").replace("]", ""));
 	}
 
 	/**
@@ -303,7 +303,7 @@ public class PuntuarDatosController implements Initializable {
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
 		imagencomic.setImage(null);
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
 		listaPorParametro(); // Llamada a funcion
@@ -319,7 +319,7 @@ public class PuntuarDatosController implements Initializable {
 	void verTodabbdd(ActionEvent event) {
 		imagencomic.setImage(null);
 		utilidad = new Utilidades();
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
 		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
@@ -336,7 +336,7 @@ public class PuntuarDatosController implements Initializable {
 	void verComicsLeidos(ActionEvent event) {
 		imagencomic.setImage(null);
 		utilidad = new Utilidades();
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(libreria.libreriaPuntuacion());

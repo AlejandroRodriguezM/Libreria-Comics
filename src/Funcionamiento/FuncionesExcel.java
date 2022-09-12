@@ -52,10 +52,10 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  */
 public class FuncionesExcel {
 
-	private static FuncionesBBDD libreria = new FuncionesBBDD();
+	private static DBLibreriaManager libreria = new DBLibreriaManager();
 	private static Connection conn = DBManager.conexion();
 	private static Ventanas nav = new Ventanas();
-	private static FuncionesBBDD db = null;
+	private static DBLibreriaManager db = null;
 	private static Utilidades utilidad = null;
 	private static int ID = 0;
 
@@ -100,7 +100,7 @@ public class FuncionesExcel {
 		try {
 			fichero.createNewFile();
 			libreria.verLibreriaCompleta();
-			List<Comic> listaComics = FuncionesBBDD.listaCompleta;
+			List<Comic> listaComics = DBLibreriaManager.listaCompleta;
 
 			libro = new XSSFWorkbook();
 
@@ -284,7 +284,7 @@ public class FuncionesExcel {
 		try {
 			PreparedStatement statement = conn.prepareStatement(sql);
 			directorio = new File("imagenes de la base de datos" + "/" + "temp.jpg");
-			db = new FuncionesBBDD();
+			db = new DBLibreriaManager();
 			int batchSize = 20;
 			utilidad = new Utilidades();
 			String lineText = null;

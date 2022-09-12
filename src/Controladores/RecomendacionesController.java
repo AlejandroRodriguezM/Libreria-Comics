@@ -25,7 +25,7 @@ package Controladores;
 
 import java.util.Random;
 
-import Funcionamiento.FuncionesBBDD;
+import Funcionamiento.DBLibreriaManager;
 import Funcionamiento.Ventanas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -59,7 +59,7 @@ public class RecomendacionesController {
 
 	private static Ventanas nav = new Ventanas();
 
-	private static FuncionesBBDD libreria = new FuncionesBBDD();
+	private static DBLibreriaManager libreria = new DBLibreriaManager();
 
 	/**
 	 * Llama a funcion que genera una lectura recomendada

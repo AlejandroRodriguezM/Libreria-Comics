@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import Funcionamiento.Comic;
-import Funcionamiento.FuncionesBBDD;
+import Funcionamiento.DBLibreriaManager;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import javafx.event.ActionEvent;
@@ -130,7 +130,7 @@ public class EliminarDatosController {
 	private ImageView imagencomic;
 
 	private static Ventanas nav = new Ventanas();
-	private static FuncionesBBDD libreria = null;
+	private static DBLibreriaManager libreria = null;
 	private static Utilidades utilidad = null;
 
 	/**
@@ -161,7 +161,7 @@ public class EliminarDatosController {
 
 	@FXML
 	void clickRaton(MouseEvent event) {
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 		libreria.verLibreriaCompleta();
 		utilidad = new Utilidades();
 		String ID;
@@ -184,7 +184,7 @@ public class EliminarDatosController {
 	@FXML
 	void eliminarDatos(ActionEvent event) {
 		imagencomic.setImage(null);
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 		String ID = idComicTratar.getText();
 		modificarDatos(ID);
 		libreria.eliminarComicBBDD(ID);
@@ -200,7 +200,7 @@ public class EliminarDatosController {
 	@FXML
 	void ventaDatos(ActionEvent event) {
 		imagencomic.setImage(null);
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 		String ID = idComicTratar.getText();
 		modificarDatos(ID);
 		libreria.venderComicBBDD(ID);
@@ -216,7 +216,7 @@ public class EliminarDatosController {
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
 		imagencomic.setImage(null);
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
 		listaPorParametro(); // Llamada a funcion
@@ -232,7 +232,7 @@ public class EliminarDatosController {
 	void verTodabbdd(ActionEvent event) {
 		imagencomic.setImage(null);
 		utilidad = new Utilidades();
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
 		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
@@ -246,7 +246,7 @@ public class EliminarDatosController {
 	 * @return
 	 */
 	public void listaPorParametro() {
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 
 		String datos[] = camposComics();
 
@@ -298,7 +298,7 @@ public class EliminarDatosController {
 	 * @param sentenciaSQL
 	 */
 	public boolean modificarDatos(String ID) {
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 		if (nav.alertaEliminar()) {
 			if (ID.length() != 0) {
 

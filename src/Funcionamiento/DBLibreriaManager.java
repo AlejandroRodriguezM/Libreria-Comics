@@ -50,7 +50,7 @@ import javafx.stage.FileChooser;
  *
  * @author Alejandro Rodriguez
  */
-public class FuncionesBBDD extends Comic {
+public class DBLibreriaManager extends Comic {
 
 	public static List<Comic> listaComics = new ArrayList<>();
 	public static List<Comic> listaPosesion = new ArrayList<>();
@@ -61,7 +61,6 @@ public class FuncionesBBDD extends Comic {
 	private static Ventanas nav = new Ventanas();
 	private static Connection conn = null;
 	private static Utilidades utilidad = null;
-	private static FuncionesBBDD bd = null;
 
 	/**
 	 * Funcion que permite contar cuantas filas hay en la base de datos.
@@ -110,7 +109,7 @@ public class FuncionesBBDD extends Comic {
 	}
 
 	/**
-	 *
+	 * Funcion que permite reasignar ID a todos los comics, se realiza a la hora de introducir, modificar, eliminar un comic.
 	 * @return
 	 */
 	public boolean reloadID() {
@@ -321,31 +320,19 @@ public class FuncionesBBDD extends Comic {
 	}
 
 	/**
-	 * Permite leer datos usando una query
-	 *
-	 * @return
-	 */
-	private Statement declaracionSQL() {
-		Connection conn = DBManager.conexion();
-		Statement st;
-		try {
-			st = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-			return st;
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	/**
 	 * Permite devolver datos de la base de datos segun la query en parametros
 	 *
 	 * @param procedimiento
 	 * @return
 	 */
 	public ResultSet ejecucionSQL(String procedimiento) {
+		ResultSet rs = null;
+		Statement st = null;
+		Connection conn = DBManager.conexion();
+		
 		try {
-			ResultSet rs = declaracionSQL().executeQuery(procedimiento);
+			st = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+			rs = st.executeQuery(procedimiento);
 			return rs;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -922,6 +909,9 @@ public class FuncionesBBDD extends Comic {
 		return false;
 	}
 
+	/**
+	 * Funcion que permite generar imagenes de formato JPG a la hora de exportar la base de datos excel.
+	 */
 	public void saveImageFromDataBase() {
 		String sentenciaSQL = "SELECT * FROM comicsbbdd";
 		conn = DBManager.conexion();
@@ -932,7 +922,7 @@ public class FuncionesBBDD extends Comic {
 			while (rs.next()) {
 				String nombreImagen = rs.getString(1);
 				Blob imagenBlob = rs.getBlob(13);
-				File directorio = new File("imagenes de la base de datos");
+				File directorio = new File("portadas");
 				directorio.mkdir();
 				FileOutputStream fileops = new FileOutputStream(
 						directorio.getAbsoluteFile().toString() + "/" + nombreImagen + ".jpg");
@@ -946,13 +936,12 @@ public class FuncionesBBDD extends Comic {
 	}
 
 	/**
-	 *
+	 * Permite modificar un comic de la base de datos
 	 * @param id
 	 * @param sentenciaSQL
 	 */
 	public boolean modificarDatos(String id, String sentenciaSQL) {
 		PreparedStatement stmt;
-		bd = new FuncionesBBDD();
 		Connection conn = DBManager.conexion();
 		try {
 			if (id.length() != 0) {
@@ -961,7 +950,7 @@ public class FuncionesBBDD extends Comic {
 
 				stmt.setString(1, id);
 				if (stmt.executeUpdate() == 1) {
-					bd.reloadID();
+					reloadID();
 					return true;
 				}
 			}
@@ -986,7 +975,7 @@ public class FuncionesBBDD extends Comic {
 	}
 
 	/**
-	 *
+	 * Funcion que manda una querry de eliminar comic de la base de datos.
 	 */
 	public void eliminarComicBBDD(String id) {
 		String sentenciaSQL;
@@ -997,8 +986,7 @@ public class FuncionesBBDD extends Comic {
 	}
 
 	/**
-	 *
-	 *
+	 * Funcion que permite obtener datos de la libreria de comics almacenada en la base de datos
 	 * @param sentenciaSQL
 	 * @return
 	 */
@@ -1040,7 +1028,7 @@ public class FuncionesBBDD extends Comic {
 	}
 
 	/**
-	 *
+	 * Funcion que permite introducir un nuevo comic en la base de datos.
 	 */
 	public void subirComic(String sentenciaSQL, String datos[]) {
 
@@ -1048,7 +1036,6 @@ public class FuncionesBBDD extends Comic {
 
 		InputStream portada = utilidad.direccionImagen(datos[10]);
 
-		bd = new FuncionesBBDD();
 		conn = DBManager.conexion();
 
 		try {
@@ -1084,7 +1071,7 @@ public class FuncionesBBDD extends Comic {
 				nav.alertaException(e.toString());
 			}
 		}
-		bd.reloadID();
+		reloadID();
 	}
 
 	/**
@@ -1141,7 +1128,6 @@ public class FuncionesBBDD extends Comic {
 	 */
 	public void comicModificar(PreparedStatement ps, String datos[]) {
 		utilidad = new Utilidades();
-		bd = new FuncionesBBDD();
 		listaTratamiento.clear();
 		String nombre = "", numero = "", variante = "", firma = "", editorial = "", formato = "", procedencia = "",
 				fecha = "", guionista = "", dibujante = "", estado = "";
@@ -1251,7 +1237,7 @@ public class FuncionesBBDD extends Comic {
 				nav.alertaException(ex.toString());
 			}
 		}
-		bd.reloadID();
+		reloadID();
 	}
 
 	/**
@@ -1348,7 +1334,7 @@ public class FuncionesBBDD extends Comic {
 	}
 
 	/**
-	 *
+	 * Funcion que permite mostrar imagen de una portada cuando se clickea con el raton encima del comic seleccionado
 	 * @param ID
 	 * @return
 	 */

@@ -30,7 +30,7 @@ import java.util.List;
 
 import Funcionamiento.Comic;
 import Funcionamiento.DBManager;
-import Funcionamiento.FuncionesBBDD;
+import Funcionamiento.DBLibreriaManager;
 import Funcionamiento.FuncionesExcel;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
@@ -205,11 +205,11 @@ public class MenuPrincipalController {
 
 	private static Ventanas nav = new Ventanas();
 
-	private static FuncionesBBDD libreria = null;
+	private static DBLibreriaManager libreria = null;
 
 	private static Utilidades utilidad = null;
 
-	private static FuncionesBBDD db = null;
+	private static DBLibreriaManager db = null;
 
 	private static FuncionesExcel excelFuntions = null;
 
@@ -307,7 +307,7 @@ public class MenuPrincipalController {
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
 		imagencomic.setImage(null);
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
 		listaPorParametro(); // Llamada a funcion
@@ -322,7 +322,7 @@ public class MenuPrincipalController {
 	@FXML
 	void verTodabbdd(ActionEvent event) {
 		imagencomic.setImage(null);
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
 		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
@@ -338,7 +338,7 @@ public class MenuPrincipalController {
 	@FXML
 	void comicsPuntuacion(ActionEvent event) {
 		limpiezaDeDatos();
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(libreria.libreriaPuntuacion());
@@ -354,7 +354,7 @@ public class MenuPrincipalController {
 	@FXML
 	void comicsVendidos(ActionEvent event) {
 		limpiezaDeDatos();
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(libreria.libreriaVendidos());
@@ -370,7 +370,7 @@ public class MenuPrincipalController {
 	@FXML
 	void comicsFirmados(ActionEvent event) {
 		limpiezaDeDatos();
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(libreria.libreriaFirmados());
@@ -386,7 +386,7 @@ public class MenuPrincipalController {
 	void comicsEnVenta(ActionEvent event) {
 		limpiezaDeDatos();
 		utilidad = new Utilidades();
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(libreria.libreriaEnVenta());
@@ -503,7 +503,7 @@ public class MenuPrincipalController {
 	 */
 	@FXML
 	void borrarContenidoTabla(ActionEvent event) {
-		db = new FuncionesBBDD();
+		db = new DBLibreriaManager();
 		if (db.borrarContenidoTabla()) {
 			prontInfo.setOpacity(1);
 			prontInfo.setStyle("-fx-background-color: #A0F52D");
@@ -523,7 +523,7 @@ public class MenuPrincipalController {
 	 */
 	@FXML
 	void verEstadistica(ActionEvent event) {
-		db = new FuncionesBBDD();
+		db = new DBLibreriaManager();
 		prontInfo.setOpacity(1);
 		prontInfo.setText(db.procedimientosEstadistica());
 	}
@@ -552,7 +552,7 @@ public class MenuPrincipalController {
 
 	@FXML
 	void clickRaton(MouseEvent event) {
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 		libreria.verLibreriaCompleta();
 		utilidad = new Utilidades();
 		String ID;
@@ -640,7 +640,7 @@ public class MenuPrincipalController {
 	 * @param fichero
 	 */
 	public void makeSQL(File fichero) {
-		db = new FuncionesBBDD();
+		db = new DBLibreriaManager();
 		if (fichero != null) {
 
 			if (Utilidades.isWindows()) {
@@ -669,7 +669,7 @@ public class MenuPrincipalController {
 	 * estas buscando.
 	 */
 	public void listaPorParametro() {
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 
 		String datos[] = camposComic();
 
@@ -687,7 +687,7 @@ public class MenuPrincipalController {
 	 * @return
 	 */
 	public List<Comic> libreriaPosesion() {
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 		limpiezaDeDatos();
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaPosesion());
 

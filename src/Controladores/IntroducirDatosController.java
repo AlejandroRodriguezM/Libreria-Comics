@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import Funcionamiento.Comic;
-import Funcionamiento.FuncionesBBDD;
+import Funcionamiento.DBLibreriaManager;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import javafx.collections.FXCollections;
@@ -201,7 +201,7 @@ public class IntroducirDatosController implements Initializable {
 	private ImageView imagencomic;
 
 	private static Ventanas nav = new Ventanas();
-	private static FuncionesBBDD libreria = null;
+	private static DBLibreriaManager libreria = null;
 	private static Utilidades utilidad = null;
 
 	/**
@@ -220,7 +220,7 @@ public class IntroducirDatosController implements Initializable {
 
 	@FXML
 	void clickRaton(MouseEvent event) {
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 		libreria.verLibreriaCompleta();
 		utilidad = new Utilidades();
 		String ID;
@@ -311,7 +311,7 @@ public class IntroducirDatosController implements Initializable {
 	@FXML
 	public void agregarDatos(ActionEvent event) {
 
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 		subidaComic();
 		libreria.reiniciarBBDD();
 		direccionImagen.setText("");
@@ -372,7 +372,7 @@ public class IntroducirDatosController implements Initializable {
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
 		imagencomic.setImage(null);
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
 		listaPorParametro(); // Llamada a funcion
@@ -388,7 +388,7 @@ public class IntroducirDatosController implements Initializable {
 	void verTodabbdd(ActionEvent event) {
 		imagencomic.setImage(null);
 		utilidad = new Utilidades();
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
 		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
@@ -402,7 +402,7 @@ public class IntroducirDatosController implements Initializable {
 	 * @return
 	 */
 	public void listaPorParametro() {
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 
 		String datos[] = camposComicActuales();
 
@@ -430,7 +430,7 @@ public class IntroducirDatosController implements Initializable {
 	 *
 	 */
 	public boolean subidaComic() {
-		libreria = new FuncionesBBDD();
+		libreria = new DBLibreriaManager();
 		utilidad = new Utilidades();
 		String datos[] = camposComicIntroducir();
 		if (nav.alertaInsertar()) {
