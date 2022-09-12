@@ -50,7 +50,7 @@ import javafx.stage.Stage;
  *
  * @author Alejandro Rodriguez
  */
-public class Ventanas {
+public class Ventanas  {
 
 	/**
 	 * Llamada a ventana para el acceso a la base de datos

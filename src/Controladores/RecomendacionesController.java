@@ -25,8 +25,8 @@ package Controladores;
 
 import java.util.Random;
 
-import Funcionamiento.DBLibreriaManager;
 import Funcionamiento.Ventanas;
+import JDBC.DBLibreriaManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;

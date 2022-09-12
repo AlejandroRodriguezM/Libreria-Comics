@@ -1,4 +1,4 @@
-package Funcionamiento;
+package JDBC;
 
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
@@ -26,6 +26,8 @@ package Funcionamiento;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+
+import Funcionamiento.Ventanas;
 
 public class DBManager {
 

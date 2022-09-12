@@ -4,9 +4,9 @@ import java.sql.SQLException;
 import java.util.List;
 
 import Funcionamiento.Comic;
-import Funcionamiento.DBLibreriaManager;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
+import JDBC.DBLibreriaManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;

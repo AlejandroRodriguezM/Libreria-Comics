@@ -1,8 +1,8 @@
 package Controladores;
 
-import Funcionamiento.DBManager;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
+import JDBC.DBManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -113,7 +113,7 @@ public class AccesoBBDDController {
 	@FXML
 	void entrarMenu(ActionEvent event) {
 
-		if (Funcionamiento.DBManager.isConnected()) { // Siempre que el metodo de la clase DBManager sea
+		if (JDBC.DBManager.isConnected()) { // Siempre que el metodo de la clase DBManager sea
 														// true,
 			// permitira acceder al menu principal
 			nav.verMenuPrincipal(); // Llamada a metodo de la clase NavegacionVentanas. Permite cargar y mostrar el
@@ -221,13 +221,13 @@ public class AccesoBBDDController {
 	@FXML
 	void enviarDatos(ActionEvent event) {
 
-		Funcionamiento.DBManager.loadDriver(); // Llamada a metodo que permite comprobar que el driver de conexion a la
+		JDBC.DBManager.loadDriver(); // Llamada a metodo que permite comprobar que el driver de conexion a la
 												// base de datos sea correcto y funcione
 		envioDatosBBDD(); // Llamada a metodo que manda los datos de los textField de la ventana hacia la
 							// clase DBManager.
 		DBManager.conexion(); // Llamada a metodo que permite conectar con la base de datos.
 
-		if (Funcionamiento.DBManager.isConnected()) { // Siempre que la base de datos se haya conectado de // forma
+		if (JDBC.DBManager.isConnected()) { // Siempre que la base de datos se haya conectado de // forma
 			// correcta, mostrara el siguiente mensaje
 			prontEstadoConexion.setStyle("-fx-background-color: #A0F52D");
 			prontEstadoConexion.setText("Conectado");
@@ -246,13 +246,13 @@ public class AccesoBBDDController {
 	@FXML
 	void cerrarbbdd(ActionEvent event) {
 
-		if (Funcionamiento.DBManager.isConnected()) { // Siempre que el metodo isConnected sea true,
+		if (JDBC.DBManager.isConnected()) { // Siempre que el metodo isConnected sea true,
 														// permitira cerrar
 			// la
 			// base de datos.
 			prontEstadoConexion.setText("BBDD Cerrada con exito.\nEstado: Desconectado.");
 			prontEstadoConexion.setStyle("-fx-background-color: #696969");
-			Funcionamiento.DBManager.close();
+			JDBC.DBManager.close();
 		} else { // En caso contrario, mostrara el siguiente mensaje.
 			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
 			prontEstadoConexion.setText("ERROR. No se encuentra conectado a ninguna bbdd");

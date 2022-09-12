@@ -1,4 +1,4 @@
-package Funcionamiento;
+package JDBC;
 
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
@@ -40,6 +40,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import Funcionamiento.Comic;
+import Funcionamiento.Utilidades;
+import Funcionamiento.Ventanas;
 import javafx.collections.FXCollections;
 import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
@@ -1370,7 +1373,7 @@ public class DBLibreriaManager extends Comic {
 			}
 
 		} catch (IOException | SQLException e) {
-			e.printStackTrace();
+			nav.alertaException(e.toString());
 		}
 
 		Image imagen = new Image("file:tmp.jpg", 250, 250, true, true);
@@ -1405,12 +1408,19 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public List<Comic> busquedaParametro(Comic comic, String busquedaGeneral) {
 
-		List<Comic> listComic;
+		List<Comic> listComic = FXCollections.observableArrayList(verLibreriaPosesion());
 
-		if (busquedaGeneral.length() != 0) {
-			listComic = FXCollections.observableArrayList(verBusquedaGeneral(busquedaGeneral));
-		} else {
-			listComic = FXCollections.observableArrayList(filtadroBBDD(comic));
+		if (listComic.size() != 0) {
+			if (busquedaGeneral.length() != 0) {
+				listComic = FXCollections.observableArrayList(verBusquedaGeneral(busquedaGeneral));
+			} else {
+				listComic = FXCollections.observableArrayList(filtadroBBDD(comic));
+			}
+		}
+		else
+		{
+			String excepcion = "No hay ningun comic guardado en la base de datos";
+			nav.alertaException(excepcion);
 		}
 
 		return listComic;

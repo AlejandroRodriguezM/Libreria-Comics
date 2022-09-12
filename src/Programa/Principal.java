@@ -1,7 +1,5 @@
 package Programa;
 
-import Controladores.VentanaPrincipalController;
-
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC
  * con mySql Las ventanas graficas se realizan con JavaFX. El programa permite:
@@ -24,12 +22,44 @@ import Controladores.VentanaPrincipalController;
  * Twitter: @silverAlox
  */
 
-public class Principal {
+import java.io.IOException;
 
-	public static void main(String[] args) {
+import Funcionamiento.Ventanas;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
 
-		VentanaPrincipalController.main(args);
+/**
+ * Esta clase es donde se ejecuta la ventana principal del programa.
+ *
+ * @author Alejandro Rodriguez
+ */
+public class Principal extends Application {
 
+	private static Ventanas nav = new Ventanas();
+
+	/**
+	 * Carga la ventana principal y arranca el programa.
+	 */
+	@Override
+	public void start(Stage primaryStage) {
+		try {
+			Parent root = FXMLLoader.load(getClass().getResource("/ventanas/AccesoBBDD.fxml"));
+			primaryStage.setScene(new Scene(root));
+			primaryStage.setResizable(false);
+			primaryStage.setTitle("Aplicacion bbdd comics"); // Titulo de la aplicacion.
+			primaryStage.show();
+			primaryStage.getIcons().add(new Image("/Icono/icon2.png"));
+
+		} catch (IOException e) {
+			nav.alertaException(e.toString());
+		}
 	}
 
+	public static void main(String[] args) {
+		launch(args);
+	}
 }

@@ -33,9 +33,9 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import Funcionamiento.Comic;
-import Funcionamiento.DBLibreriaManager;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
+import JDBC.DBLibreriaManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;

@@ -29,11 +29,11 @@ import java.sql.SQLException;
 import java.util.List;
 
 import Funcionamiento.Comic;
-import Funcionamiento.DBManager;
-import Funcionamiento.DBLibreriaManager;
 import Funcionamiento.FuncionesExcel;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
+import JDBC.DBLibreriaManager;
+import JDBC.DBManager;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
