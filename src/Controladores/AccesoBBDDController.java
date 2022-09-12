@@ -1,6 +1,6 @@
 package Controladores;
 
-import Funcionamiento.FuncionesConexionBBDD;
+import Funcionamiento.DBManager;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import javafx.event.ActionEvent;
@@ -113,8 +113,8 @@ public class AccesoBBDDController {
 	@FXML
 	void entrarMenu(ActionEvent event) {
 
-		if (Funcionamiento.FuncionesConexionBBDD.isConnected()) { // Siempre que el metodo de la clase DBManager sea
-																	// true,
+		if (Funcionamiento.DBManager.isConnected()) { // Siempre que el metodo de la clase DBManager sea
+														// true,
 			// permitira acceder al menu principal
 			nav.verMenuPrincipal(); // Llamada a metodo de la clase NavegacionVentanas. Permite cargar y mostrar el
 			// menu principal
@@ -143,6 +143,7 @@ public class AccesoBBDDController {
 	}
 
 	/**
+	 * MEtodo que permite abrir la ventana "sobreMiController"
 	 *
 	 * @param event
 	 */
@@ -220,16 +221,13 @@ public class AccesoBBDDController {
 	@FXML
 	void enviarDatos(ActionEvent event) {
 
-		Funcionamiento.FuncionesConexionBBDD.loadDriver(); // Llamada a metodo que permite comprobar que el driver de
-															// conexion a
-		// la
-		// base de datos sea correcto y funcione
+		Funcionamiento.DBManager.loadDriver(); // Llamada a metodo que permite comprobar que el driver de conexion a la
+												// base de datos sea correcto y funcione
 		envioDatosBBDD(); // Llamada a metodo que manda los datos de los textField de la ventana hacia la
-		// clase DBManager.
-		FuncionesConexionBBDD.conexion(); // Llamada a metodo que permite conectar con la base de datos.
+							// clase DBManager.
+		DBManager.conexion(); // Llamada a metodo que permite conectar con la base de datos.
 
-		if (Funcionamiento.FuncionesConexionBBDD.isConnected()) { // Siempre que la base de datos se haya conectado de
-																	// forma
+		if (Funcionamiento.DBManager.isConnected()) { // Siempre que la base de datos se haya conectado de // forma
 			// correcta, mostrara el siguiente mensaje
 			prontEstadoConexion.setStyle("-fx-background-color: #A0F52D");
 			prontEstadoConexion.setText("Conectado");
@@ -248,13 +246,13 @@ public class AccesoBBDDController {
 	@FXML
 	void cerrarbbdd(ActionEvent event) {
 
-		if (Funcionamiento.FuncionesConexionBBDD.isConnected()) { // Siempre que el metodo isConnected sea true,
-																	// permitira cerrar
+		if (Funcionamiento.DBManager.isConnected()) { // Siempre que el metodo isConnected sea true,
+														// permitira cerrar
 			// la
 			// base de datos.
 			prontEstadoConexion.setText("BBDD Cerrada con exito.\nEstado: Desconectado.");
 			prontEstadoConexion.setStyle("-fx-background-color: #696969");
-			Funcionamiento.FuncionesConexionBBDD.close();
+			Funcionamiento.DBManager.close();
 		} else { // En caso contrario, mostrara el siguiente mensaje.
 			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
 			prontEstadoConexion.setText("ERROR. No se encuentra conectado a ninguna bbdd");
@@ -262,12 +260,13 @@ public class AccesoBBDDController {
 	}
 
 	/**
+	 * Metodo que permite seleccionar un host online o el publico.
 	 *
 	 * @param event
 	 */
 	@FXML
 	void selectorBotonHost(ActionEvent event) {
-		selectorOnline();
+		selectorHost();
 	}
 
 	/**
@@ -281,15 +280,16 @@ public class AccesoBBDDController {
 		datos[1] = nombreBBDD.getText();
 		datos[2] = usuario.getText();
 		datos[3] = pass.getText();
-		datos[4] = selectorOnline();
-		FuncionesConexionBBDD.datosBBDD(datos);
+		datos[4] = selectorHost();
+		DBManager.datosBBDD(datos);
 	}
 
 	/**
+	 * Funcion que permite conectarse a un host online o usar el local.
 	 *
 	 * @return
 	 */
-	public String selectorOnline() {
+	public String selectorHost() {
 
 		if (siOnline.isSelected()) {
 			etiquetaHost.setText("Nombre del host: ");

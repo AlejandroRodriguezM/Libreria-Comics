@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import Funcionamiento.Comic;
-import Funcionamiento.FuncionesComicsBBDD;
+import Funcionamiento.FuncionesBBDD;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import javafx.collections.FXCollections;
@@ -175,7 +175,7 @@ public class ModificarDatosController implements Initializable {
 	private ImageView imagencomic;
 
 	private static Ventanas nav = new Ventanas();
-	private static FuncionesComicsBBDD libreria = null;
+	private static FuncionesBBDD libreria = null;
 	private static Utilidades utilidad = null;
 
 	/**
@@ -194,7 +194,7 @@ public class ModificarDatosController implements Initializable {
 
 	@FXML
 	void clickRaton(MouseEvent event) {
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 		libreria.verLibreriaCompleta();
 		utilidad = new Utilidades();
 		String ID;
@@ -217,9 +217,9 @@ public class ModificarDatosController implements Initializable {
 	 */
 	@FXML
 	void modificarDatos(ActionEvent event) {
-		
+
 		imagencomic.setImage(null);
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 		modificacionComic(); // Llamada a funcion que modificara el contenido de un comic especifico.
 		libreria.reiniciarBBDD();
 		direccionImagen.setText("");
@@ -403,7 +403,7 @@ public class ModificarDatosController implements Initializable {
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
 		imagencomic.setImage(null);
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
 		listaPorParametro(); // Llamada a funcion
@@ -419,7 +419,7 @@ public class ModificarDatosController implements Initializable {
 	void verTodabbdd(ActionEvent event) {
 		imagencomic.setImage(null);
 		utilidad = new Utilidades();
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
 		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
@@ -433,7 +433,7 @@ public class ModificarDatosController implements Initializable {
 	 * @return
 	 */
 	public void listaPorParametro() {
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 
 		String datos[] = camposComicActuales();
 
@@ -472,7 +472,7 @@ public class ModificarDatosController implements Initializable {
 	 */
 	// Llamada a funcion para comprobar si existe algun dato en la lista.
 	public void comprobarLista(List<Comic> listaComic) {
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 		if (libreria.checkList(listaComic)) {
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #F53636");
@@ -497,7 +497,7 @@ public class ModificarDatosController implements Initializable {
 	 *
 	 */
 	public boolean modificacionComic() {
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 		utilidad = new Utilidades();
 
 		if (nav.alertaModificar()) {
@@ -511,7 +511,7 @@ public class ModificarDatosController implements Initializable {
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 			pantallaInformativa.setText("Has modificado correctamente: "
-					+ FuncionesComicsBBDD.listaTratamiento.toString().replace("[", "").replace("]", ""));
+					+ FuncionesBBDD.listaTratamiento.toString().replace("[", "").replace("]", ""));
 
 			try {
 				portada.close();

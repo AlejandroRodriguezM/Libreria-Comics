@@ -29,9 +29,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 import Funcionamiento.Comic;
+import Funcionamiento.DBManager;
 import Funcionamiento.FuncionesBBDD;
-import Funcionamiento.FuncionesComicsBBDD;
-import Funcionamiento.FuncionesConexionBBDD;
 import Funcionamiento.FuncionesExcel;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
@@ -206,7 +205,7 @@ public class MenuPrincipalController {
 
 	private static Ventanas nav = new Ventanas();
 
-	private static FuncionesComicsBBDD libreria = null;
+	private static FuncionesBBDD libreria = null;
 
 	private static Utilidades utilidad = null;
 
@@ -308,7 +307,7 @@ public class MenuPrincipalController {
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
 		imagencomic.setImage(null);
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
 		listaPorParametro(); // Llamada a funcion
@@ -323,7 +322,7 @@ public class MenuPrincipalController {
 	@FXML
 	void verTodabbdd(ActionEvent event) {
 		imagencomic.setImage(null);
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
 		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
@@ -339,7 +338,7 @@ public class MenuPrincipalController {
 	@FXML
 	void comicsPuntuacion(ActionEvent event) {
 		limpiezaDeDatos();
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(libreria.libreriaPuntuacion());
@@ -355,7 +354,7 @@ public class MenuPrincipalController {
 	@FXML
 	void comicsVendidos(ActionEvent event) {
 		limpiezaDeDatos();
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(libreria.libreriaVendidos());
@@ -371,7 +370,7 @@ public class MenuPrincipalController {
 	@FXML
 	void comicsFirmados(ActionEvent event) {
 		limpiezaDeDatos();
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(libreria.libreriaFirmados());
@@ -387,7 +386,7 @@ public class MenuPrincipalController {
 	void comicsEnVenta(ActionEvent event) {
 		limpiezaDeDatos();
 		utilidad = new Utilidades();
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(libreria.libreriaEnVenta());
@@ -553,7 +552,7 @@ public class MenuPrincipalController {
 
 	@FXML
 	void clickRaton(MouseEvent event) {
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 		libreria.verLibreriaCompleta();
 		utilidad = new Utilidades();
 		String ID;
@@ -670,7 +669,7 @@ public class MenuPrincipalController {
 	 * estas buscando.
 	 */
 	public void listaPorParametro() {
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 
 		String datos[] = camposComic();
 
@@ -688,7 +687,7 @@ public class MenuPrincipalController {
 	 * @return
 	 */
 	public List<Comic> libreriaPosesion() {
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 		limpiezaDeDatos();
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.verLibreriaPosesion());
 
@@ -761,7 +760,7 @@ public class MenuPrincipalController {
 	public void volverMenu(ActionEvent event) throws IOException {
 
 		nav.verAccesoBBDD();
-		FuncionesConexionBBDD.close();
+		DBManager.close();
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();
 	}

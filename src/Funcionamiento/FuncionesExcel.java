@@ -52,8 +52,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  */
 public class FuncionesExcel {
 
-	private static FuncionesComicsBBDD libreria = new FuncionesComicsBBDD();
-	private static Connection conn = FuncionesConexionBBDD.conexion();
+	private static FuncionesBBDD libreria = new FuncionesBBDD();
+	private static Connection conn = DBManager.conexion();
 	private static Ventanas nav = new Ventanas();
 	private static FuncionesBBDD db = null;
 	private static Utilidades utilidad = null;
@@ -100,7 +100,7 @@ public class FuncionesExcel {
 		try {
 			fichero.createNewFile();
 			libreria.verLibreriaCompleta();
-			List<Comic> listaComics = FuncionesComicsBBDD.listaCompleta;
+			List<Comic> listaComics = FuncionesBBDD.listaCompleta;
 
 			libro = new XSSFWorkbook();
 
@@ -239,7 +239,7 @@ public class FuncionesExcel {
 				PreparedStatement statement2 = conn.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");
 				statement1.close();
 				statement2.close();
-				
+
 				nav.alertaException("El formato del fichero .csv no es correcto: " + e.toString());
 			} catch (SQLException e1) {
 				nav.alertaException(e1.toString());
@@ -259,7 +259,7 @@ public class FuncionesExcel {
 			if (directorio.exists() && portada.exists()) {
 				File tmp = utilidad.getScaledImage(portada);
 				input = new FileInputStream(tmp);
-				
+
 				return input;
 			} else {
 				input = this.getClass().getResourceAsStream("sinPortada.jpg");
@@ -283,7 +283,7 @@ public class FuncionesExcel {
 		InputStream portada = null;
 		try {
 			PreparedStatement statement = conn.prepareStatement(sql);
-			directorio = new File("imagenes de la base de datos"+ "/" + "temp.jpg");
+			directorio = new File("imagenes de la base de datos" + "/" + "temp.jpg");
 			db = new FuncionesBBDD();
 			int batchSize = 20;
 			utilidad = new Utilidades();
@@ -292,7 +292,7 @@ public class FuncionesExcel {
 			int count = 0;
 			int j = db.countRows();
 			lineReader.readLine();
-			
+
 			// Se leeran los datos hasta que no existan mas datos
 			while ((lineText = lineReader.readLine()) != null) {
 				String[] data = lineText.split(";");
@@ -342,8 +342,7 @@ public class FuncionesExcel {
 			nav.alertaException(e.toString());
 		} catch (IOException e) {
 			nav.alertaException(e.toString());
-		}
-		finally {
+		} finally {
 			try {
 				portada.close();
 				utilidad.deleteImage(directorio.toString());

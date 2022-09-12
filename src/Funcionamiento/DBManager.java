@@ -27,7 +27,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class FuncionesConexionBBDD {
+public class DBManager {
 
 	// Conexion a la base de datos
 	private static Connection conn = null;

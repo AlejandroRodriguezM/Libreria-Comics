@@ -99,14 +99,7 @@ public class CrearBBDDController {
 	public static String DB_HOST;
 
 	/**
-	 * Devuelve un objeto Connection en caso de que la conexion sea correcta, datos
-	 * introducidos por parametro
-	 *
-	 * @param numeroPuerto
-	 * @param nombreBBDD
-	 * @param nombreUsuario
-	 * @param contraBBDD
-	 * @return
+	 * Funcion que guarda los datos de la nueva base de datos.
 	 */
 	public void datosBBDD() {
 
@@ -114,16 +107,17 @@ public class CrearBBDDController {
 		DB_NAME = nombreBBDD.getText();
 		DB_USER = userBBDD.getText();
 		DB_PASS = passBBDD.getText();
-		DB_HOST = selectorOnline();
+		DB_HOST = selectorHost();
 	}
 
 	/**
+	 * Metodo que permite seleccionar un host online o el publico.
 	 *
 	 * @param event
 	 */
 	@FXML
 	void selectorBotonHost(ActionEvent event) {
-		selectorOnline();
+		selectorHost();
 	}
 
 	/**
@@ -181,7 +175,7 @@ public class CrearBBDDController {
 
 		try {
 
-			rs = ejecucionSQL(sentenciaSQL);
+			rs = comprobarDataBase(sentenciaSQL);
 			exists = rs.getInt("COUNT(*)") < 1;
 
 			if (exists) {
@@ -198,10 +192,11 @@ public class CrearBBDDController {
 	}
 
 	/**
+	 * Funcion que permite conectarse a un host online o usar el local.
 	 *
 	 * @return
 	 */
-	public String selectorOnline() {
+	public String selectorHost() {
 
 		if (siOnline.isSelected()) {
 			etiquetaHost.setText("Nombre del host: ");
@@ -219,11 +214,12 @@ public class CrearBBDDController {
 	}
 
 	/**
+	 * Funcion que devuelve un Resulset, permite
 	 *
 	 * @param sentenciaSQL
 	 * @return
 	 */
-	public ResultSet ejecucionSQL(String sentenciaSQL) {
+	public ResultSet comprobarDataBase(String sentenciaSQL) {
 
 		String url = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "?serverTimezone=UTC";
 

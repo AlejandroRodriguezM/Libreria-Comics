@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import Funcionamiento.Comic;
-import Funcionamiento.FuncionesComicsBBDD;
+import Funcionamiento.FuncionesBBDD;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import javafx.collections.FXCollections;
@@ -201,7 +201,7 @@ public class IntroducirDatosController implements Initializable {
 	private ImageView imagencomic;
 
 	private static Ventanas nav = new Ventanas();
-	private static FuncionesComicsBBDD libreria = null;
+	private static FuncionesBBDD libreria = null;
 	private static Utilidades utilidad = null;
 
 	/**
@@ -220,7 +220,7 @@ public class IntroducirDatosController implements Initializable {
 
 	@FXML
 	void clickRaton(MouseEvent event) {
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 		libreria.verLibreriaCompleta();
 		utilidad = new Utilidades();
 		String ID;
@@ -311,7 +311,7 @@ public class IntroducirDatosController implements Initializable {
 	@FXML
 	public void agregarDatos(ActionEvent event) {
 
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 		subidaComic();
 		libreria.reiniciarBBDD();
 		direccionImagen.setText("");
@@ -331,7 +331,7 @@ public class IntroducirDatosController implements Initializable {
 	public FileChooser tratarFichero() {
 		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
 		fileChooser.getExtensionFilters()
-		.addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg", "*.png", "*.jpeg"));
+				.addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg", "*.png", "*.jpeg"));
 
 		return fileChooser;
 	}
@@ -372,7 +372,7 @@ public class IntroducirDatosController implements Initializable {
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
 		imagencomic.setImage(null);
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
 		listaPorParametro(); // Llamada a funcion
@@ -388,7 +388,7 @@ public class IntroducirDatosController implements Initializable {
 	void verTodabbdd(ActionEvent event) {
 		imagencomic.setImage(null);
 		utilidad = new Utilidades();
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
 		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
@@ -402,7 +402,7 @@ public class IntroducirDatosController implements Initializable {
 	 * @return
 	 */
 	public void listaPorParametro() {
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 
 		String datos[] = camposComicActuales();
 
@@ -430,7 +430,7 @@ public class IntroducirDatosController implements Initializable {
 	 *
 	 */
 	public boolean subidaComic() {
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 		utilidad = new Utilidades();
 		String datos[] = camposComicIntroducir();
 		if (nav.alertaInsertar()) {
@@ -440,14 +440,13 @@ public class IntroducirDatosController implements Initializable {
 			Comic comic = new Comic("", datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
 					datos[8], datos[9], datos[11], "Sin puntuar", portada);
 
-
 			Image imagen = new Image(portada);
 			imagencomic.setImage(imagen);
 
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 			pantallaInformativa
-			.setText("Has añadido correctamente: " + comic.toString().replace("[", "").replace("]", ""));
+					.setText("Has añadido correctamente: " + comic.toString().replace("[", "").replace("]", ""));
 			try {
 				portada.close();
 				utilidad.deleteImage(datos[10]);

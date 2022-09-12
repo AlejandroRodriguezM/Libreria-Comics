@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import Funcionamiento.Comic;
-import Funcionamiento.FuncionesComicsBBDD;
+import Funcionamiento.FuncionesBBDD;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import javafx.event.ActionEvent;
@@ -130,7 +130,7 @@ public class EliminarDatosController {
 	private ImageView imagencomic;
 
 	private static Ventanas nav = new Ventanas();
-	private static FuncionesComicsBBDD libreria = null;
+	private static FuncionesBBDD libreria = null;
 	private static Utilidades utilidad = null;
 
 	/**
@@ -161,7 +161,7 @@ public class EliminarDatosController {
 
 	@FXML
 	void clickRaton(MouseEvent event) {
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 		libreria.verLibreriaCompleta();
 		utilidad = new Utilidades();
 		String ID;
@@ -184,7 +184,7 @@ public class EliminarDatosController {
 	@FXML
 	void eliminarDatos(ActionEvent event) {
 		imagencomic.setImage(null);
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 		String ID = idComicTratar.getText();
 		modificarDatos(ID);
 		libreria.eliminarComicBBDD(ID);
@@ -200,7 +200,7 @@ public class EliminarDatosController {
 	@FXML
 	void ventaDatos(ActionEvent event) {
 		imagencomic.setImage(null);
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 		String ID = idComicTratar.getText();
 		modificarDatos(ID);
 		libreria.venderComicBBDD(ID);
@@ -216,13 +216,13 @@ public class EliminarDatosController {
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
 		imagencomic.setImage(null);
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
 		listaPorParametro(); // Llamada a funcion
 		busquedaGeneral.setText("");
 	}
-	
+
 	/**
 	 * Metodo que muestra toda la base de datos.
 	 *
@@ -232,7 +232,7 @@ public class EliminarDatosController {
 	void verTodabbdd(ActionEvent event) {
 		imagencomic.setImage(null);
 		utilidad = new Utilidades();
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
 		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
@@ -246,7 +246,7 @@ public class EliminarDatosController {
 	 * @return
 	 */
 	public void listaPorParametro() {
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 
 		String datos[] = camposComics();
 
@@ -256,7 +256,6 @@ public class EliminarDatosController {
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
 		busquedaGeneral.setText("");
 	}
-
 
 	/**
 	 * Muestra las columnas especificas del fichero FXML
@@ -280,7 +279,6 @@ public class EliminarDatosController {
 	//// FUNCIONES/////////////
 	//////////////////////////
 
-
 	/**
 	 * Obtiene los datos de los comics de la base de datos y los devuelve en el
 	 * textView
@@ -300,7 +298,7 @@ public class EliminarDatosController {
 	 * @param sentenciaSQL
 	 */
 	public boolean modificarDatos(String ID) {
-		libreria = new FuncionesComicsBBDD();
+		libreria = new FuncionesBBDD();
 		if (nav.alertaEliminar()) {
 			if (ID.length() != 0) {
 
