@@ -20,6 +20,7 @@ package Programa;
  * Por Alejandro Rodriguez
  *
  * Twitter: @silverAlox
+ * @author Alejandro Rodriguez
  */
 
 import java.io.IOException;
@@ -32,11 +33,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-/**
- * Esta clase es donde se ejecuta la ventana principal del programa.
- *
- * @author Alejandro Rodriguez
- */
+
 public class Principal extends Application {
 
 	private static Ventanas nav = new Ventanas();
