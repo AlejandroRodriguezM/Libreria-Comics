@@ -80,6 +80,7 @@ public class AccesoBBDDController {
 	private Label etiquetaHost;
 
 	private static Ventanas nav = new Ventanas();
+	private static CrearBBDDController cbd = null;
 
 	/**
 	 * Funcion para abrir el navegador y acceder a la URL
@@ -113,13 +114,14 @@ public class AccesoBBDDController {
 	@FXML
 	void entrarMenu(ActionEvent event) {
 
-		if (JDBC.DBManager.isConnected()) { // Siempre que el metodo de la clase DBManager sea
-											// true,
-			// permitira acceder al menu principal
+		if (JDBC.DBManager.isConnected()) { // Siempre que el metodo de la clase DBManager sea true, permitira acceder
+											// al menu principal
+
 			nav.verMenuPrincipal(); // Llamada a metodo de la clase NavegacionVentanas. Permite cargar y mostrar el
-			// menu principal
+									// menu principal
 			Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
 			myStage.close();
+
 		} else { // En caso contrario mostrara el siguiente mensaje.
 			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
 			prontEstadoConexion.setFont(new Font("Arial", 25));
@@ -156,50 +158,6 @@ public class AccesoBBDDController {
 		myStage.close();
 	}
 
-//	/**
-//	 * Permite ver las bases de datos disponibles en MySql workbench
-//	 *
-//	 * @param event
-//	 */
-//	@FXML
-//	void verDBDisponibles(ActionEvent event) {
-//
-//		String url = "jdbc:mysql://" + ConexionBBDD.DB_HOST + ":" + puertobbdd.getText() + "?serverTimezone=UTC";
-//
-//		try {
-//			Connection connection = DriverManager.getConnection(url, usuario.getText(), pass.getText());
-//
-//			DatabaseMetaData meta = connection.getMetaData();
-//			ResultSet res = meta.getCatalogs();
-//
-//			ArrayList<String> databases = new ArrayList<>(); // ArrayList que almacena el nombre de las bases de datos
-//			// que hay en MySql Workbench
-//
-//			while (res.next()) {
-//
-//				if (!res.getString("TABLE_CAT").equals("information_schema")
-//						&& !res.getString("TABLE_CAT").equals("mysql")
-//						&& !res.getString("TABLE_CAT").equals("performance_schema")) // elimina las bases de datos que
-//					// no se utilizaran en este
-//					// programa
-//				{
-//					databases.add(res.getString("TABLE_CAT") + "\n"); // elimina las bases de datos que
-//					// no se utilizaran en este
-//					// programa
-//				}
-//			}
-//			res.close();
-//
-//			prontInformacion.setStyle("-fx-background-color: #696969");
-//			String bbddNames = databases.toString().replace("[", "").replace("]", "").replace(",", "").replace(" ", "");
-//			prontInformacion.setText(bbddNames);
-//
-//		} catch (SQLException e) {
-//
-//			nav.alertaException(e.toString());
-//		}
-//	}
-
 	/**
 	 * Limpia los datos de los campos
 	 *
@@ -222,20 +180,24 @@ public class AccesoBBDDController {
 	void enviarDatos(ActionEvent event) {
 
 		JDBC.DBManager.loadDriver(); // Llamada a metodo que permite comprobar que el driver de conexion a la
-										// base de datos sea correcto y funcione
+		// base de datos sea correcto y funcione
 		envioDatosBBDD(); // Llamada a metodo que manda los datos de los textField de la ventana hacia la
-							// clase DBManager.
+		// clase DBManager.
 		DBManager.conexion(); // Llamada a metodo que permite conectar con la base de datos.
+		cbd = new CrearBBDDController();
 
-		if (JDBC.DBManager.isConnected()) { // Siempre que la base de datos se haya conectado de // forma
-			// correcta, mostrara el siguiente mensaje
-			prontEstadoConexion.setStyle("-fx-background-color: #A0F52D");
-			prontEstadoConexion.setText("Conectado");
+		if (JDBC.DBManager.isConnected()) {
+
+			if (cbd.chechTables()) {
+				prontEstadoConexion.setStyle("-fx-background-color: #A0F52D");
+				prontEstadoConexion.setText("Conectado");
+			}
 		} else { // En caso contrario mostrara el siguiente mensaje
 			pass.setText(""); // Limpia el campo de la contraseña en caso de que isConnected sea false.
 			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
-			prontEstadoConexion.setText("ERROR. Los datos son \nincorrectos. Revise los datos.");
+			prontEstadoConexion.setText("ERROR. Los datos son incorrectos. Revise los datos.");
 		}
+
 	}
 
 	/**
@@ -247,7 +209,7 @@ public class AccesoBBDDController {
 	void cerrarbbdd(ActionEvent event) {
 
 		if (JDBC.DBManager.isConnected()) { // Siempre que el metodo isConnected sea true,
-											// permitira cerrar
+			// permitira cerrar
 			// la
 			// base de datos.
 			prontEstadoConexion.setText("BBDD Cerrada con exito.\nEstado: Desconectado.");
@@ -275,6 +237,7 @@ public class AccesoBBDDController {
 	 * @return
 	 */
 	public void envioDatosBBDD() { // Metodo que manda toda la informacion de los textField a la clase DBManager.
+		cbd = new CrearBBDDController();
 		String datos[] = new String[5];
 		datos[0] = puertobbdd.getText();
 		datos[1] = nombreBBDD.getText();
@@ -282,6 +245,7 @@ public class AccesoBBDDController {
 		datos[3] = pass.getText();
 		datos[4] = selectorHost();
 		DBManager.datosBBDD(datos);
+		cbd.reconstruirDatos(datos);
 	}
 
 	/**

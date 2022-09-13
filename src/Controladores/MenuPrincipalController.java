@@ -503,8 +503,11 @@ public class MenuPrincipalController {
 	 */
 	@FXML
 	void borrarContenidoTabla(ActionEvent event) {
+
 		db = new DBLibreriaManager();
-		if (db.ejecucionPreparedStatement(db.deleteTable())) {
+
+		if (nav.borrarContenidoTabla()) {
+			db.deleteTable();
 			prontInfo.setOpacity(1);
 			prontInfo.setStyle("-fx-background-color: #A0F52D");
 			prontInfo.setText("Has borrado correctamente el contenido de la base de datos.");

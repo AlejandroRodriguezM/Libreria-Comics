@@ -127,4 +127,5 @@ public class DBManager {
 			nav.alertaException(ex.toString());
 		}
 	}
+
 }

@@ -96,15 +96,24 @@ public class DBLibreriaManager extends Comic {
 		return 0;
 	}
 
+	/**
+	 * Borra el contenido de la base de datos.
+	 *
+	 * @return
+	 */
 	public String[] deleteTable() {
 		String sentencia[] = new String[2];
-		if (nav.borrarContenidoTabla()) {
-			sentencia[0] = "delete from comicsbbdd";
-			sentencia[1] = "alter table comicsbbdd AUTO_INCREMENT = 1;";
-		}
+		sentencia[0] = "delete from comicsbbdd";
+		sentencia[1] = "alter table comicsbbdd AUTO_INCREMENT = 1;";
+
 		return sentencia;
 	}
 
+	/**
+	 * Reasigna el ID a todos los comics
+	 *
+	 * @return
+	 */
 	public String[] reloadID() {
 		String sentencia[] = new String[2];
 		sentencia[0] = "ALTER TABLE comicsbbdd DROP ID, order by nomComic";
@@ -485,7 +494,7 @@ public class DBLibreriaManager extends Comic {
 
 		listaTratamiento.clear();
 
-		String sentenciaSql = "SELECT * from comicsbbdd where puntuacion <>''";
+		String sentenciaSql = "SELECT * from comicsbbdd where not puntuacion = 'Sin puntuacion'";
 
 		Comic comic[] = null;
 
@@ -1262,7 +1271,7 @@ public class DBLibreriaManager extends Comic {
 		if (nav.alertaAgregarPuntuacion()) { // Llamada a alerta de modificacion
 
 			comprobarOpinionInsertada(sentenciaSQL, ID, puntuacion); // Llamada a funcion que permite comprobar el
-																		// cambio realizado en
+			// cambio realizado en
 			// el comic
 
 		} else { // Si se cancela la opinion del comic, saltara el siguiente mensaje.
@@ -1281,8 +1290,8 @@ public class DBLibreriaManager extends Comic {
 		if (nav.alertaBorrarPuntuacion()) { // Llamada a alerta de modificacion
 
 			comprobarOpinionBorrada(sentenciaSQL, ID); // Llamada a funcion que permite comprobar el cambio realizado en
-														// el
-														// comic
+			// el
+			// comic
 
 		} else { // Si se cancela la opinion del comic, saltara el siguiente mensaje.
 

@@ -541,6 +541,25 @@ public class Ventanas {
 	}
 
 	/**
+	 * Llama a una ventana de alarma que avisa si se va reconstruir la base de datos
+	 *
+	 * @return
+	 */
+	public boolean alertaTablaError() {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
+		stage.setResizable(false);
+		alert.setTitle("Tablas no encontradas");
+		alert.setHeaderText("ERROR. No tienes la base de datos bien construida.");
+		alert.setContentText("¿Quieres recontruir la base de datos?");
+		if (alert.showAndWait().get() == ButtonType.OK) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Funcion que permite borrar el contenido de la tabla de la base de datos.
 	 *
 	 * @return

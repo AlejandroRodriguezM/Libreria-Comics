@@ -24,6 +24,7 @@ package Controladores;
  */
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,6 +32,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import Funcionamiento.Ventanas;
+import JDBC.DBManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -87,6 +89,7 @@ public class CrearBBDDController {
 
 	private static Ventanas nav = new Ventanas();
 
+	private static CrearBBDDController cbd = null;
 	public static String DB_USER;
 	public static String DB_PASS;
 	public static String DB_PORT;
@@ -103,6 +106,14 @@ public class CrearBBDDController {
 		DB_USER = userBBDD.getText();
 		DB_PASS = passBBDD.getText();
 		DB_HOST = selectorHost();
+	}
+
+	public void reconstruirDatos(String[] datos) {
+		DB_PORT = datos[0];
+		DB_NAME = datos[1];
+		DB_USER = datos[2];
+		DB_PASS = datos[3];
+		DB_HOST = datos[4];
 	}
 
 	/**
@@ -241,9 +252,13 @@ public class CrearBBDDController {
 	 */
 	public void createTable() {
 
+		Statement statement;
+		PreparedStatement preparedStatement1;
+
 		String url = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
 
-		String sentenciaSQL = "CREATE TABLE " + " comicsbbdd ( ID int NOT NULL AUTO_INCREMENT,"
+		String sentenciaSQL1 = "DROP TABLE IF EXISTS comicsbbdd";
+		String sentenciaSQL2 = "CREATE TABLE comicsbbdd (ID int NOT NULL AUTO_INCREMENT,"
 				+ "nomComic varchar(150) NOT NULL," + "numComic varchar(150) NOT NULL,"
 				+ "nomVariante varchar(150) NOT NULL," + "firma varchar(150) NOT NULL,"
 				+ "nomEditorial varchar(150) NOT NULL," + "formato varchar(150) NOT NULL,"
@@ -253,15 +268,15 @@ public class CrearBBDDController {
 				+ "PRIMARY KEY (`ID`)) "
 				+ "ENGINE=InnoDB AUTO_INCREMENT=320 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
 
-		Statement statement1;
-		PreparedStatement statement2;
-
 		try {
 			Connection connection = DriverManager.getConnection(url, DB_USER, DB_PASS);
-			statement1 = connection.createStatement();
-			statement1.executeUpdate(sentenciaSQL);
-			statement2 = connection.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");
-			statement2.executeUpdate();
+			statement = connection.createStatement();
+
+			statement.executeUpdate(sentenciaSQL1);
+			statement.executeUpdate(sentenciaSQL2);
+
+			preparedStatement1 = connection.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");
+			preparedStatement1.executeUpdate();
 
 		} catch (SQLException e) {
 			nav.alertaException(e.toString());
@@ -276,7 +291,7 @@ public class CrearBBDDController {
 		String url = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
 
 		try {
-			Connection connection = DriverManager.getConnection(url, userBBDD.getText(), passBBDD.getText());
+			Connection connection = DriverManager.getConnection(url, DB_USER, DB_PASS);
 			Statement statement;
 
 			statement = connection.createStatement();
@@ -342,6 +357,42 @@ public class CrearBBDDController {
 		nombreBBDD.setText("");
 	}
 
+	/**
+	 *
+	 * @return
+	 */
+	public boolean chechTables() {
+		cbd = new CrearBBDDController();
+		DatabaseMetaData dbm;
+		try {
+			dbm = DBManager.conexion().getMetaData();
+			ResultSet tables = dbm.getTables(null, null, "comicsbbdd", null);
+			if (tables.next()) {
+				return true;
+			} else {
+				cbd.reconstruirBBDD();
+				return false;
+			}
+		} catch (SQLException e) {
+
+			nav.alertaException(e.toString());
+		}
+		return false;
+	}
+
+	/**
+	 * Funcion que reconstruye una base de datos.
+	 */
+	public void reconstruirBBDD() {
+		if (nav.alertaTablaError()) {
+			createTable();
+			createProcedure();
+		} else {
+			String excepcion = "Debes de reconstruir la base de datos. Si no, no podras entrar";
+			nav.alertaException(excepcion);
+		}
+	}
+
 	/////////////////////////////////
 	//// METODO LLAMADA A VENTANA//
 	/////////////////////////////////
@@ -384,6 +435,5 @@ public class CrearBBDDController {
 
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();
-
 	}
 }
