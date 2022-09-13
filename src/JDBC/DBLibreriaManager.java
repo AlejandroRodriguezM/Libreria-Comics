@@ -990,6 +990,18 @@ public class DBLibreriaManager extends Comic {
 
 		modificarDatos(id, sentenciaSQL);
 	}
+	
+	/**
+	 * Funcion que permite cambiar de estado el comic a "Vendido" y hace que no se
+	 * muestre en la bbdd
+	 */
+	public void enVentaComicBBDD(String id) {
+		String sentenciaSQL;
+
+		sentenciaSQL = "UPDATE comicsbbdd set estado = 'En venta' where ID = ?";
+
+		modificarDatos(id, sentenciaSQL);
+	}
 
 	/**
 	 * Funcion que manda una querry de eliminar comic de la base de datos.
