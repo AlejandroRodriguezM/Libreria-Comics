@@ -136,6 +136,13 @@ public class Utilidades {
 		}
 	}
 
+	/**
+	 * Funcion que devuelve una lista en la que solamente se guardan aquellos datos
+	 * que no se repiten
+	 *
+	 * @param listaComics
+	 * @return
+	 */
 	public static List<Comic> listaArreglada(List<Comic> listaComics) {
 
 		// Forma número 1 (Uso de Maps).
@@ -173,6 +180,12 @@ public class Utilidades {
 		return datos;
 	}
 
+	/**
+	 * Funcion que elimina la imagen temporal creada a la hora de subir imagenes
+	 * mediante importacion de csv, modificacion o introducir datos manualmente
+	 *
+	 * @param pathFichero
+	 */
 	public void deleteImage(String pathFichero) {
 
 		File original = new File(pathFichero);
@@ -186,6 +199,7 @@ public class Utilidades {
 	}
 
 	/**
+	 * Funcion que devulve una imagen
 	 *
 	 * @param direccion
 	 * @return
@@ -214,6 +228,8 @@ public class Utilidades {
 	}
 
 	/**
+	 * Funcion que permite la redimension de una imagen. Guarda la imagen y es
+	 * cargada por otras funciones.
 	 *
 	 * @param file
 	 * @return
@@ -239,6 +255,9 @@ public class Utilidades {
 		return null;
 	}
 
+	/**
+	 * Elimina la imagen temporal de muestra de la base de datos.
+	 */
 	public void deleteImage() {
 		try {
 			Files.deleteIfExists(Paths.get("tmp.jpg"));

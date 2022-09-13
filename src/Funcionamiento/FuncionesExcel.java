@@ -251,13 +251,18 @@ public class FuncionesExcel {
 		return false;
 	}
 
+	/**
+	 * Funcion que carga la imagen a la hora de importar el csv
+	 *
+	 * @return
+	 */
 	public InputStream subirImagenes() {
 
 		ID++;
 		InputStream input;
 		utilidad = new Utilidades();
 		try {
-			File directorio = new File("imagenes de la base de datos");
+			File directorio = new File("portadas");
 			File portada = new File(directorio.toString() + "/" + ID + ".jpg");
 			if (directorio.exists() && portada.exists()) {
 				File tmp = utilidad.getScaledImage(portada);
@@ -270,7 +275,7 @@ public class FuncionesExcel {
 			}
 
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			nav.alertaException(e.toString());
 		}
 		return null;
 	}
@@ -284,9 +289,10 @@ public class FuncionesExcel {
 	public void lecturaCSV(String sql, BufferedReader lineReader) {
 		File directorio = null;
 		InputStream portada = null;
+		String puntuacion;
 		try {
 			PreparedStatement statement = conn.prepareStatement(sql);
-			directorio = new File("imagenes de la base de datos" + "/" + "temp.jpg");
+			directorio = new File("portadas" + "/" + "temp.jpg");
 			db = new DBLibreriaManager();
 			int batchSize = 20;
 			utilidad = new Utilidades();
@@ -310,7 +316,11 @@ public class FuncionesExcel {
 				String fecha = data[8];
 				String guionista = data[9];
 				String dibujante = data[10];
-				String puntuacion = data[11];
+				if (data[11].length() != 0) {
+					puntuacion = data[11];
+				} else {
+					puntuacion = "Sin puntuacion";
+				}
 				String estado = data[13];
 				portada = subirImagenes();
 				statement.setString(1, id);
@@ -335,12 +345,9 @@ public class FuncionesExcel {
 				}
 				portada.close();
 			}
-
 			lineReader.close();
 			statement.executeBatch();
 			portada.close();
-			utilidad.deleteImage(directorio.toString());
-			ID = 0;
 		} catch (SQLException e) {
 			nav.alertaException(e.toString());
 		} catch (IOException e) {

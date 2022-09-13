@@ -114,7 +114,7 @@ public class AccesoBBDDController {
 	void entrarMenu(ActionEvent event) {
 
 		if (JDBC.DBManager.isConnected()) { // Siempre que el metodo de la clase DBManager sea
-														// true,
+											// true,
 			// permitira acceder al menu principal
 			nav.verMenuPrincipal(); // Llamada a metodo de la clase NavegacionVentanas. Permite cargar y mostrar el
 			// menu principal
@@ -222,7 +222,7 @@ public class AccesoBBDDController {
 	void enviarDatos(ActionEvent event) {
 
 		JDBC.DBManager.loadDriver(); // Llamada a metodo que permite comprobar que el driver de conexion a la
-												// base de datos sea correcto y funcione
+										// base de datos sea correcto y funcione
 		envioDatosBBDD(); // Llamada a metodo que manda los datos de los textField de la ventana hacia la
 							// clase DBManager.
 		DBManager.conexion(); // Llamada a metodo que permite conectar con la base de datos.
@@ -247,7 +247,7 @@ public class AccesoBBDDController {
 	void cerrarbbdd(ActionEvent event) {
 
 		if (JDBC.DBManager.isConnected()) { // Siempre que el metodo isConnected sea true,
-														// permitira cerrar
+											// permitira cerrar
 			// la
 			// base de datos.
 			prontEstadoConexion.setText("BBDD Cerrada con exito.\nEstado: Desconectado.");

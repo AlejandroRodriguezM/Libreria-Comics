@@ -218,6 +218,12 @@ public class IntroducirDatosController implements Initializable {
 		// la puntuacion.
 	}
 
+	/**
+	 * Funcion que permite mostrar la imagen de portada cuando clickeas en una
+	 * tabla.
+	 *
+	 * @param event
+	 */
 	@FXML
 	void clickRaton(MouseEvent event) {
 		libreria = new DBLibreriaManager();
@@ -317,6 +323,11 @@ public class IntroducirDatosController implements Initializable {
 		direccionImagen.setText("");
 	}
 
+	/**
+	 * Funcion que permite la subida de una
+	 *
+	 * @param event
+	 */
 	@FXML
 	void nuevaPortada(ActionEvent event) {
 		imagencomic.setImage(null);
@@ -325,6 +336,7 @@ public class IntroducirDatosController implements Initializable {
 	}
 
 	/**
+	 * Permite abir una ventana para abrir ficheros de un determinado formato.
 	 *
 	 * @return
 	 */
@@ -337,7 +349,8 @@ public class IntroducirDatosController implements Initializable {
 	}
 
 	/**
-	 *
+	 * Funcion que escribe en el TextField de "Direccion de imagen" la dirrecion de
+	 * la imagen
 	 */
 	public void subirPortada() {
 		File file = tratarFichero().showOpenDialog(null); // Llamada a funcion
@@ -427,7 +440,7 @@ public class IntroducirDatosController implements Initializable {
 	}
 
 	/**
-	 *
+	 * Permite introducir un comic en la base de datos de forma manual
 	 */
 	public boolean subidaComic() {
 		libreria = new DBLibreriaManager();

@@ -1,5 +1,28 @@
 package Controladores;
 
+/**
+ * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
+ * Las ventanas graficas se realizan con JavaFX.
+ * El programa permite:
+ *  - Conectarse a la base de datos.
+ *  - Ver la base de datos completa o parcial segun parametros introducidos.
+ *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
+ *  - Copia de seguridad de la base de datos en formato .sql
+ *  - Introducir comics a la base de datos.
+ *  - Modificar comics de la base de datos.
+ *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
+ *  - Ver frases de personajes de comics
+ *  - Opcion de escoger algo para leer de forma aleatoria.
+ *
+ *  Esta clase permite acceder a la ventana que permite mostrar los datos sobre el creador de la aplicacion
+ *
+ *  Version 4.0.0.6
+ *
+ *  Por Alejandro Rodriguez
+ *
+ *  Twitter: @silverAlox
+ */
+
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import javafx.event.ActionEvent;
@@ -36,6 +59,11 @@ public class SobreMiController {
 
 	private static Ventanas nav = new Ventanas();
 
+	/**
+	 * Funcion que permite abrir un navegador con la url de GitHub
+	 *
+	 * @param event
+	 */
 	@FXML
 	void accesoGitHub(ActionEvent event) {
 
@@ -50,9 +78,13 @@ public class SobreMiController {
 
 			}
 		}
-
 	}
 
+	/**
+	 * Funcion que permite abrir un navegador con la url de twitter
+	 *
+	 * @param event
+	 */
 	@FXML
 	void accesoTwitter(ActionEvent event) {
 
@@ -69,6 +101,11 @@ public class SobreMiController {
 		}
 	}
 
+	/**
+	 * Funcion que permite abrir un navegador con la url de youtube
+	 *
+	 * @param event
+	 */
 	@FXML
 	void accesoYoutube(ActionEvent event) {
 
@@ -85,6 +122,11 @@ public class SobreMiController {
 		}
 	}
 
+	/**
+	 * Funcion que permite abrir un navegador con la url de twitch
+	 *
+	 * @param event
+	 */
 	@FXML
 	void accesoTwitch(ActionEvent event) {
 

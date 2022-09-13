@@ -192,6 +192,12 @@ public class ModificarDatosController implements Initializable {
 		// la puntuacion.
 	}
 
+	/**
+	 * Funcion que permite mostrar la imagen de portada cuando clickeas en una
+	 * tabla.
+	 *
+	 * @param event
+	 */
 	@FXML
 	void clickRaton(MouseEvent event) {
 		libreria = new DBLibreriaManager();
@@ -225,6 +231,7 @@ public class ModificarDatosController implements Initializable {
 		direccionImagen.setText("");
 	}
 
+	// Funcion que permite seleccionar una imagen para subirla junto al comic
 	@FXML
 	void nuevaPortada(ActionEvent event) {
 		imagencomic.setImage(null);
@@ -444,6 +451,11 @@ public class ModificarDatosController implements Initializable {
 		busquedaGeneral.setText("");
 	}
 
+	/**
+	 * Permite abir una ventana para abrir ficheros de un determinado formato.
+	 *
+	 * @return
+	 */
 	public FileChooser tratarFichero() {
 		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
 		fileChooser.getExtensionFilters()
@@ -453,7 +465,8 @@ public class ModificarDatosController implements Initializable {
 	}
 
 	/**
-	 *
+	 * Funcion que escribe en el TextField de "Direccion de imagen" la dirrecion de
+	 * la imagen
 	 */
 	public void subirPortada() {
 		File file = tratarFichero().showOpenDialog(null); // Llamada a funcion
@@ -466,19 +479,19 @@ public class ModificarDatosController implements Initializable {
 		}
 	}
 
-	/**
-	 *
-	 * @param listaComic
-	 */
-	// Llamada a funcion para comprobar si existe algun dato en la lista.
-	public void comprobarLista(List<Comic> listaComic) {
-		libreria = new DBLibreriaManager();
-		if (libreria.checkList(listaComic)) {
-			pantallaInformativa.setOpacity(1);
-			pantallaInformativa.setStyle("-fx-background-color: #F53636");
-			pantallaInformativa.setText("ERROR. No hay ningun dato en la base de datos");
-		}
-	}
+//	/**
+//	 *
+//	 * @param listaComic
+//	 */
+//	// Llamada a funcion para comprobar si existe algun dato en la lista.
+//	public void comprobarLista(List<Comic> listaComic) {
+//		libreria = new DBLibreriaManager();
+//		if (libreria.checkList(listaComic)) {
+//			pantallaInformativa.setOpacity(1);
+//			pantallaInformativa.setStyle("-fx-background-color: #F53636");
+//			pantallaInformativa.setText("ERROR. No hay ningun dato en la base de datos");
+//		}
+//	}
 
 	/**
 	 * Obtiene los datos de los comics de la base de datos y los devuelve en el
@@ -494,7 +507,7 @@ public class ModificarDatosController implements Initializable {
 	}
 
 	/**
-	 *
+	 * Funcion que permite modificar un comic, segun los datos introducidos
 	 */
 	public boolean modificacionComic() {
 		libreria = new DBLibreriaManager();

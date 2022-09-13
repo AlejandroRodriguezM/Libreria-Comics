@@ -180,6 +180,12 @@ public class PuntuarDatosController implements Initializable {
 															// la puntuacion.
 	}
 
+	/**
+	 * Funcion que permite mostrar la imagen de portada cuando clickeas en una
+	 * tabla.
+	 *
+	 * @param event
+	 */
 	@FXML
 	void clickRaton(MouseEvent event) {
 		libreria = new DBLibreriaManager();
@@ -227,11 +233,14 @@ public class PuntuarDatosController implements Initializable {
 		datosOpinion("Opinion borrada con exito: ");
 	}
 
+	/*
+	 * Muestra en TextArea un mensaje sobre puntuacion del comic introducido
+	 */
 	public void datosOpinion(String pantallaInfo) {
 		pantallaInformativa.setOpacity(0);
 		pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-		pantallaInformativa
-				.setText(pantallaInfo + DBLibreriaManager.listaTratamiento.toString().replace("[", "").replace("]", ""));
+		pantallaInformativa.setText(
+				pantallaInfo + DBLibreriaManager.listaTratamiento.toString().replace("[", "").replace("]", ""));
 	}
 
 	/**

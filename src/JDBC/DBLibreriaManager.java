@@ -73,9 +73,11 @@ public class DBLibreriaManager extends Comic {
 	public int countRows() {
 		Connection conn = DBManager.conexion();
 		String sql = "SELECT COUNT(*) FROM comicsbbdd";
+		Statement stmt = null;
+		ResultSet rs = null;
 		try {
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(sql);
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
 
 			int total = -1;
 
@@ -84,43 +86,44 @@ public class DBLibreriaManager extends Comic {
 			return total;
 		} catch (SQLException e) {
 			nav.alertaException(e.toString());
+		} finally {
+			try {
+				rs.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		return 0;
 	}
 
-	/**
-	 * Funcion que permite borrar el contenido de la tabla de la base de datos.
-	 *
-	 * @return
-	 */
-	public boolean borrarContenidoTabla() {
-		Connection conn = DBManager.conexion();
+	public String[] deleteTable() {
+		String sentencia[] = new String[2];
 		if (nav.borrarContenidoTabla()) {
-			try {
-				PreparedStatement statement1 = conn.prepareStatement("delete from comicsbbdd");
-				PreparedStatement statement2 = conn.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");
-
-				statement1.executeUpdate();
-				statement2.executeUpdate();
-				reiniciarBBDD();
-				return true;
-			} catch (SQLException e) {
-				nav.alertaException(e.toString());
-			}
+			sentencia[0] = "delete from comicsbbdd";
+			sentencia[1] = "alter table comicsbbdd AUTO_INCREMENT = 1;";
 		}
-		return false;
+		return sentencia;
+	}
+
+	public String[] reloadID() {
+		String sentencia[] = new String[2];
+		sentencia[0] = "ALTER TABLE comicsbbdd DROP ID, order by nomComic";
+		sentencia[1] = "ALTER TABLE comicsbbdd ADD ID int NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST, order by nomComic";
+		return sentencia;
 	}
 
 	/**
-	 * Funcion que permite reasignar ID a todos los comics, se realiza a la hora de introducir, modificar, eliminar un comic.
+	 * Funcion que permite reasignar ID a todos los comics, se realiza a la hora de
+	 * introducir, modificar, eliminar un comic.
+	 *
 	 * @return
 	 */
-	public boolean reloadID() {
+	public boolean ejecucionPreparedStatement(String[] sentencia) {
 		Connection conn = DBManager.conexion();
+
 		try {
-			PreparedStatement statement1 = conn.prepareStatement("ALTER TABLE comicsbbdd DROP ID, order by nomComic");
-			PreparedStatement statement2 = conn.prepareStatement(
-					"ALTER TABLE comicsbbdd ADD ID int NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST, order by nomComic");
+			PreparedStatement statement1 = conn.prepareStatement(sentencia[0]);
+			PreparedStatement statement2 = conn.prepareStatement(sentencia[1]);
 			statement1.executeUpdate();
 			statement2.executeUpdate();
 			reiniciarBBDD();
@@ -332,7 +335,7 @@ public class DBLibreriaManager extends Comic {
 		ResultSet rs = null;
 		Statement st = null;
 		Connection conn = DBManager.conexion();
-		
+
 		try {
 			st = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 			rs = st.executeQuery(procedimiento);
@@ -913,7 +916,8 @@ public class DBLibreriaManager extends Comic {
 	}
 
 	/**
-	 * Funcion que permite generar imagenes de formato JPG a la hora de exportar la base de datos excel.
+	 * Funcion que permite generar imagenes de formato JPG a la hora de exportar la
+	 * base de datos excel.
 	 */
 	public void saveImageFromDataBase() {
 		String sentenciaSQL = "SELECT * FROM comicsbbdd";
@@ -940,6 +944,7 @@ public class DBLibreriaManager extends Comic {
 
 	/**
 	 * Permite modificar un comic de la base de datos
+	 *
 	 * @param id
 	 * @param sentenciaSQL
 	 */
@@ -953,7 +958,7 @@ public class DBLibreriaManager extends Comic {
 
 				stmt.setString(1, id);
 				if (stmt.executeUpdate() == 1) {
-					reloadID();
+					ejecucionPreparedStatement(reloadID());
 					return true;
 				}
 			}
@@ -989,7 +994,9 @@ public class DBLibreriaManager extends Comic {
 	}
 
 	/**
-	 * Funcion que permite obtener datos de la libreria de comics almacenada en la base de datos
+	 * Funcion que permite obtener datos de la libreria de comics almacenada en la
+	 * base de datos
+	 *
 	 * @param sentenciaSQL
 	 * @return
 	 */
@@ -1070,11 +1077,11 @@ public class DBLibreriaManager extends Comic {
 		} finally {
 			try {
 				portada.close();
+				ejecucionPreparedStatement(reloadID());
 			} catch (IOException e) {
 				nav.alertaException(e.toString());
 			}
 		}
-		reloadID();
 	}
 
 	/**
@@ -1236,11 +1243,12 @@ public class DBLibreriaManager extends Comic {
 		} finally {
 			try {
 				portada.close();
+				ejecucionPreparedStatement(reloadID());
 			} catch (IOException ex) {
 				nav.alertaException(ex.toString());
 			}
 		}
-		reloadID();
+
 	}
 
 	/**
@@ -1337,7 +1345,9 @@ public class DBLibreriaManager extends Comic {
 	}
 
 	/**
-	 * Funcion que permite mostrar imagen de una portada cuando se clickea con el raton encima del comic seleccionado
+	 * Funcion que permite mostrar imagen de una portada cuando se clickea con el
+	 * raton encima del comic seleccionado
+	 *
 	 * @param ID
 	 * @return
 	 */
@@ -1416,9 +1426,7 @@ public class DBLibreriaManager extends Comic {
 			} else {
 				listComic = FXCollections.observableArrayList(filtadroBBDD(comic));
 			}
-		}
-		else
-		{
+		} else {
 			String excepcion = "No hay ningun comic guardado en la base de datos";
 			nav.alertaException(excepcion);
 		}

@@ -134,6 +134,7 @@ public class EliminarDatosController {
 	private static Utilidades utilidad = null;
 
 	/**
+	 * Funcion que permite limpiar los datos en pantalla
 	 *
 	 * @param event
 	 */
@@ -159,6 +160,12 @@ public class EliminarDatosController {
 		imagencomic.setImage(null);
 	}
 
+	/**
+	 * Funcion que permite mostrar la imagen de portada cuando clickeas en una
+	 * tabla.
+	 *
+	 * @param event
+	 */
 	@FXML
 	void clickRaton(MouseEvent event) {
 		libreria = new DBLibreriaManager();
@@ -178,6 +185,7 @@ public class EliminarDatosController {
 	}
 
 	/**
+	 * Funcion que elimina un comic de la base de datos.
 	 *
 	 * @param event
 	 */
@@ -293,6 +301,8 @@ public class EliminarDatosController {
 	}
 
 	/**
+	 * Funcion que permite cambiar de estado o eliminar un comic de la base de
+	 * datos.
 	 *
 	 * @param id
 	 * @param sentenciaSQL
@@ -307,7 +317,7 @@ public class EliminarDatosController {
 				pantallaInformativa.setOpacity(1);
 				pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 				pantallaInformativa
-						.setText("Has eliminado correctamente: " + comic.toString().replace("[", "").replace("]", ""));
+						.setText("Has modificado correctamente: " + comic.toString().replace("[", "").replace("]", ""));
 				idComicTratar.setStyle(null);
 				return true;
 			} else {
@@ -396,7 +406,6 @@ public class EliminarDatosController {
 
 	/**
 	 * Al cerrar la ventana, se cargara la ventana de verBBDD
-	 *
 	 */
 	public void closeWindows() { // Metodo que permite cerrar el programa a la fuerza.
 
