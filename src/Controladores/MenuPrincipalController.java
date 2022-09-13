@@ -507,7 +507,7 @@ public class MenuPrincipalController {
 		db = new DBLibreriaManager();
 
 		if (nav.borrarContenidoTabla()) {
-			db.deleteTable();
+			db.ejecucionPreparedStatement(db.deleteTable());
 			prontInfo.setOpacity(1);
 			prontInfo.setStyle("-fx-background-color: #A0F52D");
 			prontInfo.setText("Has borrado correctamente el contenido de la base de datos.");
