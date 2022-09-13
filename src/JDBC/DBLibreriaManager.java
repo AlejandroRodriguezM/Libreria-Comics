@@ -1082,7 +1082,7 @@ public class DBLibreriaManager extends Comic {
 			statement.setString(8, datos[7]);
 			statement.setString(9, datos[8]);
 			statement.setString(10, datos[9]);
-			statement.setString(11, "");
+			statement.setString(11, "Sin puntuar");
 
 			if (datos[10].length() != 0) {
 				statement.setBinaryStream(12, portada);
