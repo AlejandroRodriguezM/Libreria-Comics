@@ -90,7 +90,7 @@ public class DBLibreriaManager extends Comic {
 			try {
 				rs.close();
 			} catch (SQLException e) {
-				e.printStackTrace();
+				nav.alertaException(e.toString());
 			}
 		}
 		return 0;

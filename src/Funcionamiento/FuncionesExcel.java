@@ -299,13 +299,13 @@ public class FuncionesExcel {
 			String lineText = null;
 
 			int count = 0;
-			int j = db.countRows();
+			int nuevoID = db.countRows();
 			lineReader.readLine();
 
 			// Se leeran los datos hasta que no existan mas datos
 			while ((lineText = lineReader.readLine()) != null) {
 				String[] data = lineText.split(";");
-				String id = Integer.toString(j);
+				String id = Integer.toString(nuevoID);
 				String nombre = data[1];
 				String numero = data[2];
 				String variante = data[3];
