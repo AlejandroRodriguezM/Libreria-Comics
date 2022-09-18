@@ -71,7 +71,7 @@
       <TextField fx:id="nombreEditorial" layoutX="395.0" layoutY="68.0" prefHeight="25.0" prefWidth="126.0" />
       <TextField fx:id="nombreFormato" layoutX="125.0" layoutY="98.0" prefHeight="25.0" prefWidth="126.0" />
       <TextField fx:id="nombreProcedencia" layoutX="395.0" layoutY="97.0" prefHeight="25.0" prefWidth="126.0" />
-      <TextField fx:id="anioPublicacion" layoutX="126.0" layoutY="128.0" prefHeight="25.0" prefWidth="126.0" />
+      <TextField fx:id="fechaPublicacion" layoutX="126.0" layoutY="128.0" prefHeight="25.0" prefWidth="126.0" />
       <TextField fx:id="nombreGuionista" layoutX="395.0" layoutY="127.0" prefHeight="25.0" prefWidth="126.0" />
       <TextField fx:id="nombreDibujante" layoutX="126.0" layoutY="158.0" prefHeight="25.0" prefWidth="126.0" />
       <Button fx:id="botonMostrarParametro" layoutX="537.0" layoutY="63.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="43.0" prefWidth="90.0" text="Mostrar por parametros" wrapText="true" />

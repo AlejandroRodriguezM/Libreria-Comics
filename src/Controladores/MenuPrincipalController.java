@@ -25,8 +25,12 @@ package Controladores;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.ResourceBundle;
+
+import org.controlsfx.control.textfield.TextFields;
 
 import Funcionamiento.Comic;
 import Funcionamiento.FuncionesExcel;
@@ -37,6 +41,7 @@ import JDBC.DBManager;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -54,7 +59,7 @@ import javafx.stage.Stage;
  *
  * @author Alejandro Rodriguez
  */
-public class MenuPrincipalController {
+public class MenuPrincipalController implements Initializable{
 
 	@FXML
 	private Button botonEliminarComic;
@@ -120,7 +125,7 @@ public class MenuPrincipalController {
 	private Button botonFirmados;
 
 	@FXML
-	private TextField anioPublicacion;
+	private TextField fechaPublicacion;
 
 	@FXML
 	private TextField numeroID;
@@ -209,9 +214,21 @@ public class MenuPrincipalController {
 
 	private static Utilidades utilidad = null;
 
-	private static DBLibreriaManager db = null;
-
 	private static FuncionesExcel excelFuntions = null;
+	
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		libreria = new DBLibreriaManager();
+		TextFields.bindAutoCompletion(nombreComic, libreria.listaNombre());
+		TextFields.bindAutoCompletion(nombreVariante, libreria.listaVariante());
+		TextFields.bindAutoCompletion(nombreFirma, libreria.listaFirma());
+		TextFields.bindAutoCompletion(nombreProcedencia, libreria.listaProcedencia());
+		TextFields.bindAutoCompletion(nombreFormato, libreria.listaFormato());
+		TextFields.bindAutoCompletion(nombreEditorial, libreria.listaEditorial());
+		TextFields.bindAutoCompletion(nombreGuionista, libreria.listaGuionista());
+		TextFields.bindAutoCompletion(nombreDibujante, libreria.listaDibujante());
+		TextFields.bindAutoCompletion(fechaPublicacion, libreria.listaFecha());
+	}
 
 	/////////////////////////////////
 	//// METODOS LLAMADA A VENTANAS//
@@ -226,7 +243,6 @@ public class MenuPrincipalController {
 	public void ventanaAniadir(ActionEvent event) {
 
 		nav.verIntroducirDatos();
-
 		Stage myStage = (Stage) this.botonVentanaAniadir.getScene().getWindow();
 		myStage.close();
 	}
@@ -484,7 +500,7 @@ public class MenuPrincipalController {
 		nombreEditorial.setText("");
 		nombreFormato.setText("");
 		nombreProcedencia.setText("");
-		anioPublicacion.setText("");
+		fechaPublicacion.setText("");
 		nombreDibujante.setText("");
 		nombreGuionista.setText("");
 		prontFrases.setText(null);
@@ -504,10 +520,10 @@ public class MenuPrincipalController {
 	@FXML
 	void borrarContenidoTabla(ActionEvent event) {
 
-		db = new DBLibreriaManager();
+		libreria = new DBLibreriaManager();
 
 		if (nav.borrarContenidoTabla()) {
-			db.ejecucionPreparedStatement(db.deleteTable());
+			libreria.ejecucionPreparedStatement(libreria.deleteTable());
 			prontInfo.setOpacity(1);
 			prontInfo.setStyle("-fx-background-color: #A0F52D");
 			prontInfo.setText("Has borrado correctamente el contenido de la base de datos.");
@@ -526,9 +542,9 @@ public class MenuPrincipalController {
 	 */
 	@FXML
 	void verEstadistica(ActionEvent event) {
-		db = new DBLibreriaManager();
+		libreria = new DBLibreriaManager();
 		prontInfo.setOpacity(1);
-		prontInfo.setText(db.procedimientosEstadistica());
+		prontInfo.setText(libreria.procedimientosEstadistica());
 	}
 
 	/////////////////////////////////
@@ -643,18 +659,18 @@ public class MenuPrincipalController {
 	 * @param fichero
 	 */
 	public void makeSQL(File fichero) {
-		db = new DBLibreriaManager();
+		libreria = new DBLibreriaManager();
 		if (fichero != null) {
 
 			if (Utilidades.isWindows()) {
-				db.backupWindows(fichero); // Llamada a funcion
+				libreria.backupWindows(fichero); // Llamada a funcion
 				prontInfo.setOpacity(1);
 				prontInfo.setStyle("-fx-background-color: #A0F52D");
 				prontInfo.setText("Base de datos exportada \ncorrectamente");
 
 			} else {
 				if (Utilidades.isUnix()) {
-					db.backupLinux(fichero); // Llamada a funcion
+					libreria.backupLinux(fichero); // Llamada a funcion
 					prontInfo.setOpacity(1);
 					prontInfo.setStyle("-fx-background-color: #A0F52D");
 					prontInfo.setText("Base de datos exportada \ncorrectamente");
@@ -741,7 +757,7 @@ public class MenuPrincipalController {
 
 		campos[7] = nombreProcedencia.getText();
 
-		campos[8] = anioPublicacion.getText();
+		campos[8] = fechaPublicacion.getText();
 
 		campos[9] = nombreGuionista.getText();
 
@@ -794,4 +810,6 @@ public class MenuPrincipalController {
 		myStage.close();
 
 	}
+
+
 }

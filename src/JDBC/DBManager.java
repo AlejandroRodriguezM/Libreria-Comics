@@ -88,11 +88,11 @@ public class DBManager {
 	 */
 	public static void datosBBDD(String[] datos) {
 
-		DB_PORT = datos[0];
-		DB_NAME = datos[1];
-		DB_USER = datos[2];
-		DB_PASS = datos[3];
-		DB_HOST = datos[4];
+		DB_PORT = "3306";
+		DB_NAME = "test";
+		DB_USER = "root";
+		DB_PASS = "1234";
+		DB_HOST = "localhost";
 	}
 
 	/**

@@ -19,16 +19,16 @@
             <Image url="@../imagenes/Fondo%20Introducir.jpg" />
          </image>
       </ImageView>
-      <TextField fx:id="numeroParametro" layoutX="135.0" layoutY="64.0" prefHeight="25.0" prefWidth="102.0" />
-      <TextField fx:id="idParametro" layoutX="135.0" layoutY="6.0" prefHeight="25.0" prefWidth="102.0" />
-      <TextField fx:id="varianteParametro" layoutX="135.0" layoutY="93.0" prefHeight="25.0" prefWidth="102.0" />
-      <TextField fx:id="firmaParametro" layoutX="135.0" layoutY="123.0" prefHeight="25.0" prefWidth="102.0" />
-      <TextField fx:id="editorialParametro" layoutX="135.0" layoutY="153.0" prefHeight="25.0" prefWidth="102.0" />
-      <TextField fx:id="formatoParametro" layoutX="135.0" layoutY="182.0" prefHeight="25.0" prefWidth="102.0" />
-      <TextField fx:id="procedenciaParametro" layoutX="135.0" layoutY="211.0" prefHeight="25.0" prefWidth="102.0" />
-      <TextField fx:id="fechaParametro" layoutX="135.0" layoutY="241.0" prefHeight="25.0" prefWidth="102.0" />
-      <TextField fx:id="guionistaParametro" layoutX="135.0" layoutY="270.0" prefHeight="25.0" prefWidth="102.0" />
-      <TextField fx:id="dibujanteParametro" layoutX="136.0" layoutY="299.0" prefHeight="25.0" prefWidth="102.0" />
+      <TextField fx:id="numeroComic" layoutX="135.0" layoutY="64.0" prefHeight="25.0" prefWidth="102.0" />
+      <TextField fx:id="numeroID" layoutX="135.0" layoutY="6.0" prefHeight="25.0" prefWidth="102.0" />
+      <TextField fx:id="nombreVariante" layoutX="135.0" layoutY="93.0" prefHeight="25.0" prefWidth="102.0" />
+      <TextField fx:id="nombreFirma" layoutX="135.0" layoutY="123.0" prefHeight="25.0" prefWidth="102.0" />
+      <TextField fx:id="nombreEditorial" layoutX="135.0" layoutY="153.0" prefHeight="25.0" prefWidth="102.0" />
+      <TextField fx:id="nombreFormato" layoutX="135.0" layoutY="182.0" prefHeight="25.0" prefWidth="102.0" />
+      <TextField fx:id="nombreProcedencia" layoutX="135.0" layoutY="211.0" prefHeight="25.0" prefWidth="102.0" />
+      <TextField fx:id="fechaPublicacion" layoutX="135.0" layoutY="241.0" prefHeight="25.0" prefWidth="102.0" />
+      <TextField fx:id="nombreGuionista" layoutX="135.0" layoutY="270.0" prefHeight="25.0" prefWidth="102.0" />
+      <TextField fx:id="nombreDibujante" layoutX="136.0" layoutY="299.0" prefHeight="25.0" prefWidth="102.0" />
       <TextField fx:id="nombreAni" layoutX="382.0" layoutY="5.0" prefHeight="25.0" prefWidth="113.0" />
       <TextField fx:id="numeroAni" layoutX="382.0" layoutY="35.0" prefHeight="25.0" prefWidth="113.0" />
       <TextField fx:id="varianteAni" layoutX="382.0" layoutY="65.0" prefHeight="25.0" prefWidth="113.0" />
@@ -116,7 +116,7 @@
          </font>
       </Label>
       <TextArea fx:id="pantallaInformativa" editable="false" layoutX="601.0" layoutY="5.0" opacity="0.0" prefHeight="275.0" prefWidth="206.0" wrapText="true" />
-      <TextField fx:id="nombreParametro" layoutX="135.0" layoutY="35.0" prefHeight="25.0" prefWidth="102.0" />
+      <TextField fx:id="nombreComic" layoutX="135.0" layoutY="35.0" prefHeight="25.0" prefWidth="102.0" />
       <Label layoutX="10.0" layoutY="39.0" style="-fx-background-color: white;" text="Nombre" />
       <Label layoutX="11.0" layoutY="329.0" prefHeight="25.0" prefWidth="117.0" style="-fx-background-color: white;" text="Busqueda general" wrapText="true">
          <font>

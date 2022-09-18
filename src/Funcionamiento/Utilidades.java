@@ -51,6 +51,7 @@ import javax.imageio.ImageIO;
 public class Utilidades {
 
 	public static List<Comic> listaLimpia = new ArrayList<>();
+	public static List<String> listaLimpiaAutoCompletado = new ArrayList<>();
 
 	private static Ventanas nav = new Ventanas();
 
@@ -161,6 +162,28 @@ public class Utilidades {
 
 		}
 		return listaLimpia;
+	}
+	
+	/**
+	 * Funcion que devuelve una lista en la que solamente se guardan aquellos datos
+	 * que no se repiten
+	 *
+	 * @param listaComics
+	 * @return
+	 */
+	public static List<String> listaArregladaAutoComplete(List<String> listaComics) {
+
+		ArrayList<String> newList = new ArrayList<String>();
+		newList.clear();
+
+		for (String s : listaComics) {
+			if(!newList.contains(s))
+			{
+				newList.add(s);
+			}
+		}
+
+		return newList;
 	}
 
 	/**

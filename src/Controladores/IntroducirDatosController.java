@@ -32,6 +32,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import org.controlsfx.control.textfield.TextFields;
+
 import Funcionamiento.Comic;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
@@ -87,37 +89,40 @@ public class IntroducirDatosController implements Initializable {
 	private TextArea pantallaInformativa;
 
 	@FXML
-	private TextField idParametro;
+	private TextField fechaPublicacion;
 
 	@FXML
-	private TextField nombreParametro;
+	private TextField numeroID;
 
 	@FXML
-	private TextField numeroParametro;
+	private TextField nombreComic;
 
 	@FXML
-	private TextField varianteParametro;
+	private TextField nombreDibujante;
 
 	@FXML
-	private TextField firmaParametro;
+	private TextField nombreEditorial;
 
 	@FXML
-	private TextField editorialParametro;
+	private TextField nombreFirma;
 
 	@FXML
-	private TextField formatoParametro;
+	private TextField nombreFormato;
 
 	@FXML
-	private TextField procedenciaParametro;
+	private TextField nombreGuionista;
 
 	@FXML
-	private TextField fechaParametro;
+	private TextField nombreProcedencia;
 
 	@FXML
-	private TextField guionistaParametro;
+	private TextField nombreVariante;
 
 	@FXML
-	private TextField dibujanteParametro;
+	private TextField numeroComic;
+
+	@FXML
+	private TextField busquedaGeneral;
 
 	@FXML
 	private TextField nombreAni;
@@ -148,9 +153,6 @@ public class IntroducirDatosController implements Initializable {
 
 	@FXML
 	private TextField dibujanteAni;
-
-	@FXML
-	private TextField busquedaGeneral;
 
 	@FXML
 	private TextField direccionImagen;
@@ -203,7 +205,7 @@ public class IntroducirDatosController implements Initializable {
 	private static Ventanas nav = new Ventanas();
 	private static DBLibreriaManager libreria = null;
 	private static Utilidades utilidad = null;
-
+	
 	/**
 	 * Funcion que permite hacer funcionar la lista de puntuacion.
 	 */
@@ -216,6 +218,17 @@ public class IntroducirDatosController implements Initializable {
 		estadoComic.getSelectionModel().selectFirst(); // Permite que no exista un valor null, escogiendo el primer
 		// valor, que se encuentra vacio, en caso de querer borrar
 		// la puntuacion.
+		
+		libreria = new DBLibreriaManager();
+		TextFields.bindAutoCompletion(nombreComic, libreria.listaNombre());
+		TextFields.bindAutoCompletion(nombreVariante, libreria.listaVariante());
+		TextFields.bindAutoCompletion(nombreFirma, libreria.listaFirma());
+		TextFields.bindAutoCompletion(nombreProcedencia, libreria.listaProcedencia());
+		TextFields.bindAutoCompletion(nombreFormato, libreria.listaFormato());
+		TextFields.bindAutoCompletion(nombreEditorial, libreria.listaEditorial());
+		TextFields.bindAutoCompletion(nombreGuionista, libreria.listaGuionista());
+		TextFields.bindAutoCompletion(nombreDibujante, libreria.listaDibujante());
+		TextFields.bindAutoCompletion(fechaPublicacion, libreria.listaFecha());
 	}
 
 	/**
@@ -250,29 +263,17 @@ public class IntroducirDatosController implements Initializable {
 	@FXML
 	void limpiarDatos(ActionEvent event) {
 
-		// Campos de busqueda por parametro
-		idParametro.setText("");
-
-		nombreParametro.setText("");
-
-		numeroParametro.setText("");
-
-		varianteParametro.setText("");
-
-		firmaParametro.setText("");
-
-		editorialParametro.setText("");
-
-		formatoParametro.setText("");
-
-		procedenciaParametro.setText("");
-
-		fechaParametro.setText("");
-
-		guionistaParametro.setText("");
-
-		dibujanteParametro.setText("");
-
+		numeroID.setText("");
+		nombreComic.setText("");
+		numeroComic.setText("");
+		nombreVariante.setText("");
+		nombreFirma.setText("");
+		nombreEditorial.setText("");
+		nombreFormato.setText("");
+		nombreProcedencia.setText("");
+		fechaPublicacion.setText("");
+		nombreDibujante.setText("");
+		nombreGuionista.setText("");
 		busquedaGeneral.setText("");
 
 		// Campos de datos a modificar
@@ -485,27 +486,27 @@ public class IntroducirDatosController implements Initializable {
 	public String[] camposComicActuales() {
 		String campos[] = new String[12];
 
-		campos[0] = idParametro.getText();
+		campos[0] = numeroID.getText();
 
-		campos[1] = nombreParametro.getText();
+		campos[1] = nombreComic.getText();
 
-		campos[2] = numeroParametro.getText();
+		campos[2] = numeroComic.getText();
 
-		campos[3] = varianteParametro.getText();
+		campos[3] = nombreVariante.getText();
 
-		campos[4] = firmaParametro.getText();
+		campos[4] = nombreFirma.getText();
 
-		campos[5] = editorialParametro.getText();
+		campos[5] = nombreEditorial.getText();
 
-		campos[6] = formatoParametro.getText();
+		campos[6] = nombreFormato.getText();
 
-		campos[7] = procedenciaParametro.getText();
+		campos[7] = nombreProcedencia.getText();
 
-		campos[8] = fechaParametro.getText();
+		campos[8] = fechaPublicacion.getText();
 
-		campos[9] = guionistaParametro.getText();
+		campos[9] = nombreGuionista.getText();
 
-		campos[10] = dibujanteParametro.getText();
+		campos[10] = nombreDibujante.getText();
 
 		return campos;
 	}

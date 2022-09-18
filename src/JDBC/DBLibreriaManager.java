@@ -61,9 +61,32 @@ public class DBLibreriaManager extends Comic {
 	public static List<Comic> listaCompleta = new ArrayList<>();
 	public static List<Comic> filtroComics = new ArrayList<>();
 
+	public static List<String> listaNombreComic = new ArrayList<>();
+	public static List<String> listaVarianteComic = new ArrayList<>();
+	public static List<String> listaFirmaComic = new ArrayList<>();
+	public static List<String> listaProcedenciaComic = new ArrayList<>();
+	public static List<String> listaFormatoComic = new ArrayList<>();
+	public static List<String> listaEditorialComic = new ArrayList<>();
+	public static List<String> listaGuionistaComic = new ArrayList<>();
+	public static List<String> listaDibujanteComic = new ArrayList<>();
+	public static List<String> listaFechaComic = new ArrayList<>();
+
 	private static Ventanas nav = new Ventanas();
 	private static Connection conn = null;
 	private static Utilidades utilidad = null;
+
+	public void listasAutoCompletado() {
+		listaNombre();
+		listaVariante();
+		listaFirma();
+		listaProcedencia();
+		listaFormato();
+		listaEditorial();
+		listaGuionista();
+		listaDibujante();
+		listaFecha();
+	}
+
 
 	/**
 	 * Funcion que permite contar cuantas filas hay en la base de datos.
@@ -110,7 +133,8 @@ public class DBLibreriaManager extends Comic {
 	}
 
 	/**
-	 * Reasigna el ID a todos los comics
+	 * Funcion que permite reasignar ID a todos los comics, se realiza a la hora de
+	 * introducir, modificar, eliminar un comic.
 	 *
 	 * @return
 	 */
@@ -122,8 +146,7 @@ public class DBLibreriaManager extends Comic {
 	}
 
 	/**
-	 * Funcion que permite reasignar ID a todos los comics, se realiza a la hora de
-	 * introducir, modificar, eliminar un comic.
+	 * 
 	 *
 	 * @return
 	 */
@@ -209,7 +232,7 @@ public class DBLibreriaManager extends Comic {
 	public String procedimientosEstadistica() {
 
 		int numGrapas, numTomos, numUsa, numEsp, numMarvel, numDC, numPanini, numDarkHorse, numMangas, leidos, vendidos,
-				posesion, firmados, total;
+		posesion, firmados, total;
 
 		String procedimientos[] = { "call numeroGrapas()", "call numeroTomos()", "call numeroSpain()",
 				"call numeroUSA()", "call total()", "call numeroPanini()", "call numeroMarvel()", "call numeroDC()",
@@ -364,6 +387,292 @@ public class DBLibreriaManager extends Comic {
 	 *
 	 * @return
 	 */
+	public List<String> listaNombre() {
+
+		listaNombreComic.clear();
+
+		String sentenciaSql = "SELECT nomComic from comicsbbdd";
+
+		reiniciarBBDD();
+
+		ResultSet rs;
+		rs = obtenLibreria(sentenciaSql);
+		try {
+			while(rs.next())
+			{
+				String nombre;
+				nombre = rs.getString("nomComic");
+				listaNombreComic.add(nombre);
+			}
+			listaNombreComic = Utilidades.listaArregladaAutoComplete(listaNombreComic);
+		
+			return listaNombreComic;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//		
+		return null;
+		
+	}
+
+	/**
+	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
+	 *
+	 * @return
+	 */
+	public List<String> listaVariante() {
+
+		listaVarianteComic.clear();
+
+		String sentenciaSql = "SELECT nomVariante from comicsbbdd";
+
+		reiniciarBBDD();
+
+		ResultSet rs;
+		rs = obtenLibreria(sentenciaSql);
+		try {
+			while(rs.next())
+			{
+				String variante;
+				variante = rs.getString("nomVariante");
+				listaVarianteComic.add(variante);
+			}
+			listaVarianteComic = Utilidades.listaArregladaAutoComplete(listaVarianteComic);
+			return listaVarianteComic;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
+	 *
+	 * @return
+	 */
+	public List<String> listaFirma() {
+
+		listaFirmaComic.clear();
+
+		String sentenciaSql = "SELECT firma from comicsbbdd";
+
+		reiniciarBBDD();
+
+		ResultSet rs;
+		rs = obtenLibreria(sentenciaSql);
+		try {
+			while(rs.next())
+			{
+				String firma;
+				firma = rs.getString("firma");
+				listaFirmaComic.add(firma);
+			}
+			listaFirmaComic = Utilidades.listaArregladaAutoComplete(listaFirmaComic);
+		
+			return listaFirmaComic;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
+	 *
+	 * @return
+	 */
+	public List<String> listaProcedencia() {
+
+		listaProcedenciaComic.clear();
+
+		String sentenciaSql = "SELECT procedencia from comicsbbdd";
+
+		reiniciarBBDD();
+
+		ResultSet rs;
+		rs = obtenLibreria(sentenciaSql);
+		try {
+			while(rs.next())
+			{
+				String procedencia;
+				procedencia = rs.getString("procedencia");
+				listaProcedenciaComic.add(procedencia);
+			}
+			listaProcedenciaComic = Utilidades.listaArregladaAutoComplete(listaProcedenciaComic);
+		
+			return listaProcedenciaComic;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
+	 *
+	 * @return
+	 */
+	public List<String> listaFormato() {
+
+		listaFormatoComic.clear();
+
+		String sentenciaSql = "SELECT formato from comicsbbdd";
+
+		reiniciarBBDD();
+
+		ResultSet rs;
+		rs = obtenLibreria(sentenciaSql);
+		try {
+			while(rs.next())
+			{
+				String formato;
+				formato = rs.getString("formato");
+				listaFormatoComic.add(formato);
+			}
+			listaFormatoComic = Utilidades.listaArregladaAutoComplete(listaFormatoComic);
+		
+			return listaFormatoComic;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
+	 *
+	 * @return
+	 */
+	public List<String> listaEditorial() {
+
+		listaEditorialComic.clear();
+
+		String sentenciaSql = "SELECT nomEditorial from comicsbbdd";
+
+		reiniciarBBDD();
+
+		ResultSet rs;
+		rs = obtenLibreria(sentenciaSql);
+		try {
+			while(rs.next())
+			{
+				String editorial;
+				editorial = rs.getString("nomEditorial");
+				listaEditorialComic.add(editorial);
+			}
+			listaEditorialComic = Utilidades.listaArregladaAutoComplete(listaEditorialComic);
+		
+			return listaEditorialComic;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
+	 *
+	 * @return
+	 */
+	public List<String> listaGuionista() {
+
+		listaGuionistaComic.clear();
+
+		String sentenciaSql = "SELECT nomGuionista from comicsbbdd";
+
+		reiniciarBBDD();
+
+		ResultSet rs;
+		rs = obtenLibreria(sentenciaSql);
+		try {
+			while(rs.next())
+			{
+				String guionista;
+				guionista = rs.getString("nomGuionista");
+				listaGuionistaComic.add(guionista);
+			}
+			listaGuionistaComic = Utilidades.listaArregladaAutoComplete(listaGuionistaComic);
+			return listaGuionistaComic;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
+	 *
+	 * @return
+	 */
+	public List<String> listaDibujante() {
+
+		listaDibujanteComic.clear();
+
+		String sentenciaSql = "SELECT nomDibujante from comicsbbdd";
+
+		reiniciarBBDD();
+
+		ResultSet rs;
+		rs = obtenLibreria(sentenciaSql);
+		try {
+			while(rs.next())
+			{
+				String dibujante;
+				dibujante = rs.getString("nomDibujante");
+				listaDibujanteComic.add(dibujante);
+			}
+			listaDibujanteComic = Utilidades.listaArregladaAutoComplete(listaDibujanteComic);
+			return listaDibujanteComic;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
+	 *
+	 * @return
+	 */
+	public List<String> listaFecha() {
+
+		listaDibujanteComic.clear();
+
+		String sentenciaSql = "SELECT anioPubli from comicsbbdd";
+
+		reiniciarBBDD();
+
+		ResultSet rs;
+		rs = obtenLibreria(sentenciaSql);
+		try {
+			while(rs.next())
+			{
+				String fecha;
+				fecha = rs.getString("anioPubli");
+				listaFechaComic.add(fecha);
+			}
+			listaFechaComic = Utilidades.listaArregladaAutoComplete(listaFechaComic);
+			return listaFechaComic;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+
+	/**
+	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
+	 *
+	 * @return
+	 */
 	public Comic[] verLibreriaCompleta() {
 
 		listaCompleta.clear();
@@ -501,7 +810,6 @@ public class DBLibreriaManager extends Comic {
 		reiniciarBBDD();
 
 		ResultSet rs;
-
 		rs = obtenLibreria(sentenciaSql);
 		listaTratamiento = listaDatos(rs);
 
@@ -807,8 +1115,7 @@ public class DBLibreriaManager extends Comic {
 				} while (rs.next());
 			}
 		} catch (SQLException e) {
-			nav.alertaException("Datos introducidos incorrectos.");
-			e.printStackTrace();
+			nav.alertaException("Datos introducidos incorrectos: " + e);
 		}
 
 		return listaComics;
@@ -990,7 +1297,7 @@ public class DBLibreriaManager extends Comic {
 
 		modificarDatos(id, sentenciaSQL);
 	}
-	
+
 	/**
 	 * Funcion que permite cambiar de estado el comic a "Vendido" y hace que no se
 	 * muestre en la bbdd

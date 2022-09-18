@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import org.controlsfx.control.textfield.TextFields;
+
 import Funcionamiento.Comic;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
@@ -190,6 +192,17 @@ public class ModificarDatosController implements Initializable {
 		estadoComic.getSelectionModel().selectFirst(); // Permite que no exista un valor null, escogiendo el primer
 		// valor, que se encuentra vacio, en caso de querer borrar
 		// la puntuacion.
+		
+		TextFields.bindAutoCompletion(nombreComic, libreria.listaNombre());
+		TextFields.bindAutoCompletion(nombreVariante, libreria.listaVariante());
+		TextFields.bindAutoCompletion(nombreFirma, libreria.listaFirma());
+		TextFields.bindAutoCompletion(nombreProcedencia, libreria.listaProcedencia());
+		TextFields.bindAutoCompletion(nombreFormato, libreria.listaFormato());
+		TextFields.bindAutoCompletion(nombreEditorial, libreria.listaEditorial());
+		TextFields.bindAutoCompletion(nombreGuionista, libreria.listaGuionista());
+		TextFields.bindAutoCompletion(nombreDibujante, libreria.listaDibujante());
+		TextFields.bindAutoCompletion(anioPublicacion, libreria.listaFecha());
+		
 	}
 
 	/**

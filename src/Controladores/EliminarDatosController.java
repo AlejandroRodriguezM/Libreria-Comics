@@ -1,7 +1,11 @@
 package Controladores;
 
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.ResourceBundle;
+
+import org.controlsfx.control.textfield.TextFields;
 
 import Funcionamiento.Comic;
 import Funcionamiento.Utilidades;
@@ -9,6 +13,7 @@ import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -25,7 +30,7 @@ import javafx.stage.Stage;
  *
  * @author Alejandro Rodriguez
  */
-public class EliminarDatosController {
+public class EliminarDatosController implements Initializable{
 
 	@FXML
 	private Button botonEliminar;
@@ -136,6 +141,21 @@ public class EliminarDatosController {
 	private static DBLibreriaManager libreria = null;
 	private static Utilidades utilidad = null;
 
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		libreria = new DBLibreriaManager();
+		TextFields.bindAutoCompletion(nombreComic, libreria.listaNombre());
+		TextFields.bindAutoCompletion(nombreVariante, libreria.listaVariante());
+		TextFields.bindAutoCompletion(nombreFirma, libreria.listaFirma());
+		TextFields.bindAutoCompletion(nombreProcedencia, libreria.listaProcedencia());
+		TextFields.bindAutoCompletion(nombreFormato, libreria.listaFormato());
+		TextFields.bindAutoCompletion(nombreEditorial, libreria.listaEditorial());
+		TextFields.bindAutoCompletion(nombreGuionista, libreria.listaGuionista());
+		TextFields.bindAutoCompletion(nombreDibujante, libreria.listaDibujante());
+		TextFields.bindAutoCompletion(anioPublicacion, libreria.listaFecha());
+	}
+	
+	
 	/**
 	 * Funcion que permite limpiar los datos en pantalla
 	 *
