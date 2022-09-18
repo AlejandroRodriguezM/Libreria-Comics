@@ -391,12 +391,12 @@ public class DBLibreriaManager extends Comic {
 
 		listaNombreComic.clear();
 
-		String sentenciaSql = "SELECT nomComic from comicsbbdd";
+		String sentenciaSQL = "SELECT nomComic from comicsbbdd";
 
 		reiniciarBBDD();
 
 		ResultSet rs;
-		rs = obtenLibreria(sentenciaSql);
+		rs = obtenLibreria(sentenciaSQL);
 		try {
 			while(rs.next())
 			{
@@ -405,15 +405,14 @@ public class DBLibreriaManager extends Comic {
 				listaNombreComic.add(nombre);
 			}
 			listaNombreComic = Utilidades.listaArregladaAutoComplete(listaNombreComic);
-		
+
 			return listaNombreComic;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			nav.alertaException(e.toString());
 		}
 		//		
 		return null;
-		
+
 	}
 
 	/**
@@ -425,12 +424,12 @@ public class DBLibreriaManager extends Comic {
 
 		listaVarianteComic.clear();
 
-		String sentenciaSql = "SELECT nomVariante from comicsbbdd";
+		String sentenciaSQL = "SELECT nomVariante from comicsbbdd";
 
 		reiniciarBBDD();
 
 		ResultSet rs;
-		rs = obtenLibreria(sentenciaSql);
+		rs = obtenLibreria(sentenciaSQL);
 		try {
 			while(rs.next())
 			{
@@ -441,7 +440,7 @@ public class DBLibreriaManager extends Comic {
 			listaVarianteComic = Utilidades.listaArregladaAutoComplete(listaVarianteComic);
 			return listaVarianteComic;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			nav.alertaException(e.toString());
 		}
 		return null;
 	}
@@ -455,12 +454,12 @@ public class DBLibreriaManager extends Comic {
 
 		listaFirmaComic.clear();
 
-		String sentenciaSql = "SELECT firma from comicsbbdd";
+		String sentenciaSQL = "SELECT firma from comicsbbdd";
 
 		reiniciarBBDD();
 
 		ResultSet rs;
-		rs = obtenLibreria(sentenciaSql);
+		rs = obtenLibreria(sentenciaSQL);
 		try {
 			while(rs.next())
 			{
@@ -469,11 +468,10 @@ public class DBLibreriaManager extends Comic {
 				listaFirmaComic.add(firma);
 			}
 			listaFirmaComic = Utilidades.listaArregladaAutoComplete(listaFirmaComic);
-		
+
 			return listaFirmaComic;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			nav.alertaException(e.toString());
 		}
 		return null;
 	}
@@ -487,12 +485,12 @@ public class DBLibreriaManager extends Comic {
 
 		listaProcedenciaComic.clear();
 
-		String sentenciaSql = "SELECT procedencia from comicsbbdd";
+		String sentenciaSQL = "SELECT procedencia from comicsbbdd";
 
 		reiniciarBBDD();
 
 		ResultSet rs;
-		rs = obtenLibreria(sentenciaSql);
+		rs = obtenLibreria(sentenciaSQL);
 		try {
 			while(rs.next())
 			{
@@ -501,11 +499,10 @@ public class DBLibreriaManager extends Comic {
 				listaProcedenciaComic.add(procedencia);
 			}
 			listaProcedenciaComic = Utilidades.listaArregladaAutoComplete(listaProcedenciaComic);
-		
+
 			return listaProcedenciaComic;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			nav.alertaException(e.toString());
 		}
 		return null;
 	}
@@ -519,12 +516,12 @@ public class DBLibreriaManager extends Comic {
 
 		listaFormatoComic.clear();
 
-		String sentenciaSql = "SELECT formato from comicsbbdd";
+		String sentenciaSQL = "SELECT formato from comicsbbdd";
 
 		reiniciarBBDD();
 
 		ResultSet rs;
-		rs = obtenLibreria(sentenciaSql);
+		rs = obtenLibreria(sentenciaSQL);
 		try {
 			while(rs.next())
 			{
@@ -533,11 +530,10 @@ public class DBLibreriaManager extends Comic {
 				listaFormatoComic.add(formato);
 			}
 			listaFormatoComic = Utilidades.listaArregladaAutoComplete(listaFormatoComic);
-		
+
 			return listaFormatoComic;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			nav.alertaException(e.toString());
 		}
 		return null;
 	}
@@ -551,12 +547,12 @@ public class DBLibreriaManager extends Comic {
 
 		listaEditorialComic.clear();
 
-		String sentenciaSql = "SELECT nomEditorial from comicsbbdd";
+		String sentenciaSQL = "SELECT nomEditorial from comicsbbdd";
 
 		reiniciarBBDD();
 
 		ResultSet rs;
-		rs = obtenLibreria(sentenciaSql);
+		rs = obtenLibreria(sentenciaSQL);
 		try {
 			while(rs.next())
 			{
@@ -565,11 +561,10 @@ public class DBLibreriaManager extends Comic {
 				listaEditorialComic.add(editorial);
 			}
 			listaEditorialComic = Utilidades.listaArregladaAutoComplete(listaEditorialComic);
-		
+
 			return listaEditorialComic;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			nav.alertaException(e.toString());
 		}
 		return null;
 	}
@@ -583,12 +578,12 @@ public class DBLibreriaManager extends Comic {
 
 		listaGuionistaComic.clear();
 
-		String sentenciaSql = "SELECT nomGuionista from comicsbbdd";
+		String sentenciaSQL = "SELECT nomGuionista from comicsbbdd";
 
 		reiniciarBBDD();
 
 		ResultSet rs;
-		rs = obtenLibreria(sentenciaSql);
+		rs = obtenLibreria(sentenciaSQL);
 		try {
 			while(rs.next())
 			{
@@ -599,8 +594,7 @@ public class DBLibreriaManager extends Comic {
 			listaGuionistaComic = Utilidades.listaArregladaAutoComplete(listaGuionistaComic);
 			return listaGuionistaComic;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			nav.alertaException(e.toString());
 		}
 		return null;
 	}
@@ -614,12 +608,12 @@ public class DBLibreriaManager extends Comic {
 
 		listaDibujanteComic.clear();
 
-		String sentenciaSql = "SELECT nomDibujante from comicsbbdd";
+		String sentenciaSQL = "SELECT nomDibujante from comicsbbdd";
 
 		reiniciarBBDD();
 
 		ResultSet rs;
-		rs = obtenLibreria(sentenciaSql);
+		rs = obtenLibreria(sentenciaSQL);
 		try {
 			while(rs.next())
 			{
@@ -630,12 +624,11 @@ public class DBLibreriaManager extends Comic {
 			listaDibujanteComic = Utilidades.listaArregladaAutoComplete(listaDibujanteComic);
 			return listaDibujanteComic;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			nav.alertaException(e.toString());
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
 	 *
@@ -645,12 +638,12 @@ public class DBLibreriaManager extends Comic {
 
 		listaDibujanteComic.clear();
 
-		String sentenciaSql = "SELECT anioPubli from comicsbbdd";
+		String sentenciaSQL = "SELECT anioPubli from comicsbbdd";
 
 		reiniciarBBDD();
 
 		ResultSet rs;
-		rs = obtenLibreria(sentenciaSql);
+		rs = obtenLibreria(sentenciaSQL);
 		try {
 			while(rs.next())
 			{
@@ -661,10 +654,19 @@ public class DBLibreriaManager extends Comic {
 			listaFechaComic = Utilidades.listaArregladaAutoComplete(listaFechaComic);
 			return listaFechaComic;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			nav.alertaException(e.toString());
 		}
 		return null;
+	}
+
+	public List<Comic> verLibreria(String sentenciaSQL) {
+
+		reiniciarBBDD();
+
+		ResultSet rs;
+		rs = obtenLibreria(sentenciaSQL);
+		listaDatos(rs);
+		return listaComics;
 	}
 
 
@@ -673,22 +675,10 @@ public class DBLibreriaManager extends Comic {
 	 *
 	 * @return
 	 */
-	public Comic[] verLibreriaCompleta() {
+	public String verLibreriaCompleta() {
 
-		listaCompleta.clear();
-
-		String sentenciaSql = "SELECT * from comicsbbdd";
-
-		Comic comic[] = null;
-
-		reiniciarBBDD();
-
-		ResultSet rs;
-		rs = obtenLibreria(sentenciaSql);
-		listaCompleta = listaDatos(rs);
-		comic = new Comic[listaCompleta.size()];
-		comic = listaCompleta.toArray(comic);
-		return comic;
+		String sentenciaSQL = "SELECT * from comicsbbdd";
+		return sentenciaSQL;
 	}
 
 	/**
@@ -696,25 +686,10 @@ public class DBLibreriaManager extends Comic {
 	 *
 	 * @return
 	 */
-	public Comic[] verLibreriaPosesion() {
+	public String verLibreriaPosesion() {
 
-		listaPosesion.clear();
-
-		String sentenciaSql = "SELECT * from comicsbbdd where estado = 'En posesion'";
-
-		Comic comic[] = null;
-
-		reiniciarBBDD();
-
-		ResultSet rs;
-
-		rs = obtenLibreria(sentenciaSql);
-		listaPosesion = listaDatos(rs);
-
-		comic = new Comic[listaPosesion.size()];
-		comic = listaPosesion.toArray(comic);
-
-		return comic;
+		String sentenciaSQL = "SELECT * from comicsbbdd where estado = 'En posesion'";
+		return sentenciaSQL;
 	}
 
 	/**
@@ -722,25 +697,10 @@ public class DBLibreriaManager extends Comic {
 	 *
 	 * @return
 	 */
-	public Comic[] verLibreriaVendidos() {
+	public String verLibreriaVendidos() {
 
-		listaTratamiento.clear();
-
-		String sentenciaSql = "SELECT * from comicsbbdd where estado = 'Vendido'";
-
-		Comic comic[] = null;
-
-		reiniciarBBDD();
-
-		ResultSet rs;
-
-		rs = obtenLibreria(sentenciaSql);
-		listaTratamiento = listaDatos(rs);
-
-		comic = new Comic[listaTratamiento.size()];
-		comic = listaTratamiento.toArray(comic);
-
-		return comic;
+		String sentenciaSQL = "SELECT * from comicsbbdd where estado = 'Vendido'";
+		return sentenciaSQL;
 	}
 
 	/**
@@ -748,25 +708,10 @@ public class DBLibreriaManager extends Comic {
 	 *
 	 * @return
 	 */
-	public Comic[] verLibreriaEnVenta() {
+	public String verLibreriaEnVenta() {
 
-		listaTratamiento.clear();
-
-		String sentenciaSql = "SELECT * from comicsbbdd where estado = 'En venta'";
-
-		Comic comic[] = null;
-
-		reiniciarBBDD();
-
-		ResultSet rs;
-
-		rs = obtenLibreria(sentenciaSql);
-		listaTratamiento = listaDatos(rs);
-
-		comic = new Comic[listaTratamiento.size()];
-		comic = listaTratamiento.toArray(comic);
-
-		return comic;
+		String sentenciaSQL = "SELECT * from comicsbbdd where estado = 'En venta'";
+		return sentenciaSQL;
 	}
 
 	/**
@@ -774,23 +719,10 @@ public class DBLibreriaManager extends Comic {
 	 *
 	 * @return
 	 */
-	public Comic[] verLibreriaFirmados() {
+	public String verLibreriaFirmados() {
 
-		listaTratamiento.clear();
-
-		String sentenciaSql = "SELECT * from comicsbbdd where Firma <> ''";
-
-		Comic comic[] = null;
-
-		ResultSet rs;
-
-		rs = obtenLibreria(sentenciaSql);
-		listaTratamiento = listaDatos(rs);
-
-		comic = new Comic[listaTratamiento.size()];
-		comic = listaTratamiento.toArray(comic);
-
-		return comic;
+		String sentenciaSQL = "SELECT * from comicsbbdd where Firma <> ''";
+		return sentenciaSQL;
 	}
 
 	/**
@@ -799,24 +731,10 @@ public class DBLibreriaManager extends Comic {
 	 *
 	 * @return
 	 */
-	public Comic[] verLibreriaPuntuacion() {
+	public String verLibreriaPuntuacion() {
 
-		listaTratamiento.clear();
-
-		String sentenciaSql = "SELECT * from comicsbbdd where not puntuacion = 'Sin puntuacion'";
-
-		Comic comic[] = null;
-
-		reiniciarBBDD();
-
-		ResultSet rs;
-		rs = obtenLibreria(sentenciaSql);
-		listaTratamiento = listaDatos(rs);
-
-		comic = new Comic[listaTratamiento.size()];
-		comic = listaTratamiento.toArray(comic);
-
-		return comic;
+		String sentenciaSQL = "SELECT * from comicsbbdd where not puntuacion = 'Sin puntuacion'";
+		return sentenciaSQL;
 	}
 
 	/**
@@ -825,11 +743,9 @@ public class DBLibreriaManager extends Comic {
 	 * @param datos
 	 * @return
 	 */
-	public Comic[] filtadroBBDD(Comic datos) {
+	public List<Comic> filtadroBBDD(Comic datos) {
 
 		reiniciarBBDD();
-
-		Comic comic[] = null;
 
 		String sql = datosConcatenados(datos);
 		Connection conn = DBManager.conexion();
@@ -843,18 +759,15 @@ public class DBLibreriaManager extends Comic {
 				ResultSet rs = ps.executeQuery();
 
 				if (rs.next()) {
-					filtroComics = listaDatos(rs);
+					listaDatos(rs);
+					filtroComics = listaComics;
 				}
+				return filtroComics;
 			} catch (SQLException ex) {
 				nav.alertaException(ex.toString());
 			}
-
-			comic = new Comic[filtroComics.size()];
-			comic = filtroComics.toArray(comic);
-		} else {
-			comic = new Comic[filtroComics.size()];
 		}
-		return comic;
+		return null;
 	}
 
 	/**
@@ -864,15 +777,13 @@ public class DBLibreriaManager extends Comic {
 	 * @param sentencia
 	 * @return
 	 */
-	public Comic[] verBusquedaGeneral(String busquedaGeneral) {
+	public List<Comic> verBusquedaGeneral(String busquedaGeneral) {
 		Connection conn = DBManager.conexion();
 		String sql1 = datosGeneralesNombre(busquedaGeneral);
 		String sql2 = datosGeneralesVariante(busquedaGeneral);
 		String sql3 = datosGeneralesFirma(busquedaGeneral);
 		String sql4 = datosGeneralesGuionista(busquedaGeneral);
 		String sql5 = datosGeneralesDibujante(busquedaGeneral);
-
-		Comic comic[] = null;
 
 		reiniciarBBDD();
 
@@ -892,32 +803,33 @@ public class DBLibreriaManager extends Comic {
 			ResultSet rs5 = ps5.executeQuery();
 
 			if (rs1.next()) {
-				filtroComics = listaDatos(rs1);
+				listaDatos(rs1);
+				filtroComics = listaComics;
 			}
 			if (rs2.next()) {
-				filtroComics = listaDatos(rs2);
+				listaDatos(rs2);
+				filtroComics = listaComics;
 			}
 			if (rs3.next()) {
-				filtroComics = listaDatos(rs3);
+				listaDatos(rs3);
+				filtroComics = listaComics;
 			}
 			if (rs4.next()) {
-				filtroComics = listaDatos(rs4);
+				listaDatos(rs4);
+				filtroComics = listaComics;
 			}
 			if (rs5.next()) {
-				filtroComics = listaDatos(rs5);
+				listaDatos(rs5);
+				filtroComics = listaComics;
 			}
 
 			filtroComics = Utilidades.listaArreglada(filtroComics);
+			return filtroComics;
 
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
 		}
-
-		comic = new Comic[filtroComics.size()];
-
-		comic = filtroComics.toArray(comic);
-
-		return comic;
+		return null;
 	}
 
 	/**
@@ -1081,53 +993,12 @@ public class DBLibreriaManager extends Comic {
 	}
 
 	/**
-	 * Devuelve una lista con todos los datos de los comics de la base de datos
-	 *
-	 * @param rs
-	 * @return
-	 */
-	public List<Comic> listaDatos(ResultSet rs) {
-
-		try {
-			if (rs != null) {
-				do {
-					this.ID = rs.getString("ID");
-					this.nombre = rs.getString("nomComic");
-					this.numero = rs.getString("numComic");
-					this.variante = rs.getString("nomVariante");
-					this.firma = rs.getString("firma");
-					this.editorial = rs.getString("nomEditorial");
-					this.formato = rs.getString("formato");
-					this.procedencia = rs.getString("procedencia");
-					this.fecha = rs.getString("anioPubli");
-					this.guionista = rs.getString("nomGuionista");
-					this.dibujante = rs.getString("nomDibujante");
-					this.estado = rs.getString("estado");
-					this.puntuacion = rs.getString("puntuacion");
-					this.imagen = rs.getBinaryStream("portada");
-
-					Comic comic = new Comic(this.ID, this.nombre, this.numero, this.variante, this.firma,
-							this.editorial, this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante,
-							this.estado, this.puntuacion, this.imagen);
-
-					listaComics.add(comic);
-
-				} while (rs.next());
-			}
-		} catch (SQLException e) {
-			nav.alertaException("Datos introducidos incorrectos: " + e);
-		}
-
-		return listaComics;
-	}
-
-	/**
 	 * Devuelve solamente 1 comics de la base de datos.
 	 *
 	 * @param rs
 	 * @return
 	 */
-	public Comic datosIndividual(ResultSet rs) {
+	public Comic listaDatos(ResultSet rs) {
 		Comic comic = new Comic();
 
 		try {
@@ -1152,6 +1023,7 @@ public class DBLibreriaManager extends Comic {
 							this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante, this.estado,
 							this.puntuacion, this.imagen);
 
+					listaComics.add(comic);
 				} while (rs.next());
 			}
 		} catch (SQLException e) {
@@ -1197,7 +1069,7 @@ public class DBLibreriaManager extends Comic {
 
 		rs = obtenLibreria(sentenciaSQL);
 
-		comic = datosIndividual(rs);
+		comic = listaDatos(rs);
 
 		return comic;
 	}
@@ -1676,10 +1548,10 @@ public class DBLibreriaManager extends Comic {
 	 * Funcion que permite mostrar imagen de una portada cuando se clickea con el
 	 * raton encima del comic seleccionado
 	 *
-	 * @param ID
+	 * @param iD
 	 * @return
 	 */
-	public Image selectorImage(String ID) {
+	public Image selectorImage(String iD) {
 		conn = DBManager.conexion();
 
 		String sentenciaSQL = "SELECT * FROM comicsbbdd where ID = ?";
@@ -1687,7 +1559,7 @@ public class DBLibreriaManager extends Comic {
 		try {
 
 			PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
-			statement.setString(1, ID);
+			statement.setString(1, iD);
 
 			ResultSet rs = statement.executeQuery();
 
@@ -1724,9 +1596,9 @@ public class DBLibreriaManager extends Comic {
 	 *
 	 * @return
 	 */
-	public List<Comic> libreriaCompleta() {
+	public List<Comic> libreriaPosesion() {
 
-		List<Comic> listComic = FXCollections.observableArrayList(verLibreriaPosesion());
+		List<Comic> listComic = FXCollections.observableArrayList(verLibreria(verLibreriaPosesion()));
 
 		if (listComic.size() == 0) {
 
@@ -1746,7 +1618,7 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public List<Comic> busquedaParametro(Comic comic, String busquedaGeneral) {
 
-		List<Comic> listComic = FXCollections.observableArrayList(verLibreriaPosesion());
+		List<Comic> listComic = FXCollections.observableArrayList(verLibreria(verLibreriaCompleta()));
 
 		if (listComic.size() != 0) {
 			if (busquedaGeneral.length() != 0) {
@@ -1770,7 +1642,7 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public List<Comic> libreriaVendidos() {
 
-		List<Comic> listComic = FXCollections.observableArrayList(verLibreriaVendidos());
+		List<Comic> listComic = FXCollections.observableArrayList(verLibreria(verLibreriaVendidos()));
 		if (listComic.size() == 0) {
 			String excepcion = "No hay comics en vendidos";
 			nav.alertaException(excepcion);
@@ -1786,7 +1658,7 @@ public class DBLibreriaManager extends Comic {
 	 * @return
 	 */
 	public List<Comic> libreriaEnVenta() {
-		List<Comic> listComic = FXCollections.observableArrayList(verLibreriaEnVenta());
+		List<Comic> listComic = FXCollections.observableArrayList(verLibreria(verLibreriaEnVenta()));
 
 		if (listComic.size() == 0) {
 			String excepcion = "No hay comics en venta";
@@ -1802,7 +1674,7 @@ public class DBLibreriaManager extends Comic {
 	 * @return
 	 */
 	public List<Comic> libreriaPuntuacion() {
-		List<Comic> listComic = FXCollections.observableArrayList(verLibreriaPuntuacion());
+		List<Comic> listComic = FXCollections.observableArrayList(verLibreria(verLibreriaPuntuacion()));
 		if (listComic.size() == 0) {
 			String excepcion = "No hay comics puntuados";
 			nav.alertaException(excepcion);
@@ -1817,7 +1689,7 @@ public class DBLibreriaManager extends Comic {
 	 * @return
 	 */
 	public List<Comic> libreriaFirmados() {
-		List<Comic> listComic = FXCollections.observableArrayList(verLibreriaFirmados());
+		List<Comic> listComic = FXCollections.observableArrayList(verLibreria(verLibreriaFirmados()));
 		if (listComic.size() == 0) {
 			String excepcion = "No hay comics firmados";
 			nav.alertaException(excepcion);

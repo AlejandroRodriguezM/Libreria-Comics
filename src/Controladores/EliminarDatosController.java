@@ -282,7 +282,7 @@ public class EliminarDatosController implements Initializable{
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
-		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
+		tablaBBDD(libreria.libreriaPosesion()); // Llamada a funcion
 
 	}
 

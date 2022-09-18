@@ -86,13 +86,13 @@ public class RecomendacionesController {
 		String ID;
 		limpiarPront(); // Llamada a funcion para limpiar las pantalla "TextArea"
 
-		if (libreria.verLibreriaPosesion().length != 0) {
-			n = (int) (Math.random() * r.nextInt(libreria.verLibreriaPosesion().length));
+		if (libreria.libreriaPosesion().size() != 0) {
+			n = (int) (Math.random() * r.nextInt(libreria.libreriaPosesion().size()));
 
-			ID = libreria.verLibreriaPosesion()[n].getID();
+			ID = libreria.libreriaPosesion().get(n).getID();
 
 			imagencomic.setImage(libreria.selectorImage(ID));
-			return libreria.verLibreriaPosesion()[n].toString(); // Devuelve un comic de la lista de comics
+			return libreria.libreriaPosesion().get(n).toString(); // Devuelve un comic de la lista de comics
 		} else {
 			printComicRecomendado.setText("ERROR. No hay ningun dato en la base de datos");
 			printComicRecomendado.setStyle("-fx-background-color: #F53636");

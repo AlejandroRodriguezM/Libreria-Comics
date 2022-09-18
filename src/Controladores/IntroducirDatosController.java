@@ -240,7 +240,7 @@ public class IntroducirDatosController implements Initializable {
 	@FXML
 	void clickRaton(MouseEvent event) {
 		libreria = new DBLibreriaManager();
-		libreria.verLibreriaCompleta();
+		libreria.libreriaPosesion();
 		utilidad = new Utilidades();
 		String ID;
 
@@ -405,7 +405,7 @@ public class IntroducirDatosController implements Initializable {
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
-		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
+		tablaBBDD(libreria.libreriaPosesion()); // Llamada a funcion
 
 	}
 
