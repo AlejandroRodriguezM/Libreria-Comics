@@ -185,13 +185,11 @@ public class ModificarDatosController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
+		libreria = new DBLibreriaManager();
 		ObservableList<String> situacionEstado = FXCollections.observableArrayList("En posesion", "Vendido",
 				"En venta");
 		estadoComic.setItems(situacionEstado);
-		estadoComic.getSelectionModel().selectFirst(); // Permite que no exista un valor null, escogiendo el primer
-		// valor, que se encuentra vacio, en caso de querer borrar
-		// la puntuacion.
+		estadoComic.getSelectionModel().selectFirst();
 		
 		TextFields.bindAutoCompletion(nombreComic, libreria.listaNombre());
 		TextFields.bindAutoCompletion(nombreVariante, libreria.listaVariante());
