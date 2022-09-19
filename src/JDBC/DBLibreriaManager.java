@@ -56,6 +56,7 @@ import javafx.stage.FileChooser;
 public class DBLibreriaManager extends Comic {
 
 	public static List<Comic> listaComics = new ArrayList<>();
+	public static List<Comic> listaComicsCheck = new ArrayList<>();
 
 	private static Ventanas nav = new Ventanas();
 	private static Connection conn = null;
@@ -65,6 +66,7 @@ public class DBLibreriaManager extends Comic {
 	 *
 	 */
 	public void listasAutoCompletado() {
+
 		listaNombre();
 		listaVariante();
 		listaFirma();
@@ -74,6 +76,7 @@ public class DBLibreriaManager extends Comic {
 		listaGuionista();
 		listaDibujante();
 		listaFecha();
+
 	}
 
 	/**
@@ -220,7 +223,7 @@ public class DBLibreriaManager extends Comic {
 	public String procedimientosEstadistica() {
 
 		int numGrapas, numTomos, numUsa, numEsp, numMarvel, numDC, numPanini, numDarkHorse, numMangas, leidos, vendidos,
-				posesion, firmados, total;
+		posesion, firmados, total;
 
 		String procedimientos[] = { "call numeroGrapas()", "call numeroTomos()", "call numeroSpain()",
 				"call numeroUSA()", "call total()", "call numeroPanini()", "call numeroMarvel()", "call numeroDC()",
@@ -378,13 +381,17 @@ public class DBLibreriaManager extends Comic {
 		ResultSet rs;
 		rs = obtenLibreria(sentenciaSQL);
 		try {
-			while (rs.next()) {
-				String datosAutocompletado;
-				datosAutocompletado = rs.getString(columna);
-				listaAutoCompletado.add(datosAutocompletado);
+			if(verLibreria("SELECT * FROM comicsbbdd").size() != 0) {
+				do {
+					String datosAutocompletado;
+					datosAutocompletado = rs.getString(columna);
+					listaAutoCompletado.add(datosAutocompletado);
+				}
+				while(rs.next());
+				listaAutoCompletado = Utilidades.listaArregladaAutoComplete(listaAutoCompletado);
+				return listaAutoCompletado;
 			}
-			listaAutoCompletado = Utilidades.listaArregladaAutoComplete(listaAutoCompletado);
-			return listaAutoCompletado;
+
 		} catch (SQLException e) {
 			nav.alertaException(e.toString());
 		}
@@ -641,7 +648,7 @@ public class DBLibreriaManager extends Comic {
 
 		return "";
 	}
-	
+
 	/**
 	 * Funcion que permite hacer una busqueda general mediante 1 sola palabra, hace
 	 * una busqueda en ciertos identificadores de la tabla.
@@ -987,7 +994,6 @@ public class DBLibreriaManager extends Comic {
 	public ResultSet obtenLibreria(String sentenciaSQL) {
 		conn = DBManager.conexion();
 		try {
-			// Realizamos la consulta SQL
 			PreparedStatement stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE);
 
@@ -995,7 +1001,6 @@ public class DBLibreriaManager extends Comic {
 			if (!rs.first()) {
 				return null;
 			}
-
 			// Todo bien, devolvemos el cliente
 			return rs;
 
@@ -1423,8 +1428,7 @@ public class DBLibreriaManager extends Comic {
 	}
 
 	/**
-	 * Funcion que muestra todos los comics de la base de datos
-	 *
+	 * Funcion que muestra todos los comics de la base de datos.
 	 * @return
 	 */
 	public List<Comic> libreriaCompleta() {
@@ -1437,7 +1441,6 @@ public class DBLibreriaManager extends Comic {
 	/**
 	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
 	 * "En posesion"
-	 *
 	 * @return
 	 */
 	public List<Comic> libreriaVendidos() {

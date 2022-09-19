@@ -219,6 +219,7 @@ public class MenuPrincipalController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		libreria = new DBLibreriaManager();
+		libreria.listasAutoCompletado();
 		TextFields.bindAutoCompletion(nombreComic, libreria.listaNombre());
 		TextFields.bindAutoCompletion(nombreVariante, libreria.listaVariante());
 		TextFields.bindAutoCompletion(nombreFirma, libreria.listaFirma());
@@ -228,6 +229,7 @@ public class MenuPrincipalController implements Initializable {
 		TextFields.bindAutoCompletion(nombreGuionista, libreria.listaGuionista());
 		TextFields.bindAutoCompletion(nombreDibujante, libreria.listaDibujante());
 		TextFields.bindAutoCompletion(fechaPublicacion, libreria.listaFecha());
+
 	}
 
 	/////////////////////////////////
@@ -591,7 +593,7 @@ public class MenuPrincipalController implements Initializable {
 		ID = idRow.getID();
 		prontInfo.setOpacity(1);
 		prontInfo.setText(libreria.comicDatos(ID).toString().replace("[", "").replace("]", ""));
-		
+
 		imagencomic.setImage(libreria.selectorImage(ID));
 		utilidad.deleteImage();
 

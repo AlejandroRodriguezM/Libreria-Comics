@@ -219,6 +219,7 @@ public class EliminarDatosController implements Initializable {
 		modificarDatos(ID);
 		libreria.eliminarComicBBDD(ID);
 		libreria.reiniciarBBDD();
+		libreria.listasAutoCompletado();
 	}
 
 	/**
