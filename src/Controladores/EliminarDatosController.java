@@ -144,15 +144,15 @@ public class EliminarDatosController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		libreria = new DBLibreriaManager();
-		TextFields.bindAutoCompletion(nombreComic, libreria.listaNombre());
-		TextFields.bindAutoCompletion(nombreVariante, libreria.listaVariante());
-		TextFields.bindAutoCompletion(nombreFirma, libreria.listaFirma());
-		TextFields.bindAutoCompletion(nombreProcedencia, libreria.listaProcedencia());
-		TextFields.bindAutoCompletion(nombreFormato, libreria.listaFormato());
-		TextFields.bindAutoCompletion(nombreEditorial, libreria.listaEditorial());
-		TextFields.bindAutoCompletion(nombreGuionista, libreria.listaGuionista());
-		TextFields.bindAutoCompletion(nombreDibujante, libreria.listaDibujante());
-		TextFields.bindAutoCompletion(anioPublicacion, libreria.listaFecha());
+		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
+		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
+		TextFields.bindAutoCompletion(nombreFirma, DBLibreriaManager.listaFirma);
+		TextFields.bindAutoCompletion(nombreProcedencia, DBLibreriaManager.listaProcedencia);
+		TextFields.bindAutoCompletion(nombreFormato, DBLibreriaManager.listaFormato);
+		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
+		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
+		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
+		TextFields.bindAutoCompletion(anioPublicacion, DBLibreriaManager.listaFecha);
 	}
 
 	/**

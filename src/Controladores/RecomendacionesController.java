@@ -25,6 +25,7 @@ package Controladores;
 
 import java.util.Random;
 
+import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
 import javafx.event.ActionEvent;
@@ -59,7 +60,9 @@ public class RecomendacionesController {
 
 	private static Ventanas nav = new Ventanas();
 
-	private static DBLibreriaManager libreria = new DBLibreriaManager();
+	private static DBLibreriaManager libreria = null;
+
+	private static Utilidades utilidad = null;
 
 	/**
 	 * Llama a funcion que genera una lectura recomendada
@@ -81,7 +84,8 @@ public class RecomendacionesController {
 	 */
 	public String generarLectura() {
 		Random r = new Random();
-
+		utilidad = new Utilidades();
+		libreria = new DBLibreriaManager();
 		int n;
 		String ID;
 		limpiarPront(); // Llamada a funcion para limpiar las pantalla "TextArea"
@@ -97,7 +101,7 @@ public class RecomendacionesController {
 			printComicRecomendado.setText("ERROR. No hay ningun dato en la base de datos");
 			printComicRecomendado.setStyle("-fx-background-color: #F53636");
 		}
-
+		utilidad.deleteImage();
 		return "";
 	}
 

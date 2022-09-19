@@ -58,6 +58,16 @@ public class DBLibreriaManager extends Comic {
 	public static List<Comic> listaComics = new ArrayList<>();
 	public static List<Comic> listaComicsCheck = new ArrayList<>();
 
+	public static List<String> listaNombre = new ArrayList<>();
+	public static List<String> listaVariante = new ArrayList<>();
+	public static List<String> listaFirma = new ArrayList<>();
+	public static List<String> listaProcedencia = new ArrayList<>();
+	public static List<String> listaFormato = new ArrayList<>();
+	public static List<String> listaEditorial = new ArrayList<>();
+	public static List<String> listaGuionista = new ArrayList<>();
+	public static List<String> listaDibujante = new ArrayList<>();
+	public static List<String> listaFecha = new ArrayList<>();
+
 	private static Ventanas nav = new Ventanas();
 	private static Connection conn = null;
 	private static Utilidades utilidad = null;
@@ -199,7 +209,8 @@ public class DBLibreriaManager extends Comic {
 
 			FileChooser fileChooser = new FileChooser();
 			fileChooser.setInitialDirectory(path);
-			fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("MySqlDump only", "mysqldump.exe"));
+			fileChooser.getExtensionFilters()
+					.addAll(new FileChooser.ExtensionFilter("MySqlDump only", "mysqldump.exe"));
 			File directorio = fileChooser.showOpenDialog(null);
 
 			String mysqlDump = directorio.getAbsolutePath();
@@ -223,7 +234,7 @@ public class DBLibreriaManager extends Comic {
 	public String procedimientosEstadistica() {
 
 		int numGrapas, numTomos, numUsa, numEsp, numMarvel, numDC, numPanini, numDarkHorse, numMangas, leidos, vendidos,
-		posesion, firmados, total;
+				posesion, firmados, total;
 
 		String procedimientos[] = { "call numeroGrapas()", "call numeroTomos()", "call numeroSpain()",
 				"call numeroUSA()", "call total()", "call numeroPanini()", "call numeroMarvel()", "call numeroDC()",
@@ -381,13 +392,12 @@ public class DBLibreriaManager extends Comic {
 		ResultSet rs;
 		rs = obtenLibreria(sentenciaSQL);
 		try {
-			if(verLibreria("SELECT * FROM comicsbbdd").size() != 0) {
+			if (verLibreria("SELECT * FROM comicsbbdd").size() != 0) {
 				do {
 					String datosAutocompletado;
 					datosAutocompletado = rs.getString(columna);
 					listaAutoCompletado.add(datosAutocompletado);
-				}
-				while(rs.next());
+				} while (rs.next());
 				listaAutoCompletado = Utilidades.listaArregladaAutoComplete(listaAutoCompletado);
 				return listaAutoCompletado;
 			}
@@ -413,8 +423,8 @@ public class DBLibreriaManager extends Comic {
 		String sentenciaSQL = "SELECT nomComic from comicsbbdd";
 		String columna = "nomComic";
 		reiniciarBBDD();
-
-		return guardarDatosAutoCompletado(sentenciaSQL, columna);
+		listaNombre = guardarDatosAutoCompletado(sentenciaSQL, columna);
+		return listaNombre;
 
 	}
 
@@ -428,7 +438,8 @@ public class DBLibreriaManager extends Comic {
 		String sentenciaSQL = "SELECT nomVariante from comicsbbdd";
 		String columna = "nomVariante";
 		reiniciarBBDD();
-		return guardarDatosAutoCompletado(sentenciaSQL, columna);
+		listaVariante = guardarDatosAutoCompletado(sentenciaSQL, columna);
+		return listaVariante;
 	}
 
 	/**
@@ -441,7 +452,8 @@ public class DBLibreriaManager extends Comic {
 		String sentenciaSQL = "SELECT firma from comicsbbdd";
 		String columna = "firma";
 		reiniciarBBDD();
-		return guardarDatosAutoCompletado(sentenciaSQL, columna);
+		listaFirma = guardarDatosAutoCompletado(sentenciaSQL, columna);
+		return listaFirma;
 	}
 
 	/**
@@ -454,7 +466,8 @@ public class DBLibreriaManager extends Comic {
 		String sentenciaSQL = "SELECT procedencia from comicsbbdd";
 		String columna = "procedencia";
 		reiniciarBBDD();
-		return guardarDatosAutoCompletado(sentenciaSQL, columna);
+		listaProcedencia = guardarDatosAutoCompletado(sentenciaSQL, columna);
+		return listaProcedencia;
 	}
 
 	/**
@@ -467,7 +480,8 @@ public class DBLibreriaManager extends Comic {
 		String sentenciaSQL = "SELECT formato from comicsbbdd";
 		String columna = "formato";
 		reiniciarBBDD();
-		return guardarDatosAutoCompletado(sentenciaSQL, columna);
+		listaFormato = guardarDatosAutoCompletado(sentenciaSQL, columna);
+		return listaFormato;
 	}
 
 	/**
@@ -480,7 +494,8 @@ public class DBLibreriaManager extends Comic {
 		String sentenciaSQL = "SELECT nomEditorial from comicsbbdd";
 		String columna = "nomEditorial";
 		reiniciarBBDD();
-		return guardarDatosAutoCompletado(sentenciaSQL, columna);
+		listaEditorial = guardarDatosAutoCompletado(sentenciaSQL, columna);
+		return listaEditorial;
 	}
 
 	/**
@@ -493,7 +508,8 @@ public class DBLibreriaManager extends Comic {
 		String sentenciaSQL = "SELECT nomGuionista from comicsbbdd";
 		String columna = "nomGuionista";
 		reiniciarBBDD();
-		return guardarDatosAutoCompletado(sentenciaSQL, columna);
+		listaGuionista = guardarDatosAutoCompletado(sentenciaSQL, columna);
+		return listaGuionista;
 	}
 
 	/**
@@ -506,7 +522,8 @@ public class DBLibreriaManager extends Comic {
 		String sentenciaSQL = "SELECT nomDibujante from comicsbbdd";
 		String columna = "nomDibujante";
 		reiniciarBBDD();
-		return guardarDatosAutoCompletado(sentenciaSQL, columna);
+		listaDibujante = guardarDatosAutoCompletado(sentenciaSQL, columna);
+		return listaDibujante;
 	}
 
 	/**
@@ -519,7 +536,8 @@ public class DBLibreriaManager extends Comic {
 		String sentenciaSQL = "SELECT anioPubli from comicsbbdd";
 		String columna = "anioPubli";
 		reiniciarBBDD();
-		return guardarDatosAutoCompletado(sentenciaSQL, columna);
+		listaFecha = guardarDatosAutoCompletado(sentenciaSQL, columna);
+		return listaFecha;
 	}
 
 	/**
@@ -1429,6 +1447,7 @@ public class DBLibreriaManager extends Comic {
 
 	/**
 	 * Funcion que muestra todos los comics de la base de datos.
+	 *
 	 * @return
 	 */
 	public List<Comic> libreriaCompleta() {
@@ -1441,6 +1460,7 @@ public class DBLibreriaManager extends Comic {
 	/**
 	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
 	 * "En posesion"
+	 *
 	 * @return
 	 */
 	public List<Comic> libreriaVendidos() {

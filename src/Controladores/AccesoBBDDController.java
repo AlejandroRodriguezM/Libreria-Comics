@@ -121,7 +121,6 @@ public class AccesoBBDDController {
 									// menu principal
 			Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
 			myStage.close();
-
 		} else { // En caso contrario mostrara el siguiente mensaje.
 			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
 			prontEstadoConexion.setFont(new Font("Arial", 25));
