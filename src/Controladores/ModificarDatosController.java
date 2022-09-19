@@ -190,7 +190,7 @@ public class ModificarDatosController implements Initializable {
 				"En venta");
 		estadoComic.setItems(situacionEstado);
 		estadoComic.getSelectionModel().selectFirst();
-		
+
 		TextFields.bindAutoCompletion(nombreComic, libreria.listaNombre());
 		TextFields.bindAutoCompletion(nombreVariante, libreria.listaVariante());
 		TextFields.bindAutoCompletion(nombreFirma, libreria.listaFirma());
@@ -200,7 +200,7 @@ public class ModificarDatosController implements Initializable {
 		TextFields.bindAutoCompletion(nombreGuionista, libreria.listaGuionista());
 		TextFields.bindAutoCompletion(nombreDibujante, libreria.listaDibujante());
 		TextFields.bindAutoCompletion(anioPublicacion, libreria.listaFecha());
-		
+
 	}
 
 	/**
@@ -212,7 +212,7 @@ public class ModificarDatosController implements Initializable {
 	@FXML
 	void clickRaton(MouseEvent event) {
 		libreria = new DBLibreriaManager();
-		libreria.libreriaPosesion();
+		libreria.libreriaCompleta();
 		utilidad = new Utilidades();
 		String ID;
 
@@ -221,7 +221,8 @@ public class ModificarDatosController implements Initializable {
 		idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 
 		ID = idRow.getID();
-
+		pantallaInformativa.setOpacity(1);
+		pantallaInformativa.setText(libreria.comicDatos(ID).toString().replace("[", "").replace("]", ""));
 		imagencomic.setImage(libreria.selectorImage(ID));
 		utilidad.deleteImage();
 
@@ -440,7 +441,7 @@ public class ModificarDatosController implements Initializable {
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
-		tablaBBDD(libreria.libreriaPosesion()); // Llamada a funcion
+		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
 
 	}
 
@@ -535,7 +536,7 @@ public class ModificarDatosController implements Initializable {
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 			pantallaInformativa.setText("Has modificado correctamente: "
-					+ DBLibreriaManager.listaTratamiento.toString().replace("[", "").replace("]", ""));
+					+ DBLibreriaManager.listaComics.toString().replace("[", "").replace("]", ""));
 
 			try {
 				portada.close();

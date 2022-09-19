@@ -179,7 +179,7 @@ public class PuntuarDatosController implements Initializable {
 				"2.5/5", "3/5", "3.5/5", "4/5", "4.5/5", "5/5");
 		puntuacionMenu.setItems(puntuaciones);
 		puntuacionMenu.getSelectionModel().selectFirst();
-		
+
 		TextFields.bindAutoCompletion(nombreComic, libreria.listaNombre());
 		TextFields.bindAutoCompletion(nombreVariante, libreria.listaVariante());
 		TextFields.bindAutoCompletion(nombreFirma, libreria.listaFirma());
@@ -200,7 +200,7 @@ public class PuntuarDatosController implements Initializable {
 	@FXML
 	void clickRaton(MouseEvent event) {
 		libreria = new DBLibreriaManager();
-		libreria.libreriaPosesion();
+		libreria.libreriaCompleta();
 		utilidad = new Utilidades();
 		String ID;
 
@@ -209,7 +209,8 @@ public class PuntuarDatosController implements Initializable {
 		idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 
 		ID = idRow.getID();
-
+		pantallaInformativa.setOpacity(1);
+		pantallaInformativa.setText(libreria.comicDatos(ID).toString().replace("[", "").replace("]", ""));
 		imagencomic.setImage(libreria.selectorImage(ID));
 		utilidad.deleteImage();
 
@@ -248,10 +249,10 @@ public class PuntuarDatosController implements Initializable {
 	 * Muestra en TextArea un mensaje sobre puntuacion del comic introducido
 	 */
 	public void datosOpinion(String pantallaInfo) {
-		pantallaInformativa.setOpacity(0);
+		pantallaInformativa.setOpacity(1);
 		pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-		pantallaInformativa.setText(
-				pantallaInfo + DBLibreriaManager.listaTratamiento.toString().replace("[", "").replace("]", ""));
+		pantallaInformativa
+				.setText(pantallaInfo + DBLibreriaManager.listaComics.toString().replace("[", "").replace("]", ""));
 	}
 
 	/**
@@ -332,7 +333,7 @@ public class PuntuarDatosController implements Initializable {
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
-		tablaBBDD(libreria.libreriaPosesion()); // Llamada a funcion
+		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
 
 	}
 

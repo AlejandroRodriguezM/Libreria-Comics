@@ -102,8 +102,7 @@ public class FuncionesExcel {
 
 		try {
 			fichero.createNewFile();
-			libreria.verLibreriaCompleta();
-			List<Comic> listaComics = DBLibreriaManager.listaCompleta;
+			List<Comic> listaComics = libreria.libreriaCompleta();
 
 			libro = new XSSFWorkbook();
 
@@ -176,11 +175,7 @@ public class FuncionesExcel {
 			// Get first sheet from the workbook
 			Sheet sheet = workbook.getSheetAt(0);
 
-			// Iterate through each rows from first sheet
-			Iterator<Row> rowIterator = sheet.iterator();
-
-			while (rowIterator.hasNext()) {
-				Row row = rowIterator.next();
+			for (Row row : sheet) {
 				// For each row, iterate through each columns
 				Iterator<Cell> cellIterator = row.cellIterator();
 				while (cellIterator.hasNext()) {

@@ -205,7 +205,7 @@ public class IntroducirDatosController implements Initializable {
 	private static Ventanas nav = new Ventanas();
 	private static DBLibreriaManager libreria = null;
 	private static Utilidades utilidad = null;
-	
+
 	/**
 	 * Funcion que permite hacer funcionar la lista de puntuacion.
 	 */
@@ -218,7 +218,7 @@ public class IntroducirDatosController implements Initializable {
 		estadoComic.getSelectionModel().selectFirst(); // Permite que no exista un valor null, escogiendo el primer
 		// valor, que se encuentra vacio, en caso de querer borrar
 		// la puntuacion.
-		
+
 		libreria = new DBLibreriaManager();
 		TextFields.bindAutoCompletion(nombreComic, libreria.listaNombre());
 		TextFields.bindAutoCompletion(nombreVariante, libreria.listaVariante());
@@ -240,7 +240,7 @@ public class IntroducirDatosController implements Initializable {
 	@FXML
 	void clickRaton(MouseEvent event) {
 		libreria = new DBLibreriaManager();
-		libreria.libreriaPosesion();
+		libreria.libreriaCompleta();
 		utilidad = new Utilidades();
 		String ID;
 
@@ -249,7 +249,8 @@ public class IntroducirDatosController implements Initializable {
 		idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 
 		ID = idRow.getID();
-
+		pantallaInformativa.setOpacity(1);
+		pantallaInformativa.setText(libreria.comicDatos(ID).toString().replace("[", "").replace("]", ""));
 		imagencomic.setImage(libreria.selectorImage(ID));
 		utilidad.deleteImage();
 
@@ -405,7 +406,7 @@ public class IntroducirDatosController implements Initializable {
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
-		tablaBBDD(libreria.libreriaPosesion()); // Llamada a funcion
+		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
 
 	}
 
@@ -460,7 +461,7 @@ public class IntroducirDatosController implements Initializable {
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 			pantallaInformativa
-					.setText("Has aÃ±adido correctamente: " + comic.toString().replace("[", "").replace("]", ""));
+					.setText("Has añadido correctamente: " + comic.toString().replace("[", "").replace("]", ""));
 			try {
 				portada.close();
 				utilidad.deleteImage(datos[10]);

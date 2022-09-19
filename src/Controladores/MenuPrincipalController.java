@@ -59,7 +59,7 @@ import javafx.stage.Stage;
  *
  * @author Alejandro Rodriguez
  */
-public class MenuPrincipalController implements Initializable{
+public class MenuPrincipalController implements Initializable {
 
 	@FXML
 	private Button botonEliminarComic;
@@ -215,7 +215,7 @@ public class MenuPrincipalController implements Initializable{
 	private static Utilidades utilidad = null;
 
 	private static FuncionesExcel excelFuntions = null;
-	
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		libreria = new DBLibreriaManager();
@@ -310,6 +310,7 @@ public class MenuPrincipalController implements Initializable{
 	 */
 	@FXML
 	void fraseRandom(ActionEvent event) {
+		prontInfo.setOpacity(0);
 		prontFrases.setOpacity(1);
 		prontFrases.setText(Comic.frasesComics());
 	}
@@ -322,6 +323,7 @@ public class MenuPrincipalController implements Initializable{
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
+		prontInfo.setOpacity(0);
 		imagencomic.setImage(null);
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
@@ -337,11 +339,12 @@ public class MenuPrincipalController implements Initializable{
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) {
+		prontInfo.setOpacity(0);
 		imagencomic.setImage(null);
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
-		tablaBBDD(libreria.libreriaPosesion()); // Llamada a funcion
+		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
 
 	}
 
@@ -353,6 +356,7 @@ public class MenuPrincipalController implements Initializable{
 	 */
 	@FXML
 	void comicsPuntuacion(ActionEvent event) {
+		prontInfo.setOpacity(0);
 		limpiezaDeDatos();
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
@@ -369,6 +373,7 @@ public class MenuPrincipalController implements Initializable{
 	 */
 	@FXML
 	void comicsVendidos(ActionEvent event) {
+		prontInfo.setOpacity(0);
 		limpiezaDeDatos();
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
@@ -385,6 +390,7 @@ public class MenuPrincipalController implements Initializable{
 	 */
 	@FXML
 	void comicsFirmados(ActionEvent event) {
+		prontInfo.setOpacity(0);
 		limpiezaDeDatos();
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
@@ -400,6 +406,7 @@ public class MenuPrincipalController implements Initializable{
 	 */
 	@FXML
 	void comicsEnVenta(ActionEvent event) {
+		prontInfo.setOpacity(0);
 		limpiezaDeDatos();
 		utilidad = new Utilidades();
 		libreria = new DBLibreriaManager();
@@ -521,7 +528,7 @@ public class MenuPrincipalController implements Initializable{
 	void borrarContenidoTabla(ActionEvent event) {
 
 		libreria = new DBLibreriaManager();
-
+		prontInfo.setOpacity(0);
 		if (nav.borrarContenidoTabla()) {
 			libreria.ejecucionPreparedStatement(libreria.deleteTable());
 			prontInfo.setOpacity(1);
@@ -542,6 +549,7 @@ public class MenuPrincipalController implements Initializable{
 	 */
 	@FXML
 	void verEstadistica(ActionEvent event) {
+		prontInfo.setOpacity(0);
 		libreria = new DBLibreriaManager();
 		prontInfo.setOpacity(1);
 		prontInfo.setText(libreria.procedimientosEstadistica());
@@ -572,7 +580,7 @@ public class MenuPrincipalController implements Initializable{
 	@FXML
 	void clickRaton(MouseEvent event) {
 		libreria = new DBLibreriaManager();
-		libreria.libreriaPosesion();
+		libreria.libreriaCompleta();
 		utilidad = new Utilidades();
 		String ID;
 
@@ -581,7 +589,9 @@ public class MenuPrincipalController implements Initializable{
 		idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 
 		ID = idRow.getID();
-
+		prontInfo.setOpacity(1);
+		prontInfo.setText(libreria.comicDatos(ID).toString().replace("[", "").replace("]", ""));
+		
 		imagencomic.setImage(libreria.selectorImage(ID));
 		utilidad.deleteImage();
 
@@ -598,6 +608,7 @@ public class MenuPrincipalController implements Initializable{
 	 */
 	public void makeExcel(File fichero) {
 		excelFuntions = new FuncionesExcel();
+		prontInfo.setOpacity(0);
 		try {
 			if (fichero != null) {
 				if (excelFuntions.crearExcel(fichero)) { // Si el fichero XLSX y CSV se han creado se vera el siguiente
@@ -629,6 +640,7 @@ public class MenuPrincipalController implements Initializable{
 	 */
 	public void importCSV(File fichero) {
 		excelFuntions = new FuncionesExcel();
+		prontInfo.setOpacity(0);
 		try {
 			if (fichero != null) {
 				if (excelFuntions.importarCSV(fichero)) { // Si se ha importado el fichero CSV correctamente, se vera el
@@ -660,6 +672,7 @@ public class MenuPrincipalController implements Initializable{
 	 */
 	public void makeSQL(File fichero) {
 		libreria = new DBLibreriaManager();
+		prontInfo.setOpacity(0);
 		if (fichero != null) {
 
 			if (Utilidades.isWindows()) {
@@ -705,16 +718,10 @@ public class MenuPrincipalController implements Initializable{
 	 *
 	 * @return
 	 */
-	public List<Comic> libreriaPosesion() {
+	public List<Comic> libreriaCompleta() {
 		libreria = new DBLibreriaManager();
 		limpiezaDeDatos();
-		List<Comic> listComic = FXCollections.observableArrayList(libreria.libreriaPosesion());
-
-		if (listComic.size() == 0) {
-			prontInfo.setOpacity(1);
-			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("ERROR. La base de datos se encuentra vacia");
-		}
+		List<Comic> listComic = FXCollections.observableArrayList(libreria.libreriaCompleta());
 
 		return listComic;
 	}
@@ -810,6 +817,5 @@ public class MenuPrincipalController implements Initializable{
 		myStage.close();
 
 	}
-
 
 }

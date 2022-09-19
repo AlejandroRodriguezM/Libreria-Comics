@@ -163,7 +163,7 @@ public class Utilidades {
 		}
 		return listaLimpia;
 	}
-	
+
 	/**
 	 * Funcion que devuelve una lista en la que solamente se guardan aquellos datos
 	 * que no se repiten
@@ -173,12 +173,11 @@ public class Utilidades {
 	 */
 	public static List<String> listaArregladaAutoComplete(List<String> listaComics) {
 
-		ArrayList<String> newList = new ArrayList<String>();
+		ArrayList<String> newList = new ArrayList<>();
 		newList.clear();
 
 		for (String s : listaComics) {
-			if(!newList.contains(s))
-			{
+			if (!newList.contains(s)) {
 				newList.add(s);
 			}
 		}

@@ -30,14 +30,14 @@ import javafx.stage.Stage;
  *
  * @author Alejandro Rodriguez
  */
-public class EliminarDatosController implements Initializable{
+public class EliminarDatosController implements Initializable {
 
 	@FXML
 	private Button botonEliminar;
 
 	@FXML
 	private Button botonVender;
-	
+
 	@FXML
 	private Button botonEnVenta;
 
@@ -154,8 +154,7 @@ public class EliminarDatosController implements Initializable{
 		TextFields.bindAutoCompletion(nombreDibujante, libreria.listaDibujante());
 		TextFields.bindAutoCompletion(anioPublicacion, libreria.listaFecha());
 	}
-	
-	
+
 	/**
 	 * Funcion que permite limpiar los datos en pantalla
 	 *
@@ -192,7 +191,6 @@ public class EliminarDatosController implements Initializable{
 	@FXML
 	void clickRaton(MouseEvent event) {
 		libreria = new DBLibreriaManager();
-		libreria.verLibreriaCompleta();
 		utilidad = new Utilidades();
 		String ID;
 
@@ -201,7 +199,8 @@ public class EliminarDatosController implements Initializable{
 		idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 
 		ID = idRow.getID();
-
+		pantallaInformativa.setOpacity(1);
+		pantallaInformativa.setText(libreria.comicDatos(ID).toString().replace("[", "").replace("]", ""));
 		imagencomic.setImage(libreria.selectorImage(ID));
 		utilidad.deleteImage();
 
@@ -237,7 +236,7 @@ public class EliminarDatosController implements Initializable{
 		libreria.venderComicBBDD(ID);
 		libreria.reiniciarBBDD();
 	}
-	
+
 	/**
 	 * Metodo que permite cambiar de estado un comic, para que se deje de mostrar en
 	 * el programa, pero este sigue estando dentro de la bbdd
@@ -282,7 +281,7 @@ public class EliminarDatosController implements Initializable{
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
-		tablaBBDD(libreria.libreriaPosesion()); // Llamada a funcion
+		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
 
 	}
 
