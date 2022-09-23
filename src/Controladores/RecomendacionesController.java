@@ -83,11 +83,13 @@ public class RecomendacionesController {
 	 * @return
 	 */
 	public String generarLectura() {
+		
 		Random r = new Random();
 		utilidad = new Utilidades();
 		libreria = new DBLibreriaManager();
 		int n;
 		String ID;
+		
 		limpiarPront(); // Llamada a funcion para limpiar las pantalla "TextArea"
 
 		if (libreria.libreriaCompleta().size() != 0) {
@@ -96,12 +98,12 @@ public class RecomendacionesController {
 			ID = libreria.libreriaCompleta().get(n).getID();
 
 			imagencomic.setImage(libreria.selectorImage(ID));
+			utilidad.deleteImage();
 			return libreria.libreriaCompleta().get(n).toString(); // Devuelve un comic de la lista de comics
 		} else {
 			printComicRecomendado.setText("ERROR. No hay ningun dato en la base de datos");
 			printComicRecomendado.setStyle("-fx-background-color: #F53636");
 		}
-		utilidad.deleteImage();
 		return "";
 	}
 

@@ -67,7 +67,7 @@ public class SobreMiController {
 	@FXML
 	void accesoGitHub(ActionEvent event) {
 
-		String url = "https://github.com/MisterioRojo/Proyecto-gui-bbdd/tree/V.F";
+		String url = "https://github.com/AlejandroRodriguezM";
 		if (Utilidades.isWindows()) {
 			Utilidades.accesoWebWindows(url); // Llamada a funcion
 		} else {
