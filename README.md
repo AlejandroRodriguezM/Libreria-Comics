@@ -1,4 +1,4 @@
-Version master
+Versión principal
 
  - Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  - Las ventanas graficas se realizan con JavaFX.
