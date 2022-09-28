@@ -1,4 +1,5 @@
-Version Final 4.1 Este programa se encuentra en su fase final, los cambios que se realicen sera para solucionar posibles bugs.
+Version master
+
  - Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  - Las ventanas graficas se realizan con JavaFX.
  - Poder introducir imagenes en la base de datos.
@@ -18,5 +19,5 @@ Version Final 4.1 Este programa se encuentra en su fase final, los cambios que s
  - Se han arreglado metodos de diferentes clases, que relantizaban el programa.
  - Nueva funcion que permite autocompletar datos a la hora de la busqueda.
 
-•Perfil de twitter: https://twitter.com/SilverAlox
-•Perfil de youtube: https://www.youtube.com/channel/UCpVOq7oKeJ5vHaa5cr3_q3g/featured
+â€¢Perfil de twitter: https://twitter.com/SilverAlox
+â€¢Perfil de youtube: https://www.youtube.com/channel/UCpVOq7oKeJ5vHaa5cr3_q3g/featured
