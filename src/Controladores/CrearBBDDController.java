@@ -140,7 +140,7 @@ public class CrearBBDDController {
 			createTable();
 			createProcedure();
 			prontInformativo.setStyle("-fx-background-color: #A0F52D");
-			prontInformativo.setText("Base de datos: " + DB_NAME + " creada correctamente.");
+			prontInformativo.setText("Base de datos: " + DB_NAME + " creada correctamente");
 		}
 	}
 
