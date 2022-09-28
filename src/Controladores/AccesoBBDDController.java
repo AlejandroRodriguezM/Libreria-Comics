@@ -144,7 +144,7 @@ public class AccesoBBDDController {
 	}
 
 	/**
-	 * MEtodo que permite abrir la ventana "sobreMiController"
+	 * Metodo que permite abrir la ventana "sobreMiController"
 	 *
 	 * @param event
 	 */
