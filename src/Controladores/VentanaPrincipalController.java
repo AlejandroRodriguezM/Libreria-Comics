@@ -16,7 +16,7 @@ package Controladores;
  *
  *  Esta clase es el programa principal donde se arranca el programa.
  *
- *  Version 4.1.1.1
+ *  Version 4.1.1
  *
  *  Por Alejandro Rodriguez
  *
