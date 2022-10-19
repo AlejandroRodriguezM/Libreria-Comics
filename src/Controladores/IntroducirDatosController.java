@@ -112,8 +112,6 @@ public class IntroducirDatosController implements Initializable {
 	@FXML
 	private TextField nombreGuionista;
 
-	@FXML
-	private TextField nombreProcedencia;
 
 	@FXML
 	private TextField nombreVariante;
@@ -142,8 +140,6 @@ public class IntroducirDatosController implements Initializable {
 	@FXML
 	private TextField formatoAni;
 
-	@FXML
-	private TextField procedenciaAni;
 
 	@FXML
 	private TextField fechaAni;
@@ -195,7 +191,16 @@ public class IntroducirDatosController implements Initializable {
 
 	@FXML
 	private TableColumn<Comic, String> nombre;
+	
+	@FXML
+	private TableColumn<Comic, String> puntuacion;
 
+	@FXML
+	private ComboBox<String> nombreProcedencia;
+	
+	@FXML
+	private ComboBox<String> procedenciaAni;
+	
 	@FXML
 	private ComboBox<String> estadoComic;
 
@@ -215,15 +220,22 @@ public class IntroducirDatosController implements Initializable {
 		ObservableList<String> situacionEstado = FXCollections.observableArrayList("En posesion", "Vendido",
 				"En venta");
 		estadoComic.setItems(situacionEstado);
-		estadoComic.getSelectionModel().selectFirst(); // Permite que no exista un valor null, escogiendo el primer
-		// valor, que se encuentra vacio, en caso de querer borrar
-		// la puntuacion.
+		estadoComic.getSelectionModel().selectFirst();
+		
+		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList("Spain", "USA",
+				"Japon","Italia","Francia");
+		procedenciaAni.setItems(procedenciaEstadoActual);
+		procedenciaAni.getSelectionModel().selectFirst();
+		
+		ObservableList<String> procedenciaEstadoNuevo = FXCollections.observableArrayList("Spain", "USA",
+				"Japon","Italia","Francia");
+		nombreProcedencia.setItems(procedenciaEstadoNuevo);
+		nombreProcedencia.getSelectionModel().selectFirst();
 
 		libreria = new DBLibreriaManager();
 		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
 		TextFields.bindAutoCompletion(nombreFirma, DBLibreriaManager.listaFirma);
-		TextFields.bindAutoCompletion(nombreProcedencia, DBLibreriaManager.listaProcedencia);
 		TextFields.bindAutoCompletion(nombreFormato, DBLibreriaManager.listaFormato);
 		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
 		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
@@ -271,7 +283,6 @@ public class IntroducirDatosController implements Initializable {
 		nombreFirma.setText("");
 		nombreEditorial.setText("");
 		nombreFormato.setText("");
-		nombreProcedencia.setText("");
 		fechaPublicacion.setText("");
 		nombreDibujante.setText("");
 		nombreGuionista.setText("");
@@ -280,33 +291,19 @@ public class IntroducirDatosController implements Initializable {
 		// Campos de datos a modificar
 
 		nombreAni.setText("");
-
 		numeroAni.setText("");
-
 		nombreAni.setText("");
-
 		firmaAni.setText("");
-
 		editorialAni.setText("");
-
 		formatoAni.setText("");
-
-		procedenciaAni.setText("");
-
 		fechaAni.setText("");
-
 		guionistaAni.setText("");
-
 		dibujanteAni.setText("");
-
+		
 		pantallaInformativa.setText(null);
-
 		pantallaInformativa.setOpacity(0);
-
 		tablaBBDD.getItems().clear();
-
 		botonNuevaPortada.setStyle(null);
-
 		imagencomic.setImage(null);
 	}
 
@@ -377,6 +374,32 @@ public class IntroducirDatosController implements Initializable {
 		// "puntuacion"
 		return situacionEstado;
 	}
+	
+	/**
+	 * Funcion que permite modificar el estado de un comic.
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public String procedenciaActual() {
+
+		String procedenciaEstado = nombreProcedencia.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+		// "puntuacion"
+		return procedenciaEstado;
+	}
+	
+	/**
+	 * Funcion que permite modificar el estado de un comic.
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public String procedenciaNueva() {
+
+		String procedenciaEstadoNuevo = procedenciaAni.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+		// "puntuacion"
+		return procedenciaEstadoNuevo;
+	}
 
 	/**
 	 * Metodo que mostrara los comics o comic buscados por parametro
@@ -421,7 +444,7 @@ public class IntroducirDatosController implements Initializable {
 
 		String datos[] = camposComicActuales();
 
-		Comic comic = new Comic(datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
+		Comic comic = new Comic(datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], procedenciaActual(),
 				datos[8], datos[9], datos[10], "", "", null);
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
@@ -461,7 +484,7 @@ public class IntroducirDatosController implements Initializable {
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 			pantallaInformativa
-					.setText("Has añadido correctamente: " + comic.toString().replace("[", "").replace("]", ""));
+					.setText("Has a�adido correctamente: " + comic.toString().replace("[", "").replace("]", ""));
 			libreria.listasAutoCompletado();
 			try {
 				portada.close();
@@ -502,7 +525,7 @@ public class IntroducirDatosController implements Initializable {
 
 		campos[6] = nombreFormato.getText();
 
-		campos[7] = nombreProcedencia.getText();
+		campos[7] = procedenciaActual();
 
 		campos[8] = fechaPublicacion.getText();
 
@@ -537,7 +560,7 @@ public class IntroducirDatosController implements Initializable {
 
 		campos[5] = formatoAni.getText();
 
-		campos[6] = procedenciaAni.getText();
+		campos[6] = procedenciaNueva();
 
 		campos[7] = fechaAni.getText();
 
@@ -567,6 +590,7 @@ public class IntroducirDatosController implements Initializable {
 		fecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
 		guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
 		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
+		puntuacion.setCellValueFactory(new PropertyValueFactory<>("puntuacion"));
 	}
 
 	/**

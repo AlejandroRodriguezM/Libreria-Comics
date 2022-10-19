@@ -1,5 +1,29 @@
 package Controladores;
 
+/**
+ * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
+ * Las ventanas graficas se realizan con JavaFX.
+ * El programa permite:
+ *  - Conectarse a la base de datos.
+ *  - Ver la base de datos completa o parcial segun parametros introducidos.
+ *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
+ *  - Copia de seguridad de la base de datos en formato .sql
+ *  - Introducir comics a la base de datos.
+ *  - Modificar comics de la base de datos.
+ *  - Eliminar comics de la base de datos o modificar su 'estado' de "En posesion" a "Vendido", estos ultimos no se veran en la busqueda general de la base de datos
+ *  - Ver frases de personajes de comics
+ *  - Opcion de escoger algo para leer de forma aleatoria.
+ *  - Puntuar comics que se encuentren dentro de la base de datos.
+ *
+ *  Esta clase permite poder modificar los comics que estan en la base de datos
+ *
+ *  Version 4.1
+ *
+ *  Por Alejandro Rodriguez
+ *
+ *  Twitter: @silverAlox
+ */
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -105,12 +129,6 @@ public class ModificarDatosController implements Initializable {
 	private TextField nombreGuionistaMod;
 
 	@FXML
-	private TextField nombreProcedencia;
-
-	@FXML
-	private TextField nombreProcedenciaMod;
-
-	@FXML
 	private TextField nombreVariante;
 
 	@FXML
@@ -169,6 +187,12 @@ public class ModificarDatosController implements Initializable {
 
 	@FXML
 	private TableColumn<Comic, String> nombre;
+	
+	@FXML
+	private ComboBox<String> nombreProcedencia;
+
+	@FXML
+	private ComboBox<String> nombreProcedenciaMod;
 
 	@FXML
 	private ComboBox<String> estadoComic;
@@ -185,17 +209,25 @@ public class ModificarDatosController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		libreria = new DBLibreriaManager();
 		ObservableList<String> situacionEstado = FXCollections.observableArrayList("En posesion", "Vendido",
 				"En venta");
 		estadoComic.setItems(situacionEstado);
 		estadoComic.getSelectionModel().selectFirst();
+		
+		ObservableList<String> procedenciaEstadoMod = FXCollections.observableArrayList("Spain", "USA",
+				"Japon","Italia","Francia");
+		nombreProcedenciaMod.setItems(procedenciaEstadoMod);
+		nombreProcedenciaMod.getSelectionModel().selectFirst();
+		
+		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList("Spain", "USA",
+				"Japon","Italia","Francia");
+		nombreProcedencia.setItems(procedenciaEstadoActual);
+		nombreProcedencia.getSelectionModel().selectFirst();
 
 		libreria = new DBLibreriaManager();
 		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
 		TextFields.bindAutoCompletion(nombreFirma, DBLibreriaManager.listaFirma);
-		TextFields.bindAutoCompletion(nombreProcedencia, DBLibreriaManager.listaProcedencia);
 		TextFields.bindAutoCompletion(nombreFormato, DBLibreriaManager.listaFormato);
 		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
 		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
@@ -264,6 +296,32 @@ public class ModificarDatosController implements Initializable {
 		return situacionEstado;
 
 	}
+	
+	/**
+	 * Funcion que permite modificar el estado de un comic.
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public String procedenciaMod() {
+
+		String procedenciaEstado = nombreProcedenciaMod.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+		// "puntuacion"
+		return procedenciaEstado;
+	}
+	
+	/**
+	 * Funcion que permite modificar el estado de un comic.
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public String procedenciaActual() {
+
+		String procedenciaEstadoNuevo = nombreProcedencia.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+		// "puntuacion"
+		return procedenciaEstadoNuevo;
+	}
 
 	/**
 	 * Limpia todos los datos en pantalla.
@@ -294,7 +352,6 @@ public class ModificarDatosController implements Initializable {
 
 		nombreGuionista.setText("");
 
-		nombreProcedencia.setText("");
 
 		nombreVariante.setText("");
 
@@ -314,8 +371,6 @@ public class ModificarDatosController implements Initializable {
 		nombreEditorialMod.setText("");
 
 		nombreFormatoMod.setText("");
-
-		nombreProcedenciaMod.setText("");
 
 		anioPublicacionMod.setText("");
 
@@ -363,7 +418,7 @@ public class ModificarDatosController implements Initializable {
 
 		campos[6] = nombreFormato.getText();
 
-		campos[7] = nombreProcedencia.getText();
+		campos[7] = procedenciaActual();
 
 		campos[8] = anioPublicacion.getText();
 
@@ -400,7 +455,7 @@ public class ModificarDatosController implements Initializable {
 
 		campos[6] = nombreFormatoMod.getText();
 
-		campos[7] = nombreProcedenciaMod.getText();
+		campos[7] = procedenciaMod();
 
 		campos[8] = anioPublicacionMod.getText();
 
@@ -492,20 +547,6 @@ public class ModificarDatosController implements Initializable {
 			pantallaInformativa.setText("Has cancelado la subida de portada.");
 		}
 	}
-
-//	/**
-//	 *
-//	 * @param listaComic
-//	 */
-//	// Llamada a funcion para comprobar si existe algun dato en la lista.
-//	public void comprobarLista(List<Comic> listaComic) {
-//		libreria = new DBLibreriaManager();
-//		if (libreria.checkList(listaComic)) {
-//			pantallaInformativa.setOpacity(1);
-//			pantallaInformativa.setStyle("-fx-background-color: #F53636");
-//			pantallaInformativa.setText("ERROR. No hay ningun dato en la base de datos");
-//		}
-//	}
 
 	/**
 	 * Obtiene los datos de los comics de la base de datos y los devuelve en el

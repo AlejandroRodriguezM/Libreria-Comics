@@ -39,10 +39,12 @@ import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
 import JDBC.DBManager;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -149,9 +151,6 @@ public class MenuPrincipalController implements Initializable {
 	private TextField nombreGuionista;
 
 	@FXML
-	private TextField nombreProcedencia;
-
-	@FXML
 	private TextField nombreVariante;
 
 	@FXML
@@ -207,6 +206,9 @@ public class MenuPrincipalController implements Initializable {
 
 	@FXML
 	private ImageView imagencomic;
+	
+	@FXML
+	private ComboBox<String> nombreProcedencia;
 
 	private static Ventanas nav = new Ventanas();
 
@@ -220,15 +222,33 @@ public class MenuPrincipalController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		libreria = new DBLibreriaManager();
 		libreria.listasAutoCompletado();
+		
+		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList("Spain", "USA",
+				"Japon","Italia","Francia");
+		nombreProcedencia.setItems(procedenciaEstadoActual);
+		nombreProcedencia.getSelectionModel().selectFirst();
+		
 		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
 		TextFields.bindAutoCompletion(nombreFirma, DBLibreriaManager.listaFirma);
-		TextFields.bindAutoCompletion(nombreProcedencia, DBLibreriaManager.listaProcedencia);
 		TextFields.bindAutoCompletion(nombreFormato, DBLibreriaManager.listaFormato);
 		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
 		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
 		TextFields.bindAutoCompletion(fechaPublicacion, DBLibreriaManager.listaFecha);
+	}
+	
+	/**
+	 * Funcion que permite modificar el estado de un comic.
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public String procedenciaActual() {
+
+		String procedenciaEstadoNuevo = nombreProcedencia.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+		// "puntuacion"
+		return procedenciaEstadoNuevo;
 	}
 
 	/////////////////////////////////
@@ -508,7 +528,6 @@ public class MenuPrincipalController implements Initializable {
 		nombreFirma.setText("");
 		nombreEditorial.setText("");
 		nombreFormato.setText("");
-		nombreProcedencia.setText("");
 		fechaPublicacion.setText("");
 		nombreDibujante.setText("");
 		nombreGuionista.setText("");
@@ -764,7 +783,7 @@ public class MenuPrincipalController implements Initializable {
 
 		campos[6] = nombreFormato.getText();
 
-		campos[7] = nombreProcedencia.getText();
+		campos[7] = procedenciaActual();
 
 		campos[8] = fechaPublicacion.getText();
 
@@ -794,7 +813,7 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Permite salir completamente del programa.
+	 * Permite salir completamente del programa
 	 *
 	 * @param event
 	 */

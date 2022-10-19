@@ -46,6 +46,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import JDBC.DBLibreriaManager;
 import JDBC.DBManager;
+import javafx.stage.DirectoryChooser;
 
 /**
  * Esta clase sirve para crear tanto los ficheros Excel como los ficheros CSV,
@@ -140,10 +141,10 @@ public class FuncionesExcel {
 			try {
 				outputStream = new FileOutputStream(fichero);
 				libro.write(outputStream);
-				libreria.saveImageFromDataBase();
 				libro.close();
 				outputStream.close();
 				createCSV(fichero);
+				libreria.saveImageFromDataBase();
 				return true;
 			} catch (FileNotFoundException ex) {
 				nav.alertaException(ex.toString());
@@ -238,12 +239,21 @@ public class FuncionesExcel {
 				statement1.close();
 				statement2.close();
 
-				nav.alertaException("El formato del fichero .csv no es correcto: " + e.toString());
 			} catch (SQLException e1) {
-				nav.alertaException(e1.toString());
+				nav.alertaException("El formato del fichero .csv no es correcto: " + e.toString());
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public File carpetaPortadas() {
+		DirectoryChooser directoryChooser = new DirectoryChooser();
+		File directorio = directoryChooser.showDialog(null);
+		return directorio;
 	}
 
 	/**
@@ -251,26 +261,28 @@ public class FuncionesExcel {
 	 *
 	 * @return
 	 */
-	public InputStream subirImagenes() {
+	public InputStream subirImagenes(File directorio) {
 
 		ID++;
 		InputStream input;
 		utilidad = new Utilidades();
+		
+		File portada = new File(directorio.toString() + "/" + ID + ".jpg");
 		try {
-			File directorio = new File("portadas");
-			File portada = new File(directorio.toString() + "/" + ID + ".jpg");
-			if (directorio.exists() && portada.exists()) {
-				File tmp = utilidad.getScaledImage(portada);
-				input = new FileInputStream(tmp);
+			if (directorio.exists()) {
+				if (portada.exists()) {
+					File tmp = utilidad.getScaledImage(portada);
+					input = new FileInputStream(tmp);
 
-				return input;
-			} else {
-				input = this.getClass().getResourceAsStream("sinPortada.jpg");
-				return input;
+					return input;
+				} else {
+					input = this.getClass().getResourceAsStream("sinPortada.jpg");
+					return input;
+				}
 			}
-
 		} catch (FileNotFoundException e) {
-			nav.alertaException(e.toString());
+			String error = "ERROR. Ha cancelado la subida de imagenes de portada. Van a subirse imagenes predeterminadas.";
+			nav.alertaException(error);
 		}
 		return null;
 	}
@@ -282,17 +294,17 @@ public class FuncionesExcel {
 	 * @param lineReader
 	 */
 	public void lecturaCSV(String sql, BufferedReader lineReader) {
-		File directorio = null;
+		File directorio = carpetaPortadas();
 		InputStream portada = null;
 		String puntuacion;
+		String procedencia;
+		db = new DBLibreriaManager();
+		int batchSize = 20;
+		utilidad = new Utilidades();
+		String lineText = null;
+
 		try {
 			PreparedStatement statement = conn.prepareStatement(sql);
-			directorio = new File("portadas" + "/" + "temp.jpg");
-			db = new DBLibreriaManager();
-			int batchSize = 20;
-			utilidad = new Utilidades();
-			String lineText = null;
-
 			int count = 0;
 			int nuevoID = db.countRows();
 			lineReader.readLine();
@@ -307,7 +319,12 @@ public class FuncionesExcel {
 				String firma = data[4];
 				String editorial = data[5];
 				String formato = data[6];
-				String procedencia = data[7];
+				if (data[7].toLowerCase().contains("españa")) {
+					procedencia = data[7].toLowerCase().replace("españa", "Spain");
+				}
+				else {
+					procedencia = data[7];
+				}
 				String fecha = data[8];
 				String guionista = data[9];
 				String dibujante = data[10];
@@ -317,7 +334,12 @@ public class FuncionesExcel {
 					puntuacion = "Sin puntuacion";
 				}
 				String estado = data[13];
-				portada = subirImagenes();
+				if(directorio != null) {
+					portada = subirImagenes(directorio);
+				}
+				else {
+					portada = this.getClass().getResourceAsStream("sinPortada.jpg");
+				}
 				statement.setString(1, id);
 				statement.setString(2, nombre);
 				statement.setString(3, numero);
@@ -350,7 +372,7 @@ public class FuncionesExcel {
 		} finally {
 			try {
 				portada.close();
-				utilidad.deleteImage(directorio.toString());
+				utilidad.deleteImage(directorio.toString() + "/" + "tmp" + ".jpg");
 				ID = 0;
 			} catch (IOException e) {
 				e.printStackTrace();

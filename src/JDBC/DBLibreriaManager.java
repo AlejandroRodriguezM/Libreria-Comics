@@ -41,6 +41,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import Funcionamiento.Comic;
+import Funcionamiento.FuncionesExcel;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import javafx.collections.FXCollections;
@@ -61,7 +62,6 @@ public class DBLibreriaManager extends Comic {
 	public static List<String> listaNombre = new ArrayList<>();
 	public static List<String> listaVariante = new ArrayList<>();
 	public static List<String> listaFirma = new ArrayList<>();
-	public static List<String> listaProcedencia = new ArrayList<>();
 	public static List<String> listaFormato = new ArrayList<>();
 	public static List<String> listaEditorial = new ArrayList<>();
 	public static List<String> listaGuionista = new ArrayList<>();
@@ -71,6 +71,7 @@ public class DBLibreriaManager extends Comic {
 	private static Ventanas nav = new Ventanas();
 	private static Connection conn = null;
 	private static Utilidades utilidad = null;
+	FuncionesExcel carpeta = null;
 
 	/**
 	 *
@@ -80,7 +81,6 @@ public class DBLibreriaManager extends Comic {
 		listaNombre();
 		listaVariante();
 		listaFirma();
-		listaProcedencia();
 		listaFormato();
 		listaEditorial();
 		listaGuionista();
@@ -454,20 +454,6 @@ public class DBLibreriaManager extends Comic {
 		reiniciarBBDD();
 		listaFirma = guardarDatosAutoCompletado(sentenciaSQL, columna);
 		return listaFirma;
-	}
-
-	/**
-	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
-	 *
-	 * @return
-	 */
-	public List<String> listaProcedencia() {
-
-		String sentenciaSQL = "SELECT procedencia from comicsbbdd";
-		String columna = "procedencia";
-		reiniciarBBDD();
-		listaProcedencia = guardarDatosAutoCompletado(sentenciaSQL, columna);
-		return listaProcedencia;
 	}
 
 	/**
@@ -919,23 +905,25 @@ public class DBLibreriaManager extends Comic {
 	public void saveImageFromDataBase() {
 		String sentenciaSQL = "SELECT * FROM comicsbbdd";
 		conn = DBManager.conexion();
+		carpeta = new FuncionesExcel();
+		File directorio = carpeta.carpetaPortadas();
 		try {
 			PreparedStatement preparedStatement = conn.prepareStatement(sentenciaSQL);
 			ResultSet rs = preparedStatement.executeQuery();
-
-			while (rs.next()) {
-				String nombreImagen = rs.getString(1);
-				Blob imagenBlob = rs.getBlob(13);
-				File directorio = new File("portadas");
-				directorio.mkdir();
-				FileOutputStream fileops = new FileOutputStream(
-						directorio.getAbsoluteFile().toString() + "/" + nombreImagen + ".jpg");
-				fileops.write(imagenBlob.getBytes(1, (int) imagenBlob.length()));
-				fileops.close();
-
+			
+			if(directorio != null) {
+				while (rs.next()) {
+					String nombreImagen = rs.getString(1);
+					Blob imagenBlob = rs.getBlob(13);
+					FileOutputStream fileops = new FileOutputStream(
+							directorio.getAbsoluteFile().toString() + "/" + nombreImagen + ".jpg");
+					fileops.write(imagenBlob.getBytes(1, (int) imagenBlob.length()));
+					fileops.close();
+					
+				}
 			}
 		} catch (SQLException | IOException e) {
-			e.printStackTrace();
+			nav.alertaException(e.toString());
 		}
 	}
 

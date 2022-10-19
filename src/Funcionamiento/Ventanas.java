@@ -381,7 +381,7 @@ public class Ventanas {
 			Scene scene = new Scene(root);
 			Stage stage = new Stage();
 			stage.setResizable(false);
-			stage.setTitle("Puntuación de comic"); // Titulo de la aplicacion.
+			stage.setTitle("Puntuacion de comic"); // Titulo de la aplicacion.
 			stage.getIcons().add(new Image("/Icono/icon2.png"));
 
 			// Asocio el stage con el scene

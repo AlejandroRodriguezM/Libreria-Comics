@@ -11,10 +11,13 @@ import Funcionamiento.Comic;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -81,9 +84,6 @@ public class EliminarDatosController implements Initializable {
 	private TextField nombreFormato;
 
 	@FXML
-	private TextField nombreProcedencia;
-
-	@FXML
 	private TextField nombreGuionista;
 
 	@FXML
@@ -133,9 +133,15 @@ public class EliminarDatosController implements Initializable {
 
 	@FXML
 	private TableColumn<Comic, String> nombre;
+	
+	@FXML
+	private TableColumn<Comic, String> puntuacion;
 
 	@FXML
 	private ImageView imagencomic;
+	
+	@FXML
+	private ComboBox<String> nombreProcedencia;
 
 	private static Ventanas nav = new Ventanas();
 	private static DBLibreriaManager libreria = null;
@@ -144,15 +150,33 @@ public class EliminarDatosController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		libreria = new DBLibreriaManager();
+		
+		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList("Spain", "USA",
+				"Japon","Italia","Francia");
+		nombreProcedencia.setItems(procedenciaEstadoActual);
+		nombreProcedencia.getSelectionModel().selectFirst();
+		
 		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
 		TextFields.bindAutoCompletion(nombreFirma, DBLibreriaManager.listaFirma);
-		TextFields.bindAutoCompletion(nombreProcedencia, DBLibreriaManager.listaProcedencia);
 		TextFields.bindAutoCompletion(nombreFormato, DBLibreriaManager.listaFormato);
 		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
 		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
 		TextFields.bindAutoCompletion(anioPublicacion, DBLibreriaManager.listaFecha);
+	}
+	
+	/**
+	 * Funcion que permite modificar el estado de un comic.
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public String procedenciaActual() {
+
+		String procedenciaEstadoNuevo = nombreProcedencia.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+		// "puntuacion"
+		return procedenciaEstadoNuevo;
 	}
 
 	/**
@@ -171,7 +195,6 @@ public class EliminarDatosController implements Initializable {
 		nombreFirma.setText("");
 		nombreEditorial.setText("");
 		nombreFormato.setText("");
-		nombreProcedencia.setText("");
 		anioPublicacion.setText("");
 		nombreDibujante.setText("");
 		nombreGuionista.setText("");
@@ -305,10 +328,9 @@ public class EliminarDatosController implements Initializable {
 	}
 
 	/**
-	 * Muestra las columnas especificas del fichero FXML
+	 * Permite dar valor a las celdas de la TableView
 	 */
-	private void nombreColumnas() { // Funcion que especifica el total de columnas de la bbdd se mostraran en la
-		// ventana
+	private void nombreColumnas() {
 		ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
 		nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
 		numero.setCellValueFactory(new PropertyValueFactory<>("numero"));
@@ -320,6 +342,7 @@ public class EliminarDatosController implements Initializable {
 		fecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
 		guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
 		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
+		puntuacion.setCellValueFactory(new PropertyValueFactory<>("puntuacion"));
 	}
 
 	//////////////////////////
@@ -396,7 +419,7 @@ public class EliminarDatosController implements Initializable {
 
 		campos[6] = nombreFormato.getText();
 
-		campos[7] = nombreProcedencia.getText();
+		campos[7] = procedenciaActual();
 
 		campos[8] = anioPublicacion.getText();
 
@@ -454,5 +477,4 @@ public class EliminarDatosController implements Initializable {
 		myStage.close(); // Cierra la ventana actual
 
 	}
-
 }

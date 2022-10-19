@@ -17,7 +17,7 @@ package Controladores;
  *
  *  Esta clase permite poder puntuar los comics que estan en la base de datos.
  *
- *  Version Final
+ *  Version 4.1
  *
  *  Por Alejandro Rodriguez
  *
@@ -53,29 +53,29 @@ import javafx.stage.Stage;
 
 public class PuntuarDatosController implements Initializable {
 
-	@FXML
-	private Button botonLimpiarComic;
+    @FXML
+    private Button botonBorrarOpinion;
 
-	@FXML
-	private Button botonMostrarParametro;
+    @FXML
+    private Button botonLeidos;
 
-	@FXML
-	private Button botonPuntuacion;
+    @FXML
+    private Button botonLimpiarComic;
 
-	@FXML
-	private Button botonSalir;
+    @FXML
+    private Button botonMostrarParametro;
 
-	@FXML
-	private Button botonVolver;
+    @FXML
+    private Button botonAgregarPuntuacion;
 
-	@FXML
-	private Button botonbbdd;
+    @FXML
+    private Button botonSalir;
 
-	@FXML
-	private Button botonLeidos;
+    @FXML
+    private Button botonVolver;
 
-	@FXML
-	private Button botonBorrarPuntuacion;
+    @FXML
+    private Button botonbbdd;
 
 	@FXML
 	private TextField fechaPublicacion;
@@ -100,9 +100,6 @@ public class PuntuarDatosController implements Initializable {
 
 	@FXML
 	private TextField nombreGuionista;
-
-	@FXML
-	private TextField nombreProcedencia;
 
 	@FXML
 	private TextField nombreVariante;
@@ -156,13 +153,16 @@ public class PuntuarDatosController implements Initializable {
 	private TableColumn<Comic, String> puntuacion;
 
 	@FXML
+	private ComboBox<String> procedenciaParametro;
+	
+	@FXML
 	private ComboBox<String> puntuacionMenu;
 
 	@FXML
 	public TableView<Comic> tablaBBDD;
 
-	@FXML
-	private ImageView imagencomic;
+    @FXML
+    private ImageView imagencomic;
 
 	private static Ventanas nav = new Ventanas();
 	private static DBLibreriaManager libreria = null;
@@ -174,21 +174,38 @@ public class PuntuarDatosController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		libreria = new DBLibreriaManager();
 		ObservableList<String> puntuaciones = FXCollections.observableArrayList("0/0", "0.5/5", "1/5", "1.5/5", "2/5",
 				"2.5/5", "3/5", "3.5/5", "4/5", "4.5/5", "5/5");
 		puntuacionMenu.setItems(puntuaciones);
 		puntuacionMenu.getSelectionModel().selectFirst();
+		
+		ObservableList<String> procedenciaEstado = FXCollections.observableArrayList("Spain", "USA",
+				"Japon","Italia","Francia");
+		procedenciaParametro.setItems(procedenciaEstado);
+		procedenciaParametro.getSelectionModel().selectFirst();
 
+		libreria = new DBLibreriaManager();
 		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
 		TextFields.bindAutoCompletion(nombreFirma, DBLibreriaManager.listaFirma);
-		TextFields.bindAutoCompletion(nombreProcedencia, DBLibreriaManager.listaProcedencia);
 		TextFields.bindAutoCompletion(nombreFormato, DBLibreriaManager.listaFormato);
 		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
 		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
 		TextFields.bindAutoCompletion(fechaPublicacion, DBLibreriaManager.listaFecha);
+	}
+	
+	/**
+	 * Funcion que permite modificar el estado de un comic.
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public String procedenciaActual() {
+
+		String procedenciaEstado = procedenciaParametro.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+		// "puntuacion"
+		return procedenciaEstado;
 	}
 
 	/**
@@ -284,7 +301,6 @@ public class PuntuarDatosController implements Initializable {
 		nombreFirma.setText("");
 		nombreEditorial.setText("");
 		nombreFormato.setText("");
-		nombreProcedencia.setText("");
 		fechaPublicacion.setText("");
 		nombreDibujante.setText("");
 		nombreGuionista.setText("");
@@ -389,7 +405,7 @@ public class PuntuarDatosController implements Initializable {
 
 		campos[6] = nombreFormato.getText();
 
-		campos[7] = nombreProcedencia.getText();
+		campos[7] = procedenciaActual();
 
 		campos[8] = fechaPublicacion.getText();
 

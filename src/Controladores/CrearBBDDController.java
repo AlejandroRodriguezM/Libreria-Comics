@@ -263,7 +263,7 @@ public class CrearBBDDController {
 				+ "nomVariante varchar(150) NOT NULL," + "firma varchar(150) NOT NULL,"
 				+ "nomEditorial varchar(150) NOT NULL," + "formato varchar(150) NOT NULL,"
 				+ "procedencia varchar(150) NOT NULL," + "anioPubli varchar(150) NOT NULL,"
-				+ "nomGuionista varchar(300) NOT NULL," + "nomDibujante varchar(300) NOT NULL,"
+				+ "nomGuionista varchar(600) NOT NULL," + "nomDibujante varchar(600) NOT NULL,"
 				+ "puntuacion varchar(300) NOT NULL," + "portada blob," + "estado varchar(300) NOT NULL,"
 				+ "PRIMARY KEY (`ID`)) "
 				+ "ENGINE=InnoDB AUTO_INCREMENT=320 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
@@ -316,13 +316,13 @@ public class CrearBBDDController {
 					+ "WHERE nomEditorial = 'Panini';\n" + "END");
 
 			statement.execute("CREATE PROCEDURE numeroTomos()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE Formato = 'Tomo';\n" + "END");
+					+ "WHERE formato = 'Tomo';\n" + "END");
 
 			statement.execute("CREATE PROCEDURE numeroUSA()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE Procedencia = 'USA';\n" + "END");
+					+ "WHERE procedencia = 'USA';\n" + "END");
 
 			statement.execute("CREATE PROCEDURE numeroSpain()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE Procedencia = 'España';\n" + "END");
+					+ "WHERE procedencia = 'Spain';\n" + "END");
 
 			statement.execute("CREATE PROCEDURE total()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd;\n" + "END");
 
@@ -330,7 +330,7 @@ public class CrearBBDDController {
 					+ "WHERE puntuacion <> '';\n" + "END");
 
 			statement.execute("CREATE PROCEDURE comicsFirmados()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE Firma <> '';\n" + "END");
+					+ "WHERE firma <> '';\n" + "END");
 
 			statement.execute("CREATE PROCEDURE comicsVendidos()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
 					+ "WHERE estado = 'Vendido';\n" + "END");
