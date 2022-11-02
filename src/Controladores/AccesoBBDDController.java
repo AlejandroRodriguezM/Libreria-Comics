@@ -16,7 +16,7 @@ import javafx.stage.Stage;
 
 /**
  * Esta clase sirve para acceder a la base de datos y poder realizar diferentes
- * funciones.
+ * funciones..
  *
  * @author Alejandro Rodriguez
  */
