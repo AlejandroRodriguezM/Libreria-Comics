@@ -57,7 +57,7 @@ import javafx.stage.Stage;
 
 /**
  * Esta clase sirve viajar a las diferentes ventanas del programa, asi como
- * realizar diferentes diferentes funciones.
+ * realizar diferentes diferentes funciones
  *
  * @author Alejandro Rodriguez
  */
