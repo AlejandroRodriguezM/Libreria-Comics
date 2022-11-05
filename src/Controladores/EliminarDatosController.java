@@ -369,6 +369,7 @@ public class EliminarDatosController implements Initializable {
 				pantallaInformativa
 						.setText("Has modificado correctamente: " + comic.toString().replace("[", "").replace("]", ""));
 				idComicTratar.setStyle(null);
+				imagencomic.setImage(libreria.selectorImage(ID));
 				return true;
 			} else {
 				pantallaInformativa.setOpacity(1);
