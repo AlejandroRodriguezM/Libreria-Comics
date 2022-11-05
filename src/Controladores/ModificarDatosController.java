@@ -275,6 +275,8 @@ public class ModificarDatosController implements Initializable {
 		libreria.reiniciarBBDD();
 		direccionImagen.setText("");
 		libreria.listasAutoCompletado();
+		nombreColumnas(); // Llamada a funcion
+		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
 	}
 
 	// Funcion que permite seleccionar una imagen para subirla junto al comic

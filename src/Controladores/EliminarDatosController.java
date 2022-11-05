@@ -243,6 +243,8 @@ public class EliminarDatosController implements Initializable {
 		libreria.eliminarComicBBDD(ID);
 		libreria.reiniciarBBDD();
 		libreria.listasAutoCompletado();
+		nombreColumnas(); // Llamada a funcion
+		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
 	}
 
 	/**
@@ -252,29 +254,15 @@ public class EliminarDatosController implements Initializable {
 	 * @param event
 	 */
 	@FXML
-	void ventaDatos(ActionEvent event) {
+	void ventaComic(ActionEvent event) {
 		imagencomic.setImage(null);
 		libreria = new DBLibreriaManager();
 		String ID = idComicTratar.getText();
 		modificarDatos(ID);
 		libreria.venderComicBBDD(ID);
 		libreria.reiniciarBBDD();
-	}
-
-	/**
-	 * Metodo que permite cambiar de estado un comic, para que se deje de mostrar en
-	 * el programa, pero este sigue estando dentro de la bbdd
-	 *
-	 * @param event
-	 */
-	@FXML
-	void enVentaDatos(ActionEvent event) {
-		imagencomic.setImage(null);
-		libreria = new DBLibreriaManager();
-		String ID = idComicTratar.getText();
-		modificarDatos(ID);
-		libreria.enVentaComicBBDD(ID);
-		libreria.reiniciarBBDD();
+		nombreColumnas(); // Llamada a funcion
+		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
 	}
 
 	/**

@@ -246,6 +246,8 @@ public class PuntuarDatosController implements Initializable {
 		String ID = idPuntuar.getText();
 		libreria.actualizarPuntuacion(ID, comicPuntuacion()); // Llamada a funcion
 		datosOpinion("Opinion introducida con exito: ");
+		nombreColumnas(); // Llamada a funcion
+		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
 	}
 
 	/**
@@ -260,6 +262,8 @@ public class PuntuarDatosController implements Initializable {
 		String ID = idPuntuar.getText();
 		libreria.borrarPuntuacion(ID);
 		datosOpinion("Opinion borrada con exito: ");
+		nombreColumnas(); // Llamada a funcion
+		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
 	}
 
 	/*

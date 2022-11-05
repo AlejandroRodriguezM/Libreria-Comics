@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="741.0" prefWidth="1197.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.MenuPrincipalController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="741.0" prefWidth="1197.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.MenuPrincipalController">
    <children>
       <ImageView fitHeight="726.0" fitWidth="1197.0" pickOnBounds="true" preserveRatio="true">
          <image>
@@ -90,7 +90,7 @@
       <Button fx:id="botonVentanaAniadir" layoutX="127.0" layoutY="257.0" mnemonicParsing="false" onAction="#ventanaAniadir" prefHeight="25.0" prefWidth="99.0" text="Añadir Comic" />
       <Button fx:id="botonDelete" layoutX="14.0" layoutY="320.0" mnemonicParsing="false" onAction="#borrarContenidoTabla" prefHeight="25.0" prefWidth="99.0" text="Eliminar BD" />
       <Button fx:id="botonVerRecomendacion" layoutX="270.0" layoutY="289.0" mnemonicParsing="false" onAction="#ventanaRecomendar" prefHeight="43.0" prefWidth="75.0" text="Escoge lectura" wrapText="true" />
-      <Button fx:id="botonVolver" layoutX="1009.0" layoutY="317.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="32.0" prefWidth="102.0" text="Volver al menu" />
+      <Button fx:id="botonVolver" layoutX="1009.0" layoutY="318.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="32.0" prefWidth="102.0" text="Volver al menu" />
       <Button fx:id="botonSalir" layoutX="1122.0" layoutY="318.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="32.0" prefWidth="68.0" text="Salir" />
       <TableView fx:id="tablaBBDD" layoutX="-1.0" layoutY="356.0" onMouseClicked="#clickRaton" prefHeight="385.0" prefWidth="1198.0">
          <columns>

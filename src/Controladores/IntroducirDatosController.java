@@ -484,8 +484,10 @@ public class IntroducirDatosController implements Initializable {
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 			pantallaInformativa
-					.setText("Has a�adido correctamente: " + comic.toString().replace("[", "").replace("]", ""));
+					.setText("Has introducido correctamente: " + comic.toString().replace("[", "").replace("]", ""));
 			libreria.listasAutoCompletado();
+			nombreColumnas(); // Llamada a funcion
+			tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
 			try {
 				portada.close();
 				utilidad.deleteImage(datos[10]);
