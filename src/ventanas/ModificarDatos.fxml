@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="759.0" prefWidth="1108.0" style="-fx-background-color: DFA394;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.ModificarDatosController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="759.0" prefWidth="1108.0" style="-fx-background-color: DFA394;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.ModificarDatosController">
    <children>
       <ImageView fitHeight="633.0" fitWidth="1108.0" layoutY="-1.0" pickOnBounds="true" preserveRatio="true">
          <image>
@@ -65,10 +65,10 @@
       <Label layoutX="269.0" layoutY="310.0" style="-fx-background-color: grey;" text="Dibujante nuevo" />
       <Label layoutX="270.0" layoutY="251.0" style="-fx-background-color: grey;" text="Fecha nueva" />
       <Label layoutX="270.0" layoutY="191.0" style="-fx-background-color: grey;" text="Formato nuevo" />
-      <Label layoutX="271.0" layoutY="161.0" style="-fx-background-color: grey;" text="Editorial nuevo" />
+      <Label layoutX="270.0" layoutY="161.0" style="-fx-background-color: grey;" text="Editorial nuevo" />
       <Label layoutX="270.0" layoutY="100.0" style="-fx-background-color: grey;" text="Variante nuevo" />
       <Label layoutX="271.0" layoutY="69.0" style="-fx-background-color: grey;" text="Numero nuevo" />
-      <Label layoutX="273.0" layoutY="130.0" style="-fx-background-color: grey;" text="Firma nuevo" />
+      <Label layoutX="270.0" layoutY="130.0" style="-fx-background-color: grey;" text="Firma nuevo" />
       <Label layoutX="270.0" layoutY="221.0" style="-fx-background-color: grey;" text="Procedencia nuevo" />
       <Button fx:id="botonbbdd" layoutX="591.0" layoutY="10.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="42.0" prefWidth="75.0" text="Ver todo" wrapText="true" />
       <Label layoutX="11.0" layoutY="281.0" style="-fx-background-color: grey;" text="Guionista">
