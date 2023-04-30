@@ -25,7 +25,6 @@
       <TextField fx:id="nombreVariante" layoutX="352.0" layoutY="37.0" prefHeight="25.0" prefWidth="82.0" />
       <TextField fx:id="nombreFirma" layoutX="126.0" layoutY="68.0" prefHeight="25.0" prefWidth="82.0" />
       <TextField fx:id="nombreEditorial" layoutX="352.0" layoutY="68.0" prefHeight="25.0" prefWidth="82.0" />
-      <TextField fx:id="nombreFormato" layoutX="126.0" layoutY="98.0" prefHeight="25.0" prefWidth="82.0" />
       <TextField fx:id="anioPublicacion" layoutX="127.0" layoutY="129.0" prefHeight="25.0" prefWidth="82.0" />
       <TextField fx:id="nombreGuionista" layoutX="352.0" layoutY="129.0" prefHeight="25.0" prefWidth="82.0" />
       <TextField fx:id="nombreDibujante" layoutX="127.0" layoutY="161.0" prefHeight="25.0" prefWidth="82.0" />
@@ -125,5 +124,6 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
+      <ComboBox fx:id="nombreFormato" layoutX="127.0" layoutY="97.0" prefHeight="25.0" prefWidth="82.0" />
    </children>
 </Pane>

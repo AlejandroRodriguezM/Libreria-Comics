@@ -6,35 +6,29 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="304.0" prefWidth="372.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.SobreMiController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="304.0" prefWidth="372.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.SobreMiController">
    <children>
-      <Button fx:id="numeroVersion" layoutX="8.0" layoutY="116.0" mnemonicParsing="false" onAction="#accesoGitHub" prefHeight="25.0" prefWidth="103.0" text="Perfil en GitHub" />
-      <Button fx:id="botonTwitter" layoutX="8.0" layoutY="155.0" mnemonicParsing="false" onAction="#accesoTwitter" prefHeight="25.0" prefWidth="103.0" text="Perfil en twitter" />
-      <Button fx:id="botonYoutube" layoutX="9.0" layoutY="194.0" mnemonicParsing="false" onAction="#accesoYoutube" prefHeight="25.0" prefWidth="103.0" text="Perfil Youtube" />
-      <Button fx:id="botonTwitch" layoutX="8.0" layoutY="231.0" mnemonicParsing="false" onAction="#accesoTwitch" prefHeight="25.0" prefWidth="103.0" text="Perfil Twitch" />
+      <Button fx:id="numeroVersion" layoutX="8.0" layoutY="116.0" mnemonicParsing="false" onAction="#accesoGitHub" prefHeight="25.0" prefWidth="109.0" text="Perfil en GitHub" />
+      <Button fx:id="botonLinkedin" layoutX="8.0" layoutY="155.0" mnemonicParsing="false" onAction="#accesoLinkedin" prefHeight="25.0" prefWidth="109.0" text="Perfil en Linkedin" />
+      <Button fx:id="botonYoutube" layoutX="9.0" layoutY="194.0" mnemonicParsing="false" onAction="#accesoYoutube" prefHeight="25.0" prefWidth="109.0" text="Perfil Youtube" />
       <Button fx:id="botonVolver" layoutX="9.0" layoutY="268.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="25.0" prefWidth="60.0" text="Volver" />
       <Button fx:id="botonSalir" layoutX="81.0" layoutY="268.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="25.0" prefWidth="50.0" text="Salir" />
-      <ImageView fitHeight="63.0" fitWidth="79.0" layoutX="115.0" layoutY="182.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="63.0" fitWidth="79.0" layoutX="116.0" layoutY="182.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagenes/icono%20youtube.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="41.0" fitWidth="39.0" layoutX="122.0" layoutY="148.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="41.0" fitWidth="39.0" layoutX="128.0" layoutY="148.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../imagenes/Icono%20twitter.png" />
+            <Image url="@../imagenes/linkedin.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="49.0" fitWidth="39.0" layoutX="122.0" layoutY="224.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../imagenes/icono%20twitch.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="39.0" fitWidth="60.0" layoutX="112.0" layoutY="111.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="39.0" fitWidth="60.0" layoutX="118.0" layoutY="111.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagenes/icono%20github.png" />
          </image>
       </ImageView>
-      <Label fx:id="TextoInfo" alignment="TOP_LEFT" cache="true" layoutX="7.0" layoutY="3.0" prefHeight="105.0" prefWidth="369.0" text="Programa creado por Alejandro Rodriguez. Es un proyecto personal para probar conocimientos adquiridos durante el primer curso de DAW. Esta aplicacion solamente puede usarse con una tabla de una forma estructurada de una forma concreta. Esta aplicacion ha sido creada con la intencion de ser usada junto a una base de datos MySql. " wrapText="true" />
-      <Button fx:id="botonCompra" layoutX="249.0" layoutY="107.0" mnemonicParsing="false" onAction="#comprarComic" prefHeight="43.0" prefWidth="102.0" text="Webs recomendadas" wrapText="true" />
+      <Label fx:id="TextoInfo" alignment="TOP_LEFT" cache="true" layoutX="5.0" layoutY="2.0" prefHeight="105.0" prefWidth="369.0" text="Programa creado por Alejandro Rodriguez. Es un proyecto personal para probar conocimientos adquiridos durante el primer curso de DAW y dandole una update de calidad de vida en el año 2023. Esta aplicacion solamente puede usarse con una tabla de una forma estructurada de una forma concreta. Esta aplicacion ha sido creada con la intencion de ser usada junto a una base de datos MySql. " wrapText="true" />
+      <Button fx:id="botonCompra" layoutX="249.0" layoutY="111.0" mnemonicParsing="false" onAction="#comprarComic" prefHeight="43.0" prefWidth="102.0" text="Webs recomendadas" wrapText="true" />
    </children>
 </Pane>

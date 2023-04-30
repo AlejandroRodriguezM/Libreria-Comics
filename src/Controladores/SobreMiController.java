@@ -40,10 +40,7 @@ public class SobreMiController {
 	private Button botonSalir;
 
 	@FXML
-	private Button botonTwitch;
-
-	@FXML
-	private Button botonTwitter;
+	private Button botonLinkedin;
 
 	@FXML
 	private Button botonVolver;
@@ -86,9 +83,9 @@ public class SobreMiController {
 	 * @param event
 	 */
 	@FXML
-	void accesoTwitter(ActionEvent event) {
+	void accesoLinkedin(ActionEvent event) {
 
-		String url = "https://twitter.com/SilverAlox";
+		String url = "https://www.linkedin.com/in/alejandro-rodriguez-mena-497a00179/";
 
 		if (Utilidades.isWindows()) {
 			Utilidades.accesoWebWindows(url); // Llamada a funcion
@@ -118,27 +115,6 @@ public class SobreMiController {
 			} else {
 				Utilidades.accesoWebMac(url);
 
-			}
-		}
-	}
-
-	/**
-	 * Funcion que permite abrir un navegador con la url de twitch
-	 *
-	 * @param event
-	 */
-	@FXML
-	void accesoTwitch(ActionEvent event) {
-
-		String url = "https://www.twitch.tv/misteriorojo";
-
-		if (Utilidades.isWindows()) {
-			Utilidades.accesoWebWindows(url); // Llamada a funcion
-		} else {
-			if (Utilidades.isUnix()) {
-				Utilidades.accesoWebLinux(url); // Llamada a funcion
-			} else {
-				Utilidades.accesoWebMac(url);
 			}
 		}
 	}

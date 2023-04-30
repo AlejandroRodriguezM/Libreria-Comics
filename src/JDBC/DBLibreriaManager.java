@@ -233,13 +233,13 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public String procedimientosEstadistica() {
 
-		int numGrapas, numTomos, numUsa, numEsp, numMarvel, numDC, numPanini, numDarkHorse, numMangas, leidos, vendidos,
+		int numGrapas, numDuro,numBlando,numLibros, numUsa, numEsp, numMarvel, numDC, numPanini, numDarkHorse,numImage, numMangas, leidos, vendidos,
 				posesion, firmados, total;
 
-		String procedimientos[] = { "call numeroGrapas()", "call numeroTomos()", "call numeroSpain()",
-				"call numeroUSA()", "call total()", "call numeroPanini()", "call numeroMarvel()", "call numeroDC()",
-				"call numeroDarkHorse()", "call numeroMangas()", "call comicsLeidos()", "call comicsVendidos()",
-				"call comicsPosesion()", "call comicsFirmados()" };
+		String procedimientos[] = { "call numeroGrapas()", "call numeros_tapa_dura()", "call numeros_tapa_blanda()", "call numeros_libros()",
+				"call numeroSpain()","call numeroUSA()", "call total()", "call numeroPanini()", "call numeroMarvel()", "call numeroDC()",
+				"call numeroDarkHorse()", "call numeroImage()", "call numeroMangas()", "call comicsLeidos()", "call comicsVendidos()",
+				"call comicsPosesion()", "call comicsFirmados()"};
 
 		try {
 
@@ -257,6 +257,9 @@ public class DBLibreriaManager extends Comic {
 			ResultSet rs12 = ejecucionSQL(procedimientos[11]); // Executa el procedimiento almacenado
 			ResultSet rs13 = ejecucionSQL(procedimientos[12]); // Executa el procedimiento almacenado
 			ResultSet rs14 = ejecucionSQL(procedimientos[13]); // Executa el procedimiento almacenado
+			ResultSet rs15 = ejecucionSQL(procedimientos[14]); // Executa el procedimiento almacenado
+			ResultSet rs16 = ejecucionSQL(procedimientos[15]); // Executa el procedimiento almacenado
+			ResultSet rs17 = ejecucionSQL(procedimientos[16]); // Executa el procedimiento almacenado
 
 			// Si no hay dato que comprobar, devolvera un 0
 			if (rs1.next()) {
@@ -265,67 +268,83 @@ public class DBLibreriaManager extends Comic {
 				numGrapas = 0;
 			}
 			if (rs2.next()) {
-				numTomos = rs2.getInt(1);
+				numDuro = rs2.getInt(1);
 			} else {
-				numTomos = 0;
+				numDuro = 0;
 			}
 			if (rs3.next()) {
-				numEsp = rs3.getInt(1);
+				numBlando = rs3.getInt(1);
+			} else {
+				numBlando = 0;
+			}
+			if (rs4.next()) {
+				numLibros = rs4.getInt(1);
+			} else {
+				numLibros = 0;
+			}
+			if (rs5.next()) {
+				numEsp = rs5.getInt(1);
 			} else {
 				numEsp = 0;
 			}
-			if (rs4.next()) {
-				numUsa = rs4.getInt(1);
+			if (rs6.next()) {
+				numUsa = rs6.getInt(1);
 			} else {
 				numUsa = 0;
 			}
-			if (rs5.next()) {
-				total = rs5.getInt(1);
+			if (rs7.next()) {
+				total = rs7.getInt(1);
 			} else {
 				total = 0;
 			}
-			if (rs6.next()) {
-				numMarvel = rs6.getInt(1);
-			} else {
-				numMarvel = 0;
-			}
-			if (rs7.next()) {
-				numPanini = rs7.getInt(1);
+			if (rs8.next()) {
+				numPanini = rs8.getInt(1);
 			} else {
 				numPanini = 0;
 			}
-			if (rs8.next()) {
-				numDC = rs8.getInt(1);
+			if (rs9.next()) {
+				numMarvel = rs9.getInt(1);
+			} else {
+				numMarvel = 0;
+			}
+
+			if (rs10.next()) {
+				numDC = rs10.getInt(1);
 			} else {
 				numDC = 0;
 			}
-			if (rs9.next()) {
-				numDarkHorse = rs9.getInt(1);
+			if (rs11.next()) {
+				numDarkHorse = rs11.getInt(1);
 			} else {
 				numDarkHorse = 0;
 			}
-			if (rs10.next()) {
-				numMangas = rs10.getInt(1);
+			if (rs12.next()) {
+				numImage = rs12.getInt(1);
+			} else {
+				numImage = 0;
+			}
+			if (rs13.next()) {
+				numMangas = rs13.getInt(1);
 			} else {
 				numMangas = 0;
 			}
-			if (rs11.next()) {
-				leidos = rs11.getInt(1);
+			if (rs14.next()) {
+				leidos = rs14.getInt(1);
 			} else {
 				leidos = 0;
 			}
-			if (rs12.next()) {
-				vendidos = rs12.getInt(1);
+			if (rs15.next()) {
+				vendidos = rs15.getInt(1);
 			} else {
 				vendidos = 0;
 			}
-			if (rs13.next()) {
-				posesion = rs13.getInt(1);
+			if (rs16.next()) {
+				posesion = rs16.getInt(1);
 			} else {
 				posesion = 0;
 			}
-			if (rs14.next()) {
-				firmados = rs14.getInt(1);
+			if (rs17.next()) {
+				firmados = rs17.getInt(1);
 			} else {
 				firmados = 0;
 			}
@@ -344,11 +363,16 @@ public class DBLibreriaManager extends Comic {
 			rs12.close();
 			rs13.close();
 			rs14.close();
+			rs15.close();
+			rs16.close();
+			rs17.close();
 
-			return "Numero de grapas: " + numGrapas + "\nNumero de tomos: " + numTomos
+			return "Numero de grapas: " + numGrapas + "\nNumero de tomos de tapa dura: " + numDuro
+					+ "\nNumeros de tomos de tapa blanda: " + numBlando + "\nNumeros de libros: " + numLibros
 					+ "\nNumeros de comics en Castellano: " + numEsp + "\nNumero de comics en USA: " + numUsa
 					+ "\nNumero de comics Marvel: " + numMarvel + "\nNumero de comics DC: " + numDC
 					+ "\nNumero de comics Dark horse: " + numDarkHorse + "\nNumero de comics de Panini: " + numPanini
+					+ "\nNumero de comics de Image Comics: " + numImage
 					+ "\nNumero de mangas: " + numMangas + "\nComics leidos: " + leidos + "\nComics vendidos: "
 					+ vendidos + "\nComics en posesion: " + posesion + "\nComics firmados: " + firmados + "\nTotal: "
 					+ total;
@@ -387,27 +411,34 @@ public class DBLibreriaManager extends Comic {
 	 * @return
 	 */
 	private List<String> guardarDatosAutoCompletado(String sentenciaSQL, String columna) {
-		List<String> listaAutoCompletado = new ArrayList<>();
-		listaAutoCompletado.clear();
-		ResultSet rs;
-		rs = obtenLibreria(sentenciaSQL);
-		try {
-			if (verLibreria("SELECT * FROM comicsbbdd").size() != 0) {
-				do {
-					String datosAutocompletado;
-					datosAutocompletado = rs.getString(columna);
-					listaAutoCompletado.add(datosAutocompletado);
-				} while (rs.next());
-				listaAutoCompletado = Utilidades.listaArregladaAutoComplete(listaAutoCompletado);
-				return listaAutoCompletado;
-			}
-
-		} catch (SQLException e) {
-			nav.alertaException(e.toString());
-		}
-		return listaAutoCompletado;
-
+	    List<String> listaAutoCompletado = new ArrayList<>();
+	    listaAutoCompletado.clear();
+	    ResultSet rs = obtenLibreria(sentenciaSQL);
+	    try {
+	        if (verLibreria("SELECT * FROM comicsbbdd").size() != 0) {
+	            do {
+	                String datosAutocompletado = rs.getString(columna);
+	                if (columna.equals("nomComic")) {
+	                    listaAutoCompletado.add(datosAutocompletado.trim());
+	                } else {
+	                    String[] nombres = datosAutocompletado.split("-"); // Dividir nombres separados por "-"
+	                    for (String nombre : nombres) {
+	                        nombre = nombre.trim(); // Eliminar espacios al inicio y final
+	                        if (!nombre.isEmpty()) {
+	                            listaAutoCompletado.add(nombre); // Agregar a la lista solo si no está vacío
+	                        }
+	                    }
+	                }
+	            } while (rs.next());
+	            listaAutoCompletado = Utilidades.listaArregladaAutoComplete(listaAutoCompletado);
+	            return listaAutoCompletado;
+	        }
+	    } catch (SQLException e) {
+	        nav.alertaException(e.toString());
+	    }
+	    return listaAutoCompletado;
 	}
+
 
 	// **************************************//
 	// ****FUNCIONES DE LA LIBRERIA**********//
@@ -1123,6 +1154,15 @@ public class DBLibreriaManager extends Comic {
 			nav.alertaException(ex.toString());
 		}
 	}
+	
+    public InputStream obtenerPortada(int idComic) throws SQLException {
+        String query = "SELECT portada FROM comicsbbdd WHERE ID = ?";
+        PreparedStatement ps = conn.prepareStatement(query);
+        ps.setInt(1, idComic); //Convertimos el String a int
+        ResultSet resultado = ps.executeQuery();
+        resultado.next();
+        return resultado.getBinaryStream("portada");
+    }
 
 	/**
 	 * Devuelve un objeto Comic con los nuevos datos de un comic. En caso de tener
@@ -1130,14 +1170,16 @@ public class DBLibreriaManager extends Comic {
 	 *
 	 * @param ps
 	 * @return
+	 * @throws SQLException 
 	 */
-	public void comicModificar(PreparedStatement ps, String datos[]) {
+	public void comicModificar(PreparedStatement ps, String datos[]) throws SQLException {
 		utilidad = new Utilidades();
 		listaComics.clear();
 		String nombre = "", numero = "", variante = "", firma = "", editorial = "", formato = "", procedencia = "",
 				fecha = "", guionista = "", dibujante = "", estado = "";
 
 		InputStream portada = utilidad.direccionImagen(datos[11]);
+		InputStream portadaVieja = obtenerPortada(Integer.parseInt(datos[0]));
 		Comic comic = comicDatos(datos[0]);
 		try {
 
@@ -1215,7 +1257,7 @@ public class DBLibreriaManager extends Comic {
 			if (datos[11].length() != 0) {
 				ps.setBinaryStream(11, portada);
 			} else {
-				ps.setBinaryStream(11, portada);
+				ps.setBinaryStream(11, portadaVieja);
 			}
 			if (datos[12].length() != 0) {
 				ps.setString(12, datos[12]);
@@ -1225,8 +1267,12 @@ public class DBLibreriaManager extends Comic {
 			ps.setString(13, datos[0]);
 
 			if (ps.executeUpdate() == 1) { // Si se ha modificado correctamente, saltara el siguiente mensaje
-				comic = new Comic("", nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
-						guionista, dibujante, estado, "", null);
+				InputStream portadaActual = obtenerPortada(Integer.parseInt(datos[0]));
+					comic = new Comic("", nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+							guionista, dibujante, estado, "", portadaActual);
+				//if (ps.executeUpdate() == 1) { // Si se ha modificado correctamente, saltara el siguiente mensaje
+				//comic = new Comic("", nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+				//guionista, dibujante, estado, "", null);
 
 				listaComics.add(comic);
 

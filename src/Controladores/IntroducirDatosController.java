@@ -107,11 +107,7 @@ public class IntroducirDatosController implements Initializable {
 	private TextField nombreFirma;
 
 	@FXML
-	private TextField nombreFormato;
-
-	@FXML
 	private TextField nombreGuionista;
-
 
 	@FXML
 	private TextField nombreVariante;
@@ -136,10 +132,6 @@ public class IntroducirDatosController implements Initializable {
 
 	@FXML
 	private TextField editorialAni;
-
-	@FXML
-	private TextField formatoAni;
-
 
 	@FXML
 	private TextField fechaAni;
@@ -194,6 +186,13 @@ public class IntroducirDatosController implements Initializable {
 	
 	@FXML
 	private TableColumn<Comic, String> puntuacion;
+	
+
+	@FXML
+	private ComboBox<String> nombreFormato;
+	
+	@FXML
+	private ComboBox<String> formatoAni;
 
 	@FXML
 	private ComboBox<String> nombreProcedencia;
@@ -231,16 +230,32 @@ public class IntroducirDatosController implements Initializable {
 				"Japon","Italia","Francia");
 		nombreProcedencia.setItems(procedenciaEstadoNuevo);
 		nombreProcedencia.getSelectionModel().selectFirst();
+		
+		ObservableList<String> formatoActual = FXCollections.observableArrayList("Grapa", "Tapa dura","Tapa blanda",
+				"Manga","Libro");
+		nombreFormato.setItems(formatoActual);
+		nombreFormato.getSelectionModel().selectFirst();
+		
+		ObservableList<String> formatoNuevo = FXCollections.observableArrayList("Grapa", "Tapa dura","Tapa blanda",
+				"Manga","Libro");
+		formatoAni.setItems(formatoNuevo);
+		formatoAni.getSelectionModel().selectFirst();
 
 		libreria = new DBLibreriaManager();
 		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
 		TextFields.bindAutoCompletion(nombreFirma, DBLibreriaManager.listaFirma);
-		TextFields.bindAutoCompletion(nombreFormato, DBLibreriaManager.listaFormato);
 		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
 		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
 		TextFields.bindAutoCompletion(fechaPublicacion, DBLibreriaManager.listaFecha);
+		
+		TextFields.bindAutoCompletion(nombreAni, DBLibreriaManager.listaNombre);
+		TextFields.bindAutoCompletion(varianteAni, DBLibreriaManager.listaVariante);
+		TextFields.bindAutoCompletion(firmaAni, DBLibreriaManager.listaFirma);
+		TextFields.bindAutoCompletion(editorialAni, DBLibreriaManager.listaEditorial);
+		TextFields.bindAutoCompletion(guionistaAni, DBLibreriaManager.listaGuionista);
+		TextFields.bindAutoCompletion(dibujanteAni, DBLibreriaManager.listaDibujante);
 	}
 
 	/**
@@ -282,7 +297,6 @@ public class IntroducirDatosController implements Initializable {
 		nombreVariante.setText("");
 		nombreFirma.setText("");
 		nombreEditorial.setText("");
-		nombreFormato.setText("");
 		fechaPublicacion.setText("");
 		nombreDibujante.setText("");
 		nombreGuionista.setText("");
@@ -295,7 +309,6 @@ public class IntroducirDatosController implements Initializable {
 		nombreAni.setText("");
 		firmaAni.setText("");
 		editorialAni.setText("");
-		formatoAni.setText("");
 		fechaAni.setText("");
 		guionistaAni.setText("");
 		dibujanteAni.setText("");
@@ -384,8 +397,34 @@ public class IntroducirDatosController implements Initializable {
 	public String procedenciaActual() {
 
 		String procedenciaEstado = nombreProcedencia.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
-		// "puntuacion"
+		// "procedencia"
 		return procedenciaEstado;
+	}
+	
+	/**
+	 * Funcion que permite modificar el estado de un comic.
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public String formatoActual() {
+
+		String formatoEstado = nombreFormato.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+		// "formato"
+		return formatoEstado;
+	}
+	
+	/**
+	 * Funcion que permite modificar el estado de un comic.
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public String formatoNuevo() {
+		
+		String formatoEstadoNuevo = formatoAni.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+		// "formato"
+		return formatoEstadoNuevo;
 	}
 	
 	/**
@@ -525,7 +564,7 @@ public class IntroducirDatosController implements Initializable {
 
 		campos[5] = nombreEditorial.getText();
 
-		campos[6] = nombreFormato.getText();
+		campos[6] = formatoActual();
 
 		campos[7] = procedenciaActual();
 
@@ -560,7 +599,7 @@ public class IntroducirDatosController implements Initializable {
 
 		campos[4] = editorialAni.getText();
 
-		campos[5] = formatoAni.getText();
+		campos[5] = formatoNuevo();
 
 		campos[6] = procedenciaNueva();
 

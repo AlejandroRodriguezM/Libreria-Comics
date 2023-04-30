@@ -6,7 +6,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="335.0" prefWidth="478.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.RecomendacionesController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="335.0" prefWidth="478.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.RecomendacionesController">
    <children>
       <ImageView fitHeight="350.0" fitWidth="478.0" layoutY="-1.0" pickOnBounds="true" preserveRatio="true">
          <image>
@@ -16,7 +16,7 @@
       <Button fx:id="botonVolver" layoutX="74.0" layoutY="282.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="47.0" prefWidth="58.0" text="Volver" />
       <Button fx:id="botonElegir" layoutX="373.0" layoutY="282.0" mnemonicParsing="false" onAction="#eligePorMi" prefHeight="47.0" prefWidth="97.0" text="Elige por mi!" />
       <Button fx:id="botonSalir" layoutX="5.0" layoutY="282.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="47.0" prefWidth="58.0" text="Salir" />
-      <TextArea fx:id="printComicRecomendado" editable="false" layoutX="14.0" layoutY="8.0" opacity="0.0" prefHeight="259.0" prefWidth="205.0" wrapText="true" />
-      <ImageView fx:id="imagencomic" fitHeight="259.0" fitWidth="212.0" layoutX="271.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" />
+      <TextArea fx:id="printComicRecomendado" editable="false" layoutX="262.0" layoutY="8.0" opacity="0.0" prefHeight="259.0" prefWidth="205.0" wrapText="true" />
+      <ImageView fx:id="imagencomic" fitHeight="271.0" fitWidth="203.0" layoutX="14.0" layoutY="7.0" pickOnBounds="true" preserveRatio="true" />
    </children>
 </Pane>

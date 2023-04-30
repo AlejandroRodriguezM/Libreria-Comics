@@ -145,9 +145,6 @@ public class MenuPrincipalController implements Initializable {
 	private TextField nombreFirma;
 
 	@FXML
-	private TextField nombreFormato;
-
-	@FXML
 	private TextField nombreGuionista;
 
 	@FXML
@@ -209,6 +206,9 @@ public class MenuPrincipalController implements Initializable {
 	
 	@FXML
 	private ComboBox<String> nombreProcedencia;
+	
+	@FXML
+	private ComboBox<String> nombreFormato;
 
 	private static Ventanas nav = new Ventanas();
 
@@ -228,10 +228,14 @@ public class MenuPrincipalController implements Initializable {
 		nombreProcedencia.setItems(procedenciaEstadoActual);
 		nombreProcedencia.getSelectionModel().selectFirst();
 		
+		ObservableList<String> formatoActual = FXCollections.observableArrayList("Grapa", "Tapa dura","Tapa blanda",
+				"Manga","Libro");
+		nombreFormato.setItems(formatoActual);
+		nombreFormato.getSelectionModel().selectFirst();
+		
 		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
 		TextFields.bindAutoCompletion(nombreFirma, DBLibreriaManager.listaFirma);
-		TextFields.bindAutoCompletion(nombreFormato, DBLibreriaManager.listaFormato);
 		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
 		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
@@ -249,6 +253,19 @@ public class MenuPrincipalController implements Initializable {
 		String procedenciaEstadoNuevo = nombreProcedencia.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
 		// "puntuacion"
 		return procedenciaEstadoNuevo;
+	}
+	
+	/**
+	 * Funcion que permite modificar el estado de un comic.
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public String formatoActual() {
+
+		String formatoEstado = nombreFormato.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+		// "formato"
+		return formatoEstado;
 	}
 
 	/////////////////////////////////
@@ -527,7 +544,6 @@ public class MenuPrincipalController implements Initializable {
 		nombreVariante.setText("");
 		nombreFirma.setText("");
 		nombreEditorial.setText("");
-		nombreFormato.setText("");
 		fechaPublicacion.setText("");
 		nombreDibujante.setText("");
 		nombreGuionista.setText("");
@@ -781,7 +797,7 @@ public class MenuPrincipalController implements Initializable {
 
 		campos[5] = nombreEditorial.getText();
 
-		campos[6] = nombreFormato.getText();
+		campos[6] = formatoActual();
 
 		campos[7] = procedenciaActual();
 

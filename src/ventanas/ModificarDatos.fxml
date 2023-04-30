@@ -24,18 +24,16 @@
       <TextField fx:id="nombreVariante" layoutX="136.0" layoutY="96.0" prefHeight="25.0" prefWidth="113.0" />
       <TextField fx:id="nombreFirma" layoutX="136.0" layoutY="126.0" prefHeight="25.0" prefWidth="113.0" />
       <TextField fx:id="nombreEditorial" layoutX="136.0" layoutY="156.0" prefHeight="25.0" prefWidth="113.0" />
-      <TextField fx:id="nombreFormato" layoutX="136.0" layoutY="187.0" prefHeight="25.0" prefWidth="113.0" />
       <TextField fx:id="anioPublicacion" layoutX="136.0" layoutY="248.0" prefHeight="25.0" prefWidth="113.0" />
       <TextField fx:id="nombreGuionista" layoutX="136.0" layoutY="278.0" prefHeight="25.0" prefWidth="113.0" />
       <TextField fx:id="nombreDibujante" layoutX="136.0" layoutY="308.0" prefHeight="25.0" prefWidth="113.0" />
-      <TextField fx:id="idComicMod" layoutX="380.0" layoutY="6.0" prefHeight="25.0" prefWidth="113.0" />
-      <TextField fx:id="nombreComicMod" layoutX="380.0" layoutY="37.0" prefHeight="25.0" prefWidth="113.0" />
-      <TextField fx:id="numeroComicMod" layoutX="380.0" layoutY="68.0" prefHeight="25.0" prefWidth="113.0" />
-      <TextField fx:id="nombreVarianteMod" layoutX="380.0" layoutY="98.0" prefHeight="25.0" prefWidth="113.0" />
-      <TextField fx:id="nombreFirmaMod" layoutX="380.0" layoutY="127.0" prefHeight="25.0" prefWidth="113.0" />
-      <TextField fx:id="nombreEditorialMod" layoutX="380.0" layoutY="157.0" prefHeight="25.0" prefWidth="113.0" />
-      <TextField fx:id="nombreFormatoMod" layoutX="380.0" layoutY="186.0" prefHeight="25.0" prefWidth="113.0" />
-      <TextField fx:id="anioPublicacionMod" layoutX="380.0" layoutY="246.0" prefHeight="25.0" prefWidth="113.0" />
+      <TextField fx:id="idComicMod" layoutX="380.0" layoutY="7.0" prefHeight="25.0" prefWidth="113.0" />
+      <TextField fx:id="nombreComicMod" layoutX="380.0" layoutY="38.0" prefHeight="25.0" prefWidth="113.0" />
+      <TextField fx:id="numeroComicMod" layoutX="380.0" layoutY="69.0" prefHeight="25.0" prefWidth="113.0" />
+      <TextField fx:id="nombreVarianteMod" layoutX="380.0" layoutY="99.0" prefHeight="25.0" prefWidth="113.0" />
+      <TextField fx:id="nombreFirmaMod" layoutX="380.0" layoutY="128.0" prefHeight="25.0" prefWidth="113.0" />
+      <TextField fx:id="nombreEditorialMod" layoutX="380.0" layoutY="158.0" prefHeight="25.0" prefWidth="113.0" />
+      <TextField fx:id="anioPublicacionMod" layoutX="380.0" layoutY="247.0" prefHeight="25.0" prefWidth="113.0" />
       <TextField fx:id="nombreGuionistaMod" layoutX="380.0" layoutY="275.0" prefHeight="25.0" prefWidth="113.0" />
       <TextField fx:id="nombreDibujanteMod" layoutX="380.0" layoutY="304.0" prefHeight="25.0" prefWidth="113.0" />
       <Button fx:id="botonModificar" layoutX="503.0" layoutY="79.0" mnemonicParsing="false" onAction="#modificarDatos" prefHeight="42.0" prefWidth="75.0" text="Modificar comic" wrapText="true" />
@@ -127,7 +125,10 @@
       <Button fx:id="botonNuevaPortada" layoutX="506.0" layoutY="356.0" mnemonicParsing="false" onAction="#nuevaPortada" prefHeight="33.0" prefWidth="100.0" text="Buscar portada" wrapText="true" />
       <TextField fx:id="direccionImagen" editable="false" layoutX="380.0" layoutY="364.0" prefHeight="25.0" prefWidth="113.0" />
       <ImageView fx:id="imagencomic" fitHeight="375.0" fitWidth="207.0" layoutX="694.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true" />
-      <ComboBox fx:id="nombreProcedenciaMod" layoutX="381.0" layoutY="215.0" prefHeight="25.0" prefWidth="113.0" />
+      <ComboBox fx:id="nombreProcedenciaMod" layoutX="381.0" layoutY="217.0" prefHeight="25.0" prefWidth="113.0" />
       <ComboBox fx:id="nombreProcedencia" layoutX="136.0" layoutY="217.0" prefHeight="25.0" prefWidth="113.0" />
+      <ComboBox fx:id="nombreFormatoMod" layoutX="381.0" layoutY="188.0" prefHeight="25.0" prefWidth="113.0" />
+      <ComboBox fx:id="nombreFormato" layoutX="136.0" layoutY="187.0" prefHeight="25.0" prefWidth="113.0" />
+      <Label fx:id="TextoInfo" alignment="TOP_LEFT" cache="true" layoutX="510.0" layoutY="290.0" prefHeight="59.0" prefWidth="369.0" style="-fx-background-color: white;" text="Se recomienda, que si tienes varios artistas, guionistas o variantes, los separes con comas &quot; , &quot; o con guion &quot; - &quot;. En caso contrario, podrias tener errores en la busquedade los mismos" wrapText="true" />
    </children>
 </Pane>

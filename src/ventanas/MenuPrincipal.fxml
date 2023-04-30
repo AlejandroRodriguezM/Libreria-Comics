@@ -70,7 +70,6 @@
       <TextField fx:id="nombreVariante" layoutX="395.0" layoutY="31.0" prefHeight="25.0" prefWidth="126.0" />
       <TextField fx:id="nombreFirma" layoutX="126.0" layoutY="61.0" prefHeight="25.0" prefWidth="126.0" />
       <TextField fx:id="nombreEditorial" layoutX="395.0" layoutY="61.0" prefHeight="25.0" prefWidth="126.0" />
-      <TextField fx:id="nombreFormato" layoutX="125.0" layoutY="91.0" prefHeight="25.0" prefWidth="126.0" />
       <TextField fx:id="fechaPublicacion" layoutX="126.0" layoutY="121.0" prefHeight="25.0" prefWidth="126.0" />
       <TextField fx:id="nombreGuionista" layoutX="395.0" layoutY="120.0" prefHeight="25.0" prefWidth="126.0" />
       <TextField fx:id="nombreDibujante" layoutX="126.0" layoutY="151.0" prefHeight="25.0" prefWidth="126.0" />
@@ -111,7 +110,7 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <TextArea fx:id="prontInfo" layoutX="955.0" layoutY="4.0" opacity="0.0" prefHeight="199.0" prefWidth="232.0" wrapText="true" />
+      <TextArea fx:id="prontInfo" layoutX="955.0" layoutY="4.0" opacity="0.0" prefHeight="236.0" prefWidth="232.0" wrapText="true" />
       <TextArea fx:id="prontFrases" editable="false" layoutX="904.0" layoutY="208.0" opacity="0.0" prefHeight="105.0" prefWidth="285.0" wrapText="true">
          <font>
             <Font name="Comic Sans MS" size="15.0" />
@@ -130,5 +129,6 @@
       <Button fx:id="botonEnVenta" layoutX="358.0" layoutY="240.0" mnemonicParsing="false" onAction="#comicsEnVenta" prefHeight="43.0" prefWidth="75.0" text="Comics en venta" wrapText="true" />
       <ImageView fx:id="imagencomic" fitHeight="312.0" fitWidth="248.0" layoutX="642.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true" />
       <ComboBox fx:id="nombreProcedencia" layoutX="395.0" layoutY="91.0" prefHeight="25.0" prefWidth="126.0" />
+      <ComboBox fx:id="nombreFormato" layoutX="126.0" layoutY="92.0" prefHeight="25.0" prefWidth="126.0" />
    </children>
 </Pane>

@@ -96,9 +96,6 @@ public class PuntuarDatosController implements Initializable {
 	private TextField nombreFirma;
 
 	@FXML
-	private TextField nombreFormato;
-
-	@FXML
 	private TextField nombreGuionista;
 
 	@FXML
@@ -157,6 +154,9 @@ public class PuntuarDatosController implements Initializable {
 	
 	@FXML
 	private ComboBox<String> puntuacionMenu;
+	
+	@FXML
+	private ComboBox<String> nombreFormato;
 
 	@FXML
 	public TableView<Comic> tablaBBDD;
@@ -183,12 +183,16 @@ public class PuntuarDatosController implements Initializable {
 				"Japon","Italia","Francia");
 		procedenciaParametro.setItems(procedenciaEstado);
 		procedenciaParametro.getSelectionModel().selectFirst();
+		
+		ObservableList<String> formatoActual = FXCollections.observableArrayList("Grapa", "Tapa dura","Tapa blanda",
+				"Manga","Libro");
+		nombreFormato.setItems(formatoActual);
+		nombreFormato.getSelectionModel().selectFirst();
 
 		libreria = new DBLibreriaManager();
 		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
 		TextFields.bindAutoCompletion(nombreFirma, DBLibreriaManager.listaFirma);
-		TextFields.bindAutoCompletion(nombreFormato, DBLibreriaManager.listaFormato);
 		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
 		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
@@ -206,6 +210,19 @@ public class PuntuarDatosController implements Initializable {
 		String procedenciaEstado = procedenciaParametro.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
 		// "puntuacion"
 		return procedenciaEstado;
+	}
+	
+	/**
+	 * Funcion que permite modificar el estado de un comic.
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public String formatoActual() {
+
+		String formatoEstado = nombreFormato.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+		// "formato"
+		return formatoEstado;
 	}
 
 	/**
@@ -304,7 +321,6 @@ public class PuntuarDatosController implements Initializable {
 		nombreVariante.setText("");
 		nombreFirma.setText("");
 		nombreEditorial.setText("");
-		nombreFormato.setText("");
 		fechaPublicacion.setText("");
 		nombreDibujante.setText("");
 		nombreGuionista.setText("");
@@ -407,7 +423,7 @@ public class PuntuarDatosController implements Initializable {
 
 		campos[5] = nombreEditorial.getText();
 
-		campos[6] = nombreFormato.getText();
+		campos[6] = formatoActual();
 
 		campos[7] = procedenciaActual();
 

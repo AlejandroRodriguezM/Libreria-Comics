@@ -81,9 +81,6 @@ public class EliminarDatosController implements Initializable {
 	private TextField nombreFirma;
 
 	@FXML
-	private TextField nombreFormato;
-
-	@FXML
 	private TextField nombreGuionista;
 
 	@FXML
@@ -118,15 +115,15 @@ public class EliminarDatosController implements Initializable {
 
 	@FXML
 	private TableColumn<Comic, String> editorial;
-
+	
+	@FXML
+	private TableColumn<Comic, String> formato;
+	
 	@FXML
 	private TableColumn<Comic, String> fecha;
 
 	@FXML
 	private TableColumn<Comic, String> firma;
-
-	@FXML
-	private TableColumn<Comic, String> formato;
 
 	@FXML
 	private TableColumn<Comic, String> guionista;
@@ -142,6 +139,10 @@ public class EliminarDatosController implements Initializable {
 	
 	@FXML
 	private ComboBox<String> nombreProcedencia;
+	
+	@FXML
+	private ComboBox<String> nombreFormato;
+	
 
 	private static Ventanas nav = new Ventanas();
 	private static DBLibreriaManager libreria = null;
@@ -156,10 +157,14 @@ public class EliminarDatosController implements Initializable {
 		nombreProcedencia.setItems(procedenciaEstadoActual);
 		nombreProcedencia.getSelectionModel().selectFirst();
 		
+		ObservableList<String> formatoActual = FXCollections.observableArrayList("Grapa", "Tapa dura","Tapa blanda",
+				"Manga","Libro");
+		nombreFormato.setItems(formatoActual);
+		nombreFormato.getSelectionModel().selectFirst();
+		
 		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
 		TextFields.bindAutoCompletion(nombreFirma, DBLibreriaManager.listaFirma);
-		TextFields.bindAutoCompletion(nombreFormato, DBLibreriaManager.listaFormato);
 		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
 		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
@@ -178,6 +183,19 @@ public class EliminarDatosController implements Initializable {
 		// "puntuacion"
 		return procedenciaEstadoNuevo;
 	}
+	
+	/**
+	 * Funcion que permite modificar el estado de un comic.
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public String formatoActual() {
+
+		String formatoEstado = nombreFormato.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+		// "formato"
+		return formatoEstado;
+	}
 
 	/**
 	 * Funcion que permite limpiar los datos en pantalla
@@ -194,7 +212,6 @@ public class EliminarDatosController implements Initializable {
 		nombreVariante.setText("");
 		nombreFirma.setText("");
 		nombreEditorial.setText("");
-		nombreFormato.setText("");
 		anioPublicacion.setText("");
 		nombreDibujante.setText("");
 		nombreGuionista.setText("");
@@ -406,7 +423,7 @@ public class EliminarDatosController implements Initializable {
 
 		campos[5] = nombreEditorial.getText();
 
-		campos[6] = nombreFormato.getText();
+		campos[6] = formatoActual();
 
 		campos[7] = procedenciaActual();
 

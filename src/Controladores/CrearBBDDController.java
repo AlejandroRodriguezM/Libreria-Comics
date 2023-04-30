@@ -203,21 +203,23 @@ public class CrearBBDDController {
 	 * @return
 	 */
 	public String selectorHost() {
-
-		if (siOnline.isSelected()) {
-			etiquetaHost.setText("Nombre del host: ");
-			nombreHost.setDisable(false);
-			nombreHost.setOpacity(1);
-			return nombreHost.getText();
-		}
-		if (noOffline.isSelected()) {
-			etiquetaHost.setText("Offline");
-			nombreHost.setDisable(true);
-			nombreHost.setOpacity(0);
-			return "localhost";
-		}
-		return "localhost";
+	    if (siOnline.isSelected()) {
+	        etiquetaHost.setText("Nombre del host: ");
+	        nombreHost.setOpacity(1);
+	        nombreHost.setVisible(true);
+	        return nombreHost.getText();
+	    } else if (noOffline.isSelected()) {
+	        etiquetaHost.setText("Offline");
+	        nombreHost.setOpacity(0);
+	        nombreHost.setVisible(true);
+	        return "localhost";
+	    } else {
+	        // Opción por defecto en caso de que ninguna opción esté seleccionada
+	        return "localhost";
+	    }
 	}
+
+ 
 
 	/**
 	 * Funcion que devuelve un Resulset, permite
@@ -298,10 +300,19 @@ public class CrearBBDDController {
 
 			// Creacion de diferentes procesos almacenados
 			statement.execute("CREATE PROCEDURE numeroGrapas()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE Formato = 'Grapa';\n" + "END");
+					+ "WHERE formato = 'Grapa';\n" + "END");
+			
+			statement.execute("CREATE PROCEDURE numeros_tapa_dura()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
+					+ "WHERE formato = 'Tapa dura';\n" + "END");
+			
+			statement.execute("CREATE PROCEDURE numeros_tapa_blanda()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
+					+ "WHERE formato = 'Tapa blanda';\n" + "END");
+			
+			statement.execute("CREATE PROCEDURE numeros_libros()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
+					+ "WHERE formato = 'Libro';\n" + "END");
 
 			statement.execute("CREATE PROCEDURE numeroMangas()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE Formato = 'Manga';\n" + "END");
+					+ "WHERE formato = 'Manga';\n" + "END");
 
 			statement.execute("CREATE PROCEDURE numeroDC()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
 					+ "WHERE nomEditorial = 'DC';\n" + "END");
@@ -314,9 +325,9 @@ public class CrearBBDDController {
 
 			statement.execute("CREATE PROCEDURE numeroPanini()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
 					+ "WHERE nomEditorial = 'Panini';\n" + "END");
-
-			statement.execute("CREATE PROCEDURE numeroTomos()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE formato = 'Tomo';\n" + "END");
+			
+			statement.execute("CREATE PROCEDURE numeroImage()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
+					+ "WHERE nomEditorial = 'Image Comics';\n" + "END");
 
 			statement.execute("CREATE PROCEDURE numeroUSA()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
 					+ "WHERE procedencia = 'USA';\n" + "END");

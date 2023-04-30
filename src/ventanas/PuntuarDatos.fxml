@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="749.0" prefWidth="1196.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.PuntuarDatosController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="749.0" prefWidth="1196.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.PuntuarDatosController">
    <children>
       <ImageView fitHeight="639.0" fitWidth="1205.0" layoutX="-7.0" layoutY="-5.0" pickOnBounds="true" preserveRatio="true">
          <image>
@@ -20,16 +20,15 @@
          </image>
       </ImageView>
       <TextField fx:id="numeroID" layoutX="133.0" layoutY="3.0" prefHeight="25.0" prefWidth="138.0" />
-      <TextField fx:id="nombreComic" layoutX="134.0" layoutY="33.0" prefHeight="25.0" prefWidth="138.0" />
+      <TextField fx:id="nombreComic" layoutX="133.0" layoutY="33.0" prefHeight="25.0" prefWidth="138.0" />
       <TextField fx:id="numeroComic" layoutX="133.0" layoutY="64.0" prefHeight="25.0" prefWidth="138.0" />
       <TextField fx:id="nombreVariante" layoutX="133.0" layoutY="95.0" prefHeight="25.0" prefWidth="138.0" />
       <TextField fx:id="nombreFirma" layoutX="133.0" layoutY="126.0" prefHeight="25.0" prefWidth="138.0" />
-      <TextField fx:id="nombreEditorial" layoutX="133.0" layoutY="157.0" prefHeight="25.0" prefWidth="138.0" />
-      <TextField fx:id="nombreFormato" layoutX="133.0" layoutY="188.0" prefHeight="25.0" prefWidth="138.0" />
-      <TextField fx:id="fechaPublicacion" layoutX="133.0" layoutY="248.0" prefHeight="25.0" prefWidth="138.0" />
-      <TextField fx:id="nombreGuionista" layoutX="133.0" layoutY="278.0" prefHeight="25.0" prefWidth="138.0" />
-      <TextField fx:id="nombreDibujante" layoutX="133.0" layoutY="309.0" prefHeight="25.0" prefWidth="138.0" />
-      <TextField fx:id="busquedaGeneral" layoutX="134.0" layoutY="340.0" prefHeight="25.0" prefWidth="138.0" />
+      <TextField fx:id="nombreEditorial" layoutX="134.0" layoutY="157.0" prefHeight="25.0" prefWidth="138.0" />
+      <TextField fx:id="fechaPublicacion" layoutX="134.0" layoutY="248.0" prefHeight="25.0" prefWidth="138.0" />
+      <TextField fx:id="nombreGuionista" layoutX="134.0" layoutY="278.0" prefHeight="25.0" prefWidth="138.0" />
+      <TextField fx:id="nombreDibujante" layoutX="134.0" layoutY="309.0" prefHeight="25.0" prefWidth="138.0" />
+      <TextField fx:id="busquedaGeneral" layoutX="135.0" layoutY="340.0" prefHeight="25.0" prefWidth="138.0" />
       <Button fx:id="botonbbdd" layoutX="415.0" layoutY="7.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="42.0" prefWidth="100.0" text="Ver toda la base de datos" wrapText="true" />
       <Button fx:id="botonMostrarParametro" layoutX="286.0" layoutY="6.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="42.0" prefWidth="113.0" text="Mostrar segun parametros" wrapText="true" />
       <Button fx:id="botonLeidos" layoutX="286.0" layoutY="55.0" mnemonicParsing="false" onAction="#verComicsLeidos" prefHeight="34.0" prefWidth="113.0" text="Ver Comics leidos" wrapText="true" />
@@ -80,7 +79,7 @@
             <Font size="14.0" />
          </font>
       </Label>
-      <TextArea fx:id="pantallaInformativa" editable="false" layoutX="979.0" layoutY="2.0" opacity="0.0" prefHeight="202.0" prefWidth="210.0" wrapText="true" />
+      <TextArea fx:id="pantallaInformativa" editable="false" layoutX="979.0" layoutY="2.0" opacity="0.0" prefHeight="300.0" prefWidth="210.0" wrapText="true" />
       <Label layoutX="10.0" layoutY="36.0" style="-fx-background-color: white;" text="Nombre" />
       <Label layoutX="9.0" layoutY="340.0" prefHeight="25.0" prefWidth="117.0" style="-fx-background-color: white;" text="Busqueda general" wrapText="true">
          <font>
@@ -112,5 +111,6 @@
       <Button fx:id="botonBorrarOpinion" layoutX="286.0" layoutY="211.0" mnemonicParsing="false" onAction="#borrarPuntuacion" prefHeight="42.0" prefWidth="117.0" text="Borrar puntuación" />
       <ComboBox fx:id="procedenciaParametro" layoutX="134.0" layoutY="219.0" prefHeight="25.0" prefWidth="138.0" />
       <ImageView fx:id="imagencomic" fitHeight="367.0" fitWidth="235.0" layoutX="725.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true" />
+      <ComboBox fx:id="nombreFormato" layoutX="134.0" layoutY="188.0" prefHeight="25.0" prefWidth="138.0" />
    </children>
 </Pane>

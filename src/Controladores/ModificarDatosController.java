@@ -117,12 +117,6 @@ public class ModificarDatosController implements Initializable {
 	private TextField nombreFirmaMod;
 
 	@FXML
-	private TextField nombreFormato;
-
-	@FXML
-	private TextField nombreFormatoMod;
-
-	@FXML
 	private TextField nombreGuionista;
 
 	@FXML
@@ -196,6 +190,12 @@ public class ModificarDatosController implements Initializable {
 
 	@FXML
 	private ComboBox<String> estadoComic;
+	
+	@FXML
+	private ComboBox<String> nombreFormato;
+
+	@FXML
+	private ComboBox<String> nombreFormatoMod;
 
 	@FXML
 	private ImageView imagencomic;
@@ -223,16 +223,34 @@ public class ModificarDatosController implements Initializable {
 				"Japon","Italia","Francia");
 		nombreProcedencia.setItems(procedenciaEstadoActual);
 		nombreProcedencia.getSelectionModel().selectFirst();
+	
+		
+		ObservableList<String> formatoActual = FXCollections.observableArrayList("Grapa", "Tapa dura","Tapa blanda",
+				"Manga","Libro");
+		nombreFormato.setItems(formatoActual);
+		nombreFormato.getSelectionModel().selectFirst();
+		
+		ObservableList<String> formatoNuevo = FXCollections.observableArrayList("Grapa", "Tapa dura","Tapa blanda",
+				"Manga","Libro");
+		nombreFormatoMod.setItems(formatoNuevo);
+		nombreFormatoMod.getSelectionModel().selectFirst();
 
 		libreria = new DBLibreriaManager();
 		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
 		TextFields.bindAutoCompletion(nombreFirma, DBLibreriaManager.listaFirma);
-		TextFields.bindAutoCompletion(nombreFormato, DBLibreriaManager.listaFormato);
 		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
 		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
 		TextFields.bindAutoCompletion(anioPublicacion, DBLibreriaManager.listaFecha);
+		
+		TextFields.bindAutoCompletion(nombreComicMod, DBLibreriaManager.listaNombre);
+		TextFields.bindAutoCompletion(nombreVarianteMod, DBLibreriaManager.listaVariante);
+		TextFields.bindAutoCompletion(nombreFirmaMod, DBLibreriaManager.listaFirma);
+		TextFields.bindAutoCompletion(nombreEditorialMod, DBLibreriaManager.listaEditorial);
+		TextFields.bindAutoCompletion(nombreGuionistaMod, DBLibreriaManager.listaGuionista);
+		TextFields.bindAutoCompletion(nombreDibujanteMod, DBLibreriaManager.listaDibujante);
+		TextFields.bindAutoCompletion(anioPublicacionMod, DBLibreriaManager.listaFecha);
 
 	}
 
@@ -265,9 +283,11 @@ public class ModificarDatosController implements Initializable {
 	 * Llamada a funcion que modifica los datos de 1 comic en la base de datos.
 	 *
 	 * @param event
+	 * @throws SQLException 
+	 * @throws NumberFormatException 
 	 */
 	@FXML
-	void modificarDatos(ActionEvent event) {
+	void modificarDatos(ActionEvent event) throws NumberFormatException, SQLException {
 
 		imagencomic.setImage(null);
 		libreria = new DBLibreriaManager();
@@ -324,6 +344,32 @@ public class ModificarDatosController implements Initializable {
 		// "puntuacion"
 		return procedenciaEstadoNuevo;
 	}
+	
+	/**
+	 * Funcion que permite modificar el estado de un comic.
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public String formatoActual() {
+
+		String formatoEstado = nombreFormato.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+		// "formato"
+		return formatoEstado;
+	}
+	
+	/**
+	 * Funcion que permite modificar el estado de un comic.
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public String formatoNuevo() {
+		
+		String formatoEstadoNuevo = nombreFormatoMod.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+		// "formato"
+		return formatoEstadoNuevo;
+	}
 
 	/**
 	 * Limpia todos los datos en pantalla.
@@ -350,10 +396,7 @@ public class ModificarDatosController implements Initializable {
 
 		nombreFirma.setText("");
 
-		nombreFormato.setText("");
-
 		nombreGuionista.setText("");
-
 
 		nombreVariante.setText("");
 
@@ -371,8 +414,6 @@ public class ModificarDatosController implements Initializable {
 		nombreFirmaMod.setText("");
 
 		nombreEditorialMod.setText("");
-
-		nombreFormatoMod.setText("");
 
 		anioPublicacionMod.setText("");
 
@@ -418,7 +459,7 @@ public class ModificarDatosController implements Initializable {
 
 		campos[5] = nombreEditorial.getText();
 
-		campos[6] = nombreFormato.getText();
+		campos[6] = formatoActual();
 
 		campos[7] = procedenciaActual();
 
@@ -455,7 +496,7 @@ public class ModificarDatosController implements Initializable {
 
 		campos[5] = nombreEditorialMod.getText();
 
-		campos[6] = nombreFormatoMod.getText();
+		campos[6] = formatoNuevo();
 
 		campos[7] = procedenciaMod();
 
@@ -565,8 +606,10 @@ public class ModificarDatosController implements Initializable {
 
 	/**
 	 * Funcion que permite modificar un comic, segun los datos introducidos
+	 * @throws SQLException 
+	 * @throws NumberFormatException 
 	 */
-	public boolean modificacionComic() {
+	public boolean modificacionComic() throws NumberFormatException, SQLException {
 		libreria = new DBLibreriaManager();
 		utilidad = new Utilidades();
 
@@ -574,7 +617,7 @@ public class ModificarDatosController implements Initializable {
 			String datos[] = camposComicModificar();
 			libreria.comprobarCambio(datos);
 
-			InputStream portada = utilidad.direccionImagen(direccionImagen.getText());
+			InputStream portada = libreria.obtenerPortada(Integer.parseInt(datos[0]));
 			Image imagen = new Image(portada);
 			imagencomic.setImage(imagen);
 
@@ -585,6 +628,7 @@ public class ModificarDatosController implements Initializable {
 
 			try {
 				portada.close();
+				utilidad.deleteImage(datos[11]);
 			} catch (IOException e) {
 				nav.alertaException(e.toString());
 			}
