@@ -319,8 +319,8 @@ public class FuncionesExcel {
 				String firma = data[4];
 				String editorial = data[5];
 				String formato = data[6];
-				if (data[7].toLowerCase().contains("españa")) {
-					procedencia = data[7].toLowerCase().replace("españa", "Spain");
+				if (data[7].toLowerCase().contains("espaÃ±a")) {
+					procedencia = data[7].toLowerCase().replace("espaÃ±a", "Spain");
 				}
 				else {
 					procedencia = data[7];
