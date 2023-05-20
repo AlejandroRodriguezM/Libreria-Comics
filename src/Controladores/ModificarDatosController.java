@@ -26,7 +26,6 @@ package Controladores;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
@@ -285,9 +284,10 @@ public class ModificarDatosController implements Initializable {
 	 * @param event
 	 * @throws SQLException 
 	 * @throws NumberFormatException 
+	 * @throws IOException 
 	 */
 	@FXML
-	void modificarDatos(ActionEvent event) throws NumberFormatException, SQLException {
+	void modificarDatos(ActionEvent event) throws NumberFormatException, SQLException, IOException {
 
 		imagencomic.setImage(null);
 		libreria = new DBLibreriaManager();
@@ -609,7 +609,7 @@ public class ModificarDatosController implements Initializable {
 	 * @throws SQLException 
 	 * @throws NumberFormatException 
 	 */
-	public boolean modificacionComic() throws NumberFormatException, SQLException {
+	public boolean modificacionComic() throws NumberFormatException, SQLException, IOException {
 		libreria = new DBLibreriaManager();
 		utilidad = new Utilidades();
 
@@ -617,7 +617,7 @@ public class ModificarDatosController implements Initializable {
 			String datos[] = camposComicModificar();
 			libreria.comprobarCambio(datos);
 
-			InputStream portada = libreria.obtenerPortada(Integer.parseInt(datos[0]));
+			String portada = libreria.obtenerDireccionPortada(Integer.parseInt(datos[0]));
 			Image imagen = new Image(portada);
 			imagencomic.setImage(imagen);
 
@@ -626,12 +626,7 @@ public class ModificarDatosController implements Initializable {
 			pantallaInformativa.setText("Has modificado correctamente: "
 					+ DBLibreriaManager.listaComics.toString().replace("[", "").replace("]", ""));
 
-			try {
-				portada.close();
-				utilidad.deleteImage(datos[11]);
-			} catch (IOException e) {
-				nav.alertaException(e.toString());
-			}
+			utilidad.deleteImage(datos[11]);
 			return true;
 		} else {
 			pantallaInformativa.setOpacity(1);

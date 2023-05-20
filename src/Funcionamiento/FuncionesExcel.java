@@ -260,8 +260,9 @@ public class FuncionesExcel {
 	 * Funcion que carga la imagen a la hora de importar el csv
 	 *
 	 * @return
+	 * @throws IOException 
 	 */
-	public InputStream subirImagenes(File directorio) {
+	public InputStream subirImagenes(File directorio) throws IOException {
 
 		ID++;
 		InputStream input;
@@ -271,8 +272,8 @@ public class FuncionesExcel {
 		try {
 			if (directorio.exists()) {
 				if (portada.exists()) {
-					File tmp = utilidad.getScaledImage(portada);
-					input = new FileInputStream(tmp);
+					File copia_imagen = utilidad.guardar_imagen(portada);
+					input = new FileInputStream(copia_imagen);
 
 					return input;
 				} else {

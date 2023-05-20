@@ -1,13 +1,12 @@
 package Funcionamiento;
 
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,8 +37,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import javax.imageio.ImageIO;
 
 /**
  * Esta clase sirve para realizar diferentes funciones realizanas con la
@@ -195,7 +192,7 @@ public class Utilidades {
 		for (int i = 0; i < datos.length; i++) {
 
 			if (datos[i].contains(",")) {
-				datos[i] = datos[i].replace(",", "-");
+				datos[i] = datos[i].replace(",", " - ");
 			}
 		}
 
@@ -221,32 +218,34 @@ public class Utilidades {
 	}
 
 	/**
-	 * Funcion que devulve una imagen
+	 * Función que devuelve la dirección de una imagen
 	 *
 	 * @param direccion
 	 * @return
 	 */
-	public InputStream direccionImagen(String direccion) {
-		InputStream input = null;
-		try {
+	public String direccionImagen(String direccion) {
+	    try {
+	        if (direccion.length() != 0) {
+	            File file = new File(direccion);
+	            if (file != null) {
+	                File savedFile = guardar_imagen(file);
+	                if (savedFile != null) {
+	                    return savedFile.getAbsolutePath();
+	                }
+	            }
+	        } else {
+	        	String sin_portada = "/documentos/libreria_comics/portadas/sinPortada.jpg";
+	            File sinPortadaFile = new File(getClass().getResource(sin_portada).getPath());
+	            File savedFile = guardar_imagen(sinPortadaFile);
+	            if (savedFile != null) {
+	                return savedFile.getAbsolutePath();
+	            }
+	        }
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
 
-			if (direccion.length() != 0) {
-				File file = new File(direccion);
-				if (file != null) {
-					File tmp = getScaledImage(file);
-					input = new FileInputStream(tmp);
-					return input;
-				}
-			} else {
-				input = this.getClass().getResourceAsStream("sinPortada.jpg");
-				return input;
-			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return null;
+	    return null;
 	}
 
 	/**
@@ -256,25 +255,23 @@ public class Utilidades {
 	 * @param file
 	 * @return
 	 */
-	public File getScaledImage(File file) {
+	public File guardar_imagen(File file) throws IOException {
+	    try {
+	        String userDir = System.getProperty("user.home");
+	        String imagePath = userDir + "/documentos/libreria_comics/portadas";
+	        File portadasFolder = new File(imagePath);
+	        if (!portadasFolder.exists()) {
+	            if (!portadasFolder.mkdirs()) {
+	                throw new IOException("No se pudo crear la carpeta 'portadas'");
+	            }
+	        }
 
-		int anchura = 300;
-		int altura = 455;
-
-		try {
-
-			BufferedImage originalImage = ImageIO.read(file);
-			BufferedImage new_bi = new BufferedImage(anchura, altura, BufferedImage.TYPE_INT_RGB);
-			File tmp = new File(file.getParentFile().toString() + "/tmp.jpg");
-			Graphics g = new_bi.getGraphics();
-			g.drawImage(originalImage, 0, 0, anchura, altura, null);
-
-			ImageIO.write(new_bi, "jpg", tmp);
-			return tmp;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+	        File newFile = new File(portadasFolder.getPath() + "/" + file.getName());
+	        Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+	        return newFile;
+	    } catch (IOException e) {
+	        throw new IOException("Error al guardar la imagen en la carpeta 'portadas'", e);
+	    }
 	}
 
 	/**

@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ProcessBuilder.Redirect;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -846,7 +848,7 @@ public class DBLibreriaManager extends Comic {
 					this.dibujante = rs.getString("nomDibujante");
 					this.estado = rs.getString("estado");
 					this.puntuacion = rs.getString("puntuacion");
-					this.imagen = rs.getBinaryStream("portada");
+					this.imagen = rs.getString("portada");
 
 					comic = new Comic(this.ID, this.nombre, this.numero, this.variante, this.firma, this.editorial,
 							this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante, this.estado,
@@ -1054,8 +1056,9 @@ public class DBLibreriaManager extends Comic {
 	/**
 	 * Funcion que modifica 1 comic de la base de datos con los parametros que
 	 * introduzcamos en los campos.
+	 * @throws IOException 
 	 */
-	public void insertarDatos(String datos[]) {
+	public void insertarDatos(String datos[]) throws IOException {
 
 		String sentenciaSQL = "insert into comicsbbdd(nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,anioPubli,nomGuionista,nomDibujante,puntuacion,portada,estado) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
@@ -1066,11 +1069,11 @@ public class DBLibreriaManager extends Comic {
 	/**
 	 * Funcion que permite introducir un nuevo comic en la base de datos.
 	 */
-	public void subirComic(String sentenciaSQL, String datos[]) {
+	public void subirComic(String sentenciaSQL, String datos[]) throws IOException {
 
 		utilidad = new Utilidades();
 
-		InputStream portada = utilidad.direccionImagen(datos[10]);
+		String portada = utilidad.direccionImagen(datos[10]);
 
 		conn = DBManager.conexion();
 
@@ -1088,12 +1091,7 @@ public class DBLibreriaManager extends Comic {
 			statement.setString(9, datos[8]);
 			statement.setString(10, datos[9]);
 			statement.setString(11, "Sin puntuar");
-
-			if (datos[10].length() != 0) {
-				statement.setBinaryStream(12, portada);
-			} else {
-				statement.setBinaryStream(12, portada);
-			}
+			statement.setString(12, portada);
 			statement.setString(13, datos[11]);
 
 			statement.executeUpdate();
@@ -1101,12 +1099,7 @@ public class DBLibreriaManager extends Comic {
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
 		} finally {
-			try {
-				portada.close();
-				ejecucionPreparedStatement(reloadID());
-			} catch (IOException e) {
-				nav.alertaException(e.toString());
-			}
+			ejecucionPreparedStatement(reloadID());
 		}
 	}
 
@@ -1150,19 +1143,37 @@ public class DBLibreriaManager extends Comic {
 				comicModificar(ps, datos); // Llama a funcion que permite cambiar los datos del comic
 
 			}
-		} catch (SQLException ex) {
+		} catch (SQLException | IOException ex) {
 			nav.alertaException(ex.toString());
 		}
 	}
 	
-    public InputStream obtenerPortada(int idComic) throws SQLException {
-        String query = "SELECT portada FROM comicsbbdd WHERE ID = ?";
-        PreparedStatement ps = conn.prepareStatement(query);
-        ps.setInt(1, idComic); //Convertimos el String a int
-        ResultSet resultado = ps.executeQuery();
-        resultado.next();
-        return resultado.getBinaryStream("portada");
-    }
+	/**
+	 * Obtiene la dirección de la portada de un cómic.
+	 *
+	 * @param idComic ID del cómic
+	 * @return Dirección de la portada del cómic
+	 * @throws SQLException Si ocurre algún error de SQL
+	 */
+	public String obtenerDireccionPortada(int idComic) throws SQLException {
+	    String query = "SELECT portada FROM comicsbbdd WHERE ID = ?";
+	    PreparedStatement ps = conn.prepareStatement(query);
+	    ps.setInt(1, idComic);
+	    ResultSet resultado = ps.executeQuery();
+	    if (resultado.next()) {
+	        InputStream inputStream = resultado.getBinaryStream("portada");
+	        if (inputStream != null) {
+	            try {
+	                File portadaFile = File.createTempFile("portada", ".jpg");
+	                Files.copy(inputStream, portadaFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+	                return portadaFile.getAbsolutePath();
+	            } catch (IOException e) {
+	                e.printStackTrace();
+	            }
+	        }
+	    }
+	    return null;
+	}
 
 	/**
 	 * Devuelve un objeto Comic con los nuevos datos de un comic. En caso de tener
@@ -1172,14 +1183,14 @@ public class DBLibreriaManager extends Comic {
 	 * @return
 	 * @throws SQLException 
 	 */
-	public void comicModificar(PreparedStatement ps, String datos[]) throws SQLException {
+	public void comicModificar(PreparedStatement ps, String datos[]) throws SQLException, IOException {
 		utilidad = new Utilidades();
 		listaComics.clear();
 		String nombre = "", numero = "", variante = "", firma = "", editorial = "", formato = "", procedencia = "",
 				fecha = "", guionista = "", dibujante = "", estado = "";
 
-		InputStream portada = utilidad.direccionImagen(datos[11]);
-		InputStream portadaVieja = obtenerPortada(Integer.parseInt(datos[0]));
+		String portada = utilidad.direccionImagen(datos[11]);
+		String portadaVieja = obtenerDireccionPortada(Integer.parseInt(datos[0]));
 		Comic comic = comicDatos(datos[0]);
 		try {
 
@@ -1255,9 +1266,9 @@ public class DBLibreriaManager extends Comic {
 			}
 
 			if (datos[11].length() != 0) {
-				ps.setBinaryStream(11, portada);
+				ps.setString(11, portada);
 			} else {
-				ps.setBinaryStream(11, portadaVieja);
+				ps.setString(11, portadaVieja);
 			}
 			if (datos[12].length() != 0) {
 				ps.setString(12, datos[12]);
@@ -1267,7 +1278,7 @@ public class DBLibreriaManager extends Comic {
 			ps.setString(13, datos[0]);
 
 			if (ps.executeUpdate() == 1) { // Si se ha modificado correctamente, saltara el siguiente mensaje
-				InputStream portadaActual = obtenerPortada(Integer.parseInt(datos[0]));
+				String portadaActual = obtenerDireccionPortada(Integer.parseInt(datos[0]));
 					comic = new Comic("", nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 							guionista, dibujante, estado, "", portadaActual);
 				//if (ps.executeUpdate() == 1) { // Si se ha modificado correctamente, saltara el siguiente mensaje
@@ -1282,12 +1293,7 @@ public class DBLibreriaManager extends Comic {
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
 		} finally {
-			try {
-				portada.close();
-				ejecucionPreparedStatement(reloadID());
-			} catch (IOException ex) {
-				nav.alertaException(ex.toString());
-			}
+			ejecucionPreparedStatement(reloadID());
 		}
 	}
 

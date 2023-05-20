@@ -45,6 +45,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -128,6 +129,9 @@ public class MenuPrincipalController implements Initializable {
 
 	@FXML
 	private TextField fechaPublicacion;
+	
+	//@FXML
+	//private DatePicker fechaPublicacion;
 
 	@FXML
 	private TextField numeroID;
@@ -209,6 +213,8 @@ public class MenuPrincipalController implements Initializable {
 	
 	@FXML
 	private ComboBox<String> nombreFormato;
+	
+
 
 	private static Ventanas nav = new Ventanas();
 

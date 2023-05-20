@@ -2,7 +2,6 @@ package Controladores;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 
 /**
@@ -325,9 +324,10 @@ public class IntroducirDatosController implements Initializable {
 	 * en los textField
 	 *
 	 * @param event
+	 * @throws IOException 
 	 */
 	@FXML
-	public void agregarDatos(ActionEvent event) {
+	public void agregarDatos(ActionEvent event) throws IOException {
 
 		libreria = new DBLibreriaManager();
 		subidaComic();
@@ -505,14 +505,15 @@ public class IntroducirDatosController implements Initializable {
 
 	/**
 	 * Permite introducir un comic en la base de datos de forma manual
+	 * @throws IOException 
 	 */
-	public boolean subidaComic() {
+	public boolean subidaComic() throws IOException {
 		libreria = new DBLibreriaManager();
 		utilidad = new Utilidades();
 		String datos[] = camposComicIntroducir();
 		if (nav.alertaInsertar()) {
 
-			InputStream portada = utilidad.direccionImagen(datos[10]);
+			String portada = utilidad.direccionImagen(datos[10]);
 			libreria.insertarDatos(datos);
 			Comic comic = new Comic("", datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
 					datos[8], datos[9], datos[11], "Sin puntuar", portada);
@@ -527,12 +528,7 @@ public class IntroducirDatosController implements Initializable {
 			libreria.listasAutoCompletado();
 			nombreColumnas(); // Llamada a funcion
 			tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
-			try {
-				portada.close();
-				utilidad.deleteImage(datos[10]);
-			} catch (IOException e) {
-				nav.alertaException(e.toString());
-			}
+			utilidad.deleteImage(datos[10]);
 			return true;
 
 		} else {

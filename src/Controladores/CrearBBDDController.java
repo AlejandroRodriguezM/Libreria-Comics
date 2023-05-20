@@ -264,9 +264,10 @@ public class CrearBBDDController {
 				+ "nomComic varchar(150) NOT NULL," + "numComic varchar(150) NOT NULL,"
 				+ "nomVariante varchar(150) NOT NULL," + "firma varchar(150) NOT NULL,"
 				+ "nomEditorial varchar(150) NOT NULL," + "formato varchar(150) NOT NULL,"
-				+ "procedencia varchar(150) NOT NULL," + "anioPubli varchar(150) NOT NULL,"
+				+ "procedencia varchar(150) NOT NULL," + "fecha_publicacionvarchar(150) NOT NULL,"
 				+ "nomGuionista varchar(600) NOT NULL," + "nomDibujante varchar(600) NOT NULL,"
-				+ "puntuacion varchar(300) NOT NULL," + "portada blob," + "estado varchar(300) NOT NULL,"
+				+ "puntuacion varchar(300) NOT NULL," + "portada TEXT," 
+				+ "estado varchar(300) NOT NULL,"
 				+ "PRIMARY KEY (`ID`)) "
 				+ "ENGINE=InnoDB AUTO_INCREMENT=320 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
 
