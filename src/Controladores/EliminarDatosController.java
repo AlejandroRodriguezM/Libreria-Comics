@@ -28,7 +28,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 /**
- * Esta clase sirve para eliminar datos. No elimna los datos, realiza la funcion
+ * Esta clase sirve para almoner datos. No elimna los datos, realiza la funcion
  * de cambiar el dato de "estado" de "En posesion" a "Vendido"
  *
  * @author Alejandro Rodriguez

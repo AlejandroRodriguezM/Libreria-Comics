@@ -36,5 +36,6 @@
 	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/poi/poi-scratchpad-5.2.2.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/poi/lib/log4j-api-2.17.2.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/controlsfx-9.0.0.jar"/>
+	<classpathentry kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
