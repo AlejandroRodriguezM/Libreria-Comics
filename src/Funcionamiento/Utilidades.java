@@ -38,6 +38,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import JDBC.DBLibreriaManager;
+
 /**
  * Esta clase sirve para realizar diferentes funciones realizanas con la
  * comprobacion del sistema operativo que ejecuta este programa, al igual que
@@ -218,61 +220,89 @@ public class Utilidades {
 	}
 
 	/**
-	 * Función que devuelve la dirección de una imagen
-	 *
-	 * @param direccion
-	 * @return
-	 */
-	public String direccionImagen(String direccion) {
-	    try {
-	        if (direccion.length() != 0) {
-	            File file = new File(direccion);
-	            if (file != null) {
-	                File savedFile = guardar_imagen(file);
-	                if (savedFile != null) {
-	                    return savedFile.getAbsolutePath();
-	                }
-	            }
-	        } else {
-	        	String sin_portada = "/documentos/libreria_comics/portadas/sinPortada.jpg";
-	            File sinPortadaFile = new File(getClass().getResource(sin_portada).getPath());
-	            File savedFile = guardar_imagen(sinPortadaFile);
-	            if (savedFile != null) {
-	                return savedFile.getAbsolutePath();
-	            }
-	        }
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
-
-	    return null;
-	}
-
-	/**
 	 * Funcion que permite la redimension de una imagen. Guarda la imagen y es
 	 * cargada por otras funciones.
 	 *
 	 * @param file
 	 * @return
 	 */
-	public File guardar_imagen(File file) throws IOException {
+	public void nueva_imagen(String direccion) throws IOException {
+		try {
+			File file;
+			if (direccion != null) {
+				file = new File(direccion);
+			} else {
+				String userDir = System.getProperty("user.home");
+				String documentsPath = userDir + File.separator + "Documents";
+				String imagePath = documentsPath + File.separator + "libreria_comics" + File.separator
+						+ "portadas/sinPortada.jpg";
+				file = new File(imagePath);
+			}
+
+			if (file != null && file.exists()) {
+				String userDir = System.getProperty("user.home");
+				String documentsPath = userDir + File.separator + "Documents";
+				String imagePath = documentsPath + File.separator + "libreria_comics" + File.separator + "portadas";
+				File portadasFolder = new File(imagePath);
+				String ultimo_id = DBLibreriaManager.obtener_ultimo_id();
+				int nuevo_id = Integer.parseInt(ultimo_id);
+
+				if (!portadasFolder.exists()) {
+					if (!portadasFolder.mkdirs()) {
+						throw new IOException("No se pudo crear la carpeta 'portadas'");
+					}
+				}
+
+				String nombreOriginal = file.getName();
+				String extension = nombreOriginal.substring(nombreOriginal.lastIndexOf("."));
+				String nuevoNombreArchivo = String.valueOf(nuevo_id) + extension;
+				File newFile = new File(portadasFolder.getPath() + File.separator + nuevoNombreArchivo);
+				Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			} else {
+				throw new IOException("El archivo de imagen no existe");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void guardar_imagen(String direccion, String ID) {
 	    try {
-	        String userDir = System.getProperty("user.home");
-	        String imagePath = userDir + "/documentos/libreria_comics/portadas";
-	        File portadasFolder = new File(imagePath);
-	        if (!portadasFolder.exists()) {
-	            if (!portadasFolder.mkdirs()) {
-	                throw new IOException("No se pudo crear la carpeta 'portadas'");
-	            }
+	        File file = null;
+	        if (direccion != null) {
+	            file = new File(direccion);
 	        }
 
-	        File newFile = new File(portadasFolder.getPath() + "/" + file.getName());
-	        Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-	        return newFile;
+	        if (file.exists()) {
+	            String userDir = System.getProperty("user.home");
+	            String documentsPath = userDir + File.separator + "Documents";
+	            String imagePath = documentsPath + File.separator + "libreria_comics" + File.separator + "portadas";
+	            File portadasFolder = new File(imagePath);
+
+	            if (!portadasFolder.exists()) {
+	                if (!portadasFolder.mkdirs()) {
+	                    throw new IOException("No se pudo crear la carpeta 'portadas'");
+	                }
+	            }
+
+	            String nombreOriginal = file.getName();
+	            String extension = nombreOriginal.substring(nombreOriginal.lastIndexOf("."));
+	            String nuevoNombreArchivo = ID + extension;
+	            File newFile = new File(portadasFolder.getPath() + File.separator + nuevoNombreArchivo);
+	            Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+	        } else {
+	            String userDir = System.getProperty("user.home");
+	            String documentsPath = userDir + File.separator + "Documents";
+	            String imagePath = documentsPath + File.separator + "libreria_comics" + File.separator + "portadas/sinPortada.jpg";
+	            File sin_portada = new File(imagePath);
+	            Files.copy(file.toPath(), sin_portada.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+	        }
 	    } catch (IOException e) {
-	        throw new IOException("Error al guardar la imagen en la carpeta 'portadas'", e);
+	        e.printStackTrace();
 	    }
 	}
+
 
 	/**
 	 * Elimina la imagen temporal de muestra de la base de datos.

@@ -246,6 +246,8 @@ public class MenuPrincipalController implements Initializable {
 		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
 		TextFields.bindAutoCompletion(fechaPublicacion, DBLibreriaManager.listaFecha);
+		
+		DBLibreriaManager.listaNombre.clear();
 	}
 	
 	/**

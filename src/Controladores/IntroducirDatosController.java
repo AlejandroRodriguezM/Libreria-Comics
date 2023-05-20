@@ -355,7 +355,7 @@ public class IntroducirDatosController implements Initializable {
 	public FileChooser tratarFichero() {
 		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
 		fileChooser.getExtensionFilters()
-				.addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg", "*.png", "*.jpeg"));
+				.addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg"));
 
 		return fileChooser;
 	}
@@ -512,13 +512,12 @@ public class IntroducirDatosController implements Initializable {
 		utilidad = new Utilidades();
 		String datos[] = camposComicIntroducir();
 		if (nav.alertaInsertar()) {
-
-			String portada = utilidad.direccionImagen(datos[10]);
+			utilidad.nueva_imagen(datos[10]);
 			libreria.insertarDatos(datos);
 			Comic comic = new Comic("", datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
-					datos[8], datos[9], datos[11], "Sin puntuar", portada);
+					datos[8], datos[9], datos[11], "Sin puntuar", datos[10]);
 
-			Image imagen = new Image(portada);
+			Image imagen = new Image(datos[10]);
 			imagencomic.setImage(imagen);
 
 			pantallaInformativa.setOpacity(1);
@@ -528,7 +527,8 @@ public class IntroducirDatosController implements Initializable {
 			libreria.listasAutoCompletado();
 			nombreColumnas(); // Llamada a funcion
 			tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
-			utilidad.deleteImage(datos[10]);
+			//utilidad.deleteImage(datos[10]);
+
 			return true;
 
 		} else {

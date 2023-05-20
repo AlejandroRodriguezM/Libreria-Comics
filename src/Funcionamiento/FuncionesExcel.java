@@ -37,6 +37,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -71,7 +74,7 @@ public class FuncionesExcel {
 	 * @throws SQLException
 	 */
 	public boolean importarCSV(File fichero) {
-		String sql = "INSERT INTO comicsbbdd(ID,nomComic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,anioPubli,nomGuionista,nomDibujante,puntuacion,portada,estado)"
+		String sql = "INSERT INTO comicsbbdd(ID,nomComic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,fecha_publicacion,nomGuionista,nomDibujante,puntuacion,portada,estado)"
 				+ " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 		if (comprobarCSV(fichero, sql)) // Llamada a funcion, en caso de devolver true, devolvera un true
@@ -98,7 +101,7 @@ public class FuncionesExcel {
 		String encabezado;
 
 		String[] encabezados = { "ID", "nomComic", "numComic", "nomVariante", "Firma", "nomEditorial", "Formato",
-				"Procedencia", "anioPubli", "nomGuionista", "nomDibujante", "puntuacion", "portada", "estado" };
+				"Procedencia", "fecha_publicacion", "nomGuionista", "nomDibujante", "puntuacion", "portada", "estado" };
 		int indiceFila = 0;
 
 		try {
@@ -295,89 +298,88 @@ public class FuncionesExcel {
 	 * @param lineReader
 	 */
 	public void lecturaCSV(String sql, BufferedReader lineReader) {
-		File directorio = carpetaPortadas();
-		InputStream portada = null;
-		String puntuacion;
-		String procedencia;
-		db = new DBLibreriaManager();
-		int batchSize = 20;
-		utilidad = new Utilidades();
-		String lineText = null;
+//	    File directorio = carpetaPortadas();
+	    String puntuacion;
+	    String procedencia;
+	    db = new DBLibreriaManager();
+	    int batchSize = 20;
+	    utilidad = new Utilidades();
+	    String lineText = null;
 
-		try {
-			PreparedStatement statement = conn.prepareStatement(sql);
-			int count = 0;
-			int nuevoID = db.countRows();
-			lineReader.readLine();
+	    try {
+	        PreparedStatement statement = conn.prepareStatement(sql);
+	        int count = 0;
+	        int nuevoID = db.countRows();
+	        lineReader.readLine();
 
-			// Se leeran los datos hasta que no existan mas datos
-			while ((lineText = lineReader.readLine()) != null) {
-				String[] data = lineText.split(";");
-				String id = Integer.toString(nuevoID);
-				String nombre = data[1];
-				String numero = data[2];
-				String variante = data[3];
-				String firma = data[4];
-				String editorial = data[5];
-				String formato = data[6];
-				if (data[7].toLowerCase().contains("españa")) {
-					procedencia = data[7].toLowerCase().replace("españa", "Spain");
-				}
-				else {
-					procedencia = data[7];
-				}
-				String fecha = data[8];
-				String guionista = data[9];
-				String dibujante = data[10];
-				if (data[11].length() != 0) {
-					puntuacion = data[11];
-				} else {
-					puntuacion = "Sin puntuacion";
-				}
-				String estado = data[13];
-				if(directorio != null) {
-					portada = subirImagenes(directorio);
-				}
-				else {
-					portada = this.getClass().getResourceAsStream("sinPortada.jpg");
-				}
-				statement.setString(1, id);
-				statement.setString(2, nombre);
-				statement.setString(3, numero);
-				statement.setString(4, variante);
-				statement.setString(5, firma);
-				statement.setString(6, editorial);
-				statement.setString(7, formato);
-				statement.setString(8, procedencia);
-				statement.setString(9, fecha);
-				statement.setString(10, guionista);
-				statement.setString(11, dibujante);
-				statement.setString(12, puntuacion);
-				statement.setBinaryStream(13, portada);
-				statement.setString(14, estado);
+	        // Se leerán los datos hasta que no existan más datos
+	        while ((lineText = lineReader.readLine()) != null) {
+	            String[] data = lineText.split(";");
+	            String id = Integer.toString(nuevoID);
+	            String nombre = data[1];
+	            String numero = data[2];
+	            String variante = data[3];
+	            String firma = data[4];
+	            String editorial = data[5];
+	            String formato = data[6];
+	            if (data[7].toLowerCase().contains("españa")) {
+	                procedencia = data[7].toLowerCase().replace("españa", "Spain");
+	            } else {
+	                procedencia = data[7];
+	            }
 
-				statement.addBatch();
+	            // Conversión de fecha al formato correcto
+	            String fecha = convertirFecha(data[8]);
 
-				if (count % batchSize == 0) {
-					statement.executeBatch();
-				}
-				portada.close();
-			}
-			lineReader.close();
-			statement.executeBatch();
-			portada.close();
-		} catch (SQLException e) {
-			nav.alertaException(e.toString());
-		} catch (IOException e) {
-			nav.alertaException(e.toString());
-		} finally {
-			try {
-				portada.close();
-				utilidad.deleteImage(directorio.toString() + "/" + "tmp" + ".jpg");
-				ID = 0;
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+	            String guionista = data[9];
+	            String dibujante = data[10];
+	            if (data[11].length() != 0) {
+	                puntuacion = data[11];
+	            } else {
+	                puntuacion = "Sin puntuacion";
+	            }
+	            String portada = data[12];
+	            String estado = data[13];
+
+	            statement.setString(1, id);
+	            statement.setString(2, nombre);
+	            statement.setString(3, numero);
+	            statement.setString(4, variante);
+	            statement.setString(5, firma);
+	            statement.setString(6, editorial);
+	            statement.setString(7, formato);
+	            statement.setString(8, procedencia);
+	            statement.setString(9, fecha);
+	            statement.setString(10, guionista);
+	            statement.setString(11, dibujante);
+	            statement.setString(12, puntuacion);
+	            statement.setString(13, portada);
+	            statement.setString(14, estado);
+
+	            statement.addBatch();
+
+	            if (count % batchSize == 0) {
+	                statement.executeBatch();
+	            }
+	        }
+	        lineReader.close();
+	        statement.executeBatch();
+	    } catch (SQLException e) {
+	        nav.alertaException(e.toString());
+	    } catch (IOException e) {
+	        nav.alertaException(e.toString());
+	    }
+	}
+
+	private String convertirFecha(String fecha) {
+	    try {
+	        SimpleDateFormat formatoEntrada = new SimpleDateFormat("dd/MM/yyyy");
+	        SimpleDateFormat formatoSalida = new SimpleDateFormat("yyyy/MM/dd");
+	        Date fechaDate = formatoEntrada.parse(fecha);
+	        return formatoSalida.format(fechaDate);
+	    } catch (ParseException e) {
+	        e.printStackTrace();
+	    }
+	    return null;
 	}
 }
