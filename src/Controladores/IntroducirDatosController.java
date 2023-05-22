@@ -182,23 +182,22 @@ public class IntroducirDatosController implements Initializable {
 
 	@FXML
 	private TableColumn<Comic, String> nombre;
-	
+
 	@FXML
 	private TableColumn<Comic, String> puntuacion;
-	
 
 	@FXML
 	private ComboBox<String> nombreFormato;
-	
+
 	@FXML
 	private ComboBox<String> formatoAni;
 
 	@FXML
 	private ComboBox<String> nombreProcedencia;
-	
+
 	@FXML
 	private ComboBox<String> procedenciaAni;
-	
+
 	@FXML
 	private ComboBox<String> estadoComic;
 
@@ -219,24 +218,24 @@ public class IntroducirDatosController implements Initializable {
 				"En venta");
 		estadoComic.setItems(situacionEstado);
 		estadoComic.getSelectionModel().selectFirst();
-		
-		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList("Spain", "USA",
-				"Japon","Italia","Francia");
+
+		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList("Spain", "USA", "Japon",
+				"Italia", "Francia");
 		procedenciaAni.setItems(procedenciaEstadoActual);
 		procedenciaAni.getSelectionModel().selectFirst();
-		
-		ObservableList<String> procedenciaEstadoNuevo = FXCollections.observableArrayList("Spain", "USA",
-				"Japon","Italia","Francia");
+
+		ObservableList<String> procedenciaEstadoNuevo = FXCollections.observableArrayList("Spain", "USA", "Japon",
+				"Italia", "Francia");
 		nombreProcedencia.setItems(procedenciaEstadoNuevo);
 		nombreProcedencia.getSelectionModel().selectFirst();
-		
-		ObservableList<String> formatoActual = FXCollections.observableArrayList("Grapa", "Tapa dura","Tapa blanda",
-				"Manga","Libro");
+
+		ObservableList<String> formatoActual = FXCollections.observableArrayList("Grapa", "Tapa dura", "Tapa blanda",
+				"Manga", "Libro");
 		nombreFormato.setItems(formatoActual);
 		nombreFormato.getSelectionModel().selectFirst();
-		
-		ObservableList<String> formatoNuevo = FXCollections.observableArrayList("Grapa", "Tapa dura","Tapa blanda",
-				"Manga","Libro");
+
+		ObservableList<String> formatoNuevo = FXCollections.observableArrayList("Grapa", "Tapa dura", "Tapa blanda",
+				"Manga", "Libro");
 		formatoAni.setItems(formatoNuevo);
 		formatoAni.getSelectionModel().selectFirst();
 
@@ -248,7 +247,7 @@ public class IntroducirDatosController implements Initializable {
 		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
 		TextFields.bindAutoCompletion(fechaPublicacion, DBLibreriaManager.listaFecha);
-		
+
 		TextFields.bindAutoCompletion(nombreAni, DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(varianteAni, DBLibreriaManager.listaVariante);
 		TextFields.bindAutoCompletion(firmaAni, DBLibreriaManager.listaFirma);
@@ -311,7 +310,7 @@ public class IntroducirDatosController implements Initializable {
 		fechaAni.setText("");
 		guionistaAni.setText("");
 		dibujanteAni.setText("");
-		
+
 		pantallaInformativa.setText(null);
 		pantallaInformativa.setOpacity(0);
 		tablaBBDD.getItems().clear();
@@ -324,7 +323,7 @@ public class IntroducirDatosController implements Initializable {
 	 * en los textField
 	 *
 	 * @param event
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	@FXML
 	public void agregarDatos(ActionEvent event) throws IOException {
@@ -354,8 +353,7 @@ public class IntroducirDatosController implements Initializable {
 	 */
 	public FileChooser tratarFichero() {
 		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
-		fileChooser.getExtensionFilters()
-				.addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg"));
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg"));
 
 		return fileChooser;
 	}
@@ -387,7 +385,7 @@ public class IntroducirDatosController implements Initializable {
 		// "puntuacion"
 		return situacionEstado;
 	}
-	
+
 	/**
 	 * Funcion que permite modificar el estado de un comic.
 	 *
@@ -396,11 +394,12 @@ public class IntroducirDatosController implements Initializable {
 	 */
 	public String procedenciaActual() {
 
-		String procedenciaEstado = nombreProcedencia.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+		String procedenciaEstado = nombreProcedencia.getSelectionModel().getSelectedItem().toString(); // Toma el valor
+																										// del menu
 		// "procedencia"
 		return procedenciaEstado;
 	}
-	
+
 	/**
 	 * Funcion que permite modificar el estado de un comic.
 	 *
@@ -413,7 +412,7 @@ public class IntroducirDatosController implements Initializable {
 		// "formato"
 		return formatoEstado;
 	}
-	
+
 	/**
 	 * Funcion que permite modificar el estado de un comic.
 	 *
@@ -421,12 +420,13 @@ public class IntroducirDatosController implements Initializable {
 	 * @return
 	 */
 	public String formatoNuevo() {
-		
-		String formatoEstadoNuevo = formatoAni.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+
+		String formatoEstadoNuevo = formatoAni.getSelectionModel().getSelectedItem().toString(); // Toma el valor del
+																									// menu
 		// "formato"
 		return formatoEstadoNuevo;
 	}
-	
+
 	/**
 	 * Funcion que permite modificar el estado de un comic.
 	 *
@@ -435,7 +435,9 @@ public class IntroducirDatosController implements Initializable {
 	 */
 	public String procedenciaNueva() {
 
-		String procedenciaEstadoNuevo = procedenciaAni.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+		String procedenciaEstadoNuevo = procedenciaAni.getSelectionModel().getSelectedItem().toString(); // Toma el
+																											// valor del
+																											// menu
 		// "puntuacion"
 		return procedenciaEstadoNuevo;
 	}
@@ -483,8 +485,8 @@ public class IntroducirDatosController implements Initializable {
 
 		String datos[] = camposComicActuales();
 
-		Comic comic = new Comic(datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], procedenciaActual(),
-				datos[8], datos[9], datos[10], "", "", null);
+		Comic comic = new Comic(datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6],
+				procedenciaActual(), datos[8], datos[9], datos[10], "", "", null);
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
 		busquedaGeneral.setText("");
@@ -505,20 +507,57 @@ public class IntroducirDatosController implements Initializable {
 
 	/**
 	 * Permite introducir un comic en la base de datos de forma manual
-	 * @throws IOException 
+	 * 
+	 * @throws IOException
 	 */
 	public boolean subidaComic() throws IOException {
 		libreria = new DBLibreriaManager();
 		utilidad = new Utilidades();
-		String datos[] = camposComicIntroducir();
-		if (nav.alertaInsertar()) {
-			utilidad.nueva_imagen(datos[10]);
-			libreria.insertarDatos(datos);
-			Comic comic = new Comic("", datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
-					datos[8], datos[9], datos[11], "Sin puntuar", datos[10]);
 
-			Image imagen = new Image(datos[10]);
-			imagencomic.setImage(imagen);
+		if (nav.alertaInsertar()) {
+
+			String datos[] = camposComicIntroducir();
+			
+			String portada = "";
+
+			String nombre = datos[0];
+
+			String numero = datos[1];
+
+			String variante = datos[2];
+
+			String firma = datos[3];
+
+			String editorial = datos[4];
+
+			String formato = datos[5];
+
+			String procedencia = datos[6];
+
+			String fecha = datos[7];
+
+			String guionista = datos[8];
+
+			String dibujante = datos[9];
+
+			if(datos[10] != "") {
+				portada = datos[10];
+				Image imagen = new Image(portada);
+				imagencomic.setImage(imagen);
+
+			}
+
+			String estado = datos[11];
+
+			Comic comic = new Comic("", nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+					guionista, dibujante, estado, "Sin puntuar", portada);
+
+			utilidad.nueva_imagen(comic);
+			String nueva_portada = utilidad.obtenerNombreCompleto(comic);
+			comic.setImagen(nueva_portada);
+			libreria.insertarDatos(comic);
+
+
 
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
@@ -527,7 +566,6 @@ public class IntroducirDatosController implements Initializable {
 			libreria.listasAutoCompletado();
 			nombreColumnas(); // Llamada a funcion
 			tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
-			//utilidad.deleteImage(datos[10]);
 
 			return true;
 

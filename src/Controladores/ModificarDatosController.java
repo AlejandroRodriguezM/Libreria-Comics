@@ -180,7 +180,7 @@ public class ModificarDatosController implements Initializable {
 
 	@FXML
 	private TableColumn<Comic, String> nombre;
-	
+
 	@FXML
 	private ComboBox<String> nombreProcedencia;
 
@@ -189,7 +189,7 @@ public class ModificarDatosController implements Initializable {
 
 	@FXML
 	private ComboBox<String> estadoComic;
-	
+
 	@FXML
 	private ComboBox<String> nombreFormato;
 
@@ -212,25 +212,24 @@ public class ModificarDatosController implements Initializable {
 				"En venta");
 		estadoComic.setItems(situacionEstado);
 		estadoComic.getSelectionModel().selectFirst();
-		
-		ObservableList<String> procedenciaEstadoMod = FXCollections.observableArrayList("Spain", "USA",
-				"Japon","Italia","Francia");
+
+		ObservableList<String> procedenciaEstadoMod = FXCollections.observableArrayList("Spain", "USA", "Japon",
+				"Italia", "Francia");
 		nombreProcedenciaMod.setItems(procedenciaEstadoMod);
 		nombreProcedenciaMod.getSelectionModel().selectFirst();
-		
-		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList("Spain", "USA",
-				"Japon","Italia","Francia");
+
+		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList("Spain", "USA", "Japon",
+				"Italia", "Francia");
 		nombreProcedencia.setItems(procedenciaEstadoActual);
 		nombreProcedencia.getSelectionModel().selectFirst();
-	
-		
-		ObservableList<String> formatoActual = FXCollections.observableArrayList("Grapa", "Tapa dura","Tapa blanda",
-				"Manga","Libro");
+
+		ObservableList<String> formatoActual = FXCollections.observableArrayList("Grapa", "Tapa dura", "Tapa blanda",
+				"Manga", "Libro");
 		nombreFormato.setItems(formatoActual);
 		nombreFormato.getSelectionModel().selectFirst();
-		
-		ObservableList<String> formatoNuevo = FXCollections.observableArrayList("Grapa", "Tapa dura","Tapa blanda",
-				"Manga","Libro");
+
+		ObservableList<String> formatoNuevo = FXCollections.observableArrayList("Grapa", "Tapa dura", "Tapa blanda",
+				"Manga", "Libro");
 		nombreFormatoMod.setItems(formatoNuevo);
 		nombreFormatoMod.getSelectionModel().selectFirst();
 
@@ -242,7 +241,7 @@ public class ModificarDatosController implements Initializable {
 		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
 		TextFields.bindAutoCompletion(anioPublicacion, DBLibreriaManager.listaFecha);
-		
+
 		TextFields.bindAutoCompletion(nombreComicMod, DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(nombreVarianteMod, DBLibreriaManager.listaVariante);
 		TextFields.bindAutoCompletion(nombreFirmaMod, DBLibreriaManager.listaFirma);
@@ -282,9 +281,9 @@ public class ModificarDatosController implements Initializable {
 	 * Llamada a funcion que modifica los datos de 1 comic en la base de datos.
 	 *
 	 * @param event
-	 * @throws SQLException 
-	 * @throws NumberFormatException 
-	 * @throws IOException 
+	 * @throws SQLException
+	 * @throws NumberFormatException
+	 * @throws IOException
 	 */
 	@FXML
 	void modificarDatos(ActionEvent event) throws NumberFormatException, SQLException, IOException {
@@ -318,7 +317,7 @@ public class ModificarDatosController implements Initializable {
 		return situacionEstado;
 
 	}
-	
+
 	/**
 	 * Funcion que permite modificar el estado de un comic.
 	 *
@@ -327,11 +326,13 @@ public class ModificarDatosController implements Initializable {
 	 */
 	public String procedenciaMod() {
 
-		String procedenciaEstado = nombreProcedenciaMod.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+		String procedenciaEstado = nombreProcedenciaMod.getSelectionModel().getSelectedItem().toString(); // Toma el
+																											// valor del
+																											// menu
 		// "puntuacion"
 		return procedenciaEstado;
 	}
-	
+
 	/**
 	 * Funcion que permite modificar el estado de un comic.
 	 *
@@ -340,11 +341,13 @@ public class ModificarDatosController implements Initializable {
 	 */
 	public String procedenciaActual() {
 
-		String procedenciaEstadoNuevo = nombreProcedencia.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+		String procedenciaEstadoNuevo = nombreProcedencia.getSelectionModel().getSelectedItem().toString(); // Toma el
+																											// valor del
+																											// menu
 		// "puntuacion"
 		return procedenciaEstadoNuevo;
 	}
-	
+
 	/**
 	 * Funcion que permite modificar el estado de un comic.
 	 *
@@ -357,7 +360,7 @@ public class ModificarDatosController implements Initializable {
 		// "formato"
 		return formatoEstado;
 	}
-	
+
 	/**
 	 * Funcion que permite modificar el estado de un comic.
 	 *
@@ -365,8 +368,9 @@ public class ModificarDatosController implements Initializable {
 	 * @return
 	 */
 	public String formatoNuevo() {
-		
-		String formatoEstadoNuevo = nombreFormatoMod.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+
+		String formatoEstadoNuevo = nombreFormatoMod.getSelectionModel().getSelectedItem().toString(); // Toma el valor
+																										// del menu
 		// "formato"
 		return formatoEstadoNuevo;
 	}
@@ -570,8 +574,7 @@ public class ModificarDatosController implements Initializable {
 	 */
 	public FileChooser tratarFichero() {
 		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
-		fileChooser.getExtensionFilters()
-				.addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg", "*.png", "*.jpeg"));
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg"));
 
 		return fileChooser;
 	}
@@ -606,27 +609,63 @@ public class ModificarDatosController implements Initializable {
 
 	/**
 	 * Funcion que permite modificar un comic, segun los datos introducidos
-	 * @throws SQLException 
-	 * @throws NumberFormatException 
+	 * 
+	 * @throws SQLException
+	 * @throws NumberFormatException
 	 */
 	public boolean modificacionComic() throws NumberFormatException, SQLException, IOException {
 		libreria = new DBLibreriaManager();
 		utilidad = new Utilidades();
 
 		if (nav.alertaModificar()) {
-			String datos[] = camposComicModificar();
-			libreria.comprobarCambio(datos);
 
-			String portada = libreria.obtenerDireccionPortada(Integer.parseInt(datos[0]));
-			Image imagen = new Image(portada);
-			imagencomic.setImage(imagen);
+			String datos[] = camposComicModificar();
+			
+			String portada = "";
+
+			String id_comic = datos[0];
+
+			String nombre = datos[1];
+
+			String numero = datos[2];
+
+			String variante = datos[3];
+
+			String firma = datos[4];
+
+			String editorial = datos[5];
+
+			String formato = datos[6];
+
+			String procedencia = datos[7];
+
+			String fecha = datos[8];
+
+			String guionista = datos[9];
+
+			String dibujante = datos[10];
+			
+			if(datos[11] != "") {
+				portada = datos[11];
+				Image imagen = new Image(portada);
+				imagencomic.setImage(imagen);
+
+			}
+
+			String estado = datos[12];
+
+			Comic comic = new Comic(id_comic, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+					guionista, dibujante, estado, "Sin puntuar", portada);
+
+			
+			libreria.actualizar_comic(comic);
+			
 
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 			pantallaInformativa.setText("Has modificado correctamente: "
 					+ DBLibreriaManager.listaComics.toString().replace("[", "").replace("]", ""));
 
-			utilidad.deleteImage(datos[11]);
 			return true;
 		} else {
 			pantallaInformativa.setOpacity(1);

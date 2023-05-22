@@ -1,9 +1,8 @@
 package Funcionamiento;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -37,8 +36,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import JDBC.DBLibreriaManager;
 
 /**
  * Esta clase sirve para realizar diferentes funciones realizanas con la
@@ -209,11 +206,8 @@ public class Utilidades {
 	 */
 	public void deleteImage(String pathFichero) {
 
-		File original = new File(pathFichero);
-		File tmp = new File(original.toString());
-
 		try {
-			Files.deleteIfExists(Paths.get(tmp.getParentFile() + "/tmp.jpg"));
+			Files.deleteIfExists(Paths.get(pathFichero));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -226,82 +220,109 @@ public class Utilidades {
 	 * @param file
 	 * @return
 	 */
-	public void nueva_imagen(String direccion) throws IOException {
+	public void nueva_imagen(Comic datos) throws IOException {
 		try {
 			File file;
-			if (direccion != null) {
-				file = new File(direccion);
+			if (datos.getImagen() != "") {	
+				file = new File(datos.getImagen());
 			} else {
-				String userDir = System.getProperty("user.home");
-				String documentsPath = userDir + File.separator + "Documents";
-				String imagePath = documentsPath + File.separator + "libreria_comics" + File.separator
-						+ "portadas/sinPortada.jpg";
+				String imagePath = "sinPortada.jpg";
 				file = new File(imagePath);
 			}
-
-			if (file != null && file.exists()) {
+			if (file.exists()) {
 				String userDir = System.getProperty("user.home");
 				String documentsPath = userDir + File.separator + "Documents";
-				String imagePath = documentsPath + File.separator + "libreria_comics" + File.separator + "portadas";
+				String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator + "portadas";
+				
+				//Esto se modificara para hacerlo dinamico
+				String imagePath = defaultImagePath;
+
 				File portadasFolder = new File(imagePath);
-				String ultimo_id = DBLibreriaManager.obtener_ultimo_id();
-				int nuevo_id = Integer.parseInt(ultimo_id);
 
 				if (!portadasFolder.exists()) {
 					if (!portadasFolder.mkdirs()) {
 						throw new IOException("No se pudo crear la carpeta 'portadas'");
 					}
 				}
-
-				String nombreOriginal = file.getName();
-				String extension = nombreOriginal.substring(nombreOriginal.lastIndexOf("."));
-				String nuevoNombreArchivo = String.valueOf(nuevo_id) + extension;
+				String nombre_comic = datos.getNombre().replace(" ", "_").replace(":", "_");
+				String numero_comic = datos.getNumero();
+				String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_");
+				String fecha_comic = datos.getFecha();
+				String nombre_completo = nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic;
+				String extension = ".jpg";
+				String nuevoNombreArchivo = String.valueOf(nombre_completo) + extension;
 				File newFile = new File(portadasFolder.getPath() + File.separator + nuevoNombreArchivo);
 				Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			} else {
-				throw new IOException("El archivo de imagen no existe");
+				throw new FileNotFoundException("La dirección de la imagen no existe");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-
-	public void guardar_imagen(String direccion, String ID) {
-	    try {
-	        File file = null;
-	        if (direccion != null) {
-	            file = new File(direccion);
-	        }
-
-	        if (file.exists()) {
-	            String userDir = System.getProperty("user.home");
-	            String documentsPath = userDir + File.separator + "Documents";
-	            String imagePath = documentsPath + File.separator + "libreria_comics" + File.separator + "portadas";
-	            File portadasFolder = new File(imagePath);
-
-	            if (!portadasFolder.exists()) {
-	                if (!portadasFolder.mkdirs()) {
-	                    throw new IOException("No se pudo crear la carpeta 'portadas'");
-	                }
-	            }
-
-	            String nombreOriginal = file.getName();
-	            String extension = nombreOriginal.substring(nombreOriginal.lastIndexOf("."));
-	            String nuevoNombreArchivo = ID + extension;
-	            File newFile = new File(portadasFolder.getPath() + File.separator + nuevoNombreArchivo);
-	            Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-	        } else {
-	            String userDir = System.getProperty("user.home");
-	            String documentsPath = userDir + File.separator + "Documents";
-	            String imagePath = documentsPath + File.separator + "libreria_comics" + File.separator + "portadas/sinPortada.jpg";
-	            File sin_portada = new File(imagePath);
-	            Files.copy(file.toPath(), sin_portada.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-	        }
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
+	
+	public String obtenerNombreCompleto(Comic datos) {
+		String userDir = System.getProperty("user.home");
+		String documentsPath = userDir + File.separator + "Documents";
+		String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator + "portadas" + File.separator;
+	    String nombre_comic = datos.getNombre().replace(" ", "_").replace(":", "_");
+	    String numero_comic = datos.getNumero();
+	    String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_");
+	    String fecha_comic = datos.getFecha();
+	    String nombre_completo = nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic;
+	    String extension = ".jpg";
+	    String nuevoNombreArchivo = defaultImagePath + nombre_completo + extension;
+	    return nuevoNombreArchivo;
 	}
+	
+	public String obtenerNombreArchivo(String rutaCompleta) {
+	    // Obtener el separador de ruta del archivo según el sistema operativo
+	    String separadorRuta = File.separator;
+
+	    // Obtener la última posición del separador de ruta del archivo en la ruta completa
+	    int posicionSeparador = rutaCompleta.lastIndexOf(separadorRuta);
+
+	    // Extraer el nombre del archivo sin la ruta
+	    String nombreArchivo = rutaCompleta.substring(posicionSeparador + 1);
+
+	    return nombreArchivo;
+	}
+
+
+//	public void guardar_imagen(String direccion) {
+//	    try {
+//	        File file = null;
+//	        if (direccion != null) {
+//	            file = new File(direccion);
+//	        }
+//
+//	        if (file.exists()) {
+//	            String userDir = System.getProperty("user.home");
+//	            String documentsPath = userDir + File.separator + "Documents";
+//	            String imagePath = documentsPath + File.separator + "libreria_comics" + File.separator + "portadas" + File.separator;
+//	            File portadasFolder = new File(imagePath);
+//
+//	            if (!portadasFolder.exists()) {
+//	                if (!portadasFolder.mkdirs()) {
+//	                    throw new IOException("No se pudo crear la carpeta 'portadas'");
+//	                }
+//	            }
+//
+//	            String nuevoNombreArchivo = imagePath + direccion;
+//	            File newFile = new File(portadasFolder.getPath() + File.separator + nuevoNombreArchivo);
+//	            Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+//	        } else {
+//	            String userDir = System.getProperty("user.home");
+//	            String documentsPath = userDir + File.separator + "Documents";
+//	            String imagePath = documentsPath + File.separator + "libreria_comics" + File.separator + "portadas/sinPortada.jpg";
+//	            File sin_portada = new File(imagePath);
+//	            Files.copy(file.toPath(), sin_portada.toPath(), StandardCopyOption.REPLACE_EXISTING);
+//
+//	        }
+//	    } catch (IOException e) {
+//	        e.printStackTrace();
+//	    }
+//	}
 
 
 	/**

@@ -29,7 +29,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
-import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -1036,28 +1035,37 @@ public class DBLibreriaManager extends Comic {
 	 * base de datos excel.
 	 */
 	public void saveImageFromDataBase() {
-		String sentenciaSQL = "SELECT * FROM comicsbbdd";
-		conn = DBManager.conexion();
-		carpeta = new FuncionesExcel();
-		File directorio = carpeta.carpetaPortadas();
-		try {
-			PreparedStatement preparedStatement = conn.prepareStatement(sentenciaSQL);
-			ResultSet rs = preparedStatement.executeQuery();
-			
-			if(directorio != null) {
-				while (rs.next()) {
-					String nombreImagen = rs.getString(1);
-					Blob imagenBlob = rs.getBlob(13);
-					FileOutputStream fileops = new FileOutputStream(
-							directorio.getAbsoluteFile().toString() + "/" + nombreImagen + ".jpg");
-					fileops.write(imagenBlob.getBytes(1, (int) imagenBlob.length()));
-					fileops.close();
-					
-				}
-			}
-		} catch (SQLException | IOException e) {
-			nav.alertaException(e.toString());
-		}
+	    String sentenciaSQL = "SELECT * FROM comicsbbdd";
+	    conn = DBManager.conexion();
+	    carpeta = new FuncionesExcel();
+	    File directorio = carpeta.carpetaPortadas();
+	    try {
+	        PreparedStatement preparedStatement = conn.prepareStatement(sentenciaSQL);
+	        ResultSet rs = preparedStatement.executeQuery();
+
+	        if (directorio != null) {
+	            while (rs.next()) {
+	                String nombreImagen = rs.getString(2).replace(" ", "_").replace(":", "_") + "_" + rs.getInt(3) + "_" + rs.getString(4).replace(" ", "_") + "_" + rs.getDate(9);
+	                
+	                String direccionImagen = rs.getString(13);
+	                File imagenArchivo = new File(direccionImagen);
+	                FileInputStream fileInputStream = new FileInputStream(imagenArchivo);
+	                FileOutputStream fileOutputStream = new FileOutputStream(
+	                        directorio.getAbsolutePath() + "/" + nombreImagen + ".jpg");
+
+	                byte[] buffer = new byte[4096];
+	                int bytesRead;
+	                while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+	                    fileOutputStream.write(buffer, 0, bytesRead);
+	                }
+
+	                fileInputStream.close();
+	                fileOutputStream.close();
+	            }
+	        }
+	    } catch (SQLException | IOException e) {
+	        nav.alertaException(e.toString());
+	    }
 	}
 
 	/**
@@ -1158,52 +1166,44 @@ public class DBLibreriaManager extends Comic {
 	 * introduzcamos en los campos.
 	 * @throws IOException 
 	 */
-	public void insertarDatos(String datos[]) throws IOException {
+	public void insertarDatos(Comic comic_datos) throws IOException {
+		
+		
 
 		String sentenciaSQL = "insert into comicsbbdd(nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,fecha_publicacion,nomGuionista,nomDibujante,puntuacion,portada,estado) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-		subirComic(sentenciaSQL, datos); // Llamada a funcion que permite comprobar el cambio realizado en el comic
+		subirComic(sentenciaSQL, comic_datos); // Llamada a funcion que permite comprobar el cambio realizado en el comic
 
 	}
 
 	/**
 	 * Funcion que permite introducir un nuevo comic en la base de datos.
 	 */
-	public void subirComic(String sentenciaSQL, String datos[]) throws IOException {
-
-		utilidad = new Utilidades();
-        String ultimo_id = DBLibreriaManager.obtener_ultimo_id();
-        int nuevo_id = Integer.parseInt(ultimo_id);
-        String userDir = System.getProperty("user.home");
-        String documentsPath = userDir + File.separator + "Documents";
-        String imagePath = documentsPath + File.separator + "libreria_comics" + File.separator + "portadas" + File.separator + nuevo_id + ".jpg";
-        
+	public void subirComic(String sentenciaSQL, Comic datos) throws IOException {
 
 		conn = DBManager.conexion();
 
 		try {
 			PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
 
-			statement.setString(1, datos[0]);
-			statement.setString(2, datos[1]);
-			statement.setString(3, datos[2]);
-			statement.setString(4, datos[3]);
-			statement.setString(5, datos[4]);
-			statement.setString(6, datos[5]);
-			statement.setString(7, datos[6]);
-			statement.setString(8, datos[7]);
-			statement.setString(9, datos[8]);
-			statement.setString(10, datos[9]);
+			statement.setString(1, datos.getNombre());
+			statement.setString(2, datos.getNumero());
+			statement.setString(3, datos.getVariante());
+			statement.setString(4, datos.getFirma());
+			statement.setString(5, datos.getEditorial());
+			statement.setString(6, datos.getFormato());
+			statement.setString(7, datos.getProcedencia());
+			statement.setString(8, datos.getFecha());
+			statement.setString(9, datos.getGuionista());
+			statement.setString(10, datos.getDibujante());
 			statement.setString(11, "Sin puntuar");
-			statement.setString(12, imagePath);
-			statement.setString(13, datos[11]);
+			statement.setString(12, datos.getImagen());
+			statement.setString(13, "En posesion");
 
 			statement.executeUpdate();
 			statement.close();
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
-		} finally {
-//			ejecucionPreparedStatement(reloadID());
 		}
 	}
 
@@ -1231,21 +1231,16 @@ public class DBLibreriaManager extends Comic {
 	 * @param ps
 	 * @return
 	 */
-	public void comprobarCambio(String datos[]) {
-
+	public void actualizar_comic(Comic datos) {
+		utilidad = new Utilidades();
 		conn = DBManager.conexion();
 		String sentenciaSQL = "UPDATE comicsbbdd set nomComic = ?,numComic = ?,nomVariante = ?,"
 				+ "Firma = ?,nomEditorial = ?,formato = ?,Procedencia = ?,fecha_publicacion = ?,"
 				+ "nomGuionista = ?,nomDibujante = ?,portada = ?,estado = ? where ID = ?";
-
+		
 		try {
-			PreparedStatement ps = null;
-			ps = conn.prepareStatement(sentenciaSQL);
-			if (comprobarID(datos[0])) // Comprueba si la ID introducida existe en la base de datos
-			{
-				ps.setString(12, datos[0]);
-				comicModificar(ps, datos); // Llama a funcion que permite cambiar los datos del comic
-
+			if (comprobarID(datos.getID())) { // Comprueba si la ID introducida existe en la base de datos
+				comicModificar(sentenciaSQL, datos); // Llama a funcion que permite cambiar los datos del comic
 			}
 		} catch (SQLException | IOException ex) {
 			nav.alertaException(ex.toString());
@@ -1273,12 +1268,22 @@ public class DBLibreriaManager extends Comic {
 	    return null;
 	}
 	
-	public void modificar_direccion_portada(String ID) {
+	public void modificar_direccion_portada(Comic datos, String ID) {
+		
+		utilidad = new Utilidades();
+		
+		String nombre_comic = datos.getNombre().replace(" ", "_").replace(":", "_");
+		String numero_comic = datos.getNumero();
+		String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_");
+		String fecha_comic = datos.getFecha();
+		String nombre_completo = nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic;
+		String extension = ".jpg";
+		String nuevoNombreArchivo = String.valueOf(nombre_completo) + extension;
 		
 	    String userDir = System.getProperty("user.home");
 	    String documentsPath = userDir + File.separator + "Documents";
-	    String imagePath = documentsPath + File.separator + "libreria_comics" + File.separator + "portadas" + File.separator + ID + ".jpg";
-		
+	    String imagePath = documentsPath + File.separator + "libreria_comics" + File.separator + "portadas" + File.separator + nuevoNombreArchivo;
+		System.out.println(imagePath);
 	    String sql = "UPDATE comicsbbdd SET portada = ? WHERE ID = ?";
 	    PreparedStatement ps;
 		try {
@@ -1300,109 +1305,142 @@ public class DBLibreriaManager extends Comic {
 	 * @return
 	 * @throws SQLException 
 	 */
-	public void comicModificar(PreparedStatement ps, String datos[]) throws SQLException, IOException {
+	public void comicModificar(String sentenciaSQL, Comic datos) throws SQLException, IOException {
 		utilidad = new Utilidades();
 		listaComics.clear();
-		String nombre = "", numero = "", variante = "", firma = "", editorial = "", formato = "", procedencia = "",
-				fecha = "", guionista = "", dibujante = "", estado = "", portada_actual = "";
-		Comic comic = comicDatos(datos[0]);
-		try {
+		
+		Comic comic = comicDatos(datos.getID());
 
-			if (datos[1].length() != 0) {
-				ps.setString(1, datos[1]);
-				nombre = datos[1];
+		String nombre = datos.getNombre();
+
+		String numero = datos.getNumero();
+
+		String variante = datos.getVariante();
+
+		String firma = datos.getFirma();
+
+		String editorial = datos.getEditorial();
+
+		String formato = datos.getFormato();
+
+		String procedencia = datos.getProcedencia();
+
+		String fecha = datos.getFecha();
+
+		String guionista = datos.getGuionista();
+
+		String dibujante = datos.getDibujante();
+
+		String estado = datos.getEstado();
+
+		String portada_nueva = datos.getImagen();
+		
+//		String portada_vieja = comic.getImagen();
+				
+//		String nuevo_nombre = utilidad.obtenerNombreCompleto(datos);
+//
+//		String viejo_nombre = utilidad.obtenerNombreCompleto(comic);
+		
+		String portada_final;
+		try {
+			PreparedStatement ps = conn.prepareStatement(sentenciaSQL);
+
+			if (nombre.length() != 0) {
+				ps.setString(1, nombre);
 			} else {
 				nombre = comic.getNombre();
 				ps.setString(1, nombre);
 			}
-			if (datos[2].length() != 0) {
-				ps.setString(2, datos[2]);
-				numero = datos[2];
+			
+			if (numero.length() != 0) {
+				ps.setString(2, numero);
 			} else {
 				numero = comic.getNumero();
 				ps.setString(2, numero);
 			}
-			if (datos[3].length() != 0) {
-				ps.setString(3, datos[3]);
-				variante = datos[3];
+			
+			if (variante.length() != 0) {
+				ps.setString(3, variante);
 			} else {
 				variante = comic.getVariante();
 				ps.setString(3, variante);
 			}
-			if (datos[4].length() != 0) {
-				ps.setString(4, datos[4]);
-				firma = datos[4];
+			
+			if (firma.length() != 0) {
+				ps.setString(4, firma);
 			} else {
 				firma = comic.getFirma();
 				ps.setString(4, firma);
 			}
-			if (datos[5].length() != 0) {
-				ps.setString(5, datos[5]);
-				editorial = datos[5];
+			
+			if (editorial.length() != 0) {
+				ps.setString(5, editorial);
 			} else {
 				editorial = comic.getEditorial();
 				ps.setString(5, editorial);
 			}
-			if (datos[6].length() != 0) {
-				ps.setString(6, datos[6]);
-				formato = datos[6];
+			
+			if (formato.length() != 0) {
+				ps.setString(6, formato);
 			} else {
 				formato = comic.getFormato();
 				ps.setString(6, formato);
 			}
-			if (datos[7].length() != 0) {
-				ps.setString(7, datos[7]);
-				procedencia = datos[7];
+			
+			if (procedencia.length() != 0) {
+				ps.setString(7, procedencia);
 			} else {
 				procedencia = comic.getProcedencia();
 				ps.setString(7, procedencia);
 			}
-			if (datos[8].length() != 0) {
-				ps.setString(8, datos[8]);
-				fecha = datos[8];
+			
+			if (fecha.length() != 0) {
+				ps.setString(8, fecha);
 			} else {
 				fecha = comic.getFecha();
 				ps.setString(8, fecha);
 			}
-			if (datos[9].length() != 0) {
-				ps.setString(9, datos[9]);
-				guionista = datos[9];
+			
+			if (guionista.length() != 0) {
+				ps.setString(9, guionista);
 			} else {
 				guionista = comic.getGuionista();
 				ps.setString(9, guionista);
 			}
-			if (datos[10].length() != 0) {
-				ps.setString(10, datos[10]);
-				dibujante = datos[10];
+			
+			if (dibujante.length() != 0) {
+				ps.setString(10, dibujante);
 			} else {
 				dibujante = comic.getDibujante();
 				ps.setString(10, dibujante);
 			}
 
-			if (datos[11].length() != 0) {
-				ps.setString(11, datos[11]);
-				portada_actual = datos[11];
+			if (portada_nueva.length() != 0) {
+				portada_final = datos.getImagen();;
+				ps.setString(11, portada_final);
 			} else {
-				portada_actual = comic.getImagen();
-				ps.setString(11, portada_actual);
+				portada_final = comic.getImagen();
+				ps.setString(11, portada_final);
 			}
-			if (datos[12].length() != 0) {
-				ps.setString(12, datos[12]);
-				estado = datos[12];
+			
+			if (estado.length() != 0) {
+				ps.setString(12, estado);
+			} else {
+				estado = comic.getEstado();
+				ps.setString(12, estado);
 			}
 
-			ps.setString(13, datos[0]);
-
+			ps.setString(13, datos.getID());
+			
 			if (ps.executeUpdate() == 1) { // Si se ha modificado correctamente, saltara el siguiente mensaje
-				utilidad.guardar_imagen(portada_actual,datos[0]);
-				modificar_direccion_portada(datos[0]);
-					comic = new Comic("", nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
-							guionista, dibujante, estado, "", portada_actual);
-				//if (ps.executeUpdate() == 1) { // Si se ha modificado correctamente, saltara el siguiente mensaje
-				//comic = new Comic("", nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
-				//guionista, dibujante, estado, "", null);
+				System.out.println("Portada: " + portada_final);
 
-				listaComics.add(comic);
+					Comic nuevo_comic = new Comic("", nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+							guionista, dibujante, estado, "", portada_final);
+					
+				utilidad.nueva_imagen(nuevo_comic);
+				modificar_direccion_portada(nuevo_comic,datos.getID());
+				listaComics.add(nuevo_comic);
 
 			}
 			ps.close();

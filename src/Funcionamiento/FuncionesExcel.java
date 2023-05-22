@@ -32,6 +32,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -63,7 +65,6 @@ public class FuncionesExcel {
 	private static Connection conn = DBManager.conexion();
 	private static Ventanas nav = new Ventanas();
 	private static DBLibreriaManager db = null;
-	private static Utilidades utilidad = null;
 	private static int ID = 0;
 
 	/**
@@ -99,7 +100,7 @@ public class FuncionesExcel {
 		Sheet hoja;
 		Workbook libro;
 		String encabezado;
-
+		String direccion = "C:" + File.separator + "Users" + File.separator + "AlejandroRM" + File.separator + "Documents" + File.separator + "libreria_comics" + File.separator + "portadas" + File.separator;
 		String[] encabezados = { "ID", "nomComic", "numComic", "nomVariante", "Firma", "nomEditorial", "Formato",
 				"Procedencia", "fecha_publicacion", "nomGuionista", "nomDibujante", "puntuacion", "portada", "estado" };
 		int indiceFila = 0;
@@ -135,7 +136,8 @@ public class FuncionesExcel {
 				fila.createCell(9).setCellValue(comic.getGuionista());
 				fila.createCell(10).setCellValue(comic.getDibujante());
 				fila.createCell(11).setCellValue(comic.getPuntuacion());
-				fila.createCell(12).setCellValue("");
+				String nombreImagen = direccion + comic.getNombre().replace(" ", "_").replace(":", "_") + "_" + comic.getNumero() + "_" + comic.getVariante().replace(" ", "_") + "_" + comic.getFecha() + ".jpg";
+				fila.createCell(12).setCellValue(nombreImagen);
 				fila.createCell(13).setCellValue(comic.getEstado());
 
 				indiceFila++;
@@ -266,29 +268,39 @@ public class FuncionesExcel {
 	 * @throws IOException 
 	 */
 	public InputStream subirImagenes(File directorio) throws IOException {
+	    ID++;
+	    InputStream input;
+	    File portada = new File(directorio.toString() + "/" + ID + ".jpg");
+	    try {
+	        if (directorio.exists()) {
+	            if (portada.exists()) {
+	                String carpetaDestino = obtenerRutaDestino();  // Obtener la ruta de destino predeterminada
+	                File carpetaDestinoFile = new File(carpetaDestino);
+	                if (!carpetaDestinoFile.exists() && !carpetaDestinoFile.mkdirs()) {
+	                    throw new IOException("No se pudo crear la carpeta de destino.");
+	                }
+	                
+	                File copia_imagen = new File(carpetaDestino + File.separator + ID + ".jpg");
+	                Files.copy(portada.toPath(), copia_imagen.toPath(), StandardCopyOption.REPLACE_EXISTING);
+	                input = new FileInputStream(copia_imagen);
+	                
+	                return input;
+	            } else {
+	                input = this.getClass().getResourceAsStream("sinPortada.jpg");
+	                return input;
+	            }
+	        }
+	    } catch (FileNotFoundException e) {
+	        String error = "ERROR. Ha cancelado la subida de imágenes de portada. Se van a subir imágenes predeterminadas.";
+	        nav.alertaException(error);
+	    }
+	    return null;
+	}
 
-		ID++;
-		InputStream input;
-		utilidad = new Utilidades();
-		
-		File portada = new File(directorio.toString() + "/" + ID + ".jpg");
-		try {
-			if (directorio.exists()) {
-				if (portada.exists()) {
-					File copia_imagen = utilidad.guardar_imagen(portada);
-					input = new FileInputStream(copia_imagen);
-
-					return input;
-				} else {
-					input = this.getClass().getResourceAsStream("sinPortada.jpg");
-					return input;
-				}
-			}
-		} catch (FileNotFoundException e) {
-			String error = "ERROR. Ha cancelado la subida de imagenes de portada. Van a subirse imagenes predeterminadas.";
-			nav.alertaException(error);
-		}
-		return null;
+	private String obtenerRutaDestino() {
+	    // Aquí puedes definir y retornar la ruta de destino predeterminada
+	    String rutaDestino = "C:" + File.separator + "ruta" + File.separator + "destino";
+	    return rutaDestino;
 	}
 
 	/**
@@ -303,7 +315,7 @@ public class FuncionesExcel {
 	    String procedencia;
 	    db = new DBLibreriaManager();
 	    int batchSize = 20;
-	    utilidad = new Utilidades();
+	    new Utilidades();
 	    String lineText = null;
 
 	    try {
@@ -329,8 +341,8 @@ public class FuncionesExcel {
 	            }
 
 	            // Conversión de fecha al formato correcto
-	            String fecha = convertirFecha(data[8]);
-
+//	            String fecha = convertirFecha(data[8]);
+	            String fecha = data[8];
 	            String guionista = data[9];
 	            String dibujante = data[10];
 	            if (data[11].length() != 0) {

@@ -238,11 +238,18 @@ public class AccesoBBDDController {
 	public void envioDatosBBDD() { // Metodo que manda toda la informacion de los textField a la clase DBManager.
 		cbd = new CrearBBDDController();
 		String datos[] = new String[5];
-		datos[0] = puertobbdd.getText();
-		datos[1] = nombreBBDD.getText();
-		datos[2] = usuario.getText();
-		datos[3] = pass.getText();
-		datos[4] = selectorHost();
+//		datos[0] = puertobbdd.getText();
+//		datos[1] = nombreBBDD.getText();
+//		datos[2] = usuario.getText();
+//		datos[3] = pass.getText();
+//		datos[4] = selectorHost();
+		
+		datos[0] = "3306";
+		datos[1] = "comics";
+		datos[2] = "root";
+		datos[3] = "1234";
+		datos[4] = "localhost";
+		
 		DBManager.datosBBDD(datos);
 		cbd.reconstruirDatos(datos);
 	}
