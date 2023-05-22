@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -70,7 +71,6 @@
       <TextField fx:id="nombreVariante" layoutX="395.0" layoutY="31.0" prefHeight="25.0" prefWidth="126.0" />
       <TextField fx:id="nombreFirma" layoutX="126.0" layoutY="61.0" prefHeight="25.0" prefWidth="126.0" />
       <TextField fx:id="nombreEditorial" layoutX="395.0" layoutY="61.0" prefHeight="25.0" prefWidth="126.0" />
-      <TextField fx:id="fechaPublicacion" layoutX="126.0" layoutY="121.0" prefHeight="25.0" prefWidth="126.0" />
       <TextField fx:id="nombreGuionista" layoutX="395.0" layoutY="120.0" prefHeight="25.0" prefWidth="126.0" />
       <TextField fx:id="nombreDibujante" layoutX="126.0" layoutY="151.0" prefHeight="25.0" prefWidth="126.0" />
       <Button fx:id="botonMostrarParametro" layoutX="537.0" layoutY="56.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="43.0" prefWidth="90.0" text="Mostrar por parametros" wrapText="true" />
@@ -130,5 +130,6 @@
       <ImageView fx:id="imagencomic" fitHeight="312.0" fitWidth="248.0" layoutX="642.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true" />
       <ComboBox fx:id="nombreProcedencia" layoutX="395.0" layoutY="91.0" prefHeight="25.0" prefWidth="126.0" />
       <ComboBox fx:id="nombreFormato" layoutX="126.0" layoutY="92.0" prefHeight="25.0" prefWidth="126.0" />
+      <DatePicker fx:id="fechaPublicacion" layoutX="127.0" layoutY="121.0" prefHeight="25.0" prefWidth="126.0" />
    </children>
 </Pane>

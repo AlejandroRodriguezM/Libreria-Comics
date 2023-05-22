@@ -18,14 +18,17 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import javafx.util.converter.IntegerStringConverter;
 
 /**
  * Esta clase sirve para almoner datos. No elimna los datos, realiza la funcion
@@ -75,7 +78,7 @@ public class EliminarDatosController implements Initializable {
 	private TextField nombreEditorial;
 
 	@FXML
-	private TextField anioPublicacion;
+	private DatePicker anioPublicacion;
 
 	@FXML
 	private TextField nombreFirma;
@@ -168,7 +171,26 @@ public class EliminarDatosController implements Initializable {
 		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
 		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
-		TextFields.bindAutoCompletion(anioPublicacion, DBLibreriaManager.listaFecha);
+		
+	    TextFormatter<Integer> textFormatterAni = new TextFormatter<>(new IntegerStringConverter(), null,
+	            change -> {
+	                String newText = change.getControlNewText();
+	                if (newText.matches("\\d*")) {
+	                    return change;
+	                }
+	                return null;
+	            });
+	    idComic.setTextFormatter(textFormatterAni);
+
+	    TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null,
+	            change -> {
+	                String newText = change.getControlNewText();
+	                if (newText.matches("\\d*")) {
+	                    return change;
+	                }
+	                return null;
+	            });
+	    numeroComic.setTextFormatter(textFormatterComic);
 	}
 	
 	/**
@@ -212,7 +234,7 @@ public class EliminarDatosController implements Initializable {
 		nombreVariante.setText("");
 		nombreFirma.setText("");
 		nombreEditorial.setText("");
-		anioPublicacion.setText("");
+		anioPublicacion.setValue(null);
 		nombreDibujante.setText("");
 		nombreGuionista.setText("");
 		pantallaInformativa.setText(null);
@@ -427,7 +449,7 @@ public class EliminarDatosController implements Initializable {
 
 		campos[7] = procedenciaActual();
 
-		campos[8] = anioPublicacion.getText();
+		campos[8] = anioPublicacion.getValue().toString();
 
 		campos[9] = nombreGuionista.getText();
 

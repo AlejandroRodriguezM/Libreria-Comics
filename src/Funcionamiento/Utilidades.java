@@ -3,12 +3,16 @@ package Funcionamiento;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.io.OutputStream;
+import java.io.FileOutputStream;
+
 
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
@@ -223,12 +227,25 @@ public class Utilidades {
 	public void nueva_imagen(Comic datos) throws IOException {
 		try {
 			File file;
-			if (datos.getImagen() != "") {	
-				file = new File(datos.getImagen());
-			} else {
-				String imagePath = "sinPortada.jpg";
-				file = new File(imagePath);
-			}
+	        InputStream input = null;
+
+	        if (!datos.getImagen().equals("Funcionamiento/sinPortada.jpg")) {
+	            file = new File(datos.getImagen());
+	        } else {
+	            input = getClass().getResourceAsStream("sinPortada.jpg");
+	            if (input == null) {
+	                throw new FileNotFoundException("La imagen predeterminada no se encontró en el paquete");
+	            }
+	            file = File.createTempFile("tmp", ".jpg");
+	            file.deleteOnExit();
+	            try (OutputStream output = new FileOutputStream(file)) {
+	                byte[] buffer = new byte[4096];
+	                int bytesRead;
+	                while ((bytesRead = input.read(buffer)) != -1) {
+	                    output.write(buffer, 0, bytesRead);
+	                }
+	            }
+	        }
 			if (file.exists()) {
 				String userDir = System.getProperty("user.home");
 				String documentsPath = userDir + File.separator + "Documents";

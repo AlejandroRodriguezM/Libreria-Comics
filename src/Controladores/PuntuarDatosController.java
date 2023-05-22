@@ -42,43 +42,46 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import javafx.util.converter.IntegerStringConverter;
 
 public class PuntuarDatosController implements Initializable {
 
-    @FXML
-    private Button botonBorrarOpinion;
-
-    @FXML
-    private Button botonLeidos;
-
-    @FXML
-    private Button botonLimpiarComic;
-
-    @FXML
-    private Button botonMostrarParametro;
-
-    @FXML
-    private Button botonAgregarPuntuacion;
-
-    @FXML
-    private Button botonSalir;
-
-    @FXML
-    private Button botonVolver;
-
-    @FXML
-    private Button botonbbdd;
+	@FXML
+	private Button botonBorrarOpinion;
 
 	@FXML
-	private TextField fechaPublicacion;
+	private Button botonLeidos;
+
+	@FXML
+	private Button botonLimpiarComic;
+
+	@FXML
+	private Button botonMostrarParametro;
+
+	@FXML
+	private Button botonAgregarPuntuacion;
+
+	@FXML
+	private Button botonSalir;
+
+	@FXML
+	private Button botonVolver;
+
+	@FXML
+	private Button botonbbdd;
+
+	@FXML
+	private DatePicker fechaPublicacion;
 
 	@FXML
 	private TextField numeroID;
@@ -151,18 +154,18 @@ public class PuntuarDatosController implements Initializable {
 
 	@FXML
 	private ComboBox<String> procedenciaParametro;
-	
+
 	@FXML
 	private ComboBox<String> puntuacionMenu;
-	
+
 	@FXML
 	private ComboBox<String> nombreFormato;
 
 	@FXML
 	public TableView<Comic> tablaBBDD;
 
-    @FXML
-    private ImageView imagencomic;
+	@FXML
+	private ImageView imagencomic;
 
 	private static Ventanas nav = new Ventanas();
 	private static DBLibreriaManager libreria = null;
@@ -178,14 +181,14 @@ public class PuntuarDatosController implements Initializable {
 				"2.5/5", "3/5", "3.5/5", "4/5", "4.5/5", "5/5");
 		puntuacionMenu.setItems(puntuaciones);
 		puntuacionMenu.getSelectionModel().selectFirst();
-		
-		ObservableList<String> procedenciaEstado = FXCollections.observableArrayList("Spain", "USA",
-				"Japon","Italia","Francia");
+
+		ObservableList<String> procedenciaEstado = FXCollections.observableArrayList("Spain", "USA", "Japon", "Italia",
+				"Francia");
 		procedenciaParametro.setItems(procedenciaEstado);
 		procedenciaParametro.getSelectionModel().selectFirst();
-		
-		ObservableList<String> formatoActual = FXCollections.observableArrayList("Grapa", "Tapa dura","Tapa blanda",
-				"Manga","Libro");
+
+		ObservableList<String> formatoActual = FXCollections.observableArrayList("Grapa", "Tapa dura", "Tapa blanda",
+				"Manga", "Libro");
 		nombreFormato.setItems(formatoActual);
 		nombreFormato.getSelectionModel().selectFirst();
 
@@ -196,9 +199,26 @@ public class PuntuarDatosController implements Initializable {
 		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
 		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
-		TextFields.bindAutoCompletion(fechaPublicacion, DBLibreriaManager.listaFecha);
+
+		TextFormatter<Integer> textFormatterAni = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+			String newText = change.getControlNewText();
+			if (newText.matches("\\d*")) {
+				return change;
+			}
+			return null;
+		});
+		numeroID.setTextFormatter(textFormatterAni);
+
+		TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+			String newText = change.getControlNewText();
+			if (newText.matches("\\d*")) {
+				return change;
+			}
+			return null;
+		});
+		numeroComic.setTextFormatter(textFormatterComic);
 	}
-	
+
 	/**
 	 * Funcion que permite modificar el estado de un comic.
 	 *
@@ -207,11 +227,13 @@ public class PuntuarDatosController implements Initializable {
 	 */
 	public String procedenciaActual() {
 
-		String procedenciaEstado = procedenciaParametro.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+		String procedenciaEstado = procedenciaParametro.getSelectionModel().getSelectedItem().toString(); // Toma el
+																											// valor del
+																											// menu
 		// "puntuacion"
 		return procedenciaEstado;
 	}
-	
+
 	/**
 	 * Funcion que permite modificar el estado de un comic.
 	 *
@@ -321,7 +343,7 @@ public class PuntuarDatosController implements Initializable {
 		nombreVariante.setText("");
 		nombreFirma.setText("");
 		nombreEditorial.setText("");
-		fechaPublicacion.setText("");
+		fechaPublicacion.setValue(null);
 		nombreDibujante.setText("");
 		nombreGuionista.setText("");
 		busquedaGeneral.setText("");
@@ -427,7 +449,7 @@ public class PuntuarDatosController implements Initializable {
 
 		campos[7] = procedenciaActual();
 
-		campos[8] = fechaPublicacion.getText();
+		campos[8] = fechaPublicacion.getValue().toString();
 
 		campos[9] = nombreGuionista.getText();
 

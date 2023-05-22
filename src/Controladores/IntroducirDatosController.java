@@ -44,6 +44,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -55,7 +56,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
+import javafx.scene.control.TextFormatter;
+import javafx.util.converter.IntegerStringConverter;
 /**
  * Esta clase sirve para introducir datos a la base de datos
  *
@@ -86,9 +88,9 @@ public class IntroducirDatosController implements Initializable {
 
 	@FXML
 	private TextArea pantallaInformativa;
-
+	
 	@FXML
-	private TextField fechaPublicacion;
+	private DatePicker fechaPublicacion;
 
 	@FXML
 	private TextField numeroID;
@@ -131,9 +133,9 @@ public class IntroducirDatosController implements Initializable {
 
 	@FXML
 	private TextField editorialAni;
-
+	
 	@FXML
-	private TextField fechaAni;
+	private DatePicker fechaAni;
 
 	@FXML
 	private TextField guionistaAni;
@@ -246,7 +248,6 @@ public class IntroducirDatosController implements Initializable {
 		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
 		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
-		TextFields.bindAutoCompletion(fechaPublicacion, DBLibreriaManager.listaFecha);
 
 		TextFields.bindAutoCompletion(nombreAni, DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(varianteAni, DBLibreriaManager.listaVariante);
@@ -254,6 +255,26 @@ public class IntroducirDatosController implements Initializable {
 		TextFields.bindAutoCompletion(editorialAni, DBLibreriaManager.listaEditorial);
 		TextFields.bindAutoCompletion(guionistaAni, DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(dibujanteAni, DBLibreriaManager.listaDibujante);
+		
+	    TextFormatter<Integer> textFormatterAni = new TextFormatter<>(new IntegerStringConverter(), null,
+	            change -> {
+	                String newText = change.getControlNewText();
+	                if (newText.matches("\\d*")) {
+	                    return change;
+	                }
+	                return null;
+	            });
+	    numeroAni.setTextFormatter(textFormatterAni);
+
+	    TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null,
+	            change -> {
+	                String newText = change.getControlNewText();
+	                if (newText.matches("\\d*")) {
+	                    return change;
+	                }
+	                return null;
+	            });
+	    numeroComic.setTextFormatter(textFormatterComic);
 	}
 
 	/**
@@ -295,7 +316,7 @@ public class IntroducirDatosController implements Initializable {
 		nombreVariante.setText("");
 		nombreFirma.setText("");
 		nombreEditorial.setText("");
-		fechaPublicacion.setText("");
+		fechaPublicacion.setValue(null);
 		nombreDibujante.setText("");
 		nombreGuionista.setText("");
 		busquedaGeneral.setText("");
@@ -307,7 +328,7 @@ public class IntroducirDatosController implements Initializable {
 		nombreAni.setText("");
 		firmaAni.setText("");
 		editorialAni.setText("");
-		fechaAni.setText("");
+		fechaAni.setValue(null);
 		guionistaAni.setText("");
 		dibujanteAni.setText("");
 
@@ -513,7 +534,7 @@ public class IntroducirDatosController implements Initializable {
 	public boolean subidaComic() throws IOException {
 		libreria = new DBLibreriaManager();
 		utilidad = new Utilidades();
-
+		File file;
 		if (nav.alertaInsertar()) {
 
 			String datos[] = camposComicIntroducir();
@@ -539,12 +560,20 @@ public class IntroducirDatosController implements Initializable {
 			String guionista = datos[8];
 
 			String dibujante = datos[9];
+			
+			if (datos[10] != "") {
+				
+				file = new File(datos[10]);
 
-			if(datos[10] != "") {
-				portada = datos[10];
-				Image imagen = new Image(portada);
-				imagencomic.setImage(imagen);
-
+				if (!file.exists()) {
+					portada = "Funcionamiento/sinPortada.jpg";
+					Image imagen = new Image(portada);
+					imagencomic.setImage(imagen);
+				} else {
+					portada = datos[10];
+					Image imagen = new Image(portada);
+					imagencomic.setImage(imagen);
+				}
 			}
 
 			String estado = datos[11];
@@ -602,7 +631,7 @@ public class IntroducirDatosController implements Initializable {
 
 		campos[7] = procedenciaActual();
 
-		campos[8] = fechaPublicacion.getText();
+		campos[8] = fechaPublicacion.getValue().toString();
 
 		campos[9] = nombreGuionista.getText();
 
@@ -637,7 +666,7 @@ public class IntroducirDatosController implements Initializable {
 
 		campos[6] = procedenciaNueva();
 
-		campos[7] = fechaAni.getText();
+		campos[7] = fechaAni.getValue().toString();
 
 		campos[8] = guionistaAni.getText();
 
@@ -707,4 +736,6 @@ public class IntroducirDatosController implements Initializable {
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();
 	}
+	
+	
 }

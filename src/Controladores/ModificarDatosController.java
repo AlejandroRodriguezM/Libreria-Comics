@@ -44,6 +44,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -80,10 +81,10 @@ public class ModificarDatosController implements Initializable {
 	private Button botonNuevaPortada;
 
 	@FXML
-	private TextField anioPublicacion;
-
+	private DatePicker anioPublicacion;
+	
 	@FXML
-	private TextField anioPublicacionMod;
+	private DatePicker anioPublicacionMod;
 
 	@FXML
 	private TextField idComic;
@@ -240,7 +241,6 @@ public class ModificarDatosController implements Initializable {
 		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
 		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
-		TextFields.bindAutoCompletion(anioPublicacion, DBLibreriaManager.listaFecha);
 
 		TextFields.bindAutoCompletion(nombreComicMod, DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(nombreVarianteMod, DBLibreriaManager.listaVariante);
@@ -248,7 +248,6 @@ public class ModificarDatosController implements Initializable {
 		TextFields.bindAutoCompletion(nombreEditorialMod, DBLibreriaManager.listaEditorial);
 		TextFields.bindAutoCompletion(nombreGuionistaMod, DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(nombreDibujanteMod, DBLibreriaManager.listaDibujante);
-		TextFields.bindAutoCompletion(anioPublicacionMod, DBLibreriaManager.listaFecha);
 
 	}
 
@@ -388,7 +387,7 @@ public class ModificarDatosController implements Initializable {
 
 		nombreComic.setText("");
 
-		anioPublicacion.setText("");
+		anioPublicacion.setValue(null);
 
 		nombreComic.setText("");
 
@@ -419,7 +418,7 @@ public class ModificarDatosController implements Initializable {
 
 		nombreEditorialMod.setText("");
 
-		anioPublicacionMod.setText("");
+		anioPublicacionMod.setValue(null);
 
 		nombreGuionistaMod.setText("");
 
@@ -467,7 +466,7 @@ public class ModificarDatosController implements Initializable {
 
 		campos[7] = procedenciaActual();
 
-		campos[8] = anioPublicacion.getText();
+		campos[8] = anioPublicacion.getValue().toString();
 
 		campos[9] = nombreGuionista.getText();
 
@@ -504,7 +503,7 @@ public class ModificarDatosController implements Initializable {
 
 		campos[7] = procedenciaMod();
 
-		campos[8] = anioPublicacionMod.getText();
+		campos[8] = anioPublicacionMod.getValue().toString();
 
 		campos[9] = nombreGuionistaMod.getText();
 
@@ -616,11 +615,11 @@ public class ModificarDatosController implements Initializable {
 	public boolean modificacionComic() throws NumberFormatException, SQLException, IOException {
 		libreria = new DBLibreriaManager();
 		utilidad = new Utilidades();
-
+		File file;
 		if (nav.alertaModificar()) {
 
 			String datos[] = camposComicModificar();
-			
+
 			String portada = "";
 
 			String id_comic = datos[0];
@@ -644,12 +643,20 @@ public class ModificarDatosController implements Initializable {
 			String guionista = datos[9];
 
 			String dibujante = datos[10];
-			
-			if(datos[11] != "") {
-				portada = datos[11];
-				Image imagen = new Image(portada);
-				imagencomic.setImage(imagen);
 
+			if (datos[11] != "") {
+				portada = datos[11];
+
+				Comic comic = libreria.comicDatos(id_comic);
+				file = new File(portada);
+
+				if (!file.exists()) {
+					Image imagen = new Image(comic.getImagen());
+					imagencomic.setImage(imagen);
+				} else {
+					Image imagen = new Image(portada);
+					imagencomic.setImage(imagen);
+				}
 			}
 
 			String estado = datos[12];
@@ -657,9 +664,7 @@ public class ModificarDatosController implements Initializable {
 			Comic comic = new Comic(id_comic, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
 					guionista, dibujante, estado, "Sin puntuar", portada);
 
-			
 			libreria.actualizar_comic(comic);
-			
 
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #A0F52D");

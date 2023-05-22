@@ -1441,6 +1441,8 @@ public class DBLibreriaManager extends Comic {
 				utilidad.nueva_imagen(nuevo_comic);
 				modificar_direccion_portada(nuevo_comic,datos.getID());
 				listaComics.add(nuevo_comic);
+				
+
 
 			}
 			ps.close();

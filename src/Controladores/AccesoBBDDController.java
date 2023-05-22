@@ -1,18 +1,29 @@
 package Controladores;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+
+import org.controlsfx.control.textfield.TextFields;
+
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
+import JDBC.DBLibreriaManager;
 import JDBC.DBManager;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.util.converter.IntegerStringConverter;
 
 /**
  * Esta clase sirve para acceder a la base de datos y poder realizar diferentes
@@ -20,7 +31,7 @@ import javafx.stage.Stage;
  *
  * @author Alejandro Rodriguez
  */
-public class AccesoBBDDController {
+public class AccesoBBDDController implements Initializable{
 
 	@FXML
 	private Button botonAccesobbdd;
@@ -81,6 +92,21 @@ public class AccesoBBDDController {
 
 	private static Ventanas nav = new Ventanas();
 	private static CrearBBDDController cbd = null;
+	
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		
+	    TextFormatter<Integer> textFormatterAni = new TextFormatter<>(new IntegerStringConverter(), null,
+	            change -> {
+	                String newText = change.getControlNewText();
+	                if (newText.matches("\\d*")) {
+	                    return change;
+	                }
+	                return null;
+	            });
+	    puertobbdd.setTextFormatter(textFormatterAni);
+
+	}
 
 	/**
 	 * Funcion para abrir el navegador y acceder a la URL

@@ -50,11 +50,13 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.converter.IntegerStringConverter;
 
 /**
  * Esta clase sirve viajar a las diferentes ventanas del programa, asi como
@@ -127,11 +129,11 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	private Button botonFirmados;
 
-	@FXML
-	private TextField fechaPublicacion;
+//	@FXML
+//	private TextField fechaPublicacion;
 	
-	//@FXML
-	//private DatePicker fechaPublicacion;
+	@FXML
+	private DatePicker fechaPublicacion;
 
 	@FXML
 	private TextField numeroID;
@@ -245,9 +247,29 @@ public class MenuPrincipalController implements Initializable {
 		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
 		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
-		TextFields.bindAutoCompletion(fechaPublicacion, DBLibreriaManager.listaFecha);
+//		TextFields.bindAutoCompletion(fechaPublicacion, DBLibreriaManager.listaFecha);
 		
 		DBLibreriaManager.listaNombre.clear();
+		
+	    TextFormatter<Integer> textFormatterAni = new TextFormatter<>(new IntegerStringConverter(), null,
+	            change -> {
+	                String newText = change.getControlNewText();
+	                if (newText.matches("\\d*")) {
+	                    return change;
+	                }
+	                return null;
+	            });
+	    numeroID.setTextFormatter(textFormatterAni);
+
+	    TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null,
+	            change -> {
+	                String newText = change.getControlNewText();
+	                if (newText.matches("\\d*")) {
+	                    return change;
+	                }
+	                return null;
+	            });
+	    numeroComic.setTextFormatter(textFormatterComic);
 	}
 	
 	/**
@@ -552,7 +574,7 @@ public class MenuPrincipalController implements Initializable {
 		nombreVariante.setText("");
 		nombreFirma.setText("");
 		nombreEditorial.setText("");
-		fechaPublicacion.setText("");
+		fechaPublicacion.setValue(null);
 		nombreDibujante.setText("");
 		nombreGuionista.setText("");
 		prontFrases.setText(null);
@@ -809,7 +831,7 @@ public class MenuPrincipalController implements Initializable {
 
 		campos[7] = procedenciaActual();
 
-		campos[8] = fechaPublicacion.getText();
+		campos[8] = fechaPublicacion.getValue().toString();
 
 		campos[9] = nombreGuionista.getText();
 
