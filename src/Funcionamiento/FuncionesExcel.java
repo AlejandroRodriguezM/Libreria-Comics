@@ -66,7 +66,7 @@ public class FuncionesExcel {
 	private static DBLibreriaManager db = null;
 	private static int ID = 0;
 	
-	private static Utilidades utilidad = null;
+	private static Utilidades utilidad = new Utilidades();
 
 	/**
 	 * Funcion que permite importar ficheros CSV a la base de datos.
@@ -103,7 +103,7 @@ public class FuncionesExcel {
 		String encabezado;
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
-		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + "portadas";
+		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator +  "portadas" + File.separator;
 		String[] encabezados = { "ID", "nomComic", "numComic", "nomVariante", "Firma", "nomEditorial", "Formato",
 				"Procedencia", "fecha_publicacion", "nomGuionista", "nomDibujante", "puntuacion", "portada", "estado" };
 		int indiceFila = 0;
@@ -178,10 +178,10 @@ public class FuncionesExcel {
 	    
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
-		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + "portadas" + File.separator;
+		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas" + File.separator;
 
 		String ubicacion = userDir + File.separator + "AppData" + File.separator + "Roaming";
-		String direccion = ubicacion + File.separator + "libreria" + File.separator + "backups"
+		String direccion = ubicacion + File.separator + "libreria" + File.separator + utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "backups"
 				+ File.separator + nombre_carpeta;
 	    try {
 	        File carpetaLibreria = new File(direccion);

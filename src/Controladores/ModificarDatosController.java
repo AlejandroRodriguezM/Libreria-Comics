@@ -468,7 +468,7 @@ public class ModificarDatosController implements Initializable {
 		campos[7] = procedenciaActual();
 		
 	    LocalDate fecha = anioPublicacion.getValue();
-	    campos[8] = (fecha != null) ? fecha.toString() : "";
+	    campos[8] = (fecha != null) ? fecha.toString() : "2000-01-01";
 
 		campos[9] = nombreGuionista.getText();
 
@@ -504,8 +504,9 @@ public class ModificarDatosController implements Initializable {
 		campos[6] = formatoNuevo();
 
 		campos[7] = procedenciaMod();
-
-		campos[8] = anioPublicacionMod.getValue().toString();
+		
+	    LocalDate fecha = anioPublicacionMod.getValue();
+	    campos[8] = (fecha != null) ? fecha.toString() : "";
 
 		campos[9] = nombreGuionistaMod.getText();
 

@@ -632,8 +632,9 @@ public class IntroducirDatosController implements Initializable {
 		campos[6] = formatoActual();
 
 		campos[7] = procedenciaActual();
-
-		campos[8] = fechaPublicacion.getValue().toString();
+		
+	    LocalDate fecha = fechaPublicacion.getValue();
+	    campos[8] = (fecha != null) ? fecha.toString() : "2000-01-01";
 
 		campos[9] = nombreGuionista.getText();
 
@@ -667,8 +668,9 @@ public class IntroducirDatosController implements Initializable {
 		campos[5] = formatoNuevo();
 
 		campos[6] = procedenciaNueva();
-
-		campos[7] = fechaAni.getValue().toString();
+		
+	    LocalDate fecha = fechaAni.getValue();
+	    campos[7] = (fecha != null) ? fecha.toString() : "2000-01-01";
 
 		campos[8] = guionistaAni.getText();
 

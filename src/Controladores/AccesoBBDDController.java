@@ -138,6 +138,26 @@ public class AccesoBBDDController implements Initializable{
 		if (JDBC.DBManager.isConnected()) {
 
 			if (cbd.chechTables()) {
+				
+				String userHome = System.getProperty("user.home");
+				String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
+				String carpetaLibreria = ubicacion + File.separator + "libreria";
+				String carpetaBackup = carpetaLibreria + File.separator + obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "backups";
+
+				try {
+				    File carpeta_backupsFile = new File(carpetaBackup);
+				    if (!carpeta_backupsFile.exists()) {
+				        if (carpeta_backupsFile.mkdirs()) {
+				            System.out.println("Carpeta de backups creada: " + carpetaBackup);
+				        } else {
+				            System.out.println("No se pudo crear la carpeta de backups");
+				        }
+				    } else {
+				        System.out.println("La carpeta de backups ya existe: " + carpetaBackup);
+				    }
+				} catch (Exception e) {
+				    e.printStackTrace();
+				}
 				prontEstadoConexion.setStyle("-fx-background-color: #A0F52D");
 				prontEstadoConexion.setText("Conectado");
 			}
@@ -163,7 +183,6 @@ public class AccesoBBDDController implements Initializable{
 	    datos[4] = obtenerDatoDespuesDeDosPuntos("Hosting");
 
 	    DBManager.datosBBDD(datos);
-	    cbd.reconstruirDatos(datos);
 	}
 
 	private String obtenerDatoDespuesDeDosPuntos(String linea) {
@@ -221,13 +240,19 @@ public class AccesoBBDDController implements Initializable{
         String userHome = System.getProperty("user.home");
         String ubicacion = userHome + "\\AppData\\Roaming";
         String carpetaLibreria = ubicacion + "\\libreria";
+        
         String archivoConfiguracion = carpetaLibreria + "\\configuracion.conf";
 
+
+        
         // Verificar y crear la carpeta "libreria" si no existe
         File carpetaLibreriaFile = new File(carpetaLibreria);
         if (!carpetaLibreriaFile.exists()) {
             carpetaLibreriaFile.mkdir();
+            carpetaLibreriaFile.setWritable(true);
         }
+        
+
 
         // Verificar y crear el archivo "configuracion.conf" si no existe
         File archivoConfiguracionFile = new File(archivoConfiguracion);
@@ -260,13 +285,5 @@ public class AccesoBBDDController implements Initializable{
                 e.printStackTrace();
             }
         }
-
-        // Verificar y crear la carpeta "backups" dentro de la carpeta "libreria" si no existe
-        String carpetaBackups = carpetaLibreria + "\\backups";
-        File carpetaBackupsFile = new File(carpetaBackups);
-        if (!carpetaBackupsFile.exists()) {
-            carpetaBackupsFile.mkdir();
-        }
     }
-
 }

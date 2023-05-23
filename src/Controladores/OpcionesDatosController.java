@@ -61,10 +61,10 @@ public class OpcionesDatosController implements Initializable {
 
 	@FXML
 	private PasswordField pass;
-	
+
 	@FXML
 	private TextField puertobbdd;
-	
+
 	@FXML
 	private TextField usuario;
 
@@ -75,7 +75,7 @@ public class OpcionesDatosController implements Initializable {
 	private RadioButton siOnline;
 
 	private static Ventanas nav = new Ventanas();
-//	private static CrearBBDDController cbd = null;
+//	private static Utilidades utilidad = new Utilidades();
 	private static AccesoBBDDController acceso = new AccesoBBDDController();
 
 	@Override
@@ -91,42 +91,42 @@ public class OpcionesDatosController implements Initializable {
 		puertobbdd.setTextFormatter(textFormatterAni);
 
 		acceso.crearEstructura();
-		
-	    String userHome = System.getProperty("user.home");
-	    String ubicacion = userHome + "\\AppData\\Roaming";
-	    String carpetaLibreria = ubicacion + "\\libreria";
-	    String archivoConfiguracion = carpetaLibreria + "\\configuracion.conf";
 
-	    try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
-	        String line;
-	        while ((line = reader.readLine()) != null) {
-	            if (line.startsWith("Usuario: ")) {
-	                String usuarioTexto = line.substring("Usuario: ".length());
-	                usuario.setText(usuarioTexto);
-	            } else if (line.startsWith("Password: ")) {
-	                String passwordTexto = line.substring("Password: ".length());
-	                pass.setText(passwordTexto);
-	            } else if (line.startsWith("Puerto: ")) {
-	                String puertoTexto = line.substring("Puerto: ".length());
-	                puertobbdd.setText(puertoTexto);
-	            } else if (line.startsWith("Database: ")) {
-	                String databaseTexto = line.substring("Database: ".length());
-	                nombreBBDD.setText(databaseTexto);
-	            } else if (line.startsWith("Hosting: ")) {
-	                String hostingTexto = line.substring("Hosting: ".length());
-	                nombreHost.setText(hostingTexto);
-	            }
-	        }
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
+		String userHome = System.getProperty("user.home");
+		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
+		String carpetaLibreria = ubicacion + File.separator + "libreria";
+		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion.conf";
 
+		try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				if (line.startsWith("Usuario: ")) {
+					String usuarioTexto = line.substring("Usuario: ".length());
+					usuario.setText(usuarioTexto);
+				} else if (line.startsWith("Password: ")) {
+					String passwordTexto = line.substring("Password: ".length());
+					pass.setText(passwordTexto);
+				} else if (line.startsWith("Puerto: ")) {
+					String puertoTexto = line.substring("Puerto: ".length());
+					puertobbdd.setText(puertoTexto);
+				} else if (line.startsWith("Database: ")) {
+					String databaseTexto = line.substring("Database: ".length());
+					nombreBBDD.setText(databaseTexto);
+				} else if (line.startsWith("Hosting: ")) {
+					String hostingTexto = line.substring("Hosting: ".length());
+					nombreHost.setText(hostingTexto);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@FXML
 	void abrirUbicacion(ActionEvent event) {
 		String userHome = System.getProperty("user.home");
-		String ubicacion = userHome + "\\AppData\\Roaming\\libreria";
+		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming" + File.separator
+				+ "libreria";
 
 		File carpeta = new File(ubicacion);
 
@@ -138,6 +138,8 @@ public class OpcionesDatosController implements Initializable {
 			}
 		}
 	}
+	
+
 
 	@FXML
 	void crearBBDD(ActionEvent event) {
@@ -149,13 +151,14 @@ public class OpcionesDatosController implements Initializable {
 
 	@FXML
 	void guardarDatos(ActionEvent event) {
-		
+
 		acceso.crearEstructura();
-		
+
 		String userHome = System.getProperty("user.home");
-		String ubicacion = userHome + "\\AppData\\Roaming";
-		String carpetaLibreria = ubicacion + "\\libreria";
-		String archivoConfiguracion = carpetaLibreria + "\\configuracion.conf";
+		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
+		String carpetaLibreria = ubicacion + File.separator + "libreria";
+		String carpetaBackup = carpetaLibreria + File.separator + nombreBBDD.getText() + File.separator + "backups";
+		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion.conf";
 
 		try {
 			FileWriter fileWriter = new FileWriter(archivoConfiguracion);
@@ -179,7 +182,12 @@ public class OpcionesDatosController implements Initializable {
 			bufferedWriter.newLine();
 
 			bufferedWriter.close();
-			
+
+	        File carpeta_backupsFile = new File(carpetaBackup);
+	        if (!carpeta_backupsFile.exists()) {
+	        	carpeta_backupsFile.mkdir();
+	        }
+
 			prontEstadoFichero.setStyle("-fx-background-color: #A0F52D");
 			prontEstadoFichero.setText("Fichero guardado");
 		} catch (IOException e) {
@@ -189,26 +197,22 @@ public class OpcionesDatosController implements Initializable {
 
 	@FXML
 	void restaurarConfiguracion(ActionEvent event) {
-		
-		if(nav.borrarContenidoConfiguracion()){
-			String userHome = System.getProperty("user.home");
-			String ubicacion = userHome + "\\AppData\\Roaming";
-			String carpetaLibreria = ubicacion + "\\libreria";
-			String archivoConfiguracion = carpetaLibreria + "\\configuracion.conf";
-			String carpetaBackups = carpetaLibreria + "\\backups";
+		try {
+			if (nav.borrarContenidoConfiguracion()) {
+				String userHome = System.getProperty("user.home");
+				String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
+				String carpetaLibreria = ubicacion + "\\libreria";
+				String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion.conf";
 
-			// Verificar y borrar la carpeta "libreria" si existe
-			File carpetaLibreriaFile = new File(carpetaLibreria);
-			if (carpetaLibreriaFile.exists()) {
-				borrarDirectorio(carpetaLibreriaFile, carpetaBackups);
-			}
+				// Verificar y borrar la carpeta "libreria" si existe
+				File carpetaLibreriaFile = new File(carpetaLibreria);
 
-			// Crear la carpeta "libreria"
-			carpetaLibreriaFile.mkdir();
+				// Crear la carpeta "libreria"
+				carpetaLibreriaFile.mkdir();
 
-			// Verificar y crear el archivo "configuracion.conf"
-			File archivoConfiguracionFile = new File(archivoConfiguracion);
-			try {
+				// Verificar y crear el archivo "configuracion.conf"
+				File archivoConfiguracionFile = new File(archivoConfiguracion);
+
 				archivoConfiguracionFile.createNewFile();
 
 				// Escribir líneas en el archivo
@@ -232,34 +236,30 @@ public class OpcionesDatosController implements Initializable {
 				bufferedWriter.newLine();
 
 				bufferedWriter.close();
-			} catch (IOException e) {
-				e.printStackTrace();
+
+				limpiar_datos();
+				prontEstadoFichero.setStyle("-fx-background-color: #A0F52D");
+				prontEstadoFichero.setText("Ficheros restaurados correctamente");
+			} else {
+				prontEstadoFichero.setStyle("-fx-background-color: #DD370F");
+				prontEstadoFichero.setText("Has cancelado la restauracion de ficheros..");
 			}
 
-			// Verificar y crear la carpeta "backups" si no existe
-			File carpetaBackupsFile = new File(carpetaBackups);
-			if (!carpetaBackupsFile.exists()) {
-				carpetaBackupsFile.mkdir();
-			}
-			limpiar_datos();
-			prontEstadoFichero.setStyle("-fx-background-color: #A0F52D");
-			prontEstadoFichero.setText("Ficheros restaurados correctamente");
-		}else {
-			prontEstadoFichero.setStyle("-fx-background-color: #DD370F");
-			prontEstadoFichero.setText("Has cancelado la restauracion de ficheros..");
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
-	
+
 	public void limpiar_datos() {
-        usuario.setText("");
+		usuario.setText("");
 
-        pass.setText("");
+		pass.setText("");
 
-        puertobbdd.setText("");
+		puertobbdd.setText("");
 
-        nombreBBDD.setText("");
+		nombreBBDD.setText("");
 
-        nombreHost.setText("");
+		nombreHost.setText("");
 	}
 
 	@FXML
@@ -313,24 +313,24 @@ public class OpcionesDatosController implements Initializable {
 
 	// Método para borrar un directorio y su contenido recursivamente, excepto la
 	// carpeta "excluir"
-	private void borrarDirectorio(File directorio, String excluir) {
-		File[] archivos = directorio.listFiles();
-		if (archivos != null) {
-			for (File archivo : archivos) {
-				if (archivo.isDirectory()) {
-					if (!archivo.getAbsolutePath().equals(excluir)) {
-						borrarDirectorio(archivo, excluir);
-					}
-				} else {
-					archivo.delete();
-				}
-			}
-		}
-		if (!directorio.getAbsolutePath().equals(excluir)) {
-			directorio.delete();
-		}
-	}
-	
+//	private void borrarDirectorio(File directorio, String excluir) {
+//		File[] archivos = directorio.listFiles();
+//		if (archivos != null) {
+//			for (File archivo : archivos) {
+//				if (archivo.isDirectory()) {
+//					if (!archivo.getAbsolutePath().equals(excluir)) {
+//						borrarDirectorio(archivo, excluir);
+//					}
+//				} else {
+//					archivo.delete();
+//				}
+//			}
+//		}
+//		if (!directorio.getAbsolutePath().equals(excluir)) {
+//			directorio.delete();
+//		}
+//	}
+
 	/**
 	 * Cierra el programa a la fuerza correctamente.
 	 */

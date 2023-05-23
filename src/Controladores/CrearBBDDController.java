@@ -108,14 +108,6 @@ public class CrearBBDDController {
 		DB_HOST = selectorHost();
 	}
 
-	public void reconstruirDatos(String[] datos) {
-		DB_PORT = datos[0];
-		DB_NAME = datos[1];
-		DB_USER = datos[2];
-		DB_PASS = datos[3];
-		DB_HOST = datos[4];
-	}
-
 	/**
 	 * Metodo que permite seleccionar un host online o el publico.
 	 *

@@ -129,6 +129,7 @@ public class DBLibreriaManager extends Comic {
 		sentencia[1] = "alter table comicsbbdd AUTO_INCREMENT = 1;";
 
 		utilidad.copia_seguridad();
+		utilidad.eliminarArchivosEnCarpeta();
 		listaNombre.clear();
 		listaVariante.clear();
 		listaFirma.clear();
@@ -967,6 +968,9 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public void saveImageFromDataBase() {
 		String sentenciaSQL = "SELECT * FROM comicsbbdd";
+		
+		
+		
 		conn = DBManager.conexion();
 		carpeta = new FuncionesExcel();
 		File directorio = carpeta.carpetaPortadas();
@@ -1214,7 +1218,7 @@ public class DBLibreriaManager extends Comic {
 
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
-		String imagePath = documentsPath + File.separator + "libreria_comics" + File.separator + "portadas"
+		String imagePath = documentsPath + File.separator + "libreria_comics" + File.separator + utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas"
 				+ File.separator + nuevoNombreArchivo;
 		System.out.println(imagePath);
 		String sql = "UPDATE comicsbbdd SET portada = ? WHERE ID = ?";
@@ -1366,7 +1370,6 @@ public class DBLibreriaManager extends Comic {
 			ps.setString(13, datos.getID());
 
 			if (ps.executeUpdate() == 1) { // Si se ha modificado correctamente, saltara el siguiente mensaje
-				System.out.println("Portada: " + portada_final);
 
 				Comic nuevo_comic = new Comic("", nombre, numero, variante, firma, editorial, formato, procedencia,
 						fecha, guionista, dibujante, estado, "", portada_final);
