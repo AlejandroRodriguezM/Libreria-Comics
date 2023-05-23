@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -771,7 +772,7 @@ public class MenuPrincipalController implements Initializable {
 		libreria = new DBLibreriaManager();
 
 		String datos[] = camposComic();
-
+		
 		Comic comic = new Comic(datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
 				datos[8], datos[9], datos[10], "", "", null);
 
@@ -831,11 +832,11 @@ public class MenuPrincipalController implements Initializable {
 
 		campos[7] = procedenciaActual();
 
-		campos[8] = fechaPublicacion.getValue().toString();
+	    LocalDate fecha = fechaPublicacion.getValue();
+	    campos[8] = (fecha != null) ? fecha.toString() : "";
 
-		campos[9] = nombreGuionista.getText();
-
-		campos[10] = nombreDibujante.getText();
+	    campos[9] = nombreGuionista.getText();
+	    campos[10] = nombreDibujante.getText();
 
 		return campos;
 	}

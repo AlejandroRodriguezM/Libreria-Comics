@@ -26,6 +26,7 @@ package Controladores;
 
 import java.net.URL;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -448,8 +449,9 @@ public class PuntuarDatosController implements Initializable {
 		campos[6] = formatoActual();
 
 		campos[7] = procedenciaActual();
-
-		campos[8] = fechaPublicacion.getValue().toString();
+		
+	    LocalDate fecha = fechaPublicacion.getValue();
+	    campos[8] = (fecha != null) ? fecha.toString() : "";
 
 		campos[9] = nombreGuionista.getText();
 

@@ -34,6 +34,7 @@ import Controladores.ModificarDatosController;
 import Controladores.PuntuarDatosController;
 import Controladores.RecomendacionesController;
 import Controladores.SobreMiController;
+import Controladores.OpcionesDatosController;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -325,6 +326,44 @@ public class Ventanas {
 	/**
 	 * Llamada a ventana para el acceso a creacion de bases de datos
 	 */
+	public void verOpciones() {
+
+		try {
+			// Cargo la vista
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/opcionesAcceso.fxml"));
+
+			// Cargo el padre
+			Parent root = loader.load();
+
+			// Obtengo el controlador
+			OpcionesDatosController controlador = loader.getController();
+
+			// Creo la scene y el stage
+			Scene scene = new Scene(root);
+			Stage stage = new Stage();
+			stage.setResizable(false);
+			stage.setTitle("Opciones"); // Titulo de la aplicacion.
+			stage.getIcons().add(new Image("/Icono/icon2.png"));
+
+			// Asocio el stage con el scene
+			stage.setScene(scene);
+			stage.show();
+
+			// Indico que debe hacer al cerrar
+			stage.setOnCloseRequest(e -> {
+				controlador.closeWindows();
+			});
+
+			stage.setScene(scene);
+			stage.show();
+		} catch (IOException ex) {
+			alertaException(ex.toString());
+		}
+	}
+
+	/**
+	 * Llamada a ventana para el acceso a creacion de bases de datos
+	 */
 	public void verSobreMi() {
 
 		try {
@@ -584,6 +623,25 @@ public class Ventanas {
 			} else {
 				return false;
 			}
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Funcion que permite borrar el contenido de la tabla de la base de datos.
+	 *
+	 * @return
+	 */
+	public boolean borrarContenidoConfiguracion() {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
+		alert.setTitle("Borrando . . .");
+		alert.setHeaderText("Estas a punto de borrar el contenido.");
+		alert.setContentText("¿Estas seguro que quieres restaurar la configuracion original?");
+		if (alert.showAndWait().get() == ButtonType.OK) {
+			return true;
 		} else {
 			return false;
 		}

@@ -1,29 +1,24 @@
 package Controladores;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import org.controlsfx.control.textfield.TextFields;
-
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
-import JDBC.DBLibreriaManager;
 import JDBC.DBManager;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import javafx.util.converter.IntegerStringConverter;
 
 /**
  * Esta clase sirve para acceder a la base de datos y poder realizar diferentes
@@ -33,78 +28,35 @@ import javafx.util.converter.IntegerStringConverter;
  */
 public class AccesoBBDDController implements Initializable{
 
-	@FXML
-	private Button botonAccesobbdd;
+    @FXML
+    private Button botonAccesobbdd;
 
-	@FXML
-	private Button botonCerrar;
+    @FXML
+    private Button botonDescargaBBDD;
 
-	@FXML
-	private Button botonEnviar;
+    @FXML
+    private Button botonEnviar;
 
-	@FXML
-	private Button botonLimpiar;
+    @FXML
+    private Button botonOpciones;
 
-	@FXML
-	private Button botonSalir;
+    @FXML
+    private Button botonSalir;
 
-	@FXML
-	private Button botonCrearBBDD;
-
-	@FXML
-	private Button botonVerDDBB;
-
-	@FXML
-	private Button botonSobreMi;
-
-	@FXML
-	private Button botonDescargaBBDD;
+    @FXML
+    private Button botonSobreMi;
 
 	@FXML
 	private Label prontEstadoConexion;
 
-	@FXML
-	private TextArea informacion;
-
-	@FXML
-	public TextField nombreBBDD;
-
-	@FXML
-	private PasswordField nombreHost;
-
-	@FXML
-	public PasswordField pass;
-
-	@FXML
-	public TextField puertobbdd;
-
-	@FXML
-	public TextField usuario;
-
-	@FXML
-	private RadioButton noOffline;
-
-	@FXML
-	private RadioButton siOnline;
-
-	@FXML
-	private Label etiquetaHost;
-
+	
 	private static Ventanas nav = new Ventanas();
 	private static CrearBBDDController cbd = null;
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		
-	    TextFormatter<Integer> textFormatterAni = new TextFormatter<>(new IntegerStringConverter(), null,
-	            change -> {
-	                String newText = change.getControlNewText();
-	                if (newText.matches("\\d*")) {
-	                    return change;
-	                }
-	                return null;
-	            });
-	    puertobbdd.setTextFormatter(textFormatterAni);
+	    
+	    crearEstructura();
 
 	}
 
@@ -155,21 +107,6 @@ public class AccesoBBDDController implements Initializable{
 	}
 
 	/**
-	 * Funcion que permite entrar en la ventana de creacion de base de datos.
-	 *
-	 * @param event
-	 */
-	@FXML
-	void crearBBDD(ActionEvent event) {
-
-		nav.verCrearBBDD();
-
-		Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
-		myStage.close();
-
-	}
-
-	/**
 	 * Metodo que permite abrir la ventana "sobreMiController"
 	 *
 	 * @param event
@@ -181,19 +118,6 @@ public class AccesoBBDDController implements Initializable{
 
 		Stage myStage = (Stage) this.botonSobreMi.getScene().getWindow();
 		myStage.close();
-	}
-
-	/**
-	 * Limpia los datos de los campos
-	 *
-	 * @param event
-	 */
-	@FXML
-	void limpiarDatos(ActionEvent event) { // Metodo que permite limpiar todos textField de la ventna.
-		nombreBBDD.setText("");
-		usuario.setText("");
-		pass.setText("");
-		puertobbdd.setText("");
 	}
 
 	/**
@@ -218,7 +142,6 @@ public class AccesoBBDDController implements Initializable{
 				prontEstadoConexion.setText("Conectado");
 			}
 		} else { // En caso contrario mostrara el siguiente mensaje
-			pass.setText(""); // Limpia el campo de la contraseña en caso de que isConnected sea false.
 			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
 			prontEstadoConexion.setText("ERROR. Los datos son incorrectos. Revise los datos.");
 		}
@@ -226,80 +149,41 @@ public class AccesoBBDDController implements Initializable{
 	}
 
 	/**
-	 * Cierra la bbdd
-	 *
-	 * @param event
-	 */
-	@FXML
-	void cerrarbbdd(ActionEvent event) {
-
-		if (JDBC.DBManager.isConnected()) { // Siempre que el metodo isConnected sea true,
-			// permitira cerrar
-			// la
-			// base de datos.
-			prontEstadoConexion.setText("BBDD Cerrada con exito.\nEstado: Desconectado.");
-			prontEstadoConexion.setStyle("-fx-background-color: #696969");
-			JDBC.DBManager.close();
-		} else { // En caso contrario, mostrara el siguiente mensaje.
-			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
-			prontEstadoConexion.setText("ERROR. No se encuentra conectado a ninguna bbdd");
-		}
-	}
-
-	/**
-	 * Metodo que permite seleccionar un host online o el publico.
-	 *
-	 * @param event
-	 */
-	@FXML
-	void selectorBotonHost(ActionEvent event) {
-		selectorHost();
-	}
-
-	/**
 	 * Funcion que permite mandar los datos a la clase DBManager
 	 *
 	 * @return
 	 */
-	public void envioDatosBBDD() { // Metodo que manda toda la informacion de los textField a la clase DBManager.
-		cbd = new CrearBBDDController();
-		String datos[] = new String[5];
-//		datos[0] = puertobbdd.getText();
-//		datos[1] = nombreBBDD.getText();
-//		datos[2] = usuario.getText();
-//		datos[3] = pass.getText();
-//		datos[4] = selectorHost();
-		
-		datos[0] = "3306";
-		datos[1] = "comics";
-		datos[2] = "root";
-		datos[3] = "1234";
-		datos[4] = "localhost";
-		
-		DBManager.datosBBDD(datos);
-		cbd.reconstruirDatos(datos);
+	public void envioDatosBBDD() {
+	    cbd = new CrearBBDDController();
+	    String datos[] = new String[5];
+	    datos[0] = obtenerDatoDespuesDeDosPuntos("Puerto");
+	    datos[1] = obtenerDatoDespuesDeDosPuntos("Database");
+	    datos[2] = obtenerDatoDespuesDeDosPuntos("Usuario");
+	    datos[3] = obtenerDatoDespuesDeDosPuntos("Password");
+	    datos[4] = obtenerDatoDespuesDeDosPuntos("Hosting");
+
+	    DBManager.datosBBDD(datos);
+	    cbd.reconstruirDatos(datos);
 	}
 
-	/**
-	 * Funcion que permite conectarse a un host online o usar el local.
-	 *
-	 * @return
-	 */
-	public String selectorHost() {
+	private String obtenerDatoDespuesDeDosPuntos(String linea) {
+	    String userHome = System.getProperty("user.home");
+	    String ubicacion = userHome + "\\AppData\\Roaming";
+	    String carpetaLibreria = ubicacion + "\\libreria";
+	    String archivoConfiguracion = carpetaLibreria + "\\configuracion.conf";
 
-		if (siOnline.isSelected()) {
-			etiquetaHost.setText("Nombre del host: ");
-			nombreHost.setDisable(false);
-			nombreHost.setOpacity(1);
-			return nombreHost.getText();
-		}
-		if (noOffline.isSelected()) {
-			etiquetaHost.setText("Offline");
-			nombreHost.setDisable(true);
-			nombreHost.setOpacity(0);
-			return "localhost";
-		}
-		return "localhost";
+	    try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
+	        String line;
+	        while ((line = reader.readLine()) != null) {
+	            if (line.startsWith(linea + ": ")) {
+	                return line.substring(linea.length() + 2).trim();
+	            }
+	        }
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+	    
+	    return "";
 	}
 
 	/**
@@ -315,6 +199,14 @@ public class AccesoBBDDController implements Initializable{
 			myStage.close();
 		}
 	}
+	
+    @FXML
+    void opcionesPrograma(ActionEvent event) {
+		nav.verOpciones();
+
+		Stage myStage = (Stage) this.botonOpciones.getScene().getWindow();
+		myStage.close();
+    }
 
 	/**
 	 * Cierra el programa a la fuerza correctamente.
@@ -324,5 +216,57 @@ public class AccesoBBDDController implements Initializable{
 		Stage myStage = (Stage) this.botonEnviar.getScene().getWindow();
 		myStage.close();
 	}
+	
+    public void crearEstructura() {
+        String userHome = System.getProperty("user.home");
+        String ubicacion = userHome + "\\AppData\\Roaming";
+        String carpetaLibreria = ubicacion + "\\libreria";
+        String archivoConfiguracion = carpetaLibreria + "\\configuracion.conf";
+
+        // Verificar y crear la carpeta "libreria" si no existe
+        File carpetaLibreriaFile = new File(carpetaLibreria);
+        if (!carpetaLibreriaFile.exists()) {
+            carpetaLibreriaFile.mkdir();
+        }
+
+        // Verificar y crear el archivo "configuracion.conf" si no existe
+        File archivoConfiguracionFile = new File(archivoConfiguracion);
+        if (!archivoConfiguracionFile.exists()) {
+            try {
+                archivoConfiguracionFile.createNewFile();
+
+                // Escribir líneas en el archivo
+                FileWriter fileWriter = new FileWriter(archivoConfiguracionFile);
+                BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+                bufferedWriter.write("###############################");
+                bufferedWriter.newLine();
+                bufferedWriter.write("Fichero de configuracion de la libreria");
+                bufferedWriter.newLine();
+                bufferedWriter.write("###############################");
+                bufferedWriter.newLine();
+                bufferedWriter.write("Usuario:");
+                bufferedWriter.newLine();
+                bufferedWriter.write("Password:");
+                bufferedWriter.newLine();
+                bufferedWriter.write("Puerto:");
+                bufferedWriter.newLine();
+                bufferedWriter.write("Database:");
+                bufferedWriter.newLine();
+                bufferedWriter.write("Hosting:");
+                bufferedWriter.newLine();
+
+                bufferedWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Verificar y crear la carpeta "backups" dentro de la carpeta "libreria" si no existe
+        String carpetaBackups = carpetaLibreria + "\\backups";
+        File carpetaBackupsFile = new File(carpetaBackups);
+        if (!carpetaBackupsFile.exists()) {
+            carpetaBackupsFile.mkdir();
+        }
+    }
 
 }

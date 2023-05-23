@@ -30,18 +30,17 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.List;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -66,6 +65,8 @@ public class FuncionesExcel {
 	private static Ventanas nav = new Ventanas();
 	private static DBLibreriaManager db = null;
 	private static int ID = 0;
+	
+	private static Utilidades utilidad = null;
 
 	/**
 	 * Funcion que permite importar ficheros CSV a la base de datos.
@@ -100,7 +101,9 @@ public class FuncionesExcel {
 		Sheet hoja;
 		Workbook libro;
 		String encabezado;
-		String direccion = "C:" + File.separator + "Users" + File.separator + "AlejandroRM" + File.separator + "Documents" + File.separator + "libreria_comics" + File.separator + "portadas" + File.separator;
+		String userDir = System.getProperty("user.home");
+		String documentsPath = userDir + File.separator + "Documents";
+		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + "portadas";
 		String[] encabezados = { "ID", "nomComic", "numComic", "nomVariante", "Firma", "nomEditorial", "Formato",
 				"Procedencia", "fecha_publicacion", "nomGuionista", "nomDibujante", "puntuacion", "portada", "estado" };
 		int indiceFila = 0;
@@ -136,7 +139,7 @@ public class FuncionesExcel {
 				fila.createCell(9).setCellValue(comic.getGuionista());
 				fila.createCell(10).setCellValue(comic.getDibujante());
 				fila.createCell(11).setCellValue(comic.getPuntuacion());
-				String nombreImagen = direccion + comic.getNombre().replace(" ", "_").replace(":", "_") + "_" + comic.getNumero() + "_" + comic.getVariante().replace(" ", "_") + "_" + comic.getFecha() + ".jpg";
+				String nombreImagen = sourcePath + comic.getNombre().replace(" ", "_").replace(":", "_") + "_" + comic.getNumero() + "_" + comic.getVariante().replace(" ", "_") + "_" + comic.getFecha() + ".jpg";
 				fila.createCell(12).setCellValue(nombreImagen);
 				fila.createCell(13).setCellValue(comic.getEstado());
 
@@ -160,6 +163,108 @@ public class FuncionesExcel {
 			nav.alertaException(e.toString());
 		}
 		return false;
+	}
+	
+	public void savedataExcel(String nombre_carpeta) {
+	    FileOutputStream outputStream;
+	    Cell celda;
+	    Row fila;
+	    Sheet hoja;
+	    Workbook libro;
+	    String encabezado;
+	    String[] encabezados = { "ID", "nomComic", "numComic", "nomVariante", "Firma", "nomEditorial", "Formato",
+	            "Procedencia", "fecha_publicacion", "nomGuionista", "nomDibujante", "puntuacion", "portada", "estado" };
+	    int indiceFila = 0;
+	    
+		String userDir = System.getProperty("user.home");
+		String documentsPath = userDir + File.separator + "Documents";
+		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + "portadas" + File.separator;
+
+		String ubicacion = userDir + File.separator + "AppData" + File.separator + "Roaming";
+		String direccion = ubicacion + File.separator + "libreria" + File.separator + "backups"
+				+ File.separator + nombre_carpeta;
+	    try {
+	        File carpetaLibreria = new File(direccion);
+	        File fichero = new File(carpetaLibreria, "BaseDatos.xlsx");
+	        fichero.createNewFile();
+	        List<Comic> listaComics = libreria.libreriaCompleta();
+
+	        libro = new XSSFWorkbook();
+
+	        hoja = libro.createSheet("Base de datos comics");
+
+	        fila = hoja.createRow(indiceFila);
+	        for (int i = 0; i < encabezados.length; i++) {
+	            encabezado = encabezados[i];
+	            celda = fila.createCell(i);
+	            celda.setCellValue(encabezado);
+	            celda.getStringCellValue().getBytes(Charset.forName("UTF-8"));
+	        }
+
+	        indiceFila++;
+	        for (Comic comic : listaComics) {
+	            fila = hoja.createRow(indiceFila);
+	            fila.createCell(0).setCellValue("");
+	            fila.createCell(1).setCellValue(comic.getNombre());
+	            fila.createCell(2).setCellValue(comic.getNumero());
+	            fila.createCell(3).setCellValue(comic.getVariante());
+	            fila.createCell(4).setCellValue(comic.getFirma());
+	            fila.createCell(5).setCellValue(comic.getEditorial());
+	            fila.createCell(6).setCellValue(comic.getFormato());
+	            fila.createCell(7).setCellValue(comic.getProcedencia());
+	            fila.createCell(8).setCellValue(comic.getFecha());
+	            fila.createCell(9).setCellValue(comic.getGuionista());
+	            fila.createCell(10).setCellValue(comic.getDibujante());
+	            fila.createCell(11).setCellValue(comic.getPuntuacion());
+	            String nombreImagen = sourcePath + comic.getNombre().replace(" ", "_").replace(":", "_") + "_" + comic.getNumero() + "_" + comic.getVariante().replace(" ", "_") + "_" + comic.getFecha() + ".jpg";
+	            fila.createCell(12).setCellValue(nombreImagen);
+	            fila.createCell(13).setCellValue(comic.getEstado());
+
+	            indiceFila++;
+	        }
+
+	        try {
+	            outputStream = new FileOutputStream(fichero);
+	            libro.write(outputStream);
+	            libro.close();
+	            outputStream.close();
+
+	            // Get the backup zip file
+	            String zipPath = carpetaLibreria.getAbsolutePath() + File.separator + "excel_" +  nombre_carpeta + ".zip";
+	            File zipFile = new File(zipPath);
+	            // Create a new zip file if it doesn't exist
+	            if (!zipFile.exists()) {
+	                if (!zipFile.createNewFile()) {
+	                    throw new IOException("Failed to create backup zip file.");
+	                }
+	            }
+
+	            // Add the Excel file to the zip
+	            addFileToZip(fichero, "BaseDatos.xlsx", zipFile);
+	            fichero.delete();
+
+	        } catch (FileNotFoundException ex) {
+	            nav.alertaException(ex.toString());
+	        } catch (IOException ex) {
+	            nav.alertaException(ex.toString());
+	        }
+	    } catch (IOException e) {
+	        nav.alertaException(e.toString());
+	    }
+	}
+
+	private void addFileToZip(File file, String entryName, File zipFile) throws IOException {
+		try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile, true))) {
+			ZipEntry zipEntry = new ZipEntry(entryName);
+			zipOut.putNextEntry(zipEntry);
+			try (FileInputStream fileInputStream = new FileInputStream(file)) {
+				byte[] buffer = new byte[1024];
+				int length;
+				while ((length = fileInputStream.read(buffer)) > 0) {
+					zipOut.write(buffer, 0, length);
+				}
+			}
+		}
 	}
 
 	/**
@@ -267,41 +372,35 @@ public class FuncionesExcel {
 	 * @return
 	 * @throws IOException 
 	 */
-	public InputStream subirImagenes(File directorio) throws IOException {
-	    ID++;
-	    InputStream input;
-	    File portada = new File(directorio.toString() + "/" + ID + ".jpg");
-	    try {
-	        if (directorio.exists()) {
-	            if (portada.exists()) {
-	                String carpetaDestino = obtenerRutaDestino();  // Obtener la ruta de destino predeterminada
-	                File carpetaDestinoFile = new File(carpetaDestino);
-	                if (!carpetaDestinoFile.exists() && !carpetaDestinoFile.mkdirs()) {
-	                    throw new IOException("No se pudo crear la carpeta de destino.");
-	                }
-	                
-	                File copia_imagen = new File(carpetaDestino + File.separator + ID + ".jpg");
-	                Files.copy(portada.toPath(), copia_imagen.toPath(), StandardCopyOption.REPLACE_EXISTING);
-	                input = new FileInputStream(copia_imagen);
-	                
-	                return input;
-	            } else {
-	                input = this.getClass().getResourceAsStream("sinPortada.jpg");
-	                return input;
-	            }
-	        }
-	    } catch (FileNotFoundException e) {
-	        String error = "ERROR. Ha cancelado la subida de imágenes de portada. Se van a subir imágenes predeterminadas.";
-	        nav.alertaException(error);
-	    }
-	    return null;
-	}
-
-	private String obtenerRutaDestino() {
-	    // Aquí puedes definir y retornar la ruta de destino predeterminada
-	    String rutaDestino = "C:" + File.separator + "ruta" + File.separator + "destino";
-	    return rutaDestino;
-	}
+//	public void subirImagenes(File directorio, Comic datos) throws IOException {
+//	    ID++;
+//	    File portada = new File(directorio.toString() + "/" + ID + ".jpg");
+//	    try {
+//	        if (directorio.exists()) {
+//	            if (portada.exists()) {
+//	                String userDir = System.getProperty("user.home");
+//	                String documentsPath = userDir + File.separator + "Documents";
+//	                String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator + "portadas" + File.separator;
+//
+//	                File carpetaDestinoFile = new File(defaultImagePath);
+//	                if (!carpetaDestinoFile.exists() && !carpetaDestinoFile.mkdirs()) {
+//	                    throw new IOException("No se pudo crear la carpeta de destino.");
+//	                }
+//					
+//	                String nuevo_nombre = defaultImagePath + utilidad.crearNuevoNombre(datos);
+//
+//	                File copia_imagen = new File(nuevo_nombre);
+//	                Files.copy(portada.toPath(), copia_imagen.toPath(), StandardCopyOption.REPLACE_EXISTING);
+//	            } else {
+//	                // Manejo si no existe la imagen
+//	                System.out.println("La imagen no existe en el directorio especificado.");
+//	            }
+//	        }
+//	    } catch (FileNotFoundException e) {
+//	        String error = "ERROR. Ha cancelado la subida de imágenes de portada. Se van a subir imágenes predeterminadas.";
+//	        nav.alertaException(error);
+//	    }
+//	}
 
 	/**
 	 * Funcion que permite leer un fichero CSV
@@ -315,7 +414,7 @@ public class FuncionesExcel {
 	    String procedencia;
 	    db = new DBLibreriaManager();
 	    int batchSize = 20;
-	    new Utilidades();
+		utilidad = new Utilidades();
 	    String lineText = null;
 
 	    try {
@@ -352,7 +451,12 @@ public class FuncionesExcel {
 	            }
 	            String portada = data[12];
 	            String estado = data[13];
-
+	            
+//				Comic comic = new Comic(id, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+//						guionista, dibujante, estado, puntuacion, portada);
+				
+//				String nuevo_nombre = utilidad.obtenerNombreCompleto(comic);
+	            
 	            statement.setString(1, id);
 	            statement.setString(2, nombre);
 	            statement.setString(3, numero);
@@ -373,6 +477,9 @@ public class FuncionesExcel {
 	            if (count % batchSize == 0) {
 	                statement.executeBatch();
 	            }
+
+				
+//				subirImagenes(directorio, comic);
 	        }
 	        lineReader.close();
 	        statement.executeBatch();

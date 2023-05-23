@@ -1,18 +1,20 @@
 package Funcionamiento;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.io.OutputStream;
 import java.io.FileOutputStream;
-
 
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
@@ -40,6 +42,8 @@ import java.io.FileOutputStream;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Esta clase sirve para realizar diferentes funciones realizanas con la
@@ -52,6 +56,7 @@ public class Utilidades {
 
 	public static List<Comic> listaLimpia = new ArrayList<>();
 	public static List<String> listaLimpiaAutoCompletado = new ArrayList<>();
+	private static FuncionesExcel excel = new FuncionesExcel();
 
 	private static Ventanas nav = new Ventanas();
 
@@ -227,31 +232,32 @@ public class Utilidades {
 	public void nueva_imagen(Comic datos) throws IOException {
 		try {
 			File file;
-	        InputStream input = null;
+			InputStream input = null;
 
-	        if (!datos.getImagen().equals("Funcionamiento/sinPortada.jpg")) {
-	            file = new File(datos.getImagen());
-	        } else {
-	            input = getClass().getResourceAsStream("sinPortada.jpg");
-	            if (input == null) {
-	                throw new FileNotFoundException("La imagen predeterminada no se encontró en el paquete");
-	            }
-	            file = File.createTempFile("tmp", ".jpg");
-	            file.deleteOnExit();
-	            try (OutputStream output = new FileOutputStream(file)) {
-	                byte[] buffer = new byte[4096];
-	                int bytesRead;
-	                while ((bytesRead = input.read(buffer)) != -1) {
-	                    output.write(buffer, 0, bytesRead);
-	                }
-	            }
-	        }
+			if (!datos.getImagen().equals("Funcionamiento/sinPortada.jpg")) {
+				file = new File(datos.getImagen());
+			} else {
+				input = getClass().getResourceAsStream("sinPortada.jpg");
+				if (input == null) {
+					throw new FileNotFoundException("La imagen predeterminada no se encontró en el paquete");
+				}
+				file = File.createTempFile("tmp", ".jpg");
+				file.deleteOnExit();
+				try (OutputStream output = new FileOutputStream(file)) {
+					byte[] buffer = new byte[4096];
+					int bytesRead;
+					while ((bytesRead = input.read(buffer)) != -1) {
+						output.write(buffer, 0, bytesRead);
+					}
+				}
+			}
 			if (file.exists()) {
 				String userDir = System.getProperty("user.home");
 				String documentsPath = userDir + File.separator + "Documents";
-				String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator + "portadas";
-				
-				//Esto se modificara para hacerlo dinamico
+				String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
+						+ "portadas";
+
+				// Esto se modificara para hacerlo dinamico
 				String imagePath = defaultImagePath;
 
 				File portadasFolder = new File(imagePath);
@@ -277,34 +283,120 @@ public class Utilidades {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public String obtenerNombreCompleto(Comic datos) {
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
-		String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator + "portadas" + File.separator;
-	    String nombre_comic = datos.getNombre().replace(" ", "_").replace(":", "_");
-	    String numero_comic = datos.getNumero();
-	    String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_");
-	    String fecha_comic = datos.getFecha();
-	    String nombre_completo = nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic;
-	    String extension = ".jpg";
-	    String nuevoNombreArchivo = defaultImagePath + nombre_completo + extension;
-	    return nuevoNombreArchivo;
+		String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator + "portadas"
+				+ File.separator;
+		String nombre_comic = datos.getNombre().replace(" ", "-").replace(":", "_");
+		String numero_comic = datos.getNumero();
+		String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_");
+		String fecha_comic = datos.getFecha();
+		String nombre_completo = nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic;
+		String extension = ".jpg";
+		String nuevoNombreArchivo = defaultImagePath + nombre_completo + extension;
+		return nuevoNombreArchivo;
 	}
-	
+
+	public String crearNuevoNombre(Comic datos) {
+		String nombre_comic = datos.getNombre().replace(" ", "-").replace(":", "_");
+		String numero_comic = datos.getNumero();
+		String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_");
+		String fecha_comic = datos.getFecha();
+		String nombre_completo = nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic;
+		String extension = ".jpg";
+		String nuevoNombreArchivo = nombre_completo + extension;
+		return nuevoNombreArchivo;
+	}
+
 	public String obtenerNombreArchivo(String rutaCompleta) {
-	    // Obtener el separador de ruta del archivo según el sistema operativo
-	    String separadorRuta = File.separator;
+		// Obtener el separador de ruta del archivo según el sistema operativo
+		String separadorRuta = File.separator;
 
-	    // Obtener la última posición del separador de ruta del archivo en la ruta completa
-	    int posicionSeparador = rutaCompleta.lastIndexOf(separadorRuta);
+		// Obtener la última posición del separador de ruta del archivo en la ruta
+		// completa
+		int posicionSeparador = rutaCompleta.lastIndexOf(separadorRuta);
 
-	    // Extraer el nombre del archivo sin la ruta
-	    String nombreArchivo = rutaCompleta.substring(posicionSeparador + 1);
+		// Extraer el nombre del archivo sin la ruta
+		String nombreArchivo = rutaCompleta.substring(posicionSeparador + 1);
 
-	    return nombreArchivo;
+		return nombreArchivo;
 	}
 
+	public void copia_seguridad() {
+		// Realizar copia de seguridad
+		try {
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+			String nombre_carpeta = dateFormat.format(new Date());
+
+			String userDir = System.getProperty("user.home");
+			String documentsPath = userDir + File.separator + "Documents";
+			String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + "portadas";
+			File sourceFolder = new File(sourcePath);
+
+			String ubicacion = userDir + File.separator + "AppData" + File.separator + "Roaming";
+			String carpetaLibreria = ubicacion + File.separator + "libreria" + File.separator + "backups"
+					+ File.separator + nombre_carpeta;
+//					File libreria_backup = new File(carpetaLibreria);
+
+			if (sourceFolder.exists()) {
+				// Create the backups folder if it doesn't exist
+				File backupsFolder = new File(carpetaLibreria);
+				if (!backupsFolder.exists()) {
+					if (!backupsFolder.mkdirs()) {
+						throw new IOException("Failed to create 'backups' folder.");
+					}
+				}
+
+				// Crear archivo zip con fecha actual
+				String backupFileName = "portadas_" + dateFormat.format(new Date()) + ".zip";
+				String backupPath = carpetaLibreria + File.separator + backupFileName;
+				File backupFile = new File(backupPath);
+
+				// Comprimir carpeta en el archivo zip
+				try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(backupFile))) {
+					zipFile(sourceFolder, sourceFolder.getName(), zipOut);
+				}
+				excel.savedataExcel(nombre_carpeta);
+				System.out.println("Copia de seguridad creada: " + backupFile.getAbsolutePath());
+			} else {
+				System.out.println("La carpeta de origen no existe. No se pudo realizar la copia de seguridad.");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut) throws IOException {
+		if (fileToZip.isHidden()) {
+			return;
+		}
+		if (fileToZip.isDirectory()) {
+			if (fileName.endsWith("/")) {
+				zipOut.putNextEntry(new ZipEntry(fileName));
+				zipOut.closeEntry();
+			} else {
+				zipOut.putNextEntry(new ZipEntry(fileName + "/"));
+				zipOut.closeEntry();
+			}
+			File[] children = fileToZip.listFiles();
+			for (File childFile : children) {
+				zipFile(childFile, fileName + "/" + childFile.getName(), zipOut);
+			}
+			return;
+		}
+		FileInputStream fis = new FileInputStream(fileToZip);
+		ZipEntry zipEntry = new ZipEntry(fileName);
+		zipOut.putNextEntry(zipEntry);
+		byte[] bytes = new byte[1024];
+		int length;
+		while ((length = fis.read(bytes)) >= 0) {
+			zipOut.write(bytes, 0, length);
+		}
+
+		fis.close();
+	}
 
 //	public void guardar_imagen(String direccion) {
 //	    try {
@@ -340,7 +432,6 @@ public class Utilidades {
 //	        e.printStackTrace();
 //	    }
 //	}
-
 
 	/**
 	 * Elimina la imagen temporal de muestra de la base de datos.

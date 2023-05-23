@@ -28,6 +28,7 @@ import java.net.URL;
  */
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -555,7 +556,8 @@ public class IntroducirDatosController implements Initializable {
 
 			String procedencia = datos[6];
 
-			String fecha = datos[7];
+		    LocalDate fecha_comic = fechaAni.getValue();
+		    datos[7] = (fecha_comic != null) ? fecha_comic.toString() : "2000-01-01";
 
 			String guionista = datos[8];
 
@@ -578,7 +580,7 @@ public class IntroducirDatosController implements Initializable {
 
 			String estado = datos[11];
 
-			Comic comic = new Comic("", nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+			Comic comic = new Comic("", nombre, numero, variante, firma, editorial, formato, procedencia, fecha_comic.toString(),
 					guionista, dibujante, estado, "Sin puntuar", portada);
 
 			utilidad.nueva_imagen(comic);
