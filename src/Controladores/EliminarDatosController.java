@@ -166,12 +166,7 @@ public class EliminarDatosController implements Initializable {
 		nombreFormato.setItems(formatoActual);
 		nombreFormato.getSelectionModel().selectFirst();
 		
-		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
-		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
-		TextFields.bindAutoCompletion(nombreFirma, DBLibreriaManager.listaFirma);
-		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
-		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
-		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
+		listas_autocompletado();
 		
 	    TextFormatter<Integer> textFormatterAni = new TextFormatter<>(new IntegerStringConverter(), null,
 	            change -> {
@@ -192,6 +187,16 @@ public class EliminarDatosController implements Initializable {
 	                return null;
 	            });
 	    numeroComic.setTextFormatter(textFormatterComic);
+	}
+	
+	public void listas_autocompletado() {
+		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
+		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
+		TextFields.bindAutoCompletion(nombreFirma, DBLibreriaManager.listaFirma);
+		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
+		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
+		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
+		DBLibreriaManager.listaNombre.clear();
 	}
 	
 	/**

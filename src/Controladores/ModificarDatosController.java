@@ -235,6 +235,11 @@ public class ModificarDatosController implements Initializable {
 		nombreFormatoMod.setItems(formatoNuevo);
 		nombreFormatoMod.getSelectionModel().selectFirst();
 
+		listas_autocompletado();
+
+	}
+	
+	public void listas_autocompletado() {
 		libreria = new DBLibreriaManager();
 		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
@@ -249,7 +254,8 @@ public class ModificarDatosController implements Initializable {
 		TextFields.bindAutoCompletion(nombreEditorialMod, DBLibreriaManager.listaEditorial);
 		TextFields.bindAutoCompletion(nombreGuionistaMod, DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(nombreDibujanteMod, DBLibreriaManager.listaDibujante);
-
+		
+		DBLibreriaManager.listaNombre.clear();
 	}
 
 	/**
