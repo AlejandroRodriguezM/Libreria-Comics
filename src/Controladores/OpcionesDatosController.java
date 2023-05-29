@@ -11,15 +11,11 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import Funcionamiento.Ventanas;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
@@ -31,13 +27,13 @@ import javafx.util.converter.IntegerStringConverter;
 public class OpcionesDatosController implements Initializable {
 
 	@FXML
-	private Menu navegacion_cerrar;
-
-	@FXML
-	private Menu navegacion_comic;
-
-	@FXML
 	private Button botonCrearBBDD;
+
+	@FXML
+	private Button botonSalir;
+
+	@FXML
+	private Button botonVolver;
 
 	@FXML
 	private Button boton_abrir;
@@ -290,100 +286,32 @@ public class OpcionesDatosController implements Initializable {
 		}
 		return "localhost";
 	}
-	
-	/////////////////////////////////
-	//// METODOS LLAMADA A VENTANAS//
-	/////////////////////////////////
-
-	/**
-	 * Permite abrir y cargar la ventana para IntroducirDatosController
-	 *
-	 * @param event
-	 */
-	@FXML
-	public void ventanaAniadir(ActionEvent event) {
-
-		nav.verIntroducirDatos();
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
-	}
-
-	/**
-	 * Permite el cambio de ventana a la ventana de EliminarDatosController
-	 *
-	 * @param event
-	 */
-	@FXML
-	public void ventanaEliminar(ActionEvent event) {
-
-		nav.verEliminarDatos();
-
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
-	}
-
-	/**
-	 * Permite el cambio de ventana a la ventana de ModificarDatosController
-	 *
-	 * @param event
-	 */
-	@FXML
-	public void ventanaModificar(ActionEvent event) {
-
-		nav.verModificarDatos();
-
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
-	}
-
-	/**
-	 * Permite el cambio de ventana a la ventana deRecomendacionesController
-	 *
-	 * @param event
-	 */
-	@FXML
-	void ventanaRecomendar(ActionEvent event) {
-
-		nav.verRecomendacion();
-
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
-	}
 
 	/////////////////////////////
 	//// FUNCIONES PARA SALIR////
 	/////////////////////////////
 
 	/**
-	 * Vuelve al menu inicial de conexion de la base de datos.
+	 * Permite salir completamente del programa.
 	 *
 	 * @param event
 	 */
 	@FXML
-	public void volverMenu(ActionEvent event) throws IOException {
-		nav.verMenuPrincipal();
-
-		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-		myStage.close();
-	}
-
-	@FXML
 	public void salirPrograma(ActionEvent event) {
-		// Logic to handle the "Eliminar" action
-		nav.salirPrograma(event);
 
-		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-		myStage.close();
+		if (nav.salirPrograma(event)) { // Llamada a metodo que permite salir completamente del programa
+			Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
+			myStage.close();
+		}
 	}
-
+	
 	/**
-	 * Al cerrar la ventana, carga la ventana del menu principal
-	 *
+	 * Cierra el programa a la fuerza correctamente.
 	 */
-	public void closeWindows() {
-
-		Platform.exit();
-
+	public void closeWindows() { // Metodo que permite cerrar completamente el programa en caso de cerrar a la //
+		// fuerza.
+		Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
+		myStage.close();
 	}
 
 }

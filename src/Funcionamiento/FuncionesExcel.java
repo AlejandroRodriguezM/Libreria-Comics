@@ -64,7 +64,7 @@ public class FuncionesExcel {
 	private static Connection conn = DBManager.conexion();
 	private static Ventanas nav = new Ventanas();
 	private static DBLibreriaManager db = null;
-	private static int ID = 0;
+//	private static int ID = 0;
 	
 	private static Utilidades utilidad = new Utilidades();
 
@@ -490,15 +490,15 @@ public class FuncionesExcel {
 	    }
 	}
 
-	private String convertirFecha(String fecha) {
-	    try {
-	        SimpleDateFormat formatoEntrada = new SimpleDateFormat("dd/MM/yyyy");
-	        SimpleDateFormat formatoSalida = new SimpleDateFormat("yyyy/MM/dd");
-	        Date fechaDate = formatoEntrada.parse(fecha);
-	        return formatoSalida.format(fechaDate);
-	    } catch (ParseException e) {
-	        e.printStackTrace();
-	    }
-	    return null;
-	}
+//	private String convertirFecha(String fecha) {
+//	    try {
+//	        SimpleDateFormat formatoEntrada = new SimpleDateFormat("dd/MM/yyyy");
+//	        SimpleDateFormat formatoSalida = new SimpleDateFormat("yyyy/MM/dd");
+//	        Date fechaDate = formatoEntrada.parse(fecha);
+//	        return formatoSalida.format(fechaDate);
+//	    } catch (ParseException e) {
+//	        e.printStackTrace();
+//	    }
+//	    return null;
+//	}
 }
