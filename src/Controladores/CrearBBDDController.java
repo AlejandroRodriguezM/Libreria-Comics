@@ -266,6 +266,7 @@ public class CrearBBDDController {
 		        + "puntuacion varchar(300) NOT NULL, "
 		        + "portada TEXT, "
 		        + "estado TEXT NOT NULL, "
+		        + "caja_deposito TEXT , "
 		        + "PRIMARY KEY (`ID`)) "
 		        + "ENGINE=InnoDB AUTO_INCREMENT=320 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
 

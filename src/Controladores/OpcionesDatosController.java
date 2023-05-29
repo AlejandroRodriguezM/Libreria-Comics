@@ -11,11 +11,15 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import Funcionamiento.Ventanas;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
@@ -27,13 +31,13 @@ import javafx.util.converter.IntegerStringConverter;
 public class OpcionesDatosController implements Initializable {
 
 	@FXML
+	private Menu navegacion_cerrar;
+
+	@FXML
+	private Menu navegacion_comic;
+
+	@FXML
 	private Button botonCrearBBDD;
-
-	@FXML
-	private Button botonSalir;
-
-	@FXML
-	private Button botonVolver;
 
 	@FXML
 	private Button boton_abrir;
@@ -138,8 +142,6 @@ public class OpcionesDatosController implements Initializable {
 			}
 		}
 	}
-	
-
 
 	@FXML
 	void crearBBDD(ActionEvent event) {
@@ -183,10 +185,10 @@ public class OpcionesDatosController implements Initializable {
 
 			bufferedWriter.close();
 
-	        File carpeta_backupsFile = new File(carpetaBackup);
-	        if (!carpeta_backupsFile.exists()) {
-	        	carpeta_backupsFile.mkdir();
-	        }
+			File carpeta_backupsFile = new File(carpetaBackup);
+			if (!carpeta_backupsFile.exists()) {
+				carpeta_backupsFile.mkdir();
+			}
 
 			prontEstadoFichero.setStyle("-fx-background-color: #A0F52D");
 			prontEstadoFichero.setText("Fichero guardado");
@@ -288,65 +290,100 @@ public class OpcionesDatosController implements Initializable {
 		}
 		return "localhost";
 	}
-
-	@FXML
-	void volverPrograma(ActionEvent event) {
-		nav.verAccesoBBDD(); // Llamada a metodo para abrir la ventana anterior
-
-		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-		myStage.close();
-	}
+	
+	/////////////////////////////////
+	//// METODOS LLAMADA A VENTANAS//
+	/////////////////////////////////
 
 	/**
-	 * Permite salir completamente del programa.
+	 * Permite abrir y cargar la ventana para IntroducirDatosController
 	 *
 	 * @param event
 	 */
 	@FXML
-	public void salirPrograma(ActionEvent event) {
+	public void ventanaAniadir(ActionEvent event) {
 
-		if (nav.salirPrograma(event)) { // Llamada a metodo que permite salir completamente del programa
-			Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
-			myStage.close();
-		}
+		nav.verIntroducirDatos();
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
 	}
 
-	// Método para borrar un directorio y su contenido recursivamente, excepto la
-	// carpeta "excluir"
-//	private void borrarDirectorio(File directorio, String excluir) {
-//		File[] archivos = directorio.listFiles();
-//		if (archivos != null) {
-//			for (File archivo : archivos) {
-//				if (archivo.isDirectory()) {
-//					if (!archivo.getAbsolutePath().equals(excluir)) {
-//						borrarDirectorio(archivo, excluir);
-//					}
-//				} else {
-//					archivo.delete();
-//				}
-//			}
-//		}
-//		if (!directorio.getAbsolutePath().equals(excluir)) {
-//			directorio.delete();
-//		}
-//	}
+	/**
+	 * Permite el cambio de ventana a la ventana de EliminarDatosController
+	 *
+	 * @param event
+	 */
+	@FXML
+	public void ventanaEliminar(ActionEvent event) {
+
+		nav.verEliminarDatos();
+
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
+	}
 
 	/**
-	 * Cierra el programa a la fuerza correctamente.
+	 * Permite el cambio de ventana a la ventana de ModificarDatosController
+	 *
+	 * @param event
 	 */
-	public void closeWindows() { // Metodo que permite cerrar completamente el programa en caso de cerrar a la //
-		// fuerza.
-		Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
+	@FXML
+	public void ventanaModificar(ActionEvent event) {
+
+		nav.verModificarDatos();
+
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
+	}
+
+	/**
+	 * Permite el cambio de ventana a la ventana deRecomendacionesController
+	 *
+	 * @param event
+	 */
+	@FXML
+	void ventanaRecomendar(ActionEvent event) {
+
+		nav.verRecomendacion();
+
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
+	}
+
+	/////////////////////////////
+	//// FUNCIONES PARA SALIR////
+	/////////////////////////////
+
+	/**
+	 * Vuelve al menu inicial de conexion de la base de datos.
+	 *
+	 * @param event
+	 */
+	@FXML
+	public void volverMenu(ActionEvent event) throws IOException {
+		nav.verMenuPrincipal();
+
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 		myStage.close();
 	}
 
-//	/**
-//	 * Cierra el programa a la fuerza correctamente.
-//	 */
-//	public void closeWindows() { // Metodo que permite cerrar completamente el programa en caso de cerrar a la //
-//		// fuerza.
-//		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-//		myStage.close();
-//	}
+	@FXML
+	public void salirPrograma(ActionEvent event) {
+		// Logic to handle the "Eliminar" action
+		nav.salirPrograma(event);
+
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
+	}
+
+	/**
+	 * Al cerrar la ventana, carga la ventana del menu principal
+	 *
+	 */
+	public void closeWindows() {
+
+		Platform.exit();
+
+	}
 
 }

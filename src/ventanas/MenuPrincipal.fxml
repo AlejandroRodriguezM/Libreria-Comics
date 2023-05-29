@@ -4,6 +4,9 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
@@ -13,85 +16,14 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="741.0" prefWidth="1197.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.MenuPrincipalController">
+<Pane focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1197.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.MenuPrincipalController">
    <children>
-      <ImageView fitHeight="726.0" fitWidth="1197.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="726.0" fitWidth="1197.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagenes/Fondo%20Menu%202.jpg" />
          </image>
       </ImageView>
-      <Label layoutX="14.0" layoutY="4.0" style="-fx-background-color: grey;" text="ID">
-         <font>
-            <Font size="14.0" />
-         </font></Label>
-      <Label layoutX="270.0" layoutY="5.0" style="-fx-background-color: grey;" text="Nombre">
-         <font>
-            <Font size="14.0" />
-         </font></Label>
-      <Label layoutX="14.0" layoutY="32.0" style="-fx-background-color: grey;" text="Numero">
-         <font>
-            <Font size="14.0" />
-         </font></Label>
-      <Label layoutX="270.0" layoutY="32.0" style="-fx-background-color: grey;" text="Variante">
-         <font>
-            <Font size="14.0" />
-         </font></Label>
-      <Label layoutX="15.0" layoutY="62.0" prefHeight="17.0" prefWidth="36.0" style="-fx-background-color: grey;" text="Firma">
-         <font>
-            <Font size="14.0" />
-         </font></Label>
-      <Label layoutX="269.0" layoutY="63.0" style="-fx-background-color: grey;" text="Editorial">
-         <font>
-            <Font size="14.0" />
-         </font></Label>
-      <Label layoutX="13.0" layoutY="93.0" style="-fx-background-color: grey;" text="Formato">
-         <font>
-            <Font size="14.0" />
-         </font></Label>
-      <Label layoutX="269.0" layoutY="95.0" style="-fx-background-color: grey;" text="Procedencia">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Label>
-      <Label layoutX="14.0" layoutY="123.0" style="-fx-background-color: grey;" text="Fecha publicacion">
-         <font>
-            <Font size="13.0" />
-         </font></Label>
-      <Label layoutX="269.0" layoutY="123.0" style="-fx-background-color: grey;" text="Guionista">
-         <font>
-            <Font size="14.0" />
-         </font></Label>
-      <Label layoutX="14.0" layoutY="154.0" style="-fx-background-color: grey;" text="Dibujante">
-         <font>
-            <Font size="14.0" />
-         </font></Label>
-      <TextField fx:id="numeroID" layoutX="125.0" layoutY="2.0" prefHeight="25.0" prefWidth="126.0" />
-      <TextField fx:id="nombreComic" layoutX="395.0" layoutY="2.0" prefHeight="25.0" prefWidth="126.0" />
-      <TextField fx:id="numeroComic" layoutX="125.0" layoutY="31.0" prefHeight="25.0" prefWidth="126.0" />
-      <TextField fx:id="nombreVariante" layoutX="395.0" layoutY="31.0" prefHeight="25.0" prefWidth="126.0" />
-      <TextField fx:id="nombreFirma" layoutX="126.0" layoutY="61.0" prefHeight="25.0" prefWidth="126.0" />
-      <TextField fx:id="nombreEditorial" layoutX="395.0" layoutY="61.0" prefHeight="25.0" prefWidth="126.0" />
-      <TextField fx:id="nombreGuionista" layoutX="395.0" layoutY="120.0" prefHeight="25.0" prefWidth="126.0" />
-      <TextField fx:id="nombreDibujante" layoutX="126.0" layoutY="151.0" prefHeight="25.0" prefWidth="126.0" />
-      <Button fx:id="botonMostrarParametro" layoutX="537.0" layoutY="56.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="43.0" prefWidth="90.0" text="Mostrar por parametros" wrapText="true" />
-      <Button fx:id="botonLimpiar" layoutX="537.0" layoutY="111.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="25.0" prefWidth="90.0" text="Limpiar" />
-      <Button fx:id="botonbbdd" layoutX="537.0" layoutY="3.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="43.0" prefWidth="90.0" text="Ver todo" />
-      <Button fx:id="botonGuardarCSV" layoutX="14.0" layoutY="189.0" mnemonicParsing="false" onAction="#exportCSV" prefHeight="25.0" prefWidth="99.0" text="Exportar Excel" />
-      <Button fx:id="botonBackupBBDD" layoutX="14.0" layoutY="222.0" mnemonicParsing="false" onAction="#exportarSQL" prefHeight="25.0" prefWidth="99.0" text="Exportar BD" />
-      <Button fx:id="botonImportarCSV" layoutX="14.0" layoutY="257.0" mnemonicParsing="false" onAction="#importCSV" prefHeight="25.0" prefWidth="99.0" text="Importar CSV" />
-      <Button fx:id="botonEstadistica" alignment="TOP_LEFT" contentDisplay="CENTER" layoutX="14.0" layoutY="289.0" mnemonicParsing="false" onAction="#verEstadistica" prefHeight="25.0" prefWidth="99.0" text="Ver estadistica" />
-      <Button fx:id="botonEliminarComic" layoutX="127.0" layoutY="189.0" mnemonicParsing="false" onAction="#ventanaEliminar" prefHeight="25.0" prefWidth="99.0" text="Eliminar Comic" />
-      <Button fx:id="botonModificarComic" layoutX="127.0" layoutY="222.0" mnemonicParsing="false" onAction="#ventanaModificar" prefHeight="25.0" prefWidth="99.0" text="Modificar Comic">
-         <font>
-            <Font size="11.0" />
-         </font></Button>
-      <Button fx:id="botonFrase" layoutX="127.0" layoutY="320.0" mnemonicParsing="false" onAction="#fraseRandom" prefHeight="25.0" prefWidth="99.0" text="Frase random" />
-      <Button fx:id="botonVentanaAniadir" layoutX="127.0" layoutY="257.0" mnemonicParsing="false" onAction="#ventanaAniadir" prefHeight="25.0" prefWidth="99.0" text="Añadir Comic" />
-      <Button fx:id="botonDelete" layoutX="14.0" layoutY="320.0" mnemonicParsing="false" onAction="#borrarContenidoTabla" prefHeight="25.0" prefWidth="99.0" text="Eliminar BD" />
-      <Button fx:id="botonVerRecomendacion" layoutX="270.0" layoutY="289.0" mnemonicParsing="false" onAction="#ventanaRecomendar" prefHeight="43.0" prefWidth="75.0" text="Escoge lectura" wrapText="true" />
-      <Button fx:id="botonVolver" layoutX="1009.0" layoutY="318.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="32.0" prefWidth="102.0" text="Volver al menu" />
-      <Button fx:id="botonSalir" layoutX="1122.0" layoutY="318.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="32.0" prefWidth="68.0" text="Salir" />
-      <TableView fx:id="tablaBBDD" layoutX="-1.0" layoutY="356.0" onMouseClicked="#clickRaton" prefHeight="385.0" prefWidth="1198.0">
+      <TableView fx:id="tablaBBDD" layoutX="-1.0" layoutY="370.0" onMouseClicked="#clickRaton" prefHeight="381.0" prefWidth="1198.0">
          <columns>
             <TableColumn fx:id="ID" prefWidth="47.0" text="ID" />
             <TableColumn fx:id="nombre" prefWidth="135.0" text="Nombre" />
@@ -110,26 +42,118 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <TextArea fx:id="prontInfo" layoutX="955.0" layoutY="4.0" opacity="0.0" prefHeight="236.0" prefWidth="232.0" wrapText="true" />
+      <TextArea fx:id="prontInfo" layoutX="955.0" layoutY="33.0" opacity="0.0" prefHeight="329.0" prefWidth="235.0" wrapText="true" />
       <TextArea fx:id="prontFrases" editable="false" layoutX="904.0" layoutY="208.0" opacity="0.0" prefHeight="105.0" prefWidth="285.0" wrapText="true">
          <font>
             <Font name="Comic Sans MS" size="15.0" />
          </font>
       </TextArea>
-      <Label layoutX="270.0" layoutY="151.0" prefHeight="25.0" prefWidth="117.0" style="-fx-background-color: grey;" text="Busqueda general" wrapText="true">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Label>
-      <TextField fx:id="busquedaGeneral" layoutX="395.0" layoutY="151.0" prefHeight="25.0" prefWidth="126.0" />
-      <Button fx:id="botonVerPuntuar" layoutX="127.0" layoutY="289.0" mnemonicParsing="false" onAction="#ventanaPuntuar" prefHeight="25.0" prefWidth="99.0" text="Puntuar Comic" />
-      <Button fx:id="botonVendidos" layoutX="269.0" layoutY="240.0" mnemonicParsing="false" onAction="#comicsVendidos" prefHeight="43.0" prefWidth="75.0" text="Comics vendidos" wrapText="true" />
-      <Button fx:id="botonPuntuacion" layoutX="269.0" layoutY="188.0" mnemonicParsing="false" onAction="#comicsPuntuacion" prefHeight="43.0" prefWidth="75.0" text="Comics puntuados" wrapText="true" />
-      <Button fx:id="botonFirmados" layoutX="358.0" layoutY="188.0" mnemonicParsing="false" onAction="#comicsFirmados" prefHeight="43.0" prefWidth="75.0" text="Comics Firmados" wrapText="true" />
-      <Button fx:id="botonEnVenta" layoutX="358.0" layoutY="240.0" mnemonicParsing="false" onAction="#comicsEnVenta" prefHeight="43.0" prefWidth="75.0" text="Comics en venta" wrapText="true" />
-      <ImageView fx:id="imagencomic" fitHeight="312.0" fitWidth="248.0" layoutX="642.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true" />
-      <ComboBox fx:id="nombreProcedencia" layoutX="395.0" layoutY="91.0" prefHeight="25.0" prefWidth="126.0" />
-      <ComboBox fx:id="nombreFormato" layoutX="126.0" layoutY="92.0" prefHeight="25.0" prefWidth="126.0" />
-      <DatePicker fx:id="fechaPublicacion" layoutX="127.0" layoutY="121.0" prefHeight="25.0" prefWidth="126.0" />
+      <ImageView fx:id="imagencomic" fitHeight="339.0" fitWidth="243.0" layoutX="684.0" layoutY="26.0" pickOnBounds="true" preserveRatio="true" />
+      <MenuBar fx:id="menu_navegacion" prefHeight="25.0" prefWidth="1197.0">
+        <menus>
+          <Menu fx:id="navegacion_cerrar" mnemonicParsing="false" text="Archivo">
+            <items>
+              <MenuItem fx:id="menu_archivo_excel" mnemonicParsing="false" onAction="#exportCSV" text="Exportar Excel" />
+                  <MenuItem fx:id="menu_archivo_importar" mnemonicParsing="false" onAction="#importCSV" text="Importar CSV" />
+                  <MenuItem fx:id="menu_archivo_backupbbdd" mnemonicParsing="false" onAction="#exportarSQL" text="Exportar base de datos" />
+                  <MenuItem fx:id="menu_archivo_delete" mnemonicParsing="false" onAction="#borrarContenidoTabla" text="Eliminar Base de datos" />
+                  <MenuItem fx:id="menu_archivo_volver" mnemonicParsing="false" onAction="#volverMenu" text="Volver al menu" />
+                  <MenuItem fx:id="menu_archivo_cerrar" mnemonicParsing="false" onAction="#salirPrograma" text="Cerrar" />
+            </items>
+          </Menu>
+          <Menu fx:id="navegacion_comic" mnemonicParsing="false" text="Comic">
+            <items>
+              <MenuItem fx:id="menu_comic_aniadir" mnemonicParsing="false" onAction="#ventanaAniadir" text="Añadir comic" />
+                  <MenuItem fx:id="menu_comic_eliminar" mnemonicParsing="false" onAction="#ventanaEliminar" text="Eliminar Comic" />
+                  <MenuItem fx:id="menu_comic_modificar" mnemonicParsing="false" onAction="#ventanaModificar" text="Modificar Comic" />
+                  <MenuItem fx:id="menu_comic_puntuar" mnemonicParsing="false" onAction="#ventanaPuntuar" text="Puntuar Comic" />
+                  <MenuItem fx:id="menu_comic_aleatoria" mnemonicParsing="false" onAction="#ventanaRecomendar" text="Lectura aleatoria" />
+            </items>
+          </Menu>
+          <Menu fx:id="navegacion_estadistica" mnemonicParsing="false" text="Estadistica">
+            <items>
+              <MenuItem fx:id="menu_estadistica_puntuados" mnemonicParsing="false" onAction="#comicsPuntuacion" text="Comics puntuados" />
+                  <MenuItem fx:id="menu_estadistica_vendidos" mnemonicParsing="false" onAction="#comicsVendidos" text="Comics Vendidos" />
+                  <MenuItem fx:id="menu_estadistica_firmados" mnemonicParsing="false" onAction="#comicsFirmados" text="Comics Firmados" />
+                  <MenuItem fx:id="menu_estadistica_venta" mnemonicParsing="false" onAction="#comicsEnVenta" text="Comics en venta" />
+                  <MenuItem fx:id="menu_estadistica_estadistica" mnemonicParsing="false" onAction="#verEstadistica" text="Estadistica global" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <Pane layoutX="18.0" layoutY="34.0" prefHeight="329.0" prefWidth="483.0">
+         <children>
+            <Label layoutX="8.0" layoutY="8.0" style="-fx-background-color: grey;" text="Nombre">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <ComboBox fx:id="nombreFormato" layoutX="131.0" layoutY="121.0" prefHeight="25.0" prefWidth="126.0" />
+            <TextField fx:id="nombreComic" layoutX="131.0" layoutY="5.0" prefHeight="25.0" prefWidth="126.0" />
+            <Label layoutX="8.0" layoutY="36.0" style="-fx-background-color: grey;" text="Numero">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <TextField fx:id="numeroComic" layoutX="131.0" layoutY="35.0" prefHeight="25.0" prefWidth="126.0" />
+            <Label layoutX="8.0" layoutY="67.0" style="-fx-background-color: grey;" text="Variante">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <TextField fx:id="nombreVariante" layoutX="131.0" layoutY="64.0" prefHeight="25.0" prefWidth="126.0" />
+            <Label layoutX="8.0" layoutY="95.0" style="-fx-background-color: grey;" text="Procedencia">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <ComboBox fx:id="nombreProcedencia" layoutX="131.0" layoutY="92.0" prefHeight="25.0" prefWidth="126.0" />
+            <Label layoutX="8.0" layoutY="124.0" style="-fx-background-color: grey;" text="Formato">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="7.0" layoutY="153.0" style="-fx-background-color: grey;" text="Dibujante">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <TextField fx:id="nombreDibujante" layoutX="131.0" layoutY="150.0" prefHeight="25.0" prefWidth="126.0" />
+            <Label layoutX="8.0" layoutY="181.0" style="-fx-background-color: grey;" text="Guionista">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <TextField fx:id="nombreGuionista" layoutX="131.0" layoutY="179.0" prefHeight="25.0" prefWidth="126.0" />
+            <Label layoutX="8.0" layoutY="212.0" style="-fx-background-color: grey;" text="Editorial">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <TextField fx:id="nombreEditorial" layoutX="131.0" layoutY="208.0" prefHeight="25.0" prefWidth="126.0" />
+            <Label layoutX="7.0" layoutY="241.0" prefHeight="17.0" prefWidth="36.0" style="-fx-background-color: grey;" text="Firma">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <TextField fx:id="nombreFirma" layoutX="131.0" layoutY="238.0" prefHeight="25.0" prefWidth="126.0" />
+            <Label layoutX="6.0" layoutY="272.0" style="-fx-background-color: grey;" text="Fecha publicacion">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </Label>
+            <DatePicker fx:id="fechaPublicacion" layoutX="131.0" layoutY="269.0" prefHeight="25.0" prefWidth="126.0" />
+            <Label layoutX="4.0" layoutY="298.0" prefHeight="25.0" prefWidth="117.0" style="-fx-background-color: grey;" text="Busqueda general" wrapText="true">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <TextField fx:id="busquedaGeneral" layoutX="131.0" layoutY="298.0" prefHeight="25.0" prefWidth="126.0" />
+            <Button fx:id="botonMostrarParametro" layoutX="265.0" layoutY="60.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="43.0" prefWidth="90.0" text="Mostrar por parametros" wrapText="true" />
+            <Button fx:id="botonLimpiar" layoutX="374.0" layoutY="44.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="25.0" prefWidth="90.0" text="Limpiar" />
+            <Button fx:id="botonbbdd" layoutX="265.0" layoutY="8.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="43.0" prefWidth="102.0" text="Ver todo" />
+            <Button fx:id="botonFrase" layoutX="374.0" layoutY="10.0" mnemonicParsing="false" onAction="#fraseRandom" prefHeight="25.0" prefWidth="90.0" text="Frase random" />
+         </children>
+      </Pane>
    </children>
 </Pane>

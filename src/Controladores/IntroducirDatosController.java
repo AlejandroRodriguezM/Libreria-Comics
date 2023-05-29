@@ -38,6 +38,7 @@ import Funcionamiento.Comic;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -47,6 +48,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -66,6 +70,33 @@ import javafx.util.converter.IntegerStringConverter;
  */
 public class IntroducirDatosController implements Initializable {
 
+	@FXML
+    private MenuItem menu_archivo_cerrar;
+
+    @FXML
+    private MenuItem menu_archivo_volver;
+
+    @FXML
+    private MenuItem menu_comic_aleatoria;
+
+    @FXML
+    private MenuItem menu_comic_eliminar;
+
+    @FXML
+    private MenuItem menu_comic_modificar;
+
+    @FXML
+    private MenuItem menu_comic_puntuar;
+
+    @FXML
+    private MenuBar menu_navegacion;
+
+    @FXML
+    private Menu navegacion_cerrar;
+
+    @FXML
+    private Menu navegacion_comic;
+	
 	@FXML
 	private Button botonLimpiarComic;
 
@@ -522,8 +553,8 @@ public class IntroducirDatosController implements Initializable {
 
 		String datos[] = camposComicActuales();
 
-		Comic comic = new Comic(datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6],
-				procedenciaActual(), datos[8], datos[9], datos[10], "", "", null);
+		Comic comic = new Comic(datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
+				datos[8], datos[9], datos[10], "", "", null);
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
 		busquedaGeneral.setText("");
@@ -649,7 +680,7 @@ public class IntroducirDatosController implements Initializable {
 		campos[7] = procedenciaActual();
 		
 	    LocalDate fecha = fechaPublicacion.getValue();
-	    campos[8] = (fecha != null) ? fecha.toString() : "2000-01-01";
+	    campos[8] = (fecha != null) ? fecha.toString() : "";
 
 		campos[9] = nombreGuionista.getText();
 
@@ -715,45 +746,101 @@ public class IntroducirDatosController implements Initializable {
 		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
 		puntuacion.setCellValueFactory(new PropertyValueFactory<>("puntuacion"));
 	}
-
+	
+	/////////////////////////////////
+	//// METODOS LLAMADA A VENTANAS//
+	/////////////////////////////////
+	
 	/**
-	 * Permite volver al menu de conexion a la base de datos.
+	 * Permite el cambio de ventana a la ventana de EliminarDatosController
 	 *
 	 * @param event
 	 */
 	@FXML
-	void volverMenu(ActionEvent event) {
+	public void ventanaEliminar(ActionEvent event) {
 
-		nav.verMenuPrincipal();
+		nav.verEliminarDatos();
 
-		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-		myStage.close();
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
 	}
 
 	/**
-	 * Permite salir completamente del programa.
+	 * Permite el cambio de ventana a la ventana de ModificarDatosController
 	 *
 	 * @param event
 	 */
+	@FXML
+	public void ventanaModificar(ActionEvent event) {
+
+		nav.verModificarDatos();
+
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
+	}
+
+	/**
+	 * Permite el cambio de ventana a la ventana deRecomendacionesController
+	 *
+	 * @param event
+	 */
+	@FXML
+	void ventanaRecomendar(ActionEvent event) {
+
+		nav.verRecomendacion();
+
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
+	}
+
+	/**
+	 *
+	 * @param event
+	 */
+	@FXML
+	void ventanaPuntuar(ActionEvent event) {
+
+		nav.verPuntuar();
+
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
+
+	}
+
+	/////////////////////////////
+	//// FUNCIONES PARA SALIR////
+	/////////////////////////////
+
+	/**
+	 * Vuelve al menu inicial de conexion de la base de datos.
+	 *
+	 * @param event
+	 */
+	@FXML
+	public void volverMenu(ActionEvent event) throws IOException {
+	    nav.verMenuPrincipal();
+	    
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
+	}
+
 	@FXML
 	public void salirPrograma(ActionEvent event) {
+	    // Logic to handle the "Eliminar" action
+	    nav.salirPrograma(event);
 
-		if (nav.salirPrograma(event)) {
-			Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
-			myStage.close();
-		}
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
 	}
 
 	/**
-	 * Al cerrar la ventana, se cargara la ventana de verBBDD
+	 * Al cerrar la ventana, carga la ventana del menu principal
 	 *
 	 */
 	public void closeWindows() {
 
-		nav.verMenuPrincipal();
+		Platform.exit();
 
-		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-		myStage.close();
 	}
 	
 	

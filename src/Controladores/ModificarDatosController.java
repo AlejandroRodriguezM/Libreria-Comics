@@ -38,6 +38,7 @@ import Funcionamiento.Comic;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -47,6 +48,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -60,6 +64,33 @@ import javafx.stage.Stage;
 
 public class ModificarDatosController implements Initializable {
 
+    @FXML
+    private MenuItem menu_archivo_cerrar;
+
+    @FXML
+    private MenuItem menu_archivo_volver;
+
+    @FXML
+    private MenuItem menu_comic_aleatoria;
+
+    @FXML
+    private MenuItem menu_comic_aniadir;
+
+    @FXML
+    private MenuItem menu_comic_eliminar;
+
+    @FXML
+    private MenuItem menu_comic_modificar;
+
+    @FXML
+    private MenuBar menu_navegacion;
+
+    @FXML
+    private Menu navegacion_cerrar;
+
+    @FXML
+    private Menu navegacion_comic;
+	
 	@FXML
 	private Button botonModificar;
 
@@ -70,12 +101,6 @@ public class ModificarDatosController implements Initializable {
 	private Button botonMostrarParametro;
 
 	@FXML
-	private Button botonSalir;
-
-	@FXML
-	private Button botonVolver;
-
-	@FXML
 	private Button botonbbdd;
 
 	@FXML
@@ -83,7 +108,7 @@ public class ModificarDatosController implements Initializable {
 
 	@FXML
 	private DatePicker anioPublicacion;
-	
+
 	@FXML
 	private DatePicker anioPublicacionMod;
 
@@ -238,7 +263,7 @@ public class ModificarDatosController implements Initializable {
 		listas_autocompletado();
 
 	}
-	
+
 	public void listas_autocompletado() {
 		libreria = new DBLibreriaManager();
 		libreria.listasAutoCompletado();
@@ -255,7 +280,7 @@ public class ModificarDatosController implements Initializable {
 		TextFields.bindAutoCompletion(nombreEditorialMod, DBLibreriaManager.listaEditorial);
 		TextFields.bindAutoCompletion(nombreGuionistaMod, DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(nombreDibujanteMod, DBLibreriaManager.listaDibujante);
-		
+
 		DBLibreriaManager.listaNombre.clear();
 	}
 
@@ -473,9 +498,9 @@ public class ModificarDatosController implements Initializable {
 		campos[6] = formatoActual();
 
 		campos[7] = procedenciaActual();
-		
-	    LocalDate fecha = anioPublicacion.getValue();
-	    campos[8] = (fecha != null) ? fecha.toString() : "2000-01-01";
+
+		LocalDate fecha = anioPublicacion.getValue();
+		campos[8] = (fecha != null) ? fecha.toString() : "2000-01-01";
 
 		campos[9] = nombreGuionista.getText();
 
@@ -511,9 +536,9 @@ public class ModificarDatosController implements Initializable {
 		campos[6] = formatoNuevo();
 
 		campos[7] = procedenciaMod();
-		
-	    LocalDate fecha = anioPublicacionMod.getValue();
-	    campos[8] = (fecha != null) ? fecha.toString() : "";
+
+		LocalDate fecha = anioPublicacionMod.getValue();
+		campos[8] = (fecha != null) ? fecha.toString() : "";
 
 		campos[9] = nombreGuionistaMod.getText();
 
@@ -707,22 +732,63 @@ public class ModificarDatosController implements Initializable {
 		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
 	}
 
-	/////////////////////////////////
-	//// METODO LLAMADA A VENTANA////
-	/////////////////////////////////
+/////////////////////////////////
+//// METODOS LLAMADA A VENTANAS//
+/////////////////////////////////
 
 	/**
-	 * Permite volver al menu de conexion a la base de datos.
+	 * Permite abrir y cargar la ventana para IntroducirDatosController
 	 *
 	 * @param event
 	 */
 	@FXML
-	void volverMenu(ActionEvent event) {
+	public void ventanaAniadir(ActionEvent event) {
 
-		nav.verMenuPrincipal();
-
-		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
+		nav.verIntroducirDatos();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 		myStage.close();
+	}
+
+	/**
+	 * Permite el cambio de ventana a la ventana de EliminarDatosController
+	 *
+	 * @param event
+	 */
+	@FXML
+	public void ventanaEliminar(ActionEvent event) {
+
+		nav.verEliminarDatos();
+
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
+	}
+
+	/**
+	 * Permite el cambio de ventana a la ventana deRecomendacionesController
+	 *
+	 * @param event
+	 */
+	@FXML
+	void ventanaRecomendar(ActionEvent event) {
+
+		nav.verRecomendacion();
+
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
+	}
+
+	/**
+	 *
+	 * @param event
+	 */
+	@FXML
+	void ventanaPuntuar(ActionEvent event) {
+
+		nav.verPuntuar();
+
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
+
 	}
 
 	/////////////////////////////
@@ -730,28 +796,34 @@ public class ModificarDatosController implements Initializable {
 	/////////////////////////////
 
 	/**
-	 * Permite salir completamente del programa.
+	 * Vuelve al menu inicial de conexion de la base de datos.
 	 *
 	 * @param event
 	 */
 	@FXML
-	public void salirPrograma(ActionEvent event) {
+	public void volverMenu(ActionEvent event) throws IOException {
+		nav.verMenuPrincipal();
 
-		if (nav.salirPrograma(event)) {
-			Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
-			myStage.close();
-		}
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
+	}
+
+	@FXML
+	public void salirPrograma(ActionEvent event) {
+		// Logic to handle the "Eliminar" action
+		nav.salirPrograma(event);
+
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	/**
-	 * Al cerrar la ventana, se cargara la ventana de verBBDD
+	 * Al cerrar la ventana, carga la ventana del menu principal
 	 *
 	 */
 	public void closeWindows() {
 
-		nav.verMenuPrincipal();
+		Platform.exit();
 
-		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-		myStage.close();
 	}
 }

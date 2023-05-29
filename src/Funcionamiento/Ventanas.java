@@ -112,12 +112,13 @@ public class Ventanas {
 			// Asocio el stage con el scene
 			stage.setScene(scene);
 			stage.show();
-
+			
 			// Indico que debe hacer al cerrar
 			stage.setOnCloseRequest(e -> {
 				controlador.closeWindows();
 			});
-
+			
+		
 		} catch (IOException ex) {
 			alertaException(ex.toString());
 		}

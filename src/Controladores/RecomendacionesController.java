@@ -1,5 +1,7 @@
 package Controladores;
 
+import java.io.IOException;
+
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  * Las ventanas graficas se realizan con JavaFX.
@@ -28,9 +30,13 @@ import java.util.Random;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
@@ -43,6 +49,33 @@ import javafx.stage.Stage;
  */
 public class RecomendacionesController {
 
+    @FXML
+    private MenuItem menu_archivo_cerrar;
+
+    @FXML
+    private MenuItem menu_archivo_volver;
+
+    @FXML
+    private MenuItem menu_comic_aniadir;
+
+    @FXML
+    private MenuItem menu_comic_eliminar;
+
+    @FXML
+    private MenuItem menu_comic_modificar;
+
+    @FXML
+    private MenuItem menu_comic_puntuar;
+
+    @FXML
+    private MenuBar menu_navegacion;
+
+    @FXML
+    private Menu navegacion_cerrar;
+
+    @FXML
+    private Menu navegacion_comic;
+	
 	@FXML
 	private Button botonElegir;
 
@@ -114,44 +147,98 @@ public class RecomendacionesController {
 		printComicRecomendado.setText("");
 	}
 
+	/////////////////////////////////
+	//// METODOS LLAMADA A VENTANAS//
+	/////////////////////////////////
+
 	/**
-	 * Permite salir completamente del programa.
+	 * Permite abrir y cargar la ventana para IntroducirDatosController
 	 *
 	 * @param event
 	 */
 	@FXML
-	void salirPrograma(ActionEvent event) {
+	public void ventanaAniadir(ActionEvent event) {
 
-		if (nav.salirPrograma(event)) {
-			Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
-			myStage.close();
-		}
+		nav.verIntroducirDatos();
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
 	}
+
+	/**
+	 * Permite el cambio de ventana a la ventana de EliminarDatosController
+	 *
+	 * @param event
+	 */
+	@FXML
+	public void ventanaEliminar(ActionEvent event) {
+
+		nav.verEliminarDatos();
+
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
+	}
+
+	/**
+	 * Permite el cambio de ventana a la ventana de ModificarDatosController
+	 *
+	 * @param event
+	 */
+	@FXML
+	public void ventanaModificar(ActionEvent event) {
+
+		nav.verModificarDatos();
+
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
+	}
+
+	/**
+	 *
+	 * @param event
+	 */
+	@FXML
+	void ventanaPuntuar(ActionEvent event) {
+
+		nav.verPuntuar();
+
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
+
+	}
+	
+	/////////////////////////////
+	//// FUNCIONES PARA SALIR////
+	/////////////////////////////
 
 	/**
 	 * Vuelve al menu inicial de conexion de la base de datos.
 	 *
 	 * @param event
 	 */
-	public void volverMenu(ActionEvent event) {
+	@FXML
+	public void volverMenu(ActionEvent event) throws IOException {
+	    nav.verAccesoBBDD();
+	    
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
+	}
 
-		nav.verMenuPrincipal();
+	@FXML
+	public void salirPrograma(ActionEvent event) {
+	    // Logic to handle the "Eliminar" action
+	    nav.salirPrograma(event);
 
-		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-		myStage.close();
-
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
 	}
 
 	/**
-	 * Al cerrar la ventana, se cargara la ventana de verBBDD
+	 * Al cerrar la ventana, carga la ventana del menu principal
 	 *
 	 */
 	public void closeWindows() {
 
-		nav.verMenuPrincipal();
-
-		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-		myStage.close();
+		Platform.exit();
 
 	}
 

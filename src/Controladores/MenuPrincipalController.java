@@ -38,7 +38,7 @@ import Funcionamiento.FuncionesExcel;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
-import JDBC.DBManager;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -47,6 +47,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -68,76 +71,79 @@ import javafx.util.converter.IntegerStringConverter;
 public class MenuPrincipalController implements Initializable {
 
 	@FXML
-	private Button botonEliminarComic;
+	private MenuItem menu_archivo_backupbbdd;
 
 	@FXML
-	private Button botonModificarComic;
+	private MenuItem menu_archivo_cerrar;
+	
+	@FXML
+	private MenuItem menu_archivo_volver;
+
+	@FXML
+	private MenuItem menu_archivo_delete;
+
+	@FXML
+	private MenuItem menu_archivo_excel;
+
+	@FXML
+	private MenuItem menu_archivo_importar;
+
+	@FXML
+	private MenuItem menu_comic_aniadir;
+
+	@FXML
+	private MenuItem menu_comic_eliminar;
+	
+	@FXML
+	private MenuItem menu_comic_aleatoria;
+
+	@FXML
+	private MenuItem menu_comic_modificar;
+
+	@FXML
+	private MenuItem menu_comic_puntuar;
+
+	@FXML
+	private MenuItem menu_estadistica_estadistica;
+
+	@FXML
+	private MenuItem menu_estadistica_firmados;
+
+	@FXML
+	private MenuItem menu_estadistica_puntuados;
+
+	@FXML
+	private MenuItem menu_estadistica_vendidos;
+
+	@FXML
+	private MenuItem menu_estadistica_venta;
+
+	@FXML
+	private MenuBar menu_navegacion;
+
+	@FXML
+	private Menu navegacion_cerrar;
+
+	@FXML
+	private Menu navegacion_comic;
+
+	@FXML
+	private Menu navegacion_estadistica;
+	
+	@FXML
+	private Button botonbbdd;
 
 	@FXML
 	private Button botonLimpiar;
 
 	@FXML
 	private Button botonMostrarParametro;
-
-	@FXML
-	private Button botonSalir;
-
-	@FXML
-	private Button botonVolver;
-
-	@FXML
-	private Button botonbbdd;
-
-	@FXML
-	private Button botonVentanaAniadir;
-
-	@FXML
-	private Button botonBackupBBDD;
-
-	@FXML
-	private Button botonVentanaEliminar;
-
-	@FXML
-	private Button botonVerRecomendacion;
-
-	@FXML
-	private Button botonVerPuntuar;
-
+	
 	@FXML
 	private Button botonFrase;
 
 	@FXML
-	private Button botonImportarCSV;
-
-	@FXML
-	private Button botonGuardarCSV;
-
-	@FXML
-	private Button botonDelete;
-
-	@FXML
-	private Button botonEstadistica;
-
-	@FXML
-	private Button botonEnVenta;
-
-	@FXML
-	private Button botonVendidos;
-
-	@FXML
-	private Button botonPuntuacion;
-
-	@FXML
-	private Button botonFirmados;
-
-//	@FXML
-//	private TextField fechaPublicacion;
-	
-	@FXML
 	private DatePicker fechaPublicacion;
-
-	@FXML
-	private TextField numeroID;
 
 	@FXML
 	private TextField nombreComic;
@@ -210,14 +216,12 @@ public class MenuPrincipalController implements Initializable {
 
 	@FXML
 	private ImageView imagencomic;
-	
+
 	@FXML
 	private ComboBox<String> nombreProcedencia;
-	
+
 	@FXML
 	private ComboBox<String> nombreFormato;
-	
-
 
 	private static Ventanas nav = new Ventanas();
 
@@ -231,42 +235,30 @@ public class MenuPrincipalController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		libreria = new DBLibreriaManager();
 		libreria.listasAutoCompletado();
-		
-		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList("Spain", "USA",
-				"Japon","Italia","Francia");
+
+		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList("Spain", "USA", "Japon",
+				"Italia", "Francia");
 		nombreProcedencia.setItems(procedenciaEstadoActual);
 		nombreProcedencia.getSelectionModel().selectFirst();
-		
-		ObservableList<String> formatoActual = FXCollections.observableArrayList("Grapa", "Tapa dura","Tapa blanda",
-				"Manga","Libro");
+
+		ObservableList<String> formatoActual = FXCollections.observableArrayList("Grapa", "Tapa dura", "Tapa blanda",
+				"Manga", "Libro");
 		nombreFormato.setItems(formatoActual);
 		nombreFormato.getSelectionModel().selectFirst();
-		
 
 		listas_autocompletado();
-		
-		
-	    TextFormatter<Integer> textFormatterAni = new TextFormatter<>(new IntegerStringConverter(), null,
-	            change -> {
-	                String newText = change.getControlNewText();
-	                if (newText.matches("\\d*")) {
-	                    return change;
-	                }
-	                return null;
-	            });
-	    numeroID.setTextFormatter(textFormatterAni);
 
-	    TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null,
-	            change -> {
-	                String newText = change.getControlNewText();
-	                if (newText.matches("\\d*")) {
-	                    return change;
-	                }
-	                return null;
-	            });
-	    numeroComic.setTextFormatter(textFormatterComic);
+		TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+			String newText = change.getControlNewText();
+			if (newText.matches("\\d*")) {
+				return change;
+			}
+			return null;
+		});
+		numeroComic.setTextFormatter(textFormatterComic);
+		
 	}
-	
+
 	public void listas_autocompletado() {
 		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
@@ -276,7 +268,7 @@ public class MenuPrincipalController implements Initializable {
 		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
 		DBLibreriaManager.listaNombre.clear();
 	}
-	
+
 	/**
 	 * Funcion que permite modificar el estado de un comic.
 	 *
@@ -285,11 +277,13 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	public String procedenciaActual() {
 
-		String procedenciaEstadoNuevo = nombreProcedencia.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+		String procedenciaEstadoNuevo = nombreProcedencia.getSelectionModel().getSelectedItem().toString(); // Toma el
+																											// valor del
+																											// menu
 		// "puntuacion"
 		return procedenciaEstadoNuevo;
 	}
-	
+
 	/**
 	 * Funcion que permite modificar el estado de un comic.
 	 *
@@ -316,8 +310,8 @@ public class MenuPrincipalController implements Initializable {
 	public void ventanaAniadir(ActionEvent event) {
 
 		nav.verIntroducirDatos();
-		Stage myStage = (Stage) this.botonVentanaAniadir.getScene().getWindow();
-		myStage.close();
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
 	}
 
 	/**
@@ -330,8 +324,8 @@ public class MenuPrincipalController implements Initializable {
 
 		nav.verEliminarDatos();
 
-		Stage myStage = (Stage) this.botonEliminarComic.getScene().getWindow();
-		myStage.close();
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
 	}
 
 	/**
@@ -344,8 +338,8 @@ public class MenuPrincipalController implements Initializable {
 
 		nav.verModificarDatos();
 
-		Stage myStage = (Stage) this.botonModificarComic.getScene().getWindow();
-		myStage.close();
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
 	}
 
 	/**
@@ -358,8 +352,8 @@ public class MenuPrincipalController implements Initializable {
 
 		nav.verRecomendacion();
 
-		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-		myStage.close();
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
 	}
 
 	/**
@@ -371,8 +365,8 @@ public class MenuPrincipalController implements Initializable {
 
 		nav.verPuntuar();
 
-		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-		myStage.close();
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
 
 	}
 
@@ -573,7 +567,6 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	public void limpiezaDeDatos() {
-		numeroID.setText("");
 		nombreComic.setText("");
 		numeroComic.setText("");
 		nombreVariante.setText("");
@@ -651,22 +644,21 @@ public class MenuPrincipalController implements Initializable {
 
 	@FXML
 	void clickRaton(MouseEvent event) {
-		libreria = new DBLibreriaManager();
-		libreria.libreriaCompleta();
-		utilidad = new Utilidades();
-		String ID;
+	    libreria = new DBLibreriaManager();
+	    libreria.libreriaCompleta();
+	    utilidad = new Utilidades();
+	    String ID;
 
-		Comic idRow;
+	    Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 
-		idRow = tablaBBDD.getSelectionModel().getSelectedItem();
+	    if (idRow != null) {
+	        ID = idRow.getID();
+	        prontInfo.setOpacity(1);
+	        prontInfo.setText(libreria.comicDatos(ID).toString().replace("[", "").replace("]", ""));
 
-		ID = idRow.getID();
-		prontInfo.setOpacity(1);
-		prontInfo.setText(libreria.comicDatos(ID).toString().replace("[", "").replace("]", ""));
-
-		imagencomic.setImage(libreria.selectorImage(ID));
-		utilidad.deleteImage();
-
+	        imagencomic.setImage(libreria.selectorImage(ID));
+	        utilidad.deleteImage();
+	    }
 	}
 
 	/////////////////////////////////
@@ -777,8 +769,8 @@ public class MenuPrincipalController implements Initializable {
 		libreria = new DBLibreriaManager();
 
 		String datos[] = camposComic();
-		
-		Comic comic = new Comic(datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
+
+		Comic comic = new Comic("", datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
 				datos[8], datos[9], datos[10], "", "", null);
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
@@ -821,8 +813,6 @@ public class MenuPrincipalController implements Initializable {
 	public String[] camposComic() {
 		String campos[] = new String[11];
 
-		campos[0] = numeroID.getText();
-
 		campos[1] = nombreComic.getText();
 
 		campos[2] = numeroComic.getText();
@@ -837,11 +827,11 @@ public class MenuPrincipalController implements Initializable {
 
 		campos[7] = procedenciaActual();
 
-	    LocalDate fecha = fechaPublicacion.getValue();
-	    campos[8] = (fecha != null) ? fecha.toString() : "";
+		LocalDate fecha = fechaPublicacion.getValue();
+		campos[8] = (fecha != null) ? fecha.toString() : "";
 
-	    campos[9] = nombreGuionista.getText();
-	    campos[10] = nombreDibujante.getText();
+		campos[9] = nombreGuionista.getText();
+		campos[10] = nombreDibujante.getText();
 
 		return campos;
 	}
@@ -857,25 +847,19 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	public void volverMenu(ActionEvent event) throws IOException {
-
-		nav.verAccesoBBDD();
-		DBManager.close();
-		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-		myStage.close();
+	    nav.verAccesoBBDD();
+	    
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
 	}
 
-	/**
-	 * Permite salir completamente del programa
-	 *
-	 * @param event
-	 */
 	@FXML
 	public void salirPrograma(ActionEvent event) {
+	    // Logic to handle the "Eliminar" action
+	    nav.salirPrograma(event);
 
-		if (nav.salirPrograma(event)) {
-			Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
-			myStage.close();
-		}
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
 	}
 
 	/**
@@ -884,10 +868,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	public void closeWindows() {
 
-		nav.verAccesoBBDD();
-
-		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-		myStage.close();
+		Platform.exit();
 
 	}
 
