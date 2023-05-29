@@ -287,9 +287,13 @@ public class OpcionesDatosController implements Initializable {
 		return "localhost";
 	}
 
-	/////////////////////////////
-	//// FUNCIONES PARA SALIR////
-	/////////////////////////////
+	@FXML
+	void volverPrograma(ActionEvent event) {
+		nav.verAccesoBBDD(); // Llamada a metodo para abrir la ventana anterior
+
+		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
+		myStage.close();
+	}
 
 	/**
 	 * Permite salir completamente del programa.
@@ -304,7 +308,27 @@ public class OpcionesDatosController implements Initializable {
 			myStage.close();
 		}
 	}
-	
+
+	// Método para borrar un directorio y su contenido recursivamente, excepto la
+	// carpeta "excluir"
+//	private void borrarDirectorio(File directorio, String excluir) {
+//		File[] archivos = directorio.listFiles();
+//		if (archivos != null) {
+//			for (File archivo : archivos) {
+//				if (archivo.isDirectory()) {
+//					if (!archivo.getAbsolutePath().equals(excluir)) {
+//						borrarDirectorio(archivo, excluir);
+//					}
+//				} else {
+//					archivo.delete();
+//				}
+//			}
+//		}
+//		if (!directorio.getAbsolutePath().equals(excluir)) {
+//			directorio.delete();
+//		}
+//	}
+
 	/**
 	 * Cierra el programa a la fuerza correctamente.
 	 */
@@ -313,5 +337,14 @@ public class OpcionesDatosController implements Initializable {
 		Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
 		myStage.close();
 	}
+
+//	/**
+//	 * Cierra el programa a la fuerza correctamente.
+//	 */
+//	public void closeWindows() { // Metodo que permite cerrar completamente el programa en caso de cerrar a la //
+//		// fuerza.
+//		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
+//		myStage.close();
+//	}
 
 }
