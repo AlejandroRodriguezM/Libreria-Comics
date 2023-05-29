@@ -155,7 +155,7 @@ public class EliminarDatosController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		libreria = new DBLibreriaManager();
-		
+		libreria.listasAutoCompletado();
 		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList("Spain", "USA",
 				"Japon","Italia","Francia");
 		nombreProcedencia.setItems(procedenciaEstadoActual);

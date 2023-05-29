@@ -236,6 +236,7 @@ public class ModificarDatosController implements Initializable {
 		nombreFormatoMod.getSelectionModel().selectFirst();
 
 		libreria = new DBLibreriaManager();
+		libreria.listasAutoCompletado();
 		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
 		TextFields.bindAutoCompletion(nombreFirma, DBLibreriaManager.listaFirma);

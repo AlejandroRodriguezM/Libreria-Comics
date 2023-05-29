@@ -243,6 +243,7 @@ public class IntroducirDatosController implements Initializable {
 		formatoAni.getSelectionModel().selectFirst();
 
 		libreria = new DBLibreriaManager();
+		libreria.listasAutoCompletado();
 		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
 		TextFields.bindAutoCompletion(nombreFirma, DBLibreriaManager.listaFirma);
