@@ -251,12 +251,9 @@ public class IntroducirDatosController implements Initializable {
 		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
 
-		TextFields.bindAutoCompletion(nombreAni, DBLibreriaManager.listaNombre);
-		TextFields.bindAutoCompletion(varianteAni, DBLibreriaManager.listaVariante);
-		TextFields.bindAutoCompletion(firmaAni, DBLibreriaManager.listaFirma);
-		TextFields.bindAutoCompletion(editorialAni, DBLibreriaManager.listaEditorial);
-		TextFields.bindAutoCompletion(guionistaAni, DBLibreriaManager.listaGuionista);
-		TextFields.bindAutoCompletion(dibujanteAni, DBLibreriaManager.listaDibujante);
+
+		
+		listas_autocompletado();
 		
 	    TextFormatter<Integer> textFormatterAni = new TextFormatter<>(new IntegerStringConverter(), null,
 	            change -> {
@@ -277,6 +274,23 @@ public class IntroducirDatosController implements Initializable {
 	                return null;
 	            });
 	    numeroComic.setTextFormatter(textFormatterComic);
+	}
+	
+	public void listas_autocompletado() {
+		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
+		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
+		TextFields.bindAutoCompletion(nombreFirma, DBLibreriaManager.listaFirma);
+		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
+		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
+		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
+
+		TextFields.bindAutoCompletion(nombreAni, DBLibreriaManager.listaNombre);
+		TextFields.bindAutoCompletion(varianteAni, DBLibreriaManager.listaVariante);
+		TextFields.bindAutoCompletion(firmaAni, DBLibreriaManager.listaFirma);
+		TextFields.bindAutoCompletion(editorialAni, DBLibreriaManager.listaEditorial);
+		TextFields.bindAutoCompletion(guionistaAni, DBLibreriaManager.listaGuionista);
+		TextFields.bindAutoCompletion(dibujanteAni, DBLibreriaManager.listaDibujante);
+		DBLibreriaManager.listaNombre.clear();
 	}
 
 	/**

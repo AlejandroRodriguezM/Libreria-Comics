@@ -242,15 +242,9 @@ public class MenuPrincipalController implements Initializable {
 		nombreFormato.setItems(formatoActual);
 		nombreFormato.getSelectionModel().selectFirst();
 		
-		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
-		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
-		TextFields.bindAutoCompletion(nombreFirma, DBLibreriaManager.listaFirma);
-		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
-		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
-		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
-//		TextFields.bindAutoCompletion(fechaPublicacion, DBLibreriaManager.listaFecha);
+
+		listas_autocompletado();
 		
-		DBLibreriaManager.listaNombre.clear();
 		
 	    TextFormatter<Integer> textFormatterAni = new TextFormatter<>(new IntegerStringConverter(), null,
 	            change -> {
@@ -271,6 +265,16 @@ public class MenuPrincipalController implements Initializable {
 	                return null;
 	            });
 	    numeroComic.setTextFormatter(textFormatterComic);
+	}
+	
+	public void listas_autocompletado() {
+		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
+		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
+		TextFields.bindAutoCompletion(nombreFirma, DBLibreriaManager.listaFirma);
+		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
+		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
+		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
+		DBLibreriaManager.listaNombre.clear();
 	}
 	
 	/**
@@ -713,6 +717,7 @@ public class MenuPrincipalController implements Initializable {
 			if (fichero != null) {
 				if (excelFuntions.importarCSV(fichero)) { // Si se ha importado el fichero CSV correctamente, se vera el
 					// siguiente mensaje
+					listas_autocompletado();
 					prontInfo.setOpacity(1);
 					prontInfo.setStyle("-fx-background-color: #A0F52D");
 					prontInfo.setText("Fichero CSV importado de forma correcta");
