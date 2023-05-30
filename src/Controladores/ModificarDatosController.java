@@ -56,12 +56,14 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.converter.IntegerStringConverter;
 
 public class ModificarDatosController implements Initializable {
 
@@ -279,6 +281,23 @@ public class ModificarDatosController implements Initializable {
 		nombreFormatoMod.getSelectionModel().selectFirst();
 
 		listas_autocompletado();
+				TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+			String newText = change.getControlNewText();
+			if (newText.matches("\\d*")) {
+				return change;
+			}
+			return null;
+		});
+		
+		TextFormatter<Integer> textFormatterComic2 = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+			String newText = change.getControlNewText();
+			if (newText.matches("\\d*")) {
+				return change;
+			}
+			return null;
+		});
+		numeroComic.setTextFormatter(textFormatterComic);
+		numeroCaja.setTextFormatter(textFormatterComic2);		numeroCaja.setTextFormatter(textFormatterComic);
 
 	}
 

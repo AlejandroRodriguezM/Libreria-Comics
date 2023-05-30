@@ -38,78 +38,78 @@
       <TextField fx:id="nombreEditorialMod" layoutX="380.0" layoutY="191.0" prefHeight="25.0" prefWidth="113.0" />
       <TextField fx:id="nombreGuionistaMod" layoutX="380.0" layoutY="308.0" prefHeight="25.0" prefWidth="113.0" />
       <TextField fx:id="nombreDibujanteMod" layoutX="380.0" layoutY="337.0" prefHeight="25.0" prefWidth="113.0" />
-      <Button fx:id="botonModificar" layoutX="503.0" layoutY="109.0" mnemonicParsing="false" onAction="#modificarDatos" prefHeight="42.0" prefWidth="75.0" text="Modificar comic" wrapText="true" />
-      <Button fx:id="botonLimpiarComic" layoutX="593.0" layoutY="109.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="42.0" prefWidth="81.0" text="Limpiar datos" wrapText="true" />
-      <Label layoutX="11.0" layoutY="73.0" style="-fx-background-color: grey;" text="Nombre" />
-      <Label layoutX="11.0" layoutY="102.0" style="-fx-background-color: grey;" text="Numero" />
-      <Button fx:id="botonMostrarParametro" layoutX="503.0" layoutY="41.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="59.0" prefWidth="81.0" text="Mostrar segun parametros" wrapText="true" />
-      <Label layoutX="271.0" layoutY="73.0" style="-fx-background-color: grey;" text="Nombre nuevo" />
-      <Label layoutX="270.0" layoutY="314.0" style="-fx-background-color: grey;" text="Guionista nuevo" />
-      <Label layoutX="269.0" layoutY="343.0" style="-fx-background-color: grey;" text="Dibujante nuevo" />
-      <Label layoutX="270.0" layoutY="284.0" style="-fx-background-color: grey;" text="Fecha nueva" />
-      <Label layoutX="270.0" layoutY="224.0" style="-fx-background-color: grey;" text="Formato nuevo" />
-      <Label layoutX="270.0" layoutY="194.0" style="-fx-background-color: grey;" text="Editorial nuevo" />
-      <Label layoutX="270.0" layoutY="133.0" style="-fx-background-color: grey;" text="Variante nuevo" />
-      <Label layoutX="271.0" layoutY="102.0" style="-fx-background-color: grey;" text="Numero nuevo" />
-      <Label layoutX="270.0" layoutY="163.0" style="-fx-background-color: grey;" text="Firma nuevo" />
-      <Label layoutX="270.0" layoutY="254.0" style="-fx-background-color: grey;" text="Procedencia nuevo" />
-      <Button fx:id="botonbbdd" layoutX="591.0" layoutY="40.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="42.0" prefWidth="75.0" text="Ver todo" wrapText="true" />
-      <Label layoutX="11.0" layoutY="314.0" style="-fx-background-color: grey;" text="Guionista">
+      <Button fx:id="botonModificar" layoutX="609.0" layoutY="407.0" mnemonicParsing="false" onAction="#modificarDatos" prefHeight="42.0" prefWidth="113.0" stylesheets="@../style/genericos_style.css" text="Modificar comic" wrapText="true" />
+      <Button fx:id="botonLimpiarComic" layoutX="500.0" layoutY="142.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="35.0" prefWidth="100.0" stylesheets="@../style/genericos_style.css" text="Limpiar" wrapText="true" />
+      <Label layoutX="11.0" layoutY="73.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Nombre" />
+      <Label layoutX="11.0" layoutY="102.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Numero" />
+      <Button fx:id="botonMostrarParametro" layoutX="503.0" layoutY="97.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="35.0" prefWidth="162.0" stylesheets="@../style/genericos_style.css" text="Mostrar segun parametros" wrapText="true" />
+      <Label layoutX="265.0" layoutY="71.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Nombre nuevo" />
+      <Label layoutX="264.0" layoutY="312.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Guionista nuevo" />
+      <Label layoutX="263.0" layoutY="341.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Dibujante nuevo" />
+      <Label layoutX="264.0" layoutY="282.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Fecha nueva" />
+      <Label layoutX="264.0" layoutY="222.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Formato nuevo" />
+      <Label layoutX="264.0" layoutY="192.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Editorial nuevo" />
+      <Label layoutX="264.0" layoutY="131.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Variante nuevo" />
+      <Label layoutX="265.0" layoutY="100.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Numero nuevo" />
+      <Label layoutX="264.0" layoutY="161.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Firma nuevo" />
+      <Label layoutX="264.0" layoutY="252.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Procedencia nuevo" />
+      <Button fx:id="botonbbdd" layoutX="503.0" layoutY="43.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="42.0" prefWidth="75.0" stylesheets="@../style/genericos_style.css" text="Ver todo" wrapText="true" />
+      <Label layoutX="11.0" layoutY="314.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Guionista">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
-      <Label layoutX="10.0" layoutY="342.0" style="-fx-background-color: grey;" text="Dibujante">
+      <Label layoutX="10.0" layoutY="342.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Dibujante">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
-      <Label layoutX="11.0" layoutY="284.0" style="-fx-background-color: grey;" text="Fecha publicacion">
+      <Label layoutX="11.0" layoutY="284.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Fecha publicacion">
          <font>
             <Font size="13.0" />
          </font>
       </Label>
-      <Label layoutX="11.0" layoutY="223.0" style="-fx-background-color: grey;" text="Formato">
+      <Label layoutX="11.0" layoutY="223.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Formato">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
-      <Label layoutX="11.0" layoutY="193.0" style="-fx-background-color: grey;" text="Editorial">
+      <Label layoutX="11.0" layoutY="193.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Editorial">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
-      <Label layoutX="11.0" layoutY="133.0" style="-fx-background-color: grey;" text="Variante">
+      <Label layoutX="11.0" layoutY="133.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Variante">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
-      <Label layoutX="12.0" layoutY="162.0" prefHeight="17.0" prefWidth="36.0" style="-fx-background-color: grey;" text="Firma">
+      <Label layoutX="12.0" layoutY="162.0" prefHeight="23.0" prefWidth="44.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Firma">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
-      <Label layoutX="11.0" layoutY="254.0" style="-fx-background-color: grey;" text="Procedencia">
+      <Label layoutX="11.0" layoutY="254.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Procedencia">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
-      <Label fx:id="idMod" layoutX="271.0" layoutY="42.0" style="-fx-background-color: grey;" text="ID" />
+      <Label fx:id="idMod" layoutX="265.0" layoutY="40.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="ID" />
       <TextArea fx:id="pantallaInformativa" editable="false" layoutX="912.0" layoutY="33.0" opacity="0.0" prefHeight="322.0" prefWidth="191.0" wrapText="true" />
-      <Label layoutX="10.0" layoutY="371.0" prefHeight="25.0" prefWidth="117.0" style="-fx-background-color: grey;" text="Busqueda general" wrapText="true">
+      <Label layoutX="10.0" layoutY="371.0" prefHeight="25.0" prefWidth="117.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Busqueda general" wrapText="true">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
       <TextField fx:id="busquedaGeneral" layoutX="136.0" layoutY="372.0" prefHeight="25.0" prefWidth="113.0" />
       <TextField fx:id="idComic" layoutX="136.0" layoutY="39.0" prefHeight="25.0" prefWidth="113.0" />
-      <Label layoutX="12.0" layoutY="43.0" style="-fx-background-color: grey;" text="ID" />
-      <Label layoutX="269.0" layoutY="374.0" style="-fx-background-color: grey;" text="Estado" />
+      <Label layoutX="12.0" layoutY="43.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="ID" />
+      <Label layoutX="263.0" layoutY="372.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Estado" />
       <ComboBox fx:id="estadoComic" layoutX="380.0" layoutY="367.0" prefHeight="25.0" prefWidth="113.0" />
-      <Label layoutX="268.0" layoutY="431.0" style="-fx-background-color: grey;" text="Portada" />
-      <Button fx:id="botonNuevaPortada" layoutX="506.0" layoutY="418.0" mnemonicParsing="false" onAction="#nuevaPortada" prefHeight="33.0" prefWidth="100.0" text="Buscar portada" wrapText="true" />
+      <Label layoutX="262.0" layoutY="429.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Portada" />
+      <Button fx:id="botonNuevaPortada" layoutX="500.0" layoutY="407.0" mnemonicParsing="false" onAction="#nuevaPortada" prefHeight="42.0" prefWidth="100.0" stylesheets="@../style/genericos_style.css" text="Buscar portada" wrapText="true" />
       <TextField fx:id="direccionImagen" editable="false" layoutX="380.0" layoutY="425.0" prefHeight="25.0" prefWidth="113.0" />
-      <ImageView fx:id="imagencomic" fitHeight="322.0" fitWidth="207.0" layoutX="694.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="imagencomic" fitHeight="322.0" fitWidth="207.0" layoutX="703.0" layoutY="33.0" pickOnBounds="true" preserveRatio="true" />
       <ComboBox fx:id="nombreProcedenciaMod" layoutX="381.0" layoutY="250.0" prefHeight="25.0" prefWidth="113.0" />
       <ComboBox fx:id="nombreProcedencia" layoutX="136.0" layoutY="250.0" prefHeight="25.0" prefWidth="113.0" />
       <ComboBox fx:id="nombreFormatoMod" layoutX="381.0" layoutY="221.0" prefHeight="25.0" prefWidth="113.0" />
@@ -137,14 +137,14 @@
             </Menu>
          </menus>
       </MenuBar>
-      <Label layoutX="12.0" layoutY="405.0" style="-fx-background-color: grey;" text="Caja">
+      <Label layoutX="12.0" layoutY="405.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Caja">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
       <TextField fx:id="numeroCaja" layoutX="135.0" layoutY="402.0" prefHeight="25.0" prefWidth="117.0" />
       <TextField fx:id="numeroCajaMod" layoutX="380.0" layoutY="396.0" prefHeight="25.0" prefWidth="113.0" />
-      <Label layoutX="269.0" layoutY="402.0" style="-fx-background-color: grey;" text="Caja" />
+      <Label layoutX="263.0" layoutY="400.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Caja" />
       <TableView fx:id="tablaBBDD" layoutY="457.0" onMouseClicked="#clickRaton" prefHeight="389.0" prefWidth="1108.0">
          <columns>
             <TableColumn fx:id="ID" prefWidth="47.0" text="ID" />

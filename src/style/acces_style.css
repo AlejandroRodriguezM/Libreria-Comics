@@ -41,10 +41,6 @@
     -fx-background-color: #4cae4c;
 }
 
-.button#botonSobreMi:hover {
-    -fx-background-color: #2e6da4;
-}
-
 .button#botonOpciones {
     -fx-background-color: #337ab7;
     -fx-border-color: #2e6da4;

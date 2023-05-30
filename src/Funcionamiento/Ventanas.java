@@ -105,6 +105,7 @@ public class Ventanas {
 
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
+
 			Stage stage = new Stage();
 			stage.setResizable(false);
 			stage.setTitle("Menu principal"); // Titulo de la aplicacion.
@@ -113,15 +114,15 @@ public class Ventanas {
 			// Asocio el stage con el scene
 			stage.setScene(scene);
 			stage.show();
-			
+
 			// Indico que debe hacer al cerrar
 			stage.setOnCloseRequest(e -> {
 				controlador.closeWindows();
 			});
-			
-		
+
 		} catch (IOException ex) {
 			alertaException(ex.toString());
+			ex.printStackTrace();
 		}
 	}
 
@@ -142,6 +143,7 @@ public class Ventanas {
 
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
+
 			Stage stage = new Stage();
 			stage.setResizable(false);
 			stage.setTitle("Introducir datos"); // Titulo de la aplicacion.
@@ -181,6 +183,7 @@ public class Ventanas {
 
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
+
 			Stage stage = new Stage();
 			stage.setResizable(false);
 			stage.setTitle("Modificar datos"); // Titulo de la aplicacion.
@@ -222,6 +225,7 @@ public class Ventanas {
 
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
+
 			Stage stage = new Stage();
 			stage.setResizable(false);
 			stage.setTitle("Recomendaciones"); // Titulo de la aplicacion.
@@ -261,6 +265,7 @@ public class Ventanas {
 
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
+
 			Stage stage = new Stage();
 			stage.setResizable(false);
 			stage.setTitle("Eliminar comics"); // Titulo de la aplicacion.
@@ -302,6 +307,8 @@ public class Ventanas {
 
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
+			scene.getStylesheets().add(getClass().getResource("/style/opciones_style.css").toExternalForm());
+
 			Stage stage = new Stage();
 			stage.setResizable(false);
 			stage.setTitle("Menu de creacion"); // Titulo de la aplicacion.
@@ -342,6 +349,9 @@ public class Ventanas {
 
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
+			scene.getStylesheets().add(getClass().getResource("/style/acces_style.css").toExternalForm());
+			scene.getStylesheets().add(getClass().getResource("/style/opciones_style.css").toExternalForm());
+
 			Stage stage = new Stage();
 			stage.setResizable(false);
 			stage.setTitle("Opciones"); // Titulo de la aplicacion.
@@ -421,6 +431,8 @@ public class Ventanas {
 
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
+			scene.getStylesheets().add(getClass().getResource("/style/genericos_style.css").toExternalForm());
+
 			Stage stage = new Stage();
 			stage.setResizable(false);
 			stage.setTitle("Puntuacion de comic"); // Titulo de la aplicacion.

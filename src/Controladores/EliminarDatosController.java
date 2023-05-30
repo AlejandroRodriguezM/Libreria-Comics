@@ -14,6 +14,10 @@ import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
 import JDBC.DBManager;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,6 +27,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -34,7 +39,12 @@ import javafx.scene.control.TextFormatter;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.util.converter.IntegerStringConverter;
 
 /**
@@ -44,40 +54,43 @@ import javafx.util.converter.IntegerStringConverter;
  * @author Alejandro Rodriguez
  */
 public class EliminarDatosController implements Initializable {
-	
-    @FXML
-    private MenuItem menu_archivo_desconectar;
-	
-    @FXML
-    private MenuItem menu_archivo_sobreMi;
 
 	@FXML
-    private MenuItem menu_archivo_cerrar;
+	private Label label_id_eliminar;
 
-    @FXML
-    private MenuItem menu_archivo_volver;
+	@FXML
+	private MenuItem menu_archivo_desconectar;
 
-    @FXML
-    private MenuItem menu_comic_aleatoria;
+	@FXML
+	private MenuItem menu_archivo_sobreMi;
 
-    @FXML
-    private MenuItem menu_comic_aniadir;
+	@FXML
+	private MenuItem menu_archivo_cerrar;
 
-    @FXML
-    private MenuItem menu_comic_modificar;
+	@FXML
+	private MenuItem menu_archivo_volver;
 
-    @FXML
-    private MenuItem menu_comic_puntuar;
+	@FXML
+	private MenuItem menu_comic_aleatoria;
 
-    @FXML
-    private MenuBar menu_navegacion;
+	@FXML
+	private MenuItem menu_comic_aniadir;
 
-    @FXML
-    private Menu navegacion_cerrar;
+	@FXML
+	private MenuItem menu_comic_modificar;
 
-    @FXML
-    private Menu navegacion_comic;
-	
+	@FXML
+	private MenuItem menu_comic_puntuar;
+
+	@FXML
+	private MenuBar menu_navegacion;
+
+	@FXML
+	private Menu navegacion_cerrar;
+
+	@FXML
+	private Menu navegacion_comic;
+
 	@FXML
 	private Button botonEliminar;
 
@@ -128,9 +141,9 @@ public class EliminarDatosController implements Initializable {
 
 	@FXML
 	private TextArea pantallaInformativa;
-	
-    @FXML
-    private TextField numeroCaja;
+
+	@FXML
+	private TextField numeroCaja;
 
 	@FXML
 	private TextField idComicTratar;
@@ -140,9 +153,9 @@ public class EliminarDatosController implements Initializable {
 
 	@FXML
 	private TableColumn<Comic, String> ID;
-	
-    @FXML
-    private TableColumn<Comic, String> caja;
+
+	@FXML
+	private TableColumn<Comic, String> caja;
 
 	@FXML
 	private TableColumn<Comic, String> numero;
@@ -158,10 +171,10 @@ public class EliminarDatosController implements Initializable {
 
 	@FXML
 	private TableColumn<Comic, String> editorial;
-	
+
 	@FXML
 	private TableColumn<Comic, String> formato;
-	
+
 	@FXML
 	private TableColumn<Comic, String> fecha;
 
@@ -173,19 +186,20 @@ public class EliminarDatosController implements Initializable {
 
 	@FXML
 	private TableColumn<Comic, String> nombre;
-	
+
 	@FXML
 	private TableColumn<Comic, String> puntuacion;
 
 	@FXML
 	private ImageView imagencomic;
-	
+
 	@FXML
 	private ComboBox<String> nombreProcedencia;
-	
+
 	@FXML
 	private ComboBox<String> nombreFormato;
-	
+
+	private Timeline parpadeo;
 
 	private static Ventanas nav = new Ventanas();
 	private static DBLibreriaManager libreria = null;
@@ -195,39 +209,56 @@ public class EliminarDatosController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		libreria = new DBLibreriaManager();
 		libreria.listasAutoCompletado();
-		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList("Spain", "USA",
-				"Japon","Italia","Francia");
+		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList("Spain", "USA", "Japon",
+				"Italia", "Francia");
 		nombreProcedencia.setItems(procedenciaEstadoActual);
 		nombreProcedencia.getSelectionModel().selectFirst();
-		
-		ObservableList<String> formatoActual = FXCollections.observableArrayList("Grapa", "Tapa dura","Tapa blanda",
-				"Manga","Libro");
+
+		ObservableList<String> formatoActual = FXCollections.observableArrayList("Grapa", "Tapa dura", "Tapa blanda",
+				"Manga", "Libro");
 		nombreFormato.setItems(formatoActual);
 		nombreFormato.getSelectionModel().selectFirst();
-		
-		listas_autocompletado();
-		
-	    TextFormatter<Integer> textFormatterAni = new TextFormatter<>(new IntegerStringConverter(), null,
-	            change -> {
-	                String newText = change.getControlNewText();
-	                if (newText.matches("\\d*")) {
-	                    return change;
-	                }
-	                return null;
-	            });
-	    idComic.setTextFormatter(textFormatterAni);
 
-	    TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null,
-	            change -> {
-	                String newText = change.getControlNewText();
-	                if (newText.matches("\\d*")) {
-	                    return change;
-	                }
-	                return null;
-	            });
-	    numeroComic.setTextFormatter(textFormatterComic);
+		listas_autocompletado();
+
+		TextFormatter<Integer> textFormatterAni = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+			String newText = change.getControlNewText();
+			if (newText.matches("\\d*")) {
+				return change;
+			}
+			return null;
+		});
+		idComic.setTextFormatter(textFormatterAni);
+
+		TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+			String newText = change.getControlNewText();
+			if (newText.matches("\\d*")) {
+				return change;
+			}
+			return null;
+		});
+		TextFormatter<Integer> textFormatterComic2 = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+			String newText = change.getControlNewText();
+			if (newText.matches("\\d*")) {
+				return change;
+			}
+			return null;
+		});
+		numeroComic.setTextFormatter(textFormatterComic);
+		numeroCaja.setTextFormatter(textFormatterComic2);
+
+		parpadeo = new Timeline(
+				new KeyFrame(Duration.seconds(0.5), new KeyValue(label_id_eliminar.borderProperty(), Border.EMPTY)),
+				new KeyFrame(Duration.seconds(1), new KeyValue(label_id_eliminar.borderProperty(),
+						new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, null, null)))));
+		parpadeo.setCycleCount(Animation.INDEFINITE);
+		parpadeo.setAutoReverse(true);
+
+		// Configurar el estilo inicial del Label
+		label_id_eliminar.setBorder(Border.EMPTY);
+
 	}
-	
+
 	public void listas_autocompletado() {
 		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
@@ -237,7 +268,7 @@ public class EliminarDatosController implements Initializable {
 		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
 		DBLibreriaManager.listaNombre.clear();
 	}
-	
+
 	/**
 	 * Funcion que permite modificar el estado de un comic.
 	 *
@@ -246,11 +277,13 @@ public class EliminarDatosController implements Initializable {
 	 */
 	public String procedenciaActual() {
 
-		String procedenciaEstadoNuevo = nombreProcedencia.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+		String procedenciaEstadoNuevo = nombreProcedencia.getSelectionModel().getSelectedItem().toString(); // Toma el
+																											// valor del
+																											// menu
 		// "puntuacion"
 		return procedenciaEstadoNuevo;
 	}
-	
+
 	/**
 	 * Funcion que permite modificar el estado de un comic.
 	 *
@@ -393,8 +426,8 @@ public class EliminarDatosController implements Initializable {
 
 		String datos[] = camposComics();
 
-		Comic comic = new Comic(datos[0], datos[1],datos[11], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
-				datos[8], datos[9], datos[10], "", "", null);
+		Comic comic = new Comic(datos[0], datos[1], datos[11], datos[2], datos[3], datos[4], datos[5], datos[6],
+				datos[7], datos[8], datos[9], datos[10], "", "", null);
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
 		busquedaGeneral.setText("");
@@ -431,7 +464,7 @@ public class EliminarDatosController implements Initializable {
 	 */
 	@SuppressWarnings("unchecked")
 	public void tablaBBDD(List<Comic> listaComic) {
-		tablaBBDD.getColumns().setAll(ID, nombre,caja, numero, variante, firma, editorial, formato, procedencia, fecha,
+		tablaBBDD.getColumns().setAll(ID, nombre, caja, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante);
 		tablaBBDD.getItems().setAll(listaComic);
 	}
@@ -495,14 +528,14 @@ public class EliminarDatosController implements Initializable {
 		campos[6] = formatoActual();
 
 		campos[7] = procedenciaActual();
-		
-	    LocalDate fecha = anioPublicacion.getValue();
-	    campos[8] = (fecha != null) ? fecha.toString() : "";
+
+		LocalDate fecha = anioPublicacion.getValue();
+		campos[8] = (fecha != null) ? fecha.toString() : "";
 
 		campos[9] = nombreGuionista.getText();
 
 		campos[10] = nombreDibujante.getText();
-		
+
 		campos[11] = numeroCaja.getText();
 
 		return campos;
@@ -511,7 +544,7 @@ public class EliminarDatosController implements Initializable {
 	/////////////////////////////////
 	//// METODO LLAMADA A VENTANA//
 	/////////////////////////////////
-	
+
 	/**
 	 * Permite abrir y cargar la ventana para IntroducirDatosController
 	 *
@@ -521,8 +554,8 @@ public class EliminarDatosController implements Initializable {
 	public void ventanaAniadir(ActionEvent event) {
 
 		nav.verIntroducirDatos();
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	/**
@@ -535,8 +568,8 @@ public class EliminarDatosController implements Initializable {
 
 		nav.verModificarDatos();
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	/**
@@ -549,8 +582,8 @@ public class EliminarDatosController implements Initializable {
 
 		nav.verRecomendacion();
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	/**
@@ -562,10 +595,10 @@ public class EliminarDatosController implements Initializable {
 
 		nav.verPuntuar();
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
-	
+
 	/**
 	 * Metodo que permite abrir la ventana "sobreMiController"
 	 *
@@ -576,8 +609,8 @@ public class EliminarDatosController implements Initializable {
 
 		nav.verSobreMi();
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	/////////////////////////////
@@ -591,13 +624,13 @@ public class EliminarDatosController implements Initializable {
 	 */
 	@FXML
 	public void desconectar(ActionEvent event) throws IOException {
-	    DBManager.close();
-	    nav.verAccesoBBDD();
+		DBManager.close();
+		nav.verAccesoBBDD();
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
-	
+
 	/**
 	 * Vuelve al menu inicial de conexion de la base de datos.
 	 *
@@ -605,19 +638,19 @@ public class EliminarDatosController implements Initializable {
 	 */
 	@FXML
 	public void volverMenu(ActionEvent event) throws IOException {
-	    nav.verMenuPrincipal();
-	    
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		nav.verMenuPrincipal();
+
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	@FXML
 	public void salirPrograma(ActionEvent event) {
-	    // Logic to handle the "Eliminar" action
-	    nav.salirPrograma(event);
+		// Logic to handle the "Eliminar" action
+		nav.salirPrograma(event);
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	/**

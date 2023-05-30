@@ -73,7 +73,7 @@
             <Font name="Comic Sans MS" size="12.0" />
          </font></Label>
       <Button fx:id="boton_restaurar" layoutX="8.0" layoutY="238.0" mnemonicParsing="false" onAction="#restaurarConfiguracion" prefHeight="59.0" prefWidth="114.0" stylesheets="@../style/opciones_style.css" text="Restaurar configuracion" wrapText="true" />
-      <Label fx:id="prontEstadoFichero" alignment="CENTER" contentDisplay="TOP" layoutX="8.0" layoutY="311.0" prefHeight="82.0" prefWidth="262.0" style="-fx-background-color: #29B6CC;" stylesheets="@../style/opciones_style.css" text="Esperando entrada de datos" wrapText="true">
+      <Label fx:id="prontEstadoFichero" alignment="CENTER" contentDisplay="TOP" layoutX="8.0" layoutY="311.0" prefHeight="82.0" prefWidth="262.0" style="-fx-background-color: #29B6CC; -fx-font-size: 16;" stylesheets="@../style/opciones_style.css" text="Esperando entrada de datos" wrapText="true">
          <font>
             <Font name="Comic Sans MS" size="18.0" />
          </font>

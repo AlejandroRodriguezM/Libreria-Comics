@@ -70,12 +70,12 @@ import javafx.util.converter.IntegerStringConverter;
  */
 public class MenuPrincipalController implements Initializable {
 
-    @FXML
-    private MenuItem menu_archivo_desconectar;
-	
-    @FXML
-    private MenuItem menu_archivo_sobreMi;
-	
+	@FXML
+	private MenuItem menu_archivo_desconectar;
+
+	@FXML
+	private MenuItem menu_archivo_sobreMi;
+
 	@FXML
 	private MenuItem menu_archivo_backupbbdd;
 
@@ -96,7 +96,7 @@ public class MenuPrincipalController implements Initializable {
 
 	@FXML
 	private MenuItem menu_comic_eliminar;
-	
+
 	@FXML
 	private MenuItem menu_comic_aleatoria;
 
@@ -132,7 +132,7 @@ public class MenuPrincipalController implements Initializable {
 
 	@FXML
 	private Menu navegacion_estadistica;
-	
+
 	@FXML
 	private Button botonbbdd;
 
@@ -141,7 +141,7 @@ public class MenuPrincipalController implements Initializable {
 
 	@FXML
 	private Button botonMostrarParametro;
-	
+
 	@FXML
 	private Button botonFrase;
 
@@ -171,15 +171,15 @@ public class MenuPrincipalController implements Initializable {
 
 	@FXML
 	private TextField busquedaGeneral;
-	
-    @FXML
-    private TextField numeroCaja;
+
+	@FXML
+	private TextField numeroCaja;
 
 	@FXML
 	private TableColumn<Comic, String> ID;
-	
-    @FXML
-    private TableColumn<Comic, String> caja;
+
+	@FXML
+	private TableColumn<Comic, String> caja;
 
 	@FXML
 	private TableColumn<Comic, String> dibujante;
@@ -232,6 +232,12 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	private ComboBox<String> nombreFormato;
 
+	@FXML
+	private ResourceBundle resources;
+
+	@FXML
+	private URL location;
+
 	private static Ventanas nav = new Ventanas();
 
 	private static DBLibreriaManager libreria = null;
@@ -257,15 +263,26 @@ public class MenuPrincipalController implements Initializable {
 
 		listas_autocompletado();
 
-		TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+				TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			String newText = change.getControlNewText();
 			if (newText.matches("\\d*")) {
 				return change;
 			}
 			return null;
 		});
-		numeroComic.setTextFormatter(textFormatterComic);
 		
+		TextFormatter<Integer> textFormatterComic2 = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+			String newText = change.getControlNewText();
+			if (newText.matches("\\d*")) {
+				return change;
+			}
+			return null;
+		});
+		
+
+		numeroComic.setTextFormatter(textFormatterComic);
+		numeroCaja.setTextFormatter(textFormatterComic2);		numeroCaja.setTextFormatter(textFormatterComic2);
+
 	}
 
 	public void listas_autocompletado() {
@@ -319,8 +336,8 @@ public class MenuPrincipalController implements Initializable {
 	public void ventanaAniadir(ActionEvent event) {
 
 		nav.verIntroducirDatos();
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	/**
@@ -333,8 +350,8 @@ public class MenuPrincipalController implements Initializable {
 
 		nav.verEliminarDatos();
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	/**
@@ -347,8 +364,8 @@ public class MenuPrincipalController implements Initializable {
 
 		nav.verModificarDatos();
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	/**
@@ -361,8 +378,8 @@ public class MenuPrincipalController implements Initializable {
 
 		nav.verRecomendacion();
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	/**
@@ -374,10 +391,10 @@ public class MenuPrincipalController implements Initializable {
 
 		nav.verPuntuar();
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
-	
+
 	/**
 	 * Metodo que permite abrir la ventana "sobreMiController"
 	 *
@@ -388,8 +405,8 @@ public class MenuPrincipalController implements Initializable {
 
 		nav.verSobreMi();
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	/**
@@ -669,21 +686,21 @@ public class MenuPrincipalController implements Initializable {
 
 	@FXML
 	void clickRaton(MouseEvent event) {
-	    libreria = new DBLibreriaManager();
-	    libreria.libreriaCompleta();
-	    utilidad = new Utilidades();
-	    String ID;
+		libreria = new DBLibreriaManager();
+		libreria.libreriaCompleta();
+		utilidad = new Utilidades();
+		String ID;
 
-	    Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
+		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 
-	    if (idRow != null) {
-	        ID = idRow.getID();
-	        prontInfo.setOpacity(1);
-	        prontInfo.setText(libreria.comicDatos(ID).toString().replace("[", "").replace("]", ""));
+		if (idRow != null) {
+			ID = idRow.getID();
+			prontInfo.setOpacity(1);
+			prontInfo.setText(libreria.comicDatos(ID).toString().replace("[", "").replace("]", ""));
 
-	        imagencomic.setImage(libreria.selectorImage(ID));
-	        utilidad.deleteImage();
-	    }
+			imagencomic.setImage(libreria.selectorImage(ID));
+			utilidad.deleteImage();
+		}
 	}
 
 	/////////////////////////////////
@@ -795,7 +812,7 @@ public class MenuPrincipalController implements Initializable {
 
 		String datos[] = camposComic();
 
-		Comic comic = new Comic("", datos[1],datos[12], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
+		Comic comic = new Comic("", datos[1], datos[12], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
 				datos[8], datos[9], datos[10], "", "", null);
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
@@ -824,7 +841,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@SuppressWarnings("unchecked")
 	public void tablaBBDD(List<Comic> listaComic) {
-		tablaBBDD.getColumns().setAll(ID,nombre,caja,numero, variante, firma, editorial, formato, procedencia, fecha,
+		tablaBBDD.getColumns().setAll(ID, nombre, caja, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante, puntuacion);
 		tablaBBDD.getItems().setAll(listaComic);
 	}
@@ -856,12 +873,10 @@ public class MenuPrincipalController implements Initializable {
 		campos[8] = (fecha != null) ? fecha.toString() : "";
 
 		campos[9] = nombreGuionista.getText();
-		
+
 		campos[10] = nombreDibujante.getText();
-		
+
 		campos[12] = numeroCaja.getText();
-		
-		
 
 		return campos;
 	}
@@ -876,21 +891,20 @@ public class MenuPrincipalController implements Initializable {
 	 * @param event
 	 */
 	@FXML
-	public void volverMenu(ActionEvent event) throws IOException {
+	void volverMenu(ActionEvent event) throws IOException {
 		JDBC.DBManager.close();
-	    nav.verAccesoBBDD();
-	    
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		nav.verAccesoBBDD();
+
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	@FXML
-	public void salirPrograma(ActionEvent event) {
-	    // Logic to handle the "Eliminar" action
-	    nav.salirPrograma(event);
+	void salirPrograma(ActionEvent event) {
+		nav.salirPrograma(event);
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	/**

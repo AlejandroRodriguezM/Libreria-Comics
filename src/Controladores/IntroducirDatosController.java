@@ -64,6 +64,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.scene.control.TextFormatter;
 import javafx.util.converter.IntegerStringConverter;
+
 /**
  * Esta clase sirve para introducir datos a la base de datos
  *
@@ -71,39 +72,39 @@ import javafx.util.converter.IntegerStringConverter;
  */
 public class IntroducirDatosController implements Initializable {
 
-    @FXML
-    private MenuItem menu_archivo_desconectar;
-	
-    @FXML
-    private MenuItem menu_archivo_sobreMi;
-	
 	@FXML
-    private MenuItem menu_archivo_cerrar;
+	private MenuItem menu_archivo_desconectar;
 
-    @FXML
-    private MenuItem menu_archivo_volver;
+	@FXML
+	private MenuItem menu_archivo_sobreMi;
 
-    @FXML
-    private MenuItem menu_comic_aleatoria;
+	@FXML
+	private MenuItem menu_archivo_cerrar;
 
-    @FXML
-    private MenuItem menu_comic_eliminar;
+	@FXML
+	private MenuItem menu_archivo_volver;
 
-    @FXML
-    private MenuItem menu_comic_modificar;
+	@FXML
+	private MenuItem menu_comic_aleatoria;
 
-    @FXML
-    private MenuItem menu_comic_puntuar;
+	@FXML
+	private MenuItem menu_comic_eliminar;
 
-    @FXML
-    private MenuBar menu_navegacion;
+	@FXML
+	private MenuItem menu_comic_modificar;
 
-    @FXML
-    private Menu navegacion_cerrar;
+	@FXML
+	private MenuItem menu_comic_puntuar;
 
-    @FXML
-    private Menu navegacion_comic;
-	
+	@FXML
+	private MenuBar menu_navegacion;
+
+	@FXML
+	private Menu navegacion_cerrar;
+
+	@FXML
+	private Menu navegacion_comic;
+
 	@FXML
 	private Button botonLimpiarComic;
 
@@ -127,7 +128,7 @@ public class IntroducirDatosController implements Initializable {
 
 	@FXML
 	private TextArea pantallaInformativa;
-	
+
 	@FXML
 	private DatePicker fechaPublicacion;
 
@@ -172,7 +173,7 @@ public class IntroducirDatosController implements Initializable {
 
 	@FXML
 	private TextField editorialAni;
-	
+
 	@FXML
 	private DatePicker fechaAni;
 
@@ -184,12 +185,12 @@ public class IntroducirDatosController implements Initializable {
 
 	@FXML
 	private TextField direccionImagen;
-	
-    @FXML
-    private TextField numeroCaja;
-    
-    @FXML
-    private TextField numeroCajaAni;
+
+	@FXML
+	private TextField numeroCaja;
+
+	@FXML
+	private TextField numeroCajaAni;
 
 	@FXML
 	private Label idMod;
@@ -202,9 +203,9 @@ public class IntroducirDatosController implements Initializable {
 
 	@FXML
 	private TableColumn<Comic, String> numero;
-	
-    @FXML
-    private TableColumn<Comic, String> caja;
+
+	@FXML
+	private TableColumn<Comic, String> caja;
 
 	@FXML
 	private TableColumn<Comic, String> procedencia;
@@ -298,28 +299,35 @@ public class IntroducirDatosController implements Initializable {
 		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
 		listas_autocompletado();
-		
-	    TextFormatter<Integer> textFormatterAni = new TextFormatter<>(new IntegerStringConverter(), null,
-	            change -> {
-	                String newText = change.getControlNewText();
-	                if (newText.matches("\\d*")) {
-	                    return change;
-	                }
-	                return null;
-	            });
-	    numeroAni.setTextFormatter(textFormatterAni);
 
-	    TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null,
-	            change -> {
-	                String newText = change.getControlNewText();
-	                if (newText.matches("\\d*")) {
-	                    return change;
-	                }
-	                return null;
-	            });
-	    numeroComic.setTextFormatter(textFormatterComic);
+		TextFormatter<Integer> textFormatterAni = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+			String newText = change.getControlNewText();
+			if (newText.matches("\\d*")) {
+				return change;
+			}
+			return null;
+		});
+		numeroAni.setTextFormatter(textFormatterAni);
+
+		TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+			String newText = change.getControlNewText();
+			if (newText.matches("\\d*")) {
+				return change;
+			}
+			return null;
+		});
+		TextFormatter<Integer> textFormatterComic2 = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+			String newText = change.getControlNewText();
+			if (newText.matches("\\d*")) {
+				return change;
+			}
+			return null;
+		});
+		numeroComic.setTextFormatter(textFormatterComic);
+		numeroCaja.setTextFormatter(textFormatterComic2);
+		numeroCaja.setTextFormatter(textFormatterComic);
 	}
-	
+
 	public void listas_autocompletado() {
 		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
@@ -381,7 +389,7 @@ public class IntroducirDatosController implements Initializable {
 		nombreGuionista.setText("");
 		busquedaGeneral.setText("");
 		numeroCaja.setText("");
-		
+
 		// Campos de datos a modificar
 		nombreAni.setText("");
 		numeroAni.setText("");
@@ -566,8 +574,8 @@ public class IntroducirDatosController implements Initializable {
 
 		String datos[] = camposComicActuales();
 
-		Comic comic = new Comic(datos[0], datos[1],datos[12], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
-				datos[8], datos[9], datos[10], "", "", null );
+		Comic comic = new Comic(datos[0], datos[1], datos[12], datos[2], datos[3], datos[4], datos[5], datos[6],
+				datos[7], datos[8], datos[9], datos[10], "", "", null);
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
 		busquedaGeneral.setText("");
@@ -581,7 +589,7 @@ public class IntroducirDatosController implements Initializable {
 	 */
 	@SuppressWarnings("unchecked")
 	public void tablaBBDD(List<Comic> listaComic) {
-		tablaBBDD.getColumns().setAll(ID, nombre,caja, numero, variante, firma, editorial, formato, procedencia, fecha,
+		tablaBBDD.getColumns().setAll(ID, nombre, caja, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante);
 		tablaBBDD.getItems().setAll(listaComic);
 	}
@@ -598,7 +606,7 @@ public class IntroducirDatosController implements Initializable {
 		if (nav.alertaInsertar()) {
 
 			String datos[] = camposComicIntroducir();
-			
+
 			String portada = "";
 
 			String nombre = datos[0];
@@ -615,15 +623,15 @@ public class IntroducirDatosController implements Initializable {
 
 			String procedencia = datos[6];
 
-		    LocalDate fecha_comic = fechaAni.getValue();
-		    datos[7] = (fecha_comic != null) ? fecha_comic.toString() : "2000-01-01";
+			LocalDate fecha_comic = fechaAni.getValue();
+			datos[7] = (fecha_comic != null) ? fecha_comic.toString() : "2000-01-01";
 
 			String guionista = datos[8];
 
 			String dibujante = datos[9];
-			
+
 			if (datos[10] != "") {
-				
+
 				file = new File(datos[10]);
 
 				if (!file.exists()) {
@@ -638,18 +646,16 @@ public class IntroducirDatosController implements Initializable {
 			}
 
 			String estado = datos[11];
-			
+
 			String numCaja = datos[12];
 
-			Comic comic = new Comic("", nombre,numCaja, numero, variante, firma, editorial, formato, procedencia, fecha_comic.toString(),
-					guionista, dibujante, estado, "Sin puntuar", portada);
+			Comic comic = new Comic("", nombre, numCaja, numero, variante, firma, editorial, formato, procedencia,
+					fecha_comic.toString(), guionista, dibujante, estado, "Sin puntuar", portada);
 
 			utilidad.nueva_imagen(comic);
 			String nueva_portada = utilidad.obtenerNombreCompleto(comic);
 			comic.setImagen(nueva_portada);
 			libreria.insertarDatos(comic);
-
-
 
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
@@ -693,14 +699,14 @@ public class IntroducirDatosController implements Initializable {
 		campos[6] = formatoActual();
 
 		campos[7] = procedenciaActual();
-		
-	    LocalDate fecha = fechaPublicacion.getValue();
-	    campos[8] = (fecha != null) ? fecha.toString() : "";
+
+		LocalDate fecha = fechaPublicacion.getValue();
+		campos[8] = (fecha != null) ? fecha.toString() : "";
 
 		campos[9] = nombreGuionista.getText();
 
 		campos[10] = nombreDibujante.getText();
-		
+
 		campos[12] = numeroCaja.getText();
 
 		return campos;
@@ -731,9 +737,9 @@ public class IntroducirDatosController implements Initializable {
 		campos[5] = formatoNuevo();
 
 		campos[6] = procedenciaNueva();
-		
-	    LocalDate fecha = fechaAni.getValue();
-	    campos[7] = (fecha != null) ? fecha.toString() : "2000-01-01";
+
+		LocalDate fecha = fechaAni.getValue();
+		campos[7] = (fecha != null) ? fecha.toString() : "2000-01-01";
 
 		campos[8] = guionistaAni.getText();
 
@@ -742,7 +748,7 @@ public class IntroducirDatosController implements Initializable {
 		campos[10] = direccionImagen.getText();
 
 		campos[11] = estadoActual();
-		
+
 		campos[12] = numeroCajaAni.getText();
 
 		return utilidad.comaPorGuion(campos);
@@ -766,11 +772,11 @@ public class IntroducirDatosController implements Initializable {
 		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
 		puntuacion.setCellValueFactory(new PropertyValueFactory<>("puntuacion"));
 	}
-	
+
 	/////////////////////////////////
 	//// METODOS LLAMADA A VENTANAS//
 	/////////////////////////////////
-	
+
 	/**
 	 * Permite el cambio de ventana a la ventana de EliminarDatosController
 	 *
@@ -781,8 +787,8 @@ public class IntroducirDatosController implements Initializable {
 
 		nav.verEliminarDatos();
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	/**
@@ -795,8 +801,8 @@ public class IntroducirDatosController implements Initializable {
 
 		nav.verModificarDatos();
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	/**
@@ -809,8 +815,8 @@ public class IntroducirDatosController implements Initializable {
 
 		nav.verRecomendacion();
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	/**
@@ -822,10 +828,10 @@ public class IntroducirDatosController implements Initializable {
 
 		nav.verPuntuar();
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
-	
+
 	/**
 	 * Metodo que permite abrir la ventana "sobreMiController"
 	 *
@@ -836,8 +842,8 @@ public class IntroducirDatosController implements Initializable {
 
 		nav.verSobreMi();
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	/////////////////////////////
@@ -856,13 +862,13 @@ public class IntroducirDatosController implements Initializable {
 	 */
 	@FXML
 	public void desconectar(ActionEvent event) throws IOException {
-	    nav.verAccesoBBDD();
-	    DBManager.close();
-	    
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		nav.verAccesoBBDD();
+		DBManager.close();
+
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
-	
+
 	/**
 	 * Vuelve al menu inicial de conexion de la base de datos.
 	 *
@@ -870,19 +876,19 @@ public class IntroducirDatosController implements Initializable {
 	 */
 	@FXML
 	public void volverMenu(ActionEvent event) throws IOException {
-	    nav.verMenuPrincipal();
-	    
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		nav.verMenuPrincipal();
+
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	@FXML
 	public void salirPrograma(ActionEvent event) {
-	    // Logic to handle the "Eliminar" action
-	    nav.salirPrograma(event);
+		// Logic to handle the "Eliminar" action
+		nav.salirPrograma(event);
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	/**
@@ -894,6 +900,5 @@ public class IntroducirDatosController implements Initializable {
 		Platform.exit();
 
 	}
-	
-	
+
 }
