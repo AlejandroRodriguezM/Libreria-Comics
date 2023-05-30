@@ -37,7 +37,7 @@
       <TextField fx:id="editorialAni" layoutX="382.0" layoutY="141.0" prefHeight="25.0" prefWidth="113.0" />
       <TextField fx:id="guionistaAni" layoutX="382.0" layoutY="259.0" prefHeight="25.0" prefWidth="113.0" />
       <TextField fx:id="dibujanteAni" layoutX="382.0" layoutY="288.0" prefHeight="25.0" prefWidth="113.0" />
-      <Button fx:id="botonIntroducir" layoutX="655.0" layoutY="360.0" mnemonicParsing="false" onAction="#agregarDatos" prefHeight="42.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Añadir Comic" />
+      <Button fx:id="botonIntroducir" layoutX="652.0" layoutY="360.0" mnemonicParsing="false" onAction="#agregarDatos" prefHeight="42.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Añadir Comic" />
       <Button fx:id="botonLimpiarComic" layoutX="506.0" layoutY="136.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="25.0" prefWidth="93.0" stylesheets="@../style/genericos_style.css" text="Limpiar datos" />
       <Label layoutX="11.0" layoutY="89.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Numero" />
       <Button fx:id="botonMostrarParametro" layoutX="505.0" layoutY="83.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="42.0" prefWidth="125.0" stylesheets="@../style/genericos_style.css" text="Mostrar parametro" wrapText="true" />
@@ -105,7 +105,7 @@
       <Label layoutX="261.0" layoutY="320.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Estado" />
       <ComboBox fx:id="estadoComic" layoutX="382.0" layoutY="317.0" prefHeight="25.0" prefWidth="113.0" promptText="En posesion" />
       <ImageView fx:id="imagencomic" fitHeight="285.0" fitWidth="240.0" layoutX="827.0" layoutY="29.0" pickOnBounds="true" preserveRatio="true" />
-      <Label layoutX="258.0" layoutY="375.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Portada" />
+      <Label layoutX="260.0" layoutY="375.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Portada" />
       <Button fx:id="botonNuevaPortada" layoutX="503.0" layoutY="365.0" mnemonicParsing="false" onAction="#nuevaPortada" prefHeight="17.0" prefWidth="100.0" stylesheets="@../style/genericos_style.css" text="Buscar portada" />
       <TextField fx:id="direccionImagen" editable="false" layoutX="380.0" layoutY="375.0" prefHeight="25.0" prefWidth="113.0" />
       <ComboBox fx:id="procedenciaAni" layoutX="382.0" layoutY="200.0" prefHeight="25.0" prefWidth="113.0" />
@@ -142,7 +142,7 @@
          </font>
       </Label>
       <TextField fx:id="numeroCajaAni" layoutX="380.0" layoutY="346.0" prefHeight="25.0" prefWidth="113.0" />
-      <Label layoutX="259.0" layoutY="346.0" prefHeight="25.0" prefWidth="35.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Caja" wrapText="true">
+      <Label layoutX="261.0" layoutY="346.0" prefHeight="25.0" prefWidth="35.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Caja" wrapText="true">
          <font>
             <Font size="14.0" />
          </font>
