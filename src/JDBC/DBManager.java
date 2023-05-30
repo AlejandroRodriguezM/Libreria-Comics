@@ -123,6 +123,7 @@ public class DBManager {
 	public static void close() {
 		try {
 			conn.close();
+			conn = null;
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
 		}

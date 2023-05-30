@@ -38,7 +38,6 @@ import Funcionamiento.FuncionesExcel;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
-import JDBC.DBManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -878,8 +877,8 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	public void volverMenu(ActionEvent event) throws IOException {
+		JDBC.DBManager.close();
 	    nav.verAccesoBBDD();
-	    DBManager.close();
 	    
 	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 	    myStage.close();

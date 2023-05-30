@@ -20,7 +20,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -62,6 +61,8 @@ public class AccesoBBDDController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 
 		crearEstructura();
+		detenerAnimacion();
+
 		if (!JDBC.DBManager.isConnected()) {
 		    iniciarAnimacionEspera();
 		} else {
@@ -111,8 +112,7 @@ public class AccesoBBDDController implements Initializable {
 		} else { // En caso contrario mostrara el siguiente mensaje.
 			detenerAnimacion();
 			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
-			prontEstadoConexion.setFont(new Font("Arial", 25));
-			prontEstadoConexion.setText("Conectate a la bbdd antes de continuar");
+			iniciarAnimacionConexion();
 		}
 	}
 
@@ -316,7 +316,7 @@ public class AccesoBBDDController implements Initializable {
 		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.6),
 				new KeyValue(prontEstadoConexion.textProperty(), ""));
 		KeyFrame mostrarConectado2 = new KeyFrame(Duration.seconds(1.1),
-				new KeyValue(prontEstadoConexion.textProperty(), ""));
+				new KeyValue(prontEstadoConexion.textProperty(), "Conectado"));
 
 		// Agregar los keyframes al timeline
 		timeline.getKeyFrames().addAll(mostrarConectado, ocultarTexto,mostrarConectado2);
@@ -330,11 +330,29 @@ public class AccesoBBDDController implements Initializable {
 		timeline.setCycleCount(Timeline.INDEFINITE);
 
 		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarError = new KeyFrame(Duration.ZERO, new KeyValue(prontEstadoConexion.textProperty(), "ERROR"));
+		KeyFrame mostrarError = new KeyFrame(Duration.ZERO, new KeyValue(prontEstadoConexion.textProperty(), "ERROR. Activa MySql"));
 		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
 				new KeyValue(prontEstadoConexion.textProperty(), ""));
 		KeyFrame mostrarError2 = new KeyFrame(Duration.seconds(1),
-				new KeyValue(prontEstadoConexion.textProperty(), "ERROR"));
+				new KeyValue(prontEstadoConexion.textProperty(), "ERROR. Activa MySql"));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarError, ocultarTexto,mostrarError2);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+	
+	private void iniciarAnimacionConexion() {
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarError = new KeyFrame(Duration.ZERO, new KeyValue(prontEstadoConexion.textProperty(), "ERROR. Conectate primero"));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(prontEstadoConexion.textProperty(), ""));
+		KeyFrame mostrarError2 = new KeyFrame(Duration.seconds(1),
+				new KeyValue(prontEstadoConexion.textProperty(), "ERROR. Conectate primero"));
 
 		// Agregar los keyframes al timeline
 		timeline.getKeyFrames().addAll(mostrarError, ocultarTexto,mostrarError2);

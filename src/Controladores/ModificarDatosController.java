@@ -853,9 +853,9 @@ public class ModificarDatosController implements Initializable {
 	 */
 	@FXML
 	public void desconectar(ActionEvent event) throws IOException {
-	    nav.verAccesoBBDD();
 	    DBManager.close();
-	    
+	    nav.verAccesoBBDD();
+
 	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 	    myStage.close();
 	}

@@ -1,5 +1,11 @@
 package Controladores;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.URL;
+
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  * Las ventanas graficas se realizan con JavaFX.
@@ -30,20 +36,28 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ResourceBundle;
 
 import Funcionamiento.Ventanas;
 import JDBC.DBManager;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+import javafx.util.converter.IntegerStringConverter;
 
-public class CrearBBDDController {
+public class CrearBBDDController implements Initializable {
 
 	@FXML
 	private Button botonCrearBBDD;
@@ -96,6 +110,52 @@ public class CrearBBDDController {
 	public static String DB_NAME;
 	public static String DB_HOST;
 
+	private Timeline timeline;
+
+	@Override
+	public void initialize(URL arg0, ResourceBundle arg1) {
+		detenerAnimacion();
+		iniciarAnimacionEspera();
+
+		TextFormatter<Integer> textFormatterAni = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+			String newText = change.getControlNewText();
+			if (newText.matches("\\d*")) {
+				return change;
+			}
+			return null;
+		});
+		puertoBBDD.setTextFormatter(textFormatterAni);
+
+		String userHome = System.getProperty("user.home");
+		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
+		String carpetaLibreria = ubicacion + File.separator + "libreria";
+		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion.conf";
+
+		try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				if (line.startsWith("Usuario: ")) {
+					String usuarioTexto = line.substring("Usuario: ".length());
+					userBBDD.setText(usuarioTexto);
+				} else if (line.startsWith("Password: ")) {
+					String passwordTexto = line.substring("Password: ".length());
+					passBBDD.setText(passwordTexto);
+				} else if (line.startsWith("Puerto: ")) {
+					String puertoTexto = line.substring("Puerto: ".length());
+					puertoBBDD.setText(puertoTexto);
+				} else if (line.startsWith("Database: ")) {
+					String databaseTexto = line.substring("Database: ".length());
+					nombreBBDD.setText(databaseTexto);
+				} else if (line.startsWith("Hosting: ")) {
+					String hostingTexto = line.substring("Hosting: ".length());
+					nombreHost.setText(hostingTexto);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	/**
 	 * Funcion que guarda los datos de la nueva base de datos.
 	 */
@@ -132,7 +192,7 @@ public class CrearBBDDController {
 			createTable();
 			createProcedure();
 			prontInformativo.setStyle("-fx-background-color: #A0F52D");
-			prontInformativo.setText("Base de datos: " + DB_NAME + " creada correctamente");
+			iniciarAnimacionBaseCreada();
 		}
 	}
 
@@ -184,8 +244,9 @@ public class CrearBBDDController {
 
 			nav.alertaException(e.toString());
 		}
+		detenerAnimacion();
 		prontInformativo.setStyle("-fx-background-color: #DD370F");
-		prontInformativo.setText("ERROR. Ya existe una base de datos llamada: " + DB_NAME);
+		iniciarAnimacionBaseExiste();
 		return false;
 	}
 
@@ -195,23 +256,23 @@ public class CrearBBDDController {
 	 * @return
 	 */
 	public String selectorHost() {
-	    if (siOnline.isSelected()) {
-	        etiquetaHost.setText("Nombre del host: ");
-	        nombreHost.setOpacity(1);
-	        nombreHost.setVisible(true);
-	        return nombreHost.getText();
-	    } else if (noOffline.isSelected()) {
-	        etiquetaHost.setText("Offline");
-	        nombreHost.setOpacity(0);
-	        nombreHost.setVisible(true);
-	        return "localhost";
-	    } else {
-	        // Opción por defecto en caso de que ninguna opción esté seleccionada
-	        return "localhost";
-	    }
-	}
 
- 
+		String host = "localhost";
+
+		if (siOnline.isSelected()) {
+			etiquetaHost.setText("Nombre del host: ");
+			nombreHost.setDisable(false);
+			nombreHost.setOpacity(1);
+			host = nombreHost.getText();
+		}
+		if (noOffline.isSelected()) {
+			etiquetaHost.setText("Offline");
+			nombreHost.setDisable(true);
+			nombreHost.setOpacity(0);
+			host = "localhost";
+		}
+		return host;
+	}
 
 	/**
 	 * Funcion que devuelve un Resulset, permite
@@ -252,26 +313,16 @@ public class CrearBBDDController {
 		String url = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
 
 		String sentenciaSQL1 = "DROP TABLE IF EXISTS comicsbbdd";
-		String sentenciaSQL2 = "CREATE TABLE comicsbbdd ("
-				+ "ID int NOT NULL AUTO_INCREMENT, "
-		        + "nomComic varchar(150) NOT NULL, "
-		        + "caja_deposito TEXT , "
-		        + "numComic INT(10) NOT NULL, "
-		        + "nomVariante varchar(150) NOT NULL, "
-		        + "firma varchar(150) NOT NULL, "
-		        + "nomEditorial varchar(150) NOT NULL, "
-		        + "formato varchar(150) NOT NULL, "
-		        + "procedencia varchar(150) NOT NULL, "
-		        + "fecha_publicacion DATE NOT NULL, "
-		        + "nomGuionista TEXT NOT NULL, "
-		        + "nomDibujante TEXT NOT NULL, "
-		        + "puntuacion varchar(300) NOT NULL, "
-		        + "portada TEXT, "
-		        + "estado TEXT NOT NULL, "
+		String sentenciaSQL2 = "CREATE TABLE comicsbbdd (" + "ID int NOT NULL AUTO_INCREMENT, "
+				+ "nomComic varchar(150) NOT NULL, " + "caja_deposito TEXT , " + "numComic INT(10) NOT NULL, "
+				+ "nomVariante varchar(150) NOT NULL, " + "firma varchar(150) NOT NULL, "
+				+ "nomEditorial varchar(150) NOT NULL, " + "formato varchar(150) NOT NULL, "
+				+ "procedencia varchar(150) NOT NULL, " + "fecha_publicacion DATE NOT NULL, "
+				+ "nomGuionista TEXT NOT NULL, " + "nomDibujante TEXT NOT NULL, " + "puntuacion varchar(300) NOT NULL, "
+				+ "portada TEXT, " + "estado TEXT NOT NULL, "
 
-		        + "PRIMARY KEY (`ID`)) "
-		        + "ENGINE=InnoDB AUTO_INCREMENT=320 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
-
+				+ "PRIMARY KEY (`ID`)) "
+				+ "ENGINE=InnoDB AUTO_INCREMENT=320 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
 
 		try {
 			Connection connection = DriverManager.getConnection(url, DB_USER, DB_PASS);
@@ -304,13 +355,13 @@ public class CrearBBDDController {
 			// Creacion de diferentes procesos almacenados
 			statement.execute("CREATE PROCEDURE numeroGrapas()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
 					+ "WHERE formato = 'Grapa';\n" + "END");
-			
+
 			statement.execute("CREATE PROCEDURE numeros_tapa_dura()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
 					+ "WHERE formato = 'Tapa dura';\n" + "END");
-			
-			statement.execute("CREATE PROCEDURE numeros_tapa_blanda()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE formato = 'Tapa blanda';\n" + "END");
-			
+
+			statement.execute("CREATE PROCEDURE numeros_tapa_blanda()\n" + "BEGIN\n"
+					+ "SELECT COUNT(*) FROM comicsbbdd\n" + "WHERE formato = 'Tapa blanda';\n" + "END");
+
 			statement.execute("CREATE PROCEDURE numeros_libros()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
 					+ "WHERE formato = 'Libro';\n" + "END");
 
@@ -328,7 +379,7 @@ public class CrearBBDDController {
 
 			statement.execute("CREATE PROCEDURE numeroPanini()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
 					+ "WHERE nomEditorial = 'Panini';\n" + "END");
-			
+
 			statement.execute("CREATE PROCEDURE numeroImage()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
 					+ "WHERE nomEditorial = 'Image Comics';\n" + "END");
 
@@ -407,6 +458,72 @@ public class CrearBBDDController {
 		}
 	}
 
+	private void iniciarAnimacionBaseCreada() {
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarConectado = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontInformativo.textProperty(), "Base de datos: " + DB_NAME + " creada correctamente"));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.6), new KeyValue(prontInformativo.textProperty(), ""));
+		KeyFrame mostrarConectado2 = new KeyFrame(Duration.seconds(1.1),
+				new KeyValue(prontInformativo.textProperty(), "Base de datos: " + DB_NAME + " creada correctamente"));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarConectado, ocultarTexto, mostrarConectado2);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+
+	private void iniciarAnimacionBaseExiste() {
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarConectado = new KeyFrame(Duration.ZERO, new KeyValue(prontInformativo.textProperty(),
+				"ERROR. Ya existe una base de datos llamada: " + DB_NAME));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.6), new KeyValue(prontInformativo.textProperty(), ""));
+		KeyFrame mostrarConectado2 = new KeyFrame(Duration.seconds(1.1), new KeyValue(prontInformativo.textProperty(),
+				"ERROR. Ya existe una base de datos llamada: " + DB_NAME));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarConectado, ocultarTexto, mostrarConectado2);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+
+	private void iniciarAnimacionEspera() {
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarEsperando = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontInformativo.textProperty(), "Esperando entrada de datos"));
+		KeyFrame mostrarPunto = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(prontInformativo.textProperty(), "Esperando entrada de datos."));
+		KeyFrame mostrarDosPuntos = new KeyFrame(Duration.seconds(1),
+				new KeyValue(prontInformativo.textProperty(), "Esperando entrada de datos.."));
+		KeyFrame mostrarTresPuntos = new KeyFrame(Duration.seconds(1.5),
+				new KeyValue(prontInformativo.textProperty(), "Esperando entrada de datos..."));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(2), new KeyValue(prontInformativo.textProperty(), ""));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarEsperando, mostrarPunto, mostrarDosPuntos, mostrarTresPuntos,
+				ocultarTexto);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+
+	private void detenerAnimacion() {
+		if (timeline != null) {
+			timeline.stop();
+			timeline = null; // Destruir el objeto timeline
+		}
+	}
+
 	/////////////////////////////////
 	//// METODO LLAMADA A VENTANA//
 	/////////////////////////////////
@@ -450,4 +567,5 @@ public class CrearBBDDController {
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();
 	}
+
 }
