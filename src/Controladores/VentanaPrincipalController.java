@@ -55,6 +55,7 @@ public class VentanaPrincipalController extends Application {
 			primaryStage.setTitle("Aplicacion bbdd comics"); // Titulo de la aplicacion.
 			primaryStage.show();
 			primaryStage.getIcons().add(new Image("/Icono/icon2.png"));
+//			primaryStage.getScene().getStylesheets().add(getClass().getResource("../css/acces_style.css").toExternalForm());
 
 		} catch (IOException e) {
 			nav.alertaException(e.toString());

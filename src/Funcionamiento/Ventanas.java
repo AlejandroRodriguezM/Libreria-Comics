@@ -70,6 +70,7 @@ public class Ventanas {
 
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
+			scene.getStylesheets().add(getClass().getResource("/style/acces_style.css").toExternalForm());
 			Stage stage = new Stage();
 			stage.setTitle("Aplicacion bbdd comics"); // Titulo de la aplicacion.
 
@@ -379,6 +380,7 @@ public class Ventanas {
 
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
+			scene.getStylesheets().add(getClass().getResource("/style/sobremi_style.css").toExternalForm());
 			Stage stage = new Stage();
 			stage.setResizable(false);
 			stage.setTitle("Sobre mi"); // Titulo de la aplicacion.

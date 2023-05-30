@@ -35,6 +35,7 @@ public class Comic {
 
 	protected String ID;
 	protected String nombre;
+	protected String numCaja;
 	protected String numero;
 	protected String variante;
 	protected String firma;
@@ -47,13 +48,15 @@ public class Comic {
 	protected String estado;
 	protected String puntuacion;
 	protected String imagen;
+	
 
 	// Constructor
-	public Comic(String ID, String nombre, String numero, String variante, String firma, String editorial,
+	public Comic(String ID, String nombre,String numCaja, String numero, String variante, String firma, String editorial,
 			String formato, String procedencia, String fecha, String guionista, String dibujante, String estado,
 			String puntuacion, String imagen) {
 		this.ID = ID;
 		this.nombre = nombre;
+		this.numCaja = numCaja;
 		this.numero = numero;
 		this.variante = variante;
 		this.firma = firma;
@@ -66,6 +69,7 @@ public class Comic {
 		this.estado = estado;
 		this.puntuacion = puntuacion;
 		this.imagen = imagen;
+		
 	}
 
 	// Constructor
@@ -84,6 +88,7 @@ public class Comic {
 		this.estado = "";
 		this.puntuacion = "";
 		this.imagen = null;
+		this.numCaja = "";
 	}
 
 	// Getters y setters
@@ -138,6 +143,10 @@ public class Comic {
 
 	public String getPuntuacion() {
 		return puntuacion;
+	}
+	
+	public String getNumCaja() {
+		return numCaja;
 	}
 
 	public void setPuntuacion(String puntuacion) {
@@ -198,6 +207,10 @@ public class Comic {
 
 	public void setEstado(String estado) {
 		this.estado = estado;
+	}
+	
+	public void setNumCaja(String numCaja) {
+		this.numCaja = numCaja;
 	}
 
 	/**
@@ -270,7 +283,7 @@ public class Comic {
 
 	@Override
 	public String toString() {
-		return "\nNombre: " + nombre + "\nNumero: " + numero + "\nVariante: " + variante + "\nFirma: " + firma
+		return "\nNombre: " + nombre + "\nCaja: " + numCaja + "\nNumero: " + numero + "\nVariante: " + variante + "\nFirma: " + firma
 				+ "\nEditorial: " + editorial + "\nFormato: " + formato + "\nProcedencia: " + procedencia + "\nFecha: "
 				+ fecha + "\nGuionista: " + guionista + "\nDibujante: " + dibujante + "\nPuntuacion: " + puntuacion
 				+ "\nEstado: " + estado;

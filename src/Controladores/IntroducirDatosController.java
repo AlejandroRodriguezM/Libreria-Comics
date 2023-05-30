@@ -38,6 +38,7 @@ import Funcionamiento.Comic;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
+import JDBC.DBManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -70,6 +71,12 @@ import javafx.util.converter.IntegerStringConverter;
  */
 public class IntroducirDatosController implements Initializable {
 
+    @FXML
+    private MenuItem menu_archivo_desconectar;
+	
+    @FXML
+    private MenuItem menu_archivo_sobreMi;
+	
 	@FXML
     private MenuItem menu_archivo_cerrar;
 
@@ -177,6 +184,12 @@ public class IntroducirDatosController implements Initializable {
 
 	@FXML
 	private TextField direccionImagen;
+	
+    @FXML
+    private TextField numeroCaja;
+    
+    @FXML
+    private TextField numeroCajaAni;
 
 	@FXML
 	private Label idMod;
@@ -189,6 +202,9 @@ public class IntroducirDatosController implements Initializable {
 
 	@FXML
 	private TableColumn<Comic, String> numero;
+	
+    @FXML
+    private TableColumn<Comic, String> caja;
 
 	@FXML
 	private TableColumn<Comic, String> procedencia;
@@ -281,9 +297,6 @@ public class IntroducirDatosController implements Initializable {
 		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
 		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
-
-
-		
 		listas_autocompletado();
 		
 	    TextFormatter<Integer> textFormatterAni = new TextFormatter<>(new IntegerStringConverter(), null,
@@ -367,9 +380,9 @@ public class IntroducirDatosController implements Initializable {
 		nombreDibujante.setText("");
 		nombreGuionista.setText("");
 		busquedaGeneral.setText("");
-
+		numeroCaja.setText("");
+		
 		// Campos de datos a modificar
-
 		nombreAni.setText("");
 		numeroAni.setText("");
 		nombreAni.setText("");
@@ -378,7 +391,7 @@ public class IntroducirDatosController implements Initializable {
 		fechaAni.setValue(null);
 		guionistaAni.setText("");
 		dibujanteAni.setText("");
-
+		numeroCajaAni.setText(null);
 		pantallaInformativa.setText(null);
 		pantallaInformativa.setOpacity(0);
 		tablaBBDD.getItems().clear();
@@ -553,8 +566,8 @@ public class IntroducirDatosController implements Initializable {
 
 		String datos[] = camposComicActuales();
 
-		Comic comic = new Comic(datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
-				datos[8], datos[9], datos[10], "", "", null);
+		Comic comic = new Comic(datos[0], datos[1],datos[12], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
+				datos[8], datos[9], datos[10], "", "", null );
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
 		busquedaGeneral.setText("");
@@ -568,7 +581,7 @@ public class IntroducirDatosController implements Initializable {
 	 */
 	@SuppressWarnings("unchecked")
 	public void tablaBBDD(List<Comic> listaComic) {
-		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+		tablaBBDD.getColumns().setAll(ID, nombre,caja, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante);
 		tablaBBDD.getItems().setAll(listaComic);
 	}
@@ -625,8 +638,10 @@ public class IntroducirDatosController implements Initializable {
 			}
 
 			String estado = datos[11];
+			
+			String numCaja = datos[12];
 
-			Comic comic = new Comic("", nombre, numero, variante, firma, editorial, formato, procedencia, fecha_comic.toString(),
+			Comic comic = new Comic("", nombre,numCaja, numero, variante, firma, editorial, formato, procedencia, fecha_comic.toString(),
 					guionista, dibujante, estado, "Sin puntuar", portada);
 
 			utilidad.nueva_imagen(comic);
@@ -661,7 +676,7 @@ public class IntroducirDatosController implements Initializable {
 	 * @return
 	 */
 	public String[] camposComicActuales() {
-		String campos[] = new String[12];
+		String campos[] = new String[13];
 
 		campos[0] = numeroID.getText();
 
@@ -685,6 +700,8 @@ public class IntroducirDatosController implements Initializable {
 		campos[9] = nombreGuionista.getText();
 
 		campos[10] = nombreDibujante.getText();
+		
+		campos[12] = numeroCaja.getText();
 
 		return campos;
 	}
@@ -699,7 +716,7 @@ public class IntroducirDatosController implements Initializable {
 
 		utilidad = new Utilidades();
 
-		String campos[] = new String[12];
+		String campos[] = new String[13];
 
 		campos[0] = nombreAni.getText();
 
@@ -725,6 +742,8 @@ public class IntroducirDatosController implements Initializable {
 		campos[10] = direccionImagen.getText();
 
 		campos[11] = estadoActual();
+		
+		campos[12] = numeroCajaAni.getText();
 
 		return utilidad.comaPorGuion(campos);
 	}
@@ -735,6 +754,7 @@ public class IntroducirDatosController implements Initializable {
 	private void nombreColumnas() {
 		ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
 		nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+		caja.setCellValueFactory(new PropertyValueFactory<>("numCaja"));
 		numero.setCellValueFactory(new PropertyValueFactory<>("numero"));
 		variante.setCellValueFactory(new PropertyValueFactory<>("variante"));
 		firma.setCellValueFactory(new PropertyValueFactory<>("firma"));
@@ -804,13 +824,45 @@ public class IntroducirDatosController implements Initializable {
 
 	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 	    myStage.close();
+	}
+	
+	/**
+	 * Metodo que permite abrir la ventana "sobreMiController"
+	 *
+	 * @param event
+	 */
+	@FXML
+	void verSobreMi(ActionEvent event) {
 
+		nav.verSobreMi();
+
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
 	}
 
 	/////////////////////////////
 	//// FUNCIONES PARA SALIR////
 	/////////////////////////////
 
+	/**
+	 * Vuelve al menu inicial de conexion de la base de datos.
+	 *
+	 * @param event
+	 */
+	/**
+	 * Vuelve al menu inicial de conexion de la base de datos.
+	 *
+	 * @param event
+	 */
+	@FXML
+	public void desconectar(ActionEvent event) throws IOException {
+	    nav.verAccesoBBDD();
+	    DBManager.close();
+	    
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
+	}
+	
 	/**
 	 * Vuelve al menu inicial de conexion de la base de datos.
 	 *

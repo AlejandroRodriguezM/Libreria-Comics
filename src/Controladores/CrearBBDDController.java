@@ -252,8 +252,10 @@ public class CrearBBDDController {
 		String url = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
 
 		String sentenciaSQL1 = "DROP TABLE IF EXISTS comicsbbdd";
-		String sentenciaSQL2 = "CREATE TABLE comicsbbdd (ID int NOT NULL AUTO_INCREMENT, "
+		String sentenciaSQL2 = "CREATE TABLE comicsbbdd ("
+				+ "ID int NOT NULL AUTO_INCREMENT, "
 		        + "nomComic varchar(150) NOT NULL, "
+		        + "caja_deposito TEXT , "
 		        + "numComic INT(10) NOT NULL, "
 		        + "nomVariante varchar(150) NOT NULL, "
 		        + "firma varchar(150) NOT NULL, "
@@ -266,7 +268,7 @@ public class CrearBBDDController {
 		        + "puntuacion varchar(300) NOT NULL, "
 		        + "portada TEXT, "
 		        + "estado TEXT NOT NULL, "
-		        + "caja_deposito TEXT , "
+
 		        + "PRIMARY KEY (`ID`)) "
 		        + "ENGINE=InnoDB AUTO_INCREMENT=320 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
 

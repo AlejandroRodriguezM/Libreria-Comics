@@ -13,6 +13,7 @@ import Funcionamiento.Comic;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
+import JDBC.DBManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -43,6 +44,12 @@ import javafx.util.converter.IntegerStringConverter;
  * @author Alejandro Rodriguez
  */
 public class EliminarDatosController implements Initializable {
+	
+    @FXML
+    private MenuItem menu_archivo_desconectar;
+	
+    @FXML
+    private MenuItem menu_archivo_sobreMi;
 
 	@FXML
     private MenuItem menu_archivo_cerrar;
@@ -121,6 +128,9 @@ public class EliminarDatosController implements Initializable {
 
 	@FXML
 	private TextArea pantallaInformativa;
+	
+    @FXML
+    private TextField numeroCaja;
 
 	@FXML
 	private TextField idComicTratar;
@@ -130,6 +140,9 @@ public class EliminarDatosController implements Initializable {
 
 	@FXML
 	private TableColumn<Comic, String> ID;
+	
+    @FXML
+    private TableColumn<Comic, String> caja;
 
 	@FXML
 	private TableColumn<Comic, String> numero;
@@ -274,6 +287,7 @@ public class EliminarDatosController implements Initializable {
 		tablaBBDD.getItems().clear();
 		idComicTratar.setStyle(null);
 		imagencomic.setImage(null);
+		numeroCaja.setText("");
 	}
 
 	/**
@@ -379,7 +393,7 @@ public class EliminarDatosController implements Initializable {
 
 		String datos[] = camposComics();
 
-		Comic comic = new Comic(datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
+		Comic comic = new Comic(datos[0], datos[1],datos[11], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
 				datos[8], datos[9], datos[10], "", "", null);
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
@@ -392,6 +406,7 @@ public class EliminarDatosController implements Initializable {
 	private void nombreColumnas() {
 		ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
 		nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+		caja.setCellValueFactory(new PropertyValueFactory<>("numCaja"));
 		numero.setCellValueFactory(new PropertyValueFactory<>("numero"));
 		variante.setCellValueFactory(new PropertyValueFactory<>("variante"));
 		firma.setCellValueFactory(new PropertyValueFactory<>("firma"));
@@ -416,7 +431,7 @@ public class EliminarDatosController implements Initializable {
 	 */
 	@SuppressWarnings("unchecked")
 	public void tablaBBDD(List<Comic> listaComic) {
-		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+		tablaBBDD.getColumns().setAll(ID, nombre,caja, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante);
 		tablaBBDD.getItems().setAll(listaComic);
 	}
@@ -463,7 +478,7 @@ public class EliminarDatosController implements Initializable {
 	 * @return
 	 */
 	public String[] camposComics() {
-		String campos[] = new String[11];
+		String campos[] = new String[12];
 
 		campos[0] = idComic.getText();
 
@@ -487,6 +502,8 @@ public class EliminarDatosController implements Initializable {
 		campos[9] = nombreGuionista.getText();
 
 		campos[10] = nombreDibujante.getText();
+		
+		campos[11] = numeroCaja.getText();
 
 		return campos;
 	}
@@ -547,13 +564,40 @@ public class EliminarDatosController implements Initializable {
 
 	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 	    myStage.close();
+	}
+	
+	/**
+	 * Metodo que permite abrir la ventana "sobreMiController"
+	 *
+	 * @param event
+	 */
+	@FXML
+	void verSobreMi(ActionEvent event) {
 
+		nav.verSobreMi();
+
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
 	}
 
 	/////////////////////////////
 	//// FUNCIONES PARA SALIR////
 	/////////////////////////////
 
+	/**
+	 * Vuelve al menu inicial de conexion de la base de datos.
+	 *
+	 * @param event
+	 */
+	@FXML
+	public void desconectar(ActionEvent event) throws IOException {
+	    nav.verAccesoBBDD();
+	    DBManager.close();
+	    
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
+	}
+	
 	/**
 	 * Vuelve al menu inicial de conexion de la base de datos.
 	 *

@@ -43,47 +43,47 @@
             <Image url="@../imagenes/Fondo%20AccederBBDD.jpg" />
          </image>
       </ImageView>
-      <TextField fx:id="nombreBBDD" layoutX="167.0" layoutY="11.0" prefHeight="25.0" prefWidth="103.0" />
-      <TextField fx:id="puertobbdd" layoutX="167.0" layoutY="44.0" prefHeight="25.0" prefWidth="103.0" />
-      <TextField fx:id="usuario" layoutX="167.0" layoutY="76.0" prefHeight="25.0" prefWidth="103.0" />
-      <PasswordField fx:id="pass" layoutX="167.0" layoutY="107.0" prefHeight="25.0" prefWidth="103.0" />
-      <RadioButton fx:id="siOnline" layoutX="169.0" layoutY="139.0" mnemonicParsing="false" onAction="#selectorBotonHost" selected="true" style="-fx-background-color: grey;" text="Si">
+      <TextField fx:id="nombreBBDD" layoutX="170.0" layoutY="11.0" prefHeight="25.0" prefWidth="103.0" />
+      <TextField fx:id="puertobbdd" layoutX="170.0" layoutY="44.0" prefHeight="25.0" prefWidth="103.0" />
+      <TextField fx:id="usuario" layoutX="170.0" layoutY="76.0" prefHeight="25.0" prefWidth="103.0" />
+      <PasswordField fx:id="pass" layoutX="170.0" layoutY="107.0" prefHeight="25.0" prefWidth="103.0" />
+      <RadioButton fx:id="siOnline" layoutX="172.0" layoutY="139.0" mnemonicParsing="false" onAction="#selectorBotonHost" selected="true" style="-fx-background-color: grey;" text="Si">
          <toggleGroup>
             <ToggleGroup fx:id="estado" />
          </toggleGroup></RadioButton>
-      <RadioButton fx:id="noOffline" layoutX="232.0" layoutY="139.0" mnemonicParsing="false" onAction="#selectorBotonHost" style="-fx-background-color: grey;" text="No" toggleGroup="$estado" />
-      <Button fx:id="boton_guardar" layoutX="8.0" layoutY="196.0" mnemonicParsing="false" onAction="#guardarDatos" prefHeight="33.0" prefWidth="105.0" text="Guardar" />
-      <Button fx:id="botonSalir" layoutX="191.0" layoutY="400.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="39.0" prefWidth="78.0" text="Salir" />
-      <Button fx:id="botonCrearBBDD" layoutX="146.0" layoutY="238.0" mnemonicParsing="false" onAction="#crearBBDD" prefHeight="59.0" prefWidth="123.0" text="Crear base de datos" />
-      <Button fx:id="boton_abrir" layoutX="147.0" layoutY="196.0" mnemonicParsing="false" onAction="#abrirUbicacion" prefHeight="33.0" prefWidth="123.0" text="Abrir ubicación" />
-      <Label layoutX="7.0" layoutY="16.0" style="-fx-background-color: grey;" text="Nombre de la base de datos">
+      <RadioButton fx:id="noOffline" layoutX="235.0" layoutY="139.0" mnemonicParsing="false" onAction="#selectorBotonHost" style="-fx-background-color: grey;" text="No" toggleGroup="$estado" />
+      <Button fx:id="boton_guardar" layoutX="8.0" layoutY="196.0" mnemonicParsing="false" onAction="#guardarDatos" prefHeight="33.0" prefWidth="114.0" stylesheets="@../style/opciones_style.css" text="Guardar" />
+      <Button fx:id="botonSalir" layoutX="191.0" layoutY="400.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="39.0" prefWidth="78.0" stylesheets="@../style/opciones_style.css" text="Salir" />
+      <Button fx:id="botonCrearBBDD" layoutX="146.0" layoutY="238.0" mnemonicParsing="false" onAction="#crearBBDD" prefHeight="59.0" prefWidth="123.0" stylesheets="@../style/opciones_style.css" text="Crear base de datos" wrapText="true" />
+      <Button fx:id="boton_abrir" layoutX="147.0" layoutY="196.0" mnemonicParsing="false" onAction="#abrirUbicacion" prefHeight="33.0" prefWidth="123.0" stylesheets="@../style/opciones_style.css" text="Abrir ubicación" />
+      <Label fx:id="nombre_label" layoutX="2.0" layoutY="12.0" style="-fx-background-color: grey;" stylesheets="@../style/opciones_style.css" text="Nombre de la base de datos">
          <font>
             <Font name="Comic Sans MS" size="12.0" />
          </font></Label>
-      <Label layoutX="9.0" layoutY="48.0" style="-fx-background-color: grey;" text="Puerto de la base de datos">
+      <Label fx:id="puerto_label" layoutX="3.0" layoutY="44.0" style="-fx-background-color: grey;" stylesheets="@../style/opciones_style.css" text="Puerto de la base de datos">
          <font>
             <Font name="Comic Sans MS" size="12.0" />
          </font></Label>
-      <Label layoutX="8.0" layoutY="80.0" style="-fx-background-color: grey;" text="Nombre de usuario">
+      <Label fx:id="usuario_label" layoutX="3.0" layoutY="76.0" style="-fx-background-color: grey;" stylesheets="@../style/opciones_style.css" text="Nombre de usuario">
          <font>
             <Font name="Comic Sans MS" size="12.0" />
          </font></Label>
-      <Label layoutX="9.0" layoutY="111.0" style="-fx-background-color: grey;" text="Contraseña de usuario">
+      <Label fx:id="password_label" layoutX="3.0" layoutY="107.0" style="-fx-background-color: grey;" stylesheets="@../style/opciones_style.css" text="Contraseña de usuario">
          <font>
             <Font name="Comic Sans MS" size="12.0" />
          </font></Label>
-      <Button fx:id="boton_restaurar" layoutX="8.0" layoutY="238.0" mnemonicParsing="false" onAction="#restaurarConfiguracion" prefHeight="59.0" prefWidth="105.0" text="Restaurar configuracion" wrapText="true" />
-      <Label fx:id="prontEstadoFichero" alignment="CENTER" contentDisplay="TOP" layoutX="8.0" layoutY="311.0" prefHeight="82.0" prefWidth="262.0" style="-fx-background-color: #29B6CC;" text="Esperando entrada de datos" wrapText="true">
+      <Button fx:id="boton_restaurar" layoutX="8.0" layoutY="238.0" mnemonicParsing="false" onAction="#restaurarConfiguracion" prefHeight="59.0" prefWidth="114.0" stylesheets="@../style/opciones_style.css" text="Restaurar configuracion" wrapText="true" />
+      <Label fx:id="prontEstadoFichero" alignment="CENTER" contentDisplay="TOP" layoutX="8.0" layoutY="311.0" prefHeight="82.0" prefWidth="262.0" style="-fx-background-color: #29B6CC;" stylesheets="@../style/opciones_style.css" text="Esperando entrada de datos" wrapText="true">
          <font>
             <Font name="Comic Sans MS" size="18.0" />
          </font>
       </Label>
-      <PasswordField fx:id="nombreHost" layoutX="167.0" layoutY="164.0" prefHeight="25.0" prefWidth="103.0" />
-      <Label fx:id="etiquetaHost" layoutX="11.0" layoutY="168.0" prefHeight="17.0" prefWidth="103.0" style="-fx-background-color: grey;" text="Nombre del host:" />
-      <Label layoutX="10.0" layoutY="139.0" style="-fx-background-color: grey;" text="Base de datos en servidor">
+      <PasswordField fx:id="nombreHost" layoutX="170.0" layoutY="164.0" prefHeight="25.0" prefWidth="103.0" />
+      <Label fx:id="etiquetaHost" layoutX="5.0" layoutY="164.0" prefHeight="23.0" prefWidth="114.0" style="-fx-background-color: grey;" stylesheets="@../style/opciones_style.css" text="Nombre del host:" />
+      <Label fx:id="host_label" layoutX="4.0" layoutY="135.0" style="-fx-background-color: grey;" stylesheets="@../style/opciones_style.css" text="Base de datos en servidor">
          <font>
             <Font name="Comic Sans MS" size="12.0" />
          </font></Label>
-      <Button fx:id="botonVolver" layoutX="9.0" layoutY="400.0" mnemonicParsing="false" onAction="#volverPrograma" prefHeight="39.0" prefWidth="78.0" text="Volver" />
+      <Button fx:id="botonVolver" layoutX="9.0" layoutY="400.0" mnemonicParsing="false" onAction="#volverPrograma" prefHeight="39.0" prefWidth="78.0" stylesheets="@../style/opciones_style.css" text="Volver" />
    </children>
 </Pane>

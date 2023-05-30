@@ -38,6 +38,7 @@ import Funcionamiento.FuncionesExcel;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
+import JDBC.DBManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -70,14 +71,17 @@ import javafx.util.converter.IntegerStringConverter;
  */
 public class MenuPrincipalController implements Initializable {
 
+    @FXML
+    private MenuItem menu_archivo_desconectar;
+	
+    @FXML
+    private MenuItem menu_archivo_sobreMi;
+	
 	@FXML
 	private MenuItem menu_archivo_backupbbdd;
 
 	@FXML
 	private MenuItem menu_archivo_cerrar;
-	
-	@FXML
-	private MenuItem menu_archivo_volver;
 
 	@FXML
 	private MenuItem menu_archivo_delete;
@@ -168,9 +172,15 @@ public class MenuPrincipalController implements Initializable {
 
 	@FXML
 	private TextField busquedaGeneral;
+	
+    @FXML
+    private TextField numeroCaja;
 
 	@FXML
 	private TableColumn<Comic, String> ID;
+	
+    @FXML
+    private TableColumn<Comic, String> caja;
 
 	@FXML
 	private TableColumn<Comic, String> dibujante;
@@ -367,7 +377,20 @@ public class MenuPrincipalController implements Initializable {
 
 	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 	    myStage.close();
+	}
+	
+	/**
+	 * Metodo que permite abrir la ventana "sobreMiController"
+	 *
+	 * @param event
+	 */
+	@FXML
+	void verSobreMi(ActionEvent event) {
 
+		nav.verSobreMi();
+
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
 	}
 
 	/**
@@ -568,6 +591,7 @@ public class MenuPrincipalController implements Initializable {
 
 	public void limpiezaDeDatos() {
 		nombreComic.setText("");
+		numeroCaja.setText("");
 		numeroComic.setText("");
 		nombreVariante.setText("");
 		nombreFirma.setText("");
@@ -581,6 +605,7 @@ public class MenuPrincipalController implements Initializable {
 		prontFrases.setOpacity(0);
 		tablaBBDD.getItems().clear();
 		imagencomic.setImage(null);
+
 	}
 
 	/**
@@ -629,17 +654,18 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	private void nombreColumnas() {
 		ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
-		nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-		numero.setCellValueFactory(new PropertyValueFactory<>("numero"));
-		variante.setCellValueFactory(new PropertyValueFactory<>("variante"));
-		firma.setCellValueFactory(new PropertyValueFactory<>("firma"));
-		editorial.setCellValueFactory(new PropertyValueFactory<>("editorial"));
-		formato.setCellValueFactory(new PropertyValueFactory<>("formato"));
-		procedencia.setCellValueFactory(new PropertyValueFactory<>("procedencia"));
-		fecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
-		guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
-		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
-		puntuacion.setCellValueFactory(new PropertyValueFactory<>("puntuacion"));
+		nombre.setCellValueFactory(new PropertyValueFactory<>("Nombre"));
+		caja.setCellValueFactory(new PropertyValueFactory<>("numCaja"));
+		numero.setCellValueFactory(new PropertyValueFactory<>("Numero"));
+		variante.setCellValueFactory(new PropertyValueFactory<>("Variante"));
+		firma.setCellValueFactory(new PropertyValueFactory<>("Firma"));
+		editorial.setCellValueFactory(new PropertyValueFactory<>("Editorial"));
+		formato.setCellValueFactory(new PropertyValueFactory<>("Formato"));
+		procedencia.setCellValueFactory(new PropertyValueFactory<>("Procedencia"));
+		fecha.setCellValueFactory(new PropertyValueFactory<>("Fecha"));
+		guionista.setCellValueFactory(new PropertyValueFactory<>("Guionista"));
+		dibujante.setCellValueFactory(new PropertyValueFactory<>("Dibujante"));
+		puntuacion.setCellValueFactory(new PropertyValueFactory<>("Puntuacion"));
 	}
 
 	@FXML
@@ -770,7 +796,7 @@ public class MenuPrincipalController implements Initializable {
 
 		String datos[] = camposComic();
 
-		Comic comic = new Comic("", datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
+		Comic comic = new Comic("", datos[1],datos[12], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
 				datos[8], datos[9], datos[10], "", "", null);
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
@@ -799,7 +825,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@SuppressWarnings("unchecked")
 	public void tablaBBDD(List<Comic> listaComic) {
-		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
+		tablaBBDD.getColumns().setAll(ID,nombre,caja,numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante, puntuacion);
 		tablaBBDD.getItems().setAll(listaComic);
 	}
@@ -811,7 +837,7 @@ public class MenuPrincipalController implements Initializable {
 	 * @return
 	 */
 	public String[] camposComic() {
-		String campos[] = new String[11];
+		String campos[] = new String[13];
 
 		campos[1] = nombreComic.getText();
 
@@ -831,7 +857,12 @@ public class MenuPrincipalController implements Initializable {
 		campos[8] = (fecha != null) ? fecha.toString() : "";
 
 		campos[9] = nombreGuionista.getText();
+		
 		campos[10] = nombreDibujante.getText();
+		
+		campos[12] = numeroCaja.getText();
+		
+		
 
 		return campos;
 	}
@@ -848,6 +879,7 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	public void volverMenu(ActionEvent event) throws IOException {
 	    nav.verAccesoBBDD();
+	    DBManager.close();
 	    
 	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 	    myStage.close();

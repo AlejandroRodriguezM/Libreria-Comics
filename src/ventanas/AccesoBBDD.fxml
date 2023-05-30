@@ -7,26 +7,45 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="293.0" prefWidth="271.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.AccesoBBDDController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="318.0" prefWidth="271.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.AccesoBBDDController">
    <children>
       <ImageView fitHeight="332.0" fitWidth="271.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagenes/Fondo%20AccederBBDD.jpg" />
          </image>
       </ImageView>
-      <Button fx:id="botonEnviar" layoutX="65.0" layoutY="88.0" mnemonicParsing="false" onAction="#enviarDatos" prefHeight="54.0" prefWidth="141.0" text="Conectar bbdd">
+      <ImageView fitHeight="46.0" fitWidth="84.0" layoutY="272.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imagenes/azul.jpg" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="46.0" fitWidth="84.0" layoutX="84.0" layoutY="272.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imagenes/azul.jpg" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="46.0" fitWidth="84.0" layoutX="168.0" layoutY="272.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imagenes/azul.jpg" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="46.0" fitWidth="84.0" layoutX="187.0" layoutY="272.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imagenes/azul.jpg" />
+         </image>
+      </ImageView>
+      <Button fx:id="botonEnviar" layoutX="65.0" layoutY="98.0" mnemonicParsing="false" onAction="#enviarDatos" prefHeight="54.0" prefWidth="141.0" stylesheets="@../style/acces_style.css" text="Conectar bbdd">
          <font>
             <Font size="17.0" />
          </font></Button>
-      <Button fx:id="botonAccesobbdd" layoutX="65.0" layoutY="152.0" mnemonicParsing="false" onAction="#entrarMenu" prefHeight="54.0" prefWidth="141.0" text="Entrar al menu">
+      <Button fx:id="botonAccesobbdd" layoutX="65.0" layoutY="160.0" mnemonicParsing="false" onAction="#entrarMenu" prefHeight="54.0" prefWidth="141.0" stylesheets="@../style/acces_style.css" text="Entrar al menu">
          <font>
             <Font size="18.0" />
          </font></Button>
-      <Button fx:id="botonOpciones" layoutX="7.0" layoutY="215.0" mnemonicParsing="false" onAction="#opcionesPrograma" prefHeight="33.0" prefWidth="116.0" text="Opciones" />
-      <Button fx:id="botonSalir" layoutX="198.0" layoutY="255.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="33.0" prefWidth="67.0" text="Salir" />
-      <Button fx:id="botonSobreMi" layoutX="7.0" layoutY="255.0" mnemonicParsing="false" onAction="#verSobreMi" prefHeight="33.0" prefWidth="74.0" text="Sobre mi" />
-      <Button fx:id="botonDescargaBBDD" layoutX="149.0" layoutY="215.0" mnemonicParsing="false" onAction="#accesoMySqlWorkbench" prefHeight="33.0" prefWidth="116.0" text="Tutorial MySql" wrapText="true" />
-      <Label fx:id="prontEstadoConexion" alignment="CENTER" contentDisplay="TOP" layoutX="4.0" layoutY="9.0" prefHeight="72.0" prefWidth="262.0" style="-fx-background-color: #29B6CC;" wrapText="true">
+      <Button fx:id="botonOpciones" layoutX="7.0" layoutY="221.0" mnemonicParsing="false" onAction="#opcionesPrograma" prefHeight="33.0" prefWidth="116.0" stylesheets="@../style/acces_style.css" text="Opciones" />
+      <Button fx:id="botonSalir" layoutX="27.0" layoutY="271.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="38.0" prefWidth="216.0" stylesheets="@../style/acces_style.css" text="Salir" />
+      <Button fx:id="botonDescargaBBDD" layoutX="149.0" layoutY="222.0" mnemonicParsing="false" onAction="#accesoMySqlWorkbench" prefHeight="33.0" prefWidth="116.0" stylesheets="@../style/acces_style.css" text="Tutorial" wrapText="true" />
+      <Label fx:id="prontEstadoConexion" alignment="CENTER" contentDisplay="TOP" layoutX="4.0" layoutY="4.0" mouseTransparent="true" prefHeight="90.0" prefWidth="262.0" style="-fx-background-color: #29B6CC;" stylesheets="@../style/acces_style.css" wrapText="true">
          <font>
             <Font name="Comic Sans MS" size="18.0" />
          </font>

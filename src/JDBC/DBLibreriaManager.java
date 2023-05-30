@@ -664,6 +664,12 @@ public class DBLibreriaManager extends Comic {
 			connector = " AND ";
 			datosRellenados++;
 		}
+		if (comic.getNumCaja().length() != 0) {
+
+			sql.append(connector).append("caja_deposito like'%" + comic.getNumCaja() + "%'");
+			connector = " AND ";
+			datosRellenados++;
+		}
 		if (comic.getNumero().length() != 0) {
 			sql.append(connector).append("numComic = " + comic.getNumero());
 			connector = " AND ";
@@ -868,6 +874,7 @@ public class DBLibreriaManager extends Comic {
 				do {
 					this.ID = rs.getString("ID");
 					this.nombre = rs.getString("nomComic");
+					this.numCaja= rs.getString("caja_deposito");
 					this.numero = rs.getString("numComic");
 					this.variante = rs.getString("nomVariante");
 					this.firma = rs.getString("firma");
@@ -881,7 +888,7 @@ public class DBLibreriaManager extends Comic {
 					this.puntuacion = rs.getString("puntuacion");
 					this.imagen = rs.getString("portada");
 
-					comic = new Comic(this.ID, this.nombre, this.numero, this.variante, this.firma, this.editorial,
+					comic = new Comic(this.ID, this.nombre,this.numCaja, this.numero, this.variante, this.firma, this.editorial,
 							this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante, this.estado,
 							this.puntuacion, this.imagen);
 
@@ -969,8 +976,6 @@ public class DBLibreriaManager extends Comic {
 	public void saveImageFromDataBase() {
 		String sentenciaSQL = "SELECT * FROM comicsbbdd";
 		
-		
-		
 		conn = DBManager.conexion();
 		carpeta = new FuncionesExcel();
 		File directorio = carpeta.carpetaPortadas();
@@ -980,8 +985,8 @@ public class DBLibreriaManager extends Comic {
 
 			if (directorio != null) {
 				while (rs.next()) {
-					String nombreImagen = rs.getString(2).replace(" ", "_").replace(":", "_") + "_" + rs.getInt(3) + "_"
-							+ rs.getString(4).replace(" ", "_") + "_" + rs.getDate(9);
+					String nombreImagen = rs.getString(2).replace(" ", "_").replace(":", "_") + "_" + rs.getInt(4) + "_"
+							+ rs.getString(5).replace(" ", "_") + "_" + rs.getDate(10);
 
 					String direccionImagen = rs.getString(13);
 					File imagenArchivo = new File(direccionImagen);
@@ -1105,7 +1110,7 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public void insertarDatos(Comic comic_datos) throws IOException {
 
-		String sentenciaSQL = "insert into comicsbbdd(nomComic,numComic,nomVariante,firma,nomEditorial,formato,procedencia,fecha_publicacion,nomGuionista,nomDibujante,puntuacion,portada,estado) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		String sentenciaSQL = "insert into comicsbbdd(nomComic,caja_deposito,numComic,nomVariante,firma,nomEditorial,formato,procedencia,fecha_publicacion,nomGuionista,nomDibujante,puntuacion,portada,estado) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 		subirComic(sentenciaSQL, comic_datos); // Llamada a funcion que permite comprobar el cambio realizado en el
 												// comic
@@ -1123,18 +1128,19 @@ public class DBLibreriaManager extends Comic {
 			PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
 
 			statement.setString(1, datos.getNombre());
-			statement.setString(2, datos.getNumero());
-			statement.setString(3, datos.getVariante());
-			statement.setString(4, datos.getFirma());
-			statement.setString(5, datos.getEditorial());
-			statement.setString(6, datos.getFormato());
-			statement.setString(7, datos.getProcedencia());
-			statement.setString(8, datos.getFecha());
-			statement.setString(9, datos.getGuionista());
-			statement.setString(10, datos.getDibujante());
-			statement.setString(11, "Sin puntuar");
-			statement.setString(12, datos.getImagen());
-			statement.setString(13, "En posesion");
+			statement.setString(2, datos.getNumCaja());
+			statement.setString(3, datos.getNumero());
+			statement.setString(4, datos.getVariante());
+			statement.setString(5, datos.getFirma());
+			statement.setString(6, datos.getEditorial());
+			statement.setString(7, datos.getFormato());
+			statement.setString(8, datos.getProcedencia());
+			statement.setString(9, datos.getFecha());
+			statement.setString(10, datos.getGuionista());
+			statement.setString(11, datos.getDibujante());
+			statement.setString(12, "Sin puntuar");
+			statement.setString(13, datos.getImagen());
+			statement.setString(14, "En posesion");
 
 			statement.executeUpdate();
 			statement.close();
@@ -1170,7 +1176,7 @@ public class DBLibreriaManager extends Comic {
 	public void actualizar_comic(Comic datos) {
 		utilidad = new Utilidades();
 		conn = DBManager.conexion();
-		String sentenciaSQL = "UPDATE comicsbbdd set nomComic = ?,numComic = ?,nomVariante = ?,"
+		String sentenciaSQL = "UPDATE comicsbbdd set nomComic = ?,caja_deposito = ? ,numComic = ?,nomVariante = ?,"
 				+ "Firma = ?,nomEditorial = ?,formato = ?,Procedencia = ?,fecha_publicacion = ?,"
 				+ "nomGuionista = ?,nomDibujante = ?,portada = ?,estado = ? where ID = ?";
 
@@ -1248,6 +1254,8 @@ public class DBLibreriaManager extends Comic {
 		Comic comic = comicDatos(datos.getID());
 
 		String nombre = datos.getNombre();
+		
+		String numCaja = datos.getNumCaja();
 
 		String numero = datos.getNumero();
 
@@ -1287,91 +1295,98 @@ public class DBLibreriaManager extends Comic {
 				nombre = comic.getNombre();
 				ps.setString(1, nombre);
 			}
+			
+			if (numCaja.length() != 0) {
+				ps.setString(2,numCaja);
+			} else {
+				numCaja = comic.getNumCaja();
+				ps.setString(2, numCaja);
+			}
 
 			if (numero.length() != 0) {
-				ps.setString(2, numero);
+				ps.setString(3, numero);
 			} else {
 				numero = comic.getNumero();
-				ps.setString(2, numero);
+				ps.setString(3, numero);
 			}
 
 			if (variante.length() != 0) {
-				ps.setString(3, variante);
+				ps.setString(4, variante);
 			} else {
 				variante = comic.getVariante();
-				ps.setString(3, variante);
+				ps.setString(4, variante);
 			}
 
 			if (firma.length() != 0) {
-				ps.setString(4, firma);
+				ps.setString(5, firma);
 			} else {
 				firma = comic.getFirma();
-				ps.setString(4, firma);
+				ps.setString(5, firma);
 			}
 
 			if (editorial.length() != 0) {
-				ps.setString(5, editorial);
+				ps.setString(6, editorial);
 			} else {
 				editorial = comic.getEditorial();
-				ps.setString(5, editorial);
+				ps.setString(6, editorial);
 			}
 
 			if (formato.length() != 0) {
-				ps.setString(6, formato);
+				ps.setString(7, formato);
 			} else {
 				formato = comic.getFormato();
-				ps.setString(6, formato);
+				ps.setString(7, formato);
 			}
 
 			if (procedencia.length() != 0) {
-				ps.setString(7, procedencia);
+				ps.setString(8, procedencia);
 			} else {
 				procedencia = comic.getProcedencia();
-				ps.setString(7, procedencia);
+				ps.setString(8, procedencia);
 			}
 
 			if (fecha.length() != 0) {
-				ps.setString(8, fecha);
+				ps.setString(9, fecha);
 			} else {
 				fecha = comic.getFecha();
-				ps.setString(8, fecha);
+				ps.setString(9, fecha);
 			}
 
 			if (guionista.length() != 0) {
-				ps.setString(9, guionista);
+				ps.setString(10, guionista);
 			} else {
 				guionista = comic.getGuionista();
-				ps.setString(9, guionista);
+				ps.setString(10, guionista);
 			}
 
 			if (dibujante.length() != 0) {
-				ps.setString(10, dibujante);
+				ps.setString(11, dibujante);
 			} else {
 				dibujante = comic.getDibujante();
-				ps.setString(10, dibujante);
+				ps.setString(11, dibujante);
 			}
 
 			if (portada_nueva.length() != 0) {
 				portada_final = datos.getImagen();
 				;
-				ps.setString(11, portada_final);
+				ps.setString(12, portada_final);
 			} else {
 				portada_final = comic.getImagen();
-				ps.setString(11, portada_final);
+				ps.setString(12, portada_final);
 			}
 
 			if (estado.length() != 0) {
-				ps.setString(12, estado);
+				ps.setString(13, estado);
 			} else {
 				estado = comic.getEstado();
-				ps.setString(12, estado);
+				ps.setString(13, estado);
 			}
 
-			ps.setString(13, datos.getID());
+			ps.setString(14, datos.getID());
 
 			if (ps.executeUpdate() == 1) { // Si se ha modificado correctamente, saltara el siguiente mensaje
 
-				Comic nuevo_comic = new Comic("", nombre, numero, variante, firma, editorial, formato, procedencia,
+				Comic nuevo_comic = new Comic("", nombre,numCaja, numero, variante, firma, editorial, formato, procedencia,
 						fecha, guionista, dibujante, estado, "", portada_final);
 
 				utilidad.nueva_imagen(nuevo_comic);

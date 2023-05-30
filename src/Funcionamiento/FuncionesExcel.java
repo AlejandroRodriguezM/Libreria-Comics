@@ -76,8 +76,8 @@ public class FuncionesExcel {
 	 * @throws SQLException
 	 */
 	public boolean importarCSV(File fichero) {
-		String sql = "INSERT INTO comicsbbdd(ID,nomComic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,fecha_publicacion,nomGuionista,nomDibujante,puntuacion,portada,estado)"
-				+ " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		String sql = "INSERT INTO comicsbbdd(ID,nomComic,caja_deposito,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,fecha_publicacion,nomGuionista,nomDibujante,puntuacion,portada,estado)"
+				+ " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 		if (comprobarCSV(fichero, sql)) // Llamada a funcion, en caso de devolver true, devolvera un true
 		{
@@ -104,7 +104,7 @@ public class FuncionesExcel {
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
 		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator +  "portadas" + File.separator;
-		String[] encabezados = { "ID", "nomComic", "numComic", "nomVariante", "Firma", "nomEditorial", "Formato",
+		String[] encabezados = { "ID", "nomComic","caja_deposito", "numComic", "nomVariante", "Firma", "nomEditorial", "Formato",
 				"Procedencia", "fecha_publicacion", "nomGuionista", "nomDibujante", "puntuacion", "portada", "estado" };
 		int indiceFila = 0;
 
@@ -129,20 +129,20 @@ public class FuncionesExcel {
 				fila = hoja.createRow(indiceFila);
 				fila.createCell(0).setCellValue("");
 				fila.createCell(1).setCellValue(comic.getNombre());
-				fila.createCell(2).setCellValue(comic.getNumero());
-				fila.createCell(3).setCellValue(comic.getVariante());
-				fila.createCell(4).setCellValue(comic.getFirma());
-				fila.createCell(5).setCellValue(comic.getEditorial());
-				fila.createCell(6).setCellValue(comic.getFormato());
-				fila.createCell(7).setCellValue(comic.getProcedencia());
-				fila.createCell(8).setCellValue(comic.getFecha());
-				fila.createCell(9).setCellValue(comic.getGuionista());
-				fila.createCell(10).setCellValue(comic.getDibujante());
-				fila.createCell(11).setCellValue(comic.getPuntuacion());
+				fila.createCell(2).setCellValue(comic.getNumCaja());
+				fila.createCell(3).setCellValue(comic.getEstado());
+				fila.createCell(4).setCellValue(comic.getNumero());
+				fila.createCell(5).setCellValue(comic.getVariante());
+				fila.createCell(6).setCellValue(comic.getFirma());
+				fila.createCell(7).setCellValue(comic.getEditorial());
+				fila.createCell(8).setCellValue(comic.getFormato());
+				fila.createCell(9).setCellValue(comic.getProcedencia());
+				fila.createCell(10).setCellValue(comic.getFecha());
+				fila.createCell(11).setCellValue(comic.getGuionista());
+				fila.createCell(12).setCellValue(comic.getDibujante());
+				fila.createCell(13).setCellValue(comic.getPuntuacion());
 				String nombreImagen = sourcePath + comic.getNombre().replace(" ", "_").replace(":", "_") + "_" + comic.getNumero() + "_" + comic.getVariante().replace(" ", "_") + "_" + comic.getFecha() + ".jpg";
-				fila.createCell(12).setCellValue(nombreImagen);
-				fila.createCell(13).setCellValue(comic.getEstado());
-
+				fila.createCell(14).setCellValue(nombreImagen);
 				indiceFila++;
 			}
 
@@ -172,7 +172,7 @@ public class FuncionesExcel {
 	    Sheet hoja;
 	    Workbook libro;
 	    String encabezado;
-	    String[] encabezados = { "ID", "nomComic", "numComic", "nomVariante", "Firma", "nomEditorial", "Formato",
+	    String[] encabezados = { "ID", "nomComic","caja_deposito", "numComic", "nomVariante", "Firma", "nomEditorial", "Formato",
 	            "Procedencia", "fecha_publicacion", "nomGuionista", "nomDibujante", "puntuacion", "portada", "estado" };
 	    int indiceFila = 0;
 	    
@@ -428,49 +428,48 @@ public class FuncionesExcel {
 	            String[] data = lineText.split(";");
 	            String id = Integer.toString(nuevoID);
 	            String nombre = data[1];
-	            String numero = data[2];
-	            String variante = data[3];
-	            String firma = data[4];
-	            String editorial = data[5];
-	            String formato = data[6];
-	            if (data[7].toLowerCase().contains("españa")) {
-	                procedencia = data[7].toLowerCase().replace("españa", "Spain");
+	            String numCaja = data[2];
+	            String numero = data[3];
+	            String variante = data[4];
+	            String firma = data[5];
+	            String editorial = data[6];
+	            String formato = data[7];
+	            if (data[8].toLowerCase().contains("españa")) {
+	                procedencia = data[8].toLowerCase().replace("españa", "Spain");
 	            } else {
-	                procedencia = data[7];
+	                procedencia = data[8];
 	            }
 
 	            // Conversión de fecha al formato correcto
 //	            String fecha = convertirFecha(data[8]);
-	            String fecha = data[8];
-	            String guionista = data[9];
-	            String dibujante = data[10];
+	            String fecha = data[9];
+	            String guionista = data[10];
+	            String dibujante = data[11];
 	            if (data[11].length() != 0) {
-	                puntuacion = data[11];
+	                puntuacion = data[12];
 	            } else {
 	                puntuacion = "Sin puntuacion";
 	            }
-	            String portada = data[12];
-	            String estado = data[13];
+	            String portada = data[13];
+	            String estado = data[14];
 	            
-//				Comic comic = new Comic(id, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
-//						guionista, dibujante, estado, puntuacion, portada);
-				
-//				String nuevo_nombre = utilidad.obtenerNombreCompleto(comic);
 	            
 	            statement.setString(1, id);
 	            statement.setString(2, nombre);
-	            statement.setString(3, numero);
-	            statement.setString(4, variante);
-	            statement.setString(5, firma);
-	            statement.setString(6, editorial);
-	            statement.setString(7, formato);
-	            statement.setString(8, procedencia);
-	            statement.setString(9, fecha);
-	            statement.setString(10, guionista);
-	            statement.setString(11, dibujante);
-	            statement.setString(12, puntuacion);
-	            statement.setString(13, portada);
-	            statement.setString(14, estado);
+	            statement.setString(3, numCaja);
+	            statement.setString(4, numero);
+	            statement.setString(5, variante);
+	            statement.setString(6, firma);
+	            statement.setString(7, editorial);
+	            statement.setString(8, formato);
+	            statement.setString(9, procedencia);
+	            statement.setString(10, fecha);
+	            statement.setString(11, guionista);
+	            statement.setString(12, dibujante);
+	            statement.setString(13, puntuacion);
+	            statement.setString(14, portada);
+	            statement.setString(15, estado);
+	            
 
 	            statement.addBatch();
 

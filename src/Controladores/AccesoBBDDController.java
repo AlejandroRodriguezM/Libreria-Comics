@@ -12,6 +12,9 @@ import java.util.ResourceBundle;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBManager;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -19,6 +22,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  * Esta clase sirve para acceder a la base de datos y poder realizar diferentes
@@ -26,37 +30,43 @@ import javafx.stage.Stage;
  *
  * @author Alejandro Rodriguez
  */
-public class AccesoBBDDController implements Initializable{
+public class AccesoBBDDController implements Initializable {
 
-    @FXML
-    private Button botonAccesobbdd;
+	@FXML
+	private Button botonAccesobbdd;
 
-    @FXML
-    private Button botonDescargaBBDD;
+	@FXML
+	private Button botonDescargaBBDD;
 
-    @FXML
-    private Button botonEnviar;
+	@FXML
+	private Button botonEnviar;
 
-    @FXML
-    private Button botonOpciones;
+	@FXML
+	private Button botonOpciones;
 
-    @FXML
-    private Button botonSalir;
+	@FXML
+	private Button botonSalir;
 
-    @FXML
-    private Button botonSobreMi;
+	@FXML
+	private Button botonSobreMi;
 
 	@FXML
 	private Label prontEstadoConexion;
 
-	
+	private Timeline timeline;
+
 	private static Ventanas nav = new Ventanas();
 	private static CrearBBDDController cbd = null;
-	
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-	    
-	    crearEstructura();
+
+		crearEstructura();
+		if (!JDBC.DBManager.isConnected()) {
+		    iniciarAnimacionEspera();
+		} else {
+			iniciarAnimacionConectado();
+		}
 
 	}
 
@@ -94,30 +104,16 @@ public class AccesoBBDDController implements Initializable{
 
 		if (JDBC.DBManager.isConnected()) { // Siempre que el metodo de la clase DBManager sea true, permitira acceder
 											// al menu principal
-
 			nav.verMenuPrincipal(); // Llamada a metodo de la clase NavegacionVentanas. Permite cargar y mostrar el
 									// menu principal
 			Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
 			myStage.close();
 		} else { // En caso contrario mostrara el siguiente mensaje.
+			detenerAnimacion();
 			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
 			prontEstadoConexion.setFont(new Font("Arial", 25));
 			prontEstadoConexion.setText("Conectate a la bbdd antes de continuar");
 		}
-	}
-
-	/**
-	 * Metodo que permite abrir la ventana "sobreMiController"
-	 *
-	 * @param event
-	 */
-	@FXML
-	void verSobreMi(ActionEvent event) {
-
-		nav.verSobreMi();
-
-		Stage myStage = (Stage) this.botonSobreMi.getScene().getWindow();
-		myStage.close();
 	}
 
 	/**
@@ -138,32 +134,35 @@ public class AccesoBBDDController implements Initializable{
 		if (JDBC.DBManager.isConnected()) {
 
 			if (cbd.chechTables()) {
-				
+
 				String userHome = System.getProperty("user.home");
 				String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
 				String carpetaLibreria = ubicacion + File.separator + "libreria";
-				String carpetaBackup = carpetaLibreria + File.separator + obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "backups";
+				String carpetaBackup = carpetaLibreria + File.separator + obtenerDatoDespuesDeDosPuntos("Database")
+						+ File.separator + "backups";
 
 				try {
-				    File carpeta_backupsFile = new File(carpetaBackup);
-				    if (!carpeta_backupsFile.exists()) {
-				        if (carpeta_backupsFile.mkdirs()) {
-				            System.out.println("Carpeta de backups creada: " + carpetaBackup);
-				        } else {
-				            System.out.println("No se pudo crear la carpeta de backups");
-				        }
-				    } else {
-				        System.out.println("La carpeta de backups ya existe: " + carpetaBackup);
-				    }
+					File carpeta_backupsFile = new File(carpetaBackup);
+					if (!carpeta_backupsFile.exists()) {
+						if (carpeta_backupsFile.mkdirs()) {
+							System.out.println("Carpeta de backups creada: " + carpetaBackup);
+						} else {
+							System.out.println("No se pudo crear la carpeta de backups");
+						}
+					} else {
+						System.out.println("La carpeta de backups ya existe: " + carpetaBackup);
+					}
 				} catch (Exception e) {
-				    e.printStackTrace();
+					e.printStackTrace();
 				}
+				detenerAnimacion();
 				prontEstadoConexion.setStyle("-fx-background-color: #A0F52D");
-				prontEstadoConexion.setText("Conectado");
+				iniciarAnimacionConectado();
 			}
 		} else { // En caso contrario mostrara el siguiente mensaje
+			detenerAnimacion();
 			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
-			prontEstadoConexion.setText("ERROR. Los datos son incorrectos. Revise los datos.");
+			iniciarAnimacionError();
 		}
 
 	}
@@ -174,35 +173,36 @@ public class AccesoBBDDController implements Initializable{
 	 * @return
 	 */
 	public void envioDatosBBDD() {
-	    cbd = new CrearBBDDController();
-	    String datos[] = new String[5];
-	    datos[0] = obtenerDatoDespuesDeDosPuntos("Puerto");
-	    datos[1] = obtenerDatoDespuesDeDosPuntos("Database");
-	    datos[2] = obtenerDatoDespuesDeDosPuntos("Usuario");
-	    datos[3] = obtenerDatoDespuesDeDosPuntos("Password");
-	    datos[4] = obtenerDatoDespuesDeDosPuntos("Hosting");
+		detenerAnimacion();
+		cbd = new CrearBBDDController();
+		String datos[] = new String[5];
+		datos[0] = obtenerDatoDespuesDeDosPuntos("Puerto");
+		datos[1] = obtenerDatoDespuesDeDosPuntos("Database");
+		datos[2] = obtenerDatoDespuesDeDosPuntos("Usuario");
+		datos[3] = obtenerDatoDespuesDeDosPuntos("Password");
+		datos[4] = obtenerDatoDespuesDeDosPuntos("Hosting");
 
-	    DBManager.datosBBDD(datos);
+		DBManager.datosBBDD(datos);
 	}
 
 	private String obtenerDatoDespuesDeDosPuntos(String linea) {
-	    String userHome = System.getProperty("user.home");
-	    String ubicacion = userHome + "\\AppData\\Roaming";
-	    String carpetaLibreria = ubicacion + "\\libreria";
-	    String archivoConfiguracion = carpetaLibreria + "\\configuracion.conf";
+		String userHome = System.getProperty("user.home");
+		String ubicacion = userHome + "\\AppData\\Roaming";
+		String carpetaLibreria = ubicacion + "\\libreria";
+		String archivoConfiguracion = carpetaLibreria + "\\configuracion.conf";
 
-	    try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
-	        String line;
-	        while ((line = reader.readLine()) != null) {
-	            if (line.startsWith(linea + ": ")) {
-	                return line.substring(linea.length() + 2).trim();
-	            }
-	        }
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
-	    
-	    return "";
+		try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				if (line.startsWith(linea + ": ")) {
+					return line.substring(linea.length() + 2).trim();
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return "";
 	}
 
 	/**
@@ -218,14 +218,14 @@ public class AccesoBBDDController implements Initializable{
 			myStage.close();
 		}
 	}
-	
-    @FXML
-    void opcionesPrograma(ActionEvent event) {
+
+	@FXML
+	void opcionesPrograma(ActionEvent event) {
 		nav.verOpciones();
 
 		Stage myStage = (Stage) this.botonOpciones.getScene().getWindow();
 		myStage.close();
-    }
+	}
 
 	/**
 	 * Cierra el programa a la fuerza correctamente.
@@ -235,55 +235,118 @@ public class AccesoBBDDController implements Initializable{
 		Stage myStage = (Stage) this.botonEnviar.getScene().getWindow();
 		myStage.close();
 	}
-	
-    public void crearEstructura() {
-        String userHome = System.getProperty("user.home");
-        String ubicacion = userHome + "\\AppData\\Roaming";
-        String carpetaLibreria = ubicacion + "\\libreria";
-        
-        String archivoConfiguracion = carpetaLibreria + "\\configuracion.conf";
 
+	public void crearEstructura() {
+		String userHome = System.getProperty("user.home");
+		String ubicacion = userHome + "\\AppData\\Roaming";
+		String carpetaLibreria = ubicacion + "\\libreria";
 
-        
-        // Verificar y crear la carpeta "libreria" si no existe
-        File carpetaLibreriaFile = new File(carpetaLibreria);
-        if (!carpetaLibreriaFile.exists()) {
-            carpetaLibreriaFile.mkdir();
-            carpetaLibreriaFile.setWritable(true);
-        }
-        
+		String archivoConfiguracion = carpetaLibreria + "\\configuracion.conf";
 
+		// Verificar y crear la carpeta "libreria" si no existe
+		File carpetaLibreriaFile = new File(carpetaLibreria);
+		if (!carpetaLibreriaFile.exists()) {
+			carpetaLibreriaFile.mkdir();
+			carpetaLibreriaFile.setWritable(true);
+		}
 
-        // Verificar y crear el archivo "configuracion.conf" si no existe
-        File archivoConfiguracionFile = new File(archivoConfiguracion);
-        if (!archivoConfiguracionFile.exists()) {
-            try {
-                archivoConfiguracionFile.createNewFile();
+		// Verificar y crear el archivo "configuracion.conf" si no existe
+		File archivoConfiguracionFile = new File(archivoConfiguracion);
+		if (!archivoConfiguracionFile.exists()) {
+			try {
+				archivoConfiguracionFile.createNewFile();
 
-                // Escribir líneas en el archivo
-                FileWriter fileWriter = new FileWriter(archivoConfiguracionFile);
-                BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-                bufferedWriter.write("###############################");
-                bufferedWriter.newLine();
-                bufferedWriter.write("Fichero de configuracion de la libreria");
-                bufferedWriter.newLine();
-                bufferedWriter.write("###############################");
-                bufferedWriter.newLine();
-                bufferedWriter.write("Usuario:");
-                bufferedWriter.newLine();
-                bufferedWriter.write("Password:");
-                bufferedWriter.newLine();
-                bufferedWriter.write("Puerto:");
-                bufferedWriter.newLine();
-                bufferedWriter.write("Database:");
-                bufferedWriter.newLine();
-                bufferedWriter.write("Hosting:");
-                bufferedWriter.newLine();
+				// Escribir líneas en el archivo
+				FileWriter fileWriter = new FileWriter(archivoConfiguracionFile);
+				BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+				bufferedWriter.write("###############################");
+				bufferedWriter.newLine();
+				bufferedWriter.write("Fichero de configuracion de la libreria");
+				bufferedWriter.newLine();
+				bufferedWriter.write("###############################");
+				bufferedWriter.newLine();
+				bufferedWriter.write("Usuario:");
+				bufferedWriter.newLine();
+				bufferedWriter.write("Password:");
+				bufferedWriter.newLine();
+				bufferedWriter.write("Puerto:");
+				bufferedWriter.newLine();
+				bufferedWriter.write("Database:");
+				bufferedWriter.newLine();
+				bufferedWriter.write("Hosting:");
+				bufferedWriter.newLine();
 
-                bufferedWriter.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+				bufferedWriter.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void iniciarAnimacionEspera() {
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarEsperando = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontEstadoConexion.textProperty(), "Esperando"));
+		KeyFrame mostrarPunto = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(prontEstadoConexion.textProperty(), "Esperando."));
+		KeyFrame mostrarDosPuntos = new KeyFrame(Duration.seconds(1),
+				new KeyValue(prontEstadoConexion.textProperty(), "Esperando.."));
+		KeyFrame mostrarTresPuntos = new KeyFrame(Duration.seconds(1.5),
+				new KeyValue(prontEstadoConexion.textProperty(), "Esperando..."));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(2), new KeyValue(prontEstadoConexion.textProperty(), ""));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarEsperando, mostrarPunto, mostrarDosPuntos, mostrarTresPuntos,
+				ocultarTexto);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+
+	private void iniciarAnimacionConectado() {
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarConectado = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontEstadoConexion.textProperty(), "Conectado"));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.6),
+				new KeyValue(prontEstadoConexion.textProperty(), ""));
+		KeyFrame mostrarConectado2 = new KeyFrame(Duration.seconds(1.1),
+				new KeyValue(prontEstadoConexion.textProperty(), ""));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarConectado, ocultarTexto,mostrarConectado2);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+
+	private void iniciarAnimacionError() {
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarError = new KeyFrame(Duration.ZERO, new KeyValue(prontEstadoConexion.textProperty(), "ERROR"));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(prontEstadoConexion.textProperty(), ""));
+		KeyFrame mostrarError2 = new KeyFrame(Duration.seconds(1),
+				new KeyValue(prontEstadoConexion.textProperty(), "ERROR"));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarError, ocultarTexto,mostrarError2);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+
+	private void detenerAnimacion() {
+		if (timeline != null) {
+			timeline.stop();
+			timeline = null; // Destruir el objeto timeline
+		}
+	}
 }

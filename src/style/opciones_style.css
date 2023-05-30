@@ -1,0 +1,119 @@
+#prontEstadoConexion {
+    -fx-font-size: 22.0px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+    -fx-background-color: #ffffff;
+    -fx-padding: 8.0px;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1.0px;
+    -fx-border-radius: 4.0px;
+}
+
+#prontEstadoConexion:hover {
+    -fx-background-color: #f0f0f0;
+    -fx-cursor: hand;
+}
+
+#prontEstadoConexion:pressed {
+    -fx-background-color: #dddddd;
+}
+
+.button {
+    -fx-font-size: 12.0px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+    -fx-padding: 8.0px 16.0px;
+    -fx-border-width: 1.0px;
+    -fx-border-radius: 4.0px;
+}
+
+.button#boton_restaurar {
+    -fx-background-color: #ffd700; /* Amarillo */
+    -fx-border-color: #e5b800; /* Borde */
+    -fx-text-fill: black;
+    }
+.button#boton_restaurar:hover {
+    -fx-background-color: #e5b800;
+}
+
+.button#boton_guardar {
+    -fx-background-color: #5cb85c;
+    -fx-border-color: #4cae4c;
+    
+}
+
+.button#boton_guardar:hover {
+    -fx-background-color: #4cae4c;
+}
+
+.button#boton_abrir {
+    -fx-background-color: #337ab7;
+    -fx-border-color: #2e6da4;
+    
+}
+
+.button#boton_abrir:hover {
+    -fx-background-color: #2e6da4;
+}
+
+.button#botonCrearBBDD {
+    -fx-background-color: #337ab7;
+    -fx-border-color: #2e6da4;
+    
+}
+
+.button#botonCrearBBDD:hover {
+    -fx-background-color: #2e6da4;
+}
+
+.button#botonSalir {
+    -fx-background-color: #c9302c;
+    -fx-border-color: #d43f3a;
+    
+}
+
+.button#botonSalir:hover {
+    -fx-background-color: #d9534f;
+}
+
+.button#botonVolver {
+    -fx-background-color: grey;
+    -fx-border-color: grey;
+    
+}
+
+.button#botonVolver:hover {
+    -fx-background-color: grey;
+}
+
+.button:hover {
+    -fx-cursor: hand;
+}
+
+.button:pressed {
+    -fx-opacity: 0.8;
+}
+
+.label {
+    -fx-font-size: 12.0px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+    -fx-padding: 2.0px 2.0px;
+    -fx-background-color: #f0f0f0;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1.0px;
+    -fx-border-radius: 4.0px;
+}
+
+.label:hover {
+    -fx-background-color: #e0e0e0;
+}
+
+.label:focused {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #4a90e2;
+}
+
+.label:disabled {
+    -fx-opacity: 0.6;
+}

@@ -30,6 +30,7 @@ import java.util.Random;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
+import JDBC.DBManager;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -48,6 +49,12 @@ import javafx.stage.Stage;
  * @author Alejandro Rodriguez
  */
 public class RecomendacionesController {
+	
+    @FXML
+    private MenuItem menu_archivo_desconectar;
+	
+    @FXML
+    private MenuItem menu_archivo_sobreMi;
 
     @FXML
     private MenuItem menu_archivo_cerrar;
@@ -206,6 +213,20 @@ public class RecomendacionesController {
 
 	}
 	
+	/**
+	 * Metodo que permite abrir la ventana "sobreMiController"
+	 *
+	 * @param event
+	 */
+	@FXML
+	void verSobreMi(ActionEvent event) {
+
+		nav.verSobreMi();
+
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
+	}
+	
 	/////////////////////////////
 	//// FUNCIONES PARA SALIR////
 	/////////////////////////////
@@ -216,8 +237,22 @@ public class RecomendacionesController {
 	 * @param event
 	 */
 	@FXML
-	public void volverMenu(ActionEvent event) throws IOException {
+	public void desconectar(ActionEvent event) throws IOException {
 	    nav.verAccesoBBDD();
+	    DBManager.close();
+	    
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
+	}
+	
+	/**
+	 * Vuelve al menu inicial de conexion de la base de datos.
+	 *
+	 * @param event
+	 */
+	@FXML
+	public void volverMenu(ActionEvent event) throws IOException {
+		nav.verMenuPrincipal();
 	    
 	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 	    myStage.close();

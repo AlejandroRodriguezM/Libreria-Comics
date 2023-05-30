@@ -11,6 +11,9 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import Funcionamiento.Ventanas;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -22,10 +25,29 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.util.converter.IntegerStringConverter;
 
 public class OpcionesDatosController implements Initializable {
+	
+    @FXML
+    private Label password_label;
 
+    @FXML
+    private Label puerto_label;
+	
+    @FXML
+    private Label nombre_label;
+
+    @FXML
+    private Label host_label;
+    
+	@FXML
+	private Label etiquetaHost;
+	
+	@FXML
+	private Label prontEstadoFichero;
+	
 	@FXML
 	private Button botonCrearBBDD;
 
@@ -48,9 +70,6 @@ public class OpcionesDatosController implements Initializable {
 	private ToggleGroup estado;
 
 	@FXML
-	private Label etiquetaHost;
-
-	@FXML
 	private RadioButton noOffline;
 
 	@FXML
@@ -69,10 +88,9 @@ public class OpcionesDatosController implements Initializable {
 	private TextField usuario;
 
 	@FXML
-	private Label prontEstadoFichero;
-
-	@FXML
 	private RadioButton siOnline;
+	
+	private Timeline timeline;
 
 	private static Ventanas nav = new Ventanas();
 //	private static Utilidades utilidad = new Utilidades();
@@ -81,6 +99,8 @@ public class OpcionesDatosController implements Initializable {
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 
+		iniciarAnimacionEspera();
+		
 		TextFormatter<Integer> textFormatterAni = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			String newText = change.getControlNewText();
 			if (newText.matches("\\d*")) {
@@ -186,8 +206,9 @@ public class OpcionesDatosController implements Initializable {
 				carpeta_backupsFile.mkdir();
 			}
 
+			detenerAnimacion();
 			prontEstadoFichero.setStyle("-fx-background-color: #A0F52D");
-			prontEstadoFichero.setText("Fichero guardado");
+			iniciarAnimacionConectado();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -236,11 +257,13 @@ public class OpcionesDatosController implements Initializable {
 				bufferedWriter.close();
 
 				limpiar_datos();
+				detenerAnimacion();
 				prontEstadoFichero.setStyle("-fx-background-color: #A0F52D");
-				prontEstadoFichero.setText("Ficheros restaurados correctamente");
+				iniciarAnimacionRestaurado();
 			} else {
+				detenerAnimacion();
 				prontEstadoFichero.setStyle("-fx-background-color: #DD370F");
-				prontEstadoFichero.setText("Has cancelado la restauracion de ficheros..");
+				iniciarAnimacionRestauradoError();
 			}
 
 		} catch (IOException e) {
@@ -272,20 +295,108 @@ public class OpcionesDatosController implements Initializable {
 	 */
 	public String selectorHost() {
 
+		String host = "localhost";
+		
 		if (siOnline.isSelected()) {
 			etiquetaHost.setText("Nombre del host: ");
 			nombreHost.setDisable(false);
 			nombreHost.setOpacity(1);
-			return nombreHost.getText();
+			host = nombreHost.getText();
 		}
 		if (noOffline.isSelected()) {
 			etiquetaHost.setText("Offline");
 			nombreHost.setDisable(true);
 			nombreHost.setOpacity(0);
-			return "localhost";
+			host = "localhost";
 		}
-		return "localhost";
+		return host;
 	}
+	
+	private void iniciarAnimacionEspera() {
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarEsperando = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontEstadoFichero.textProperty(), "Esperando entrada de datos"));
+		KeyFrame mostrarPunto = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(prontEstadoFichero.textProperty(), "Esperando entrada de datos."));
+		KeyFrame mostrarDosPuntos = new KeyFrame(Duration.seconds(1),
+				new KeyValue(prontEstadoFichero.textProperty(), "Esperando entrada de datos.."));
+		KeyFrame mostrarTresPuntos = new KeyFrame(Duration.seconds(1.5),
+				new KeyValue(prontEstadoFichero.textProperty(), "Esperando entrada de datos..."));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(2), new KeyValue(prontEstadoFichero.textProperty(), ""));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarEsperando, mostrarPunto, mostrarDosPuntos, mostrarTresPuntos,
+				ocultarTexto);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+
+	private void iniciarAnimacionConectado() {
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarConectado = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontEstadoFichero.textProperty(), "Fichero guardado"));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.6),
+				new KeyValue(prontEstadoFichero.textProperty(), ""));
+		KeyFrame mostrarConectado2 = new KeyFrame(Duration.seconds(1.1),
+				new KeyValue(prontEstadoFichero.textProperty(), ""));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarConectado, ocultarTexto,mostrarConectado2);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+	
+	private void iniciarAnimacionRestaurado() {
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarError = new KeyFrame(Duration.ZERO, new KeyValue(prontEstadoFichero.textProperty(), "Fichero restaurado correctamente"));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(prontEstadoFichero.textProperty(), ""));
+		KeyFrame mostrarError2 = new KeyFrame(Duration.seconds(1),
+				new KeyValue(prontEstadoFichero.textProperty(), "ERROR"));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarError, ocultarTexto,mostrarError2);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+	
+	private void iniciarAnimacionRestauradoError() {
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarError = new KeyFrame(Duration.ZERO, new KeyValue(prontEstadoFichero.textProperty(), "No se ha podido restaurar correctamente"));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(prontEstadoFichero.textProperty(), ""));
+		KeyFrame mostrarError2 = new KeyFrame(Duration.seconds(1),
+				new KeyValue(prontEstadoFichero.textProperty(), "ERROR"));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarError, ocultarTexto,mostrarError2);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+
+	private void detenerAnimacion() {
+		if (timeline != null) {
+			timeline.stop();
+			timeline = null; // Destruir el objeto timeline
+		}
+	}
+	
 
 	@FXML
 	void volverPrograma(ActionEvent event) {
@@ -309,26 +420,6 @@ public class OpcionesDatosController implements Initializable {
 		}
 	}
 
-	// Método para borrar un directorio y su contenido recursivamente, excepto la
-	// carpeta "excluir"
-//	private void borrarDirectorio(File directorio, String excluir) {
-//		File[] archivos = directorio.listFiles();
-//		if (archivos != null) {
-//			for (File archivo : archivos) {
-//				if (archivo.isDirectory()) {
-//					if (!archivo.getAbsolutePath().equals(excluir)) {
-//						borrarDirectorio(archivo, excluir);
-//					}
-//				} else {
-//					archivo.delete();
-//				}
-//			}
-//		}
-//		if (!directorio.getAbsolutePath().equals(excluir)) {
-//			directorio.delete();
-//		}
-//	}
-
 	/**
 	 * Cierra el programa a la fuerza correctamente.
 	 */
@@ -337,14 +428,5 @@ public class OpcionesDatosController implements Initializable {
 		Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
 		myStage.close();
 	}
-
-//	/**
-//	 * Cierra el programa a la fuerza correctamente.
-//	 */
-//	public void closeWindows() { // Metodo que permite cerrar completamente el programa en caso de cerrar a la //
-//		// fuerza.
-//		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-//		myStage.close();
-//	}
 
 }

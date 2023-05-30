@@ -38,6 +38,7 @@ import Funcionamiento.Comic;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
+import JDBC.DBManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -62,6 +63,12 @@ import javafx.util.converter.IntegerStringConverter;
 
 public class PuntuarDatosController implements Initializable {
 
+    @FXML
+    private MenuItem menu_archivo_desconectar;
+	
+    @FXML
+    private MenuItem menu_archivo_sobreMi;
+	
 	@FXML
 	private MenuItem menu_archivo_cerrar;
 
@@ -133,12 +140,18 @@ public class PuntuarDatosController implements Initializable {
 
 	@FXML
 	private TextField idPuntuar;
+	
+    @FXML
+    private TextField numeroCaja;
 
 	@FXML
 	private TextArea pantallaInformativa;
 
 	@FXML
 	private TableColumn<Comic, String> ID;
+	
+    @FXML
+    private TableColumn<Comic, String> caja;
 
 	@FXML
 	private TableColumn<Comic, String> dibujante;
@@ -368,7 +381,7 @@ public class PuntuarDatosController implements Initializable {
 		nombreDibujante.setText("");
 		nombreGuionista.setText("");
 		busquedaGeneral.setText("");
-
+		numeroCaja.setText("");
 		busquedaGeneral.setText("");
 
 		idPuntuar.setText("");
@@ -440,8 +453,8 @@ public class PuntuarDatosController implements Initializable {
 	 */
 	@SuppressWarnings("unchecked")
 	public void tablaBBDD(List<Comic> listaComic) {
-		tablaBBDD.getColumns().setAll(ID, nombre, numero, variante, firma, editorial, formato, procedencia, fecha,
-				guionista, dibujante, puntuacion);
+		tablaBBDD.getColumns().setAll(ID, nombre,caja, numero, variante, firma, editorial, formato, procedencia, fecha,
+				guionista, dibujante);
 		tablaBBDD.getItems().setAll(listaComic);
 	}
 
@@ -452,7 +465,7 @@ public class PuntuarDatosController implements Initializable {
 	 * @return
 	 */
 	public String[] camposComic() {
-		String campos[] = new String[11];
+		String campos[] = new String[12];
 
 		campos[0] = numeroID.getText();
 
@@ -476,6 +489,8 @@ public class PuntuarDatosController implements Initializable {
 		campos[9] = nombreGuionista.getText();
 
 		campos[10] = nombreDibujante.getText();
+		
+		campos[11] = numeroCaja.getText();
 
 		return campos;
 	}
@@ -487,9 +502,8 @@ public class PuntuarDatosController implements Initializable {
 	public void listaPorParametro() {
 		String datosComic[] = camposComic();
 
-		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[2], datosComic[3], datosComic[4],
-				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "", "",
-				null);
+		Comic comic = new Comic(datosComic[0], datosComic[1],datosComic[11], datosComic[2], datosComic[3], datosComic[4],
+				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "", "",null);
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
 		busquedaGeneral.setText("");
@@ -500,17 +514,18 @@ public class PuntuarDatosController implements Initializable {
 	 */
 	private void nombreColumnas() {
 		ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
-		nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-		numero.setCellValueFactory(new PropertyValueFactory<>("numero"));
-		variante.setCellValueFactory(new PropertyValueFactory<>("variante"));
-		firma.setCellValueFactory(new PropertyValueFactory<>("firma"));
-		editorial.setCellValueFactory(new PropertyValueFactory<>("editorial"));
-		formato.setCellValueFactory(new PropertyValueFactory<>("formato"));
-		procedencia.setCellValueFactory(new PropertyValueFactory<>("procedencia"));
-		fecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
-		guionista.setCellValueFactory(new PropertyValueFactory<>("guionista"));
-		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
-		puntuacion.setCellValueFactory(new PropertyValueFactory<>("puntuacion"));
+		nombre.setCellValueFactory(new PropertyValueFactory<>("Nombre"));
+		caja.setCellValueFactory(new PropertyValueFactory<>("numCaja"));
+		numero.setCellValueFactory(new PropertyValueFactory<>("Numero"));
+		variante.setCellValueFactory(new PropertyValueFactory<>("Variante"));
+		firma.setCellValueFactory(new PropertyValueFactory<>("Firma"));
+		editorial.setCellValueFactory(new PropertyValueFactory<>("Editorial"));
+		formato.setCellValueFactory(new PropertyValueFactory<>("Formato"));
+		procedencia.setCellValueFactory(new PropertyValueFactory<>("Procedencia"));
+		fecha.setCellValueFactory(new PropertyValueFactory<>("Fecha"));
+		guionista.setCellValueFactory(new PropertyValueFactory<>("Guionista"));
+		dibujante.setCellValueFactory(new PropertyValueFactory<>("Dibujante"));
+		puntuacion.setCellValueFactory(new PropertyValueFactory<>("Puntuacion"));
 	}
 
 	/////////////////////////////////
@@ -571,11 +586,39 @@ public class PuntuarDatosController implements Initializable {
 	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 	    myStage.close();
 	}
+	
+	/**
+	 * Metodo que permite abrir la ventana "sobreMiController"
+	 *
+	 * @param event
+	 */
+	@FXML
+	void verSobreMi(ActionEvent event) {
+
+		nav.verSobreMi();
+
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
+	}
 
 	/////////////////////////////
 	//// FUNCIONES PARA SALIR////
 	/////////////////////////////
 
+	/**
+	 * Vuelve al menu inicial de conexion de la base de datos.
+	 *
+	 * @param event
+	 */
+	@FXML
+	public void desconectar(ActionEvent event) throws IOException {
+	    nav.verAccesoBBDD();
+	    DBManager.close();
+	    
+	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+	    myStage.close();
+	}
+	
 	/**
 	 * Vuelve al menu inicial de conexion de la base de datos.
 	 *
