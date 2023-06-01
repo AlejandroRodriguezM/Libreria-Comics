@@ -18,9 +18,9 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="846.0" prefWidth="1107.0" style="-fx-background-color: DFA394;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.ModificarDatosController">
    <children>
-      <ImageView fitHeight="634.0" fitWidth="1108.0" layoutX="-1.0" layoutY="24.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="625.0" fitWidth="1203.0" layoutX="-1.0" layoutY="24.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../imagenes/Fondo%20modificar%203.jpg" />
+            <Image url="@../imagenes/Fondo%20modificar%204.jpg" />
          </image>
       </ImageView>
       <TextField fx:id="nombreComic" layoutX="136.0" layoutY="69.0" prefHeight="25.0" prefWidth="113.0" />
@@ -95,7 +95,7 @@
          </font>
       </Label>
       <Label fx:id="idMod" layoutX="265.0" layoutY="40.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="ID" />
-      <TextArea fx:id="pantallaInformativa" editable="false" layoutX="912.0" layoutY="33.0" opacity="0.0" prefHeight="322.0" prefWidth="191.0" wrapText="true" />
+      <TextArea fx:id="pantallaInformativa" editable="false" layoutX="912.0" layoutY="33.0" opacity="0.0" prefHeight="322.0" prefWidth="191.0" stylesheets="@../style/genericos_style.css" wrapText="true" />
       <Label layoutX="10.0" layoutY="371.0" prefHeight="25.0" prefWidth="117.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Busqueda general" wrapText="true">
          <font>
             <Font size="14.0" />

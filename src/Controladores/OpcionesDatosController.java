@@ -29,25 +29,25 @@ import javafx.util.Duration;
 import javafx.util.converter.IntegerStringConverter;
 
 public class OpcionesDatosController implements Initializable {
-	
-    @FXML
-    private Label password_label;
 
-    @FXML
-    private Label puerto_label;
-	
-    @FXML
-    private Label nombre_label;
+	@FXML
+	private Label password_label;
 
-    @FXML
-    private Label host_label;
-    
+	@FXML
+	private Label puerto_label;
+
+	@FXML
+	private Label nombre_label;
+
+	@FXML
+	private Label host_label;
+
 	@FXML
 	private Label etiquetaHost;
-	
+
 	@FXML
 	private Label prontEstadoFichero;
-	
+
 	@FXML
 	private Button botonCrearBBDD;
 
@@ -76,7 +76,7 @@ public class OpcionesDatosController implements Initializable {
 	private TextField nombreBBDD;
 
 	@FXML
-	private PasswordField nombreHost;
+	private TextField nombreHost;
 
 	@FXML
 	private PasswordField pass;
@@ -89,7 +89,7 @@ public class OpcionesDatosController implements Initializable {
 
 	@FXML
 	private RadioButton siOnline;
-	
+
 	private Timeline timeline;
 
 	private static Ventanas nav = new Ventanas();
@@ -100,7 +100,7 @@ public class OpcionesDatosController implements Initializable {
 	public void initialize(URL arg0, ResourceBundle arg1) {
 
 		iniciarAnimacionEspera();
-		
+
 		TextFormatter<Integer> textFormatterAni = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			String newText = change.getControlNewText();
 			if (newText.matches("\\d*")) {
@@ -296,7 +296,7 @@ public class OpcionesDatosController implements Initializable {
 	public String selectorHost() {
 
 		String host = "localhost";
-		
+
 		if (siOnline.isSelected()) {
 			etiquetaHost.setText("Nombre del host: ");
 			nombreHost.setDisable(false);
@@ -311,7 +311,7 @@ public class OpcionesDatosController implements Initializable {
 		}
 		return host;
 	}
-	
+
 	private void iniciarAnimacionEspera() {
 		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
@@ -348,43 +348,45 @@ public class OpcionesDatosController implements Initializable {
 				new KeyValue(prontEstadoFichero.textProperty(), ""));
 
 		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(mostrarConectado, ocultarTexto,mostrarConectado2);
+		timeline.getKeyFrames().addAll(mostrarConectado, ocultarTexto, mostrarConectado2);
 
 		// Iniciar la animación
 		timeline.play();
 	}
-	
+
 	private void iniciarAnimacionRestaurado() {
 		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
 
 		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarError = new KeyFrame(Duration.ZERO, new KeyValue(prontEstadoFichero.textProperty(), "Fichero restaurado correctamente"));
+		KeyFrame mostrarError = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontEstadoFichero.textProperty(), "Fichero restaurado correctamente"));
 		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
 				new KeyValue(prontEstadoFichero.textProperty(), ""));
 		KeyFrame mostrarError2 = new KeyFrame(Duration.seconds(1),
 				new KeyValue(prontEstadoFichero.textProperty(), "ERROR"));
 
 		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(mostrarError, ocultarTexto,mostrarError2);
+		timeline.getKeyFrames().addAll(mostrarError, ocultarTexto, mostrarError2);
 
 		// Iniciar la animación
 		timeline.play();
 	}
-	
+
 	private void iniciarAnimacionRestauradoError() {
 		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
 
 		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarError = new KeyFrame(Duration.ZERO, new KeyValue(prontEstadoFichero.textProperty(), "No se ha podido restaurar correctamente"));
+		KeyFrame mostrarError = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontEstadoFichero.textProperty(), "No se ha podido restaurar correctamente"));
 		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
 				new KeyValue(prontEstadoFichero.textProperty(), ""));
 		KeyFrame mostrarError2 = new KeyFrame(Duration.seconds(1),
 				new KeyValue(prontEstadoFichero.textProperty(), "ERROR"));
 
 		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(mostrarError, ocultarTexto,mostrarError2);
+		timeline.getKeyFrames().addAll(mostrarError, ocultarTexto, mostrarError2);
 
 		// Iniciar la animación
 		timeline.play();
@@ -396,7 +398,6 @@ public class OpcionesDatosController implements Initializable {
 			timeline = null; // Destruir el objeto timeline
 		}
 	}
-	
 
 	@FXML
 	void volverPrograma(ActionEvent event) {

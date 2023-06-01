@@ -278,10 +278,11 @@ public class MenuPrincipalController implements Initializable {
 			}
 			return null;
 		});
+		numeroComic.setTextFormatter(textFormatterComic);
+		numeroCaja.setTextFormatter(textFormatterComic2);
 		
 
-		numeroComic.setTextFormatter(textFormatterComic);
-		numeroCaja.setTextFormatter(textFormatterComic2);		numeroCaja.setTextFormatter(textFormatterComic2);
+
 
 	}
 
@@ -430,6 +431,7 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
 		prontInfo.setOpacity(0);
+		prontFrases.setOpacity(0);
 		imagencomic.setImage(null);
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
@@ -446,6 +448,7 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void verTodabbdd(ActionEvent event) {
 		prontInfo.setOpacity(0);
+		prontFrases.setOpacity(0);
 		imagencomic.setImage(null);
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
@@ -635,6 +638,7 @@ public class MenuPrincipalController implements Initializable {
 
 		libreria = new DBLibreriaManager();
 		prontInfo.setOpacity(0);
+		prontFrases.setOpacity(0);
 		if (nav.borrarContenidoTabla()) {
 			libreria.ejecucionPreparedStatement(libreria.deleteTable());
 			prontInfo.setOpacity(1);
@@ -686,6 +690,7 @@ public class MenuPrincipalController implements Initializable {
 
 	@FXML
 	void clickRaton(MouseEvent event) {
+		prontFrases.setOpacity(0);
 		libreria = new DBLibreriaManager();
 		libreria.libreriaCompleta();
 		utilidad = new Utilidades();

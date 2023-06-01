@@ -297,7 +297,7 @@ public class ModificarDatosController implements Initializable {
 			return null;
 		});
 		numeroComic.setTextFormatter(textFormatterComic);
-		numeroCaja.setTextFormatter(textFormatterComic2);		numeroCaja.setTextFormatter(textFormatterComic);
+		numeroCaja.setTextFormatter(textFormatterComic2);
 
 	}
 

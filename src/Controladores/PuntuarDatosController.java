@@ -63,12 +63,12 @@ import javafx.util.converter.IntegerStringConverter;
 
 public class PuntuarDatosController implements Initializable {
 
-    @FXML
-    private MenuItem menu_archivo_desconectar;
-	
-    @FXML
-    private MenuItem menu_archivo_sobreMi;
-	
+	@FXML
+	private MenuItem menu_archivo_desconectar;
+
+	@FXML
+	private MenuItem menu_archivo_sobreMi;
+
 	@FXML
 	private MenuItem menu_archivo_cerrar;
 
@@ -89,7 +89,7 @@ public class PuntuarDatosController implements Initializable {
 
 	@FXML
 	private MenuBar menu_navegacion;
-	
+
 	@FXML
 	private Button botonBorrarOpinion;
 
@@ -140,18 +140,18 @@ public class PuntuarDatosController implements Initializable {
 
 	@FXML
 	private TextField idPuntuar;
-	
-    @FXML
-    private TextField numeroCaja;
+
+	@FXML
+	private TextField numeroCaja;
 
 	@FXML
 	private TextArea pantallaInformativa;
 
 	@FXML
 	private TableColumn<Comic, String> ID;
-	
-    @FXML
-    private TableColumn<Comic, String> caja;
+
+	@FXML
+	private TableColumn<Comic, String> caja;
 
 	@FXML
 	private TableColumn<Comic, String> dibujante;
@@ -243,14 +243,14 @@ public class PuntuarDatosController implements Initializable {
 		});
 		numeroID.setTextFormatter(textFormatterAni);
 
-				TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+		TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			String newText = change.getControlNewText();
 			if (newText.matches("\\d*")) {
 				return change;
 			}
 			return null;
 		});
-		
+
 		TextFormatter<Integer> textFormatterComic2 = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			String newText = change.getControlNewText();
 			if (newText.matches("\\d*")) {
@@ -258,8 +258,8 @@ public class PuntuarDatosController implements Initializable {
 			}
 			return null;
 		});
-				numeroComic.setTextFormatter(textFormatterComic);
-		numeroCaja.setTextFormatter(textFormatterComic2);		numeroCaja.setTextFormatter(textFormatterComic);
+		numeroComic.setTextFormatter(textFormatterComic);
+		numeroCaja.setTextFormatter(textFormatterComic2);
 	}
 
 	/**
@@ -462,7 +462,7 @@ public class PuntuarDatosController implements Initializable {
 	 */
 	@SuppressWarnings("unchecked")
 	public void tablaBBDD(List<Comic> listaComic) {
-		tablaBBDD.getColumns().setAll(ID, nombre,caja, numero, variante, firma, editorial, formato, procedencia, fecha,
+		tablaBBDD.getColumns().setAll(ID, nombre, caja, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante);
 		tablaBBDD.getItems().setAll(listaComic);
 	}
@@ -491,14 +491,14 @@ public class PuntuarDatosController implements Initializable {
 		campos[6] = formatoActual();
 
 		campos[7] = procedenciaActual();
-		
-	    LocalDate fecha = fechaPublicacion.getValue();
-	    campos[8] = (fecha != null) ? fecha.toString() : "";
+
+		LocalDate fecha = fechaPublicacion.getValue();
+		campos[8] = (fecha != null) ? fecha.toString() : "";
 
 		campos[9] = nombreGuionista.getText();
 
 		campos[10] = nombreDibujante.getText();
-		
+
 		campos[11] = numeroCaja.getText();
 
 		return campos;
@@ -511,8 +511,9 @@ public class PuntuarDatosController implements Initializable {
 	public void listaPorParametro() {
 		String datosComic[] = camposComic();
 
-		Comic comic = new Comic(datosComic[0], datosComic[1],datosComic[11], datosComic[2], datosComic[3], datosComic[4],
-				datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9], datosComic[10], "", "",null);
+		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[11], datosComic[2], datosComic[3],
+				datosComic[4], datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9],
+				datosComic[10], "", "", null);
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
 		busquedaGeneral.setText("");
@@ -550,8 +551,8 @@ public class PuntuarDatosController implements Initializable {
 	public void ventanaAniadir(ActionEvent event) {
 
 		nav.verIntroducirDatos();
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	/**
@@ -564,8 +565,8 @@ public class PuntuarDatosController implements Initializable {
 
 		nav.verEliminarDatos();
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	/**
@@ -578,8 +579,8 @@ public class PuntuarDatosController implements Initializable {
 
 		nav.verModificarDatos();
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	/**
@@ -592,10 +593,10 @@ public class PuntuarDatosController implements Initializable {
 
 		nav.verRecomendacion();
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
-	
+
 	/**
 	 * Metodo que permite abrir la ventana "sobreMiController"
 	 *
@@ -606,8 +607,8 @@ public class PuntuarDatosController implements Initializable {
 
 		nav.verSobreMi();
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	/////////////////////////////
@@ -621,13 +622,13 @@ public class PuntuarDatosController implements Initializable {
 	 */
 	@FXML
 	public void desconectar(ActionEvent event) throws IOException {
-	    nav.verAccesoBBDD();
-	    DBManager.close();
-	    
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		nav.verAccesoBBDD();
+		DBManager.close();
+
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
-	
+
 	/**
 	 * Vuelve al menu inicial de conexion de la base de datos.
 	 *

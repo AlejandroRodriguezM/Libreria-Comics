@@ -65,7 +65,7 @@ public class FuncionesExcel {
 	private static Ventanas nav = new Ventanas();
 	private static DBLibreriaManager db = null;
 //	private static int ID = 0;
-	
+
 	private static Utilidades utilidad = new Utilidades();
 
 	/**
@@ -103,9 +103,11 @@ public class FuncionesExcel {
 		String encabezado;
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
-		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator +  "portadas" + File.separator;
-		String[] encabezados = { "ID", "nomComic","caja_deposito", "numComic", "nomVariante", "Firma", "nomEditorial", "Formato",
-				"Procedencia", "fecha_publicacion", "nomGuionista", "nomDibujante", "puntuacion", "portada", "estado" };
+		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator
+				+ utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas" + File.separator;
+		String[] encabezados = { "ID", "nomComic", "caja_deposito", "numComic", "nomVariante", "Firma", "nomEditorial",
+				"Formato", "Procedencia", "fecha_publicacion", "nomGuionista", "nomDibujante", "puntuacion", "portada",
+				"estado" };
 		int indiceFila = 0;
 
 		try {
@@ -130,19 +132,21 @@ public class FuncionesExcel {
 				fila.createCell(0).setCellValue("");
 				fila.createCell(1).setCellValue(comic.getNombre());
 				fila.createCell(2).setCellValue(comic.getNumCaja());
-				fila.createCell(3).setCellValue(comic.getEstado());
-				fila.createCell(4).setCellValue(comic.getNumero());
-				fila.createCell(5).setCellValue(comic.getVariante());
-				fila.createCell(6).setCellValue(comic.getFirma());
-				fila.createCell(7).setCellValue(comic.getEditorial());
-				fila.createCell(8).setCellValue(comic.getFormato());
-				fila.createCell(9).setCellValue(comic.getProcedencia());
-				fila.createCell(10).setCellValue(comic.getFecha());
-				fila.createCell(11).setCellValue(comic.getGuionista());
-				fila.createCell(12).setCellValue(comic.getDibujante());
-				fila.createCell(13).setCellValue(comic.getPuntuacion());
-				String nombreImagen = sourcePath + comic.getNombre().replace(" ", "_").replace(":", "_") + "_" + comic.getNumero() + "_" + comic.getVariante().replace(" ", "_") + "_" + comic.getFecha() + ".jpg";
-				fila.createCell(14).setCellValue(nombreImagen);
+				fila.createCell(3).setCellValue(comic.getNumero());
+				fila.createCell(4).setCellValue(comic.getVariante());
+				fila.createCell(5).setCellValue(comic.getFirma());
+				fila.createCell(6).setCellValue(comic.getEditorial());
+				fila.createCell(7).setCellValue(comic.getFormato());
+				fila.createCell(8).setCellValue(comic.getProcedencia());
+				fila.createCell(9).setCellValue(comic.getFecha());
+				fila.createCell(10).setCellValue(comic.getGuionista());
+				fila.createCell(11).setCellValue(comic.getDibujante());
+				fila.createCell(12).setCellValue(comic.getPuntuacion());
+				String nombreImagen = sourcePath + comic.getNombre().replace(" ", "_").replace(":", "_") + "_"
+						+ comic.getNumero() + "_" + comic.getVariante().replace(" ", "_") + "_" + comic.getFecha()
+						+ ".jpg";
+				fila.createCell(13).setCellValue(nombreImagen);
+				fila.createCell(14).setCellValue(comic.getEstado());
 				indiceFila++;
 			}
 
@@ -164,93 +168,100 @@ public class FuncionesExcel {
 		}
 		return false;
 	}
-	
+
 	public void savedataExcel(String nombre_carpeta) {
-	    FileOutputStream outputStream;
-	    Cell celda;
-	    Row fila;
-	    Sheet hoja;
-	    Workbook libro;
-	    String encabezado;
-	    String[] encabezados = { "ID", "nomComic","caja_deposito", "numComic", "nomVariante", "Firma", "nomEditorial", "Formato",
-	            "Procedencia", "fecha_publicacion", "nomGuionista", "nomDibujante", "puntuacion", "portada", "estado" };
-	    int indiceFila = 0;
-	    
+		FileOutputStream outputStream;
+		Cell celda;
+		Row fila;
+		Sheet hoja;
+		Workbook libro;
+		String encabezado;
+		String[] encabezados = { "ID", "nomComic", "caja_deposito", "numComic", "nomVariante", "Firma", "nomEditorial",
+				"Formato", "Procedencia", "fecha_publicacion", "nomGuionista", "nomDibujante", "puntuacion", "portada",
+				"estado" };
+		int indiceFila = 0;
+
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
-		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas" + File.separator;
+		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator
+				+ utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas" + File.separator;
 
 		String ubicacion = userDir + File.separator + "AppData" + File.separator + "Roaming";
-		String direccion = ubicacion + File.separator + "libreria" + File.separator + utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "backups"
-				+ File.separator + nombre_carpeta;
-	    try {
-	        File carpetaLibreria = new File(direccion);
-	        File fichero = new File(carpetaLibreria, "BaseDatos.xlsx");
-	        fichero.createNewFile();
-	        List<Comic> listaComics = libreria.libreriaCompleta();
+		String direccion = ubicacion + File.separator + "libreria" + File.separator
+				+ utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "backups" + File.separator
+				+ nombre_carpeta;
+		try {
+			File carpetaLibreria = new File(direccion);
+			File fichero = new File(carpetaLibreria, "BaseDatos.xlsx");
+			fichero.createNewFile();
+			List<Comic> listaComics = libreria.libreriaCompleta();
 
-	        libro = new XSSFWorkbook();
+			libro = new XSSFWorkbook();
 
-	        hoja = libro.createSheet("Base de datos comics");
+			hoja = libro.createSheet("Base de datos comics");
 
-	        fila = hoja.createRow(indiceFila);
-	        for (int i = 0; i < encabezados.length; i++) {
-	            encabezado = encabezados[i];
-	            celda = fila.createCell(i);
-	            celda.setCellValue(encabezado);
-	            celda.getStringCellValue().getBytes(Charset.forName("UTF-8"));
-	        }
+			fila = hoja.createRow(indiceFila);
+			for (int i = 0; i < encabezados.length; i++) {
+				encabezado = encabezados[i];
+				celda = fila.createCell(i);
+				celda.setCellValue(encabezado);
+				celda.getStringCellValue().getBytes(Charset.forName("UTF-8"));
+			}
 
-	        indiceFila++;
-	        for (Comic comic : listaComics) {
-	            fila = hoja.createRow(indiceFila);
-	            fila.createCell(0).setCellValue("");
-	            fila.createCell(1).setCellValue(comic.getNombre());
-	            fila.createCell(2).setCellValue(comic.getNumero());
-	            fila.createCell(3).setCellValue(comic.getVariante());
-	            fila.createCell(4).setCellValue(comic.getFirma());
-	            fila.createCell(5).setCellValue(comic.getEditorial());
-	            fila.createCell(6).setCellValue(comic.getFormato());
-	            fila.createCell(7).setCellValue(comic.getProcedencia());
-	            fila.createCell(8).setCellValue(comic.getFecha());
-	            fila.createCell(9).setCellValue(comic.getGuionista());
-	            fila.createCell(10).setCellValue(comic.getDibujante());
-	            fila.createCell(11).setCellValue(comic.getPuntuacion());
-	            String nombreImagen = sourcePath + comic.getNombre().replace(" ", "_").replace(":", "_") + "_" + comic.getNumero() + "_" + comic.getVariante().replace(" ", "_") + "_" + comic.getFecha() + ".jpg";
-	            fila.createCell(12).setCellValue(nombreImagen);
-	            fila.createCell(13).setCellValue(comic.getEstado());
+			indiceFila++;
+			for (Comic comic : listaComics) {
+				fila = hoja.createRow(indiceFila);
+				fila.createCell(0).setCellValue("");
+				fila.createCell(1).setCellValue(comic.getNombre());
+				fila.createCell(2).setCellValue(comic.getNumCaja());
+				fila.createCell(3).setCellValue(comic.getNumero());
+				fila.createCell(4).setCellValue(comic.getVariante());
+				fila.createCell(5).setCellValue(comic.getFirma());
+				fila.createCell(6).setCellValue(comic.getEditorial());
+				fila.createCell(7).setCellValue(comic.getFormato());
+				fila.createCell(8).setCellValue(comic.getProcedencia());
+				fila.createCell(9).setCellValue(comic.getFecha());
+				fila.createCell(10).setCellValue(comic.getGuionista());
+				fila.createCell(11).setCellValue(comic.getDibujante());
+				fila.createCell(12).setCellValue(comic.getPuntuacion());
+				String nombreImagen = sourcePath + comic.getNombre().replace(" ", "_").replace(":", "_") + "_"
+						+ comic.getNumero() + "_" + comic.getVariante().replace(" ", "_") + "_" + comic.getFecha()
+						+ ".jpg";
+				fila.createCell(13).setCellValue(nombreImagen);
+				fila.createCell(14).setCellValue(comic.getEstado());
 
-	            indiceFila++;
-	        }
+				indiceFila++;
+			}
 
-	        try {
-	            outputStream = new FileOutputStream(fichero);
-	            libro.write(outputStream);
-	            libro.close();
-	            outputStream.close();
+			try {
+				outputStream = new FileOutputStream(fichero);
+				libro.write(outputStream);
+				libro.close();
+				outputStream.close();
 
-	            // Get the backup zip file
-	            String zipPath = carpetaLibreria.getAbsolutePath() + File.separator + "excel_" +  nombre_carpeta + ".zip";
-	            File zipFile = new File(zipPath);
-	            // Create a new zip file if it doesn't exist
-	            if (!zipFile.exists()) {
-	                if (!zipFile.createNewFile()) {
-	                    throw new IOException("Failed to create backup zip file.");
-	                }
-	            }
+				// Get the backup zip file
+				String zipPath = carpetaLibreria.getAbsolutePath() + File.separator + "excel_" + nombre_carpeta
+						+ ".zip";
+				File zipFile = new File(zipPath);
+				// Create a new zip file if it doesn't exist
+				if (!zipFile.exists()) {
+					if (!zipFile.createNewFile()) {
+						throw new IOException("Failed to create backup zip file.");
+					}
+				}
 
-	            // Add the Excel file to the zip
-	            addFileToZip(fichero, "BaseDatos.xlsx", zipFile);
-	            fichero.delete();
+				// Add the Excel file to the zip
+				addFileToZip(fichero, "BaseDatos.xlsx", zipFile);
+				fichero.delete();
 
-	        } catch (FileNotFoundException ex) {
-	            nav.alertaException(ex.toString());
-	        } catch (IOException ex) {
-	            nav.alertaException(ex.toString());
-	        }
-	    } catch (IOException e) {
-	        nav.alertaException(e.toString());
-	    }
+			} catch (FileNotFoundException ex) {
+				nav.alertaException(ex.toString());
+			} catch (IOException ex) {
+				nav.alertaException(ex.toString());
+			}
+		} catch (IOException e) {
+			nav.alertaException(e.toString());
+		}
 	}
 
 	private void addFileToZip(File file, String entryName, File zipFile) throws IOException {
@@ -355,7 +366,7 @@ public class FuncionesExcel {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -370,7 +381,7 @@ public class FuncionesExcel {
 	 * Funcion que carga la imagen a la hora de importar el csv
 	 *
 	 * @return
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 //	public void subirImagenes(File directorio, Comic datos) throws IOException {
 //	    ID++;
@@ -410,83 +421,80 @@ public class FuncionesExcel {
 	 */
 	public void lecturaCSV(String sql, BufferedReader lineReader) {
 //	    File directorio = carpetaPortadas();
-	    String puntuacion;
-	    String procedencia;
-	    db = new DBLibreriaManager();
-	    int batchSize = 20;
+		String puntuacion;
+		String procedencia;
+		db = new DBLibreriaManager();
+		int batchSize = 20;
 		utilidad = new Utilidades();
-	    String lineText = null;
+		String lineText = null;
 
-	    try {
-	        PreparedStatement statement = conn.prepareStatement(sql);
-	        int count = 0;
-	        int nuevoID = db.countRows();
-	        lineReader.readLine();
+		try {
+			PreparedStatement statement = conn.prepareStatement(sql);
+			int count = 0;
+			int nuevoID = db.countRows();
+			lineReader.readLine();
 
-	        // Se leerán los datos hasta que no existan más datos
-	        while ((lineText = lineReader.readLine()) != null) {
-	            String[] data = lineText.split(";");
-	            String id = Integer.toString(nuevoID);
-	            String nombre = data[1];
-	            String numCaja = data[2];
-	            String numero = data[3];
-	            String variante = data[4];
-	            String firma = data[5];
-	            String editorial = data[6];
-	            String formato = data[7];
-	            if (data[8].toLowerCase().contains("españa")) {
-	                procedencia = data[8].toLowerCase().replace("españa", "Spain");
-	            } else {
-	                procedencia = data[8];
-	            }
+			// Se leerán los datos hasta que no existan más datos
+			while ((lineText = lineReader.readLine()) != null) {
+				String[] data = lineText.split(";");
+				String id = Integer.toString(nuevoID);
+				String nombre = data[1];
+				String numCaja = data[2];
+				String numero = data[3];
+				String variante = data[4];
+				String firma = data[5];
+				String editorial = data[6];
+				String formato = data[7];
+				if (data[8].toLowerCase().contains("españa")) {
+					procedencia = data[8].toLowerCase().replace("españa", "Spain");
+				} else {
+					procedencia = data[8];
+				}
 
-	            // Conversión de fecha al formato correcto
+				// Conversión de fecha al formato correcto
 //	            String fecha = convertirFecha(data[8]);
-	            String fecha = data[9];
-	            String guionista = data[10];
-	            String dibujante = data[11];
-	            if (data[11].length() != 0) {
-	                puntuacion = data[12];
-	            } else {
-	                puntuacion = "Sin puntuacion";
-	            }
-	            String portada = data[13];
-	            String estado = data[14];
-	            
-	            
-	            statement.setString(1, id);
-	            statement.setString(2, nombre);
-	            statement.setString(3, numCaja);
-	            statement.setString(4, numero);
-	            statement.setString(5, variante);
-	            statement.setString(6, firma);
-	            statement.setString(7, editorial);
-	            statement.setString(8, formato);
-	            statement.setString(9, procedencia);
-	            statement.setString(10, fecha);
-	            statement.setString(11, guionista);
-	            statement.setString(12, dibujante);
-	            statement.setString(13, puntuacion);
-	            statement.setString(14, portada);
-	            statement.setString(15, estado);
-	            
+				String fecha = data[9];
+				String guionista = data[10];
+				String dibujante = data[11];
+				if (data[11].length() != 0) {
+					puntuacion = data[12];
+				} else {
+					puntuacion = "Sin puntuacion";
+				}
+				String portada = data[13];
+				String estado = data[14];
 
-	            statement.addBatch();
+				statement.setString(1, id);
+				statement.setString(2, nombre);
+				statement.setString(3, numCaja);
+				statement.setString(4, numero);
+				statement.setString(5, variante);
+				statement.setString(6, firma);
+				statement.setString(7, editorial);
+				statement.setString(8, formato);
+				statement.setString(9, procedencia);
+				statement.setString(10, fecha);
+				statement.setString(11, guionista);
+				statement.setString(12, dibujante);
+				statement.setString(13, puntuacion);
+				statement.setString(14, portada);
+				statement.setString(15, estado);
 
-	            if (count % batchSize == 0) {
-	                statement.executeBatch();
-	            }
+				statement.addBatch();
 
-				
+				if (count % batchSize == 0) {
+					statement.executeBatch();
+				}
+
 //				subirImagenes(directorio, comic);
-	        }
-	        lineReader.close();
-	        statement.executeBatch();
-	    } catch (SQLException e) {
-	        nav.alertaException(e.toString());
-	    } catch (IOException e) {
-	        nav.alertaException(e.toString());
-	    }
+			}
+			lineReader.close();
+			statement.executeBatch();
+		} catch (SQLException e) {
+			nav.alertaException(e.toString());
+		} catch (IOException e) {
+			nav.alertaException(e.toString());
+		}
 	}
 
 //	private String convertirFecha(String fecha) {

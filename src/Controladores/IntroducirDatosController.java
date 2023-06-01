@@ -325,7 +325,6 @@ public class IntroducirDatosController implements Initializable {
 		});
 		numeroComic.setTextFormatter(textFormatterComic);
 		numeroCaja.setTextFormatter(textFormatterComic2);
-		numeroCaja.setTextFormatter(textFormatterComic);
 	}
 
 	public void listas_autocompletado() {

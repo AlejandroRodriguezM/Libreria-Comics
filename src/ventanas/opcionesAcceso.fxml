@@ -78,12 +78,12 @@
             <Font name="Comic Sans MS" size="18.0" />
          </font>
       </Label>
-      <PasswordField fx:id="nombreHost" layoutX="170.0" layoutY="164.0" prefHeight="25.0" prefWidth="103.0" />
       <Label fx:id="etiquetaHost" layoutX="5.0" layoutY="164.0" prefHeight="23.0" prefWidth="114.0" style="-fx-background-color: grey;" stylesheets="@../style/opciones_style.css" text="Nombre del host:" />
       <Label fx:id="host_label" layoutX="4.0" layoutY="135.0" style="-fx-background-color: grey;" stylesheets="@../style/opciones_style.css" text="Base de datos en servidor">
          <font>
             <Font name="Comic Sans MS" size="12.0" />
          </font></Label>
       <Button fx:id="botonVolver" layoutX="9.0" layoutY="400.0" mnemonicParsing="false" onAction="#volverPrograma" prefHeight="39.0" prefWidth="78.0" stylesheets="@../style/opciones_style.css" text="Volver" />
+      <TextField fx:id="nombreHost" layoutX="170.0" layoutY="163.0" prefHeight="25.0" prefWidth="103.0" />
    </children>
 </Pane>

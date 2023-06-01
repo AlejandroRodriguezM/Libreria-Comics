@@ -988,7 +988,7 @@ public class DBLibreriaManager extends Comic {
 					String nombreImagen = rs.getString(2).replace(" ", "_").replace(":", "_") + "_" + rs.getInt(4) + "_"
 							+ rs.getString(5).replace(" ", "_") + "_" + rs.getDate(10);
 
-					String direccionImagen = rs.getString(13);
+					String direccionImagen = rs.getString(14);
 					File imagenArchivo = new File(direccionImagen);
 					FileInputStream fileInputStream = new FileInputStream(imagenArchivo);
 					FileOutputStream fileOutputStream = new FileOutputStream(
@@ -1128,7 +1128,11 @@ public class DBLibreriaManager extends Comic {
 			PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
 
 			statement.setString(1, datos.getNombre());
-			statement.setString(2, datos.getNumCaja());
+			if(datos.getNumCaja() == "") {
+				statement.setString(2, "0");
+			}else {
+				statement.setString(2,datos.getNumCaja());
+			}
 			statement.setString(3, datos.getNumero());
 			statement.setString(4, datos.getVariante());
 			statement.setString(5, datos.getFirma());

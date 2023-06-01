@@ -23,33 +23,6 @@
             <Image url="@../imagenes/Fondo%20Menu%202.jpg" />
          </image>
       </ImageView>
-      <TableView fx:id="tablaBBDD" layoutX="-1.0" layoutY="370.0" onMouseClicked="#clickRaton" prefHeight="381.0" prefWidth="1198.0">
-         <columns>
-            <TableColumn fx:id="ID" prefWidth="47.0" text="ID" />
-            <TableColumn fx:id="nombre" prefWidth="135.0" text="Nombre" />
-            <TableColumn fx:id="caja" prefWidth="193.0" text="Caja" />
-            <TableColumn fx:id="numero" prefWidth="58.0" text="Numero" />
-            <TableColumn fx:id="variante" prefWidth="121.0" text="Variante" />
-            <TableColumn fx:id="firma" prefWidth="59.0" text="Firma" />
-            <TableColumn fx:id="editorial" prefWidth="61.0" text="Editorial" />
-            <TableColumn fx:id="formato" prefWidth="59.0" text="Formato" />
-            <TableColumn fx:id="procedencia" text="Procedencia" />
-            <TableColumn fx:id="fecha" prefWidth="65.0" text="Fecha" />
-            <TableColumn fx:id="guionista" prefWidth="182.0" text="Guionista" />
-            <TableColumn fx:id="dibujante" prefWidth="85.0" text="Dibujante" />
-            <TableColumn fx:id="puntuacion" prefWidth="193.0" text="puntuacion" />
-         </columns>
-         <columnResizePolicy>
-            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-         </columnResizePolicy>
-      </TableView>
-      <TextArea fx:id="prontInfo" layoutX="955.0" layoutY="33.0" opacity="0.0" prefHeight="329.0" prefWidth="235.0" wrapText="true" />
-      <TextArea fx:id="prontFrases" editable="false" layoutX="904.0" layoutY="208.0" opacity="0.0" prefHeight="105.0" prefWidth="285.0" wrapText="true">
-         <font>
-            <Font name="Comic Sans MS" size="15.0" />
-         </font>
-      </TextArea>
-      <ImageView fx:id="imagencomic" fitHeight="339.0" fitWidth="243.0" layoutX="684.0" layoutY="26.0" pickOnBounds="true" preserveRatio="true" />
       <MenuBar fx:id="menu_navegacion" prefHeight="25.0" prefWidth="1197.0">
         <menus>
           <Menu fx:id="navegacion_cerrar" mnemonicParsing="false" text="Archivo">
@@ -83,6 +56,33 @@
           </Menu>
         </menus>
       </MenuBar>
+      <TableView fx:id="tablaBBDD" layoutX="-1.0" layoutY="370.0" onMouseClicked="#clickRaton" prefHeight="381.0" prefWidth="1198.0">
+         <columns>
+            <TableColumn fx:id="ID" prefWidth="47.0" text="ID" />
+            <TableColumn fx:id="nombre" prefWidth="135.0" text="Nombre" />
+            <TableColumn fx:id="caja" prefWidth="193.0" text="Caja" />
+            <TableColumn fx:id="numero" prefWidth="58.0" text="Numero" />
+            <TableColumn fx:id="variante" prefWidth="121.0" text="Variante" />
+            <TableColumn fx:id="firma" prefWidth="59.0" text="Firma" />
+            <TableColumn fx:id="editorial" prefWidth="61.0" text="Editorial" />
+            <TableColumn fx:id="formato" prefWidth="59.0" text="Formato" />
+            <TableColumn fx:id="procedencia" text="Procedencia" />
+            <TableColumn fx:id="fecha" prefWidth="65.0" text="Fecha" />
+            <TableColumn fx:id="guionista" prefWidth="182.0" text="Guionista" />
+            <TableColumn fx:id="dibujante" prefWidth="85.0" text="Dibujante" />
+            <TableColumn fx:id="puntuacion" prefWidth="193.0" text="puntuacion" />
+         </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
+      <TextArea fx:id="prontInfo" editable="false" layoutX="850.0" layoutY="30.0" opacity="0.0" prefHeight="286.0" prefWidth="340.0" stylesheets="@../style/genericos_style.css" wrapText="true" />
+      <TextArea fx:id="prontFrases" editable="false" layoutX="849.0" layoutY="209.0" opacity="0.0" prefHeight="139.0" prefWidth="340.0" stylesheets="@../style/genericos_style.css" wrapText="true">
+         <font>
+            <Font name="Comic Sans MS" size="15.0" />
+         </font>
+      </TextArea>
+      <ImageView fx:id="imagencomic" fitHeight="319.0" fitWidth="243.0" layoutX="590.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true" />
       <Pane layoutX="18.0" layoutY="33.0" prefHeight="329.0" prefWidth="483.0">
          <children>
             <Label layoutX="8.0" layoutY="-3.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Nombre">

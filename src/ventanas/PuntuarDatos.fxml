@@ -83,7 +83,7 @@
             <Font size="14.0" />
          </font>
       </Label>
-      <TextArea fx:id="pantallaInformativa" editable="false" layoutX="979.0" layoutY="32.0" opacity="0.0" prefHeight="355.0" prefWidth="210.0" wrapText="true" />
+      <TextArea fx:id="pantallaInformativa" editable="false" layoutX="979.0" layoutY="32.0" opacity="0.0" prefHeight="355.0" prefWidth="210.0" stylesheets="@../style/genericos_style.css" wrapText="true" />
       <Label layoutX="10.0" layoutY="69.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Nombre">
          <font>
             <Font size="14.0" />
