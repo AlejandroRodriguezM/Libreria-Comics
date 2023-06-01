@@ -270,7 +270,7 @@ public class Utilidades {
 						throw new IOException("No se pudo crear la carpeta 'portadas'");
 					}
 				}
-				String nombre_comic = datos.getNombre().replace(" ", "_").replace(":", "_");
+				String nombre_comic = datos.getNombre().replace(" ", "-").replace(":", "_");
 				String numero_comic = datos.getNumero();
 				String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_");
 				String fecha_comic = datos.getFecha();

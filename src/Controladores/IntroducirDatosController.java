@@ -598,7 +598,7 @@ public class IntroducirDatosController implements Initializable {
 	 * 
 	 * @throws IOException
 	 */
-	public boolean subidaComic() throws IOException {
+	public void subidaComic() throws IOException {
 		libreria = new DBLibreriaManager();
 		utilidad = new Utilidades();
 		File file;
@@ -607,6 +607,8 @@ public class IntroducirDatosController implements Initializable {
 			String datos[] = camposComicIntroducir();
 
 			String portada = "";
+			
+			String numCaja = "";
 
 			String nombre = datos[0];
 
@@ -646,8 +648,12 @@ public class IntroducirDatosController implements Initializable {
 
 			String estado = datos[11];
 
-			String numCaja = datos[12];
-
+			if(datos[12] != null) {
+				numCaja = datos[12];
+			}else {
+				numCaja = "0";
+			}
+			
 			Comic comic = new Comic("", nombre, numCaja, numero, variante, firma, editorial, formato, procedencia,
 					fecha_comic.toString(), guionista, dibujante, estado, "Sin puntuar", portada);
 
@@ -664,13 +670,10 @@ public class IntroducirDatosController implements Initializable {
 			nombreColumnas(); // Llamada a funcion
 			tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
 
-			return true;
-
 		} else {
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #F53636");
 			pantallaInformativa.setText("Se ha cancelado la subida del nuevo comic.");
-			return false;
 		}
 	}
 

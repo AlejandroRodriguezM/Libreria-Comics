@@ -116,6 +116,14 @@ public class DBManager {
 			return null;
 		}
 	}
+	
+    /**
+     * Reinicia la conexión a la base de datos
+     */
+    public static void resetConnection() {
+        close();
+        conn = conexion();
+    }
 
 	/**
 	 * Cierra la conexion con la base de datos

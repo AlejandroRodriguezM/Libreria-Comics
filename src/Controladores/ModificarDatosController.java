@@ -587,7 +587,12 @@ public class ModificarDatosController implements Initializable {
 
 		campos[12] = estadoActual();
 		
-		campos[13] = numeroCajaMod.getText();
+		
+		if(numeroCajaMod.getText() != null) {
+			campos[13] = "0";
+		}else {
+			campos[13] = numeroCajaMod.getText();
+		}
 
 		return utilidad.comaPorGuion(campos);
 	}

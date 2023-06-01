@@ -75,7 +75,6 @@ public class DBLibreriaManager extends Comic {
 	 *
 	 */
 	public void listasAutoCompletado() {
-
 		listaNombre();
 		listaVariante();
 		listaFirma();
@@ -84,7 +83,6 @@ public class DBLibreriaManager extends Comic {
 		listaGuionista();
 		listaDibujante();
 		listaFecha();
-
 	}
 
 	/**
@@ -140,21 +138,6 @@ public class DBLibreriaManager extends Comic {
 
 		return sentencia;
 	}
-
-
-
-	/**
-	 * Funcion que permite reasignar ID a todos los comics, se realiza a la hora de
-	 * introducir, modificar, eliminar un comic.
-	 *
-	 * @return
-	 */
-//	public String[] reloadID() {
-//		String sentencia[] = new String[2];
-//		sentencia[0] = "ALTER TABLE comicsbbdd DROP ID, order by nomComic";
-//		sentencia[1] = "ALTER TABLE comicsbbdd ADD ID int NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST, order by nomComic";
-//		return sentencia;
-//	}
 
 	/**
 	 *
@@ -1015,7 +998,7 @@ public class DBLibreriaManager extends Comic {
 	 * @param id
 	 * @param sentenciaSQL
 	 */
-	public boolean modificarDatos(String id, String sentenciaSQL) {
+	public void modificarDatos(String id, String sentenciaSQL) {
 		PreparedStatement stmt;
 		Connection conn = DBManager.conexion();
 		try {
@@ -1025,16 +1008,13 @@ public class DBLibreriaManager extends Comic {
 
 				stmt.setString(1, id);
 				if (stmt.executeUpdate() == 1) {
-//					ejecucionPreparedStatement(reloadID());
-					return true;
 				}
 			}
-
-			return false;
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
+		}finally {
+			DBManager.resetConnection();
 		}
-		return false;
 	}
 
 	/**
@@ -1151,6 +1131,9 @@ public class DBLibreriaManager extends Comic {
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
 		}
+		finally {
+			DBManager.resetConnection();
+		}
 	}
 
 	/**
@@ -1190,6 +1173,8 @@ public class DBLibreriaManager extends Comic {
 			}
 		} catch (SQLException | IOException ex) {
 			nav.alertaException(ex.toString());
+		}finally {
+			DBManager.resetConnection();
 		}
 	}
 
@@ -1240,6 +1225,8 @@ public class DBLibreriaManager extends Comic {
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}finally {
+			DBManager.resetConnection();
 		}
 	}
 
@@ -1403,7 +1390,7 @@ public class DBLibreriaManager extends Comic {
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
 		} finally {
-//			ejecucionPreparedStatement(reloadID());
+			DBManager.resetConnection();
 		}
 	}
 
@@ -1466,6 +1453,8 @@ public class DBLibreriaManager extends Comic {
 			}
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
+		}finally {
+			DBManager.resetConnection();
 		}
 	}
 
@@ -1493,6 +1482,8 @@ public class DBLibreriaManager extends Comic {
 			}
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
+		}finally {
+			DBManager.resetConnection();
 		}
 	}
 
