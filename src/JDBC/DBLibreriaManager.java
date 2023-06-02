@@ -26,8 +26,11 @@ package JDBC;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.ProcessBuilder.Redirect;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -957,39 +960,57 @@ public class DBLibreriaManager extends Comic {
 	 * base de datos excel.
 	 */
 	public void saveImageFromDataBase() {
-		String sentenciaSQL = "SELECT * FROM comicsbbdd";
-		
-		conn = DBManager.conexion();
-		carpeta = new FuncionesExcel();
-		File directorio = carpeta.carpetaPortadas();
-		try {
-			PreparedStatement preparedStatement = conn.prepareStatement(sentenciaSQL);
-			ResultSet rs = preparedStatement.executeQuery();
+	    String sentenciaSQL = "SELECT * FROM comicsbbdd";
 
-			if (directorio != null) {
-				while (rs.next()) {
-					String nombreImagen = rs.getString(2).replace(" ", "_").replace(":", "_") + "_" + rs.getInt(4) + "_"
-							+ rs.getString(5).replace(" ", "_") + "_" + rs.getDate(10);
+	    conn = DBManager.conexion();
+	    carpeta = new FuncionesExcel();
+	    File directorio = carpeta.carpetaPortadas();
+	    InputStream input = null;
+	    try {
+	        PreparedStatement preparedStatement = conn.prepareStatement(sentenciaSQL);
+	        ResultSet rs = preparedStatement.executeQuery();
 
-					String direccionImagen = rs.getString(14);
-					File imagenArchivo = new File(direccionImagen);
-					FileInputStream fileInputStream = new FileInputStream(imagenArchivo);
-					FileOutputStream fileOutputStream = new FileOutputStream(
-							directorio.getAbsolutePath() + "/" + nombreImagen + ".jpg");
+	        if (directorio != null) {
+	            while (rs.next()) {
+	                String direccionImagen = rs.getString(14);
 
-					byte[] buffer = new byte[4096];
-					int bytesRead;
-					while ((bytesRead = fileInputStream.read(buffer)) != -1) {
-						fileOutputStream.write(buffer, 0, bytesRead);
-					}
+	                String nombreImagen = utilidad.obtenerNombreArchivo(direccionImagen);
 
-					fileInputStream.close();
-					fileOutputStream.close();
-				}
-			}
-		} catch (SQLException | IOException e) {
-			nav.alertaException(e.toString());
-		}
+	                File imagenArchivo = new File(direccionImagen);
+	                
+	                if(!imagenArchivo.exists()) {
+	    				input = getClass().getResourceAsStream("sinPortada.jpg");
+	    				if (input == null) {
+	    					throw new FileNotFoundException("La imagen predeterminada no se encontró en el paquete");
+	    				}
+	                	imagenArchivo = File.createTempFile("tmp", ".jpg");
+	                	imagenArchivo.deleteOnExit();
+	    				try (OutputStream output = new FileOutputStream(imagenArchivo)) {
+	    					byte[] buffer = new byte[4096];
+	    					int bytesRead;
+	    					while ((bytesRead = input.read(buffer)) != -1) {
+	    						output.write(buffer, 0, bytesRead);
+	    					}
+	    				}
+	                }else {
+		                FileInputStream fileInputStream = new FileInputStream(imagenArchivo);
+		                FileOutputStream fileOutputStream = new FileOutputStream(
+		                        directorio.getAbsolutePath() + "/" + nombreImagen);
+
+		                byte[] buffer = new byte[4096];
+		                int bytesRead;
+		                while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+		                    fileOutputStream.write(buffer, 0, bytesRead);
+		                }
+		                fileInputStream.close();
+		                fileOutputStream.close();
+
+	                }
+	            }
+	        }
+	    } catch (SQLException | IOException e) {
+	        nav.alertaException(e.toString());
+	    }
 	}
 
 	/**

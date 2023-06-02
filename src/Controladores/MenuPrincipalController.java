@@ -263,14 +263,14 @@ public class MenuPrincipalController implements Initializable {
 
 		listas_autocompletado();
 
-				TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+		TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			String newText = change.getControlNewText();
 			if (newText.matches("\\d*")) {
 				return change;
 			}
 			return null;
 		});
-		
+
 		TextFormatter<Integer> textFormatterComic2 = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			String newText = change.getControlNewText();
 			if (newText.matches("\\d*")) {
@@ -280,9 +280,6 @@ public class MenuPrincipalController implements Initializable {
 		});
 		numeroComic.setTextFormatter(textFormatterComic);
 		numeroCaja.setTextFormatter(textFormatterComic2);
-		
-
-
 
 	}
 
@@ -645,6 +642,7 @@ public class MenuPrincipalController implements Initializable {
 			prontInfo.setStyle("-fx-background-color: #A0F52D");
 			prontInfo.setText("Has borrado correctamente el contenido de la base de datos.");
 			tablaBBDD.getItems().clear();
+			imagencomic.setImage(null);
 		} else {
 			prontInfo.setOpacity(1);
 			prontInfo.setStyle("-fx-background-color: #F53636");

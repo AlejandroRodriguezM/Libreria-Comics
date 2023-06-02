@@ -10,16 +10,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ProcessBuilder.Redirect;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-
+import java.nio.file.attribute.BasicFileAttributes;
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  * Las ventanas graficas se realizan con JavaFX.
@@ -42,7 +39,11 @@ import java.util.List;
  *
  *  Twitter: @silverAlox
  */
-
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -254,6 +255,8 @@ public class Utilidades {
 				}
 				System.out.println("No existe: " + datos.getImagen());
 
+			}else {
+				System.out.println("Portada copiada: " + datos.getImagen());
 			}
 
 			String userDir = System.getProperty("user.home");
@@ -273,8 +276,7 @@ public class Utilidades {
 			}
 			String nombre_comic = datos.getNombre().replace(" ", "_").replace(":", "_").replace("-", "_");
 			String numero_comic = datos.getNumero();
-			String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_")
-					.replace(":", "");
+			String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_").replace(":", "");
 			String fecha_comic = datos.getFecha();
 			String nombre_completo = nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic;
 			String extension = ".jpg";
@@ -286,11 +288,30 @@ public class Utilidades {
 		}
 	}
 
-	public static void copyFile(String sourceFilePath, String destinationFilePath) throws IOException {
-		Path sourcePath = Path.of(sourceFilePath);
-		Path destinationPath = Path.of(destinationFilePath);
+	public static void copyDirectory(String sourceDirectoryPath, String destinationDirectoryPath) throws IOException {
+	    Path sourceDirectory = Paths.get(sourceDirectoryPath);
+	    Path destinationDirectory = Paths.get(destinationDirectoryPath);
 
-		Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+	    if (!Files.exists(destinationDirectory)) {
+	        Files.createDirectories(destinationDirectory);
+	    }
+
+	    Files.walkFileTree(sourceDirectory, new SimpleFileVisitor<>() {
+	        @Override
+	        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+	            Path targetPath = destinationDirectory.resolve(sourceDirectory.relativize(dir));
+	            if (!Files.exists(targetPath)) {
+	                Files.createDirectory(targetPath);
+	            }
+	            return FileVisitResult.CONTINUE;
+	        }
+
+	        @Override
+	        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+	            Files.copy(file, destinationDirectory.resolve(sourceDirectory.relativize(file)), StandardCopyOption.REPLACE_EXISTING);
+	            return FileVisitResult.CONTINUE;
+	        }
+	    });
 	}
 
 	public String obtenerDatoDespuesDeDosPuntos(String linea) {
@@ -320,7 +341,7 @@ public class Utilidades {
 				+ obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas" + File.separator;
 		String nombre_comic = datos.getNombre().replace(" ", "_").replace(":", "_").replace("-", "_");
 		String numero_comic = datos.getNumero();
-		String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_");
+		String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_").replace(":", "_");
 		String fecha_comic = datos.getFecha();
 		String nombre_completo = nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic;
 		String extension = ".jpg";
@@ -331,7 +352,7 @@ public class Utilidades {
 	public String crearNuevoNombre(Comic datos) {
 		String nombre_comic = datos.getNombre().replace(" ", "_").replace(":", "_").replace("-", "_");
 		String numero_comic = datos.getNumero();
-		String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_");
+		String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_").replace(":", "_");
 		String fecha_comic = datos.getFecha();
 		String nombre_completo = nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic;
 		String extension = ".jpg";

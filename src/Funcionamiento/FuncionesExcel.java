@@ -139,7 +139,7 @@ public class FuncionesExcel {
 				fila.createCell(10).setCellValue(comic.getGuionista());
 				fila.createCell(11).setCellValue(comic.getDibujante());
 				fila.createCell(12).setCellValue(comic.getPuntuacion());
-				String nombreImagen = sourcePath + comic.getNombre().replace(" ", "_").replace(":", "_").replace("-", "_") + "_"
+				String nombreImagen = sourcePath + comic.getNombre().replace(" ", "_").replace(":", "_") + "_"
 						+ comic.getNumero() + "_" + comic.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_") + "_" + comic.getFecha()
 						+ ".jpg";
 				fila.createCell(13).setCellValue(nombreImagen);
@@ -433,7 +433,7 @@ public class FuncionesExcel {
 			int count = 0;
 			int nuevoID = db.countRows();
 			lineReader.readLine();
-			Utilidades.copyFile(directorio.getAbsolutePath(),defaultImagePath);
+			Utilidades.copyDirectory(directorio.getAbsolutePath(),defaultImagePath);
 
 			// Se leerán los datos hasta que no existan más datos
 			while ((lineText = lineReader.readLine()) != null) {
@@ -465,16 +465,7 @@ public class FuncionesExcel {
 				String portada = data[13];
 				String estado = data[14];
 				
-				Comic nuevo_comic = new Comic("", nombre,numCaja, numero, variante, firma, editorial, formato, procedencia,
-						fecha, guionista, dibujante, estado, dibujante, portada);
-//				String nombre_comic = utilidad.crearNuevoNombre(nuevo_comic);
-				String nombre_imagen = utilidad.obtenerNombreArchivo(nuevo_comic.getImagen());
-				
-				nuevo_comic.setImagen(directorio.getAbsolutePath() + File.separator + nombre_imagen);
-				
-				utilidad.nueva_imagen(nuevo_comic);
-				
-//				Utilidades.copyFile(portada,defaultImagePath);
+
 				statement.setString(1, id);
 				statement.setString(2, nombre);
 				statement.setString(3, numCaja);
