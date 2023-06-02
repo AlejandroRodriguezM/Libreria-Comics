@@ -143,6 +143,8 @@ public class AccesoBBDDController implements Initializable {
 
 				try {
 					File carpeta_backupsFile = new File(carpetaBackup);
+					
+					cbd.crearCarpeta();
 					if (!carpeta_backupsFile.exists()) {
 						if (carpeta_backupsFile.mkdirs()) {
 							System.out.println("Carpeta de backups creada: " + carpetaBackup);
@@ -186,7 +188,7 @@ public class AccesoBBDDController implements Initializable {
 	}
 
 	
-	private String obtenerDatoDespuesDeDosPuntos(String linea) {
+	public String obtenerDatoDespuesDeDosPuntos(String linea) {
 		String userHome = System.getProperty("user.home");
 		String ubicacion = userHome + "\\AppData\\Roaming";
 		String carpetaLibreria = ubicacion + "\\libreria";
@@ -202,7 +204,6 @@ public class AccesoBBDDController implements Initializable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 		return "";
 	}
 

@@ -1104,11 +1104,12 @@ public class DBLibreriaManager extends Comic {
 
 		conn = DBManager.conexion();
 
+
 		try {
 			PreparedStatement statement = conn.prepareStatement(sentenciaSQL);
 
 			statement.setString(1, datos.getNombre());
-			if(datos.getNumCaja() == "") {
+			if(datos.getNumCaja() == null) {
 				statement.setString(2, "0");
 			}else {
 				statement.setString(2,datos.getNumCaja());
@@ -1203,9 +1204,9 @@ public class DBLibreriaManager extends Comic {
 
 		utilidad = new Utilidades();
 
-		String nombre_comic = datos.getNombre().replace(" ", "_").replace(":", "_");
-		String numero_comic = datos.getNumero();
-		String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_");
+		String nombre_comic = datos.getNombre().replace(" ", "_").replace(":", "_").replace("-", "_");
+		String numero_comic = datos.getNumero().replace(" ", "").replace(":", "").replace("-", "");
+		String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_").replace(":", "_");
 		String fecha_comic = datos.getFecha();
 		String nombre_completo = nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic;
 		String extension = ".jpg";

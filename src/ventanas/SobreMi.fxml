@@ -41,8 +41,8 @@
             <Menu fx:id="navegacion_cerrar" mnemonicParsing="false" text="Archivo">
                <items>
                   <MenuItem fx:id="menu_archivo_sobreMi" mnemonicParsing="false" onAction="#verSobreMi" text="Sobre mi" />
-                  <MenuItem fx:id="menu_archivo_desconectar" mnemonicParsing="false" onAction="#desconectar" text="Desconectar" />
                   <MenuItem fx:id="menu_archivo_volver" mnemonicParsing="false" onAction="#volverMenu" text="Volver al menu" />
+                  <MenuItem fx:id="menu_archivo_desconectar" mnemonicParsing="false" onAction="#desconectar" text="Desconectar" />
                   <MenuItem fx:id="menu_archivo_cerrar" mnemonicParsing="false" onAction="#salirPrograma" text="Cerrar" />
                </items>
             </Menu>

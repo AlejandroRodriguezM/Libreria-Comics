@@ -751,7 +751,11 @@ public class IntroducirDatosController implements Initializable {
 
 		campos[11] = estadoActual();
 
-		campos[12] = numeroCajaAni.getText();
+		if(campos[12] == null) {
+			campos[12] = "0";
+		}else {
+			campos[12] = numeroCajaAni.getText();
+		}
 
 		return utilidad.comaPorGuion(campos);
 	}

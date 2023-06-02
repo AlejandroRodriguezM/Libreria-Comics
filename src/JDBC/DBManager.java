@@ -113,6 +113,7 @@ public class DBManager {
 			return conn;
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
+			ex.printStackTrace();
 			return null;
 		}
 	}

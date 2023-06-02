@@ -43,6 +43,7 @@ import JDBC.DBManager;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -102,7 +103,9 @@ public class CrearBBDDController implements Initializable {
 	private RadioButton siOnline;
 
 	private static Ventanas nav = new Ventanas();
-
+	
+	private static AccesoBBDDController acceso = new AccesoBBDDController();
+	
 	private static CrearBBDDController cbd = null;
 	public static String DB_USER;
 	public static String DB_PASS;
@@ -183,14 +186,16 @@ public class CrearBBDDController implements Initializable {
 	 * procedimientos almacenados
 	 *
 	 * @param event
+	 * @throws IOException 
 	 */
 	@FXML
-	void crearBBDD(ActionEvent event) {
+	void crearBBDD(ActionEvent event) throws IOException{
 		datosBBDD();
 		if (checkDatabase()) {
 			createDataBase();
 			createTable();
 			createProcedure();
+			crearCarpeta();
 			prontInformativo.setStyle("-fx-background-color: #A0F52D");
 			iniciarAnimacionBaseCreada();
 		}
@@ -421,6 +426,22 @@ public class CrearBBDDController implements Initializable {
 		puertoBBDD.setText("");
 		nombreBBDD.setText("");
 	}
+	
+	public void crearCarpeta() throws IOException {
+		String userDir = System.getProperty("user.home");
+		String documentsPath = userDir + File.separator + "Documents";
+		String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator + acceso.obtenerDatoDespuesDeDosPuntos("Database") + File.separator 
+				+ "portadas";
+		File portadasFolder = new File(defaultImagePath);
+
+		if (!portadasFolder.exists()) {
+			if (!portadasFolder.mkdirs()) {
+				throw new IOException("No se pudo crear la carpeta 'portadas'");
+			}
+		}else {
+			System.out.println("Ya existe la carpeta en libreria_comics para " + acceso.obtenerDatoDespuesDeDosPuntos("Database"));
+		}
+	}
 
 	/**
 	 *
@@ -536,7 +557,7 @@ public class CrearBBDDController implements Initializable {
 	@FXML
 	public void volverMenu(ActionEvent event) {
 
-		nav.verAccesoBBDD(); // Llamada a metodo para abrir la ventana anterior
+		nav.verOpciones(); // Llamada a metodo para abrir la ventana anterior
 
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
 		myStage.close();
@@ -562,10 +583,7 @@ public class CrearBBDDController implements Initializable {
 	 */
 	public void closeWindows() {
 
-		nav.verAccesoBBDD(); // Llamada a metodo para abrir la ventana anterior
-
-		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-		myStage.close();
+		Platform.exit();
 	}
 
 }
