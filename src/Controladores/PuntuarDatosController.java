@@ -57,6 +57,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
@@ -313,6 +315,27 @@ public class PuntuarDatosController implements Initializable {
 		imagencomic.setImage(libreria.selectorImage(ID));
 		utilidad.deleteImage();
 
+	}
+	
+	@FXML
+	void teclasDireccion(KeyEvent event) {
+	    if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
+	        libreria = new DBLibreriaManager();
+	        libreria.libreriaCompleta();
+	        utilidad = new Utilidades();
+	        String ID;
+
+	        Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
+
+	        if (idRow != null) {
+	            ID = idRow.getID();
+	            pantallaInformativa.setOpacity(1);
+	            pantallaInformativa.setText(libreria.comicDatos(ID).toString().replace("[", "").replace("]", ""));
+
+	            imagencomic.setImage(libreria.selectorImage(ID));
+	            utilidad.deleteImage();
+	        }
+	    }
 	}
 
 	/**

@@ -147,7 +147,7 @@
             <Font size="14.0" />
          </font>
       </Label>
-      <TableView fx:id="tablaBBDD" layoutY="411.0" onMouseClicked="#clickRaton" prefHeight="321.0" prefWidth="1116.0">
+      <TableView fx:id="tablaBBDD" layoutY="411.0" onKeyPressed="#teclasDireccion" onMouseClicked="#clickRaton" prefHeight="321.0" prefWidth="1116.0">
          <columns>
             <TableColumn fx:id="ID" prefWidth="47.0" text="ID" />
             <TableColumn fx:id="nombre" prefWidth="135.0" text="Nombre" />

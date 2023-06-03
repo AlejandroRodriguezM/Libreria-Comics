@@ -57,5 +57,6 @@
             </Menu>
          </menus>
       </MenuBar>
+      <Button fx:id="botonOtroProyecto" layoutX="569.0" layoutY="353.0" maxWidth="143.0" mnemonicParsing="false" onAction="#misOtroProyectos" prefHeight="34.0" prefWidth="143.0" stylesheets="@../style/sobremi_style.css" text="Otro proyecto" />
    </children>
 </Pane>

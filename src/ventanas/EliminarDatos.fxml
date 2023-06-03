@@ -128,7 +128,7 @@
             </Menu>
          </menus>
       </MenuBar>
-      <TableView fx:id="tablaBBDD" layoutY="431.0" onMouseClicked="#clickRaton" prefHeight="366.0" prefWidth="1105.0">
+      <TableView fx:id="tablaBBDD" layoutY="431.0" onKeyPressed="#teclasDireccion" onMouseClicked="#clickRaton" prefHeight="366.0" prefWidth="1105.0">
          <columns>
             <TableColumn fx:id="ID" prefWidth="47.0" text="ID" />
             <TableColumn fx:id="nombre" prefWidth="135.0" text="Nombre" />

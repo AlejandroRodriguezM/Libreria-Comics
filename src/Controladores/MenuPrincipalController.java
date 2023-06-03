@@ -57,6 +57,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -705,6 +707,29 @@ public class MenuPrincipalController implements Initializable {
 			utilidad.deleteImage();
 		}
 	}
+	
+	@FXML
+	void teclasDireccion(KeyEvent event) {
+	    if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
+	        prontFrases.setOpacity(0);
+	        libreria = new DBLibreriaManager();
+	        libreria.libreriaCompleta();
+	        utilidad = new Utilidades();
+	        String ID;
+
+	        Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
+
+	        if (idRow != null) {
+	            ID = idRow.getID();
+	            prontInfo.setOpacity(1);
+	            prontInfo.setText(libreria.comicDatos(ID).toString().replace("[", "").replace("]", ""));
+
+	            imagencomic.setImage(libreria.selectorImage(ID));
+	            utilidad.deleteImage();
+	        }
+	    }
+	}
+
 
 	/////////////////////////////////
 	//// FUNCIONES CREACION FICHEROS//

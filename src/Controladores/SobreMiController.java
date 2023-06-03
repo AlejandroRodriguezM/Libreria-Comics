@@ -96,6 +96,9 @@ public class SobreMiController {
 
 	@FXML
 	private Button botonCompra;
+	
+	@FXML
+	private Button botonOtroProyecto;
 
 	private static Ventanas nav = new Ventanas();
 
@@ -172,6 +175,17 @@ public class SobreMiController {
 	void comprarComic(ActionEvent event) {
 		verPagina();
 	}
+	
+	/**
+	 * Se llama a funcion que permite abrir 1 direcciones web junto al navegador
+	 * predeterminado
+	 *
+	 * @param event
+	 */
+	@FXML
+	void misOtroProyectos(ActionEvent event) {
+		otroProyecto();
+	}
 
 	/**
 	 * Funcion que permite llamar al navegador predeterminado del sistema y abrir 2
@@ -191,6 +205,20 @@ public class SobreMiController {
 			} else {
 				Utilidades.accesoWebMac(url1);
 				Utilidades.accesoWebMac(url2);
+			}
+		}
+	}
+	
+	public void otroProyecto() {
+		String url = "https://www.comicweb.es";
+
+		if (Utilidades.isWindows()) {
+			Utilidades.accesoWebWindows(url); // Llamada a funcion
+		} else {
+			if (Utilidades.isUnix()) {
+				Utilidades.accesoWebLinux(url); // Llamada a funcion
+			} else {
+				Utilidades.accesoWebMac(url);
 			}
 		}
 	}

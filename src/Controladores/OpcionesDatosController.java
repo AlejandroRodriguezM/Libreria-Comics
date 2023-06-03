@@ -93,7 +93,6 @@ public class OpcionesDatosController implements Initializable {
 	private Timeline timeline;
 
 	private static Ventanas nav = new Ventanas();
-//	private static Utilidades utilidad = new Utilidades();
 	private static AccesoBBDDController acceso = new AccesoBBDDController();
 
 	@Override

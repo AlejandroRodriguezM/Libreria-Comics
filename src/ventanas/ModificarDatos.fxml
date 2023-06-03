@@ -145,7 +145,7 @@
       <TextField fx:id="numeroCaja" layoutX="135.0" layoutY="402.0" prefHeight="25.0" prefWidth="117.0" />
       <TextField fx:id="numeroCajaMod" layoutX="380.0" layoutY="396.0" prefHeight="25.0" prefWidth="113.0" />
       <Label layoutX="263.0" layoutY="400.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Caja" />
-      <TableView fx:id="tablaBBDD" layoutY="457.0" onMouseClicked="#clickRaton" prefHeight="389.0" prefWidth="1108.0">
+      <TableView fx:id="tablaBBDD" layoutY="457.0" onKeyPressed="#teclasDireccion" onMouseClicked="#clickRaton" prefHeight="389.0" prefWidth="1108.0">
          <columns>
             <TableColumn fx:id="ID" prefWidth="47.0" text="ID" />
             <TableColumn fx:id="nombre" prefWidth="135.0" text="Nombre" />
