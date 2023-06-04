@@ -56,7 +56,7 @@
           </Menu>
         </menus>
       </MenuBar>
-      <TableView fx:id="tablaBBDD" layoutX="-1.0" layoutY="370.0" onKeyPressed="#teclasDireccion" onMouseClicked="#clickRaton" prefHeight="381.0" prefWidth="1198.0">
+      <TableView fx:id="tablaBBDD" layoutX="-1.0" layoutY="376.0" onKeyPressed="#teclasDireccion" onMouseClicked="#clickRaton" prefHeight="375.0" prefWidth="1198.0">
          <columns>
             <TableColumn fx:id="ID" prefWidth="47.0" text="ID" />
             <TableColumn fx:id="nombre" prefWidth="135.0" text="Nombre" />
@@ -82,7 +82,7 @@
             <Font name="Comic Sans MS" size="15.0" />
          </font>
       </TextArea>
-      <ImageView fx:id="imagencomic" fitHeight="319.0" fitWidth="243.0" layoutX="590.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="imagencomic" fitHeight="337.0" fitWidth="252.0" layoutX="581.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true" />
       <Pane layoutX="18.0" layoutY="33.0" prefHeight="329.0" prefWidth="483.0">
          <children>
             <Label layoutX="8.0" layoutY="-3.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Nombre">

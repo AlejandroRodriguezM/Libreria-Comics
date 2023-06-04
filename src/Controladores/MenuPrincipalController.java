@@ -38,6 +38,7 @@ import Funcionamiento.FuncionesExcel;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
+import JDBC.DBManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -443,9 +444,10 @@ public class MenuPrincipalController implements Initializable {
 	 * Metodo que muestra toda la base de datos.
 	 *
 	 * @param event
+	 * @throws IOException 
 	 */
 	@FXML
-	void verTodabbdd(ActionEvent event) {
+	void verTodabbdd(ActionEvent event) throws IOException {
 		prontInfo.setOpacity(0);
 		prontFrases.setOpacity(0);
 		imagencomic.setImage(null);
@@ -689,7 +691,7 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	@FXML
-	void clickRaton(MouseEvent event) {
+	void clickRaton(MouseEvent event) throws IOException {
 		prontFrases.setOpacity(0);
 		libreria = new DBLibreriaManager();
 		libreria.libreriaCompleta();
@@ -709,7 +711,7 @@ public class MenuPrincipalController implements Initializable {
 	}
 	
 	@FXML
-	void teclasDireccion(KeyEvent event) {
+	void teclasDireccion(KeyEvent event) throws IOException {
 	    if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
 	        prontFrases.setOpacity(0);
 	        libreria = new DBLibreriaManager();
@@ -727,6 +729,7 @@ public class MenuPrincipalController implements Initializable {
 	            imagencomic.setImage(libreria.selectorImage(ID));
 	            utilidad.deleteImage();
 	        }
+	        DBManager.resetConnection();
 	    }
 	}
 
@@ -852,8 +855,9 @@ public class MenuPrincipalController implements Initializable {
 	 * "En posesion"
 	 *
 	 * @return
+	 * @throws IOException 
 	 */
-	public List<Comic> libreriaCompleta() {
+	public List<Comic> libreriaCompleta() throws IOException {
 		libreria = new DBLibreriaManager();
 		limpiezaDeDatos();
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.libreriaCompleta());

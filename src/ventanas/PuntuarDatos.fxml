@@ -83,7 +83,7 @@
             <Font size="14.0" />
          </font>
       </Label>
-      <TextArea fx:id="pantallaInformativa" editable="false" layoutX="979.0" layoutY="32.0" opacity="0.0" prefHeight="355.0" prefWidth="210.0" stylesheets="@../style/genericos_style.css" wrapText="true" />
+      <TextArea fx:id="pantallaInformativa" editable="false" layoutX="896.0" layoutY="28.0" opacity="0.0" prefHeight="355.0" prefWidth="293.0" stylesheets="@../style/genericos_style.css" wrapText="true" />
       <Label layoutX="10.0" layoutY="69.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Nombre">
          <font>
             <Font size="14.0" />
@@ -98,7 +98,7 @@
       <ComboBox fx:id="puntuacionMenu" layoutX="404.0" layoutY="160.0" prefHeight="25.0" prefWidth="102.0" />
       <Button fx:id="botonBorrarOpinion" layoutX="286.0" layoutY="244.0" mnemonicParsing="false" onAction="#borrarPuntuacion" prefHeight="42.0" prefWidth="117.0" stylesheets="@../style/genericos_style.css" text="Borrar puntuación" />
       <ComboBox fx:id="procedenciaParametro" layoutX="134.0" layoutY="252.0" prefHeight="25.0" prefWidth="138.0" />
-      <ImageView fx:id="imagencomic" fitHeight="367.0" fitWidth="235.0" layoutX="725.0" layoutY="29.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="imagencomic" fitHeight="367.0" fitWidth="235.0" layoutX="636.0" layoutY="29.0" pickOnBounds="true" preserveRatio="true" />
       <ComboBox fx:id="nombreFormato" layoutX="134.0" layoutY="221.0" prefHeight="25.0" prefWidth="138.0" />
       <DatePicker fx:id="fechaPublicacion" layoutX="135.0" layoutY="280.0" prefHeight="25.0" prefWidth="138.0" />
       <MenuBar fx:id="menu_navegacion" prefHeight="25.0" prefWidth="1197.0">

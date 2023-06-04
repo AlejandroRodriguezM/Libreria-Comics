@@ -351,9 +351,10 @@ public class IntroducirDatosController implements Initializable {
 	 * tabla.
 	 *
 	 * @param event
+	 * @throws IOException 
 	 */
 	@FXML
-	void clickRaton(MouseEvent event) {
+	void clickRaton(MouseEvent event) throws IOException {
 		libreria = new DBLibreriaManager();
 		libreria.libreriaCompleta();
 		utilidad = new Utilidades();
@@ -372,7 +373,7 @@ public class IntroducirDatosController implements Initializable {
 	}
 	
 	@FXML
-	void teclasDireccion(KeyEvent event) {
+	void teclasDireccion(KeyEvent event) throws IOException {
 	    if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
 	        libreria = new DBLibreriaManager();
 	        libreria.libreriaCompleta();
@@ -389,6 +390,7 @@ public class IntroducirDatosController implements Initializable {
 	            imagencomic.setImage(libreria.selectorImage(ID));
 	            utilidad.deleteImage();
 	        }
+	        DBManager.resetConnection();
 	    }
 	}
 
@@ -573,9 +575,10 @@ public class IntroducirDatosController implements Initializable {
 	 * Metodo que muestra toda la base de datos.
 	 *
 	 * @param event
+	 * @throws IOException 
 	 */
 	@FXML
-	void verTodabbdd(ActionEvent event) {
+	void verTodabbdd(ActionEvent event) throws IOException {
 		imagencomic.setImage(null);
 		utilidad = new Utilidades();
 		libreria = new DBLibreriaManager();
@@ -681,6 +684,9 @@ public class IntroducirDatosController implements Initializable {
 					fecha_comic.toString(), guionista, dibujante, estado, "Sin puntuar", portada);
 
 			utilidad.nueva_imagen(comic);
+			
+			String carpeta_portada = Utilidades.eliminarDespuesUltimoPortadas(portada);
+			Utilidades.convertirNombresCarpetas(carpeta_portada);
 			String nueva_portada = utilidad.obtenerNombreCompleto(comic);
 			comic.setImagen(nueva_portada);
 			libreria.insertarDatos(comic);

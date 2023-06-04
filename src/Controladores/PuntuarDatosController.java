@@ -297,9 +297,10 @@ public class PuntuarDatosController implements Initializable {
 	 * tabla.
 	 *
 	 * @param event
+	 * @throws IOException 
 	 */
 	@FXML
-	void clickRaton(MouseEvent event) {
+	void clickRaton(MouseEvent event) throws IOException {
 		libreria = new DBLibreriaManager();
 		libreria.libreriaCompleta();
 		utilidad = new Utilidades();
@@ -318,7 +319,7 @@ public class PuntuarDatosController implements Initializable {
 	}
 	
 	@FXML
-	void teclasDireccion(KeyEvent event) {
+	void teclasDireccion(KeyEvent event) throws IOException {
 	    if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
 	        libreria = new DBLibreriaManager();
 	        libreria.libreriaCompleta();
@@ -335,6 +336,7 @@ public class PuntuarDatosController implements Initializable {
 	            imagencomic.setImage(libreria.selectorImage(ID));
 	            utilidad.deleteImage();
 	        }
+	        DBManager.resetConnection();
 	    }
 	}
 
@@ -343,9 +345,10 @@ public class PuntuarDatosController implements Initializable {
 	 * dato "puntuacion" de un comic en concreto usando su ID"
 	 *
 	 * @param event
+	 * @throws IOException 
 	 */
 	@FXML
-	void agregarPuntuacion(ActionEvent event) {
+	void agregarPuntuacion(ActionEvent event) throws IOException {
 		imagencomic.setImage(null);
 		libreria = new DBLibreriaManager();
 		String ID = idPuntuar.getText();
@@ -359,9 +362,10 @@ public class PuntuarDatosController implements Initializable {
 	 * Funcion que permite borrar la opinion de un comic
 	 *
 	 * @param event
+	 * @throws IOException 
 	 */
 	@FXML
-	void borrarPuntuacion(ActionEvent event) {
+	void borrarPuntuacion(ActionEvent event) throws IOException {
 		imagencomic.setImage(null);
 		libreria = new DBLibreriaManager();
 		String ID = idPuntuar.getText();
@@ -375,11 +379,16 @@ public class PuntuarDatosController implements Initializable {
 	 * Muestra en TextArea un mensaje sobre puntuacion del comic introducido
 	 */
 	public void datosOpinion(String pantallaInfo) {
-		pantallaInformativa.setOpacity(1);
-		pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-		pantallaInformativa
-				.setText(pantallaInfo + DBLibreriaManager.listaComics.toString().replace("[", "").replace("]", ""));
+	    pantallaInformativa.setOpacity(1);
+	    pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
+
+	    String listaComicsTexto = DBLibreriaManager.listaComics.toString();
+	    int indexComa = listaComicsTexto.indexOf(",");
+	    String listaComicsSinComa = listaComicsTexto.substring(0, indexComa).replace("[", "");
+
+	    pantallaInformativa.setText(pantallaInfo + listaComicsSinComa);
 	}
+
 
 	/**
 	 * Funcion que permite modificar la puntuacion de un comic, siempre y cuando el
@@ -449,9 +458,10 @@ public class PuntuarDatosController implements Initializable {
 	 * Metodo que muestra toda la base de datos.
 	 *
 	 * @param event
+	 * @throws IOException 
 	 */
 	@FXML
-	void verTodabbdd(ActionEvent event) {
+	void verTodabbdd(ActionEvent event) throws IOException {
 		imagencomic.setImage(null);
 		utilidad = new Utilidades();
 		libreria = new DBLibreriaManager();

@@ -108,9 +108,10 @@ public class RecomendacionesController {
 	 * Llama a funcion que genera una lectura recomendada
 	 *
 	 * @param event
+	 * @throws IOException 
 	 */
 	@FXML
-	void eligePorMi(ActionEvent event) {
+	void eligePorMi(ActionEvent event) throws IOException {
 		printComicRecomendado.setOpacity(1);
 
 		printComicRecomendado.setText(generarLectura());
@@ -121,8 +122,9 @@ public class RecomendacionesController {
 	 * Funcion que devuelve un comic al azar de toda la base de datos.
 	 *
 	 * @return
+	 * @throws IOException 
 	 */
-	public String generarLectura() {
+	public String generarLectura() throws IOException {
 		
 		Random r = new Random();
 		utilidad = new Utilidades();

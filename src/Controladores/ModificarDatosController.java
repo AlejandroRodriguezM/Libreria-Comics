@@ -328,9 +328,10 @@ public class ModificarDatosController implements Initializable {
 	 * tabla.
 	 *
 	 * @param event
+	 * @throws IOException 
 	 */
 	@FXML
-	void clickRaton(MouseEvent event) {
+	void clickRaton(MouseEvent event) throws IOException {
 		libreria = new DBLibreriaManager();
 		libreria.libreriaCompleta();
 		utilidad = new Utilidades();
@@ -349,7 +350,7 @@ public class ModificarDatosController implements Initializable {
 	}
 	
 	@FXML
-	void teclasDireccion(KeyEvent event) {
+	void teclasDireccion(KeyEvent event) throws IOException {
 	    if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
 	        libreria = new DBLibreriaManager();
 	        libreria.libreriaCompleta();
@@ -366,6 +367,7 @@ public class ModificarDatosController implements Initializable {
 	            imagencomic.setImage(libreria.selectorImage(ID));
 	            utilidad.deleteImage();
 	        }
+	        DBManager.resetConnection();
 	    }
 	}
 
@@ -640,9 +642,10 @@ public class ModificarDatosController implements Initializable {
 	 * Metodo que muestra toda la base de datos.
 	 *
 	 * @param event
+	 * @throws IOException 
 	 */
 	@FXML
-	void verTodabbdd(ActionEvent event) {
+	void verTodabbdd(ActionEvent event) throws IOException {
 		imagencomic.setImage(null);
 		utilidad = new Utilidades();
 		libreria = new DBLibreriaManager();
@@ -783,7 +786,8 @@ public class ModificarDatosController implements Initializable {
 			pantallaInformativa.setText("Has modificado correctamente: "
 					+ comic.toString().replace("[", "").replace("]", ""));
 			libreria.listasAutoCompletado();
-
+			String carpeta_portada = Utilidades.eliminarDespuesUltimoPortadas(portada);
+			Utilidades.convertirNombresCarpetas(carpeta_portada);
 			return true;
 		} else {
 			pantallaInformativa.setOpacity(1);

@@ -1601,12 +1601,19 @@ public class DBLibreriaManager extends Comic {
 	 * Funcion que muestra todos los comics de la base de datos.
 	 *
 	 * @return
+	 * @throws IOException 
 	 */
-	public List<Comic> libreriaCompleta() {
+	public List<Comic> libreriaCompleta() throws IOException {
 		String query = "SELECT * FROM comicsbbdd ORDER BY nomComic,fecha_publicacion,numComic";
 
 		String excepcion = "No hay ningun comic guardado en la base de datos";
 
+		String userDir = System.getProperty("user.home");
+		String documentsPath = userDir + File.separator + "Documents";
+		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator
+				+ utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas";
+		Utilidades.convertirNombresCarpetas(sourcePath);
+		
 		return comprobarLibreria(query, excepcion);
 	}
 

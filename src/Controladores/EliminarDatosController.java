@@ -350,7 +350,7 @@ public class EliminarDatosController implements Initializable {
 	}
 	
 	@FXML
-	void teclasDireccion(KeyEvent event) {
+	void teclasDireccion(KeyEvent event) throws IOException {
 	    if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
 	        libreria = new DBLibreriaManager();
 	        libreria.libreriaCompleta();
@@ -367,6 +367,7 @@ public class EliminarDatosController implements Initializable {
 	            imagencomic.setImage(libreria.selectorImage(ID));
 	            utilidad.deleteImage();
 	        }
+	        DBManager.resetConnection();
 	    }
 	}
 
@@ -374,9 +375,10 @@ public class EliminarDatosController implements Initializable {
 	 * Funcion que elimina un comic de la base de datos.
 	 *
 	 * @param event
+	 * @throws IOException 
 	 */
 	@FXML
-	void eliminarDatos(ActionEvent event) {
+	void eliminarDatos(ActionEvent event) throws IOException {
 		imagencomic.setImage(null);
 		libreria = new DBLibreriaManager();
 		String ID = idComicTratar.getText();
@@ -393,9 +395,10 @@ public class EliminarDatosController implements Initializable {
 	 * el programa, pero este sigue estando dentro de la bbdd
 	 *
 	 * @param event
+	 * @throws IOException 
 	 */
 	@FXML
-	void ventaComic(ActionEvent event) {
+	void ventaComic(ActionEvent event) throws IOException {
 		imagencomic.setImage(null);
 		libreria = new DBLibreriaManager();
 		String ID = idComicTratar.getText();
@@ -426,9 +429,10 @@ public class EliminarDatosController implements Initializable {
 	 * Metodo que muestra toda la base de datos.
 	 *
 	 * @param event
+	 * @throws IOException 
 	 */
 	@FXML
-	void verTodabbdd(ActionEvent event) {
+	void verTodabbdd(ActionEvent event) throws IOException {
 		imagencomic.setImage(null);
 		utilidad = new Utilidades();
 		libreria = new DBLibreriaManager();

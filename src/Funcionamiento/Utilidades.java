@@ -520,4 +520,89 @@ public class Utilidades {
 			e.printStackTrace();
 		}
 	}
+	
+    /* 
+    * Convierte los nombres de los archivos en una carpeta, reemplazando los guiones por guiones bajos.
+    * @param rutaCarpeta La ruta de la carpeta que contiene los archivos.
+    * @throws IOException Si hay un error al leer el contenido de la carpeta.
+    */
+	public static void convertirNombresCarpetas(String rutaCarpeta) throws IOException {
+
+	    File carpeta = new File(rutaCarpeta);
+
+	    if (!carpeta.isDirectory()) {
+	        throw new IllegalArgumentException("La ruta proporcionada no es una carpeta.");
+	    }
+
+	    File[] archivos = carpeta.listFiles();
+	    if (archivos == null) {
+	        throw new IOException("Error al leer el contenido de la carpeta.");
+	    }
+
+	    for (File archivo : archivos) {
+	        if (archivo.isFile()) {
+	            String nombreArchivoAntiguo = archivo.getName();
+	            String nombreArchivoNuevo = convertirNombreArchivo(nombreArchivoAntiguo);
+	            if (!nombreArchivoAntiguo.equals(nombreArchivoNuevo)) {
+	                File nuevoArchivo = new File(carpeta, nombreArchivoNuevo);
+	                if (archivo.renameTo(nuevoArchivo)) {
+	                    System.out.println("Archivo renombrado: " + nombreArchivoAntiguo + " -> " + nombreArchivoNuevo);
+	                } else {
+	                    System.out.println("Error al renombrar el archivo: " + nombreArchivoAntiguo);
+	                }
+	            }
+	        }
+	    }
+	}
+
+    /*
+    * Convierte el nombre de un archivo, reemplazando los guiones por guiones bajos.
+    * @param nombreArchivo El nombre del archivo a convertir.
+    * @return El nuevo nombre de archivo convertido.
+    */
+	public static String convertirNombreArchivo(String nombreArchivo) {
+
+	    StringBuilder nombreConvertido = new StringBuilder();
+
+	    for (int i = 0; i < nombreArchivo.length(); i++) {
+	        char caracterActual = nombreArchivo.charAt(i);
+
+	        if (caracterActual == '-' && esPosicionGuionValida(nombreArchivo, i)) {
+	            nombreConvertido.append('_');
+	        } else {
+	            nombreConvertido.append(caracterActual);
+	        }
+	    }
+
+	    return nombreConvertido.toString();
+	}
+
+    /*
+    * Verifica si la posición de un guion en el nombre de archivo es válida para convertirlo.
+    * @param nombreArchivo El nombre del archivo.
+    * @param indice El índice del guion en el nombre del archivo.
+    * @return true si la posición del guion es válida, false en caso contrario.
+    */
+	public static boolean esPosicionGuionValida(String nombreArchivo, int indice) {
+
+	    // Verificar si el guion está precedido por un dígito
+	    if (indice > 0 && Character.isDigit(nombreArchivo.charAt(indice - 1))) {
+	        return false;
+	    }
+	    // Verificar si el guion está seguido por un dígito
+	    if (indice < nombreArchivo.length() - 1 && Character.isDigit(nombreArchivo.charAt(indice + 1))) {
+	        return false;
+	    }
+
+	    return true;
+	}
+    
+    public static String eliminarDespuesUltimoPortadas(String rutaArchivo) {
+        int indiceUltimoPortadas = rutaArchivo.lastIndexOf("portadas\\");
+        if (indiceUltimoPortadas != -1) {
+            return rutaArchivo.substring(0, indiceUltimoPortadas + 9);
+        } else {
+            return rutaArchivo;
+        }
+    }
 }

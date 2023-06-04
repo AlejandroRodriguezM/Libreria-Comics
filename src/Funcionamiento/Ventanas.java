@@ -431,7 +431,7 @@ public class Ventanas {
 
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
-			scene.getStylesheets().add(getClass().getResource("/style/genericos_style.css").toExternalForm());
+//			scene.getStylesheets().add(getClass().getResource("/style/genericos_style.css").toExternalForm());
 
 			Stage stage = new Stage();
 			stage.setResizable(false);

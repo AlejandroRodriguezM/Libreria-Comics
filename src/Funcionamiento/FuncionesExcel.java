@@ -139,14 +139,18 @@ public class FuncionesExcel {
 				fila.createCell(10).setCellValue(comic.getGuionista());
 				fila.createCell(11).setCellValue(comic.getDibujante());
 				fila.createCell(12).setCellValue(comic.getPuntuacion());
-				String nombreImagen = sourcePath + comic.getNombre().replace(" ", "_").replace(":", "_") + "_"
-						+ comic.getNumero() + "_" + comic.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_") + "_" + comic.getFecha()
-						+ ".jpg";
-				fila.createCell(13).setCellValue(nombreImagen);
+				
+				String nombre_comic = comic.getNombre().replace(" ", "_").replace(":", "_").replace("-", "_");
+				String numero_comic = comic.getNumero();
+				String variante_comic = comic.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_").replace(":", "");
+				String fecha_comic = comic.getFecha();
+				String nombre_completo =sourcePath +  nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic + ".jpg";
+				
+				fila.createCell(13).setCellValue(nombre_completo);
 				fila.createCell(14).setCellValue(comic.getEstado());
 				indiceFila++;
 			}
-
+			
 			try {
 				outputStream = new FileOutputStream(fichero);
 				libro.write(outputStream);
@@ -221,10 +225,12 @@ public class FuncionesExcel {
 				fila.createCell(10).setCellValue(comic.getGuionista());
 				fila.createCell(11).setCellValue(comic.getDibujante());
 				fila.createCell(12).setCellValue(comic.getPuntuacion());
-				String nombreImagen = sourcePath + comic.getNombre().replace(" ", "_").replace(":", "_").replace("-", "_") + "_"
-						+ comic.getNumero() + "_" + comic.getVariante().replace(" ", "_").replace(":", "_") + "_" + comic.getFecha()
-						+ ".jpg";
-				fila.createCell(13).setCellValue(nombreImagen);
+				String nombre_comic = comic.getNombre().replace(" ", "_").replace(":", "_").replace("-", "_");
+				String numero_comic = comic.getNumero();
+				String variante_comic = comic.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_").replace(":", "");
+				String fecha_comic = comic.getFecha();
+				String nombre_completo =sourcePath +  nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic + ".jpg";
+				fila.createCell(13).setCellValue(nombre_completo);
 				fila.createCell(14).setCellValue(comic.getEstado());
 
 				indiceFila++;
@@ -415,8 +421,9 @@ public class FuncionesExcel {
 	 *
 	 * @param sql
 	 * @param lineReader
+	 * @throws IOException 
 	 */
-	public void lecturaCSV(String sql, BufferedReader lineReader) {
+	public void lecturaCSV(String sql, BufferedReader lineReader) throws IOException{
 	    File directorio = carpetaPortadas();
 		String puntuacion;
 		String procedencia;
@@ -428,6 +435,9 @@ public class FuncionesExcel {
 		String documentsPath = userDir + File.separator + "Documents";
 		String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator + utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator 
 				+ "portadas"; 
+		Utilidades.convertirNombresCarpetas(defaultImagePath + File.separator);
+		Utilidades.convertirNombresCarpetas(directorio.getAbsolutePath());
+
 		try {
 			PreparedStatement statement = conn.prepareStatement(sql);
 			int count = 0;
@@ -462,10 +472,17 @@ public class FuncionesExcel {
 				} else {
 					puntuacion = "Sin puntuacion";
 				}
-				String portada = data[13];
 				String estado = data[14];
 				
+				String nombre_comic1 = nombre.replace("-", "_");
+				String nombre_comic2 = nombre_comic1.replace(" ", "_");
+				String nombre_comic3 = nombre_comic2.replace(":", "_");
 
+				String numero_comic = numero;
+				String variante_comic = variante.replace(" ", "_").replace(",", "_").replace("-", "_").replace(":", "");
+				String fecha_comic = fecha;
+				String nombre_completo = defaultImagePath + File.separator +  nombre_comic3 + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic + ".jpg";
+			
 				statement.setString(1, id);
 				statement.setString(2, nombre);
 				statement.setString(3, numCaja);
@@ -479,7 +496,7 @@ public class FuncionesExcel {
 				statement.setString(11, guionista);
 				statement.setString(12, dibujante);
 				statement.setString(13, puntuacion);
-				statement.setString(14, defaultImagePath + File.separator + utilidad.obtenerNombreArchivo(portada));
+				statement.setString(14, nombre_completo);
 				statement.setString(15, estado);
 
 				statement.addBatch();
