@@ -492,7 +492,7 @@ public class EliminarDatosController implements Initializable {
 	@SuppressWarnings("unchecked")
 	public void tablaBBDD(List<Comic> listaComic) {
 		tablaBBDD.getColumns().setAll(ID, nombre, caja, numero, variante, firma, editorial, formato, procedencia, fecha,
-				guionista, dibujante);
+				guionista, dibujante,puntuacion);
 		tablaBBDD.getItems().setAll(listaComic);
 	}
 

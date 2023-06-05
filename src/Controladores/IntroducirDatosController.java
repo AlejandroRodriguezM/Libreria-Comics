@@ -628,6 +628,7 @@ public class IntroducirDatosController implements Initializable {
 		libreria = new DBLibreriaManager();
 		utilidad = new Utilidades();
 		File file;
+		LocalDate fecha_comic;
 		if (nav.alertaInsertar()) {
 
 			String datos[] = camposComicIntroducir();
@@ -650,9 +651,13 @@ public class IntroducirDatosController implements Initializable {
 
 			String procedencia = datos[6];
 
-			LocalDate fecha_comic = fechaAni.getValue();
-			datos[7] = (fecha_comic != null) ? fecha_comic.toString() : "2000-01-01";
-
+		    if (datos[7] == null) {
+		        datos[7] = "2000-01-01";
+		        fecha_comic = LocalDate.parse(datos[7]);
+		    } else {
+		        fecha_comic = LocalDate.parse(datos[7]);
+		    }
+			
 			String guionista = datos[8];
 
 			String dibujante = datos[9];
@@ -662,6 +667,12 @@ public class IntroducirDatosController implements Initializable {
 				file = new File(datos[10]);
 
 				if (!file.exists()) {
+					
+					String userDir = System.getProperty("user.home");
+					String documentsPath = userDir + File.separator + "Documents";
+					String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator
+							+ utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas";
+					Utilidades.convertirNombresCarpetas(sourcePath);
 					portada = "Funcionamiento/sinPortada.jpg";
 					Image imagen = new Image(portada);
 					imagencomic.setImage(imagen);
@@ -669,6 +680,8 @@ public class IntroducirDatosController implements Initializable {
 					portada = datos[10];
 					Image imagen = new Image(portada);
 					imagencomic.setImage(imagen);
+					String carpeta_portada = Utilidades.eliminarDespuesUltimoPortadas(portada);
+					Utilidades.convertirNombresCarpetas(carpeta_portada);
 				}
 			}
 
@@ -685,8 +698,7 @@ public class IntroducirDatosController implements Initializable {
 
 			utilidad.nueva_imagen(comic);
 			
-			String carpeta_portada = Utilidades.eliminarDespuesUltimoPortadas(portada);
-			Utilidades.convertirNombresCarpetas(carpeta_portada);
+
 			String nueva_portada = utilidad.obtenerNombreCompleto(comic);
 			comic.setImagen(nueva_portada);
 			libreria.insertarDatos(comic);

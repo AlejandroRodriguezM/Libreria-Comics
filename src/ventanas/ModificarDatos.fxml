@@ -95,7 +95,7 @@
          </font>
       </Label>
       <Label fx:id="idMod" layoutX="265.0" layoutY="40.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="ID" />
-      <TextArea fx:id="pantallaInformativa" editable="false" layoutX="912.0" layoutY="33.0" opacity="0.0" prefHeight="322.0" prefWidth="191.0" stylesheets="@../style/genericos_style.css" wrapText="true" />
+      <TextArea fx:id="pantallaInformativa" editable="false" layoutX="902.0" layoutY="33.0" opacity="0.0" prefHeight="322.0" prefWidth="201.0" stylesheets="@../style/genericos_style.css" wrapText="true" />
       <Label layoutX="10.0" layoutY="371.0" prefHeight="25.0" prefWidth="117.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Busqueda general" wrapText="true">
          <font>
             <Font size="14.0" />
@@ -109,7 +109,7 @@
       <Label layoutX="262.0" layoutY="429.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Portada" />
       <Button fx:id="botonNuevaPortada" layoutX="500.0" layoutY="407.0" mnemonicParsing="false" onAction="#nuevaPortada" prefHeight="42.0" prefWidth="100.0" stylesheets="@../style/genericos_style.css" text="Buscar portada" wrapText="true" />
       <TextField fx:id="direccionImagen" editable="false" layoutX="380.0" layoutY="425.0" prefHeight="25.0" prefWidth="113.0" />
-      <ImageView fx:id="imagencomic" fitHeight="322.0" fitWidth="207.0" layoutX="703.0" layoutY="33.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="imagencomic" fitHeight="322.0" fitWidth="207.0" layoutX="678.0" layoutY="33.0" pickOnBounds="true" preserveRatio="true" />
       <ComboBox fx:id="nombreProcedenciaMod" layoutX="381.0" layoutY="250.0" prefHeight="25.0" prefWidth="113.0" />
       <ComboBox fx:id="nombreProcedencia" layoutX="136.0" layoutY="250.0" prefHeight="25.0" prefWidth="113.0" />
       <ComboBox fx:id="nombreFormatoMod" layoutX="381.0" layoutY="221.0" prefHeight="25.0" prefWidth="113.0" />

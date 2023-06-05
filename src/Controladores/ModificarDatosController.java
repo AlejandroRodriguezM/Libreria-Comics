@@ -69,39 +69,39 @@ import javafx.util.converter.IntegerStringConverter;
 
 public class ModificarDatosController implements Initializable {
 
-    @FXML
-    private MenuItem menu_archivo_desconectar;
-	
-    @FXML
-    private MenuItem menu_archivo_sobreMi;
-	
-    @FXML
-    private MenuItem menu_archivo_cerrar;
+	@FXML
+	private MenuItem menu_archivo_desconectar;
 
-    @FXML
-    private MenuItem menu_archivo_volver;
+	@FXML
+	private MenuItem menu_archivo_sobreMi;
 
-    @FXML
-    private MenuItem menu_comic_aleatoria;
+	@FXML
+	private MenuItem menu_archivo_cerrar;
 
-    @FXML
-    private MenuItem menu_comic_aniadir;
+	@FXML
+	private MenuItem menu_archivo_volver;
 
-    @FXML
-    private MenuItem menu_comic_eliminar;
+	@FXML
+	private MenuItem menu_comic_aleatoria;
 
-    @FXML
-    private MenuItem menu_comic_modificar;
+	@FXML
+	private MenuItem menu_comic_aniadir;
 
-    @FXML
-    private MenuBar menu_navegacion;
+	@FXML
+	private MenuItem menu_comic_eliminar;
 
-    @FXML
-    private Menu navegacion_cerrar;
+	@FXML
+	private MenuItem menu_comic_modificar;
 
-    @FXML
-    private Menu navegacion_comic;
-	
+	@FXML
+	private MenuBar menu_navegacion;
+
+	@FXML
+	private Menu navegacion_cerrar;
+
+	@FXML
+	private Menu navegacion_comic;
+
 	@FXML
 	private Button botonModificar;
 
@@ -176,12 +176,12 @@ public class ModificarDatosController implements Initializable {
 
 	@FXML
 	private TextField direccionImagen;
-	
-    @FXML
-    private TextField numeroCaja;
-    
-    @FXML
-    private TextField numeroCajaMod;
+
+	@FXML
+	private TextField numeroCaja;
+
+	@FXML
+	private TextField numeroCajaMod;
 
 	@FXML
 	private TextArea pantallaInformativa;
@@ -191,9 +191,9 @@ public class ModificarDatosController implements Initializable {
 
 	@FXML
 	private TableColumn<Comic, String> ID;
-	
-    @FXML
-    private TableColumn<Comic, String> caja;
+
+	@FXML
+	private TableColumn<Comic, String> caja;
 
 	@FXML
 	private TableColumn<Comic, String> dibujante;
@@ -283,14 +283,14 @@ public class ModificarDatosController implements Initializable {
 		nombreFormatoMod.getSelectionModel().selectFirst();
 
 		listas_autocompletado();
-				TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+		TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			String newText = change.getControlNewText();
 			if (newText.matches("\\d*")) {
 				return change;
 			}
 			return null;
 		});
-		
+
 		TextFormatter<Integer> textFormatterComic2 = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			String newText = change.getControlNewText();
 			if (newText.matches("\\d*")) {
@@ -328,7 +328,7 @@ public class ModificarDatosController implements Initializable {
 	 * tabla.
 	 *
 	 * @param event
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	@FXML
 	void clickRaton(MouseEvent event) throws IOException {
@@ -348,27 +348,27 @@ public class ModificarDatosController implements Initializable {
 		utilidad.deleteImage();
 
 	}
-	
+
 	@FXML
 	void teclasDireccion(KeyEvent event) throws IOException {
-	    if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
-	        libreria = new DBLibreriaManager();
-	        libreria.libreriaCompleta();
-	        utilidad = new Utilidades();
-	        String ID;
+		if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
+			libreria = new DBLibreriaManager();
+			libreria.libreriaCompleta();
+			utilidad = new Utilidades();
+			String ID;
 
-	        Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
+			Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 
-	        if (idRow != null) {
-	            ID = idRow.getID();
-	            pantallaInformativa.setOpacity(1);
-	            pantallaInformativa.setText(libreria.comicDatos(ID).toString().replace("[", "").replace("]", ""));
+			if (idRow != null) {
+				ID = idRow.getID();
+				pantallaInformativa.setOpacity(1);
+				pantallaInformativa.setText(libreria.comicDatos(ID).toString().replace("[", "").replace("]", ""));
 
-	            imagencomic.setImage(libreria.selectorImage(ID));
-	            utilidad.deleteImage();
-	        }
-	        DBManager.resetConnection();
-	    }
+				imagencomic.setImage(libreria.selectorImage(ID));
+				utilidad.deleteImage();
+			}
+			DBManager.resetConnection();
+		}
 	}
 
 	/**
@@ -567,7 +567,7 @@ public class ModificarDatosController implements Initializable {
 		campos[9] = nombreGuionista.getText();
 
 		campos[10] = nombreDibujante.getText();
-		
+
 		campos[11] = numeroCaja.getText();
 
 		return campos;
@@ -611,11 +611,10 @@ public class ModificarDatosController implements Initializable {
 		campos[11] = direccionImagen.getText();
 
 		campos[12] = estadoActual();
-		
-		
-		if(numeroCajaMod.getText() != null) {
+
+		if (numeroCajaMod.getText() != null) {
 			campos[13] = "0";
-		}else {
+		} else {
 			campos[13] = numeroCajaMod.getText();
 		}
 
@@ -642,7 +641,7 @@ public class ModificarDatosController implements Initializable {
 	 * Metodo que muestra toda la base de datos.
 	 *
 	 * @param event
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) throws IOException {
@@ -666,8 +665,8 @@ public class ModificarDatosController implements Initializable {
 
 		String datos[] = camposComicActuales();
 
-		Comic comic = new Comic(datos[0], datos[1],datos[11], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
-				datos[8], datos[9], datos[10], "", "", null);
+		Comic comic = new Comic(datos[0], datos[1], datos[11], datos[2], datos[3], datos[4], datos[5], datos[6],
+				datos[7], datos[8], datos[9], datos[10], "", "", null);
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
 		busquedaGeneral.setText("");
@@ -708,7 +707,7 @@ public class ModificarDatosController implements Initializable {
 	 */
 	@SuppressWarnings("unchecked")
 	public void tablaBBDD(List<Comic> listaComic) {
-		tablaBBDD.getColumns().setAll(ID, nombre,caja, numero, variante, firma, editorial, formato, procedencia, fecha,
+		tablaBBDD.getColumns().setAll(ID, nombre, caja, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante);
 		tablaBBDD.getItems().setAll(listaComic);
 	}
@@ -729,7 +728,11 @@ public class ModificarDatosController implements Initializable {
 
 			String portada = "";
 
+			String fecha = "";
+			
 			String id_comic = datos[0];
+			
+			Comic comic_temp = libreria.comicDatos(id_comic);
 
 			String nombre = datos[1];
 
@@ -745,14 +748,17 @@ public class ModificarDatosController implements Initializable {
 
 			String procedencia = datos[7];
 
-			String fecha = datos[8];
-
+			if(datos[8] == "") {
+				fecha = comic_temp.getFecha();
+			}else {
+				fecha = datos[8];
+			}
+			
 			String guionista = datos[9];
 
 			String dibujante = datos[10];
-			
-			Comic comic_temp = libreria.comicDatos(id_comic);
 
+			
 			if (datos[11] != "") {
 				portada = datos[11];
 
@@ -761,33 +767,38 @@ public class ModificarDatosController implements Initializable {
 				if (!file.exists()) {
 					Image imagen = new Image(comic_temp.getImagen());
 					imagencomic.setImage(imagen);
+
+					String carpeta_portada = Utilidades.eliminarDespuesUltimoPortadas(comic_temp.getImagen());
+					Utilidades.convertirNombresCarpetas(carpeta_portada);
 				} else {
 					Image imagen = new Image(portada);
 					imagencomic.setImage(imagen);
+
+					String carpeta_portada = Utilidades.eliminarDespuesUltimoPortadas(portada);
+					Utilidades.convertirNombresCarpetas(carpeta_portada);
 				}
 			}
 
 			String estado = datos[12];
-			
+
 			String numCaja = "";
-			if(datos[13] != "") {
+			if (datos[13] != "") {
 				numCaja = datos[13];
-			}else {
+			} else {
 				numCaja = comic_temp.getNumCaja();
 			}
 
-			Comic comic = new Comic(id_comic, nombre,numCaja,numero, variante, firma, editorial, formato, procedencia, fecha,
-					guionista, dibujante, estado, "Sin puntuar", portada);
+			Comic comic = new Comic(id_comic, nombre, numCaja, numero, variante, firma, editorial, formato, procedencia,
+					fecha, guionista, dibujante, estado, "Sin puntuar", portada);
 
 			libreria.actualizar_comic(comic);
 
 			pantallaInformativa.setOpacity(1);
 			pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
-			pantallaInformativa.setText("Has modificado correctamente: "
-					+ comic.toString().replace("[", "").replace("]", ""));
+			pantallaInformativa
+					.setText("Has modificado correctamente: " + comic.toString().replace("[", "").replace("]", ""));
 			libreria.listasAutoCompletado();
-			String carpeta_portada = Utilidades.eliminarDespuesUltimoPortadas(portada);
-			Utilidades.convertirNombresCarpetas(carpeta_portada);
+
 			return true;
 		} else {
 			pantallaInformativa.setOpacity(1);
@@ -873,7 +884,7 @@ public class ModificarDatosController implements Initializable {
 		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 		myStage.close();
 	}
-	
+
 	/**
 	 * Metodo que permite abrir la ventana "sobreMiController"
 	 *
@@ -884,8 +895,8 @@ public class ModificarDatosController implements Initializable {
 
 		nav.verSobreMi();
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	/////////////////////////////
@@ -904,13 +915,13 @@ public class ModificarDatosController implements Initializable {
 	 */
 	@FXML
 	public void desconectar(ActionEvent event) throws IOException {
-	    DBManager.close();
-	    nav.verAccesoBBDD();
+		DBManager.close();
+		nav.verAccesoBBDD();
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
-	
+
 	/**
 	 * Vuelve al menu inicial de conexion de la base de datos.
 	 *
