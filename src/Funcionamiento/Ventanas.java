@@ -34,6 +34,7 @@ import Controladores.ModificarDatosController;
 import Controladores.PuntuarDatosController;
 import Controladores.RecomendacionesController;
 import Controladores.SobreMiController;
+import JDBC.DBManager;
 import Controladores.OpcionesDatosController;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -160,7 +161,7 @@ public class Ventanas {
 
 			stage.setScene(scene);
 			stage.show();
-
+			DBManager.resetConnection();
 		} catch (IOException ex) {
 			alertaException(ex.toString());
 		}
@@ -195,14 +196,11 @@ public class Ventanas {
 
 			// Indico que debe hacer al cerrar
 			stage.setOnCloseRequest(e -> {
-
 				controlador.closeWindows();
-
 			});
-
 			stage.setScene(scene);
 			stage.show();
-
+			DBManager.resetConnection();
 		} catch (IOException ex) {
 			alertaException(ex.toString());
 		}
@@ -242,6 +240,7 @@ public class Ventanas {
 
 			stage.setScene(scene);
 			stage.show();
+			DBManager.resetConnection();
 
 		} catch (IOException ex) {
 			alertaException(ex.toString());
@@ -284,6 +283,7 @@ public class Ventanas {
 
 			stage.setScene(scene);
 			stage.show();
+			DBManager.resetConnection();
 
 		} catch (IOException ex) {
 			alertaException(ex.toString());
@@ -407,6 +407,7 @@ public class Ventanas {
 
 			stage.setScene(scene);
 			stage.show();
+			DBManager.resetConnection();
 
 		} catch (IOException ex) {
 			alertaException(ex.toString());

@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -260,8 +261,160 @@ public class PuntuarDatosController implements Initializable {
 			}
 			return null;
 		});
+		
+		TextFormatter<Integer> textFormatterComic3 = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+			String newText = change.getControlNewText();
+			if (newText.matches("\\d*")) {
+				return change;
+			}
+			return null;
+		});
+		
+		TextFormatter<Integer> textFormatterComic4 = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+			String newText = change.getControlNewText();
+			if (newText.matches("\\d*")) {
+				return change;
+			}
+			return null;
+		});
+		
 		numeroComic.setTextFormatter(textFormatterComic);
 		numeroCaja.setTextFormatter(textFormatterComic2);
+		numeroID.setTextFormatter(textFormatterComic3);
+		idPuntuar.setTextFormatter(textFormatterComic4);
+		libreria = new DBLibreriaManager();
+
+		// Agregar el ChangeListener al TextField idComicMod
+		idPuntuar.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (!newValue.isEmpty()) {
+				boolean existeComic = libreria.checkID(newValue);
+				if (existeComic || newValue.isEmpty()) {
+
+					Comic comic_temp = libreria.comicDatos(idPuntuar.getText());
+
+					idPuntuar.setText(idPuntuar.getText());
+
+					nombreComic.setText(comic_temp.getNombre());
+
+					numeroComic.setText(comic_temp.getNumero());
+
+					nombreVariante.setText(comic_temp.getVariante());
+
+					nombreFirma.setText(comic_temp.getFirma());
+
+					nombreEditorial.setText(comic_temp.getEditorial());
+
+					String formato = comic_temp.getFormato();
+					nombreFormato.getSelectionModel().select(formato);
+
+					String procedencia = comic_temp.getProcedencia();
+					procedenciaParametro.getSelectionModel().select(procedencia);
+					
+					String puntuacion = comic_temp.getPuntuacion();
+					puntuacionMenu.getSelectionModel().select(puntuacion);
+
+					String fechaString = comic_temp.getFecha();
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+					LocalDate fecha = LocalDate.parse(fechaString, formatter);
+					fechaPublicacion.setValue(fecha);
+
+					nombreGuionista.setText(comic_temp.getGuionista());
+
+					nombreDibujante.setText(comic_temp.getDibujante());
+
+					numeroCaja.setText(comic_temp.getNumCaja());
+					
+					pantallaInformativa.setOpacity(1);
+					pantallaInformativa.setText(libreria.comicDatos(idPuntuar.getText()).toString().replace("[", "").replace("]", ""));
+					imagencomic.setImage(libreria.selectorImage(idPuntuar.getText()));
+				}
+			}
+			else {
+				borrar_datos();
+			}
+		});
+		
+		numeroID.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (!newValue.isEmpty()) {
+				boolean existeComic = libreria.checkID(newValue);
+				if (existeComic || newValue.isEmpty()) {
+
+					Comic comic_temp = libreria.comicDatos(numeroID.getText());
+
+					numeroID.setText(numeroID.getText());
+
+					nombreComic.setText(comic_temp.getNombre());
+
+					numeroComic.setText(comic_temp.getNumero());
+
+					nombreVariante.setText(comic_temp.getVariante());
+
+					nombreFirma.setText(comic_temp.getFirma());
+
+					nombreEditorial.setText(comic_temp.getEditorial());
+
+					String formato = comic_temp.getFormato();
+					nombreFormato.getSelectionModel().select(formato);
+
+					String procedencia = comic_temp.getProcedencia();
+					procedenciaParametro.getSelectionModel().select(procedencia);
+					
+					String puntuacion = comic_temp.getPuntuacion();
+					puntuacionMenu.getSelectionModel().select(puntuacion);
+
+					String fechaString = comic_temp.getFecha();
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+					LocalDate fecha = LocalDate.parse(fechaString, formatter);
+					fechaPublicacion.setValue(fecha);
+
+					nombreGuionista.setText(comic_temp.getGuionista());
+
+					nombreDibujante.setText(comic_temp.getDibujante());
+
+					numeroCaja.setText(comic_temp.getNumCaja());
+					
+					pantallaInformativa.setOpacity(1);
+					pantallaInformativa.setText(libreria.comicDatos(numeroID.getText()).toString().replace("[", "").replace("]", ""));
+					imagencomic.setImage(libreria.selectorImage(numeroID.getText()));
+				}
+			}
+			else {
+				borrar_datos();
+			} 
+		});
+	}
+	
+	public void borrar_datos() {
+
+		nombreComic.setText("");
+
+		numeroComic.setText("");
+
+		nombreVariante.setText("");
+
+		nombreFirma.setText("");
+
+		nombreEditorial.setText("");
+
+		nombreFormato.getSelectionModel().select("");
+		
+		procedenciaParametro.getSelectionModel().select("");
+		
+		puntuacionMenu.getSelectionModel().select("");
+
+		fechaPublicacion.setValue(null);
+
+		nombreGuionista.setText("");
+
+		nombreDibujante.setText("");
+
+		numeroCaja.setText("");
+		
+		imagencomic.setImage(null);
+		
+		pantallaInformativa.setOpacity(0);
 	}
 
 	/**
@@ -297,47 +450,54 @@ public class PuntuarDatosController implements Initializable {
 	 * tabla.
 	 *
 	 * @param event
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	@FXML
 	void clickRaton(MouseEvent event) throws IOException {
 		libreria = new DBLibreriaManager();
 		libreria.libreriaCompleta();
 		utilidad = new Utilidades();
-		String ID;
+		String id_comic;
 
-		Comic idRow;
+		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 
-		idRow = tablaBBDD.getSelectionModel().getSelectedItem();
+		if (idRow != null) {
+			id_comic = idRow.getID();
+			idPuntuar.setStyle("");
+			idPuntuar.setText(id_comic);
+			pantallaInformativa.setStyle("");
+			pantallaInformativa.setOpacity(1);
+			pantallaInformativa.setText(libreria.comicDatos(id_comic).toString().replace("[", "").replace("]", ""));
 
-		ID = idRow.getID();
-		pantallaInformativa.setOpacity(1);
-		pantallaInformativa.setText(libreria.comicDatos(ID).toString().replace("[", "").replace("]", ""));
-		imagencomic.setImage(libreria.selectorImage(ID));
-		utilidad.deleteImage();
-
+			imagencomic.setImage(libreria.selectorImage(id_comic));
+			utilidad.deleteImage();
+		}
+		DBManager.resetConnection();
 	}
-	
+
 	@FXML
 	void teclasDireccion(KeyEvent event) throws IOException {
-	    if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
-	        libreria = new DBLibreriaManager();
-	        libreria.libreriaCompleta();
-	        utilidad = new Utilidades();
-	        String ID;
+		if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
+			libreria = new DBLibreriaManager();
+			libreria.libreriaCompleta();
+			utilidad = new Utilidades();
+			String id_comic;
 
-	        Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
+			Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 
-	        if (idRow != null) {
-	            ID = idRow.getID();
-	            pantallaInformativa.setOpacity(1);
-	            pantallaInformativa.setText(libreria.comicDatos(ID).toString().replace("[", "").replace("]", ""));
+			if (idRow != null) {
+				id_comic = idRow.getID();
+				idPuntuar.setStyle("");
+				idPuntuar.setText(id_comic);
+				pantallaInformativa.setStyle("");
+				pantallaInformativa.setOpacity(1);
+				pantallaInformativa.setText(libreria.comicDatos(id_comic).toString().replace("[", "").replace("]", ""));
 
-	            imagencomic.setImage(libreria.selectorImage(ID));
-	            utilidad.deleteImage();
-	        }
-	        DBManager.resetConnection();
-	    }
+				imagencomic.setImage(libreria.selectorImage(id_comic));
+				utilidad.deleteImage();
+			}
+			DBManager.resetConnection();
+		}
 	}
 
 	/**
@@ -345,50 +505,70 @@ public class PuntuarDatosController implements Initializable {
 	 * dato "puntuacion" de un comic en concreto usando su ID"
 	 *
 	 * @param event
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	@FXML
 	void agregarPuntuacion(ActionEvent event) throws IOException {
 		imagencomic.setImage(null);
 		libreria = new DBLibreriaManager();
-		String ID = idPuntuar.getText();
-		libreria.actualizarPuntuacion(ID, comicPuntuacion()); // Llamada a funcion
-		datosOpinion("Opinion introducida con exito: ");
-		nombreColumnas(); // Llamada a funcion
-		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
+		String id_comic = idPuntuar.getText();
+		idPuntuar.setStyle("");
+		if (id_comic.length() == 0 || !libreria.comprobarID(id_comic)) {
+			String excepcion = "No puedes puntuar un comic si antes no pones un ID valido";
+
+			nav.alertaException(excepcion);
+			idPuntuar.setStyle("-fx-background-color: #FF0000;");
+			pantallaInformativa.setStyle("-fx-background-color: #F53636");
+			pantallaInformativa.setText("Error. Debes de introducir los datos correctos");
+		} else {
+			libreria.actualizarPuntuacion(id_comic, comicPuntuacion()); // Llamada a funcion
+			datosOpinion("Opinion introducida con exito: ");
+			nombreColumnas(); // Llamada a funcion
+			tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
+		}
 	}
 
 	/**
 	 * Funcion que permite borrar la opinion de un comic
 	 *
 	 * @param event
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	@FXML
 	void borrarPuntuacion(ActionEvent event) throws IOException {
 		imagencomic.setImage(null);
 		libreria = new DBLibreriaManager();
-		String ID = idPuntuar.getText();
-		libreria.borrarPuntuacion(ID);
-		datosOpinion("Opinion borrada con exito: ");
-		nombreColumnas(); // Llamada a funcion
-		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
+		String id_comic = idPuntuar.getText();
+		idPuntuar.setStyle("");
+
+		if (id_comic.length() == 0 || !libreria.comprobarID(id_comic)) {
+			String excepcion = "No puedes puntuar un comic si antes no pones un ID valido";
+
+			nav.alertaException(excepcion);
+			idPuntuar.setStyle("-fx-background-color: #FF0000;");
+			pantallaInformativa.setStyle("-fx-background-color: #F53636");
+			pantallaInformativa.setText("Error. Debes de introducir los datos correctos");
+		} else {
+			libreria.borrarPuntuacion(id_comic);
+			datosOpinion("Opinion borrada con exito: ");
+			nombreColumnas(); // Llamada a funcion
+			tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
+		}
 	}
 
 	/*
 	 * Muestra en TextArea un mensaje sobre puntuacion del comic introducido
 	 */
 	public void datosOpinion(String pantallaInfo) {
-	    pantallaInformativa.setOpacity(1);
-	    pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
+		pantallaInformativa.setOpacity(1);
+		pantallaInformativa.setStyle("-fx-background-color: #A0F52D");
 
-	    String listaComicsTexto = DBLibreriaManager.listaComics.toString();
-	    int indexComa = listaComicsTexto.indexOf(",");
-	    String listaComicsSinComa = listaComicsTexto.substring(0, indexComa).replace("[", "");
+		String listaComicsTexto = DBLibreriaManager.listaComics.toString();
+		int indexComa = listaComicsTexto.indexOf(",");
+		String listaComicsSinComa = listaComicsTexto.substring(0, indexComa).replace("[", "");
 
-	    pantallaInformativa.setText(pantallaInfo + listaComicsSinComa);
+		pantallaInformativa.setText(pantallaInfo + listaComicsSinComa);
 	}
-
 
 	/**
 	 * Funcion que permite modificar la puntuacion de un comic, siempre y cuando el
@@ -424,17 +604,11 @@ public class PuntuarDatosController implements Initializable {
 		busquedaGeneral.setText("");
 		numeroCaja.setText("");
 		busquedaGeneral.setText("");
-
 		idPuntuar.setText("");
-
 		idPuntuar.setStyle(null);
-
 		pantallaInformativa.setText(null);
-
 		pantallaInformativa.setOpacity(0);
-
 		tablaBBDD.getItems().clear();
-
 		imagencomic.setImage(null);
 	}
 
@@ -458,7 +632,7 @@ public class PuntuarDatosController implements Initializable {
 	 * Metodo que muestra toda la base de datos.
 	 *
 	 * @param event
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) throws IOException {
@@ -495,8 +669,8 @@ public class PuntuarDatosController implements Initializable {
 	 */
 	@SuppressWarnings("unchecked")
 	public void tablaBBDD(List<Comic> listaComic) {
-		tablaBBDD.getColumns().setAll(ID, nombre, caja, numero, variante, firma, editorial, formato, procedencia, fecha,
-				guionista, dibujante,puntuacion);
+		tablaBBDD.getColumns().setAll(nombre, caja, numero, variante, firma, editorial, formato, procedencia, fecha,
+				guionista, dibujante, puntuacion);
 		tablaBBDD.getItems().setAll(listaComic);
 	}
 

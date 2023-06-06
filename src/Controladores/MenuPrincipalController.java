@@ -264,7 +264,7 @@ public class MenuPrincipalController implements Initializable {
 		nombreFormato.setItems(formatoActual);
 		nombreFormato.getSelectionModel().selectFirst();
 
-		listas_autocompletado();
+//		listas_autocompletado();
 
 		TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			String newText = change.getControlNewText();
@@ -337,6 +337,8 @@ public class MenuPrincipalController implements Initializable {
 	public void ventanaAniadir(ActionEvent event) {
 
 		nav.verIntroducirDatos();
+//		DBManager.resetConnection();
+
 		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 		myStage.close();
 	}
@@ -350,6 +352,7 @@ public class MenuPrincipalController implements Initializable {
 	public void ventanaEliminar(ActionEvent event) {
 
 		nav.verEliminarDatos();
+		DBManager.resetConnection();
 
 		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 		myStage.close();
@@ -364,6 +367,7 @@ public class MenuPrincipalController implements Initializable {
 	public void ventanaModificar(ActionEvent event) {
 
 		nav.verModificarDatos();
+		DBManager.resetConnection();
 
 		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 		myStage.close();
@@ -378,6 +382,7 @@ public class MenuPrincipalController implements Initializable {
 	void ventanaRecomendar(ActionEvent event) {
 
 		nav.verRecomendacion();
+		DBManager.resetConnection();
 
 		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 		myStage.close();
@@ -391,7 +396,7 @@ public class MenuPrincipalController implements Initializable {
 	void ventanaPuntuar(ActionEvent event) {
 
 		nav.verPuntuar();
-
+		DBManager.resetConnection();
 		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 		myStage.close();
 	}
@@ -405,6 +410,7 @@ public class MenuPrincipalController implements Initializable {
 	void verSobreMi(ActionEvent event) {
 
 		nav.verSobreMi();
+		DBManager.resetConnection();
 
 		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 		myStage.close();
@@ -729,7 +735,7 @@ public class MenuPrincipalController implements Initializable {
 	            imagencomic.setImage(libreria.selectorImage(ID));
 	            utilidad.deleteImage();
 	        }
-	        DBManager.resetConnection();
+//	        DBManager.resetConnection();
 	    }
 	}
 
@@ -873,7 +879,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@SuppressWarnings("unchecked")
 	public void tablaBBDD(List<Comic> listaComic) {
-		tablaBBDD.getColumns().setAll(ID, nombre, caja, numero, variante, firma, editorial, formato, procedencia, fecha,
+		tablaBBDD.getColumns().setAll(nombre, caja, numero, variante, firma, editorial, formato, procedencia, fecha,
 				guionista, dibujante, puntuacion);
 		tablaBBDD.getItems().setAll(listaComic);
 	}

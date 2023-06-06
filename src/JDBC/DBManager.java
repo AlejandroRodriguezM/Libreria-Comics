@@ -105,26 +105,30 @@ public class DBManager {
 	 * @return
 	 */
 	public static Connection conexion() {
+	    DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
 
-		DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
+	    try {
+	        conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+	        return conn;
+	    } catch (SQLException ex) {
+	        nav.alertaException(ex.toString());
+	        ex.printStackTrace();
+	        System.out.println(DB_URL + " " + DB_USER + " " + DB_PASS);
+	    }
 
-		try {
-			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
-			return conn;
-		} catch (SQLException ex) {
-			nav.alertaException(ex.toString());
-			ex.printStackTrace();
-			return null;
-		}
+	    return null;
 	}
 	
-    /**
-     * Reinicia la conexión a la base de datos
-     */
-    public static void resetConnection() {
-        close();
-        conn = conexion();
-    }
+	public static void resetConnection() {
+	    try {
+	        if (conn != null && !conn.isClosed()) {
+	            conn.close();
+	        }
+	        conn = conexion();
+	    } catch (SQLException ex) {
+	        nav.alertaException(ex.toString());
+	    }
+	}
 
 	/**
 	 * Cierra la conexion con la base de datos

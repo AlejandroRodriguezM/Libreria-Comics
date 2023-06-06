@@ -253,10 +253,7 @@ public class Utilidades {
 						output.write(buffer, 0, bytesRead);
 					}
 				}
-				System.out.println("No existe: " + datos.getImagen());
 
-			}else {
-				System.out.println("Portada copiada: " + datos.getImagen());
 			}
 
 			String userDir = System.getProperty("user.home");
@@ -276,7 +273,8 @@ public class Utilidades {
 			}
 			String nombre_comic = datos.getNombre().replace(" ", "_").replace(":", "_").replace("-", "_");
 			String numero_comic = datos.getNumero();
-			String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_").replace(":", "");
+			String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_")
+					.replace(":", "");
 			String fecha_comic = datos.getFecha();
 			String nombre_completo = nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic;
 			String extension = ".jpg";
@@ -289,29 +287,30 @@ public class Utilidades {
 	}
 
 	public static void copyDirectory(String sourceDirectoryPath, String destinationDirectoryPath) throws IOException {
-	    Path sourceDirectory = Paths.get(sourceDirectoryPath);
-	    Path destinationDirectory = Paths.get(destinationDirectoryPath);
+		Path sourceDirectory = Paths.get(sourceDirectoryPath);
+		Path destinationDirectory = Paths.get(destinationDirectoryPath);
 
-	    if (!Files.exists(destinationDirectory)) {
-	        Files.createDirectories(destinationDirectory);
-	    }
+		if (!Files.exists(destinationDirectory)) {
+			Files.createDirectories(destinationDirectory);
+		}
 
-	    Files.walkFileTree(sourceDirectory, new SimpleFileVisitor<>() {
-	        @Override
-	        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-	            Path targetPath = destinationDirectory.resolve(sourceDirectory.relativize(dir));
-	            if (!Files.exists(targetPath)) {
-	                Files.createDirectory(targetPath);
-	            }
-	            return FileVisitResult.CONTINUE;
-	        }
+		Files.walkFileTree(sourceDirectory, new SimpleFileVisitor<>() {
+			@Override
+			public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+				Path targetPath = destinationDirectory.resolve(sourceDirectory.relativize(dir));
+				if (!Files.exists(targetPath)) {
+					Files.createDirectory(targetPath);
+				}
+				return FileVisitResult.CONTINUE;
+			}
 
-	        @Override
-	        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-	            Files.copy(file, destinationDirectory.resolve(sourceDirectory.relativize(file)), StandardCopyOption.REPLACE_EXISTING);
-	            return FileVisitResult.CONTINUE;
-	        }
-	    });
+			@Override
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+				Files.copy(file, destinationDirectory.resolve(sourceDirectory.relativize(file)),
+						StandardCopyOption.REPLACE_EXISTING);
+				return FileVisitResult.CONTINUE;
+			}
+		});
 	}
 
 	public String obtenerDatoDespuesDeDosPuntos(String linea) {
@@ -341,7 +340,8 @@ public class Utilidades {
 				+ obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas" + File.separator;
 		String nombre_comic = datos.getNombre().replace(" ", "_").replace(":", "_").replace("-", "_");
 		String numero_comic = datos.getNumero();
-		String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_").replace(":", "_");
+		String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_").replace(":",
+				"_");
 		String fecha_comic = datos.getFecha();
 		String nombre_completo = nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic;
 		String extension = ".jpg";
@@ -352,7 +352,8 @@ public class Utilidades {
 	public String crearNuevoNombre(Comic datos) {
 		String nombre_comic = datos.getNombre().replace(" ", "_").replace(":", "_").replace("-", "_");
 		String numero_comic = datos.getNumero();
-		String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_").replace(":", "_");
+		String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_").replace(":",
+				"_");
 		String fecha_comic = datos.getFecha();
 		String nombre_completo = nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic;
 		String extension = ".jpg";
@@ -411,9 +412,6 @@ public class Utilidades {
 					zipFile(sourceFolder, sourceFolder.getName(), zipOut);
 				}
 				excel.savedataExcel(nombre_carpeta);
-				System.out.println("Copia de seguridad creada: " + backupFile.getAbsolutePath());
-			} else {
-				System.out.println("La carpeta de origen no existe. No se pudo realizar la copia de seguridad.");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -463,17 +461,10 @@ public class Utilidades {
 			if (archivos != null) {
 				for (File archivo : archivos) {
 					if (archivo.isFile()) {
-						boolean eliminado = archivo.delete();
-						if (eliminado) {
-							System.out.println("Archivo eliminado: " + archivo.getAbsolutePath());
-						} else {
-							System.out.println("No se pudo eliminar el archivo: " + archivo.getAbsolutePath());
-						}
+						archivo.delete();
 					}
 				}
 			}
-		} else {
-			System.out.println("La carpeta no existe o no es un directorio: " + sourcePath);
 		}
 	}
 
@@ -504,7 +495,6 @@ public class Utilidades {
 			pb.redirectOutput(Redirect.to(archivoCopia));
 			pb.start();
 
-			System.out.println("Copia de seguridad de la base de datos creada en: " + archivoCopia.getAbsolutePath());
 		} catch (Exception e) {
 			nav.alertaException(e.toString());
 		}
@@ -520,89 +510,117 @@ public class Utilidades {
 			e.printStackTrace();
 		}
 	}
-	
-    /* 
-    * Convierte los nombres de los archivos en una carpeta, reemplazando los guiones por guiones bajos.
-    * @param rutaCarpeta La ruta de la carpeta que contiene los archivos.
-    * @throws IOException Si hay un error al leer el contenido de la carpeta.
-    */
+
+	/*
+	 * Convierte los nombres de los archivos en una carpeta, reemplazando los
+	 * guiones por guiones bajos.
+	 * 
+	 * @param rutaCarpeta La ruta de la carpeta que contiene los archivos.
+	 * 
+	 * @throws IOException Si hay un error al leer el contenido de la carpeta.
+	 */
 	public static void convertirNombresCarpetas(String rutaCarpeta) throws IOException {
 
-	    File carpeta = new File(rutaCarpeta);
+		File carpeta = new File(rutaCarpeta);
 
-	    if (!carpeta.isDirectory()) {
-	        throw new IllegalArgumentException("La ruta proporcionada no es una carpeta.");
-	    }
+		if (!carpeta.isDirectory()) {
+			throw new IllegalArgumentException("La ruta proporcionada no es una carpeta.");
+		}
 
-	    File[] archivos = carpeta.listFiles();
-	    if (archivos == null) {
-	        throw new IOException("Error al leer el contenido de la carpeta.");
-	    }
+		File[] archivos = carpeta.listFiles();
+		if (archivos == null) {
+			throw new IOException("Error al leer el contenido de la carpeta.");
+		}
 
-	    for (File archivo : archivos) {
-	        if (archivo.isFile()) {
-	            String nombreArchivoAntiguo = archivo.getName();
-	            String nombreArchivoNuevo = convertirNombreArchivo(nombreArchivoAntiguo);
-	            if (!nombreArchivoAntiguo.equals(nombreArchivoNuevo)) {
-	                File nuevoArchivo = new File(carpeta, nombreArchivoNuevo);
-	                if (archivo.renameTo(nuevoArchivo)) {
-	                    System.out.println("Archivo renombrado: " + nombreArchivoAntiguo + " -> " + nombreArchivoNuevo);
-	                } else {
-	                    System.out.println("Error al renombrar el archivo: " + nombreArchivoAntiguo);
-	                }
-	            }
-	        }
-	    }
+		for (File archivo : archivos) {
+			if (archivo.isFile()) {
+				String nombreArchivoAntiguo = archivo.getName();
+				String nombreArchivoNuevo = convertirNombreArchivo(nombreArchivoAntiguo);
+				if (!nombreArchivoAntiguo.equals(nombreArchivoNuevo)) {
+					File nuevoArchivo = new File(carpeta, nombreArchivoNuevo);
+					archivo.renameTo(nuevoArchivo);
+
+				}
+			}
+		}
 	}
 
-    /*
-    * Convierte el nombre de un archivo, reemplazando los guiones por guiones bajos.
-    * @param nombreArchivo El nombre del archivo a convertir.
-    * @return El nuevo nombre de archivo convertido.
-    */
+	/*
+	 * Convierte el nombre de un archivo, reemplazando los guiones por guiones
+	 * bajos.
+	 * 
+	 * @param nombreArchivo El nombre del archivo a convertir.
+	 * 
+	 * @return El nuevo nombre de archivo convertido.
+	 */
 	public static String convertirNombreArchivo(String nombreArchivo) {
 
-	    StringBuilder nombreConvertido = new StringBuilder();
+		StringBuilder nombreConvertido = new StringBuilder();
 
-	    for (int i = 0; i < nombreArchivo.length(); i++) {
-	        char caracterActual = nombreArchivo.charAt(i);
+		for (int i = 0; i < nombreArchivo.length(); i++) {
+			char caracterActual = nombreArchivo.charAt(i);
 
-	        if (caracterActual == '-' && esPosicionGuionValida(nombreArchivo, i)) {
-	            nombreConvertido.append('_');
-	        } else {
-	            nombreConvertido.append(caracterActual);
-	        }
-	    }
+			if (caracterActual == '-' && esPosicionGuionValida(nombreArchivo, i)) {
+				nombreConvertido.append('_');
+			} else {
+				nombreConvertido.append(caracterActual);
+			}
+		}
 
-	    return nombreConvertido.toString();
+		return nombreConvertido.toString();
 	}
 
-    /*
-    * Verifica si la posición de un guion en el nombre de archivo es válida para convertirlo.
-    * @param nombreArchivo El nombre del archivo.
-    * @param indice El índice del guion en el nombre del archivo.
-    * @return true si la posición del guion es válida, false en caso contrario.
-    */
+	/*
+	 * Verifica si la posición de un guion en el nombre de archivo es válida para
+	 * convertirlo.
+	 * 
+	 * @param nombreArchivo El nombre del archivo.
+	 * 
+	 * @param indice El índice del guion en el nombre del archivo.
+	 * 
+	 * @return true si la posición del guion es válida, false en caso contrario.
+	 */
 	public static boolean esPosicionGuionValida(String nombreArchivo, int indice) {
 
-	    // Verificar si el guion está precedido por un dígito
-	    if (indice > 0 && Character.isDigit(nombreArchivo.charAt(indice - 1))) {
-	        return false;
-	    }
-	    // Verificar si el guion está seguido por un dígito
-	    if (indice < nombreArchivo.length() - 1 && Character.isDigit(nombreArchivo.charAt(indice + 1))) {
-	        return false;
-	    }
+		// Verificar si el guion está precedido por un dígito
+		if (indice > 0 && Character.isDigit(nombreArchivo.charAt(indice - 1))) {
+			return false;
+		}
+		// Verificar si el guion está seguido por un dígito
+		if (indice < nombreArchivo.length() - 1 && Character.isDigit(nombreArchivo.charAt(indice + 1))) {
+			return false;
+		}
 
-	    return true;
+		return true;
 	}
-    
-    public static String eliminarDespuesUltimoPortadas(String rutaArchivo) {
-        int indiceUltimoPortadas = rutaArchivo.lastIndexOf("portadas\\");
-        if (indiceUltimoPortadas != -1) {
-            return rutaArchivo.substring(0, indiceUltimoPortadas + 9);
-        } else {
-            return rutaArchivo;
-        }
-    }
+
+	public static String eliminarDespuesUltimoPortadas(String rutaArchivo) {
+		int indiceUltimoPortadas = rutaArchivo.lastIndexOf("portadas\\");
+		if (indiceUltimoPortadas != -1) {
+			return rutaArchivo.substring(0, indiceUltimoPortadas + 9);
+		} else {
+			return rutaArchivo;
+		}
+	}
+
+	public static void eliminarFichero(String direccion) {
+		File archivo = new File(direccion);
+		archivo.delete();
+	}
+
+	public static void renombrarArchivo(String carpeta, String nombreArchivoBuscado, String nuevoNombreArchivo) {
+		File directorio = new File(carpeta);
+		File[] archivos = directorio.listFiles();
+
+		if (archivos != null) {
+			for (File archivo : archivos) {
+				if (archivo.isFile() && !archivo.getName().equals(nombreArchivoBuscado)) {
+					File nuevoArchivo = new File(directorio, nuevoNombreArchivo);
+					archivo.renameTo(nuevoArchivo);
+					
+				}
+			}
+		}
+	}
+
 }

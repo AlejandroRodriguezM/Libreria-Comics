@@ -147,8 +147,7 @@ public class CrearBBDDController implements Initializable {
 					String puertoTexto = line.substring("Puerto: ".length());
 					puertoBBDD.setText(puertoTexto);
 				} else if (line.startsWith("Database: ")) {
-					String databaseTexto = line.substring("Database: ".length());
-					nombreBBDD.setText(databaseTexto);
+					nombreBBDD.setText("");
 				} else if (line.startsWith("Hosting: ")) {
 					String hostingTexto = line.substring("Hosting: ".length());
 					nombreHost.setText(hostingTexto);
@@ -438,8 +437,6 @@ public class CrearBBDDController implements Initializable {
 			if (!portadasFolder.mkdirs()) {
 				throw new IOException("No se pudo crear la carpeta 'portadas'");
 			}
-		}else {
-			System.out.println("Ya existe la carpeta en libreria_comics para " + acceso.obtenerDatoDespuesDeDosPuntos("Database"));
 		}
 	}
 

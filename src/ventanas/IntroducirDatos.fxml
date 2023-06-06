@@ -149,7 +149,7 @@
       </Label>
       <TableView fx:id="tablaBBDD" layoutY="411.0" onKeyPressed="#teclasDireccion" onMouseClicked="#clickRaton" prefHeight="321.0" prefWidth="1116.0">
          <columns>
-            <TableColumn fx:id="ID" prefWidth="47.0" text="ID" />
+            <TableColumn fx:id="ID" prefWidth="47.0" text="ID" visible="false" />
             <TableColumn fx:id="nombre" prefWidth="135.0" text="Nombre" />
             <TableColumn fx:id="caja" prefWidth="193.0" text="Caja" />
             <TableColumn fx:id="numero" prefWidth="58.0" text="Numero" />

@@ -104,7 +104,8 @@ public class AccesoBBDDController implements Initializable {
 	void entrarMenu(ActionEvent event) {
 
 		if (JDBC.DBManager.isConnected()) { // Siempre que el metodo de la clase DBManager sea true, permitira acceder
-											// al menu principal
+			DBManager.resetConnection();
+						// al menu principal
 			nav.verMenuPrincipal(); // Llamada a metodo de la clase NavegacionVentanas. Permite cargar y mostrar el
 									// menu principal
 			Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
@@ -146,13 +147,7 @@ public class AccesoBBDDController implements Initializable {
 					
 					cbd.crearCarpeta();
 					if (!carpeta_backupsFile.exists()) {
-						if (carpeta_backupsFile.mkdirs()) {
-							System.out.println("Carpeta de backups creada: " + carpetaBackup);
-						} else {
-							System.out.println("No se pudo crear la carpeta de backups");
-						}
-					} else {
-						System.out.println("La carpeta de backups ya existe: " + carpetaBackup);
+						carpeta_backupsFile.mkdirs();
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
