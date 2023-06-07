@@ -89,8 +89,9 @@ public class FuncionesExcel {
 	 *
 	 * @param fichero
 	 * @return
+	 * @throws SQLException 
 	 */
-	public boolean crearExcel(File fichero) {
+	public boolean crearExcel(File fichero) throws SQLException {
 
 		FileOutputStream outputStream;
 		Cell celda;
@@ -170,7 +171,7 @@ public class FuncionesExcel {
 		return false;
 	}
 
-	public void savedataExcel(String nombre_carpeta) {
+	public void savedataExcel(String nombre_carpeta) throws SQLException {
 		FileOutputStream outputStream;
 		Cell celda;
 		Row fila;

@@ -287,10 +287,20 @@ public class PuntuarDatosController implements Initializable {
 		// Agregar el ChangeListener al TextField idComicMod
 		idPuntuar.textProperty().addListener((observable, oldValue, newValue) -> {
 			if (!newValue.isEmpty()) {
-				boolean existeComic = libreria.checkID(newValue);
+				boolean existeComic = false;
+				try {
+					existeComic = libreria.checkID(newValue);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 				if (existeComic || newValue.isEmpty()) {
 
-					Comic comic_temp = libreria.comicDatos(idPuntuar.getText());
+					Comic comic_temp = null;
+					try {
+						comic_temp = libreria.comicDatos(idPuntuar.getText());
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
 
 					idPuntuar.setText(idPuntuar.getText());
 
@@ -326,8 +336,13 @@ public class PuntuarDatosController implements Initializable {
 					numeroCaja.setText(comic_temp.getNumCaja());
 					
 					pantallaInformativa.setOpacity(1);
-					pantallaInformativa.setText(libreria.comicDatos(idPuntuar.getText()).toString().replace("[", "").replace("]", ""));
-					imagencomic.setImage(libreria.selectorImage(idPuntuar.getText()));
+					try {
+						pantallaInformativa.setText(libreria.comicDatos(idPuntuar.getText()).toString().replace("[", "").replace("]", ""));
+						imagencomic.setImage(libreria.selectorImage(idPuntuar.getText()));
+
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 			else {
@@ -337,10 +352,21 @@ public class PuntuarDatosController implements Initializable {
 		
 		numeroID.textProperty().addListener((observable, oldValue, newValue) -> {
 			if (!newValue.isEmpty()) {
-				boolean existeComic = libreria.checkID(newValue);
+				boolean existeComic = false;
+				try {
+					existeComic = libreria.checkID(newValue);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 				if (existeComic || newValue.isEmpty()) {
 
-					Comic comic_temp = libreria.comicDatos(numeroID.getText());
+					Comic comic_temp = null;
+					try {
+						comic_temp = libreria.comicDatos(numeroID.getText());
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 
 					numeroID.setText(numeroID.getText());
 
@@ -376,8 +402,12 @@ public class PuntuarDatosController implements Initializable {
 					numeroCaja.setText(comic_temp.getNumCaja());
 					
 					pantallaInformativa.setOpacity(1);
-					pantallaInformativa.setText(libreria.comicDatos(numeroID.getText()).toString().replace("[", "").replace("]", ""));
-					imagencomic.setImage(libreria.selectorImage(numeroID.getText()));
+					try {
+						pantallaInformativa.setText(libreria.comicDatos(numeroID.getText()).toString().replace("[", "").replace("]", ""));
+						imagencomic.setImage(libreria.selectorImage(numeroID.getText()));
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 			else {
@@ -451,9 +481,10 @@ public class PuntuarDatosController implements Initializable {
 	 *
 	 * @param event
 	 * @throws IOException
+	 * @throws SQLException 
 	 */
 	@FXML
-	void clickRaton(MouseEvent event) throws IOException {
+	void clickRaton(MouseEvent event) throws IOException, SQLException {
 		libreria = new DBLibreriaManager();
 		libreria.libreriaCompleta();
 		utilidad = new Utilidades();
@@ -476,7 +507,7 @@ public class PuntuarDatosController implements Initializable {
 	}
 
 	@FXML
-	void teclasDireccion(KeyEvent event) throws IOException {
+	void teclasDireccion(KeyEvent event) throws IOException, SQLException {
 		if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
 			libreria = new DBLibreriaManager();
 			libreria.libreriaCompleta();
@@ -506,9 +537,10 @@ public class PuntuarDatosController implements Initializable {
 	 *
 	 * @param event
 	 * @throws IOException
+	 * @throws SQLException 
 	 */
 	@FXML
-	void agregarPuntuacion(ActionEvent event) throws IOException {
+	void agregarPuntuacion(ActionEvent event) throws IOException, SQLException {
 		imagencomic.setImage(null);
 		libreria = new DBLibreriaManager();
 		String id_comic = idPuntuar.getText();
@@ -533,9 +565,10 @@ public class PuntuarDatosController implements Initializable {
 	 *
 	 * @param event
 	 * @throws IOException
+	 * @throws SQLException 
 	 */
 	@FXML
-	void borrarPuntuacion(ActionEvent event) throws IOException {
+	void borrarPuntuacion(ActionEvent event) throws IOException, SQLException {
 		imagencomic.setImage(null);
 		libreria = new DBLibreriaManager();
 		String id_comic = idPuntuar.getText();
@@ -619,7 +652,7 @@ public class PuntuarDatosController implements Initializable {
 	 * @throws SQLException
 	 */
 	@FXML
-	void mostrarPorParametro(ActionEvent event) {
+	void mostrarPorParametro(ActionEvent event) throws SQLException {
 		imagencomic.setImage(null);
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
@@ -633,9 +666,10 @@ public class PuntuarDatosController implements Initializable {
 	 *
 	 * @param event
 	 * @throws IOException
+	 * @throws SQLException 
 	 */
 	@FXML
-	void verTodabbdd(ActionEvent event) throws IOException {
+	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
 		imagencomic.setImage(null);
 		utilidad = new Utilidades();
 		libreria = new DBLibreriaManager();
@@ -650,9 +684,10 @@ public class PuntuarDatosController implements Initializable {
 	 * muestren aquellos comics que tengan una puntuacion
 	 *
 	 * @param event
+	 * @throws SQLException 
 	 */
 	@FXML
-	void verComicsLeidos(ActionEvent event) {
+	void verComicsLeidos(ActionEvent event) throws SQLException {
 		imagencomic.setImage(null);
 		utilidad = new Utilidades();
 		libreria = new DBLibreriaManager();
@@ -714,8 +749,9 @@ public class PuntuarDatosController implements Initializable {
 	/**
 	 * Funcion que comprueba segun los datos escritos en los textArea, que comic
 	 * estas buscando.
+	 * @throws SQLException 
 	 */
-	public void listaPorParametro() {
+	public void listaPorParametro() throws SQLException {
 		String datosComic[] = camposComic();
 
 		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[11], datosComic[2], datosComic[3],

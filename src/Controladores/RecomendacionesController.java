@@ -1,6 +1,7 @@
 package Controladores;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
@@ -109,9 +110,10 @@ public class RecomendacionesController {
 	 *
 	 * @param event
 	 * @throws IOException 
+	 * @throws SQLException 
 	 */
 	@FXML
-	void eligePorMi(ActionEvent event) throws IOException {
+	void eligePorMi(ActionEvent event) throws IOException, SQLException {
 		printComicRecomendado.setOpacity(1);
 
 		printComicRecomendado.setText(generarLectura());
@@ -123,8 +125,9 @@ public class RecomendacionesController {
 	 *
 	 * @return
 	 * @throws IOException 
+	 * @throws SQLException 
 	 */
-	public String generarLectura() throws IOException {
+	public String generarLectura() throws IOException, SQLException {
 		
 		Random r = new Random();
 		utilidad = new Utilidades();

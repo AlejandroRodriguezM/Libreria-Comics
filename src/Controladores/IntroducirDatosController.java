@@ -317,8 +317,17 @@ public class IntroducirDatosController implements Initializable {
 			}
 			return null;
 		});
+		
+		TextFormatter<Integer> textFormatterComic3 = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+			String newText = change.getControlNewText();
+			if (newText.matches("\\d*")) {
+				return change;
+			}
+			return null;
+		});
 		numeroComic.setTextFormatter(textFormatterComic);
 		numeroCaja.setTextFormatter(textFormatterComic2);
+		numeroCajaAni.setTextFormatter(textFormatterComic3);
 	}
 
 	public void listas_autocompletado() {
@@ -344,9 +353,10 @@ public class IntroducirDatosController implements Initializable {
 	 *
 	 * @param event
 	 * @throws IOException
+	 * @throws SQLException 
 	 */
 	@FXML
-	void clickRaton(MouseEvent event) throws IOException {
+	void clickRaton(MouseEvent event) throws IOException, SQLException {
 		libreria = new DBLibreriaManager();
 		libreria.libreriaCompleta();
 		String id_comic;
@@ -393,7 +403,7 @@ public class IntroducirDatosController implements Initializable {
 	}
 
 	@FXML
-	void teclasDireccion(KeyEvent event) throws IOException {
+	void teclasDireccion(KeyEvent event) throws IOException, SQLException {
 		if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
 			libreria = new DBLibreriaManager();
 			libreria.libreriaCompleta();
@@ -487,9 +497,10 @@ public class IntroducirDatosController implements Initializable {
 	 *
 	 * @param event
 	 * @throws IOException
+	 * @throws SQLException 
 	 */
 	@FXML
-	public void agregarDatos(ActionEvent event) throws IOException {
+	public void agregarDatos(ActionEvent event) throws IOException, SQLException {
 
 		libreria = new DBLibreriaManager();
 		subidaComic();
@@ -612,7 +623,7 @@ public class IntroducirDatosController implements Initializable {
 	 * @throws SQLException
 	 */
 	@FXML
-	void mostrarPorParametro(ActionEvent event) {
+	void mostrarPorParametro(ActionEvent event) throws SQLException {
 		imagencomic.setImage(null);
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
@@ -626,9 +637,10 @@ public class IntroducirDatosController implements Initializable {
 	 *
 	 * @param event
 	 * @throws IOException
+	 * @throws SQLException 
 	 */
 	@FXML
-	void verTodabbdd(ActionEvent event) throws IOException {
+	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
 		imagencomic.setImage(null);
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
@@ -642,8 +654,9 @@ public class IntroducirDatosController implements Initializable {
 	 * en los textField
 	 *
 	 * @return
+	 * @throws SQLException 
 	 */
-	public void listaPorParametro() {
+	public void listaPorParametro() throws SQLException {
 		libreria = new DBLibreriaManager();
 
 		String datos[] = camposComicActuales();
@@ -673,8 +686,9 @@ public class IntroducirDatosController implements Initializable {
 	 * Permite introducir un comic en la base de datos de forma manual
 	 * 
 	 * @throws IOException
+	 * @throws SQLException 
 	 */
-	public void subidaComic() throws IOException {
+	public void subidaComic() throws IOException, SQLException {
 		libreria = new DBLibreriaManager();
 		utilidad = new Utilidades();
 		File file;

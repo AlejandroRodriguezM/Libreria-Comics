@@ -211,7 +211,11 @@ public class EliminarDatosController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		libreria = new DBLibreriaManager();
-		libreria.listasAutoCompletado();
+		try {
+			libreria.listasAutoCompletado();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList("Spain", "USA", "Japon",
 				"Italia", "Francia");
 		nombreProcedencia.setItems(procedenciaEstadoActual);
@@ -284,10 +288,20 @@ public class EliminarDatosController implements Initializable {
 		// Agregar el ChangeListener al TextField idComicMod
 		idComicTratar.textProperty().addListener((observable, oldValue, newValue) -> {
 			if (!newValue.isEmpty()) {
-				boolean existeComic = libreria.checkID(newValue);
+				boolean existeComic = false;
+				try {
+					existeComic = libreria.checkID(newValue);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 				if (existeComic || newValue.isEmpty()) {
 
-					Comic comic_temp = libreria.comicDatos(idComicTratar.getText());
+					Comic comic_temp = null;
+					try {
+						comic_temp = libreria.comicDatos(idComicTratar.getText());
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
 
 					idComic.setText(idComic.getText());
 
@@ -320,8 +334,12 @@ public class EliminarDatosController implements Initializable {
 					numeroCaja.setText(comic_temp.getNumCaja());
 					
 					pantallaInformativa.setOpacity(1);
-					pantallaInformativa.setText(libreria.comicDatos(idComic.getText()).toString().replace("[", "").replace("]", ""));
-					imagencomic.setImage(libreria.selectorImage(idComic.getText()));
+					try {
+						pantallaInformativa.setText(libreria.comicDatos(idComic.getText()).toString().replace("[", "").replace("]", ""));
+						imagencomic.setImage(libreria.selectorImage(idComic.getText()));
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 			else {
@@ -331,10 +349,20 @@ public class EliminarDatosController implements Initializable {
 		
 		idComic.textProperty().addListener((observable, oldValue, newValue) -> {
 			if (!newValue.isEmpty()) {
-				boolean existeComic = libreria.checkID(newValue);
+				boolean existeComic = false;
+				try {
+					existeComic = libreria.checkID(newValue);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 				if (existeComic || newValue.isEmpty()) {
 
-					Comic comic_temp = libreria.comicDatos(idComic.getText());
+					Comic comic_temp = null;
+					try {
+						comic_temp = libreria.comicDatos(idComic.getText());
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
 
 					idComic.setText(idComic.getText());
 
@@ -367,8 +395,13 @@ public class EliminarDatosController implements Initializable {
 					numeroCaja.setText(comic_temp.getNumCaja());
 					
 					pantallaInformativa.setOpacity(1);
-					pantallaInformativa.setText(libreria.comicDatos(idComic.getText()).toString().replace("[", "").replace("]", ""));
-					imagencomic.setImage(libreria.selectorImage(idComic.getText()));
+					try {
+						pantallaInformativa.setText(libreria.comicDatos(idComic.getText()).toString().replace("[", "").replace("]", ""));
+						imagencomic.setImage(libreria.selectorImage(idComic.getText()));
+
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 			else {
@@ -377,6 +410,9 @@ public class EliminarDatosController implements Initializable {
 		});
 	}
 	
+	/**
+	 * Metodo que permite borrar los datos en pantalla 
+	 */
 	public void borrar_datos() {
 
 		nombreComic.setText("");
@@ -406,6 +442,9 @@ public class EliminarDatosController implements Initializable {
 		pantallaInformativa.setOpacity(0);
 	}
 
+	/**
+	 * Metodo que permite actualizar los valores de las listas de los autocompletados
+	 */
 	public void listas_autocompletado() {
 		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
@@ -476,9 +515,10 @@ public class EliminarDatosController implements Initializable {
 	 *
 	 * @param event
 	 * @throws IOException
+	 * @throws SQLException 
 	 */
 	@FXML
-	void clickRaton(MouseEvent event) throws IOException {
+	void clickRaton(MouseEvent event) throws IOException, SQLException {
 		libreria = new DBLibreriaManager();
 		libreria.libreriaCompleta();
 		utilidad = new Utilidades();
@@ -500,8 +540,16 @@ public class EliminarDatosController implements Initializable {
 		DBManager.resetConnection();
 	}
 
+	/**
+	 * Funcion que permite mostrar la imagen de portada cuando usas las teclas de direccion en una
+	 * tabla.
+	 *
+	 * @param event
+	 * @throws IOException
+	 * @throws SQLException 
+	 */
 	@FXML
-	void teclasDireccion(KeyEvent event) throws IOException {
+	void teclasDireccion(KeyEvent event) throws IOException, SQLException {
 		if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
 			libreria = new DBLibreriaManager();
 			libreria.libreriaCompleta();
@@ -601,7 +649,7 @@ public class EliminarDatosController implements Initializable {
 	 * @throws SQLException
 	 */
 	@FXML
-	void mostrarPorParametro(ActionEvent event) {
+	void mostrarPorParametro(ActionEvent event) throws SQLException {
 		imagencomic.setImage(null);
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
@@ -615,9 +663,10 @@ public class EliminarDatosController implements Initializable {
 	 *
 	 * @param event
 	 * @throws IOException
+	 * @throws SQLException 
 	 */
 	@FXML
-	void verTodabbdd(ActionEvent event) throws IOException {
+	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
 		imagencomic.setImage(null);
 		utilidad = new Utilidades();
 		libreria = new DBLibreriaManager();
@@ -632,8 +681,9 @@ public class EliminarDatosController implements Initializable {
 	 * en los textField
 	 *
 	 * @return
+	 * @throws SQLException 
 	 */
-	public void listaPorParametro() {
+	public void listaPorParametro() throws SQLException {
 		libreria = new DBLibreriaManager();
 
 		String datos[] = camposComics();
@@ -687,8 +737,9 @@ public class EliminarDatosController implements Initializable {
 	 *
 	 * @param id
 	 * @param sentenciaSQL
+	 * @throws SQLException 
 	 */
-	public boolean modificarDatos(String ID) {
+	public boolean modificarDatos(String ID) throws SQLException {
 		libreria = new DBLibreriaManager();
 		if (nav.alertaEliminar()) {
 			if (ID.length() != 0) {

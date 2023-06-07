@@ -283,7 +283,11 @@ public class ModificarDatosController implements Initializable {
 		nombreFormatoMod.setItems(formatoNuevo);
 		nombreFormatoMod.getSelectionModel().selectFirst();
 
-		listas_autocompletado();
+		try {
+			listas_autocompletado();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			String newText = change.getControlNewText();
 			if (newText.matches("\\d*")) {
@@ -315,21 +319,41 @@ public class ModificarDatosController implements Initializable {
 			}
 			return null;
 		});
+		
+		TextFormatter<Integer> textFormatterComic5 = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+			String newText = change.getControlNewText();
+			if (newText.matches("\\d*")) {
+				return change;
+			}
+			return null;
+		});
 
 		numeroComic.setTextFormatter(textFormatterComic);
 		numeroCaja.setTextFormatter(textFormatterComic2);
 		idComicMod.setTextFormatter(textFormatterComic3);
 		idComic.setTextFormatter(textFormatterComic4);
+		numeroCajaMod.setTextFormatter(textFormatterComic5);
 
 		libreria = new DBLibreriaManager();
 
 		// Agregar el ChangeListener al TextField idComicMod
 		idComicMod.textProperty().addListener((observable, oldValue, newValue) -> {
 			if (!newValue.isEmpty()) {
-				boolean existeComic = libreria.checkID(newValue);
+				boolean existeComic = false;
+				try {
+					existeComic = libreria.checkID(newValue);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 				if (existeComic || newValue.isEmpty()) {
 
-					Comic comic_temp = libreria.comicDatos(idComicMod.getText());
+					Comic comic_temp = null;
+					try {
+						comic_temp = libreria.comicDatos(idComicMod.getText());
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 
 					idComicMod.setText(idComicMod.getText());
 
@@ -364,9 +388,15 @@ public class ModificarDatosController implements Initializable {
 					direccionImagen.setText(comic_temp.getImagen());
 
 					pantallaInformativa.setOpacity(1);
-					pantallaInformativa.setText(
-							libreria.comicDatos(idComicMod.getText()).toString().replace("[", "").replace("]", ""));
-					imagencomic.setImage(libreria.selectorImage(idComicMod.getText()));
+					try {
+						pantallaInformativa.setText(
+								libreria.comicDatos(idComicMod.getText()).toString().replace("[", "").replace("]", ""));
+						imagencomic.setImage(libreria.selectorImage(idComicMod.getText()));
+
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			} else {
 				borrar_datos_mod();
@@ -375,10 +405,21 @@ public class ModificarDatosController implements Initializable {
 
 		idComic.textProperty().addListener((observable, oldValue, newValue) -> {
 			if (!newValue.isEmpty()) {
-				boolean existeComic = libreria.checkID(newValue);
+				boolean existeComic = false;
+				try {
+					existeComic = libreria.checkID(newValue);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				if (existeComic || newValue.isEmpty()) {
 
-					Comic comic_temp = libreria.comicDatos(idComic.getText());
+					Comic comic_temp = null;
+					try {
+						comic_temp = libreria.comicDatos(idComic.getText());
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
 
 					idComic.setText(idComic.getText());
 
@@ -413,9 +454,14 @@ public class ModificarDatosController implements Initializable {
 					direccionImagen.setText(comic_temp.getImagen());
 
 					pantallaInformativa.setOpacity(1);
-					pantallaInformativa.setText(
-							libreria.comicDatos(idComic.getText()).toString().replace("[", "").replace("]", ""));
-					imagencomic.setImage(libreria.selectorImage(idComic.getText()));
+					try {
+						pantallaInformativa.setText(
+								libreria.comicDatos(idComic.getText()).toString().replace("[", "").replace("]", ""));
+						imagencomic.setImage(libreria.selectorImage(idComic.getText()));
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			} else {
 				borrar_datos();
@@ -485,7 +531,7 @@ public class ModificarDatosController implements Initializable {
 		pantallaInformativa.setOpacity(0);
 	}
 
-	public void listas_autocompletado() {
+	public void listas_autocompletado() throws SQLException {
 		libreria = new DBLibreriaManager();
 		libreria.listasAutoCompletado();
 		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
@@ -511,9 +557,10 @@ public class ModificarDatosController implements Initializable {
 	 *
 	 * @param event
 	 * @throws IOException
+	 * @throws SQLException 
 	 */
 	@FXML
-	void clickRaton(MouseEvent event) throws IOException {
+	void clickRaton(MouseEvent event) throws IOException, SQLException {
 		libreria = new DBLibreriaManager();
 		libreria.libreriaCompleta();
 		utilidad = new Utilidades();
@@ -566,7 +613,7 @@ public class ModificarDatosController implements Initializable {
 	}
 
 	@FXML
-	void teclasDireccion(KeyEvent event) throws IOException {
+	void teclasDireccion(KeyEvent event) throws IOException, SQLException {
 		if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
 			libreria = new DBLibreriaManager();
 			libreria.libreriaCompleta();
@@ -881,7 +928,7 @@ public class ModificarDatosController implements Initializable {
 	 * @throws SQLException
 	 */
 	@FXML
-	void mostrarPorParametro(ActionEvent event) {
+	void mostrarPorParametro(ActionEvent event) throws SQLException {
 		imagencomic.setImage(null);
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
@@ -895,9 +942,10 @@ public class ModificarDatosController implements Initializable {
 	 *
 	 * @param event
 	 * @throws IOException
+	 * @throws SQLException 
 	 */
 	@FXML
-	void verTodabbdd(ActionEvent event) throws IOException {
+	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
 		imagencomic.setImage(null);
 		utilidad = new Utilidades();
 		libreria = new DBLibreriaManager();
@@ -912,8 +960,9 @@ public class ModificarDatosController implements Initializable {
 	 * en los textField
 	 *
 	 * @return
+	 * @throws SQLException 
 	 */
-	public void listaPorParametro() {
+	public void listaPorParametro() throws SQLException {
 		libreria = new DBLibreriaManager();
 
 		String datos[] = camposComicActuales();

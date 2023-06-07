@@ -216,6 +216,10 @@ public class AccesoBBDDController implements Initializable {
 		}
 	}
 
+	/**
+	* Método que se ejecuta al hacer clic en el botón de opciones del programa.
+	* Abre la ventana de opciones y cierra la ventana actual.
+	*/
 	@FXML
 	void opcionesPrograma(ActionEvent event) {
 		nav.verOpciones();
@@ -233,6 +237,9 @@ public class AccesoBBDDController implements Initializable {
 		myStage.close();
 	}
 
+	/**
+	* Método que crea la estructura de carpetas y archivos necesarios para la librería.
+	*/
 	public void crearEstructura() {
 		String userHome = System.getProperty("user.home");
 		String ubicacion = userHome + "\\AppData\\Roaming";
@@ -280,6 +287,10 @@ public class AccesoBBDDController implements Initializable {
 		}
 	}
 
+	/**
+	 * Metodo que permite crear una animacion
+	 * 
+	 */
 	private void iniciarAnimacionEspera() {
 		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
@@ -303,6 +314,10 @@ public class AccesoBBDDController implements Initializable {
 		timeline.play();
 	}
 
+	/**
+	 * Metodo que permite crear una animacion
+	 * 
+	 */
 	private void iniciarAnimacionConectado() {
 		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
@@ -322,6 +337,10 @@ public class AccesoBBDDController implements Initializable {
 		timeline.play();
 	}
 
+	/**
+	 * Metodo que permite crear una animacion
+	 * 
+	 */
 	private void iniciarAnimacionError() {
 		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
@@ -340,6 +359,10 @@ public class AccesoBBDDController implements Initializable {
 		timeline.play();
 	}
 	
+	/**
+	 * Metodo que permite crear una animacion
+	 * 
+	 */
 	private void iniciarAnimacionConexion() {
 		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
@@ -358,6 +381,10 @@ public class AccesoBBDDController implements Initializable {
 		timeline.play();
 	}
 
+	/**
+	 * Metodo que permite detener una animacion
+	 * 
+	 */
 	private void detenerAnimacion() {
 		if (timeline != null) {
 			timeline.stop();

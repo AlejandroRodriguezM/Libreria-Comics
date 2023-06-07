@@ -43,10 +43,9 @@ public class DBManager {
 	public static String DB_URL;
 
 	/**
-	 * Conecta el proyecto con el driver JBDC
-	 *
-	 * @return
-	 */
+	* Carga el controlador JDBC para el proyecto.
+	* @return true si se carga el controlador correctamente, false en caso contrario.
+	*/
 	public static boolean loadDriver() {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
@@ -84,7 +83,6 @@ public class DBManager {
 	 * @param nombreBBDD
 	 * @param nombreUsuario
 	 * @param contraBBDD
-	 * @return
 	 */
 	public static void datosBBDD(String[] datos) {
 
@@ -102,7 +100,7 @@ public class DBManager {
 	 * @param nombreBBDD
 	 * @param nombreUsuario
 	 * @param contraBBDD
-	 * @return
+	 * @return objeto Connection 
 	 */
 	public static Connection conexion() {
 	    DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
@@ -119,6 +117,9 @@ public class DBManager {
 	    return null;
 	}
 	
+	/**
+	* Método estático que restablece la conexión a la base de datos.
+	*/
 	public static void resetConnection() {
 	    try {
 	        if (conn != null && !conn.isClosed()) {
@@ -131,7 +132,7 @@ public class DBManager {
 	}
 
 	/**
-	 * Cierra la conexion con la base de datos
+	 * Método estático que cierra la conexion con la base de datos
 	 */
 	public static void close() {
 		try {

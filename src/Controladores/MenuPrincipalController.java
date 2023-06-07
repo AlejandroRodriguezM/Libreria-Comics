@@ -252,7 +252,11 @@ public class MenuPrincipalController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		libreria = new DBLibreriaManager();
-		libreria.listasAutoCompletado();
+		try {
+			libreria.listasAutoCompletado();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
 		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList("Spain", "USA", "Japon",
 				"Italia", "Francia");
@@ -264,7 +268,7 @@ public class MenuPrincipalController implements Initializable {
 		nombreFormato.setItems(formatoActual);
 		nombreFormato.getSelectionModel().selectFirst();
 
-//		listas_autocompletado();
+		listas_autocompletado();
 
 		TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			String newText = change.getControlNewText();
@@ -435,7 +439,7 @@ public class MenuPrincipalController implements Initializable {
 	 * @throws SQLException
 	 */
 	@FXML
-	void mostrarPorParametro(ActionEvent event) {
+	void mostrarPorParametro(ActionEvent event) throws SQLException {
 		prontInfo.setOpacity(0);
 		prontFrases.setOpacity(0);
 		imagencomic.setImage(null);
@@ -451,9 +455,10 @@ public class MenuPrincipalController implements Initializable {
 	 *
 	 * @param event
 	 * @throws IOException 
+	 * @throws SQLException 
 	 */
 	@FXML
-	void verTodabbdd(ActionEvent event) throws IOException {
+	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
 		prontInfo.setOpacity(0);
 		prontFrases.setOpacity(0);
 		imagencomic.setImage(null);
@@ -469,9 +474,10 @@ public class MenuPrincipalController implements Initializable {
 	 * comics que tienen una puntuacion
 	 *
 	 * @param event
+	 * @throws SQLException 
 	 */
 	@FXML
-	void comicsPuntuacion(ActionEvent event) {
+	void comicsPuntuacion(ActionEvent event) throws SQLException {
 		prontInfo.setOpacity(0);
 		limpiezaDeDatos();
 		libreria = new DBLibreriaManager();
@@ -486,9 +492,10 @@ public class MenuPrincipalController implements Initializable {
 	 * que han sido vendidos
 	 *
 	 * @param event
+	 * @throws SQLException 
 	 */
 	@FXML
-	void comicsVendidos(ActionEvent event) {
+	void comicsVendidos(ActionEvent event) throws SQLException {
 		prontInfo.setOpacity(0);
 		limpiezaDeDatos();
 		libreria = new DBLibreriaManager();
@@ -503,9 +510,10 @@ public class MenuPrincipalController implements Initializable {
 	 * que han sido vendidos
 	 *
 	 * @param event
+	 * @throws SQLException 
 	 */
 	@FXML
-	void comicsFirmados(ActionEvent event) {
+	void comicsFirmados(ActionEvent event) throws SQLException {
 		prontInfo.setOpacity(0);
 		limpiezaDeDatos();
 		libreria = new DBLibreriaManager();
@@ -519,9 +527,10 @@ public class MenuPrincipalController implements Initializable {
 	 * que han sido vendidos
 	 *
 	 * @param event
+	 * @throws SQLException 
 	 */
 	@FXML
-	void comicsEnVenta(ActionEvent event) {
+	void comicsEnVenta(ActionEvent event) throws SQLException {
 		prontInfo.setOpacity(0);
 		limpiezaDeDatos();
 		utilidad = new Utilidades();
@@ -540,9 +549,10 @@ public class MenuPrincipalController implements Initializable {
 	 * a la base de datos
 	 *
 	 * @param event
+	 * @throws SQLException 
 	 */
 	@FXML
-	void importCSV(ActionEvent event) {
+	void importCSV(ActionEvent event) throws SQLException {
 
 		String frase = "Fichero CSV";
 
@@ -639,9 +649,10 @@ public class MenuPrincipalController implements Initializable {
 	 * tablas.
 	 *
 	 * @param event
+	 * @throws SQLException 
 	 */
 	@FXML
-	void borrarContenidoTabla(ActionEvent event) {
+	void borrarContenidoTabla(ActionEvent event) throws SQLException {
 
 		libreria = new DBLibreriaManager();
 		prontInfo.setOpacity(0);
@@ -697,7 +708,7 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	@FXML
-	void clickRaton(MouseEvent event) throws IOException {
+	void clickRaton(MouseEvent event) throws IOException, SQLException {
 		prontFrases.setOpacity(0);
 		libreria = new DBLibreriaManager();
 		libreria.libreriaCompleta();
@@ -717,7 +728,7 @@ public class MenuPrincipalController implements Initializable {
 	}
 	
 	@FXML
-	void teclasDireccion(KeyEvent event) throws IOException {
+	void teclasDireccion(KeyEvent event) throws IOException, SQLException {
 	    if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
 	        prontFrases.setOpacity(0);
 	        libreria = new DBLibreriaManager();
@@ -843,8 +854,9 @@ public class MenuPrincipalController implements Initializable {
 	/**
 	 * Funcion que comprueba segun los datos escritos en los textArea, que comic
 	 * estas buscando.
+	 * @throws SQLException 
 	 */
-	public void listaPorParametro() {
+	public void listaPorParametro() throws SQLException {
 		libreria = new DBLibreriaManager();
 
 		String datos[] = camposComic();
@@ -862,8 +874,9 @@ public class MenuPrincipalController implements Initializable {
 	 *
 	 * @return
 	 * @throws IOException 
+	 * @throws SQLException 
 	 */
-	public List<Comic> libreriaCompleta() throws IOException {
+	public List<Comic> libreriaCompleta() throws IOException, SQLException {
 		libreria = new DBLibreriaManager();
 		limpiezaDeDatos();
 		List<Comic> listComic = FXCollections.observableArrayList(libreria.libreriaCompleta());

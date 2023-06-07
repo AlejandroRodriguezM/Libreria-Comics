@@ -426,6 +426,10 @@ public class CrearBBDDController implements Initializable {
 		nombreBBDD.setText("");
 	}
 	
+	/**
+	* Método que crea la carpeta "portadas" para almacenar las imágenes de portada de los cómics.
+	* @throws IOException Si ocurre un error al crear la carpeta.
+	*/
 	public void crearCarpeta() throws IOException {
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
@@ -441,9 +445,11 @@ public class CrearBBDDController implements Initializable {
 	}
 
 	/**
-	 *
-	 * @return
-	 */
+	* Método que verifica si las tablas de la base de datos existen.
+	* Si las tablas existen, devuelve true.
+	* Si las tablas no existen, reconstruye la base de datos y devuelve false.
+	* @return true si las tablas existen, false si las tablas no existen y se reconstruyó la base de datos.
+	*/
 	public boolean chechTables() {
 		cbd = new CrearBBDDController();
 		DatabaseMetaData dbm;
@@ -476,6 +482,10 @@ public class CrearBBDDController implements Initializable {
 		}
 	}
 
+	/**
+	 * Metodo que permite crear una animacion
+	 * 
+	 */
 	private void iniciarAnimacionBaseCreada() {
 		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
@@ -494,6 +504,10 @@ public class CrearBBDDController implements Initializable {
 		timeline.play();
 	}
 
+	/**
+	 * Metodo que permite crear una animacion
+	 * 
+	 */
 	private void iniciarAnimacionBaseExiste() {
 		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
@@ -512,6 +526,10 @@ public class CrearBBDDController implements Initializable {
 		timeline.play();
 	}
 
+	/**
+	 * Metodo que permite crear una animacion
+	 * 
+	 */
 	private void iniciarAnimacionEspera() {
 		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
@@ -535,6 +553,10 @@ public class CrearBBDDController implements Initializable {
 		timeline.play();
 	}
 
+	/**
+	 * Metodo que permite detener una animacion
+	 * 
+	 */
 	private void detenerAnimacion() {
 		if (timeline != null) {
 			timeline.stop();
@@ -576,7 +598,6 @@ public class CrearBBDDController implements Initializable {
 
 	/**
 	 * Al cerrar la ventana, carga la ventana del menu principal
-	 *
 	 */
 	public void closeWindows() {
 
