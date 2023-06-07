@@ -398,6 +398,9 @@ public class ModificarDatosController implements Initializable {
 						e.printStackTrace();
 					}
 				}
+				else {
+					borrar_datos_mod();
+				}
 			} else {
 				borrar_datos_mod();
 			}
@@ -462,6 +465,9 @@ public class ModificarDatosController implements Initializable {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+				}
+				else {
+					borrar_datos();
 				}
 			} else {
 				borrar_datos();

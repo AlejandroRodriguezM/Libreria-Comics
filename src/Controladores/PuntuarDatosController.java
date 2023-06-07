@@ -229,14 +229,12 @@ public class PuntuarDatosController implements Initializable {
 		nombreFormato.setItems(formatoActual);
 		nombreFormato.getSelectionModel().selectFirst();
 
-		libreria = new DBLibreriaManager();
-		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
-		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
-		TextFields.bindAutoCompletion(nombreFirma, DBLibreriaManager.listaFirma);
-		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
-		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
-		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
-
+		try {
+			listas_autocompletado();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
 		TextFormatter<Integer> textFormatterAni = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			String newText = change.getControlNewText();
 			if (newText.matches("\\d*")) {
@@ -261,7 +259,7 @@ public class PuntuarDatosController implements Initializable {
 			}
 			return null;
 		});
-		
+
 		TextFormatter<Integer> textFormatterComic3 = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			String newText = change.getControlNewText();
 			if (newText.matches("\\d*")) {
@@ -269,7 +267,7 @@ public class PuntuarDatosController implements Initializable {
 			}
 			return null;
 		});
-		
+
 		TextFormatter<Integer> textFormatterComic4 = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			String newText = change.getControlNewText();
 			if (newText.matches("\\d*")) {
@@ -277,7 +275,7 @@ public class PuntuarDatosController implements Initializable {
 			}
 			return null;
 		});
-		
+
 		numeroComic.setTextFormatter(textFormatterComic);
 		numeroCaja.setTextFormatter(textFormatterComic2);
 		numeroID.setTextFormatter(textFormatterComic3);
@@ -319,7 +317,7 @@ public class PuntuarDatosController implements Initializable {
 
 					String procedencia = comic_temp.getProcedencia();
 					procedenciaParametro.getSelectionModel().select(procedencia);
-					
+
 					String puntuacion = comic_temp.getPuntuacion();
 					puntuacionMenu.getSelectionModel().select(puntuacion);
 
@@ -334,22 +332,25 @@ public class PuntuarDatosController implements Initializable {
 					nombreDibujante.setText(comic_temp.getDibujante());
 
 					numeroCaja.setText(comic_temp.getNumCaja());
-					
+
 					pantallaInformativa.setOpacity(1);
 					try {
-						pantallaInformativa.setText(libreria.comicDatos(idPuntuar.getText()).toString().replace("[", "").replace("]", ""));
+						pantallaInformativa.setText(
+								libreria.comicDatos(idPuntuar.getText()).toString().replace("[", "").replace("]", ""));
 						imagencomic.setImage(libreria.selectorImage(idPuntuar.getText()));
 
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}
 				}
-			}
-			else {
+				else {
+					borrar_datos();
+				}
+			} else {
 				borrar_datos();
 			}
 		});
-		
+
 		numeroID.textProperty().addListener((observable, oldValue, newValue) -> {
 			if (!newValue.isEmpty()) {
 				boolean existeComic = false;
@@ -364,7 +365,6 @@ public class PuntuarDatosController implements Initializable {
 					try {
 						comic_temp = libreria.comicDatos(numeroID.getText());
 					} catch (SQLException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 
@@ -385,7 +385,7 @@ public class PuntuarDatosController implements Initializable {
 
 					String procedencia = comic_temp.getProcedencia();
 					procedenciaParametro.getSelectionModel().select(procedencia);
-					
+
 					String puntuacion = comic_temp.getPuntuacion();
 					puntuacionMenu.getSelectionModel().select(puntuacion);
 
@@ -400,21 +400,40 @@ public class PuntuarDatosController implements Initializable {
 					nombreDibujante.setText(comic_temp.getDibujante());
 
 					numeroCaja.setText(comic_temp.getNumCaja());
-					
+
 					pantallaInformativa.setOpacity(1);
 					try {
-						pantallaInformativa.setText(libreria.comicDatos(numeroID.getText()).toString().replace("[", "").replace("]", ""));
+						pantallaInformativa.setText(
+								libreria.comicDatos(numeroID.getText()).toString().replace("[", "").replace("]", ""));
 						imagencomic.setImage(libreria.selectorImage(numeroID.getText()));
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}
 				}
-			}
-			else {
+				else {
+					borrar_datos();
+				}
+			} else {
 				borrar_datos();
-			} 
+			}
 		});
 	}
+
+	/**
+	 * Metodo que permite actualizar los valores de las listas de los
+	 * autocompletados
+	 */
+	public void listas_autocompletado()  throws SQLException {
+		libreria = new DBLibreriaManager();
+		libreria.listasAutoCompletado();
+		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
+		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
+		TextFields.bindAutoCompletion(nombreFirma, DBLibreriaManager.listaFirma);
+		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
+		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
+		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
+	}
+
 	
 	public void borrar_datos() {
 
@@ -429,9 +448,9 @@ public class PuntuarDatosController implements Initializable {
 		nombreEditorial.setText("");
 
 		nombreFormato.getSelectionModel().select("");
-		
+
 		procedenciaParametro.getSelectionModel().select("");
-		
+
 		puntuacionMenu.getSelectionModel().select("");
 
 		fechaPublicacion.setValue(null);
@@ -441,9 +460,9 @@ public class PuntuarDatosController implements Initializable {
 		nombreDibujante.setText("");
 
 		numeroCaja.setText("");
-		
+
 		imagencomic.setImage(null);
-		
+
 		pantallaInformativa.setOpacity(0);
 	}
 
@@ -481,7 +500,7 @@ public class PuntuarDatosController implements Initializable {
 	 *
 	 * @param event
 	 * @throws IOException
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	@FXML
 	void clickRaton(MouseEvent event) throws IOException, SQLException {
@@ -537,7 +556,7 @@ public class PuntuarDatosController implements Initializable {
 	 *
 	 * @param event
 	 * @throws IOException
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	@FXML
 	void agregarPuntuacion(ActionEvent event) throws IOException, SQLException {
@@ -565,7 +584,7 @@ public class PuntuarDatosController implements Initializable {
 	 *
 	 * @param event
 	 * @throws IOException
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	@FXML
 	void borrarPuntuacion(ActionEvent event) throws IOException, SQLException {
@@ -666,7 +685,7 @@ public class PuntuarDatosController implements Initializable {
 	 *
 	 * @param event
 	 * @throws IOException
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
@@ -684,7 +703,7 @@ public class PuntuarDatosController implements Initializable {
 	 * muestren aquellos comics que tengan una puntuacion
 	 *
 	 * @param event
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	@FXML
 	void verComicsLeidos(ActionEvent event) throws SQLException {
@@ -749,7 +768,8 @@ public class PuntuarDatosController implements Initializable {
 	/**
 	 * Funcion que comprueba segun los datos escritos en los textArea, que comic
 	 * estas buscando.
-	 * @throws SQLException 
+	 * 
+	 * @throws SQLException
 	 */
 	public void listaPorParametro() throws SQLException {
 		String datosComic[] = camposComic();

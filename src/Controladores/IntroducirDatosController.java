@@ -293,7 +293,11 @@ public class IntroducirDatosController implements Initializable {
 		formatoAni.setItems(formatoNuevo);
 		formatoAni.getSelectionModel().selectFirst();
 
-		listas_autocompletado();
+		try {
+			listas_autocompletado();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		TextFormatter<Integer> textFormatterAni = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			String newText = change.getControlNewText();
 			if (newText.matches("\\d*")) {
@@ -330,7 +334,9 @@ public class IntroducirDatosController implements Initializable {
 		numeroCajaAni.setTextFormatter(textFormatterComic3);
 	}
 
-	public void listas_autocompletado() {
+	public void listas_autocompletado() throws SQLException {
+		libreria = new DBLibreriaManager();
+		libreria.listasAutoCompletado();
 		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
 		TextFields.bindAutoCompletion(nombreFirma, DBLibreriaManager.listaFirma);

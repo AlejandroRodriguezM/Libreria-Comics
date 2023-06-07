@@ -226,7 +226,11 @@ public class EliminarDatosController implements Initializable {
 		nombreFormato.setItems(formatoActual);
 		nombreFormato.getSelectionModel().selectFirst();
 
-		listas_autocompletado();
+		try {
+			listas_autocompletado();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
 		TextFormatter<Integer> textFormatterAni = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			String newText = change.getControlNewText();
@@ -251,7 +255,7 @@ public class EliminarDatosController implements Initializable {
 			}
 			return null;
 		});
-		
+
 		TextFormatter<Integer> textFormatterComic3 = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			String newText = change.getControlNewText();
 			if (newText.matches("\\d*")) {
@@ -259,7 +263,7 @@ public class EliminarDatosController implements Initializable {
 			}
 			return null;
 		});
-		
+
 		TextFormatter<Integer> textFormatterComic4 = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			String newText = change.getControlNewText();
 			if (newText.matches("\\d*")) {
@@ -267,7 +271,7 @@ public class EliminarDatosController implements Initializable {
 			}
 			return null;
 		});
-		
+
 		numeroComic.setTextFormatter(textFormatterComic);
 		numeroCaja.setTextFormatter(textFormatterComic2);
 		idComicTratar.setTextFormatter(textFormatterComic3);
@@ -332,21 +336,23 @@ public class EliminarDatosController implements Initializable {
 					nombreDibujante.setText(comic_temp.getDibujante());
 
 					numeroCaja.setText(comic_temp.getNumCaja());
-					
+
 					pantallaInformativa.setOpacity(1);
 					try {
-						pantallaInformativa.setText(libreria.comicDatos(idComic.getText()).toString().replace("[", "").replace("]", ""));
+						pantallaInformativa.setText(
+								libreria.comicDatos(idComic.getText()).toString().replace("[", "").replace("]", ""));
 						imagencomic.setImage(libreria.selectorImage(idComic.getText()));
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}
+				} else {
+					borrar_datos();
 				}
-			}
-			else {
+			} else {
 				borrar_datos();
 			}
 		});
-		
+
 		idComic.textProperty().addListener((observable, oldValue, newValue) -> {
 			if (!newValue.isEmpty()) {
 				boolean existeComic = false;
@@ -393,25 +399,27 @@ public class EliminarDatosController implements Initializable {
 					nombreDibujante.setText(comic_temp.getDibujante());
 
 					numeroCaja.setText(comic_temp.getNumCaja());
-					
+
 					pantallaInformativa.setOpacity(1);
 					try {
-						pantallaInformativa.setText(libreria.comicDatos(idComic.getText()).toString().replace("[", "").replace("]", ""));
+						pantallaInformativa.setText(
+								libreria.comicDatos(idComic.getText()).toString().replace("[", "").replace("]", ""));
 						imagencomic.setImage(libreria.selectorImage(idComic.getText()));
 
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}
+				} else {
+					borrar_datos();
 				}
-			}
-			else {
+			} else {
 				borrar_datos();
-			} 
+			}
 		});
 	}
-	
+
 	/**
-	 * Metodo que permite borrar los datos en pantalla 
+	 * Metodo que permite borrar los datos en pantalla
 	 */
 	public void borrar_datos() {
 
@@ -426,7 +434,7 @@ public class EliminarDatosController implements Initializable {
 		nombreEditorial.setText("");
 
 		nombreFormato.getSelectionModel().select("");
-		
+
 		nombreProcedencia.getSelectionModel().select("");
 
 		anioPublicacion.setValue(null);
@@ -436,16 +444,19 @@ public class EliminarDatosController implements Initializable {
 		nombreDibujante.setText("");
 
 		numeroCaja.setText("");
-		
+
 		imagencomic.setImage(null);
-		
+
 		pantallaInformativa.setOpacity(0);
 	}
 
 	/**
-	 * Metodo que permite actualizar los valores de las listas de los autocompletados
+	 * Metodo que permite actualizar los valores de las listas de los
+	 * autocompletados
 	 */
-	public void listas_autocompletado() {
+	public void listas_autocompletado() throws SQLException {
+		libreria = new DBLibreriaManager();
+		libreria.listasAutoCompletado();
 		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
 		TextFields.bindAutoCompletion(nombreFirma, DBLibreriaManager.listaFirma);
@@ -515,7 +526,7 @@ public class EliminarDatosController implements Initializable {
 	 *
 	 * @param event
 	 * @throws IOException
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	@FXML
 	void clickRaton(MouseEvent event) throws IOException, SQLException {
@@ -541,12 +552,12 @@ public class EliminarDatosController implements Initializable {
 	}
 
 	/**
-	 * Funcion que permite mostrar la imagen de portada cuando usas las teclas de direccion en una
-	 * tabla.
+	 * Funcion que permite mostrar la imagen de portada cuando usas las teclas de
+	 * direccion en una tabla.
 	 *
 	 * @param event
 	 * @throws IOException
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	@FXML
 	void teclasDireccion(KeyEvent event) throws IOException, SQLException {
@@ -586,19 +597,18 @@ public class EliminarDatosController implements Initializable {
 		libreria = new DBLibreriaManager();
 		String id_comic = idComicTratar.getText();
 		idComicTratar.setStyle("");
-		
+
 		System.out.println(id_comic);
-		
+
 		if (id_comic.length() == 0 || !libreria.comprobarID(id_comic)) {
 			String excepcion = "No puedes eliminar un comic si antes no pones un ID valido";
 			nav.alertaException(excepcion);
-			
+
 			idComicTratar.setStyle("-fx-background-color: #FF0000;");
-			
+
 			pantallaInformativa.setStyle("-fx-background-color: #F53636");
-			pantallaInformativa
-					.setText("Error. Debes de introducir los datos correctos");
-		}else {
+			pantallaInformativa.setText("Error. Debes de introducir los datos correctos");
+		} else {
 			modificarDatos(id_comic);
 			libreria.eliminarComicBBDD(id_comic);
 			libreria.reiniciarBBDD();
@@ -625,14 +635,13 @@ public class EliminarDatosController implements Initializable {
 
 		if (id_comic.length() == 0 || !libreria.comprobarID(id_comic)) {
 			String excepcion = "No puedes eliminar un comic si antes no pones un ID valido";
-			
+
 			nav.alertaException(excepcion);
 			idComicTratar.setStyle("-fx-background-color: #FF0000;");
 			pantallaInformativa.setStyle("-fx-background-color: #F53636");
-			pantallaInformativa
-					.setText("Error. Debes de introducir los datos correctos");
-		}else {
-			
+			pantallaInformativa.setText("Error. Debes de introducir los datos correctos");
+		} else {
+
 			modificarDatos(id_comic);
 			libreria.venderComicBBDD(id_comic);
 			libreria.reiniciarBBDD();
@@ -663,7 +672,7 @@ public class EliminarDatosController implements Initializable {
 	 *
 	 * @param event
 	 * @throws IOException
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
@@ -681,7 +690,7 @@ public class EliminarDatosController implements Initializable {
 	 * en los textField
 	 *
 	 * @return
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	public void listaPorParametro() throws SQLException {
 		libreria = new DBLibreriaManager();
@@ -737,7 +746,7 @@ public class EliminarDatosController implements Initializable {
 	 *
 	 * @param id
 	 * @param sentenciaSQL
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	public boolean modificarDatos(String ID) throws SQLException {
 		libreria = new DBLibreriaManager();
