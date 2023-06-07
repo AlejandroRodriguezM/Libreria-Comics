@@ -440,8 +440,6 @@ public class DBLibreriaManager extends Comic {
 			}
 		} catch (SQLException e) {
 			nav.alertaException(e.toString());
-		} finally {
-			rs.close();
 		}
 		return listaAutoCompletado;
 	}
