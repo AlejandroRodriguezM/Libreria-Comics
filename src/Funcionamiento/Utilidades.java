@@ -236,9 +236,9 @@ public class Utilidades {
 	 * @param file
 	 * @return
 	 */
-	public void nueva_imagen(Comic datos) throws IOException {
+	public void nueva_imagen(String imagen, String nuevoNombreArchivo) throws IOException {
 		try {
-			File file = new File(datos.getImagen());
+			File file = new File(imagen);
 			InputStream input = null;
 
 			if (!file.exists()) {
@@ -255,7 +255,6 @@ public class Utilidades {
 						output.write(buffer, 0, bytesRead);
 					}
 				}
-
 			}
 
 			String userDir = System.getProperty("user.home");
@@ -273,16 +272,18 @@ public class Utilidades {
 					throw new IOException("No se pudo crear la carpeta 'portadas'");
 				}
 			}
-			String nombre_comic = datos.getNombre().replace(" ", "_").replace(":", "_").replace("-", "_");
-			String numero_comic = datos.getNumero();
-			String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_")
-					.replace(":", "");
-			String fecha_comic = datos.getFecha();
-			String nombre_completo = nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic;
-			String extension = ".jpg";
-			String nuevoNombreArchivo = String.valueOf(nombre_completo) + extension;
-			File newFile = new File(portadasFolder.getPath() + File.separator + nuevoNombreArchivo);
+//			String nombre_comic = datos.getNombre().replace(" ", "_").replace(":", "_").replace("-", "_");
+//			String numero_comic = datos.getNumero();
+//			String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_")
+//					.replace(":", "");
+//			String fecha_comic = datos.getFecha();
+//			String nombre_completo = nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic;
+//			String extension = ".jpg";
+//			String nuevoNombreArchivo = String.valueOf(nombre_completo) + extension;
+			
+			File newFile = new File(portadasFolder.getPath() + File.separator + nuevoNombreArchivo + ".jpg");
 			Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -596,6 +597,11 @@ public class Utilidades {
 		return true;
 	}
 
+	/**
+	 * Funcion que devuelve la direccion de una url sin tener en cuenta el fichero y extension
+	 * @param rutaArchivo
+	 * @return
+	 */
 	public static String eliminarDespuesUltimoPortadas(String rutaArchivo) {
 		int indiceUltimoPortadas = rutaArchivo.lastIndexOf("portadas\\");
 		if (indiceUltimoPortadas != -1) {
@@ -604,9 +610,26 @@ public class Utilidades {
 			return rutaArchivo;
 		}
 	}
+	
+	/**
+	 * Funcion que solamente deuvelve el nombre del fichero y la extension dada una direccion
+	 * @param rutaArchivo
+	 * @return
+	 */
+	public static String obtenerDespuesPortadas(String rutaArchivo) {
+	    int indicePortadas = rutaArchivo.indexOf("portadas\\");
+	    if (indicePortadas != -1) {
+	        return rutaArchivo.substring(indicePortadas + 9);
+	    } else {
+	        return "";
+	    }
+	}
 
 	public static void eliminarFichero(String direccion) {
 		File archivo = new File(direccion);
+		
+		System.out.println(direccion);
+		
 		archivo.delete();
 	}
 
@@ -623,6 +646,40 @@ public class Utilidades {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Genera un codigo unico para renombrar una imagen solamente si el codigo no existe, si no, vuelve a crear otro hasta que aparezca uno que sea adecuado
+	 * @param carpeta
+	 * @return
+	 */
+	public static String generarCodigoUnico(String carpeta) {
+	    String codigo;
+	    File directorio = new File(carpeta);
+	    File archivo = null;
+	    do {
+	        codigo = generarCodigo(); // Genera un nuevo código único
+	        String nombreArchivo = codigo + ".jpg";
+	        archivo = new File(directorio, nombreArchivo);
+	    } while (archivo.exists());
+
+	    return codigo;
+	}
+
+	/**
+	 * Genera un codigo de forma aleatoria
+	 * @return
+	 */
+	private static String generarCodigo() {
+	    String caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	    StringBuilder codigo = new StringBuilder();
+
+	    for (int i = 0; i < 10; i++) {
+	        int indice = (int) (Math.random() * caracteres.length());
+	        codigo.append(caracteres.charAt(indice));
+	    }
+
+	    return codigo.toString();
 	}
 
 }

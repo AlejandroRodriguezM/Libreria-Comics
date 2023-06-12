@@ -971,15 +971,11 @@ public class DBLibreriaManager extends Comic {
 
 		ResultSet rs = null;
 
-		try {
-			rs = obtenLibreria(sentenciaSQL);
+		rs = obtenLibreria(sentenciaSQL);
 
-			comic = listaDatos(rs);
+		comic = listaDatos(rs);
 
-			return comic;
-		} finally {
-			rs.close();
-		}
+		return comic;
 	}
 
 	/**
@@ -1287,16 +1283,16 @@ public class DBLibreriaManager extends Comic {
 	* @param ID El ID del cómic a modificar.
 	* @throws SQLException Si ocurre algún error al ejecutar la consulta SQL.
 	*/
-	public void modificar_direccion_portada(Comic datos, String ID) throws SQLException {
+	public void modificar_direccion_portada(String nombre_completo, String ID) throws SQLException {
 
 		utilidad = new Utilidades();
 
-		String nombre_comic = datos.getNombre().replace(" ", "_").replace(":", "_").replace("-", "_");
-		String numero_comic = datos.getNumero().replace(" ", "").replace(":", "").replace("-", "");
-		String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_").replace(":",
-				"_");
-		String fecha_comic = datos.getFecha();
-		String nombre_completo = nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic;
+//		String nombre_comic = datos.getNombre().replace(" ", "_").replace(":", "_").replace("-", "_");
+//		String numero_comic = datos.getNumero().replace(" ", "").replace(":", "").replace("-", "");
+//		String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_").replace(":",
+//				"_");
+//		String fecha_comic = datos.getFecha();
+//		String nombre_completo = nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic;
 		String extension = ".jpg";
 		String nuevoNombreArchivo = String.valueOf(nombre_completo) + extension;
 
@@ -1331,8 +1327,11 @@ public class DBLibreriaManager extends Comic {
 	public void comicModificar(String sentenciaSQL, Comic datos) throws SQLException, IOException {
 		utilidad = new Utilidades();
 		listaComics.clear();
-
-		Comic comic = comicDatos(datos.getID());
+		
+//		String userDir = System.getProperty("user.home");
+//		String documentsPath = userDir + File.separator + "Documents";
+//		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator
+//				+ utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas";
 
 		String ID = datos.getID();
 
@@ -1360,9 +1359,9 @@ public class DBLibreriaManager extends Comic {
 
 		String estado = datos.getEstado();
 
-		String portada_nueva = datos.getImagen();
-
 		String portada_final;
+		
+		String codigo_imagen;
 		PreparedStatement ps = null;
 		try {
 			ps = conn.prepareStatement(sentenciaSQL);
@@ -1389,15 +1388,10 @@ public class DBLibreriaManager extends Comic {
 
 			ps.setString(11, dibujante);
 
-			if (portada_nueva.length() != 0) {
-				portada_final = datos.getImagen();
-				;
-				ps.setString(12, portada_final);
-			} else {
-				portada_final = comic.getImagen();
-				ps.setString(12, portada_final);
-			}
-
+			portada_final = datos.getImagen();
+			codigo_imagen = Utilidades.generarCodigoUnico(portada_final + File.separator);
+			ps.setString(12, portada_final);
+			
 			ps.setString(13, estado);
 
 			ps.setString(14, ID);
@@ -1407,10 +1401,12 @@ public class DBLibreriaManager extends Comic {
 				Comic nuevo_comic = new Comic("", nombre, numCaja, numero, variante, firma, editorial, formato,
 						procedencia, fecha, guionista, dibujante, estado, "", portada_final);
 
-				utilidad.nueva_imagen(nuevo_comic);
-				modificar_direccion_portada(nuevo_comic, datos.getID());
+				String carpeta = Utilidades.eliminarDespuesUltimoPortadas(codigo_imagen);
+				
+				utilidad.nueva_imagen(portada_final,carpeta);
+				
+				modificar_direccion_portada(codigo_imagen, datos.getID());
 				listaComics.add(nuevo_comic);
-
 			}
 
 		} catch (SQLException ex) {

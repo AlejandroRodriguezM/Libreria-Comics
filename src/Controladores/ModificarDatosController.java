@@ -125,9 +125,6 @@ public class ModificarDatosController implements Initializable {
 	private DatePicker anioPublicacionMod;
 
 	@FXML
-	private TextField idComic;
-
-	@FXML
 	private TextField idComicMod;
 
 	@FXML
@@ -311,14 +308,6 @@ public class ModificarDatosController implements Initializable {
 			}
 			return null;
 		});
-
-		TextFormatter<Integer> textFormatterComic4 = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
-			String newText = change.getControlNewText();
-			if (newText.matches("\\d*")) {
-				return change;
-			}
-			return null;
-		});
 		
 		TextFormatter<Integer> textFormatterComic5 = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			String newText = change.getControlNewText();
@@ -331,7 +320,6 @@ public class ModificarDatosController implements Initializable {
 		numeroComic.setTextFormatter(textFormatterComic);
 		numeroCaja.setTextFormatter(textFormatterComic2);
 		idComicMod.setTextFormatter(textFormatterComic3);
-		idComic.setTextFormatter(textFormatterComic4);
 		numeroCajaMod.setTextFormatter(textFormatterComic5);
 
 		libreria = new DBLibreriaManager();
@@ -403,74 +391,6 @@ public class ModificarDatosController implements Initializable {
 				}
 			} else {
 				borrar_datos_mod();
-			}
-		});
-
-		idComic.textProperty().addListener((observable, oldValue, newValue) -> {
-			if (!newValue.isEmpty()) {
-				boolean existeComic = false;
-				try {
-					existeComic = libreria.checkID(newValue);
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if (existeComic || newValue.isEmpty()) {
-
-					Comic comic_temp = null;
-					try {
-						comic_temp = libreria.comicDatos(idComic.getText());
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-
-					idComic.setText(idComic.getText());
-
-					nombreComic.setText(comic_temp.getNombre());
-
-					numeroComic.setText(comic_temp.getNumero());
-
-					nombreVariante.setText(comic_temp.getVariante());
-
-					nombreFirma.setText(comic_temp.getFirma());
-
-					nombreEditorial.setText(comic_temp.getEditorial());
-
-					String formato = comic_temp.getFormato();
-					nombreFormato.getSelectionModel().select(formato);
-
-					String procedencia = comic_temp.getProcedencia();
-					nombreProcedencia.getSelectionModel().select(procedencia);
-
-					String fechaString = comic_temp.getFecha();
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-					LocalDate fecha = LocalDate.parse(fechaString, formatter);
-					anioPublicacion.setValue(fecha);
-
-					nombreGuionista.setText(comic_temp.getGuionista());
-
-					nombreDibujante.setText(comic_temp.getDibujante());
-
-					numeroCaja.setText(comic_temp.getNumCaja());
-
-					direccionImagen.setText(comic_temp.getImagen());
-
-					pantallaInformativa.setOpacity(1);
-					try {
-						pantallaInformativa.setText(
-								libreria.comicDatos(idComic.getText()).toString().replace("[", "").replace("]", ""));
-						imagencomic.setImage(libreria.selectorImage(idComic.getText()));
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-				else {
-					borrar_datos();
-				}
-			} else {
-				borrar_datos();
 			}
 		});
 	}
@@ -781,9 +701,6 @@ public class ModificarDatosController implements Initializable {
 	@FXML
 	void limpiarDatos(ActionEvent event) {
 
-		// Campos de busqueda por parametro
-		idComic.setText("");
-
 		nombreComic.setText("");
 
 		anioPublicacion.setValue(null);
@@ -850,8 +767,6 @@ public class ModificarDatosController implements Initializable {
 	 */
 	public String[] camposComicActuales() {
 		String campos[] = new String[12];
-
-		campos[0] = idComic.getText();
 
 		campos[1] = nombreComic.getText();
 
@@ -973,7 +888,7 @@ public class ModificarDatosController implements Initializable {
 
 		String datos[] = camposComicActuales();
 
-		Comic comic = new Comic(datos[0], datos[1], datos[11], datos[2], datos[3], datos[4], datos[5], datos[6],
+		Comic comic = new Comic("", datos[1], datos[11], datos[2], datos[3], datos[4], datos[5], datos[6],
 				datos[7], datos[8], datos[9], datos[10], "", "", null);
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
@@ -1031,7 +946,7 @@ public class ModificarDatosController implements Initializable {
 		utilidad = new Utilidades();
 		Comic comic_temp = new Comic();
 		Image imagen = null;
-		File file;
+//		File file;
 
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
@@ -1138,29 +1053,11 @@ public class ModificarDatosController implements Initializable {
 			}
 
 			if (datos[11].length() == 0) {
+				portada = comic_temp.getImagen();
+				imagen = new Image(portada);
+			} else {
 				portada = datos[11];
-
-				file = new File(portada);
-
-				if (!file.exists()) {
-
-					String nombre_comic = nombre.replace(" ", "_").replace(":", "_").replace("-", "_");
-					String numero_comic = numero.replace(" ", "").replace(":", "").replace("-", "");
-					String variante_comic = variante.replace(" ", "_").replace(",", "_").replace("-", "_").replace(":",
-							"_");
-					String fecha_comic = fecha;
-					String nombre_completo = nombre_comic + "_" + numero_comic + "_" + variante_comic + "_"
-							+ fecha_comic + ".jpg";
-
-					Utilidades.renombrarArchivo(sourcePath, comic_temp.getImagen(), nombre_completo);
-
-					portada = sourcePath + File.separator + nombre_completo;
-
-					imagen = new Image(portada);
-				} else {
-					portada = datos[11];
-					imagen = new Image(portada);
-				}
+				imagen = new Image(portada);
 			}
 
 			if (datos[12].length() == 0) {
@@ -1192,6 +1089,9 @@ public class ModificarDatosController implements Initializable {
 				pantallaInformativa.setText("Error. Debes de introducir los datos correctos");
 			} else {
 				libreria.actualizar_comic(comic);
+				
+				Utilidades.eliminarFichero(comic_temp.getImagen());
+				
 				imagencomic.setImage(imagen);
 				pantallaInformativa.setOpacity(1);
 				pantallaInformativa.setStyle("-fx-background-color: #A0F52D");

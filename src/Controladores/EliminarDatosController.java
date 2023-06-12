@@ -113,9 +113,6 @@ public class EliminarDatosController implements Initializable {
 	private Button botonbbdd;
 
 	@FXML
-	private TextField idComic;
-
-	@FXML
 	private TextField nombreComic;
 
 	@FXML
@@ -232,15 +229,6 @@ public class EliminarDatosController implements Initializable {
 			e.printStackTrace();
 		}
 
-		TextFormatter<Integer> textFormatterAni = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
-			String newText = change.getControlNewText();
-			if (newText.matches("\\d*")) {
-				return change;
-			}
-			return null;
-		});
-		idComic.setTextFormatter(textFormatterAni);
-
 		TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			String newText = change.getControlNewText();
 			if (newText.matches("\\d*")) {
@@ -264,18 +252,9 @@ public class EliminarDatosController implements Initializable {
 			return null;
 		});
 
-		TextFormatter<Integer> textFormatterComic4 = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
-			String newText = change.getControlNewText();
-			if (newText.matches("\\d*")) {
-				return change;
-			}
-			return null;
-		});
-
 		numeroComic.setTextFormatter(textFormatterComic);
 		numeroCaja.setTextFormatter(textFormatterComic2);
 		idComicTratar.setTextFormatter(textFormatterComic3);
-		idComic.setTextFormatter(textFormatterComic4);
 
 		parpadeo = new Timeline(
 				new KeyFrame(Duration.seconds(0.5), new KeyValue(label_id_eliminar.borderProperty(), Border.EMPTY)),
@@ -307,7 +286,7 @@ public class EliminarDatosController implements Initializable {
 						e.printStackTrace();
 					}
 
-					idComic.setText(idComic.getText());
+					idComicTratar.setText(idComicTratar.getText());
 
 					nombreComic.setText(comic_temp.getNombre());
 
@@ -337,78 +316,18 @@ public class EliminarDatosController implements Initializable {
 
 					numeroCaja.setText(comic_temp.getNumCaja());
 
+					pantallaInformativa.clear();
 					pantallaInformativa.setOpacity(1);
 					try {
 						pantallaInformativa.setText(
-								libreria.comicDatos(idComic.getText()).toString().replace("[", "").replace("]", ""));
-						imagencomic.setImage(libreria.selectorImage(idComic.getText()));
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				} else {
-					borrar_datos();
-				}
-			} else {
-				borrar_datos();
-			}
-		});
-
-		idComic.textProperty().addListener((observable, oldValue, newValue) -> {
-			if (!newValue.isEmpty()) {
-				boolean existeComic = false;
-				try {
-					existeComic = libreria.checkID(newValue);
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-				if (existeComic || newValue.isEmpty()) {
-
-					Comic comic_temp = null;
-					try {
-						comic_temp = libreria.comicDatos(idComic.getText());
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-
-					idComic.setText(idComic.getText());
-
-					nombreComic.setText(comic_temp.getNombre());
-
-					numeroComic.setText(comic_temp.getNumero());
-
-					nombreVariante.setText(comic_temp.getVariante());
-
-					nombreFirma.setText(comic_temp.getFirma());
-
-					nombreEditorial.setText(comic_temp.getEditorial());
-
-					String formato = comic_temp.getFormato();
-					nombreFormato.getSelectionModel().select(formato);
-
-					String procedencia = comic_temp.getProcedencia();
-					nombreProcedencia.getSelectionModel().select(procedencia);
-
-					String fechaString = comic_temp.getFecha();
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-					LocalDate fecha = LocalDate.parse(fechaString, formatter);
-					anioPublicacion.setValue(fecha);
-
-					nombreGuionista.setText(comic_temp.getGuionista());
-
-					nombreDibujante.setText(comic_temp.getDibujante());
-
-					numeroCaja.setText(comic_temp.getNumCaja());
-
-					pantallaInformativa.setOpacity(1);
-					try {
-						pantallaInformativa.setText(
-								libreria.comicDatos(idComic.getText()).toString().replace("[", "").replace("]", ""));
-						imagencomic.setImage(libreria.selectorImage(idComic.getText()));
+								libreria.comicDatos(idComicTratar.getText()).toString().replace("[", "").replace("]", ""));
+						imagencomic.setImage(libreria.selectorImage(idComicTratar.getText()));
 
 					} catch (SQLException e) {
+						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+					imagencomic.setImage(libreria.selectorImage(idComicTratar.getText()));
 				} else {
 					borrar_datos();
 				}
@@ -422,6 +341,10 @@ public class EliminarDatosController implements Initializable {
 	 * Metodo que permite borrar los datos en pantalla
 	 */
 	public void borrar_datos() {
+		
+//		idComic.setText("");
+		
+//		idComicTratar.setText("");
 
 		nombreComic.setText("");
 
@@ -697,7 +620,7 @@ public class EliminarDatosController implements Initializable {
 
 		String datos[] = camposComics();
 
-		Comic comic = new Comic(datos[0], datos[1], datos[11], datos[2], datos[3], datos[4], datos[5], datos[6],
+		Comic comic = new Comic("", datos[1], datos[11], datos[2], datos[3], datos[4], datos[5], datos[6],
 				datos[7], datos[8], datos[9], datos[10], "", "", null);
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
@@ -784,8 +707,6 @@ public class EliminarDatosController implements Initializable {
 	 */
 	public String[] camposComics() {
 		String campos[] = new String[12];
-
-		campos[0] = idComic.getText();
 
 		campos[1] = nombreComic.getText();
 

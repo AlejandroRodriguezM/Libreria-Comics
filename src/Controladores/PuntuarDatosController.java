@@ -115,9 +115,6 @@ public class PuntuarDatosController implements Initializable {
 	private DatePicker fechaPublicacion;
 
 	@FXML
-	private TextField numeroID;
-
-	@FXML
 	private TextField nombreComic;
 
 	@FXML
@@ -234,15 +231,6 @@ public class PuntuarDatosController implements Initializable {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
-		TextFormatter<Integer> textFormatterAni = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
-			String newText = change.getControlNewText();
-			if (newText.matches("\\d*")) {
-				return change;
-			}
-			return null;
-		});
-		numeroID.setTextFormatter(textFormatterAni);
 
 		TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			String newText = change.getControlNewText();
@@ -260,14 +248,6 @@ public class PuntuarDatosController implements Initializable {
 			return null;
 		});
 
-		TextFormatter<Integer> textFormatterComic3 = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
-			String newText = change.getControlNewText();
-			if (newText.matches("\\d*")) {
-				return change;
-			}
-			return null;
-		});
-
 		TextFormatter<Integer> textFormatterComic4 = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			String newText = change.getControlNewText();
 			if (newText.matches("\\d*")) {
@@ -278,7 +258,6 @@ public class PuntuarDatosController implements Initializable {
 
 		numeroComic.setTextFormatter(textFormatterComic);
 		numeroCaja.setTextFormatter(textFormatterComic2);
-		numeroID.setTextFormatter(textFormatterComic3);
 		idPuntuar.setTextFormatter(textFormatterComic4);
 		libreria = new DBLibreriaManager();
 
@@ -339,73 +318,6 @@ public class PuntuarDatosController implements Initializable {
 								libreria.comicDatos(idPuntuar.getText()).toString().replace("[", "").replace("]", ""));
 						imagencomic.setImage(libreria.selectorImage(idPuntuar.getText()));
 
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				else {
-					borrar_datos();
-				}
-			} else {
-				borrar_datos();
-			}
-		});
-
-		numeroID.textProperty().addListener((observable, oldValue, newValue) -> {
-			if (!newValue.isEmpty()) {
-				boolean existeComic = false;
-				try {
-					existeComic = libreria.checkID(newValue);
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-				if (existeComic || newValue.isEmpty()) {
-
-					Comic comic_temp = null;
-					try {
-						comic_temp = libreria.comicDatos(numeroID.getText());
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-
-					numeroID.setText(numeroID.getText());
-
-					nombreComic.setText(comic_temp.getNombre());
-
-					numeroComic.setText(comic_temp.getNumero());
-
-					nombreVariante.setText(comic_temp.getVariante());
-
-					nombreFirma.setText(comic_temp.getFirma());
-
-					nombreEditorial.setText(comic_temp.getEditorial());
-
-					String formato = comic_temp.getFormato();
-					nombreFormato.getSelectionModel().select(formato);
-
-					String procedencia = comic_temp.getProcedencia();
-					procedenciaParametro.getSelectionModel().select(procedencia);
-
-					String puntuacion = comic_temp.getPuntuacion();
-					puntuacionMenu.getSelectionModel().select(puntuacion);
-
-					String fechaString = comic_temp.getFecha();
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-					LocalDate fecha = LocalDate.parse(fechaString, formatter);
-					fechaPublicacion.setValue(fecha);
-
-					nombreGuionista.setText(comic_temp.getGuionista());
-
-					nombreDibujante.setText(comic_temp.getDibujante());
-
-					numeroCaja.setText(comic_temp.getNumCaja());
-
-					pantallaInformativa.setOpacity(1);
-					try {
-						pantallaInformativa.setText(
-								libreria.comicDatos(numeroID.getText()).toString().replace("[", "").replace("]", ""));
-						imagencomic.setImage(libreria.selectorImage(numeroID.getText()));
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}
@@ -644,7 +556,6 @@ public class PuntuarDatosController implements Initializable {
 	@FXML
 	void limpiarDatos(ActionEvent event) {
 
-		numeroID.setText("");
 		nombreComic.setText("");
 		numeroComic.setText("");
 		nombreVariante.setText("");
@@ -737,8 +648,6 @@ public class PuntuarDatosController implements Initializable {
 	public String[] camposComic() {
 		String campos[] = new String[12];
 
-		campos[0] = numeroID.getText();
-
 		campos[1] = nombreComic.getText();
 
 		campos[2] = numeroComic.getText();
@@ -774,7 +683,7 @@ public class PuntuarDatosController implements Initializable {
 	public void listaPorParametro() throws SQLException {
 		String datosComic[] = camposComic();
 
-		Comic comic = new Comic(datosComic[0], datosComic[1], datosComic[11], datosComic[2], datosComic[3],
+		Comic comic = new Comic("", datosComic[1], datosComic[11], datosComic[2], datosComic[3],
 				datosComic[4], datosComic[5], datosComic[6], datosComic[7], datosComic[8], datosComic[9],
 				datosComic[10], "", "", null);
 

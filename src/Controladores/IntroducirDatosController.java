@@ -777,10 +777,13 @@ public class IntroducirDatosController implements Initializable {
 
 				nav.alertaException(excepcion);
 			} else {
-				utilidad.nueva_imagen(comic);
+				
+				String codigo_imagen = Utilidades.generarCodigoUnico(sourcePath + File.separator);
+				
+				utilidad.nueva_imagen(portada,codigo_imagen); //Se genera el fichero del comic y el nuevo nombre de este
 
-				String nueva_portada = utilidad.obtenerNombreCompleto(comic);
-				comic.setImagen(nueva_portada);
+//				String nueva_portada = utilidad.obtenerNombreCompleto(comic);
+				comic.setImagen(sourcePath + File.separator + codigo_imagen + ".jpg");
 				libreria.insertarDatos(comic);
 
 				pantallaInformativa.setOpacity(1);

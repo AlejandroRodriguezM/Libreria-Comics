@@ -140,14 +140,7 @@ public class FuncionesExcel {
 				fila.createCell(10).setCellValue(comic.getGuionista());
 				fila.createCell(11).setCellValue(comic.getDibujante());
 				fila.createCell(12).setCellValue(comic.getPuntuacion());
-				
-				String nombre_comic = comic.getNombre().replace(" ", "_").replace(":", "_").replace("-", "_");
-				String numero_comic = comic.getNumero();
-				String variante_comic = comic.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_").replace(":", "");
-				String fecha_comic = comic.getFecha();
-				String nombre_completo =sourcePath +  nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic + ".jpg";
-				
-				fila.createCell(13).setCellValue(nombre_completo);
+				fila.createCell(13).setCellValue(comic.getImagen());
 				fila.createCell(14).setCellValue(comic.getEstado());
 				indiceFila++;
 			}
@@ -226,12 +219,7 @@ public class FuncionesExcel {
 				fila.createCell(10).setCellValue(comic.getGuionista());
 				fila.createCell(11).setCellValue(comic.getDibujante());
 				fila.createCell(12).setCellValue(comic.getPuntuacion());
-				String nombre_comic = comic.getNombre().replace(" ", "_").replace(":", "_").replace("-", "_");
-				String numero_comic = comic.getNumero();
-				String variante_comic = comic.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_").replace(":", "");
-				String fecha_comic = comic.getFecha();
-				String nombre_completo =sourcePath +  nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic + ".jpg";
-				fila.createCell(13).setCellValue(nombre_completo);
+				fila.createCell(13).setCellValue(comic.getImagen());
 				fila.createCell(14).setCellValue(comic.getEstado());
 
 				indiceFila++;
@@ -473,16 +461,18 @@ public class FuncionesExcel {
 				} else {
 					puntuacion = "Sin puntuacion";
 				}
+				
+				String direccion_portada = data[13];
+				
+				String nombre_portada = Utilidades.obtenerDespuesPortadas(direccion_portada);
+				
+				String nombre_modificado = Utilidades.convertirNombreArchivo(nombre_portada);
+
+				String nombre_completo = defaultImagePath + File.separator + nombre_modificado;
+
 				String estado = data[14];
 				
-				String nombre_comic1 = nombre.replace("-", "_");
-				String nombre_comic2 = nombre_comic1.replace(" ", "_");
-				String nombre_comic3 = nombre_comic2.replace(":", "_");
-
-				String numero_comic = numero;
-				String variante_comic = variante.replace(" ", "_").replace(",", "_").replace("-", "_").replace(":", "");
-				String fecha_comic = fecha;
-				String nombre_completo = defaultImagePath + File.separator +  nombre_comic3 + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic + ".jpg";
+				System.out.println(nombre_completo);
 			
 				statement.setString(1, id);
 				statement.setString(2, nombre);
