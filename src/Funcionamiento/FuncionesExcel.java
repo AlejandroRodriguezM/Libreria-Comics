@@ -1,5 +1,7 @@
 package Funcionamiento;
 
+import java.awt.Desktop;
+
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  * Las ventanas graficas se realizan con JavaFX.
@@ -24,16 +26,25 @@ package Funcionamiento;
  */
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -99,10 +110,10 @@ public class FuncionesExcel {
 		Sheet hoja;
 		Workbook libro;
 		String encabezado;
-		String userDir = System.getProperty("user.home");
-		String documentsPath = userDir + File.separator + "Documents";
-		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator
-				+ utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas" + File.separator;
+//		String userDir = System.getProperty("user.home");
+//		String documentsPath = userDir + File.separator + "Documents";
+//		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator
+//				+ utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas" + File.separator;
 		String[] encabezados = { "ID", "nomComic", "caja_deposito", "numComic", "nomVariante", "Firma", "nomEditorial",
 				"Formato", "Procedencia", "fecha_publicacion", "nomGuionista", "nomDibujante", "puntuacion", "portada",
 				"estado" };
@@ -177,9 +188,9 @@ public class FuncionesExcel {
 		int indiceFila = 0;
 
 		String userDir = System.getProperty("user.home");
-		String documentsPath = userDir + File.separator + "Documents";
-		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator
-				+ utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas" + File.separator;
+//		String documentsPath = userDir + File.separator + "Documents";
+//		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator
+//				+ utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas" + File.separator;
 
 		String ubicacion = userDir + File.separator + "AppData" + File.separator + "Roaming";
 		String direccion = ubicacion + File.separator + "libreria" + File.separator
@@ -406,105 +417,205 @@ public class FuncionesExcel {
 //	}
 
 	/**
-	 * Funcion que permite leer un fichero CSV
+	 * Función que permite leer un fichero CSV
 	 *
 	 * @param sql
 	 * @param lineReader
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	public void lecturaCSV(String sql, BufferedReader lineReader) throws IOException{
+	public void lecturaCSV(String sql, BufferedReader lineReader) throws IOException {
 	    File directorio = carpetaPortadas();
-		String puntuacion;
-		String procedencia;
-		db = new DBLibreriaManager();
-		int batchSize = 20;
-		utilidad = new Utilidades();
-		String lineText = null;
-		String userDir = System.getProperty("user.home");
-		String documentsPath = userDir + File.separator + "Documents";
-		String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator + utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator 
-				+ "portadas"; 
-		Utilidades.convertirNombresCarpetas(defaultImagePath + File.separator);
-		Utilidades.convertirNombresCarpetas(directorio.getAbsolutePath());
+	    db = new DBLibreriaManager();
+	    utilidad = new Utilidades();
+	    int batchSize = 20;
 
-		try {
-			PreparedStatement statement = conn.prepareStatement(sql);
-			int count = 0;
-			int nuevoID = db.countRows();
-			lineReader.readLine();
-			Utilidades.copyDirectory(directorio.getAbsolutePath(),defaultImagePath);
+	    String lineText = null;
+	    String userDir = System.getProperty("user.home");
+	    String documentsPath = userDir + File.separator + "Documents";
+	    String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
+	            + utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas";
+	    Utilidades.convertirNombresCarpetas(defaultImagePath + File.separator);
+	    Utilidades.convertirNombresCarpetas(directorio.getAbsolutePath());
 
-			// Se leerán los datos hasta que no existan más datos
-			while ((lineText = lineReader.readLine()) != null) {
-				String[] data = lineText.split(";");
-				String id = Integer.toString(nuevoID);
-				String nombre = data[1];
-				String numCaja = data[2];
-				String numero = data[3];
-				String variante = data[4];
-				String firma = data[5];
-				String editorial = data[6];
-				String formato = data[7];
-				if (data[8].toLowerCase().contains("españa")) {
-					procedencia = data[8].toLowerCase().replace("españa", "Spain");
-				} else {
-					procedencia = data[8];
-				}
+	    String defaultImagePathBase = documentsPath + File.separator + "libreria_comics" + File.separator
+	            + utilidad.obtenerDatoDespuesDeDosPuntos("Database");
 
-				// Conversión de fecha al formato correcto
-//	            String fecha = convertirFecha(data[8]);
-				String fecha = data[9];
-				String guionista = data[10];
-				String dibujante = data[11];
-				if (data[11].length() != 0) {
-					puntuacion = data[12];
-				} else {
-					puntuacion = "Sin puntuacion";
-				}
-				
-				String direccion_portada = data[13];
-				
-				String nombre_portada = Utilidades.obtenerDespuesPortadas(direccion_portada);
-				
-				String nombre_modificado = Utilidades.convertirNombreArchivo(nombre_portada);
+	    String logFileName = "log_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")) + ".txt";
 
-				String nombre_completo = defaultImagePath + File.separator + nombre_modificado;
+	    try {
+	        PreparedStatement statement = conn.prepareStatement(sql);
+	        int count = 0;
+	        int nuevoID = db.countRows();
+	        lineReader.readLine();
+	        Utilidades.copyDirectory(directorio.getAbsolutePath(), defaultImagePath);
 
-				String estado = data[14];
-				
-				System.out.println(nombre_completo);
-			
-				statement.setString(1, id);
-				statement.setString(2, nombre);
-				statement.setString(3, numCaja);
-				statement.setString(4, numero);
-				statement.setString(5, variante);
-				statement.setString(6, firma);
-				statement.setString(7, editorial);
-				statement.setString(8, formato);
-				statement.setString(9, procedencia);
-				statement.setString(10, fecha);
-				statement.setString(11, guionista);
-				statement.setString(12, dibujante);
-				statement.setString(13, puntuacion);
-				statement.setString(14, nombre_completo);
-				statement.setString(15, estado);
+	        // Se leerán los datos hasta que no existan más datos
+	        while ((lineText = lineReader.readLine()) != null) {
+	            String[] data = lineText.split(";");
+	            String id = Integer.toString(nuevoID);
+	            String nombre = data[1];
+	            String numCaja = data[2];
+	            String numero = data[3];
+	            String variante = data[4];
+	            String firma = data[5];
+	            String editorial = data[6];
+	            String formato = data[7];
+	            String procedencia = obtenerProcedencia(data[8]);
+	            String fecha = data[9];
+	            String guionista = data[10];
+	            String dibujante = data[11];
+	            String puntuacion = obtenerPuntuacion(data[11], data[12]);
+	            String direccion_portada = data[13];
+	            String nombre_portada = Utilidades.obtenerDespuesPortadas(direccion_portada);
+	            String nombre_modificado = Utilidades.convertirNombreArchivo(nombre_portada);
+	            String nombre_completo = defaultImagePath + File.separator + nombre_modificado;
+	            String estado = data[14];
 
-				statement.addBatch();
+	            if (!existeArchivo(defaultImagePath, nombre_modificado)) {
+	                copiarPortadaPredeterminada(defaultImagePath, nombre_modificado);
+	                generarLogFaltaPortada(defaultImagePathBase, logFileName, nombre_modificado);
+	            }
 
-				if (count % batchSize == 0) {
-					statement.executeBatch();
-				}
+	            statement.setString(1, id);
+	            statement.setString(2, nombre);
+	            statement.setString(3, numCaja);
+	            statement.setString(4, numero);
+	            statement.setString(5, variante);
+	            statement.setString(6, firma);
+	            statement.setString(7, editorial);
+	            statement.setString(8, formato);
+	            statement.setString(9, procedencia);
+	            statement.setString(10, fecha);
+	            statement.setString(11, guionista);
+	            statement.setString(12, dibujante);
+	            statement.setString(13, puntuacion);
+	            statement.setString(14, nombre_completo);
+	            statement.setString(15, estado);
 
-			}
-			lineReader.close();
-			statement.executeBatch();
-		} catch (SQLException e) {
-			nav.alertaException(e.toString());
-		} catch (IOException e) {
-			nav.alertaException(e.toString());
-		}
+	            statement.addBatch();
+
+	            if (count % batchSize == 0) {
+	                statement.executeBatch();
+	            }
+	        }
+
+	        lineReader.close();
+	        statement.executeBatch();
+	        abrirArchivoRegistro(defaultImagePathBase + File.separator + logFileName);
+	    } catch (SQLException e) {
+	        nav.alertaException(e.toString());
+	    } catch (IOException e) {
+	        nav.alertaException(e.toString());
+	        e.printStackTrace();
+	    }
 	}
+	
+	private void abrirArchivoRegistro(String filePath) {
+	    File file = new File(filePath);
+	    
+	    if (file.exists()) {
+	        try {
+	            Desktop.getDesktop().open(file);
+	        } catch (IOException e) {
+	            nav.alertaException(e.toString());
+	            e.printStackTrace();
+	        }
+	    }
+	}
+
+	/**
+	 * Función que obtiene la procedencia según el país
+	 *
+	 * @param pais El país de origen
+	 * @return La procedencia actualizada
+	 */
+	private String obtenerProcedencia(String pais) {
+	    String procedencia;
+	    if (pais.toLowerCase().contains("españa")) {
+	        procedencia = pais.toLowerCase().replace("españa", "Spain");
+	    } else {
+	        procedencia = pais;
+	    }
+	    return procedencia;
+	}
+
+	/**
+	 * Función que obtiene la puntuación del cómic
+	 *
+	 * @param dibujante El nombre del dibujante
+	 * @param puntuacion La puntuación actual
+	 * @return La puntuación actualizada
+	 */
+	private String obtenerPuntuacion(String dibujante, String puntuacion) {
+	    if (dibujante.length() != 0) {
+	        return puntuacion;
+	    } else {
+	        return "Sin puntuación";
+	    }
+	}
+
+	/**
+	 * Función que verifica si un archivo de portada existe
+	 *
+	 * @param defaultImagePath El directorio de las portadas
+	 * @param nombreModificado El nombre del archivo modificado
+	 * @return true si el archivo existe, false en caso contrario
+	 */
+	private boolean existeArchivo(String defaultImagePath, String nombreModificado) {
+	    return Files.exists(Paths.get(defaultImagePath, nombreModificado));
+	}
+
+	/**
+	 * Función que copia la portada predeterminada y cambia su nombre
+	 *
+	 * @param defaultImagePath El directorio de las portadas
+	 * @param nombreModificado El nombre del archivo modificado
+	 * @throws IOException
+	 */
+	public void copiarPortadaPredeterminada(String defaultImagePath, String nombreModificado) throws IOException {
+	    File sourceFile = new File(defaultImagePath, nombreModificado);
+	    if (!sourceFile.exists()) {
+	        InputStream input = getClass().getResourceAsStream("sinPortada.jpg");
+
+	        if (input == null) {
+	            throw new FileNotFoundException("La imagen predeterminada no se encontró en el paquete");
+	        }
+
+	        File destinationFile = new File(defaultImagePath, nombreModificado);
+	        destinationFile.createNewFile();
+
+	        try (OutputStream output = new FileOutputStream(destinationFile)) {
+	            byte[] buffer = new byte[4096];
+	            int bytesRead;
+	            while ((bytesRead = input.read(buffer)) != -1) {
+	                output.write(buffer, 0, bytesRead);
+	            }
+	        }
+	    } else {
+	        File destinationFile = new File(defaultImagePath, nombreModificado);
+	        Files.copy(sourceFile.toPath(), destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+	    }
+	}
+
+
+	/**
+	 * Función que genera el log cuando falta una portada
+	 *
+	 * @param defaultImagePathBase El directorio base de las portadas
+	 * @param logFileName El nombre del archivo de log
+	 * @param nombreModificado El nombre del archivo modificado
+	 * @throws IOException
+	 */
+	private void generarLogFaltaPortada(String defaultImagePathBase, String logFileName, String nombreModificado) throws IOException {
+	    String logFilePath = defaultImagePathBase + File.separator + logFileName;
+	    try (BufferedWriter writer = new BufferedWriter(new FileWriter(logFilePath, true))) {
+	        writer.write("Falta portada: " + nombreModificado);
+	        writer.newLine();
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+	}
+
 
 //	private String convertirFecha(String fecha) {
 //	    try {

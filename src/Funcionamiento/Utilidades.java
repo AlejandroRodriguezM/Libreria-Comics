@@ -35,6 +35,7 @@ import java.io.OutputStream;
 import java.lang.ProcessBuilder.Redirect;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
@@ -280,40 +281,59 @@ public class Utilidades {
 //			String nombre_completo = nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic;
 //			String extension = ".jpg";
 //			String nuevoNombreArchivo = String.valueOf(nombre_completo) + extension;
-			
+
 			File newFile = new File(portadasFolder.getPath() + File.separator + nuevoNombreArchivo + ".jpg");
 			Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static void copyDirectory(String sourceDirectoryPath, String destinationDirectoryPath) throws IOException {
+	/**
+	 * Copia un directorio y cuenta los archivos que no existen durante la copia.
+	 *
+	 * @param sourceDirectoryPath      Ruta del directorio fuente.
+	 * @param destinationDirectoryPath Ruta del directorio de destino.
+	 */
+	public static void copyDirectory(String sourceDirectoryPath, String destinationDirectoryPath) {
 		Path sourceDirectory = Paths.get(sourceDirectoryPath);
 		Path destinationDirectory = Paths.get(destinationDirectoryPath);
 
-		if (!Files.exists(destinationDirectory)) {
-			Files.createDirectories(destinationDirectory);
-		}
+		final int[] contadorArchivosNoExistentes = { 0 }; // Array de un solo elemento para almacenar el contador
 
-		Files.walkFileTree(sourceDirectory, new SimpleFileVisitor<>() {
-			@Override
-			public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-				Path targetPath = destinationDirectory.resolve(sourceDirectory.relativize(dir));
-				if (!Files.exists(targetPath)) {
-					Files.createDirectory(targetPath);
+		try {
+			if (!Files.exists(destinationDirectory)) {
+				Files.createDirectories(destinationDirectory);
+			}
+
+			Files.walkFileTree(sourceDirectory, new SimpleFileVisitor<>() {
+				@Override
+				public FileVisitResult visitFile(Path sourceFile, BasicFileAttributes attrs) throws IOException {
+					if (sourceFile.toString().endsWith(".jpg")) {
+						Path destinationPath = destinationDirectory.resolve(sourceDirectory.relativize(sourceFile));
+						try {
+							Files.copy(sourceFile, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+						} catch (NoSuchFileException e) {
+							contadorArchivosNoExistentes[0]++; // Incrementar el contador utilizando el array
+						} catch (IOException e) {
+							System.err.println("Se produjo un error al copiar el archivo: " + e.getMessage());
+						}
+					}
+					return FileVisitResult.CONTINUE;
 				}
-				return FileVisitResult.CONTINUE;
-			}
 
-			@Override
-			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-				Files.copy(file, destinationDirectory.resolve(sourceDirectory.relativize(file)),
-						StandardCopyOption.REPLACE_EXISTING);
-				return FileVisitResult.CONTINUE;
-			}
-		});
+				@Override
+				public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+					System.err.println("No se pudo visitar el archivo: " + file + ". Motivo: " + exc.getMessage());
+					return FileVisitResult.CONTINUE;
+				}
+			});
+
+			System.out.println("Directorio copiado exitosamente.");
+		} catch (IOException e) {
+			System.err.println("Se produjo un error al copiar el directorio: " + e.getMessage());
+		}
 	}
 
 	public String obtenerDatoDespuesDeDosPuntos(String linea) {
@@ -598,7 +618,9 @@ public class Utilidades {
 	}
 
 	/**
-	 * Funcion que devuelve la direccion de una url sin tener en cuenta el fichero y extension
+	 * Funcion que devuelve la direccion de una url sin tener en cuenta el fichero y
+	 * extension
+	 * 
 	 * @param rutaArchivo
 	 * @return
 	 */
@@ -610,26 +632,28 @@ public class Utilidades {
 			return rutaArchivo;
 		}
 	}
-	
+
 	/**
-	 * Funcion que solamente deuvelve el nombre del fichero y la extension dada una direccion
+	 * Funcion que solamente deuvelve el nombre del fichero y la extension dada una
+	 * direccion
+	 * 
 	 * @param rutaArchivo
 	 * @return
 	 */
 	public static String obtenerDespuesPortadas(String rutaArchivo) {
-	    int indicePortadas = rutaArchivo.indexOf("portadas\\");
-	    if (indicePortadas != -1) {
-	        return rutaArchivo.substring(indicePortadas + 9);
-	    } else {
-	        return "";
-	    }
+		int indicePortadas = rutaArchivo.indexOf("portadas\\");
+		if (indicePortadas != -1) {
+			return rutaArchivo.substring(indicePortadas + 9);
+		} else {
+			return "";
+		}
 	}
 
 	public static void eliminarFichero(String direccion) {
 		File archivo = new File(direccion);
-		
+
 		System.out.println(direccion);
-		
+
 		archivo.delete();
 	}
 
@@ -647,39 +671,42 @@ public class Utilidades {
 			}
 		}
 	}
-	
+
 	/**
-	 * Genera un codigo unico para renombrar una imagen solamente si el codigo no existe, si no, vuelve a crear otro hasta que aparezca uno que sea adecuado
+	 * Genera un codigo unico para renombrar una imagen solamente si el codigo no
+	 * existe, si no, vuelve a crear otro hasta que aparezca uno que sea adecuado
+	 * 
 	 * @param carpeta
 	 * @return
 	 */
 	public static String generarCodigoUnico(String carpeta) {
-	    String codigo;
-	    File directorio = new File(carpeta);
-	    File archivo = null;
-	    do {
-	        codigo = generarCodigo(); // Genera un nuevo código único
-	        String nombreArchivo = codigo + ".jpg";
-	        archivo = new File(directorio, nombreArchivo);
-	    } while (archivo.exists());
+		String codigo;
+		File directorio = new File(carpeta);
+		File archivo = null;
+		do {
+			codigo = generarCodigo(); // Genera un nuevo código único
+			String nombreArchivo = codigo + ".jpg";
+			archivo = new File(directorio, nombreArchivo);
+		} while (archivo.exists());
 
-	    return codigo;
+		return codigo;
 	}
 
 	/**
 	 * Genera un codigo de forma aleatoria
+	 * 
 	 * @return
 	 */
 	private static String generarCodigo() {
-	    String caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-	    StringBuilder codigo = new StringBuilder();
+		String caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+		StringBuilder codigo = new StringBuilder();
 
-	    for (int i = 0; i < 10; i++) {
-	        int indice = (int) (Math.random() * caracteres.length());
-	        codigo.append(caracteres.charAt(indice));
-	    }
+		for (int i = 0; i < 10; i++) {
+			int indice = (int) (Math.random() * caracteres.length());
+			codigo.append(caracteres.charAt(indice));
+		}
 
-	    return codigo.toString();
+		return codigo.toString();
 	}
 
 }

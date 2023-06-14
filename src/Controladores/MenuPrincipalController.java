@@ -258,12 +258,12 @@ public class MenuPrincipalController implements Initializable {
 			e.printStackTrace();
 		}
 
-		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList("Spain", "USA", "Japon",
+		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList("Todo","Spain", "USA", "Japon",
 				"Italia", "Francia");
 		nombreProcedencia.setItems(procedenciaEstadoActual);
 		nombreProcedencia.getSelectionModel().selectFirst();
 
-		ObservableList<String> formatoActual = FXCollections.observableArrayList("Grapa", "Tapa dura", "Tapa blanda",
+		ObservableList<String> formatoActual = FXCollections.observableArrayList("Todo","Grapa", "Tapa dura", "Tapa blanda",
 				"Manga", "Libro");
 		nombreFormato.setItems(formatoActual);
 		nombreFormato.getSelectionModel().selectFirst();
@@ -916,9 +916,18 @@ public class MenuPrincipalController implements Initializable {
 
 		campos[5] = nombreEditorial.getText();
 
-		campos[6] = formatoActual();
+		if(formatoActual() == "Todo") {
+			campos[6] = "";
+		}else {
+			campos[6] = formatoActual();
+		}
+		
+		if(procedenciaActual() == "Todo") {
+			campos[7] = "";
+		}else {
+			campos[7] = procedenciaActual();
 
-		campos[7] = procedenciaActual();
+		}
 
 		LocalDate fecha = fechaPublicacion.getValue();
 		campos[8] = (fecha != null) ? fecha.toString() : "";

@@ -213,12 +213,12 @@ public class EliminarDatosController implements Initializable {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList("Spain", "USA", "Japon",
+		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList("Todo","Spain", "USA", "Japon",
 				"Italia", "Francia");
 		nombreProcedencia.setItems(procedenciaEstadoActual);
 		nombreProcedencia.getSelectionModel().selectFirst();
 
-		ObservableList<String> formatoActual = FXCollections.observableArrayList("Grapa", "Tapa dura", "Tapa blanda",
+		ObservableList<String> formatoActual = FXCollections.observableArrayList("Todo","Grapa", "Tapa dura", "Tapa blanda",
 				"Manga", "Libro");
 		nombreFormato.setItems(formatoActual);
 		nombreFormato.getSelectionModel().selectFirst();
@@ -324,7 +324,6 @@ public class EliminarDatosController implements Initializable {
 						imagencomic.setImage(libreria.selectorImage(idComicTratar.getText()));
 
 					} catch (SQLException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					imagencomic.setImage(libreria.selectorImage(idComicTratar.getText()));
@@ -718,9 +717,18 @@ public class EliminarDatosController implements Initializable {
 
 		campos[5] = nombreEditorial.getText();
 
-		campos[6] = formatoActual();
+		if(formatoActual() == "Todo") {
+			campos[6] = "";
+		}else {
+			campos[6] = formatoActual();
+		}
+		
+		if(procedenciaActual() == "Todo") {
+			campos[7] = "";
+		}else {
+			campos[7] = procedenciaActual();
 
-		campos[7] = procedenciaActual();
+		}
 
 		LocalDate fecha = anioPublicacion.getValue();
 		campos[8] = (fecha != null) ? fecha.toString() : "";

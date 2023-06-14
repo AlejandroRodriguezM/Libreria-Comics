@@ -669,9 +669,12 @@ public class Ventanas {
 	 * @param excepcion
 	 */
 	public void alertaException(String excepcion) {
-		Platform.runLater(() -> {
-			Alert dialog = new Alert(AlertType.ERROR, excepcion, ButtonType.OK);
-			dialog.show();
-		});
+	    Platform.runLater(() -> {
+	        Alert dialog = new Alert(AlertType.ERROR, excepcion, ButtonType.OK);
+	        Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+	        stage.getIcons().add(new Image("/Icono/icon.png"));  // Reemplaza "path/to/your/icon.png" con la ruta de tu icono
+	        
+	        dialog.show();
+	    });
 	}
 }

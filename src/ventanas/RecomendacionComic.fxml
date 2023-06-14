@@ -5,21 +5,25 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.effect.Bloom?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="366.0" prefWidth="523.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.RecomendacionesController">
    <children>
-      <ImageView fitHeight="368.0" fitWidth="535.0" layoutY="-1.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="532.0" fitWidth="523.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagenes/fondoRecomendacion.jpg" />
          </image>
+         <effect>
+            <Bloom threshold="1.0" />
+         </effect>
       </ImageView>
       <Button fx:id="botonElegir" layoutX="205.0" layoutY="311.0" mnemonicParsing="false" onAction="#eligePorMi" prefHeight="47.0" prefWidth="97.0" stylesheets="@../style/genericos_style.css" text="Elige por mi!" />
       <TextArea fx:id="printComicRecomendado" editable="false" layoutX="308.0" layoutY="28.0" opacity="0.0" prefHeight="271.0" prefWidth="205.0" wrapText="true" />
       <ImageView fx:id="imagencomic" fitHeight="271.0" fitWidth="214.0" layoutX="9.0" layoutY="31.0" pickOnBounds="true" preserveRatio="true" />
-      <MenuBar fx:id="menu_navegacion" prefHeight="25.0" prefWidth="524.0">
+      <MenuBar fx:id="menu_navegacion" prefHeight="25.0" prefWidth="523.0">
          <menus>
             <Menu fx:id="navegacion_cerrar" mnemonicParsing="false" text="Archivo">
                <items>

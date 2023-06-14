@@ -228,30 +228,28 @@ public class CrearBBDDController implements Initializable {
 	 * @return
 	 */
 	public boolean checkDatabase() {
+	    boolean exists;
+	    ResultSet rs;
+	    String sentenciaSQL = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '" + DB_NAME + "';";
 
-		boolean exists;
-		ResultSet rs;
-
-		String sentenciaSQL = "SELECT COUNT(*) " + "FROM information_schema.tables " + "WHERE table_schema = '"
-				+ DB_NAME + "';";
-
-		try {
-
-			rs = comprobarDataBase(sentenciaSQL);
-			exists = rs.getInt("COUNT(*)") < 1;
-
-			if (exists) {
-				return true;
-			}
-
-		} catch (SQLException e) {
-
-			nav.alertaException(e.toString());
-		}
-		detenerAnimacion();
-		prontInformativo.setStyle("-fx-background-color: #DD370F");
-		iniciarAnimacionBaseExiste();
-		return false;
+	    try {
+	        rs = comprobarDataBase(sentenciaSQL);
+	        
+	        if (rs != null && rs.next()) {
+	            exists = rs.getInt(1) < 1;
+	            
+	            if (exists) {
+	                return true;
+	            }
+	        }
+	    } catch (SQLException e) {
+	        nav.alertaException("Hay algún error en tu conexión a la base de datos. Revisa la configuración.");
+	    }
+	    
+	    detenerAnimacion();
+	    prontInformativo.setStyle("-fx-background-color: #DD370F");
+	    iniciarAnimacionBaseExiste();
+	    return false;
 	}
 
 	/**
@@ -279,31 +277,28 @@ public class CrearBBDDController implements Initializable {
 	}
 
 	/**
-	 * Funcion que devuelve un Resulset, permite
-	 *
-	 * @param sentenciaSQL
-	 * @return
+	 * Verifica la base de datos ejecutando una sentencia SQL y devuelve el ResultSet correspondiente.
+	 * 
+	 * @param sentenciaSQL la sentencia SQL a ejecutar
+	 * @return el ResultSet que contiene los resultados de la consulta
 	 */
 	public ResultSet comprobarDataBase(String sentenciaSQL) {
-
-		String url = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "?serverTimezone=UTC";
-
-		Statement statement;
-		try {
-
-			Connection connection = DriverManager.getConnection(url, DB_USER, DB_PASS);
-
-			statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-			ResultSet rs = statement.executeQuery(sentenciaSQL);
-			rs.next();
-
-			return rs;
-
-		} catch (SQLException e) {
-
-			nav.alertaException(e.toString());
-		}
-		return null;
+	    String url = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "?serverTimezone=UTC";
+	    Statement statement;
+	    
+	    try {
+	        Connection connection = DriverManager.getConnection(url, DB_USER, DB_PASS);
+	        statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+	        ResultSet rs = statement.executeQuery(sentenciaSQL);
+	        
+	        if (rs.next()) {
+	            return rs;
+	        }
+	    } catch (SQLException e) {
+	        nav.alertaException("Hay algún error en tu conexión a la base de datos. Revisa la configuración.");
+	    }
+	    
+	    return null;
 	}
 
 	/**

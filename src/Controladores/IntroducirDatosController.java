@@ -136,9 +136,6 @@ public class IntroducirDatosController implements Initializable {
 	private DatePicker fechaPublicacion;
 
 	@FXML
-	private TextField numeroID;
-
-	@FXML
 	private TextField nombreComic;
 
 	@FXML
@@ -273,26 +270,26 @@ public class IntroducirDatosController implements Initializable {
 		estadoComic.setItems(situacionEstado);
 		estadoComic.getSelectionModel().selectFirst();
 
-		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList("Spain", "USA", "Japon",
-				"Italia", "Francia");
-		procedenciaAni.setItems(procedenciaEstadoActual);
-		procedenciaAni.getSelectionModel().selectFirst();
-
 		ObservableList<String> procedenciaEstadoNuevo = FXCollections.observableArrayList("Spain", "USA", "Japon",
 				"Italia", "Francia");
 		nombreProcedencia.setItems(procedenciaEstadoNuevo);
 		nombreProcedencia.getSelectionModel().selectFirst();
-
-		ObservableList<String> formatoActual = FXCollections.observableArrayList("Grapa", "Tapa dura", "Tapa blanda",
-				"Manga", "Libro");
-		nombreFormato.setItems(formatoActual);
-		nombreFormato.getSelectionModel().selectFirst();
 
 		ObservableList<String> formatoNuevo = FXCollections.observableArrayList("Grapa", "Tapa dura", "Tapa blanda",
 				"Manga", "Libro");
 		formatoAni.setItems(formatoNuevo);
 		formatoAni.getSelectionModel().selectFirst();
 
+		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList("Todo","Spain", "USA", "Japon",
+				"Italia", "Francia");
+		nombreProcedencia.setItems(procedenciaEstadoActual);
+		nombreProcedencia.getSelectionModel().selectFirst();
+
+		ObservableList<String> formatoActual = FXCollections.observableArrayList("Todo","Grapa", "Tapa dura", "Tapa blanda",
+				"Manga", "Libro");
+		nombreFormato.setItems(formatoActual);
+		nombreFormato.getSelectionModel().selectFirst();
+		
 		try {
 			listas_autocompletado();
 		} catch (SQLException e) {
@@ -467,7 +464,6 @@ public class IntroducirDatosController implements Initializable {
 	@FXML
 	void limpiarDatos(ActionEvent event) {
 
-		numeroID.setText("");
 		nombreComic.setText("");
 		numeroComic.setText("");
 		nombreVariante.setText("");
@@ -667,7 +663,7 @@ public class IntroducirDatosController implements Initializable {
 
 		String datos[] = camposComicActuales();
 
-		Comic comic = new Comic(datos[0], datos[1], datos[12], datos[2], datos[3], datos[4], datos[5], datos[6],
+		Comic comic = new Comic("", datos[1], datos[12], datos[2], datos[3], datos[4], datos[5], datos[6],
 				datos[7], datos[8], datos[9], datos[10], "", "", null);
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
@@ -847,8 +843,6 @@ public class IntroducirDatosController implements Initializable {
 	public String[] camposComicActuales() {
 		String campos[] = new String[13];
 
-		campos[0] = numeroID.getText();
-
 		campos[1] = nombreComic.getText();
 
 		campos[2] = numeroComic.getText();
@@ -859,9 +853,18 @@ public class IntroducirDatosController implements Initializable {
 
 		campos[5] = nombreEditorial.getText();
 
-		campos[6] = formatoActual();
+		if(formatoActual() == "Todo") {
+			campos[6] = "";
+		}else {
+			campos[6] = formatoActual();
+		}
+		
+		if(procedenciaActual() == "Todo") {
+			campos[7] = "";
+		}else {
+			campos[7] = procedenciaActual();
 
-		campos[7] = procedenciaActual();
+		}
 
 		LocalDate fecha = fechaPublicacion.getValue();
 		campos[8] = (fecha != null) ? fecha.toString() : "";
