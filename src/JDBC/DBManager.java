@@ -43,17 +43,20 @@ public class DBManager {
 	public static String DB_URL;
 
 	/**
-	* Carga el controlador JDBC para el proyecto.
-	* @return true si se carga el controlador correctamente, false en caso contrario.
-	*/
+	 * Carga el controlador JDBC para el proyecto.
+	 * 
+	 * @return true si se carga el controlador correctamente, false en caso
+	 *         contrario.
+	 */
 	public static boolean loadDriver() {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			return true;
 		} catch (ClassNotFoundException ex) {
 			nav.alertaException(ex.toString());
-			return false;
 		}
+		return false;
+
 	}
 
 	/**
@@ -62,15 +65,12 @@ public class DBManager {
 	 * @return true si la conexión existe y es válida, false en caso contrario
 	 */
 	public static boolean isConnected() {
-
 		try {
-			if (conn != null && conn.isValid(0)) {
-
+			if (conn != null && !conn.isClosed()) {
 				return true;
 			}
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
-			return false;
 		}
 		return false;
 	}
@@ -100,35 +100,34 @@ public class DBManager {
 	 * @param nombreBBDD
 	 * @param nombreUsuario
 	 * @param contraBBDD
-	 * @return objeto Connection 
+	 * @return objeto Connection
 	 */
 	public static Connection conexion() {
-	    DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
+		DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
 
-	    try {
-	        conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
-	        return conn;
-	    } catch (SQLException ex) {
-	        nav.alertaException(ex.toString());
-	        ex.printStackTrace();
-	        System.out.println(DB_URL + " " + DB_USER + " " + DB_PASS);
-	    }
+		try {
+			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+			return conn;
+		} catch (SQLException ex) {
+			nav.alertaException("Revisa la conexion de la base de datos. Esta desconectada");
+		}
 
-	    return null;
+		return null;
 	}
-	
+
 	/**
-	* Método estático que restablece la conexión a la base de datos.
-	*/
+	 * Método estático que restablece la conexión a la base de datos.
+	 */
 	public static void resetConnection() {
-	    try {
-	        if (conn != null && !conn.isClosed()) {
-	            conn.close();
-	        }
-	        conn = conexion();
-	    } catch (SQLException ex) {
-	        nav.alertaException(ex.toString());
-	    }
+		try {
+			if (conn != null && !conn.isClosed()) {
+				conn.close();
+			}
+			conn = conexion();
+		} catch (SQLException ex) {
+			nav.alertaException(
+					"No ha sido posible restablecer la conexion a la base de datos. Parece que esta desconectada");
+		}
 	}
 
 	/**
@@ -139,7 +138,7 @@ public class DBManager {
 			conn.close();
 			conn = null;
 		} catch (SQLException ex) {
-			nav.alertaException(ex.toString());
+			nav.alertaException("No ha sido posible cerrar su conexion con la base de datos");
 		}
 	}
 

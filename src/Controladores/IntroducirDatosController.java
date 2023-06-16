@@ -265,15 +265,15 @@ public class IntroducirDatosController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		ObservableList<String> situacionEstado = FXCollections.observableArrayList("En posesion", "Vendido",
+		ObservableList<String> situacionEstado = FXCollections.observableArrayList("En posesion", "Comprado",
 				"En venta");
 		estadoComic.setItems(situacionEstado);
 		estadoComic.getSelectionModel().selectFirst();
 
 		ObservableList<String> procedenciaEstadoNuevo = FXCollections.observableArrayList("Spain", "USA", "Japon",
 				"Italia", "Francia");
-		nombreProcedencia.setItems(procedenciaEstadoNuevo);
-		nombreProcedencia.getSelectionModel().selectFirst();
+		procedenciaAni.setItems(procedenciaEstadoNuevo);
+		procedenciaAni.getSelectionModel().selectFirst();
 
 		ObservableList<String> formatoNuevo = FXCollections.observableArrayList("Grapa", "Tapa dura", "Tapa blanda",
 				"Manga", "Libro");
@@ -1054,11 +1054,10 @@ public class IntroducirDatosController implements Initializable {
 
 	@FXML
 	public void salirPrograma(ActionEvent event) {
-		// Logic to handle the "Eliminar" action
-		nav.salirPrograma(event);
-
-		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-		myStage.close();
+		if (nav.salirPrograma(event)) {
+			Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+			myStage.close();
+		}
 	}
 
 	/**

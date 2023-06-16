@@ -112,6 +112,8 @@ public class CrearBBDDController implements Initializable {
 	public static String DB_PORT;
 	public static String DB_NAME;
 	public static String DB_HOST;
+	public static String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
+
 
 	private Timeline timeline;
 
@@ -222,10 +224,9 @@ public class CrearBBDDController implements Initializable {
 	}
 
 	/**
-	 * Comprueba si existe una base de datos con el nombre de la base de datos a
-	 * crear
+	 * Comprueba si existe una base de datos con el nombre especificado para la creación.
 	 *
-	 * @return
+	 * @return true si la base de datos no existe, false si ya existe o si hay un error en la conexión
 	 */
 	public boolean checkDatabase() {
 	    boolean exists;
@@ -302,109 +303,132 @@ public class CrearBBDDController implements Initializable {
 	}
 
 	/**
-	 * Se crean las tablas de la base de datos.
+	 * Crea las tablas de la base de datos si no existen.
 	 */
 	public void createTable() {
+				
+	    try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+	         Statement statement = connection.createStatement()) {
+	        
+	        String dropTableSQL = "DROP TABLE IF EXISTS comicsbbdd";
+	        String createTableSQL = "CREATE TABLE comicsbbdd ("
+	                + "ID INT NOT NULL AUTO_INCREMENT, "
+	                + "nomComic VARCHAR(150) NOT NULL, "
+	                + "cajaDeposito TEXT, "
+	                + "numComic INT NOT NULL, "
+	                + "nomVariante VARCHAR(150) NOT NULL, "
+	                + "firma VARCHAR(150) NOT NULL, "
+	                + "nomEditorial VARCHAR(150) NOT NULL, "
+	                + "formato VARCHAR(150) NOT NULL, "
+	                + "procedencia VARCHAR(150) NOT NULL, "
+	                + "fechaPublicacion DATE NOT NULL, "
+	                + "nomGuionista TEXT NOT NULL, "
+	                + "nomDibujante TEXT NOT NULL, "
+	                + "puntuacion VARCHAR(300) NOT NULL, "
+	                + "portada TEXT, "
+	                + "estado TEXT NOT NULL, "
+	                + "PRIMARY KEY (ID)) "
+	                + "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+	        
+	        statement.executeUpdate(dropTableSQL);
+	        statement.executeUpdate(createTableSQL);
+	        
+	        try (PreparedStatement preparedStatement = connection.prepareStatement("ALTER TABLE comicsbbdd AUTO_INCREMENT = 1")) {
+	            preparedStatement.executeUpdate();
+	        }
+	    } catch (SQLException e) {
+	        nav.alertaException(e.toString());
+	    }
+	}
 
-		Statement statement;
-		PreparedStatement preparedStatement1;
 
-		String url = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
+	/**
+	 * Crea los procedimientos almacenados en la base de datos.
+	 */
+	public void createProcedure() {
+	    try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+	         Statement statement = connection.createStatement()) {
 
-		String sentenciaSQL1 = "DROP TABLE IF EXISTS comicsbbdd";
-		String sentenciaSQL2 = "CREATE TABLE comicsbbdd (" + "ID int NOT NULL AUTO_INCREMENT, "
-				+ "nomComic varchar(150) NOT NULL, " + "caja_deposito TEXT , " + "numComic INT(10) NOT NULL, "
-				+ "nomVariante varchar(150) NOT NULL, " + "firma varchar(150) NOT NULL, "
-				+ "nomEditorial varchar(150) NOT NULL, " + "formato varchar(150) NOT NULL, "
-				+ "procedencia varchar(150) NOT NULL, " + "fecha_publicacion DATE NOT NULL, "
-				+ "nomGuionista TEXT NOT NULL, " + "nomDibujante TEXT NOT NULL, " + "puntuacion varchar(300) NOT NULL, "
-				+ "portada TEXT, " + "estado TEXT NOT NULL, "
+	        // Creación de procedimientos almacenados
+	        String[] procedures = {
+	                "numeroGrapas",
+	                "numeros_tapa_dura",
+	                "numeros_tapa_blanda",
+	                "numeros_libros",
+	                "numeroMangas",
+	                "numeroDC",
+	                "numeroMarvel",
+	                "numeroDarkHorse",
+	                "numeroPanini",
+	                "numeroImage",
+	                "numeroUSA",
+	                "numeroSpain",
+	                "total",
+	                "comicsLeidos",
+	                "comicsFirmados",
+	                "comicsComprados",
+	                "comicsPosesion"
+	        };
 
-				+ "PRIMARY KEY (`ID`)) "
-				+ "ENGINE=InnoDB AUTO_INCREMENT=320 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
+	        for (String procedure : procedures) {
+	            String procedureSQL = "CREATE PROCEDURE " + procedure + "()\n" +
+	                    "BEGIN\n" +
+	                    "SELECT COUNT(*) FROM comicsbbdd\n" +
+	                    getProcedureCondition(procedure) +
+	                    "END";
 
-		try {
-			Connection connection = DriverManager.getConnection(url, DB_USER, DB_PASS);
-			statement = connection.createStatement();
-
-			statement.executeUpdate(sentenciaSQL1);
-			statement.executeUpdate(sentenciaSQL2);
-
-			preparedStatement1 = connection.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");
-			preparedStatement1.executeUpdate();
-
-		} catch (SQLException e) {
-			nav.alertaException(e.toString());
-		}
+	            statement.execute(procedureSQL);
+	        }
+	    } catch (SQLException e) {
+	        nav.alertaException(e.toString());
+	    }
 	}
 
 	/**
-	 * Funcion que realiza la creacion de procedimientos almacenados.
+	 * Devuelve la condición WHERE correspondiente al procedimiento almacenado.
+	 *
+	 * @param procedure El nombre del procedimiento almacenado.
+	 * @return La condición WHERE correspondiente.
 	 */
-	public void createProcedure() {
-
-		String url = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
-
-		try {
-			Connection connection = DriverManager.getConnection(url, DB_USER, DB_PASS);
-			Statement statement;
-
-			statement = connection.createStatement();
-
-			// Creacion de diferentes procesos almacenados
-			statement.execute("CREATE PROCEDURE numeroGrapas()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE formato = 'Grapa';\n" + "END");
-
-			statement.execute("CREATE PROCEDURE numeros_tapa_dura()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE formato = 'Tapa dura';\n" + "END");
-
-			statement.execute("CREATE PROCEDURE numeros_tapa_blanda()\n" + "BEGIN\n"
-					+ "SELECT COUNT(*) FROM comicsbbdd\n" + "WHERE formato = 'Tapa blanda';\n" + "END");
-
-			statement.execute("CREATE PROCEDURE numeros_libros()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE formato = 'Libro';\n" + "END");
-
-			statement.execute("CREATE PROCEDURE numeroMangas()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE formato = 'Manga';\n" + "END");
-
-			statement.execute("CREATE PROCEDURE numeroDC()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE nomEditorial = 'DC';\n" + "END");
-
-			statement.execute("CREATE PROCEDURE numeroMarvel()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE nomEditorial = 'Marvel';\n" + "END");
-
-			statement.execute("CREATE PROCEDURE numeroDarkHorse()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE nomEditorial = 'Dark Horse';\n" + "END");
-
-			statement.execute("CREATE PROCEDURE numeroPanini()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE nomEditorial = 'Panini';\n" + "END");
-
-			statement.execute("CREATE PROCEDURE numeroImage()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE nomEditorial = 'Image Comics';\n" + "END");
-
-			statement.execute("CREATE PROCEDURE numeroUSA()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE procedencia = 'USA';\n" + "END");
-
-			statement.execute("CREATE PROCEDURE numeroSpain()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE procedencia = 'Spain';\n" + "END");
-
-			statement.execute("CREATE PROCEDURE total()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd;\n" + "END");
-
-			statement.execute("CREATE PROCEDURE comicsLeidos()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE puntuacion <> '';\n" + "END");
-
-			statement.execute("CREATE PROCEDURE comicsFirmados()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE firma <> '';\n" + "END");
-
-			statement.execute("CREATE PROCEDURE comicsVendidos()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE estado = 'Vendido';\n" + "END");
-
-			statement.execute("CREATE PROCEDURE comicsPosesion()\n" + "BEGIN\n" + "SELECT COUNT(*) FROM comicsbbdd\n"
-					+ "WHERE estado = 'En posesion';\n" + "END");
-
-		} catch (SQLException e) {
-			nav.alertaException(e.toString());
-		}
+	private String getProcedureCondition(String procedure) {
+	    switch (procedure) {
+	        case "numeroGrapas":
+	            return "WHERE formato = 'Grapa';";
+	        case "numeros_tapa_dura":
+	            return "WHERE formato = 'Tapa dura';";
+	        case "numeros_tapa_blanda":
+	            return "WHERE formato = 'Tapa blanda';";
+	        case "numeros_libros":
+	            return "WHERE formato = 'Libro';";
+	        case "numeroMangas":
+	            return "WHERE formato = 'Manga';";
+	        case "numeroDC":
+	            return "WHERE nomEditorial = 'DC';";
+	        case "numeroMarvel":
+	            return "WHERE nomEditorial = 'Marvel';";
+	        case "numeroDarkHorse":
+	            return "WHERE nomEditorial = 'Dark Horse';";
+	        case "numeroPanini":
+	            return "WHERE nomEditorial = 'Panini';";
+	        case "numeroImage":
+	            return "WHERE nomEditorial = 'Image Comics';";
+	        case "numeroUSA":
+	            return "WHERE procedencia = 'USA';";
+	        case "numeroSpain":
+	            return "WHERE procedencia = 'Spain';";
+	        case "total":
+	            return ";";
+	        case "comicsLeidos":
+	            return "WHERE puntuacion <> '';";
+	        case "comicsFirmados":
+	            return "WHERE firma <> '';";
+	        case "comicsComprados":
+	            return "WHERE estado = 'Comprado';";
+	        case "comicsPosesion":
+	            return "WHERE estado = 'En posesion';";
+	        default:
+	            return ";";
+	    }
 	}
 
 	/**

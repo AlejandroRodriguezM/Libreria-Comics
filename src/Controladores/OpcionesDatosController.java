@@ -1,5 +1,27 @@
 package Controladores;
 
+/**
+ * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
+ * Las ventanas graficas se realizan con JavaFX.
+ * El programa permite:
+ *  - Conectarse a la base de datos.
+ *  - Ver la base de datos completa o parcial segun parametros introducidos.
+ *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
+ *  - Copia de seguridad de la base de datos en formato .sql
+ *  - Introducir comics a la base de datos.
+ *  - Modificar comics de la base de datos.
+ *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
+ *  - Ver frases de personajes de comics
+ *  - Opcion de escoger algo para leer de forma aleatoria.
+ *
+ *
+ *  Version Final
+ *
+ *  Por Alejandro Rodriguez
+ *
+ *  Twitter: @silverAlox
+ */
+
 import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -28,6 +50,12 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.converter.IntegerStringConverter;
 
+/**
+ * Esta clase sirve para configurar los datos de la base de datos para que el
+ * programa pueda operar correctamente
+ *
+ * @author Alejandro Rodriguez
+ */
 public class OpcionesDatosController implements Initializable {
 
 	@FXML
@@ -141,6 +169,12 @@ public class OpcionesDatosController implements Initializable {
 		}
 	}
 
+	/**
+	 * Abre la ubicación de la carpeta "libreria" en el sistema de archivos del
+	 * usuario.
+	 *
+	 * @param event el evento que desencadena la acción
+	 */
 	@FXML
 	void abrirUbicacion(ActionEvent event) {
 		String userHome = System.getProperty("user.home");
@@ -158,6 +192,11 @@ public class OpcionesDatosController implements Initializable {
 		}
 	}
 
+	/**
+	 * Abre la ventana para crear la base de datos.
+	 *
+	 * @param event el evento que desencadena la acción
+	 */
 	@FXML
 	void crearBBDD(ActionEvent event) {
 		nav.verCrearBBDD();
@@ -166,6 +205,12 @@ public class OpcionesDatosController implements Initializable {
 		myStage.close();
 	}
 
+	/**
+	 * Guarda los datos en un archivo de configuración y realiza otras tareas
+	 * relacionadas.
+	 *
+	 * @param event el evento que desencadena la acción
+	 */
 	@FXML
 	void guardarDatos(ActionEvent event) {
 
@@ -213,6 +258,11 @@ public class OpcionesDatosController implements Initializable {
 		}
 	}
 
+	/**
+	 * Restaura la configuración a los valores predeterminados.
+	 *
+	 * @param event el evento que desencadena la acción
+	 */
 	@FXML
 	void restaurarConfiguracion(ActionEvent event) {
 		try {
@@ -270,6 +320,9 @@ public class OpcionesDatosController implements Initializable {
 		}
 	}
 
+	/**
+	 * Limpia los datos en los campos de texto.
+	 */
 	public void limpiar_datos() {
 		usuario.setText("");
 
@@ -282,15 +335,20 @@ public class OpcionesDatosController implements Initializable {
 		nombreHost.setText("");
 	}
 
+	/**
+	 * Selector para el tipo de host a utilizar.
+	 *
+	 * @param event el evento que desencadena la acción
+	 */
 	@FXML
 	void selectorBotonHost(ActionEvent event) {
 		selectorHost();
 	}
 
 	/**
-	 * Funcion que permite conectarse a un host online o usar el local.
+	 * Permite conectarse a un host online o usar el local.
 	 *
-	 * @return
+	 * @return el nombre del host seleccionado
 	 */
 	public String selectorHost() {
 
@@ -311,6 +369,9 @@ public class OpcionesDatosController implements Initializable {
 		return host;
 	}
 
+	/**
+	 * Inicia la animación de espera en la interfaz.
+	 */
 	private void iniciarAnimacionEspera() {
 		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
@@ -334,6 +395,9 @@ public class OpcionesDatosController implements Initializable {
 		timeline.play();
 	}
 
+	/**
+	 * Inicia la animación de conexión exitosa en la interfaz.
+	 */
 	private void iniciarAnimacionConectado() {
 		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
@@ -353,6 +417,9 @@ public class OpcionesDatosController implements Initializable {
 		timeline.play();
 	}
 
+	/**
+	 * Inicia la animación de restauración exitosa en la interfaz.
+	 */
 	private void iniciarAnimacionRestaurado() {
 		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
@@ -372,6 +439,9 @@ public class OpcionesDatosController implements Initializable {
 		timeline.play();
 	}
 
+	/**
+	 * Inicia la animación de restauración con error en la interfaz.
+	 */
 	private void iniciarAnimacionRestauradoError() {
 		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
@@ -391,6 +461,9 @@ public class OpcionesDatosController implements Initializable {
 		timeline.play();
 	}
 
+	/**
+	 * Detiene la animación actual en la interfaz.
+	 */
 	private void detenerAnimacion() {
 		if (timeline != null) {
 			timeline.stop();
@@ -398,6 +471,11 @@ public class OpcionesDatosController implements Initializable {
 		}
 	}
 
+	/**
+	 * Vuelve al programa principal desde la ventana actual.
+	 *
+	 * @param event el evento que desencadena la acción
+	 */
 	@FXML
 	void volverPrograma(ActionEvent event) {
 		nav.verAccesoBBDD(); // Llamada a metodo para abrir la ventana anterior

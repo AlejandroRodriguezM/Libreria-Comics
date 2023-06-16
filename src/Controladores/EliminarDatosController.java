@@ -213,13 +213,13 @@ public class EliminarDatosController implements Initializable {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList("Todo","Spain", "USA", "Japon",
-				"Italia", "Francia");
+		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList("Todo", "Spain", "USA",
+				"Japon", "Italia", "Francia");
 		nombreProcedencia.setItems(procedenciaEstadoActual);
 		nombreProcedencia.getSelectionModel().selectFirst();
 
-		ObservableList<String> formatoActual = FXCollections.observableArrayList("Todo","Grapa", "Tapa dura", "Tapa blanda",
-				"Manga", "Libro");
+		ObservableList<String> formatoActual = FXCollections.observableArrayList("Todo", "Grapa", "Tapa dura",
+				"Tapa blanda", "Manga", "Libro");
 		nombreFormato.setItems(formatoActual);
 		nombreFormato.getSelectionModel().selectFirst();
 
@@ -319,8 +319,8 @@ public class EliminarDatosController implements Initializable {
 					pantallaInformativa.clear();
 					pantallaInformativa.setOpacity(1);
 					try {
-						pantallaInformativa.setText(
-								libreria.comicDatos(idComicTratar.getText()).toString().replace("[", "").replace("]", ""));
+						pantallaInformativa.setText(libreria.comicDatos(idComicTratar.getText()).toString()
+								.replace("[", "").replace("]", ""));
 						imagencomic.setImage(libreria.selectorImage(idComicTratar.getText()));
 
 					} catch (SQLException e) {
@@ -340,9 +340,9 @@ public class EliminarDatosController implements Initializable {
 	 * Metodo que permite borrar los datos en pantalla
 	 */
 	public void borrar_datos() {
-		
+
 //		idComic.setText("");
-		
+
 //		idComicTratar.setText("");
 
 		nombreComic.setText("");
@@ -619,8 +619,8 @@ public class EliminarDatosController implements Initializable {
 
 		String datos[] = camposComics();
 
-		Comic comic = new Comic("", datos[1], datos[11], datos[2], datos[3], datos[4], datos[5], datos[6],
-				datos[7], datos[8], datos[9], datos[10], "", "", null);
+		Comic comic = new Comic("", datos[1], datos[11], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
+				datos[8], datos[9], datos[10], "", "", null);
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
 		busquedaGeneral.setText("");
@@ -717,15 +717,15 @@ public class EliminarDatosController implements Initializable {
 
 		campos[5] = nombreEditorial.getText();
 
-		if(formatoActual() == "Todo") {
+		if (formatoActual() == "Todo") {
 			campos[6] = "";
-		}else {
+		} else {
 			campos[6] = formatoActual();
 		}
-		
-		if(procedenciaActual() == "Todo") {
+
+		if (procedenciaActual() == "Todo") {
 			campos[7] = "";
-		}else {
+		} else {
 			campos[7] = procedenciaActual();
 
 		}
@@ -847,11 +847,10 @@ public class EliminarDatosController implements Initializable {
 
 	@FXML
 	public void salirPrograma(ActionEvent event) {
-		// Logic to handle the "Eliminar" action
-		nav.salirPrograma(event);
-
-		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-		myStage.close();
+		if (nav.salirPrograma(event)) {
+			Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+			myStage.close();
+		}
 	}
 
 	/**

@@ -119,10 +119,13 @@ public class MenuPrincipalController implements Initializable {
 	private MenuItem menu_estadistica_puntuados;
 
 	@FXML
-	private MenuItem menu_estadistica_vendidos;
+	private MenuItem menu_estadistica_comprados;
 
 	@FXML
-	private MenuItem menu_estadistica_venta;
+	private MenuItem menu_estadistica_posesion;
+	
+	@FXML
+	private MenuItem menu_estadistica_vendidos;
 
 	@FXML
 	private MenuBar menu_navegacion;
@@ -502,7 +505,6 @@ public class MenuPrincipalController implements Initializable {
 		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(libreria.libreriaVendidos());
-
 	}
 
 	/**
@@ -530,14 +532,32 @@ public class MenuPrincipalController implements Initializable {
 	 * @throws SQLException 
 	 */
 	@FXML
-	void comicsEnVenta(ActionEvent event) throws SQLException {
+	void comicsComprados(ActionEvent event) throws SQLException {
 		prontInfo.setOpacity(0);
 		limpiezaDeDatos();
 		utilidad = new Utilidades();
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
-		tablaBBDD(libreria.libreriaEnVenta());
+		tablaBBDD(libreria.libreriaComprados());
+	}
+	
+	/**
+	 * Funcion que al pulsar el boton de 'botonVentas' se muestran aquellos comics
+	 * que han sido vendidos
+	 *
+	 * @param event
+	 * @throws SQLException 
+	 */
+	@FXML
+	void comicsEnPosesion(ActionEvent event) throws SQLException {
+		prontInfo.setOpacity(0);
+		limpiezaDeDatos();
+		utilidad = new Utilidades();
+		libreria = new DBLibreriaManager();
+		libreria.reiniciarBBDD();
+		nombreColumnas();
+		tablaBBDD(libreria.libreriaPosesion());
 	}
 
 	////////////////////////////
@@ -960,11 +980,11 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	@FXML
-	void salirPrograma(ActionEvent event) {
-		nav.salirPrograma(event);
-
-		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-		myStage.close();
+	public void salirPrograma(ActionEvent event) {
+		if (nav.salirPrograma(event)) {
+			Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+			myStage.close();
+		}
 	}
 
 	/**

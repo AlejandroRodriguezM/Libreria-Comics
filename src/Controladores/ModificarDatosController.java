@@ -255,7 +255,7 @@ public class ModificarDatosController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		ObservableList<String> situacionEstado = FXCollections.observableArrayList("En posesion", "Vendido",
+		ObservableList<String> situacionEstado = FXCollections.observableArrayList("En posesion", "Comprado",
 				"En venta");
 		estadoComic.setItems(situacionEstado);
 		estadoComic.getSelectionModel().selectFirst();
@@ -339,7 +339,6 @@ public class ModificarDatosController implements Initializable {
 					try {
 						comic_temp = libreria.comicDatos(idComicMod.getText());
 					} catch (SQLException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 
@@ -382,7 +381,6 @@ public class ModificarDatosController implements Initializable {
 						imagencomic.setImage(libreria.selectorImage(idComicMod.getText()));
 
 					} catch (SQLException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -1243,14 +1241,13 @@ public class ModificarDatosController implements Initializable {
 		myStage.close();
 	}
 
-	@FXML
-	public void salirPrograma(ActionEvent event) {
-		// Logic to handle the "Eliminar" action
-		nav.salirPrograma(event);
-
-		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-		myStage.close();
-	}
+@FXML
+public void salirPrograma(ActionEvent event) {
+    if (nav.salirPrograma(event)) {
+        Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+        myStage.close();
+    }
+}
 
 	/**
 	 * Al cerrar la ventana, carga la ventana del menu principal

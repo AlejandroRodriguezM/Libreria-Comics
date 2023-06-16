@@ -128,29 +128,29 @@ public class RecomendacionesController {
 	 * @throws SQLException 
 	 */
 	public String generarLectura() throws IOException, SQLException {
-		
-		Random r = new Random();
-		utilidad = new Utilidades();
-		libreria = new DBLibreriaManager();
-		int n;
-		String ID;
-		
-		limpiarPront(); // Llamada a funcion para limpiar las pantalla "TextArea"
 
-		if (libreria.libreriaCompleta().size() != 0) {
-			n = (int) (Math.random() * r.nextInt(libreria.libreriaCompleta().size()));
+	    Random r = new Random();
+	    utilidad = new Utilidades();
+	    libreria = new DBLibreriaManager();
+	    String ID;
 
-			ID = libreria.libreriaCompleta().get(n).getID();
+	    limpiarPront(); // Llamada a función para limpiar la pantalla "TextArea"
 
-			imagencomic.setImage(libreria.selectorImage(ID));
-			utilidad.deleteImage();
-			return libreria.libreriaCompleta().get(n).toString(); // Devuelve un comic de la lista de comics
-		} else {
-			printComicRecomendado.setText("ERROR. No hay ningun dato en la base de datos");
-			printComicRecomendado.setStyle("-fx-background-color: #F53636");
-		}
-		return "";
+	    if (libreria.libreriaCompleta().size() != 0) {
+	        int n = r.nextInt(libreria.libreriaCompleta().size()); // Generar un número aleatorio dentro del rango válido
+
+	        ID = libreria.libreriaCompleta().get(n).getID();
+
+	        imagencomic.setImage(libreria.selectorImage(ID));
+	        utilidad.deleteImage();
+	        return libreria.libreriaCompleta().get(n).toString(); // Devuelve un cómic de la lista de cómics
+	    } else {
+	        printComicRecomendado.setText("ERROR. No hay ningún dato en la base de datos");
+	        printComicRecomendado.setStyle("-fx-background-color: #F53636");
+	    }
+	    return "";
 	}
+
 
 	/**
 	 * Se limpia el pront de informacion de la ventana

@@ -825,11 +825,10 @@ public class PuntuarDatosController implements Initializable {
 
 	@FXML
 	public void salirPrograma(ActionEvent event) {
-		// Logic to handle the "Eliminar" action
-		nav.salirPrograma(event);
-
-		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-		myStage.close();
+		if (nav.salirPrograma(event)) {
+			Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+			myStage.close();
+		}
 	}
 
 	/**

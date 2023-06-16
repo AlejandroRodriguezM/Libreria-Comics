@@ -161,7 +161,6 @@ public class AccesoBBDDController implements Initializable {
 			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
 			iniciarAnimacionError();
 		}
-
 	}
 
 	/**
@@ -182,7 +181,12 @@ public class AccesoBBDDController implements Initializable {
 		DBManager.datosBBDD(datos);
 	}
 
-	
+	/**
+	 * Obtiene el dato que sigue a dos puntos (:) en una línea específica del archivo de configuración.
+	 *
+	 * @param linea la línea específica para buscar el dato
+	 * @return el dato encontrado o una cadena vacía si no se encuentra
+	 */
 	public String obtenerDatoDespuesDeDosPuntos(String linea) {
 		String userHome = System.getProperty("user.home");
 		String ubicacion = userHome + "\\AppData\\Roaming";
@@ -289,7 +293,6 @@ public class AccesoBBDDController implements Initializable {
 
 	/**
 	 * Metodo que permite crear una animacion
-	 * 
 	 */
 	private void iniciarAnimacionEspera() {
 		timeline = new Timeline();
@@ -316,7 +319,6 @@ public class AccesoBBDDController implements Initializable {
 
 	/**
 	 * Metodo que permite crear una animacion
-	 * 
 	 */
 	private void iniciarAnimacionConectado() {
 		timeline = new Timeline();
@@ -339,7 +341,6 @@ public class AccesoBBDDController implements Initializable {
 
 	/**
 	 * Metodo que permite crear una animacion
-	 * 
 	 */
 	private void iniciarAnimacionError() {
 		timeline = new Timeline();
@@ -361,7 +362,6 @@ public class AccesoBBDDController implements Initializable {
 	
 	/**
 	 * Metodo que permite crear una animacion
-	 * 
 	 */
 	private void iniciarAnimacionConexion() {
 		timeline = new Timeline();
@@ -383,7 +383,6 @@ public class AccesoBBDDController implements Initializable {
 
 	/**
 	 * Metodo que permite detener una animacion
-	 * 
 	 */
 	private void detenerAnimacion() {
 		if (timeline != null) {

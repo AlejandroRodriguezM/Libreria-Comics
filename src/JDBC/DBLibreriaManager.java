@@ -86,7 +86,6 @@ public class DBLibreriaManager extends Comic {
 		listaEditorial();
 		listaGuionista();
 		listaDibujante();
-		listaFecha();
 	}
 
 	/**
@@ -145,10 +144,14 @@ public class DBLibreriaManager extends Comic {
 	}
 
 	/**
-	* Función que ejecuta un conjunto de sentencias PreparedStatement en la base de datos.
-	* @param sentencia Un arreglo de cadenas que contiene las sentencias SQL a ejecutar.
-	* @return true si las sentencias se ejecutaron correctamente, false en caso contrario.
-	*/
+	 * Función que ejecuta un conjunto de sentencias PreparedStatement en la base de
+	 * datos.
+	 * 
+	 * @param sentencia Un arreglo de cadenas que contiene las sentencias SQL a
+	 *                  ejecutar.
+	 * @return true si las sentencias se ejecutaron correctamente, false en caso
+	 *         contrario.
+	 */
 	public boolean ejecucionPreparedStatement(String[] sentencia) {
 		Connection conn = DBManager.conexion();
 
@@ -234,7 +237,7 @@ public class DBLibreriaManager extends Comic {
 	public String procedimientosEstadistica() {
 
 		int numGrapas, numDuro, numBlando, numLibros, numUsa, numEsp, numMarvel, numDC, numPanini, numDarkHorse,
-				numImage, numMangas, leidos, vendidos, posesion, firmados, total;
+				numImage, numMangas, leidos, comprados, posesion, firmados, total;
 
 		String procedimientos[] = { "call numeroGrapas()", "call numeros_tapa_dura()", "call numeros_tapa_blanda()",
 				"call numeros_libros()", "call numeroSpain()", "call numeroUSA()", "call total()",
@@ -335,9 +338,9 @@ public class DBLibreriaManager extends Comic {
 				leidos = 0;
 			}
 			if (rs15.next()) {
-				vendidos = rs15.getInt(1);
+				comprados = rs15.getInt(1);
 			} else {
-				vendidos = 0;
+				comprados = 0;
 			}
 			if (rs16.next()) {
 				posesion = rs16.getInt(1);
@@ -374,11 +377,12 @@ public class DBLibreriaManager extends Comic {
 					+ "\nNumero de comics Marvel: " + numMarvel + "\nNumero de comics DC: " + numDC
 					+ "\nNumero de comics Dark horse: " + numDarkHorse + "\nNumero de comics de Panini: " + numPanini
 					+ "\nNumero de comics de Image Comics: " + numImage + "\nNumero de mangas: " + numMangas
-					+ "\nComics leidos: " + leidos + "\nComics vendidos: " + vendidos + "\nComics en posesion: "
+					+ "\nComics leidos: " + leidos + "\nComics comprados: " + comprados + "\nComics en posesion: "
 					+ posesion + "\nComics firmados: " + firmados + "\nTotal: " + total;
 
 		} catch (SQLException e) {
 			nav.alertaException(e.toString());
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -401,9 +405,6 @@ public class DBLibreriaManager extends Comic {
 			return rs;
 		} catch (SQLException e) {
 			nav.alertaException(e.toString());
-		} finally {
-			st.close();
-			rs.close();
 		}
 		return null;
 	}
@@ -436,6 +437,9 @@ public class DBLibreriaManager extends Comic {
 					}
 				} while (rs.next());
 				listaAutoCompletado = Utilidades.listaArregladaAutoComplete(listaAutoCompletado);
+				
+
+				
 				return listaAutoCompletado;
 			}
 		} catch (SQLException e) {
@@ -448,27 +452,14 @@ public class DBLibreriaManager extends Comic {
 	// ****FUNCIONES DE LA LIBRERIA**********//
 	// **************************************//
 
+
+
 	/**
-	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
-	 *
-	 * @return
-	 * @throws SQLException
+	 * Método estático que obtiene el último ID de la tabla "comicsbbdd".
+	 * 
+	 * @return El último ID como una cadena de texto.
+	 * @throws SQLException Si ocurre algún error al ejecutar la consulta SQL.
 	 */
-	public List<String> listaNombre() throws SQLException {
-
-		String sentenciaSQL = "SELECT nomComic from comicsbbdd";
-		String columna = "nomComic";
-		reiniciarBBDD();
-		listaNombre = guardarDatosAutoCompletado(sentenciaSQL, columna);
-		return listaNombre;
-
-	}
-
-	/**
-	* Método estático que obtiene el último ID de la tabla "comicsbbdd".
-	* @return El último ID como una cadena de texto.
-	* @throws SQLException Si ocurre algún error al ejecutar la consulta SQL.
-	*/
 	public static String obtener_ultimo_id() throws SQLException {
 		String query = "SELECT ID FROM comicsbbdd ORDER BY ID DESC LIMIT 1";
 		PreparedStatement ps = null;
@@ -495,6 +486,22 @@ public class DBLibreriaManager extends Comic {
 		return ultimoId;
 	}
 
+	/**
+	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
+	 *
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<String> listaNombre() throws SQLException {
+
+		String sentenciaSQL = "SELECT nomComic from comicsbbdd";
+		String columna = "nomComic";
+		reiniciarBBDD();
+		listaNombre = guardarDatosAutoCompletado(sentenciaSQL, columna);
+		return listaNombre;
+
+	}
+	
 	/**
 	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
 	 *
@@ -586,35 +593,25 @@ public class DBLibreriaManager extends Comic {
 	}
 
 	/**
-	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
-	 *
-	 * @return
-	 * @throws SQLException
+	 * Método que muestra los cómics de la librería según la sentencia SQL
+	 * proporcionada.
+	 * 
+	 * @param sentenciaSQL La sentencia SQL para obtener los cómics de la librería.
+	 * @return Una lista de objetos Comic que representan los cómics de la librería.
+	 * @throws SQLException Si ocurre algún error al ejecutar la consulta SQL.
 	 */
-	public List<String> listaFecha() throws SQLException {
-
-		String sentenciaSQL = "SELECT fecha_publicacion from comicsbbdd";
-		String columna = "fecha_publicacion";
-		reiniciarBBDD();
-		listaFecha = guardarDatosAutoCompletado(sentenciaSQL, columna);
-		return listaFecha;
-	}
-
-	/**
-	* Método que muestra los cómics de la librería según la sentencia SQL proporcionada.
-	* @param sentenciaSQL La sentencia SQL para obtener los cómics de la librería.
-	* @return Una lista de objetos Comic que representan los cómics de la librería.
-	* @throws SQLException Si ocurre algún error al ejecutar la consulta SQL.
-	*/
 	public List<Comic> verLibreria(String sentenciaSQL) throws SQLException {
+	    listaComics.clear(); // Limpiar la lista existente de cómics
 
-		reiniciarBBDD();
+	    ResultSet rs = obtenLibreria(sentenciaSQL); // Obtener el ResultSet
 
-		ResultSet rs;
-		rs = obtenLibreria(sentenciaSQL);
-		listaDatos(rs);
-		return listaComics;
+	    if (rs != null) {
+	        listaDatos(rs); // Llenar la lista de cómics con los datos del ResultSet
+	    }
+
+	    return listaComics;
 	}
+
 
 	/**
 	 * Devuelve datos de la base de datos segun el parametro.
@@ -897,6 +894,12 @@ public class DBLibreriaManager extends Comic {
 	}
 
 	/**
+	 * Crea una lista de objetos Comic a partir del ResultSet proporcionado.
+	 *
+	 * @param rs el ResultSet con los datos de los cómics
+	 * @return una lista de objetos Comic
+	 */
+	/**
 	 * Devuelve solamente 1 comics de la base de datos.
 	 *
 	 * @param rs
@@ -958,22 +961,56 @@ public class DBLibreriaManager extends Comic {
 	}
 
 	/**
-	 * Funcion que devuelve un comic cuya ID este como parametro de busqueda
+	 * Devuelve un objeto Comic cuya ID coincida con el parámetro de búsqueda.
 	 *
-	 * @param id
-	 * @return
-	 * @throws SQLException
+	 * @param identificador el ID del cómic a buscar
+	 * @return el objeto Comic encontrado, o null si no se encontró ningún cómic con
+	 *         ese ID
+	 * @throws SQLException si ocurre algún error al ejecutar la consulta SQL
 	 */
 	public Comic comicDatos(String identificador) throws SQLException {
-		Comic comic = new Comic();
+		Comic comic = null;
 
-		String sentenciaSQL = "select * from comicsbbdd where ID = " + identificador;
+		String sentenciaSQL = "SELECT * FROM comicsbbdd WHERE ID = ?";
 
+		PreparedStatement statement = null;
 		ResultSet rs = null;
 
-		rs = obtenLibreria(sentenciaSQL);
+		try {
+			statement = conn.prepareStatement(sentenciaSQL);
+			statement.setString(1, identificador);
+			rs = statement.executeQuery();
 
-		comic = listaDatos(rs);
+			if (rs.next()) {
+				String ID = rs.getString("ID");
+				String nombre = rs.getString("nomComic");
+				String numCaja = rs.getString("caja_deposito");
+				String numero = rs.getString("numComic");
+				String variante = rs.getString("nomVariante");
+				String firma = rs.getString("firma");
+				String editorial = rs.getString("nomEditorial");
+				String formato = rs.getString("formato");
+				String procedencia = rs.getString("procedencia");
+				String fecha = rs.getString("fecha_publicacion");
+				String guionista = rs.getString("nomGuionista");
+				String dibujante = rs.getString("nomDibujante");
+				String estado = rs.getString("estado");
+				String puntuacion = rs.getString("puntuacion");
+				String imagen = rs.getString("portada");
+
+				comic = new Comic(ID, nombre, numCaja, numero, variante, firma, editorial, formato, procedencia, fecha,
+						guionista, dibujante, estado, puntuacion, imagen);
+			}
+		} catch (SQLException e) {
+			nav.alertaException(e.toString());
+		} finally {
+			if (rs != null) {
+				rs.close();
+			}
+			if (statement != null) {
+				statement.close();
+			}
+		}
 
 		return comic;
 	}
@@ -1165,7 +1202,15 @@ public class DBLibreriaManager extends Comic {
 			if (!rs.first()) {
 				return null;
 			}
-			// Todo bien, devolvemos el cliente
+//		    String countQuery = "SELECT COUNT(*) FROM comicsbbdd";
+//		    PreparedStatement countStmt = conn.prepareStatement(countQuery);
+//		    ResultSet countResultSet = countStmt.executeQuery();
+//
+//		    if (countResultSet.next()) {
+//		        int count = countResultSet.getInt(1);
+//		        System.out.println("Count: " + count);
+//		    }
+			
 			return rs;
 
 		} catch (NullPointerException ex) {
@@ -1179,33 +1224,31 @@ public class DBLibreriaManager extends Comic {
 	}
 
 	/**
-	 * Funcion que modifica 1 comic de la base de datos con los parametros que
-	 * introduzcamos en los campos.
-	 * 
-	 * @throws IOException
+	 * Inserta los datos de un cómic en la base de datos.
+	 *
+	 * @param comic_datos los datos del cómic a insertar
+	 * @throws IOException  si ocurre un error al manejar el archivo de imagen
+	 * @throws SQLException si ocurre un error al ejecutar la consulta SQL
 	 */
-	public void insertarDatos(Comic comic_datos) throws IOException {
-
-		String sentenciaSQL = "insert into comicsbbdd(nomComic,caja_deposito,numComic,nomVariante,firma,nomEditorial,formato,procedencia,fecha_publicacion,nomGuionista,nomDibujante,puntuacion,portada,estado) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		try {
-			subirComic(sentenciaSQL, comic_datos);
-		} catch (IOException | SQLException e) {
-			e.printStackTrace();
-		}
+	public void insertarDatos(Comic comic_datos) throws IOException, SQLException {
+		String sentenciaSQL = "INSERT INTO comicsbbdd (nomComic, caja_deposito, numComic, nomVariante, firma, nomEditorial, formato, procedencia, fecha_publicacion, nomGuionista, nomDibujante, puntuacion, portada, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		subirComic(sentenciaSQL, comic_datos);
 	}
 
 	/**
-	 * Funcion que permite introducir un nuevo comic en la base de datos.
-	 * 
-	 * @throws SQLException
+	 * Permite introducir un nuevo cómic en la base de datos.
+	 *
+	 * @param sentenciaSQL la sentencia SQL para insertar el cómic
+	 * @param datos        los datos del cómic a insertar
+	 * @throws IOException  si ocurre un error al manejar el archivo de imagen
+	 * @throws SQLException si ocurre un error al ejecutar la consulta SQL
 	 */
 	public void subirComic(String sentenciaSQL, Comic datos) throws IOException, SQLException {
-
 		conn = DBManager.conexion();
 		PreparedStatement statement = null;
+
 		try {
 			statement = conn.prepareStatement(sentenciaSQL);
-
 			statement.setString(1, datos.getNombre());
 			if (datos.getNumCaja() == null) {
 				statement.setString(2, "0");
@@ -1226,30 +1269,36 @@ public class DBLibreriaManager extends Comic {
 			statement.setString(14, "En posesion");
 
 			statement.executeUpdate();
-			statement.close();
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
 		} finally {
-			statement.close();
+			if (statement != null) {
+				statement.close();
+			}
 		}
 	}
 
 	/**
-	 * Comprueba que el ID introducido existe
+	 * Comprueba si el ID introducido existe en la base de datos.
 	 *
-	 * @return
-	 * @throws SQLException
+	 * @param ID el ID a comprobar
+	 * @return true si el ID existe, false en caso contrario
 	 */
-	public boolean comprobarID(String ID) throws SQLException {
+	public boolean comprobarID(String ID) {
+		if (ID.isEmpty()) {
+			return false;
+		}
 
-		if (ID.length() != 0) {
+		try {
 			if (checkID(ID)) {
 				return true;
 			} else {
 				nav.alertaException("La ID no existe");
-				return false;
 			}
+		} catch (SQLException ex) {
+			nav.alertaException(ex.toString());
 		}
+
 		return false;
 	}
 
@@ -1261,7 +1310,6 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public void actualizar_comic(Comic datos) {
 		utilidad = new Utilidades();
-		conn = DBManager.conexion();
 		String sentenciaSQL = "UPDATE comicsbbdd set nomComic = ?,caja_deposito = ? ,numComic = ?,nomVariante = ?,"
 				+ "Firma = ?,nomEditorial = ?,formato = ?,Procedencia = ?,fecha_publicacion = ?,"
 				+ "nomGuionista = ?,nomDibujante = ?,portada = ?,estado = ? where ID = ?";
@@ -1278,141 +1326,97 @@ public class DBLibreriaManager extends Comic {
 	}
 
 	/**
-	* Método que modifica la dirección de la portada de un cómic en la base de datos.
-	* @param datos El objeto Comic que contiene los datos del cómic.
-	* @param ID El ID del cómic a modificar.
-	* @throws SQLException Si ocurre algún error al ejecutar la consulta SQL.
-	*/
+	 * Modifica la dirección de la portada de un cómic en la base de datos.
+	 *
+	 * @param nombre_completo el nombre completo de la imagen de la portada
+	 * @param ID              el ID del cómic a modificar
+	 * @throws SQLException si ocurre un error al ejecutar la consulta SQL
+	 */
 	public void modificar_direccion_portada(String nombre_completo, String ID) throws SQLException {
-
 		utilidad = new Utilidades();
-
-//		String nombre_comic = datos.getNombre().replace(" ", "_").replace(":", "_").replace("-", "_");
-//		String numero_comic = datos.getNumero().replace(" ", "").replace(":", "").replace("-", "");
-//		String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_").replace(":",
-//				"_");
-//		String fecha_comic = datos.getFecha();
-//		String nombre_completo = nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic;
 		String extension = ".jpg";
-		String nuevoNombreArchivo = String.valueOf(nombre_completo) + extension;
+		String nuevoNombreArchivo = nombre_completo + extension;
 
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
 		String imagePath = documentsPath + File.separator + "libreria_comics" + File.separator
 				+ utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas" + File.separator
 				+ nuevoNombreArchivo;
+
 		String sql = "UPDATE comicsbbdd SET portada = ? WHERE ID = ?";
-		PreparedStatement ps = null;
-		;
-		try {
-			ps = conn.prepareStatement(sql);
+		try (PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setString(1, imagePath);
 			ps.setString(2, ID);
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} finally {
-			ps.close();
 		}
 	}
 
 	/**
-	 * Devuelve un objeto Comic con los nuevos datos de un comic. En caso de tener
-	 * el espacio en blanco, el valor del parametro sera el que tenia originalmente.
+	 * Modifica los datos de un cómic en la base de datos.
 	 *
-	 * @param ps
-	 * @return
-	 * @throws SQLException
+	 * @param sentenciaSQL la sentencia SQL para modificar el cómic
+	 * @param datos        los nuevos datos del cómic
+	 * @throws SQLException si ocurre un error al acceder a la base de datos
+	 * @throws IOException  si ocurre un error de lectura/escritura al manejar las
+	 *                      imágenes
 	 */
 	public void comicModificar(String sentenciaSQL, Comic datos) throws SQLException, IOException {
 		utilidad = new Utilidades();
 		listaComics.clear();
-		
-//		String userDir = System.getProperty("user.home");
-//		String documentsPath = userDir + File.separator + "Documents";
-//		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator
-//				+ utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas";
 
 		String ID = datos.getID();
-
 		String nombre = datos.getNombre();
-
 		String numCaja = datos.getNumCaja();
-
 		String numero = datos.getNumero();
-
 		String variante = datos.getVariante();
-
 		String firma = datos.getFirma();
-
 		String editorial = datos.getEditorial();
-
 		String formato = datos.getFormato();
-
 		String procedencia = datos.getProcedencia();
-
 		String fecha = datos.getFecha();
-
 		String guionista = datos.getGuionista();
-
 		String dibujante = datos.getDibujante();
-
 		String estado = datos.getEstado();
+		String portada_final = datos.getImagen();
+		String codigo_imagen = Utilidades.generarCodigoUnico(portada_final + File.separator);
 
-		String portada_final;
-		
-		String codigo_imagen;
 		PreparedStatement ps = null;
 		try {
 			ps = conn.prepareStatement(sentenciaSQL);
 
 			ps.setString(1, nombre);
-
 			ps.setString(2, numCaja);
-
 			ps.setString(3, numero);
-
 			ps.setString(4, variante);
-
 			ps.setString(5, firma);
-
 			ps.setString(6, editorial);
-
 			ps.setString(7, formato);
-
 			ps.setString(8, procedencia);
-
 			ps.setString(9, fecha);
-
 			ps.setString(10, guionista);
-
 			ps.setString(11, dibujante);
-
-			portada_final = datos.getImagen();
-			codigo_imagen = Utilidades.generarCodigoUnico(portada_final + File.separator);
 			ps.setString(12, portada_final);
-			
 			ps.setString(13, estado);
-
 			ps.setString(14, ID);
 
-			if (ps.executeUpdate() == 1) { // Si se ha modificado correctamente, saltara el siguiente mensaje
-
+			if (ps.executeUpdate() == 1) {
 				Comic nuevo_comic = new Comic("", nombre, numCaja, numero, variante, firma, editorial, formato,
 						procedencia, fecha, guionista, dibujante, estado, "", portada_final);
 
 				String carpeta = Utilidades.eliminarDespuesUltimoPortadas(codigo_imagen);
-				
-				utilidad.nueva_imagen(portada_final,carpeta);
-				
+				utilidad.nueva_imagen(portada_final, carpeta);
 				modificar_direccion_portada(codigo_imagen, datos.getID());
+
 				listaComics.add(nuevo_comic);
 			}
-
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
 		} finally {
-			ps.close();
+			if (ps != null) {
+				ps.close();
+			}
 			DBManager.resetConnection();
 		}
 	}
@@ -1429,10 +1433,7 @@ public class DBLibreriaManager extends Comic {
 
 		if (nav.alertaAgregarPuntuacion()) { // Llamada a alerta de modificacion
 
-			comprobarOpinionInsertada(sentenciaSQL, ID, puntuacion); // Llamada a funcion que permite comprobar el
-			// cambio realizado en
-			// el comic
-
+			comprobarOpinionInsertada(sentenciaSQL, ID, puntuacion);
 		}
 	}
 
@@ -1517,26 +1518,25 @@ public class DBLibreriaManager extends Comic {
 	}
 
 	/**
-	 * Funcion que permite mostrar imagen de una portada cuando se clickea con el
-	 * raton encima del comic seleccionado
+	 * Función que permite mostrar la imagen de una portada cuando se hace clic con
+	 * el ratón encima del cómic seleccionado.
 	 *
-	 * @param iD
-	 * @return
+	 * @param iD el ID del cómic
+	 * @return la imagen de la portada del cómic
 	 */
 	public Image selectorImage(String iD) {
-		ResultSet rs = null; // Declaración del ResultSet
 		PreparedStatement statement = null;
-		try {
-			if (!DBManager.isConnected()) {
-				conn = DBManager.conexion();
-			}
+		ResultSet rs = null;
 
-			String sentenciaSQL = "SELECT * FROM comicsbbdd WHERE ID = ?";
+		try {
+			conn = DBManager.conexion(); // Se establece la conexión si no está conectado
+
+			String sentenciaSQL = "SELECT portada FROM comicsbbdd WHERE ID = ?";
 			statement = conn.prepareStatement(sentenciaSQL);
 			statement.setString(1, iD);
 			rs = statement.executeQuery();
 
-			while (rs.next()) {
+			if (rs.next()) {
 				String direccionImagen = rs.getString("portada");
 				if (direccionImagen != null && !direccionImagen.isEmpty()) {
 					try {
@@ -1555,7 +1555,9 @@ public class DBLibreriaManager extends Comic {
 				if (rs != null) {
 					rs.close();
 				}
-				statement.close();
+				if (statement != null) {
+					statement.close();
+				}
 			} catch (SQLException e) {
 				nav.alertaException(e.toString());
 			}
@@ -1565,17 +1567,20 @@ public class DBLibreriaManager extends Comic {
 	}
 
 	/**
-	 * Funcion que muestra todos los comics de la base de datos
+	 * Función que muestra todos los cómics de la base de datos.
 	 *
-	 * @return
+	 * @param sentenciaSQL la sentencia SQL para obtener los cómics
+	 * @param excepcion    el mensaje de excepción a mostrar si no se encuentran
+	 *                     cómics
+	 * @return una lista de cómics obtenidos de la base de datos
 	 * @throws SQLException
 	 */
 	public List<Comic> comprobarLibreria(String sentenciaSQL, String excepcion) throws SQLException {
-
+		
 		List<Comic> listComic = FXCollections.observableArrayList(verLibreria(sentenciaSQL));
-
-		if (listComic.size() == 0) {
-
+		
+		if (listComic.isEmpty()) {
+			
 			nav.alertaException(excepcion);
 		}
 
@@ -1583,12 +1588,13 @@ public class DBLibreriaManager extends Comic {
 	}
 
 	/**
-	 * Funcion que busca en el arrayList el o los comics que tengan coincidencia con
-	 * los datos introducidos en el TextField
+	 * Función que busca en el ArrayList el o los cómics que tengan coincidencia con
+	 * los datos introducidos en el TextField.
 	 *
-	 * @param comic
-	 * @return
-	 * @throws SQLException
+	 * @param comic           el cómic con los parámetros de búsqueda
+	 * @param busquedaGeneral el texto de búsqueda general
+	 * @return una lista de cómics que coinciden con los criterios de búsqueda
+	 * @throws SQLException si ocurre un error al acceder a la base de datos
 	 */
 	public List<Comic> busquedaParametro(Comic comic, String busquedaGeneral) throws SQLException {
 		String sentenciaSQL = "SELECT * from comicsbbdd";
@@ -1608,12 +1614,12 @@ public class DBLibreriaManager extends Comic {
 	/**
 	 * Funcion que muestra todos los comics de la base de datos
 	 *
-	 * @return
+	 * @return una lista de cómics que coinciden con los criterios de búsqueda
 	 * @throws SQLException
 	 */
 	public List<Comic> libreriaPosesion() throws SQLException {
 
-		String sentenciaSQL = "SELECT * from comicsbbdd where estado = 'En posesion ORDER BY nomComic,fecha_publicacion,numComic'";
+		String sentenciaSQL = "SELECT * from comicsbbdd where estado = 'En posesion' ORDER BY nomComic,fecha_publicacion,numComic";
 		String excepcion = "No hay ningun comic guardado en la base de datos";
 
 		return comprobarLibreria(sentenciaSQL, excepcion);
@@ -1631,11 +1637,6 @@ public class DBLibreriaManager extends Comic {
 
 		String excepcion = "No hay ningun comic guardado en la base de datos";
 
-		String userDir = System.getProperty("user.home");
-		String documentsPath = userDir + File.separator + "Documents";
-		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator
-				+ utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas";
-		Utilidades.convertirNombresCarpetas(sourcePath);
 
 		return comprobarLibreria(query, excepcion);
 	}
@@ -1644,7 +1645,7 @@ public class DBLibreriaManager extends Comic {
 	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
 	 * "En posesion"
 	 *
-	 * @return
+	 * @return una lista de cómics que coinciden con los criterios de búsqueda
 	 * @throws SQLException
 	 */
 	public List<Comic> libreriaVendidos() throws SQLException {
@@ -1658,12 +1659,12 @@ public class DBLibreriaManager extends Comic {
 	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
 	 * "En posesion"
 	 *
-	 * @return
+	 * @return una lista de cómics que coinciden con los criterios de búsqueda
 	 * @throws SQLException
 	 */
-	public List<Comic> libreriaEnVenta() throws SQLException {
-		String sentenciaSQL = "SELECT * from comicsbbdd where estado = 'En venta' ORDER BY nomComic,fecha_publicacion,numComic";
-		String excepcion = "No hay comics en venta";
+	public List<Comic> libreriaComprados() throws SQLException {
+		String sentenciaSQL = "SELECT * from comicsbbdd where estado = 'Comprado' ORDER BY nomComic,fecha_publicacion,numComic";
+		String excepcion = "No hay comics comprados";
 
 		return comprobarLibreria(sentenciaSQL, excepcion);
 	}
@@ -1672,11 +1673,11 @@ public class DBLibreriaManager extends Comic {
 	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
 	 * "En posesion"
 	 *
-	 * @return
+	 * @return una lista de cómics que coinciden con los criterios de búsqueda
 	 * @throws SQLException
 	 */
 	public List<Comic> libreriaPuntuacion() throws SQLException {
-		String sentenciaSQL = "SELECT * from comicsbbdd where not puntuacion = 'Sin puntuacion' ORDER BY nomComic,fecha_publicacion,numComic";
+		String sentenciaSQL = "SELECT * from comicsbbdd where puntuacion <> 'Sin puntuar' ORDER BY nomComic,fecha_publicacion,numComic";
 		String excepcion = "No hay comics puntuados";
 
 		return comprobarLibreria(sentenciaSQL, excepcion);
@@ -1686,7 +1687,7 @@ public class DBLibreriaManager extends Comic {
 	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
 	 * firmados
 	 *
-	 * @return
+	 * @return una lista de cómics que coinciden con los criterios de búsqueda
 	 * @throws SQLException
 	 */
 	public List<Comic> libreriaFirmados() throws SQLException {

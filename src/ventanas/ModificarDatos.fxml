@@ -120,17 +120,18 @@
             <Menu fx:id="navegacion_cerrar" mnemonicParsing="false" text="Archivo">
                <items>
                   <MenuItem fx:id="menu_archivo_sobreMi" mnemonicParsing="false" onAction="#verSobreMi" text="Sobre mi" />
-                  <MenuItem fx:id="menu_archivo_volver" mnemonicParsing="false" onAction="#volverMenu" text="Volver al menu" />
                   <MenuItem fx:id="menu_archivo_desconectar" mnemonicParsing="false" onAction="#desconectar" text="Desconectar" />
                   <MenuItem fx:id="menu_archivo_cerrar" mnemonicParsing="false" onAction="#salirPrograma" text="Cerrar" />
                </items>
             </Menu>
             <Menu fx:id="navegacion_comic" mnemonicParsing="false" text="Comic">
                <items>
-                  <MenuItem fx:id="menu_comic_aniadir" mnemonicParsing="false" onAction="#ventanaAniadir" text="Añadir comic" />
+                  <MenuItem fx:id="menu_comic_aniadir" mnemonicParsing="false" onAction="#ventanaAniadir" text="Añadir Comic" />
                   <MenuItem fx:id="menu_comic_eliminar" mnemonicParsing="false" onAction="#ventanaEliminar" text="Eliminar Comic" />
+                  <MenuItem disable="true" mnemonicParsing="false" text="Modificar Comic" />
                   <MenuItem fx:id="menu_comic_puntuar" mnemonicParsing="false" onAction="#ventanaPuntuar" text="Puntuar Comic" />
                   <MenuItem fx:id="menu_comic_aleatoria" mnemonicParsing="false" onAction="#ventanaRecomendar" text="Lectura aleatoria" />
+                  <MenuItem fx:id="menu_archivo_volver" mnemonicParsing="false" onAction="#volverMenu" text="Volver al menu" />
                </items>
             </Menu>
          </menus>
