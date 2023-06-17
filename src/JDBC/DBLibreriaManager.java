@@ -1445,7 +1445,7 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public void borrarPuntuacion(String ID) throws SQLException {
 
-		String sentenciaSQL = "UPDATE comicsbbdd set puntuacion = 'Sin puntuacion' where ID = ?";
+		String sentenciaSQL = "UPDATE comicsbbdd set puntuacion = 'Sin puntuar' where ID = ?";
 
 		if (nav.alertaBorrarPuntuacion()) { // Llamada a alerta de modificacion
 

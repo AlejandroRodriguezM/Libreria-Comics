@@ -383,10 +383,10 @@ public class CrearBBDDController implements Initializable {
 
 			String dropTableSQL = "DROP TABLE IF EXISTS comicsbbdd";
 			String createTableSQL = "CREATE TABLE comicsbbdd (" + "ID INT NOT NULL AUTO_INCREMENT, "
-					+ "nomComic VARCHAR(150) NOT NULL, " + "cajaDeposito TEXT, " + "numComic INT NOT NULL, "
+					+ "nomComic VARCHAR(150) NOT NULL, " + "caja_deposito TEXT, " + "numComic INT NOT NULL, "
 					+ "nomVariante VARCHAR(150) NOT NULL, " + "firma VARCHAR(150) NOT NULL, "
 					+ "nomEditorial VARCHAR(150) NOT NULL, " + "formato VARCHAR(150) NOT NULL, "
-					+ "procedencia VARCHAR(150) NOT NULL, " + "fechaPublicacion DATE NOT NULL, "
+					+ "procedencia VARCHAR(150) NOT NULL, " + "fecha_publicacion DATE NOT NULL, "
 					+ "nomGuionista TEXT NOT NULL, " + "nomDibujante TEXT NOT NULL, "
 					+ "puntuacion VARCHAR(300) NOT NULL, " + "portada TEXT, " + "estado TEXT NOT NULL, "
 					+ "PRIMARY KEY (ID)) " + "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
@@ -460,7 +460,7 @@ public class CrearBBDDController implements Initializable {
 		case "total":
 			return ";";
 		case "comicsLeidos":
-			return "WHERE puntuacion <> '';";
+			return "WHERE puntuacion <> 'Sin puntuar';";
 		case "comicsFirmados":
 			return "WHERE firma <> '';";
 		case "comicsComprados":
