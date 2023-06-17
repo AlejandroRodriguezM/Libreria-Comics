@@ -242,7 +242,7 @@ public class DBLibreriaManager extends Comic {
 		String procedimientos[] = { "call numeroGrapas()", "call numeros_tapa_dura()", "call numeros_tapa_blanda()",
 				"call numeros_libros()", "call numeroSpain()", "call numeroUSA()", "call total()",
 				"call numeroPanini()", "call numeroMarvel()", "call numeroDC()", "call numeroDarkHorse()",
-				"call numeroImage()", "call numeroMangas()", "call comicsLeidos()", "call comicsVendidos()",
+				"call numeroImage()", "call numeroMangas()", "call comicsLeidos()", "call comicsComprados",
 				"call comicsPosesion()", "call comicsFirmados()" };
 
 		try {
