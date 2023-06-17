@@ -252,6 +252,12 @@ public class MenuPrincipalController implements Initializable {
 
 	private static FuncionesExcel excelFuntions = null;
 
+	/**
+	 * Inicializa el controlador cuando se carga la vista.
+	 *
+	 * @param location  la ubicación del archivo FXML
+	 * @param resources los recursos utilizados por la vista
+	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		libreria = new DBLibreriaManager();
@@ -979,8 +985,14 @@ public class MenuPrincipalController implements Initializable {
 		myStage.close();
 	}
 
+	/**
+	 * Maneja la acción de salida del programa.
+	 *
+	 * @param event el evento que desencadena la acción
+	 */
 	@FXML
 	public void salirPrograma(ActionEvent event) {
+		// Lógica para manejar la acción de "Salir"
 		if (nav.salirPrograma(event)) {
 			Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 			myStage.close();

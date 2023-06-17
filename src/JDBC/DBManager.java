@@ -1,5 +1,4 @@
 package JDBC;
-
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  * Las ventanas graficas se realizan con JavaFX.
@@ -103,16 +102,34 @@ public class DBManager {
 	 * @return objeto Connection
 	 */
 	public static Connection conexion() {
-		DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
+	    if (DB_HOST == null || DB_HOST.isEmpty() || DB_PORT == null || DB_PORT.isEmpty() ||
+	        DB_NAME == null || DB_NAME.isEmpty() || DB_USER == null || DB_USER.isEmpty() ||
+	        DB_PASS == null || DB_PASS.isEmpty()) {
+	        nav.alertaException("Los datos de conexión son incorrectos");
+	        return null;
+	    }
 
-		try {
-			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
-			return conn;
-		} catch (SQLException ex) {
-			nav.alertaException("Revisa la conexion de la base de datos. Esta desconectada");
-		}
+	    DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
 
-		return null;
+	    // Validar la URL de conexión
+	    if (!DB_URL.startsWith("jdbc:mysql://") || DB_URL.indexOf(':', 12) == -1 || DB_URL.indexOf('/', 12) == -1) {
+	        nav.alertaException("La URL de conexión no es válida");
+	        return null;
+	    }
+
+	    try {
+	        conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+	        
+	        if (conn == null) {
+	            nav.alertaException("No se pudo establecer la conexión a la base de datos");
+	        }
+	        
+	        return conn;
+	    } catch (SQLException ex) {
+	        nav.alertaException("ERROR. Revisa los datos del fichero de conexion.");
+	    }
+
+	    return null;
 	}
 
 	/**
@@ -125,8 +142,7 @@ public class DBManager {
 			}
 			conn = conexion();
 		} catch (SQLException ex) {
-			nav.alertaException(
-					"No ha sido posible restablecer la conexion a la base de datos. Parece que esta desconectada");
+			nav.alertaException("No ha sido posible restablecer la conexion a la base de datos. Parece que esta desconectada");
 		}
 	}
 

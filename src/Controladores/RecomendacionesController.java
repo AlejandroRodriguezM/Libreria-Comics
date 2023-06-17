@@ -50,40 +50,43 @@ import javafx.stage.Stage;
  * @author Alejandro Rodriguez
  */
 public class RecomendacionesController {
-	
-    @FXML
-    private MenuItem menu_archivo_desconectar;
-	
-    @FXML
-    private MenuItem menu_archivo_sobreMi;
 
-    @FXML
-    private MenuItem menu_archivo_cerrar;
+	@FXML
+	private MenuItem menu_archivo_desconectar;
 
-    @FXML
-    private MenuItem menu_archivo_volver;
+	@FXML
+	private MenuItem menu_archivo_sobreMi;
 
-    @FXML
-    private MenuItem menu_comic_aniadir;
+	@FXML
+	private MenuItem menu_archivo_cerrar;
 
-    @FXML
-    private MenuItem menu_comic_eliminar;
+	@FXML
+	private MenuItem menu_archivo_volver;
 
-    @FXML
-    private MenuItem menu_comic_modificar;
+	@FXML
+	private MenuItem menu_comic_aniadir;
 
-    @FXML
-    private MenuItem menu_comic_puntuar;
+	@FXML
+	private MenuItem menu_comic_eliminar;
 
-    @FXML
-    private MenuBar menu_navegacion;
+	@FXML
+	private MenuItem menu_comic_modificar;
 
-    @FXML
-    private Menu navegacion_cerrar;
+	@FXML
+	private MenuItem menu_comic_puntuar;
 
-    @FXML
-    private Menu navegacion_comic;
-	
+	@FXML
+	private MenuBar menu_navegacion;
+
+	@FXML
+	private Menu navegacion_cerrar;
+
+	@FXML
+	private Menu navegacion_comic;
+
+	@FXML
+	private Menu navegacion_estadistica;
+
 	@FXML
 	private Button botonElegir;
 
@@ -109,8 +112,8 @@ public class RecomendacionesController {
 	 * Llama a funcion que genera una lectura recomendada
 	 *
 	 * @param event
-	 * @throws IOException 
-	 * @throws SQLException 
+	 * @throws IOException
+	 * @throws SQLException
 	 */
 	@FXML
 	void eligePorMi(ActionEvent event) throws IOException, SQLException {
@@ -124,33 +127,33 @@ public class RecomendacionesController {
 	 * Funcion que devuelve un comic al azar de toda la base de datos.
 	 *
 	 * @return
-	 * @throws IOException 
-	 * @throws SQLException 
+	 * @throws IOException
+	 * @throws SQLException
 	 */
 	public String generarLectura() throws IOException, SQLException {
 
-	    Random r = new Random();
-	    utilidad = new Utilidades();
-	    libreria = new DBLibreriaManager();
-	    String ID;
+		Random r = new Random();
+		utilidad = new Utilidades();
+		libreria = new DBLibreriaManager();
+		String ID;
 
-	    limpiarPront(); // Llamada a función para limpiar la pantalla "TextArea"
+		limpiarPront(); // Llamada a función para limpiar la pantalla "TextArea"
 
-	    if (libreria.libreriaCompleta().size() != 0) {
-	        int n = r.nextInt(libreria.libreriaCompleta().size()); // Generar un número aleatorio dentro del rango válido
+		if (libreria.libreriaCompleta().size() != 0) {
+			int n = r.nextInt(libreria.libreriaCompleta().size()); // Generar un número aleatorio dentro del rango
+																	// válido
 
-	        ID = libreria.libreriaCompleta().get(n).getID();
+			ID = libreria.libreriaCompleta().get(n).getID();
 
-	        imagencomic.setImage(libreria.selectorImage(ID));
-	        utilidad.deleteImage();
-	        return libreria.libreriaCompleta().get(n).toString(); // Devuelve un cómic de la lista de cómics
-	    } else {
-	        printComicRecomendado.setText("ERROR. No hay ningún dato en la base de datos");
-	        printComicRecomendado.setStyle("-fx-background-color: #F53636");
-	    }
-	    return "";
+			imagencomic.setImage(libreria.selectorImage(ID));
+			utilidad.deleteImage();
+			return libreria.libreriaCompleta().get(n).toString(); // Devuelve un cómic de la lista de cómics
+		} else {
+			printComicRecomendado.setText("ERROR. No hay ningún dato en la base de datos");
+			printComicRecomendado.setStyle("-fx-background-color: #F53636");
+		}
+		return "";
 	}
-
 
 	/**
 	 * Se limpia el pront de informacion de la ventana
@@ -172,8 +175,8 @@ public class RecomendacionesController {
 	public void ventanaAniadir(ActionEvent event) {
 
 		nav.verIntroducirDatos();
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	/**
@@ -186,8 +189,8 @@ public class RecomendacionesController {
 
 		nav.verEliminarDatos();
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	/**
@@ -200,8 +203,8 @@ public class RecomendacionesController {
 
 		nav.verModificarDatos();
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
 	/**
@@ -213,11 +216,11 @@ public class RecomendacionesController {
 
 		nav.verPuntuar();
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 
 	}
-	
+
 	/**
 	 * Metodo que permite abrir la ventana "sobreMiController"
 	 *
@@ -228,10 +231,10 @@ public class RecomendacionesController {
 
 		nav.verSobreMi();
 
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
-	
+
 	/////////////////////////////
 	//// FUNCIONES PARA SALIR////
 	/////////////////////////////
@@ -243,13 +246,13 @@ public class RecomendacionesController {
 	 */
 	@FXML
 	public void desconectar(ActionEvent event) throws IOException {
-	    nav.verAccesoBBDD();
-	    DBManager.close();
-	    
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		nav.verAccesoBBDD();
+		DBManager.close();
+
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
-	
+
 	/**
 	 * Vuelve al menu inicial de conexion de la base de datos.
 	 *
@@ -258,18 +261,23 @@ public class RecomendacionesController {
 	@FXML
 	public void volverMenu(ActionEvent event) throws IOException {
 		nav.verMenuPrincipal();
-	    
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
 	}
 
+	/**
+	 * Maneja la acción de salida del programa.
+	 *
+	 * @param event el evento que desencadena la acción
+	 */
 	@FXML
 	public void salirPrograma(ActionEvent event) {
-	    // Logic to handle the "Eliminar" action
-	    nav.salirPrograma(event);
-
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		// Lógica para manejar la acción de "Salir"
+		if (nav.salirPrograma(event)) {
+			Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+			myStage.close();
+		}
 	}
 
 	/**

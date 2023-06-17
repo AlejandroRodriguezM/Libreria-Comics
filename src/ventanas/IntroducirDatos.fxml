@@ -117,7 +117,13 @@
          <menus>
             <Menu fx:id="navegacion_cerrar" mnemonicParsing="false" text="Archivo">
                <items>
+                  <MenuItem disable="true" mnemonicParsing="false" text="Exportar CSV" />
+                  <MenuItem disable="true" mnemonicParsing="false" text="ImportarCSV" />
+                  <MenuItem disable="true" mnemonicParsing="false" text="Exportar base de datos" />
+                  <MenuItem disable="true" mnemonicParsing="false" text="Eliminar base de datos" />
                   <MenuItem fx:id="menu_archivo_sobreMi" mnemonicParsing="false" onAction="#verSobreMi" text="Sobre mi" />
+                                    <MenuItem fx:id="menu_archivo_volver" mnemonicParsing="false" onAction="#volverMenu" text="Volver al menu" />
+                  
                   <MenuItem fx:id="menu_archivo_desconectar" mnemonicParsing="false" onAction="#desconectar" text="Desconectar" />
                   <MenuItem fx:id="menu_archivo_cerrar" mnemonicParsing="false" onAction="#salirPrograma" text="Cerrar" />
                </items>
@@ -129,9 +135,18 @@
                   <MenuItem fx:id="menu_comic_modificar" mnemonicParsing="false" onAction="#ventanaModificar" text="Modificar Comic" />
                   <MenuItem fx:id="menu_comic_puntuar" mnemonicParsing="false" onAction="#ventanaPuntuar" text="Puntuar Comic" />
                   <MenuItem fx:id="menu_comic_aleatoria" mnemonicParsing="false" onAction="#ventanaRecomendar" text="Lectura aleatoria" />
-                  <MenuItem fx:id="menu_archivo_volver" mnemonicParsing="false" onAction="#volverMenu" text="Volver al menu" />
                </items>
             </Menu>
+                      <Menu fx:id="navegacion_estadistica" mnemonicParsing="false" text="Estadistica">
+            <items>
+                  <MenuItem fx:id="menu_estadistica_posesion" mnemonicParsing="false" onAction="#comicsEnPosesion" text="Comics en posesion" />
+                  <MenuItem fx:id="menu_estadistica_comprados" mnemonicParsing="false" onAction="#comicsComprados" text="Comics Comprados" />
+                  <MenuItem fx:id="menu_estadistica_vendidos" mnemonicParsing="false" onAction="#comicsVendidos" text="Comics vendidos" />
+                  <MenuItem fx:id="menu_estadistica_puntuados" mnemonicParsing="false" onAction="#comicsPuntuacion" text="Comics puntuados" />
+                  <MenuItem fx:id="menu_estadistica_firmados" mnemonicParsing="false" onAction="#comicsFirmados" text="Comics Firmados" />
+                  <MenuItem fx:id="menu_estadistica_estadistica" mnemonicParsing="false" onAction="#verEstadistica" text="Estadistica global" />
+            </items>
+          </Menu>
          </menus>
       </MenuBar>
       <TextField fx:id="numeroCaja" layoutX="137.0" layoutY="315.0" prefHeight="25.0" prefWidth="102.0" />

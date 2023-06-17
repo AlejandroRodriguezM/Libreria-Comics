@@ -49,6 +49,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
@@ -64,6 +65,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 
+
+/**
+ * Esta clase sirve para poder puntuar comics que tenemos en la base de datos
+ *
+ * @author Alejandro Rodriguez
+ */
 public class PuntuarDatosController implements Initializable {
 
 	@FXML
@@ -89,9 +96,30 @@ public class PuntuarDatosController implements Initializable {
 
 	@FXML
 	private MenuItem menu_comic_modificar;
+	
+	@FXML
+	private MenuItem menu_estadistica_estadistica;
+
+	@FXML
+	private MenuItem menu_estadistica_firmados;
+
+	@FXML
+	private MenuItem menu_estadistica_puntuados;
+
+	@FXML
+	private MenuItem menu_estadistica_comprados;
+
+	@FXML
+	private MenuItem menu_estadistica_posesion;
+	
+	@FXML
+	private MenuItem menu_estadistica_vendidos;
 
 	@FXML
 	private MenuBar menu_navegacion;
+	
+	@FXML
+	private Menu navegacion_estadistica;
 
 	@FXML
 	private Button botonBorrarOpinion;
@@ -206,11 +234,22 @@ public class PuntuarDatosController implements Initializable {
 	private static Utilidades utilidad = null;
 
 	/**
-	 * Funcion que permite hacer funcionar la lista de puntuacion.
+	 * Inicializa el controlador cuando se carga la vista.
+	 *
+	 * @param location  la ubicación del archivo FXML
+	 * @param resources los recursos utilizados por la vista
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
+		libreria = new DBLibreriaManager();
+		try {
+			listas_autocompletado();
+			libreria.listasAutoCompletado();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
 		ObservableList<String> puntuaciones = FXCollections.observableArrayList("0/0", "0.5/5", "1/5", "1.5/5", "2/5",
 				"2.5/5", "3/5", "3.5/5", "4/5", "4.5/5", "5/5");
 		puntuacionMenu.setItems(puntuaciones);
@@ -225,12 +264,6 @@ public class PuntuarDatosController implements Initializable {
 				"Manga", "Libro");
 		nombreFormato.setItems(formatoActual);
 		nombreFormato.getSelectionModel().selectFirst();
-
-		try {
-			listas_autocompletado();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 
 		TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			String newText = change.getControlNewText();
@@ -259,7 +292,6 @@ public class PuntuarDatosController implements Initializable {
 		numeroComic.setTextFormatter(textFormatterComic);
 		numeroCaja.setTextFormatter(textFormatterComic2);
 		idPuntuar.setTextFormatter(textFormatterComic4);
-		libreria = new DBLibreriaManager();
 
 		// Agregar el ChangeListener al TextField idComicMod
 		idPuntuar.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -336,8 +368,6 @@ public class PuntuarDatosController implements Initializable {
 	 * autocompletados
 	 */
 	public void listas_autocompletado()  throws SQLException {
-		libreria = new DBLibreriaManager();
-		libreria.listasAutoCompletado();
 		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
 		TextFields.bindAutoCompletion(nombreFirma, DBLibreriaManager.listaFirma);
@@ -718,6 +748,107 @@ public class PuntuarDatosController implements Initializable {
 		dibujante.setCellValueFactory(new PropertyValueFactory<>("Dibujante"));
 		puntuacion.setCellValueFactory(new PropertyValueFactory<>("Puntuacion"));
 	}
+	
+	/**
+	 * Funcion que al pulsar el boton de 'botonPuntuacion' se muestran aquellos
+	 * comics que tienen una puntuacion
+	 *
+	 * @param event
+	 * @throws SQLException 
+	 */
+	@FXML
+	void comicsPuntuacion(ActionEvent event) throws SQLException {
+		pantallaInformativa.setOpacity(0);
+		tablaBBDD.getItems().clear();
+		libreria = new DBLibreriaManager();
+		libreria.reiniciarBBDD();
+		nombreColumnas();
+		tablaBBDD(libreria.libreriaPuntuacion());
+
+	}
+
+	/**
+	 * Funcion que al pulsar el boton de 'botonVentas' se muestran aquellos comics
+	 * que han sido vendidos
+	 *
+	 * @param event
+	 * @throws SQLException 
+	 */
+	@FXML
+	void comicsVendidos(ActionEvent event) throws SQLException {
+		pantallaInformativa.setOpacity(0);
+		tablaBBDD.getItems().clear();
+		libreria = new DBLibreriaManager();
+		libreria.reiniciarBBDD();
+		nombreColumnas();
+		tablaBBDD(libreria.libreriaVendidos());
+	}
+
+	/**
+	 * Funcion que al pulsar el boton de 'botonVentas' se muestran aquellos comics
+	 * que han sido vendidos
+	 *
+	 * @param event
+	 * @throws SQLException 
+	 */
+	@FXML
+	void comicsFirmados(ActionEvent event) throws SQLException {
+		pantallaInformativa.setOpacity(0);
+		tablaBBDD.getItems().clear();
+		libreria = new DBLibreriaManager();
+		libreria.reiniciarBBDD();
+		nombreColumnas();
+		tablaBBDD(libreria.libreriaFirmados());
+	}
+
+	/**
+	 * Funcion que al pulsar el boton de 'botonVentas' se muestran aquellos comics
+	 * que han sido vendidos
+	 *
+	 * @param event
+	 * @throws SQLException 
+	 */
+	@FXML
+	void comicsComprados(ActionEvent event) throws SQLException {
+		pantallaInformativa.setOpacity(0);
+		tablaBBDD.getItems().clear();
+		utilidad = new Utilidades();
+		libreria = new DBLibreriaManager();
+		libreria.reiniciarBBDD();
+		nombreColumnas();
+		tablaBBDD(libreria.libreriaComprados());
+	}
+	
+	/**
+	 * Funcion que al pulsar el boton de 'botonVentas' se muestran aquellos comics
+	 * que han sido vendidos
+	 *
+	 * @param event
+	 * @throws SQLException 
+	 */
+	@FXML
+	void comicsEnPosesion(ActionEvent event) throws SQLException {
+		pantallaInformativa.setOpacity(0);
+		tablaBBDD.getItems().clear();
+		utilidad = new Utilidades();
+		libreria = new DBLibreriaManager();
+		libreria.reiniciarBBDD();
+		nombreColumnas();
+		tablaBBDD(libreria.libreriaPosesion());
+	}
+	
+	/**
+	 * Se llama a funcion que permite ver las estadisticas de la bbdd
+	 *
+	 * @param event
+	 */
+	@FXML
+	void verEstadistica(ActionEvent event) {
+		tablaBBDD.getItems().clear();
+		libreria = new DBLibreriaManager();
+		pantallaInformativa.setOpacity(1);
+		pantallaInformativa.setText(libreria.procedimientosEstadistica());
+	}
 
 	/////////////////////////////////
 	//// METODOS LLAMADA A VENTANAS//
@@ -823,8 +954,14 @@ public class PuntuarDatosController implements Initializable {
 		myStage.close();
 	}
 
+	/**
+	 * Maneja la acción de salida del programa.
+	 *
+	 * @param event el evento que desencadena la acción
+	 */
 	@FXML
 	public void salirPrograma(ActionEvent event) {
+		// Lógica para manejar la acción de "Salir"
 		if (nav.salirPrograma(event)) {
 			Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 			myStage.close();

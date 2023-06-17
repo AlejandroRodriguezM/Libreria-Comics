@@ -30,9 +30,12 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 import Funcionamiento.Ventanas;
+import JDBC.DBManager;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -123,6 +126,12 @@ public class OpcionesDatosController implements Initializable {
 	private static Ventanas nav = new Ventanas();
 	private static AccesoBBDDController acceso = new AccesoBBDDController();
 
+	/**
+	 * Inicializa el controlador cuando se carga la vista.
+	 *
+	 * @param location  la ubicación del archivo FXML
+	 * @param resources los recursos utilizados por la vista
+	 */
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 
@@ -210,12 +219,11 @@ public class OpcionesDatosController implements Initializable {
 	 * relacionadas.
 	 *
 	 * @param event el evento que desencadena la acción
+	 * @throws SQLException 
 	 */
 	@FXML
-	void guardarDatos(ActionEvent event) {
-
-		acceso.crearEstructura();
-
+	void guardarDatos(ActionEvent event) throws SQLException {
+		
 		String userHome = System.getProperty("user.home");
 		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
 		String carpetaLibreria = ubicacion + File.separator + "libreria";
@@ -223,40 +231,82 @@ public class OpcionesDatosController implements Initializable {
 		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion.conf";
 
 		try {
-			FileWriter fileWriter = new FileWriter(archivoConfiguracion);
-			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+			if(verificarDatos()) {
+				acceso.crearEstructura();
+				
+				FileWriter fileWriter = new FileWriter(archivoConfiguracion);
+				BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
-			bufferedWriter.write("###############################");
-			bufferedWriter.newLine();
-			bufferedWriter.write("Fichero de configuracion de la libreria");
-			bufferedWriter.newLine();
-			bufferedWriter.write("###############################");
-			bufferedWriter.newLine();
-			bufferedWriter.write("Usuario: " + usuario.getText());
-			bufferedWriter.newLine();
-			bufferedWriter.write("Password: " + pass.getText());
-			bufferedWriter.newLine();
-			bufferedWriter.write("Puerto: " + puertobbdd.getText());
-			bufferedWriter.newLine();
-			bufferedWriter.write("Database: " + nombreBBDD.getText());
-			bufferedWriter.newLine();
-			bufferedWriter.write("Hosting: " + nombreHost.getText());
-			bufferedWriter.newLine();
+				bufferedWriter.write("###############################");
+				bufferedWriter.newLine();
+				bufferedWriter.write("Fichero de configuracion de la libreria");
+				bufferedWriter.newLine();
+				bufferedWriter.write("###############################");
+				bufferedWriter.newLine();
+				bufferedWriter.write("Usuario: " + usuario.getText());
+				bufferedWriter.newLine();
+				bufferedWriter.write("Password: " + pass.getText());
+				bufferedWriter.newLine();
+				bufferedWriter.write("Puerto: " + puertobbdd.getText());
+				bufferedWriter.newLine();
+				bufferedWriter.write("Database: " + nombreBBDD.getText());
+				bufferedWriter.newLine();
+				bufferedWriter.write("Hosting: " + nombreHost.getText());
+				bufferedWriter.newLine();
 
-			bufferedWriter.close();
+				bufferedWriter.close();
 
-			File carpeta_backupsFile = new File(carpetaBackup);
-			if (!carpeta_backupsFile.exists()) {
-				carpeta_backupsFile.mkdir();
-			}
+				File carpeta_backupsFile = new File(carpetaBackup);
+				if (!carpeta_backupsFile.exists()) {
+					carpeta_backupsFile.mkdir();
+				}
 
-			detenerAnimacion();
-			prontEstadoFichero.setStyle("-fx-background-color: #A0F52D");
-			iniciarAnimacionConectado();
+				prontEstadoFichero.setStyle("-fx-background-color: #A0F52D");
+				iniciarAnimacionConectado();
+			}else {
+				detenerAnimacion();
+				prontEstadoFichero.setStyle("-fx-background-color: #DD370F");
+				iniciarAnimacionBBDDError();			
+				}
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Comprueba si los datos ingresados coinciden con los datos en la base de datos.
+	 *
+	 * @return true si los datos coinciden, false si no coinciden o si hay un error en la conexión
+	 * @throws SQLException si hay un error al consultar la base de datos
+	 */
+	private boolean verificarDatos() throws SQLException {
+		
+		String datos[] = new String[5];
+	    datos[0] = puertobbdd.getText();
+	    datos[1] = nombreBBDD.getText();
+		datos[2] = usuario.getText();
+	    datos[3] = pass.getText();
+	    datos[4] = nombreHost.getText();
+
+	    DBManager.datosBBDD(datos);
+	    
+	    Connection connection = DBManager.conexion();
+	    if (connection == null) {
+			prontEstadoFichero.setStyle("-fx-background-color: #DD370F");
+	        iniciarAnimacionBBDDError();
+	        return false;
+		}
+
+		if (JDBC.DBManager.isConnected()) {
+			return true;
+		}else {
+			prontEstadoFichero.setStyle("-fx-background-color: #DD370F");
+	        iniciarAnimacionBBDDError();
+			return false;
+		}
+	}
+
 
 	/**
 	 * Restaura la configuración a los valores predeterminados.
@@ -460,6 +510,28 @@ public class OpcionesDatosController implements Initializable {
 		// Iniciar la animación
 		timeline.play();
 	}
+	
+	/**
+	 * Inicia la animación de restauración con error en la interfaz.
+	 */
+	private void iniciarAnimacionBBDDError() {
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarError = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontEstadoFichero.textProperty(), "La base de datos no existe"));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(prontEstadoFichero.textProperty(), ""));
+		KeyFrame mostrarError2 = new KeyFrame(Duration.seconds(1),
+				new KeyValue(prontEstadoFichero.textProperty(), "ERROR"));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarError, ocultarTexto, mostrarError2);
+
+		// Iniciar la animación
+		timeline.play();
+	}
 
 	/**
 	 * Detiene la animación actual en la interfaz.
@@ -467,6 +539,7 @@ public class OpcionesDatosController implements Initializable {
 	private void detenerAnimacion() {
 		if (timeline != null) {
 			timeline.stop();
+	        timeline.getKeyFrames().clear(); // Eliminar los KeyFrames del Timeline
 			timeline = null; // Destruir el objeto timeline
 		}
 	}
@@ -485,9 +558,9 @@ public class OpcionesDatosController implements Initializable {
 	}
 
 	/**
-	 * Permite salir completamente del programa.
+	 * Maneja la acción de salida del programa.
 	 *
-	 * @param event
+	 * @param event el evento que desencadena la acción
 	 */
 	@FXML
 	public void salirPrograma(ActionEvent event) {

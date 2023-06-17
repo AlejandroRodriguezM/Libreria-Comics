@@ -51,8 +51,8 @@ import javafx.util.Duration;
 import javafx.util.converter.IntegerStringConverter;
 
 /**
- * Esta clase sirve para almoner datos. No elimna los datos, realiza la funcion
- * de cambiar el dato de "estado" de "En posesion" a "Vendido"
+ * Esta clase sirve para eliminar datos de la base de datos, realiza la funcion
+ * de cambiar el dato de "estado" de "En posesion" a "Vendido" o de eliminar directamente.
  *
  * @author Alejandro Rodriguez
  */
@@ -93,6 +93,27 @@ public class EliminarDatosController implements Initializable {
 
 	@FXML
 	private Menu navegacion_comic;
+	
+	@FXML
+	private Menu navegacion_estadistica;
+	
+	@FXML
+	private MenuItem menu_estadistica_estadistica;
+
+	@FXML
+	private MenuItem menu_estadistica_firmados;
+
+	@FXML
+	private MenuItem menu_estadistica_puntuados;
+
+	@FXML
+	private MenuItem menu_estadistica_comprados;
+
+	@FXML
+	private MenuItem menu_estadistica_posesion;
+	
+	@FXML
+	private MenuItem menu_estadistica_vendidos;
 
 	@FXML
 	private Button botonEliminar;
@@ -205,10 +226,17 @@ public class EliminarDatosController implements Initializable {
 	private static DBLibreriaManager libreria = null;
 	private static Utilidades utilidad = null;
 
+	/**
+	 * Inicializa el controlador cuando se carga la vista.
+	 *
+	 * @param location  la ubicación del archivo FXML
+	 * @param resources los recursos utilizados por la vista
+	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		libreria = new DBLibreriaManager();
 		try {
+			listas_autocompletado();
 			libreria.listasAutoCompletado();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -223,11 +251,6 @@ public class EliminarDatosController implements Initializable {
 		nombreFormato.setItems(formatoActual);
 		nombreFormato.getSelectionModel().selectFirst();
 
-		try {
-			listas_autocompletado();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 
 		TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			String newText = change.getControlNewText();
@@ -265,8 +288,6 @@ public class EliminarDatosController implements Initializable {
 
 		// Configurar el estilo inicial del Label
 		label_id_eliminar.setBorder(Border.EMPTY);
-
-		libreria = new DBLibreriaManager();
 
 		// Agregar el ChangeListener al TextField idComicMod
 		idComicTratar.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -377,8 +398,6 @@ public class EliminarDatosController implements Initializable {
 	 * autocompletados
 	 */
 	public void listas_autocompletado() throws SQLException {
-		libreria = new DBLibreriaManager();
-		libreria.listasAutoCompletado();
 		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
 		TextFields.bindAutoCompletion(nombreFirma, DBLibreriaManager.listaFirma);
@@ -644,7 +663,108 @@ public class EliminarDatosController implements Initializable {
 		dibujante.setCellValueFactory(new PropertyValueFactory<>("dibujante"));
 		puntuacion.setCellValueFactory(new PropertyValueFactory<>("puntuacion"));
 	}
+	
+	/**
+	 * Funcion que al pulsar el boton de 'botonPuntuacion' se muestran aquellos
+	 * comics que tienen una puntuacion
+	 *
+	 * @param event
+	 * @throws SQLException 
+	 */
+	@FXML
+	void comicsPuntuacion(ActionEvent event) throws SQLException {
+		pantallaInformativa.setOpacity(0);
+		tablaBBDD.getItems().clear();
+		libreria = new DBLibreriaManager();
+		libreria.reiniciarBBDD();
+		nombreColumnas();
+		tablaBBDD(libreria.libreriaPuntuacion());
 
+	}
+
+	/**
+	 * Funcion que al pulsar el boton de 'botonVentas' se muestran aquellos comics
+	 * que han sido vendidos
+	 *
+	 * @param event
+	 * @throws SQLException 
+	 */
+	@FXML
+	void comicsVendidos(ActionEvent event) throws SQLException {
+		pantallaInformativa.setOpacity(0);
+		tablaBBDD.getItems().clear();
+		libreria = new DBLibreriaManager();
+		libreria.reiniciarBBDD();
+		nombreColumnas();
+		tablaBBDD(libreria.libreriaVendidos());
+	}
+
+	/**
+	 * Funcion que al pulsar el boton de 'botonVentas' se muestran aquellos comics
+	 * que han sido vendidos
+	 *
+	 * @param event
+	 * @throws SQLException 
+	 */
+	@FXML
+	void comicsFirmados(ActionEvent event) throws SQLException {
+		pantallaInformativa.setOpacity(0);
+		tablaBBDD.getItems().clear();
+		libreria = new DBLibreriaManager();
+		libreria.reiniciarBBDD();
+		nombreColumnas();
+		tablaBBDD(libreria.libreriaFirmados());
+	}
+
+	/**
+	 * Funcion que al pulsar el boton de 'botonVentas' se muestran aquellos comics
+	 * que han sido vendidos
+	 *
+	 * @param event
+	 * @throws SQLException 
+	 */
+	@FXML
+	void comicsComprados(ActionEvent event) throws SQLException {
+		pantallaInformativa.setOpacity(0);
+		tablaBBDD.getItems().clear();
+		utilidad = new Utilidades();
+		libreria = new DBLibreriaManager();
+		libreria.reiniciarBBDD();
+		nombreColumnas();
+		tablaBBDD(libreria.libreriaComprados());
+	}
+	
+	/**
+	 * Funcion que al pulsar el boton de 'botonVentas' se muestran aquellos comics
+	 * que han sido vendidos
+	 *
+	 * @param event
+	 * @throws SQLException 
+	 */
+	@FXML
+	void comicsEnPosesion(ActionEvent event) throws SQLException {
+		pantallaInformativa.setOpacity(0);
+		tablaBBDD.getItems().clear();
+		utilidad = new Utilidades();
+		libreria = new DBLibreriaManager();
+		libreria.reiniciarBBDD();
+		nombreColumnas();
+		tablaBBDD(libreria.libreriaPosesion());
+	}
+
+	/**
+	 * Se llama a funcion que permite ver las estadisticas de la bbdd
+	 *
+	 * @param event
+	 */
+	@FXML
+	void verEstadistica(ActionEvent event) {
+		tablaBBDD.getItems().clear();
+		libreria = new DBLibreriaManager();
+		pantallaInformativa.setOpacity(1);
+		pantallaInformativa.setText(libreria.procedimientosEstadistica());
+	}
+	
 	//////////////////////////
 	//// FUNCIONES/////////////
 	//////////////////////////
@@ -845,8 +965,14 @@ public class EliminarDatosController implements Initializable {
 		myStage.close();
 	}
 
+	/**
+	 * Maneja la acción de salida del programa.
+	 *
+	 * @param event el evento que desencadena la acción
+	 */
 	@FXML
 	public void salirPrograma(ActionEvent event) {
+		// Lógica para manejar la acción de "Salir"
 		if (nav.salirPrograma(event)) {
 			Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 			myStage.close();

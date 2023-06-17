@@ -57,6 +57,12 @@ public class AccesoBBDDController implements Initializable {
 	private static Ventanas nav = new Ventanas();
 	private static CrearBBDDController cbd = null;
 
+	/**
+	 * Inicializa el controlador cuando se carga la vista.
+	 *
+	 * @param location  la ubicación del archivo FXML
+	 * @param resources los recursos utilizados por la vista
+	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
@@ -64,11 +70,10 @@ public class AccesoBBDDController implements Initializable {
 		detenerAnimacion();
 
 		if (!JDBC.DBManager.isConnected()) {
-		    iniciarAnimacionEspera();
+			iniciarAnimacionEspera();
 		} else {
 			iniciarAnimacionConectado();
 		}
-
 	}
 
 	/**
@@ -105,7 +110,7 @@ public class AccesoBBDDController implements Initializable {
 
 		if (JDBC.DBManager.isConnected()) { // Siempre que el metodo de la clase DBManager sea true, permitira acceder
 			DBManager.resetConnection();
-						// al menu principal
+			// al menu principal
 			nav.verMenuPrincipal(); // Llamada a metodo de la clase NavegacionVentanas. Permite cargar y mostrar el
 									// menu principal
 			Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
@@ -144,7 +149,7 @@ public class AccesoBBDDController implements Initializable {
 
 				try {
 					File carpeta_backupsFile = new File(carpetaBackup);
-					
+
 					cbd.crearCarpeta();
 					if (!carpeta_backupsFile.exists()) {
 						carpeta_backupsFile.mkdirs();
@@ -182,7 +187,8 @@ public class AccesoBBDDController implements Initializable {
 	}
 
 	/**
-	 * Obtiene el dato que sigue a dos puntos (:) en una línea específica del archivo de configuración.
+	 * Obtiene el dato que sigue a dos puntos (:) en una línea específica del
+	 * archivo de configuración.
 	 *
 	 * @param linea la línea específica para buscar el dato
 	 * @return el dato encontrado o una cadena vacía si no se encuentra
@@ -221,9 +227,9 @@ public class AccesoBBDDController implements Initializable {
 	}
 
 	/**
-	* Método que se ejecuta al hacer clic en el botón de opciones del programa.
-	* Abre la ventana de opciones y cierra la ventana actual.
-	*/
+	 * Método que se ejecuta al hacer clic en el botón de opciones del programa.
+	 * Abre la ventana de opciones y cierra la ventana actual.
+	 */
 	@FXML
 	void opcionesPrograma(ActionEvent event) {
 		nav.verOpciones();
@@ -242,8 +248,9 @@ public class AccesoBBDDController implements Initializable {
 	}
 
 	/**
-	* Método que crea la estructura de carpetas y archivos necesarios para la librería.
-	*/
+	 * Método que crea la estructura de carpetas y archivos necesarios para la
+	 * librería.
+	 */
 	public void crearEstructura() {
 		String userHome = System.getProperty("user.home");
 		String ubicacion = userHome + "\\AppData\\Roaming";
@@ -333,7 +340,7 @@ public class AccesoBBDDController implements Initializable {
 				new KeyValue(prontEstadoConexion.textProperty(), "Conectado"));
 
 		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(mostrarConectado, ocultarTexto,mostrarConectado2);
+		timeline.getKeyFrames().addAll(mostrarConectado, ocultarTexto, mostrarConectado2);
 
 		// Iniciar la animación
 		timeline.play();
@@ -347,19 +354,20 @@ public class AccesoBBDDController implements Initializable {
 		timeline.setCycleCount(Timeline.INDEFINITE);
 
 		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarError = new KeyFrame(Duration.ZERO, new KeyValue(prontEstadoConexion.textProperty(), "ERROR. Activa MySql"));
+		KeyFrame mostrarError = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontEstadoConexion.textProperty(), "ERROR. Activa MySql"));
 		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
 				new KeyValue(prontEstadoConexion.textProperty(), ""));
 		KeyFrame mostrarError2 = new KeyFrame(Duration.seconds(1),
 				new KeyValue(prontEstadoConexion.textProperty(), "ERROR. Activa MySql"));
 
 		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(mostrarError, ocultarTexto,mostrarError2);
+		timeline.getKeyFrames().addAll(mostrarError, ocultarTexto, mostrarError2);
 
 		// Iniciar la animación
 		timeline.play();
 	}
-	
+
 	/**
 	 * Metodo que permite crear una animacion
 	 */
@@ -368,14 +376,15 @@ public class AccesoBBDDController implements Initializable {
 		timeline.setCycleCount(Timeline.INDEFINITE);
 
 		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarError = new KeyFrame(Duration.ZERO, new KeyValue(prontEstadoConexion.textProperty(), "ERROR. Conectate primero"));
+		KeyFrame mostrarError = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontEstadoConexion.textProperty(), "ERROR. Conectate primero"));
 		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
 				new KeyValue(prontEstadoConexion.textProperty(), ""));
 		KeyFrame mostrarError2 = new KeyFrame(Duration.seconds(1),
 				new KeyValue(prontEstadoConexion.textProperty(), "ERROR. Conectate primero"));
 
 		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(mostrarError, ocultarTexto,mostrarError2);
+		timeline.getKeyFrames().addAll(mostrarError, ocultarTexto, mostrarError2);
 
 		// Iniciar la animación
 		timeline.play();

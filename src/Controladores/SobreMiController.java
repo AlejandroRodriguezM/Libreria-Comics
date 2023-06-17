@@ -38,6 +38,11 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.stage.Stage;
 
+/**
+ * Esta clase sirve para poder mostrar a los usuarios los datos del creador del programa
+ *
+ * @author Alejandro Rodriguez
+ */
 public class SobreMiController {
 
     @FXML
@@ -75,6 +80,9 @@ public class SobreMiController {
 
 	@FXML
 	private Menu navegacion_comic;
+	
+	@FXML
+	private Menu navegacion_estadistica;
 	
 	@FXML
 	private Label TextoInfo;
@@ -335,13 +343,18 @@ public class SobreMiController {
 	    myStage.close();
 	}
 
+	/**
+	 * Maneja la acción de salida del programa.
+	 *
+	 * @param event el evento que desencadena la acción
+	 */
 	@FXML
 	public void salirPrograma(ActionEvent event) {
-	    // Logic to handle the "Eliminar" action
-	    nav.salirPrograma(event);
-
-	    Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-	    myStage.close();
+		// Lógica para manejar la acción de "Salir"
+		if (nav.salirPrograma(event)) {
+			Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+			myStage.close();
+		}
 	}
 
 	/**
