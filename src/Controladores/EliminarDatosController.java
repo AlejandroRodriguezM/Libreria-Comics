@@ -236,8 +236,8 @@ public class EliminarDatosController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		libreria = new DBLibreriaManager();
 		try {
-			listas_autocompletado();
 			libreria.listasAutoCompletado();
+			listas_autocompletado();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

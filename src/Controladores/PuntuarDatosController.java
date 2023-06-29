@@ -244,8 +244,8 @@ public class PuntuarDatosController implements Initializable {
 
 		libreria = new DBLibreriaManager();
 		try {
-			listas_autocompletado();
 			libreria.listasAutoCompletado();
+			listas_autocompletado();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
