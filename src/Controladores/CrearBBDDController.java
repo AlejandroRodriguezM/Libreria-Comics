@@ -192,6 +192,10 @@ public class CrearBBDDController implements Initializable {
 		return comprobarEntradas();
 	}
 
+	/**
+	 * Funcion que permite comprobar si las entradas estan rellenas o no.
+	 * @return
+	 */
 	public boolean comprobarEntradas() {
 		String errorMessage = "";
 
@@ -205,10 +209,6 @@ public class CrearBBDDController implements Initializable {
 
 		if (DB_USER.isEmpty()) {
 			errorMessage += "El usuario de la base de datos está vacío.\n";
-		}
-
-		if (DB_PASS.isEmpty()) {
-			errorMessage += "La contraseña de la base de datos está vacía.\n";
 		}
 
 		if (DB_HOST.isEmpty()) {

@@ -1,0 +1,42 @@
+/* Estilos para TableColumn */
+.table-column {
+    -fx-font-size: 14px;
+    -fx-table-cell-resize-policy: UNCONSTRAINED_RESIZE_POLICY;
+
+    -fx-border-color: #CCCCCC;
+    -fx-border-width: 0 0 0 1px;
+}
+
+/* Estilos para TableView */
+.table-view {
+    -fx-table-cell-border-color: transparent;
+    -fx-selection-bar: #BFEFFF;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #EFEFEF;
+}
+
+.table-view .column-header,
+.table-view .filler {
+    -fx-background-color: #EFEFEF;
+    -fx-text-fill: #333333;
+}
+
+.table-view .table-cell {
+    -fx-padding: 5px;
+    -fx-font-size: 14px;
+}
+
+.table-view .table-row-cell:odd {
+    -fx-background-color: #F5F5F5;
+}
+
+.table-view .table-row-cell:even {
+    -fx-background-color: #FFFFFF;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: #BFEFFF;
+}
+

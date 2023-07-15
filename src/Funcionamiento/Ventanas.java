@@ -159,8 +159,6 @@ public class Ventanas {
 				controlador.closeWindows();
 			});
 
-			stage.setScene(scene);
-			stage.show();
 			DBManager.resetConnection();
 		} catch (IOException ex) {
 			alertaException(ex.toString());
@@ -198,8 +196,6 @@ public class Ventanas {
 			stage.setOnCloseRequest(e -> {
 				controlador.closeWindows();
 			});
-			stage.setScene(scene);
-			stage.show();
 			DBManager.resetConnection();
 		} catch (IOException ex) {
 			alertaException(ex.toString());
@@ -238,8 +234,6 @@ public class Ventanas {
 				controlador.closeWindows();
 			});
 
-			stage.setScene(scene);
-			stage.show();
 			DBManager.resetConnection();
 
 		} catch (IOException ex) {
@@ -280,9 +274,6 @@ public class Ventanas {
 				controlador.closeWindows();
 
 			});
-
-			stage.setScene(scene);
-			stage.show();
 			DBManager.resetConnection();
 
 		} catch (IOException ex) {
@@ -323,9 +314,6 @@ public class Ventanas {
 				controlador.closeWindows();
 			});
 
-			stage.setScene(scene);
-			stage.show();
-
 		} catch (IOException ex) {
 			alertaException(ex.toString());
 			ex.printStackTrace();
@@ -365,9 +353,6 @@ public class Ventanas {
 			stage.setOnCloseRequest(e -> {
 				controlador.closeWindows();
 			});
-
-			stage.setScene(scene);
-			stage.show();
 		} catch (IOException ex) {
 			alertaException(ex.toString());
 		}
@@ -404,9 +389,6 @@ public class Ventanas {
 			stage.setOnCloseRequest(e -> {
 				controlador.closeWindows();
 			});
-
-			stage.setScene(scene);
-			stage.show();
 			DBManager.resetConnection();
 
 		} catch (IOException ex) {
@@ -447,9 +429,6 @@ public class Ventanas {
 			stage.setOnCloseRequest(e -> {
 				controlador.closeWindows();
 			});
-
-			stage.setScene(scene);
-			stage.show();
 
 		} catch (IOException ex) {
 			alertaException(ex.toString());

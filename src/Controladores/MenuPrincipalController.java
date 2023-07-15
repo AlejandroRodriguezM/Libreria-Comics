@@ -28,7 +28,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.controlsfx.control.textfield.TextFields;
@@ -52,6 +54,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -123,7 +126,7 @@ public class MenuPrincipalController implements Initializable {
 
 	@FXML
 	private MenuItem menu_estadistica_posesion;
-	
+
 	@FXML
 	private MenuItem menu_estadistica_vendidos;
 
@@ -260,6 +263,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		modificarColumnas();
 		libreria = new DBLibreriaManager();
 		try {
 			libreria.listasAutoCompletado();
@@ -267,15 +271,19 @@ public class MenuPrincipalController implements Initializable {
 			e.printStackTrace();
 		}
 
-		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList("Todo","Spain", "USA", "Japon",
-				"Italia", "Francia");
+		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList("Todo", "Spain", "USA",
+				"Japon", "Italia", "Francia");
 		nombreProcedencia.setItems(procedenciaEstadoActual);
 		nombreProcedencia.getSelectionModel().selectFirst();
 
-		ObservableList<String> formatoActual = FXCollections.observableArrayList("Todo","Grapa", "Tapa dura", "Tapa blanda",
-				"Manga", "Libro");
+		ObservableList<String> formatoActual = FXCollections.observableArrayList("Todo", "Grapa", "Tapa dura",
+				"Tapa blanda", "Manga", "Libro");
 		nombreFormato.setItems(formatoActual);
 		nombreFormato.getSelectionModel().selectFirst();
+		
+		ObservableList<String> editoriales = FXCollections.observableArrayList(DBLibreriaManager.listaEditorial);
+		nombreEditorial.setItems(editoriales);
+		nombreEditorial.getSelectionModel().selectFirst();
 
 		listas_autocompletado();
 
@@ -297,7 +305,22 @@ public class MenuPrincipalController implements Initializable {
 		numeroComic.setTextFormatter(textFormatterComic);
 		numeroCaja.setTextFormatter(textFormatterComic2);
 
+	    tablaBBDD.setRowFactory(tv -> {
+	        TableRow<Comic> row = new TableRow<>();
+	        row.setOnMouseEntered(event -> {
+	            if (!row.isEmpty()) {
+	                row.setStyle("-fx-background-color: #BFEFFF;");
+	            }
+	        });
+	        row.setOnMouseExited(event -> {
+	            if (!row.isEmpty()) {
+	                row.setStyle("");
+	            }
+	        });
+	        return row;
+	    });
 	}
+
 
 	public void listas_autocompletado() {
 		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
@@ -436,6 +459,8 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void fraseRandom(ActionEvent event) {
+		modificarColumnas();
+		modificarColumnas();
 		prontInfo.setOpacity(0);
 		prontFrases.setOpacity(1);
 		prontFrases.setText(Comic.frasesComics());
@@ -449,6 +474,8 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
+		modificarColumnas();
+		modificarColumnas();
 		prontInfo.setOpacity(0);
 		prontFrases.setOpacity(0);
 		imagencomic.setImage(null);
@@ -463,11 +490,15 @@ public class MenuPrincipalController implements Initializable {
 	 * Metodo que muestra toda la base de datos.
 	 *
 	 * @param event
-	 * @throws IOException 
-	 * @throws SQLException 
+	 * @throws IOException
+	 * @throws SQLException
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
+		modificarColumnas();
+		modificarColumnas();
+
+		tablaBBDD.refresh();
 		prontInfo.setOpacity(0);
 		prontFrases.setOpacity(0);
 		imagencomic.setImage(null);
@@ -475,7 +506,6 @@ public class MenuPrincipalController implements Initializable {
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
 		tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
-
 	}
 
 	/**
@@ -483,7 +513,7 @@ public class MenuPrincipalController implements Initializable {
 	 * comics que tienen una puntuacion
 	 *
 	 * @param event
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	@FXML
 	void comicsPuntuacion(ActionEvent event) throws SQLException {
@@ -501,7 +531,7 @@ public class MenuPrincipalController implements Initializable {
 	 * que han sido vendidos
 	 *
 	 * @param event
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	@FXML
 	void comicsVendidos(ActionEvent event) throws SQLException {
@@ -518,7 +548,7 @@ public class MenuPrincipalController implements Initializable {
 	 * que han sido vendidos
 	 *
 	 * @param event
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	@FXML
 	void comicsFirmados(ActionEvent event) throws SQLException {
@@ -535,7 +565,7 @@ public class MenuPrincipalController implements Initializable {
 	 * que han sido vendidos
 	 *
 	 * @param event
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	@FXML
 	void comicsComprados(ActionEvent event) throws SQLException {
@@ -547,13 +577,13 @@ public class MenuPrincipalController implements Initializable {
 		nombreColumnas();
 		tablaBBDD(libreria.libreriaComprados());
 	}
-	
+
 	/**
 	 * Funcion que al pulsar el boton de 'botonVentas' se muestran aquellos comics
 	 * que han sido vendidos
 	 *
 	 * @param event
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	@FXML
 	void comicsEnPosesion(ActionEvent event) throws SQLException {
@@ -575,7 +605,7 @@ public class MenuPrincipalController implements Initializable {
 	 * a la base de datos
 	 *
 	 * @param event
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	@FXML
 	void importCSV(ActionEvent event) throws SQLException {
@@ -675,7 +705,7 @@ public class MenuPrincipalController implements Initializable {
 	 * tablas.
 	 *
 	 * @param event
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	@FXML
 	void borrarContenidoTabla(ActionEvent event) throws SQLException {
@@ -718,6 +748,7 @@ public class MenuPrincipalController implements Initializable {
 	 * Permite dar valor a las celdas de la TableView
 	 */
 	private void nombreColumnas() {
+
 		ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
 		nombre.setCellValueFactory(new PropertyValueFactory<>("Nombre"));
 		caja.setCellValueFactory(new PropertyValueFactory<>("numCaja"));
@@ -731,6 +762,52 @@ public class MenuPrincipalController implements Initializable {
 		guionista.setCellValueFactory(new PropertyValueFactory<>("Guionista"));
 		dibujante.setCellValueFactory(new PropertyValueFactory<>("Dibujante"));
 		puntuacion.setCellValueFactory(new PropertyValueFactory<>("Puntuacion"));
+
+	}
+
+	public void modificarColumnas() {
+
+		// Set the initial widths of the columns
+		nombre.setPrefWidth(141);
+		numero.setPrefWidth(50);
+		firma.setPrefWidth(50);
+		editorial.setPrefWidth(72);
+		variante.setPrefWidth(140);
+		procedencia.setPrefWidth(120);
+		fecha.setPrefWidth(87);
+		guionista.setPrefWidth(150);
+		dibujante.setPrefWidth(150);
+		puntuacion.setPrefWidth(100);
+		formato.setPrefWidth(90);
+
+		// Set the resizing policy to unconstrained
+		tablaBBDD.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+
+		// Store the original widths
+		@SuppressWarnings("rawtypes")
+		Map<TableColumn, Double> originalWidths = new HashMap<>();
+		originalWidths.put(nombre, nombre.getWidth());
+		originalWidths.put(numero, numero.getWidth());
+		originalWidths.put(firma, firma.getWidth());
+		originalWidths.put(editorial, editorial.getWidth());
+		originalWidths.put(variante, variante.getWidth());
+		originalWidths.put(procedencia, procedencia.getWidth());
+		originalWidths.put(fecha, fecha.getWidth());
+		originalWidths.put(guionista, guionista.getWidth());
+		originalWidths.put(dibujante, dibujante.getWidth());
+		originalWidths.put(puntuacion, puntuacion.getWidth());
+		originalWidths.put(formato, formato.getWidth());
+
+		// Reiniciar el tamaño de las columnas
+		tablaBBDD.refresh();
+
+		// Reset the widths of the columns to their original sizes
+		tablaBBDD.getColumns().forEach(column -> {
+			Double originalWidth = originalWidths.get(column);
+			if (originalWidth != null) {
+				column.setPrefWidth(originalWidth);
+			}
+		});
 	}
 
 	@FXML
@@ -752,30 +829,29 @@ public class MenuPrincipalController implements Initializable {
 			utilidad.deleteImage();
 		}
 	}
-	
+
 	@FXML
 	void teclasDireccion(KeyEvent event) throws IOException, SQLException {
-	    if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
-	        prontFrases.setOpacity(0);
-	        libreria = new DBLibreriaManager();
-	        libreria.libreriaCompleta();
-	        utilidad = new Utilidades();
-	        String ID;
+		if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
+			prontFrases.setOpacity(0);
+			libreria = new DBLibreriaManager();
+			libreria.libreriaCompleta();
+			utilidad = new Utilidades();
+			String ID;
 
-	        Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
+			Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 
-	        if (idRow != null) {
-	            ID = idRow.getID();
-	            prontInfo.setOpacity(1);
-	            prontInfo.setText(libreria.comicDatos(ID).toString().replace("[", "").replace("]", ""));
+			if (idRow != null) {
+				ID = idRow.getID();
+				prontInfo.setOpacity(1);
+				prontInfo.setText(libreria.comicDatos(ID).toString().replace("[", "").replace("]", ""));
 
-	            imagencomic.setImage(libreria.selectorImage(ID));
-	            utilidad.deleteImage();
-	        }
+				imagencomic.setImage(libreria.selectorImage(ID));
+				utilidad.deleteImage();
+			}
 //	        DBManager.resetConnection();
-	    }
+		}
 	}
-
 
 	/////////////////////////////////
 	//// FUNCIONES CREACION FICHEROS//
@@ -880,16 +956,23 @@ public class MenuPrincipalController implements Initializable {
 	/**
 	 * Funcion que comprueba segun los datos escritos en los textArea, que comic
 	 * estas buscando.
-	 * @throws SQLException 
+	 * 
+	 * @throws SQLException
 	 */
 	public void listaPorParametro() throws SQLException {
 		libreria = new DBLibreriaManager();
-
+		Comic comic = new Comic();
 		String datos[] = camposComic();
+		String fecha = datos[8];
+		if(datos[8].isEmpty()) {
+			fecha = "1900-01-01";
+		}else {
+			fecha = datos[8];
+		}
 
-		Comic comic = new Comic("", datos[1], datos[12], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
-				datos[8], datos[9], datos[10], "", "", null);
-
+		comic = new Comic("", datos[1], datos[12], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
+				fecha, datos[9], datos[10], "", "", null);
+		
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
 		busquedaGeneral.setText("");
 	}
@@ -899,8 +982,8 @@ public class MenuPrincipalController implements Initializable {
 	 * "En posesion"
 	 *
 	 * @return
-	 * @throws IOException 
-	 * @throws SQLException 
+	 * @throws IOException
+	 * @throws SQLException
 	 */
 	public List<Comic> libreriaCompleta() throws IOException, SQLException {
 		libreria = new DBLibreriaManager();
@@ -942,21 +1025,25 @@ public class MenuPrincipalController implements Initializable {
 
 		campos[5] = nombreEditorial.getText();
 
-		if(formatoActual() == "Todo") {
+		if (formatoActual() == "Todo") {
 			campos[6] = "";
-		}else {
+		} else {
 			campos[6] = formatoActual();
 		}
-		
-		if(procedenciaActual() == "Todo") {
+
+		if (procedenciaActual() == "Todo") {
 			campos[7] = "";
-		}else {
+		} else {
 			campos[7] = procedenciaActual();
 
 		}
 
-		LocalDate fecha = fechaPublicacion.getValue();
-		campos[8] = (fecha != null) ? fecha.toString() : "";
+	    LocalDate fecha = fechaPublicacion.getValue();
+	    if (fecha != null) {
+	        campos[8] = fecha.toString();
+	    } else {
+	        campos[8] = "";
+	    }
 
 		campos[9] = nombreGuionista.getText();
 
