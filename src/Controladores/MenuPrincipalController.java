@@ -42,6 +42,8 @@ import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
 import JDBC.DBManager;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -64,6 +66,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
@@ -158,31 +161,10 @@ public class MenuPrincipalController implements Initializable {
 	private DatePicker fechaPublicacion;
 
 	@FXML
-	private TextField nombreComic;
-
-	@FXML
-	private TextField nombreDibujante;
-
-	@FXML
-	private TextField nombreEditorial;
-
-	@FXML
-	private TextField nombreFirma;
-
-	@FXML
-	private TextField nombreGuionista;
-
-	@FXML
-	private TextField nombreVariante;
-
-	@FXML
 	private TextField numeroComic;
 
 	@FXML
 	private TextField busquedaGeneral;
-
-	@FXML
-	private TextField numeroCaja;
 
 	@FXML
 	private TableColumn<Comic, String> ID;
@@ -236,10 +218,31 @@ public class MenuPrincipalController implements Initializable {
 	private ImageView imagencomic;
 
 	@FXML
+	private ComboBox<String> nombreComic;
+
+	@FXML
+	private ComboBox<String> nombreFirma;
+
+	@FXML
+	private ComboBox<String> nombreGuionista;
+
+	@FXML
+	private ComboBox<String> nombreVariante;
+
+	@FXML
+	private ComboBox<String> numeroCaja;
+
+	@FXML
 	private ComboBox<String> nombreProcedencia;
 
 	@FXML
 	private ComboBox<String> nombreFormato;
+
+	@FXML
+	private ComboBox<String> nombreEditorial;
+
+	@FXML
+	private ComboBox<String> nombreDibujante;
 
 	@FXML
 	private ResourceBundle resources;
@@ -271,19 +274,49 @@ public class MenuPrincipalController implements Initializable {
 			e.printStackTrace();
 		}
 
-		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList("Todo", "Spain", "USA",
-				"Japon", "Italia", "Francia");
+		ObservableList<String> procedenciaEstadoActual = FXCollections
+				.observableArrayList(DBLibreriaManager.listaProcedencia);
+		procedenciaEstadoActual.add(0, "Todo");
 		nombreProcedencia.setItems(procedenciaEstadoActual);
 		nombreProcedencia.getSelectionModel().selectFirst();
 
-		ObservableList<String> formatoActual = FXCollections.observableArrayList("Todo", "Grapa", "Tapa dura",
-				"Tapa blanda", "Manga", "Libro");
+		ObservableList<String> nombresActuales = FXCollections.observableArrayList(DBLibreriaManager.listaNombre);
+		nombreComic.setItems(nombresActuales);
+//		nombreComic.getSelectionModel().selectFirst();
+
+		ObservableList<String> variantesActuales = FXCollections.observableArrayList(DBLibreriaManager.listaVariante);
+		nombreVariante.setItems(variantesActuales);
+//		nombreVariante.getSelectionModel().selectFirst();
+
+		ObservableList<String> guionistasActuales = FXCollections.observableArrayList(DBLibreriaManager.listaGuionista);
+		nombreGuionista.setItems(guionistasActuales);
+//		nombreGuionista.getSelectionModel().selectFirst();
+
+		ObservableList<String> dibujantesActuales = FXCollections.observableArrayList(DBLibreriaManager.listaDibujante);
+		nombreDibujante.setItems(dibujantesActuales);
+//		nombreDibujante.getSelectionModel().selectFirst();
+
+		ObservableList<String> firmasActuales = FXCollections.observableArrayList(DBLibreriaManager.listaFirma);
+		nombreFirma.setItems(firmasActuales);
+//		nombreFirma.getSelectionModel().selectFirst();
+
+		ObservableList<String> formatoActual = FXCollections.observableArrayList(DBLibreriaManager.listaFormato);
+		formatoActual.add(0, "Todo");
+
 		nombreFormato.setItems(formatoActual);
 		nombreFormato.getSelectionModel().selectFirst();
-		
+
 		ObservableList<String> editoriales = FXCollections.observableArrayList(DBLibreriaManager.listaEditorial);
+		editoriales.add(0, "Todo");
+
 		nombreEditorial.setItems(editoriales);
 		nombreEditorial.getSelectionModel().selectFirst();
+
+		ObservableList<String> cajaComics = FXCollections.observableArrayList(DBLibreriaManager.listaCaja);
+		editoriales.add(0, "0");
+
+		numeroCaja.setItems(cajaComics);
+		numeroCaja.getSelectionModel().selectFirst();
 
 		listas_autocompletado();
 
@@ -295,40 +328,51 @@ public class MenuPrincipalController implements Initializable {
 			return null;
 		});
 
-		TextFormatter<Integer> textFormatterComic2 = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
-			String newText = change.getControlNewText();
-			if (newText.matches("\\d*")) {
-				return change;
-			}
-			return null;
-		});
 		numeroComic.setTextFormatter(textFormatterComic);
-		numeroCaja.setTextFormatter(textFormatterComic2);
 
-	    tablaBBDD.setRowFactory(tv -> {
-	        TableRow<Comic> row = new TableRow<>();
-	        row.setOnMouseEntered(event -> {
-	            if (!row.isEmpty()) {
-	                row.setStyle("-fx-background-color: #BFEFFF;");
-	            }
-	        });
-	        row.setOnMouseExited(event -> {
-	            if (!row.isEmpty()) {
-	                row.setStyle("");
-	            }
-	        });
-	        return row;
-	    });
+		tablaBBDD.setRowFactory(tv -> {
+			TableRow<Comic> row = new TableRow<>();
+			row.setOnMouseEntered(event -> {
+				if (!row.isEmpty()) {
+					row.setStyle("-fx-background-color: #BFEFFF;");
+				}
+			});
+			row.setOnMouseExited(event -> {
+				if (!row.isEmpty()) {
+					row.setStyle("");
+				}
+			});
+			return row;
+		});
+
+		// Crear un TextField y un ComboBox
+		TextField nombreDibujante = new TextField();
+		ComboBox<String> nombreDibujantes = new ComboBox<>();
+		nombreDibujantes.setItems(FXCollections.observableArrayList(DBLibreriaManager.listaDibujante));
+		nombreDibujantes.setPromptText("Seleccionar dibujante");
+		nombreDibujantes.setEditable(true);
+
+		// Add a listener to the value property of the ComboBox
+		nombreDibujantes.valueProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				nombreDibujante.setText(newValue);
+			}
+		});
+
+		// Create a container to group TextField and ComboBox
+		HBox hbox = new HBox(nombreDibujante);
+		hbox.setSpacing(10);
+
 	}
 
-
 	public void listas_autocompletado() {
-		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
-		TextFields.bindAutoCompletion(nombreVariante, DBLibreriaManager.listaVariante);
-		TextFields.bindAutoCompletion(nombreFirma, DBLibreriaManager.listaFirma);
-		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
-		TextFields.bindAutoCompletion(nombreGuionista, DBLibreriaManager.listaGuionista);
-		TextFields.bindAutoCompletion(nombreDibujante, DBLibreriaManager.listaDibujante);
+		TextFields.bindAutoCompletion(nombreComic.getEditor(), DBLibreriaManager.listaNombre);
+		TextFields.bindAutoCompletion(nombreVariante.getEditor(), DBLibreriaManager.listaVariante);
+		TextFields.bindAutoCompletion(nombreFirma.getEditor(), DBLibreriaManager.listaFirma);
+//		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
+		TextFields.bindAutoCompletion(nombreGuionista.getEditor(), DBLibreriaManager.listaGuionista);
+		TextFields.bindAutoCompletion(nombreDibujante.getEditor(), DBLibreriaManager.listaDibujante);
 		DBLibreriaManager.listaNombre.clear();
 	}
 
@@ -358,6 +402,89 @@ public class MenuPrincipalController implements Initializable {
 		String formatoEstado = nombreFormato.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
 		// "formato"
 		return formatoEstado;
+	}
+
+	/**
+	 * Funcion que permite modificar el estado de un comic.
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public String editorialActual() {
+
+		String editorialComic = nombreEditorial.getSelectionModel().getSelectedItem().toString(); // Toma el valor del
+																									// menu
+		// "formato"
+		return editorialComic;
+	}
+
+	public String dibujanteActual() {
+		String dibujanteComic = "";
+
+		if (nombreDibujante.getSelectionModel().getSelectedItem() != null) {
+			dibujanteComic = nombreDibujante.getSelectionModel().getSelectedItem().toString();
+		}
+
+		return dibujanteComic;
+	}
+
+	public String guionistaActual() {
+		String guionistaComic = "";
+
+		if (nombreGuionista.getSelectionModel().getSelectedItem() != null) {
+			guionistaComic = nombreGuionista.getSelectionModel().getSelectedItem().toString();
+		}
+
+		return guionistaComic;
+	}
+
+	public String firmaActual() {
+		String firmaComic = "";
+
+		if (nombreFirma.getSelectionModel().getSelectedItem() != null) {
+			firmaComic = nombreFirma.getSelectionModel().getSelectedItem().toString();
+		}
+
+		return firmaComic;
+	}
+
+	public String nombreActual() {
+		String nombreComics = "";
+
+		if (nombreComic.getSelectionModel().getSelectedItem() != null) {
+			nombreComics = nombreComic.getSelectionModel().getSelectedItem().toString();
+		}
+
+		return nombreComics;
+	}
+
+	/**
+	 * Funcion que permite modificar el estado de un comic.
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public String varianteActual() {
+		String varianteComics = "";
+
+		if (nombreVariante.getSelectionModel().getSelectedItem() != null) {
+			varianteComics = nombreVariante.getSelectionModel().getSelectedItem().toString();
+		}
+
+		return varianteComics;
+	}
+
+	/**
+	 * Funcion que permite modificar el estado de un comic.
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public String cajaActual() {
+
+		String cajaComics = numeroCaja.getSelectionModel().getSelectedItem().toString();
+
+		return cajaComics;
 	}
 
 	/////////////////////////////////
@@ -682,15 +809,13 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	public void limpiezaDeDatos() {
-		nombreComic.setText("");
-		numeroCaja.setText("");
-		numeroComic.setText("");
-		nombreVariante.setText("");
-		nombreFirma.setText("");
-		nombreEditorial.setText("");
+//		nombreComic.setText("");
+//		numeroComic.setText("");
+//		nombreVariante.setText("");
+//		nombreFirma.setText("");
+//		nombreEditorial.setText("");
 		fechaPublicacion.setValue(null);
-		nombreDibujante.setText("");
-		nombreGuionista.setText("");
+//		nombreGuionista.setText("");
 		prontFrases.setText(null);
 		prontInfo.setText(null);
 		prontInfo.setOpacity(0);
@@ -964,15 +1089,18 @@ public class MenuPrincipalController implements Initializable {
 		Comic comic = new Comic();
 		String datos[] = camposComic();
 		String fecha = datos[8];
-		if(datos[8].isEmpty()) {
-			fecha = "1900-01-01";
-		}else {
+		
+		if (datos[8].isEmpty()) {
+			fecha = "";
+		} else {
 			fecha = datos[8];
 		}
-
-		comic = new Comic("", datos[1], datos[12], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
-				fecha, datos[9], datos[10], "", "", null);
 		
+		System.out.println(datos[12] + " " + datos[12].isEmpty());
+
+		comic = new Comic("", datos[1], datos[12], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7], fecha,
+				datos[9], datos[10], "", "", null);
+
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
 		busquedaGeneral.setText("");
 	}
@@ -1015,15 +1143,31 @@ public class MenuPrincipalController implements Initializable {
 	public String[] camposComic() {
 		String campos[] = new String[13];
 
-		campos[1] = nombreComic.getText();
+		if (nombreActual().isEmpty()) {
+			campos[1] = "";
+		} else {
+			campos[1] = nombreActual();
+		}
 
 		campos[2] = numeroComic.getText();
 
-		campos[3] = nombreVariante.getText();
+		if (varianteActual().isEmpty()) {
+			campos[3] = "";
+		} else {
+			campos[3] = varianteActual();
+		}
 
-		campos[4] = nombreFirma.getText();
+		if (firmaActual().isEmpty()) {
+			campos[4] = "";
+		} else {
+			campos[4] = firmaActual();
+		}
 
-		campos[5] = nombreEditorial.getText();
+		if (editorialActual() == "Todo") {
+			campos[5] = "";
+		} else {
+			campos[5] = editorialActual();
+		}
 
 		if (formatoActual() == "Todo") {
 			campos[6] = "";
@@ -1038,18 +1182,30 @@ public class MenuPrincipalController implements Initializable {
 
 		}
 
-	    LocalDate fecha = fechaPublicacion.getValue();
-	    if (fecha != null) {
-	        campos[8] = fecha.toString();
-	    } else {
-	        campos[8] = "";
-	    }
+		LocalDate fecha = fechaPublicacion.getValue();
+		if (fecha != null) {
+			campos[8] = fecha.toString();
+		} else {
+			campos[8] = "";
+		}
 
-		campos[9] = nombreGuionista.getText();
+		if (guionistaActual().isEmpty()) {
+			campos[9] = "";
+		} else {
+			campos[9] = guionistaActual();
+		}
 
-		campos[10] = nombreDibujante.getText();
+		if (dibujanteActual().isEmpty()) {
+			campos[10] = "";
+		} else {
+			campos[10] = dibujanteActual();
+		}
 
-		campos[12] = numeroCaja.getText();
+		if (cajaActual().isEmpty() || cajaActual().equals("0")) {
+		    campos[12] = "";
+		} else {
+		    campos[12] = cajaActual();
+		}
 
 		return campos;
 	}

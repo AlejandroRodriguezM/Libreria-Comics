@@ -68,6 +68,8 @@ public class DBLibreriaManager extends Comic {
 	public static List<String> listaGuionista = new ArrayList<>();
 	public static List<String> listaDibujante = new ArrayList<>();
 	public static List<String> listaFecha = new ArrayList<>();
+	public static List<String> listaProcedencia = new ArrayList<>();
+	public static List<String> listaCaja = new ArrayList<>();
 
 	private static Ventanas nav = new Ventanas();
 	private static Connection conn = null;
@@ -86,6 +88,8 @@ public class DBLibreriaManager extends Comic {
 		listaEditorial();
 		listaGuionista();
 		listaDibujante();
+		listaProcedencia();
+		listaCajas();
 	}
 
 	/**
@@ -139,7 +143,9 @@ public class DBLibreriaManager extends Comic {
 		listaGuionista.clear();
 		listaDibujante.clear();
 		listaFecha.clear();
-
+		listaFormato.clear();
+		listaProcedencia.clear();
+		listaCaja.clear();
 		return sentencia;
 	}
 
@@ -508,6 +514,37 @@ public class DBLibreriaManager extends Comic {
 	 * @return
 	 * @throws SQLException
 	 */
+	public List<String> listaCajas() throws SQLException {
+
+		String sentenciaSQL = "SELECT caja_deposito FROM comicsbbdd ORDER BY caja_deposito ASC";
+		String columna = "caja_deposito";
+		reiniciarBBDD();
+		listaCaja = guardarDatosAutoCompletado(sentenciaSQL, columna);
+		return listaCaja;
+
+	}
+	
+	/**
+	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
+	 *
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<String> listaProcedencia() throws SQLException {
+
+		String sentenciaSQL = "SELECT procedencia from comicsbbdd";
+		String columna = "procedencia";
+		reiniciarBBDD();
+		listaProcedencia = guardarDatosAutoCompletado(sentenciaSQL, columna);
+		return listaProcedencia;
+	}
+	
+	/**
+	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
+	 *
+	 * @return
+	 * @throws SQLException
+	 */
 	public List<String> listaVariante() throws SQLException {
 
 		String sentenciaSQL = "SELECT nomVariante from comicsbbdd";
@@ -672,8 +709,12 @@ public class DBLibreriaManager extends Comic {
 			connector = " AND ";
 			datosRellenados++;
 		}
-		if (comic.getNumCaja().length() != 0) {
+		if (comic.getNumCaja() != "") {
 
+			sql.append(connector).append("caja_deposito = " + comic.getNumCaja());
+			connector = " AND ";
+			datosRellenados++;
+		}else {
 			sql.append(connector).append("caja_deposito like'%" + comic.getNumCaja() + "%'");
 			connector = " AND ";
 			datosRellenados++;
@@ -725,6 +766,7 @@ public class DBLibreriaManager extends Comic {
 		}
 
 		if (datosRellenados != 0) {
+			System.out.println(sql.toString());
 			return sql.toString();
 		}
 

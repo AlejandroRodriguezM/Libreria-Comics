@@ -64,86 +64,78 @@
          </font>
       </TextArea>
       <ImageView fx:id="imagencomic" fitHeight="337.0" fitWidth="252.0" layoutX="581.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true" />
-      <Pane layoutX="18.0" layoutY="33.0" prefHeight="329.0" prefWidth="483.0">
-         <children>
-            <Label layoutX="8.0" layoutY="-3.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Nombre">
+
+            <Label layoutX="18.0" layoutY="60.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Nombre">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
-            <ComboBox fx:id="nombreFormato" layoutX="131.0" layoutY="108.0" prefHeight="25.0" prefWidth="126.0" />
-            <TextField fx:id="nombreComic" layoutX="131.0" layoutY="-6.0" prefHeight="25.0" prefWidth="126.0" />
-            <Label layoutX="8.0" layoutY="25.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Numero">
+            <ComboBox fx:id="nombreFormato" layoutX="141.0" layoutY="173.0" prefHeight="25.0" prefWidth="153.0" />
+            <Label layoutX="18.0" layoutY="88.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Numero">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
-            <TextField fx:id="numeroComic" layoutX="131.0" layoutY="22.0" prefHeight="25.0" prefWidth="126.0" />
-            <Label layoutX="8.0" layoutY="54.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Variante">
+            <TextField fx:id="numeroComic" layoutX="141.0" layoutY="87.0" prefHeight="25.0" prefWidth="153.0" />
+            <Label layoutX="18.0" layoutY="117.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Variante">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
-            <TextField fx:id="nombreVariante" layoutX="131.0" layoutY="51.0" prefHeight="25.0" prefWidth="126.0" />
-            <Label layoutX="8.0" layoutY="83.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Procedencia">
+            <Label layoutX="18.0" layoutY="146.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Procedencia">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
-            <ComboBox fx:id="nombreProcedencia" layoutX="131.0" layoutY="79.0" prefHeight="25.0" prefWidth="126.0" />
-            <Label layoutX="8.0" layoutY="112.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Formato">
+            <ComboBox fx:id="nombreProcedencia" layoutX="141.0" layoutY="144.0" prefHeight="25.0" prefWidth="153.0" />
+            <Label layoutX="18.0" layoutY="175.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Formato">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
-            <Label layoutX="7.0" layoutY="140.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Dibujante">
+            <Label layoutX="17.0" layoutY="203.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Dibujante">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
-            <TextField fx:id="nombreDibujante" layoutX="131.0" layoutY="137.0" prefHeight="25.0" prefWidth="126.0" />
-            <Label layoutX="8.0" layoutY="168.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Guionista">
+        <Label layoutX="18.0" layoutY="231.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Guionista">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </Label>
+            <Label layoutX="18.0" layoutY="262.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Editorial">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
-            <TextField fx:id="nombreGuionista" layoutX="131.0" layoutY="166.0" prefHeight="25.0" prefWidth="126.0" />
-            <Label layoutX="8.0" layoutY="199.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Editorial">
+            <Label layoutX="17.0" layoutY="291.0" prefHeight="23.0" prefWidth="43.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Firma">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
-            <TextField fx:id="nombreEditorial" layoutX="131.0" layoutY="195.0" prefHeight="25.0" prefWidth="126.0" />
-            <Label layoutX="7.0" layoutY="228.0" prefHeight="23.0" prefWidth="43.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Firma">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Label>
-            <TextField fx:id="nombreFirma" layoutX="131.0" layoutY="224.0" prefHeight="25.0" prefWidth="126.0" />
-            <Label layoutX="6.0" layoutY="255.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Fecha publicacion">
+            <Label layoutX="16.0" layoutY="318.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Fecha publicacion">
                <font>
                   <Font size="13.0" />
                </font>
             </Label>
-            <DatePicker fx:id="fechaPublicacion" layoutX="131.0" layoutY="252.0" prefHeight="25.0" prefWidth="126.0" />
-            <Label layoutX="5.0" layoutY="306.0" prefHeight="25.0" prefWidth="117.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Busqueda general" wrapText="true">
+            <DatePicker fx:id="fechaPublicacion" layoutX="141.0" layoutY="315.0" prefHeight="25.0" prefWidth="153.0" />
+            <Button fx:id="botonMostrarParametro" alignment="CENTER" contentDisplay="BOTTOM" layoutX="315.0" layoutY="87.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="32.0" prefWidth="153.0" stylesheets="@../style/genericos_style.css" text="Mostrar por parametros" />
+            <Button fx:id="botonLimpiar" layoutX="314.0" layoutY="332.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="25.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Limpiar" />
+            <Button fx:id="botonbbdd" layoutX="314.0" layoutY="33.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="43.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Ver todo" />
+            <Button fx:id="botonFrase" layoutX="314.0" layoutY="291.0" mnemonicParsing="false" onAction="#fraseRandom" prefHeight="25.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Frase random" />
+            <Label layoutX="16.0" layoutY="344.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Caja">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
-            <TextField fx:id="busquedaGeneral" layoutX="131.0" layoutY="307.0" prefHeight="25.0" prefWidth="126.0" />
-            <Button fx:id="botonMostrarParametro" alignment="CENTER" contentDisplay="BOTTOM" layoutX="266.0" layoutY="52.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="32.0" prefWidth="153.0" stylesheets="@../style/genericos_style.css" text="Mostrar por parametros" />
-            <Button fx:id="botonLimpiar" layoutX="272.0" layoutY="298.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="25.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Limpiar" />
-            <Button fx:id="botonbbdd" layoutX="265.0" layoutY="-2.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="43.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Ver todo" />
-            <Button fx:id="botonFrase" layoutX="272.0" layoutY="259.0" mnemonicParsing="false" onAction="#fraseRandom" prefHeight="25.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Frase random" />
-            <Label layoutX="6.0" layoutY="281.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Caja">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Label>
-            <TextField fx:id="numeroCaja" layoutX="131.0" layoutY="280.0" prefHeight="25.0" prefWidth="126.0" />
-         </children>
-      </Pane>
+            <ComboBox fx:id="nombreEditorial" layoutX="141.0" layoutY="260.0" prefHeight="25.0" prefWidth="153.0" />
+            <ComboBox fx:id="numeroCaja" layoutX="141.0" layoutY="343.0" prefHeight="25.0" prefWidth="153.0" />
+            <ComboBox fx:id="nombreDibujante" editable="true" layoutX="141.0" layoutY="202.0" prefHeight="25.0" prefWidth="153.0" promptText="Seleccionar dibujante" />
+            <ComboBox fx:id="nombreGuionista" editable="true" layoutX="141.0" layoutY="231.0" prefHeight="25.0" prefWidth="153.0" promptText="Seleccionar guionista" />
+            <ComboBox fx:id="nombreVariante" editable="true" layoutX="141.0" layoutY="115.0" prefHeight="25.0" prefWidth="153.0" promptText="Seleccionar variante" />
+            <ComboBox fx:id="nombreFirma" editable="true" layoutX="141.0" layoutY="288.0" prefHeight="25.0" prefWidth="153.0" promptText="Seleccionar firma" />
+            <ComboBox fx:id="nombreComic" editable="true" layoutX="141.0" layoutY="59.0" prefHeight="25.0" prefWidth="153.0" promptText="Seleccionar comic" />
+
       <TableView fx:id="tablaBBDD" layoutX="-1.0" layoutY="376.0" onKeyPressed="#teclasDireccion" onMouseClicked="#clickRaton" prefHeight="375.0" prefWidth="1198.0" stylesheets="@../style/tablas_style.css">
          <columns>
             <TableColumn fx:id="ID" prefWidth="47.0" text="ID" visible="false" />
@@ -164,5 +156,11 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
+      <Label layoutX="18.0" layoutY="30.0" prefHeight="25.0" prefWidth="117.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Busqueda general" wrapText="true">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <TextField fx:id="busquedaGeneral" layoutX="141.0" layoutY="31.0" prefHeight="25.0" prefWidth="153.0" />
    </children>
 </Pane>
