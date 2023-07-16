@@ -7,7 +7,6 @@
     -fx-text-fill: #283747;
     -fx-effect: dropshadow( gaussian , rgba(255,20,147,0.3) , 2, 0, 0, 1 );
     -fx-background-radius: 5;
-    -fx-wrap-text: false;
 }
 
 .text-area .content {

@@ -10,18 +10,16 @@ package Controladores;
  *  - Copia de seguridad de la base de datos en formato .sql
  *  - Introducir comics a la base de datos.
  *  - Modificar comics de la base de datos.
- *  - Eliminar comics de la base de datos o modificar su 'estado' de "En posesion" a "Vendido", estos ultimos no se veran en la busqueda general de la base de datos
+ *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
  *  - Ver frases de personajes de comics
  *  - Opcion de escoger algo para leer de forma aleatoria.
  *  - Puntuar comics que se encuentren dentro de la base de datos.
+ *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
  *
- *  Esta clase permite poder modificar los comics que estan en la base de datos
+ *  Version 5.3
  *
- *  Version 4.1
+ *  @author Alejandro Rodriguez
  *
- *  Por Alejandro Rodriguez
- *
- *  Twitter: @silverAlox
  */
 
 import java.io.File;

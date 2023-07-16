@@ -13,14 +13,13 @@ package Funcionamiento;
  *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
  *  - Ver frases de personajes de comics
  *  - Opcion de escoger algo para leer de forma aleatoria.
+ *  - Puntuar comics que se encuentren dentro de la base de datos.
+ *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
  *
- *  Esta clase permite acceder a la base de datos introduciendo los diferentes datos que nos pide.
+ *  Version 5.3
  *
- *  Version Final
+ *  @author Alejandro Rodriguez
  *
- *  Por Alejandro Rodriguez
- *
- *  Twitter: @silverAlox
  */
 
 import java.io.IOException;

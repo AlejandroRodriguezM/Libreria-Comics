@@ -1,7 +1,7 @@
 /* Estilos para TableColumn */
 .table-column {
     -fx-font-size: 14px;
-    -fx-table-cell-resize-policy: UNCONSTRAINED_RESIZE_POLICY;
+    /* -fx-table-cell-resize-policy: UNCONSTRAINED_RESIZE_POLICY; */
 
     -fx-border-color: #CCCCCC;
     -fx-border-width: 0 0 0 1px;
@@ -9,7 +9,6 @@
 
 /* Estilos para TableView */
 .table-view {
-    -fx-table-cell-border-color: transparent;
     -fx-selection-bar: #BFEFFF;
 }
 

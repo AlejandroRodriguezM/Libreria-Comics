@@ -13,14 +13,13 @@ package Controladores;
  *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
  *  - Ver frases de personajes de comics
  *  - Opcion de escoger algo para leer de forma aleatoria.
- *
+ *  - Puntuar comics que se encuentren dentro de la base de datos.
  *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
  *
  *  Version 5.3
  *
  *  Por Alejandro Rodriguez
  *
- *  Twitter: @silverAlox
  */
 
 import java.io.File;
@@ -277,6 +276,46 @@ public class MenuPrincipalController implements Initializable {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		
+		rellenarComboBox();
+		listas_autocompletado();
+		restringir_entrada_datos();
+		mensaje_emergente();
+		seleccionarRaw();
+
+	}
+	
+	/**
+	 * Funcion que permite restringir entrada de datos de todo aquello que no sea un numero entero en los comboBox numeroComic y caja_comic
+	 */
+	public void restringir_entrada_datos() {
+		// Crear un validador para permitir solo números enteros
+		TextFormatter<Integer> textFormatter = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+			if (change.getControlNewText().matches("\\d*")) {
+				return change;
+			}
+			return null;
+		});
+
+		// Aplicar el validador al ComboBox
+		numeroComic.getEditor().setTextFormatter(textFormatter);
+
+		// Crear un validador para permitir solo números enteros
+		TextFormatter<Integer> textFormatter2 = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+			if (change.getControlNewText().matches("\\d*")) {
+				return change;
+			}
+			return null;
+		});
+
+		// Aplicar el validador al ComboBox
+		numeroCaja.getEditor().setTextFormatter(textFormatter2);
+	}
+	
+	/**
+	 * Permite rellenar los datos de los comboBox con los datos de las listas
+	 */
+	public void rellenarComboBox() {
 
 		ObservableList<String> nombresActuales = FXCollections.observableArrayList(DBLibreriaManager.listaNombre);
 		nombreComic.setItems(nombresActuales);
@@ -302,36 +341,18 @@ public class MenuPrincipalController implements Initializable {
 		ObservableList<String> numeroComics = FXCollections.observableArrayList(DBLibreriaManager.listaNumeroComic);
 		numeroComic.setItems(numeroComics);
 
-		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList(DBLibreriaManager.listaProcedencia);
+		ObservableList<String> procedenciaEstadoActual = FXCollections
+				.observableArrayList(DBLibreriaManager.listaProcedencia);
 		nombreProcedencia.setItems(procedenciaEstadoActual);
 
 		ObservableList<String> cajaComics = FXCollections.observableArrayList(DBLibreriaManager.listaCaja);
 		numeroCaja.setItems(cajaComics);
+	}
 
-		listas_autocompletado();
-
-		// Crear un validador para permitir solo números enteros
-		TextFormatter<Integer> textFormatter = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
-			if (change.getControlNewText().matches("\\d*")) {
-				return change;
-			}
-			return null;
-		});
-
-		// Aplicar el validador al ComboBox
-		numeroComic.getEditor().setTextFormatter(textFormatter);
-		
-		// Crear un validador para permitir solo números enteros
-		TextFormatter<Integer> textFormatter2 = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
-			if (change.getControlNewText().matches("\\d*")) {
-				return change;
-			}
-			return null;
-		});
-
-		// Aplicar el validador al ComboBox
-		numeroCaja.getEditor().setTextFormatter(textFormatter2);
-
+	/**
+	 * Cuando pasa el raton por encima, se colorea de color azul el raw donde el raton se encuentra
+	 */
+	public void seleccionarRaw() {
 		tablaBBDD.setRowFactory(tv -> {
 			TableRow<Comic> row = new TableRow<>();
 			row.setOnMouseEntered(event -> {
@@ -346,7 +367,12 @@ public class MenuPrincipalController implements Initializable {
 			});
 			return row;
 		});
-
+	}
+	
+	/**
+	 * Funcion que permite mostrar un mensaje emergente encima del raton cuando se pasa el raton por encima de un raw concreto
+	 */
+	public void mensaje_emergente() {
 		tablaBBDD.setRowFactory(tv -> {
 			javafx.scene.control.TableRow<Comic> row = new javafx.scene.control.TableRow<>();
 			Tooltip tooltip = new Tooltip();
@@ -374,9 +400,11 @@ public class MenuPrincipalController implements Initializable {
 			});
 			return row;
 		});
-
 	}
 
+	/**
+	 * Funcion que permite el autocompletado en la parte Text del comboBox
+	 */
 	public void listas_autocompletado() {
 		TextFields.bindAutoCompletion(nombreComic.getEditor(), DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(numeroComic.getEditor(), DBLibreriaManager.listaNumeroComic);
@@ -414,9 +442,7 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Funcion que permite modificar el estado de un comic.
-	 *
-	 * @param ps
+	 * Funcion que permite seleccionar en el comboBox "nombreFormato" y lo devuelve, para la busqueda de comic
 	 * @return
 	 */
 	public String formatoActual() {
@@ -429,9 +455,7 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Funcion que permite modificar el estado de un comic.
-	 *
-	 * @param ps
+	 * Funcion que permite seleccionar en el comboBox "nombreEditorial" y lo devuelve, para la busqueda de comic
 	 * @return
 	 */
 	public String editorialActual() {
@@ -445,6 +469,10 @@ public class MenuPrincipalController implements Initializable {
 		return editorialComic;
 	}
 
+	/**
+	 * Funcion que permite seleccionar en el comboBox "nombreDibujante" y lo devuelve, para la busqueda de comic
+	 * @return
+	 */
 	public String dibujanteActual() {
 		String dibujanteComic = "";
 
@@ -455,6 +483,10 @@ public class MenuPrincipalController implements Initializable {
 		return dibujanteComic;
 	}
 
+	/**
+	 * Funcion que permite seleccionar en el comboBox "nombreGuionista" y lo devuelve, para la busqueda de comic
+	 * @return
+	 */
 	public String guionistaActual() {
 		String guionistaComic = "";
 
@@ -465,6 +497,10 @@ public class MenuPrincipalController implements Initializable {
 		return guionistaComic;
 	}
 
+	/**
+	 * Funcion que permite seleccionar en el comboBox "nombreFirma" y lo devuelve, para la busqueda de comic
+	 * @return
+	 */
 	public String firmaActual() {
 		String firmaComic = "";
 
@@ -475,6 +511,10 @@ public class MenuPrincipalController implements Initializable {
 		return firmaComic;
 	}
 
+	/**
+	 * Funcion que permite seleccionar en el comboBox "nombreComic" y lo devuelve, para la busqueda de comic
+	 * @return
+	 */
 	public String nombreActual() {
 		String nombreComics = "";
 
@@ -486,9 +526,7 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Funcion que permite modificar el estado de un comic.
-	 *
-	 * @param ps
+	 * Funcion que permite seleccionar en el comboBox "numeroComic" y lo devuelve, para la busqueda de comic
 	 * @return
 	 */
 	public String numeroComicActual() {
@@ -502,9 +540,7 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Funcion que permite modificar el estado de un comic.
-	 *
-	 * @param ps
+	 * Funcion que permite seleccionar en el comboBox "nombreVariante" y lo devuelve, para la busqueda de comic
 	 * @return
 	 */
 	public String varianteActual() {
@@ -518,15 +554,13 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Funcion que permite modificar el estado de un comic.
-	 *
-	 * @param ps
+	 * Funcion que permite seleccionar en el comboBox "caja_actual" y lo devuelve, para la busqueda de comic
 	 * @return
 	 */
 	public String cajaActual() {
 
 		String cajaComics = "";
-		
+
 		if (numeroCaja.getSelectionModel().getSelectedItem() != null) {
 			cajaComics = numeroCaja.getSelectionModel().getSelectedItem().toString();
 		}
@@ -584,7 +618,7 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Permite el cambio de ventana a la ventana deRecomendacionesController
+	 * Permite el cambio de ventana a la ventana de RecomendacionesController
 	 *
 	 * @param event
 	 */
@@ -599,7 +633,7 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 *
+	 * Permite el cambio de ventana a la ventana de PuntuarDatosController
 	 * @param event
 	 */
 	@FXML
@@ -612,7 +646,7 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Metodo que permite abrir la ventana "sobreMiController"
+	 * Permite el cambio de ventana a la ventana de SobreMiController
 	 *
 	 * @param event
 	 */
@@ -962,47 +996,51 @@ public class MenuPrincipalController implements Initializable {
 	 * @param columna
 	 */
 	public void busquedaRaw(TableColumn<Comic, String> columna) {
-	    columna.setCellFactory(column -> {
-	        return new TableCell<Comic, String>() {
-	            private VBox vbox = new VBox();
+		columna.setCellFactory(column -> {
+			return new TableCell<Comic, String>() {
+				private VBox vbox = new VBox();
 
-	            @Override
-	            protected void updateItem(String item, boolean empty) {
-	                super.updateItem(item, empty);
+				@Override
+				protected void updateItem(String item, boolean empty) {
+					super.updateItem(item, empty);
 
-	                if (empty || item == null) {
-	                    setGraphic(null);
-	                } else {
-	                    String[] nombres = item.split(" - "); // Dividir el dato en caso de contener " - "
-	                    vbox.getChildren().clear(); // Limpiar VBox antes de agregar nuevos elementos
+					if (empty || item == null) {
+						setGraphic(null);
+					} else {
+						String[] nombres = item.split(" - "); // Dividir el dato en caso de contener " - "
+						vbox.getChildren().clear(); // Limpiar VBox antes de agregar nuevos elementos
 
-	                    for (String nombre : nombres) {
-	                    	if(!nombre.isEmpty()) {
-		                        Label label = new Label("◉ " + nombre + "\n"); // Agregar salto de línea para cada nombre
-		                        label.getStyleClass().add("hyperlink"); // Agregar clase CSS
-		                        Hyperlink hyperlink = new Hyperlink();
-		                        hyperlink.setGraphic(label);
-		                        hyperlink.setOnAction(event -> {
-		                            try {
-		                                columnaSeleccionada(nombre);
-		                                prontInfo.setOpacity(1);
-		                                prontInfo.setText("El número de cómics donde aparece la \nbúsqueda: " + nombre + " es: "
-		                                        + libreria.numeroTotalSelecionado(nombre));
-		                            } catch (SQLException e) {
-		                                e.printStackTrace();
-		                            }
-		                        });
-		                        vbox.getChildren().add(hyperlink);
-	                    	}
-	                    }
-	                    setGraphic(vbox);
-	                }
-	            }
-	        };
-	    });
+						for (String nombre : nombres) {
+							if (!nombre.isEmpty()) {
+								Label label = new Label("◉ " + nombre + "\n"); // Agregar salto de línea para cada
+																				// nombre
+								label.getStyleClass().add("hyperlink"); // Agregar clase CSS
+								Hyperlink hyperlink = new Hyperlink();
+								hyperlink.setGraphic(label);
+								hyperlink.setOnAction(event -> {
+									try {
+										prontFrases.setText(null);
+										prontInfo.setText(null);
+										prontInfo.setOpacity(0);
+										prontFrases.setOpacity(0);
+										
+										columnaSeleccionada(nombre);
+										prontInfo.setOpacity(1);
+										prontInfo.setText("El número de cómics donde aparece la \nbúsqueda: " + nombre
+												+ " es: " + libreria.numeroTotalSelecionado(nombre));
+									} catch (SQLException e) {
+										e.printStackTrace();
+									}
+								});
+								vbox.getChildren().add(hyperlink);
+							}
+						}
+						setGraphic(vbox);
+					}
+				}
+			};
+		});
 	}
-
-
 
 	/**
 	 * Funcion que modifica el tamaño de los TableColumn
@@ -1053,6 +1091,13 @@ public class MenuPrincipalController implements Initializable {
 		});
 	}
 
+	/**
+	 * Maneja el evento de clic del ratón en un elemento específico dentro del RAW y permite ver los datos de este mediante el TextArea, imagen incluida
+	 *
+	 * @param event El evento del ratón desencadenado por el clic.
+	 * @throws IOException  Si ocurre una excepción de entrada o salida al trabajar con archivos.
+	 * @throws SQLException Si ocurre un error al acceder a la base de datos.
+	 */
 	@FXML
 	void clickRaton(MouseEvent event) throws IOException, SQLException {
 		prontFrases.setOpacity(0);
@@ -1073,6 +1118,13 @@ public class MenuPrincipalController implements Initializable {
 		}
 	}
 
+	/**
+	 * Maneja el evento de teclas direccionales (arriba/abajo) presionadas dentro del RAW y permite ver los datos de este mediante el TextArea, imagen incluida
+	 *
+	 * @param event El evento de teclado desencadenado por la pulsación de teclas.
+	 * @throws IOException  Si ocurre una excepción de entrada o salida al trabajar con archivos.
+	 * @throws SQLException Si ocurre un error al acceder a la base de datos.
+	 */
 	@FXML
 	void teclasDireccion(KeyEvent event) throws IOException, SQLException {
 		if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
@@ -1371,7 +1423,5 @@ public class MenuPrincipalController implements Initializable {
 	public void closeWindows() {
 
 		Platform.exit();
-
 	}
-
 }
