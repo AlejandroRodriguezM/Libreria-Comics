@@ -283,10 +283,62 @@ public class Comic {
 
 	@Override
 	public String toString() {
-		return "\nNombre: " + nombre + "\nCaja: " + numCaja + "\nID: " + ID +  "\nNumero: " + numero + "\nVariante: " + variante + "\nFirma: " + firma
-				+ "\nEditorial: " + editorial + "\nFormato: " + formato + "\nProcedencia: " + procedencia + "\nFecha: "
-				+ fecha + "\nGuionista: " + guionista + "\nDibujante: " + dibujante + "\nPuntuacion: " + puntuacion
-				+ "\nEstado: " + estado;
+	    String contenidoComic = "ID: " + ID;
+
+	    if (!nombre.isEmpty()) {
+	        contenidoComic += "\nNombre: " + nombre;
+	    }
+
+	    if (!numero.isEmpty()) {
+	        contenidoComic += "\nNumero: " + numero;
+	    }
+
+	    if (!variante.isEmpty()) {
+	        contenidoComic += "\nVariante: " + variante;
+	    }
+
+	    if (!firma.isEmpty()) {
+	        contenidoComic += "\nFirma: " + firma;
+	    }
+
+	    if (!editorial.isEmpty()) {
+	        contenidoComic += "\nEditorial: " + editorial;
+	    }
+
+	    if (!formato.isEmpty()) {
+	        contenidoComic += "\nFormato: " + formato;
+	    }
+
+	    if (!procedencia.isEmpty()) {
+	        contenidoComic += "\nProcedencia: " + procedencia;
+	    }
+
+	    if (!fecha.isEmpty()) {
+	        contenidoComic += "\nFecha: " + fecha;
+	    }
+
+	    if (!guionista.isEmpty()) {
+	        contenidoComic += "\nGuionista: " + guionista;
+	    }
+
+	    if (!dibujante.isEmpty()) {
+	        contenidoComic += "\nDibujante: " + dibujante;
+	    }
+
+	    if (!puntuacion.isEmpty()) {
+	        contenidoComic += "\nPuntuacion: " + puntuacion;
+	    }
+
+	    if (!estado.isEmpty()) {
+	        contenidoComic += "\nEstado: " + estado;
+	    }
+
+	    if (!numCaja.isEmpty()) {
+	        contenidoComic += "\nCaja: " + numCaja;
+	    }
+
+	    return contenidoComic;
 	}
+
 
 }

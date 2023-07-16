@@ -16,7 +16,7 @@ package Controladores;
  *
  *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
  *
- *  Version Final
+ *  Version 5.3
  *
  *  Por Alejandro Rodriguez
  *
@@ -42,8 +42,6 @@ import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
 import JDBC.DBManager;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -52,23 +50,28 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.util.converter.IntegerStringConverter;
 
 /**
@@ -161,9 +164,6 @@ public class MenuPrincipalController implements Initializable {
 	private DatePicker fechaPublicacion;
 
 	@FXML
-	private TextField numeroComic;
-
-	@FXML
 	private TextField busquedaGeneral;
 
 	@FXML
@@ -221,6 +221,9 @@ public class MenuPrincipalController implements Initializable {
 	private ComboBox<String> nombreComic;
 
 	@FXML
+	private ComboBox<String> numeroComic;
+
+	@FXML
 	private ComboBox<String> nombreFirma;
 
 	@FXML
@@ -266,6 +269,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+
 		modificarColumnas();
 		libreria = new DBLibreriaManager();
 		try {
@@ -274,61 +278,59 @@ public class MenuPrincipalController implements Initializable {
 			e.printStackTrace();
 		}
 
-		ObservableList<String> procedenciaEstadoActual = FXCollections
-				.observableArrayList(DBLibreriaManager.listaProcedencia);
-		procedenciaEstadoActual.add(0, "Todo");
-		nombreProcedencia.setItems(procedenciaEstadoActual);
-		nombreProcedencia.getSelectionModel().selectFirst();
-
 		ObservableList<String> nombresActuales = FXCollections.observableArrayList(DBLibreriaManager.listaNombre);
 		nombreComic.setItems(nombresActuales);
-//		nombreComic.getSelectionModel().selectFirst();
 
 		ObservableList<String> variantesActuales = FXCollections.observableArrayList(DBLibreriaManager.listaVariante);
 		nombreVariante.setItems(variantesActuales);
-//		nombreVariante.getSelectionModel().selectFirst();
 
 		ObservableList<String> guionistasActuales = FXCollections.observableArrayList(DBLibreriaManager.listaGuionista);
 		nombreGuionista.setItems(guionistasActuales);
-//		nombreGuionista.getSelectionModel().selectFirst();
 
 		ObservableList<String> dibujantesActuales = FXCollections.observableArrayList(DBLibreriaManager.listaDibujante);
 		nombreDibujante.setItems(dibujantesActuales);
-//		nombreDibujante.getSelectionModel().selectFirst();
 
 		ObservableList<String> firmasActuales = FXCollections.observableArrayList(DBLibreriaManager.listaFirma);
 		nombreFirma.setItems(firmasActuales);
-//		nombreFirma.getSelectionModel().selectFirst();
 
 		ObservableList<String> formatoActual = FXCollections.observableArrayList(DBLibreriaManager.listaFormato);
-		formatoActual.add(0, "Todo");
-
 		nombreFormato.setItems(formatoActual);
-		nombreFormato.getSelectionModel().selectFirst();
 
 		ObservableList<String> editoriales = FXCollections.observableArrayList(DBLibreriaManager.listaEditorial);
-		editoriales.add(0, "Todo");
-
 		nombreEditorial.setItems(editoriales);
-		nombreEditorial.getSelectionModel().selectFirst();
+
+		ObservableList<String> numeroComics = FXCollections.observableArrayList(DBLibreriaManager.listaNumeroComic);
+		numeroComic.setItems(numeroComics);
+
+		ObservableList<String> procedenciaEstadoActual = FXCollections.observableArrayList(DBLibreriaManager.listaProcedencia);
+		nombreProcedencia.setItems(procedenciaEstadoActual);
 
 		ObservableList<String> cajaComics = FXCollections.observableArrayList(DBLibreriaManager.listaCaja);
-		editoriales.add(0, "0");
-
 		numeroCaja.setItems(cajaComics);
-		numeroCaja.getSelectionModel().selectFirst();
 
 		listas_autocompletado();
 
-		TextFormatter<Integer> textFormatterComic = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
-			String newText = change.getControlNewText();
-			if (newText.matches("\\d*")) {
+		// Crear un validador para permitir solo números enteros
+		TextFormatter<Integer> textFormatter = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+			if (change.getControlNewText().matches("\\d*")) {
 				return change;
 			}
 			return null;
 		});
 
-		numeroComic.setTextFormatter(textFormatterComic);
+		// Aplicar el validador al ComboBox
+		numeroComic.getEditor().setTextFormatter(textFormatter);
+		
+		// Crear un validador para permitir solo números enteros
+		TextFormatter<Integer> textFormatter2 = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+			if (change.getControlNewText().matches("\\d*")) {
+				return change;
+			}
+			return null;
+		});
+
+		// Aplicar el validador al ComboBox
+		numeroCaja.getEditor().setTextFormatter(textFormatter2);
 
 		tablaBBDD.setRowFactory(tv -> {
 			TableRow<Comic> row = new TableRow<>();
@@ -345,34 +347,54 @@ public class MenuPrincipalController implements Initializable {
 			return row;
 		});
 
-		// Crear un TextField y un ComboBox
-		TextField nombreDibujante = new TextField();
-		ComboBox<String> nombreDibujantes = new ComboBox<>();
-		nombreDibujantes.setItems(FXCollections.observableArrayList(DBLibreriaManager.listaDibujante));
-		nombreDibujantes.setPromptText("Seleccionar dibujante");
-		nombreDibujantes.setEditable(true);
+		tablaBBDD.setRowFactory(tv -> {
+			javafx.scene.control.TableRow<Comic> row = new javafx.scene.control.TableRow<>();
+			Tooltip tooltip = new Tooltip();
+			tooltip.setShowDelay(Duration.ZERO);
+			tooltip.setHideDelay(Duration.ZERO);
 
-		// Add a listener to the value property of the ComboBox
-		nombreDibujantes.valueProperty().addListener(new ChangeListener<String>() {
-			@Override
-			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				nombreDibujante.setText(newValue);
-			}
+			row.setOnMouseEntered(event -> {
+				Comic comic = row.getItem();
+				if (comic != null && !tooltip.isShowing()) {
+					String mensaje = "Nombre: " + comic.getNombre() + "\nNumero: " + comic.getNumero() + "\nVariante: "
+							+ comic.getVariante() + "\nGuionista: " + comic.getGuionista() + "\nDibujante: "
+							+ comic.getDibujante();
+					if (!comic.getFirma().isEmpty()) {
+						mensaje += "\nFirma: " + comic.getFirma();
+					}
+					tooltip.setText(mensaje);
+					tooltip.show(row, event.getSceneX(), event.getSceneY());
+					tooltip.setX(event.getScreenX() + 10); // Ajusta el desplazamiento X según tus necesidades
+					tooltip.setY(event.getScreenY() - 20); // Ajusta el desplazamiento Y según tus necesidades
+				}
+			});
+
+			row.setOnMouseExited(event -> {
+				tooltip.hide();
+			});
+			return row;
 		});
-
-		// Create a container to group TextField and ComboBox
-		HBox hbox = new HBox(nombreDibujante);
-		hbox.setSpacing(10);
 
 	}
 
 	public void listas_autocompletado() {
 		TextFields.bindAutoCompletion(nombreComic.getEditor(), DBLibreriaManager.listaNombre);
+		TextFields.bindAutoCompletion(numeroComic.getEditor(), DBLibreriaManager.listaNumeroComic);
 		TextFields.bindAutoCompletion(nombreVariante.getEditor(), DBLibreriaManager.listaVariante);
 		TextFields.bindAutoCompletion(nombreFirma.getEditor(), DBLibreriaManager.listaFirma);
-//		TextFields.bindAutoCompletion(nombreEditorial, DBLibreriaManager.listaEditorial);
+		TextFields.bindAutoCompletion(nombreEditorial.getEditor(), DBLibreriaManager.listaEditorial);
 		TextFields.bindAutoCompletion(nombreGuionista.getEditor(), DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(nombreDibujante.getEditor(), DBLibreriaManager.listaDibujante);
+		TextFields.bindAutoCompletion(nombreProcedencia.getEditor(), DBLibreriaManager.listaProcedencia);
+		TextFields.bindAutoCompletion(nombreFormato.getEditor(), DBLibreriaManager.listaFormato);
+		TextFields.bindAutoCompletion(numeroCaja.getEditor(), DBLibreriaManager.listaCaja);
+
+		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaNombre);
+		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaVariante);
+		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaGuionista);
+		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaDibujante);
+		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaEditorial);
+
 		DBLibreriaManager.listaNombre.clear();
 	}
 
@@ -384,10 +406,10 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	public String procedenciaActual() {
 
-		String procedenciaEstadoNuevo = nombreProcedencia.getSelectionModel().getSelectedItem().toString(); // Toma el
-																											// valor del
-																											// menu
-		// "puntuacion"
+		String procedenciaEstadoNuevo = "";
+		if (nombreProcedencia.getSelectionModel().getSelectedItem() != null) {
+			procedenciaEstadoNuevo = nombreProcedencia.getSelectionModel().getSelectedItem().toString();
+		}
 		return procedenciaEstadoNuevo;
 	}
 
@@ -399,8 +421,10 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	public String formatoActual() {
 
-		String formatoEstado = nombreFormato.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
-		// "formato"
+		String formatoEstado = "";
+		if (nombreFormato.getSelectionModel().getSelectedItem() != null) {
+			formatoEstado = nombreFormato.getSelectionModel().getSelectedItem().toString();
+		}
 		return formatoEstado;
 	}
 
@@ -412,9 +436,12 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	public String editorialActual() {
 
-		String editorialComic = nombreEditorial.getSelectionModel().getSelectedItem().toString(); // Toma el valor del
-																									// menu
-		// "formato"
+		String editorialComic = "";
+
+		if (nombreEditorial.getSelectionModel().getSelectedItem() != null) {
+			editorialComic = nombreEditorial.getSelectionModel().getSelectedItem().toString();
+		}
+
 		return editorialComic;
 	}
 
@@ -464,6 +491,22 @@ public class MenuPrincipalController implements Initializable {
 	 * @param ps
 	 * @return
 	 */
+	public String numeroComicActual() {
+		String numComic = "";
+
+		if (numeroComic.getSelectionModel().getSelectedItem() != null) {
+			numComic = numeroComic.getSelectionModel().getSelectedItem().toString();
+		}
+
+		return numComic;
+	}
+
+	/**
+	 * Funcion que permite modificar el estado de un comic.
+	 *
+	 * @param ps
+	 * @return
+	 */
 	public String varianteActual() {
 		String varianteComics = "";
 
@@ -482,7 +525,11 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	public String cajaActual() {
 
-		String cajaComics = numeroCaja.getSelectionModel().getSelectedItem().toString();
+		String cajaComics = "";
+		
+		if (numeroCaja.getSelectionModel().getSelectedItem() != null) {
+			cajaComics = numeroCaja.getSelectionModel().getSelectedItem().toString();
+		}
 
 		return cajaComics;
 	}
@@ -653,6 +700,16 @@ public class MenuPrincipalController implements Initializable {
 
 	}
 
+	void columnaSeleccionada(String rawSelecionado) throws SQLException {
+		prontInfo.setOpacity(0);
+		limpiezaDeDatos();
+		libreria = new DBLibreriaManager();
+		libreria.reiniciarBBDD();
+		nombreColumnas();
+		tablaBBDD(libreria.libreriaSeleccionado(rawSelecionado));
+
+	}
+
 	/**
 	 * Funcion que al pulsar el boton de 'botonVentas' se muestran aquellos comics
 	 * que han sido vendidos
@@ -809,20 +866,23 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	public void limpiezaDeDatos() {
-//		nombreComic.setText("");
-//		numeroComic.setText("");
-//		nombreVariante.setText("");
-//		nombreFirma.setText("");
-//		nombreEditorial.setText("");
+
+		nombreComic.getEditor().clear();
+		nombreVariante.getEditor().clear();
+		nombreProcedencia.getEditor().clear();
+		nombreFormato.getEditor().clear();
+		nombreDibujante.getEditor().clear();
+		nombreGuionista.getEditor().clear();
+		nombreEditorial.getEditor().clear();
+		nombreFirma.getEditor().clear();
+		numeroComic.getEditor().clear();
 		fechaPublicacion.setValue(null);
-//		nombreGuionista.setText("");
 		prontFrases.setText(null);
 		prontInfo.setText(null);
 		prontInfo.setOpacity(0);
 		prontFrases.setOpacity(0);
 		tablaBBDD.getItems().clear();
 		imagencomic.setImage(null);
-
 	}
 
 	/**
@@ -888,21 +948,79 @@ public class MenuPrincipalController implements Initializable {
 		dibujante.setCellValueFactory(new PropertyValueFactory<>("Dibujante"));
 		puntuacion.setCellValueFactory(new PropertyValueFactory<>("Puntuacion"));
 
+		busquedaRaw(variante);
+		busquedaRaw(guionista);
+		busquedaRaw(dibujante);
+		busquedaRaw(firma);
 	}
 
+	/**
+	 * Funcion que permite que los diferentes raw de los TableColumn se puedan
+	 * pinchar. Al hacer, genera un nuevo tipo de busqueda personalizada solo con el
+	 * valor que hemos pinchado
+	 * 
+	 * @param columna
+	 */
+	public void busquedaRaw(TableColumn<Comic, String> columna) {
+	    columna.setCellFactory(column -> {
+	        return new TableCell<Comic, String>() {
+	            private VBox vbox = new VBox();
+
+	            @Override
+	            protected void updateItem(String item, boolean empty) {
+	                super.updateItem(item, empty);
+
+	                if (empty || item == null) {
+	                    setGraphic(null);
+	                } else {
+	                    String[] nombres = item.split(" - "); // Dividir el dato en caso de contener " - "
+	                    vbox.getChildren().clear(); // Limpiar VBox antes de agregar nuevos elementos
+
+	                    for (String nombre : nombres) {
+	                    	if(!nombre.isEmpty()) {
+		                        Label label = new Label("◉ " + nombre + "\n"); // Agregar salto de línea para cada nombre
+		                        label.getStyleClass().add("hyperlink"); // Agregar clase CSS
+		                        Hyperlink hyperlink = new Hyperlink();
+		                        hyperlink.setGraphic(label);
+		                        hyperlink.setOnAction(event -> {
+		                            try {
+		                                columnaSeleccionada(nombre);
+		                                prontInfo.setOpacity(1);
+		                                prontInfo.setText("El número de cómics donde aparece la \nbúsqueda: " + nombre + " es: "
+		                                        + libreria.numeroTotalSelecionado(nombre));
+		                            } catch (SQLException e) {
+		                                e.printStackTrace();
+		                            }
+		                        });
+		                        vbox.getChildren().add(hyperlink);
+	                    	}
+	                    }
+	                    setGraphic(vbox);
+	                }
+	            }
+	        };
+	    });
+	}
+
+
+
+	/**
+	 * Funcion que modifica el tamaño de los TableColumn
+	 */
 	public void modificarColumnas() {
 
 		// Set the initial widths of the columns
-		nombre.setPrefWidth(141);
-		numero.setPrefWidth(50);
-		firma.setPrefWidth(50);
+		nombre.setPrefWidth(150);
+		caja.setPrefWidth(40);
+		numero.setPrefWidth(45);
+		firma.setPrefWidth(100);
 		editorial.setPrefWidth(72);
-		variante.setPrefWidth(140);
-		procedencia.setPrefWidth(120);
+		variante.setPrefWidth(150);
+		procedencia.setPrefWidth(52);
 		fecha.setPrefWidth(87);
 		guionista.setPrefWidth(150);
-		dibujante.setPrefWidth(150);
-		puntuacion.setPrefWidth(100);
+		dibujante.setPrefWidth(155);
+		puntuacion.setPrefWidth(90);
 		formato.setPrefWidth(90);
 
 		// Set the resizing policy to unconstrained
@@ -1089,13 +1207,13 @@ public class MenuPrincipalController implements Initializable {
 		Comic comic = new Comic();
 		String datos[] = camposComic();
 		String fecha = datos[8];
-		
+
 		if (datos[8].isEmpty()) {
 			fecha = "";
 		} else {
 			fecha = datos[8];
 		}
-		
+
 		System.out.println(datos[12] + " " + datos[12].isEmpty());
 
 		comic = new Comic("", datos[1], datos[12], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7], fecha,
@@ -1149,7 +1267,11 @@ public class MenuPrincipalController implements Initializable {
 			campos[1] = nombreActual();
 		}
 
-		campos[2] = numeroComic.getText();
+		if (numeroComicActual().isEmpty()) {
+			campos[2] = "";
+		} else {
+			campos[2] = numeroComicActual();
+		}
 
 		if (varianteActual().isEmpty()) {
 			campos[3] = "";
@@ -1163,19 +1285,19 @@ public class MenuPrincipalController implements Initializable {
 			campos[4] = firmaActual();
 		}
 
-		if (editorialActual() == "Todo") {
+		if (editorialActual().isEmpty()) {
 			campos[5] = "";
 		} else {
 			campos[5] = editorialActual();
 		}
 
-		if (formatoActual() == "Todo") {
+		if (formatoActual().isEmpty()) {
 			campos[6] = "";
 		} else {
 			campos[6] = formatoActual();
 		}
 
-		if (procedenciaActual() == "Todo") {
+		if (procedenciaActual().isEmpty()) {
 			campos[7] = "";
 		} else {
 			campos[7] = procedenciaActual();
@@ -1202,9 +1324,9 @@ public class MenuPrincipalController implements Initializable {
 		}
 
 		if (cajaActual().isEmpty() || cajaActual().equals("0")) {
-		    campos[12] = "";
+			campos[12] = "";
 		} else {
-		    campos[12] = cajaActual();
+			campos[12] = cajaActual();
 		}
 
 		return campos;

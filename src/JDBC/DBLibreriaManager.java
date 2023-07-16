@@ -61,6 +61,7 @@ public class DBLibreriaManager extends Comic {
 	public static List<Comic> listaComicsCheck = new ArrayList<>();
 
 	public static List<String> listaNombre = new ArrayList<>();
+	public static List<String> listaNumeroComic = new ArrayList<>();
 	public static List<String> listaVariante = new ArrayList<>();
 	public static List<String> listaFirma = new ArrayList<>();
 	public static List<String> listaFormato = new ArrayList<>();
@@ -90,6 +91,7 @@ public class DBLibreriaManager extends Comic {
 		listaDibujante();
 		listaProcedencia();
 		listaCajas();
+		listaNumeroComic();
 	}
 
 	/**
@@ -137,6 +139,7 @@ public class DBLibreriaManager extends Comic {
 		utilidad.copia_seguridad();
 		utilidad.eliminarArchivosEnCarpeta();
 		listaNombre.clear();
+		listaNumeroComic.clear();
 		listaVariante.clear();
 		listaFirma.clear();
 		listaEditorial.clear();
@@ -500,11 +503,28 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public List<String> listaNombre() throws SQLException {
 
-		String sentenciaSQL = "SELECT nomComic from comicsbbdd";
+		String sentenciaSQL = "SELECT nomComic from comicsbbdd ORDER BY nomComic ASC";
 		String columna = "nomComic";
 		reiniciarBBDD();
 		listaNombre = guardarDatosAutoCompletado(sentenciaSQL, columna);
 		return listaNombre;
+
+	}
+	
+	/**
+	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
+	 *
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<String> listaNumeroComic() throws SQLException {
+
+		String sentenciaSQL = "SELECT numComic from comicsbbdd ORDER BY numComic ASC";
+		String columna = "numComic";
+		reiniciarBBDD();
+		listaNumeroComic = guardarDatosAutoCompletado(sentenciaSQL, columna);
+				
+		return listaNumeroComic;
 
 	}
 	
@@ -532,7 +552,7 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public List<String> listaProcedencia() throws SQLException {
 
-		String sentenciaSQL = "SELECT procedencia from comicsbbdd";
+		String sentenciaSQL = "SELECT procedencia from comicsbbdd ORDER BY procedencia ASC";
 		String columna = "procedencia";
 		reiniciarBBDD();
 		listaProcedencia = guardarDatosAutoCompletado(sentenciaSQL, columna);
@@ -547,7 +567,7 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public List<String> listaVariante() throws SQLException {
 
-		String sentenciaSQL = "SELECT nomVariante from comicsbbdd";
+		String sentenciaSQL = "SELECT nomVariante from comicsbbdd ORDER BY nomVariante ASC";
 		String columna = "nomVariante";
 		reiniciarBBDD();
 		listaVariante = guardarDatosAutoCompletado(sentenciaSQL, columna);
@@ -562,7 +582,7 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public List<String> listaFirma() throws SQLException {
 
-		String sentenciaSQL = "SELECT firma from comicsbbdd";
+		String sentenciaSQL = "SELECT firma from comicsbbdd ORDER BY firma ASC";
 		String columna = "firma";
 		reiniciarBBDD();
 		listaFirma = guardarDatosAutoCompletado(sentenciaSQL, columna);
@@ -577,7 +597,7 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public List<String> listaFormato() throws SQLException {
 
-		String sentenciaSQL = "SELECT formato from comicsbbdd";
+		String sentenciaSQL = "SELECT formato from comicsbbdd ORDER BY formato ASC";
 		String columna = "formato";
 		reiniciarBBDD();
 		listaFormato = guardarDatosAutoCompletado(sentenciaSQL, columna);
@@ -592,7 +612,7 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public List<String> listaEditorial() throws SQLException {
 
-		String sentenciaSQL = "SELECT nomEditorial from comicsbbdd";
+		String sentenciaSQL = "SELECT nomEditorial from comicsbbdd ORDER BY nomEditorial ASC";
 		String columna = "nomEditorial";
 		reiniciarBBDD();
 		listaEditorial = guardarDatosAutoCompletado(sentenciaSQL, columna);
@@ -607,7 +627,7 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public List<String> listaGuionista() throws SQLException {
 
-		String sentenciaSQL = "SELECT nomGuionista from comicsbbdd";
+		String sentenciaSQL = "SELECT nomGuionista from comicsbbdd ORDER BY nomGuionista ASC";
 		String columna = "nomGuionista";
 		reiniciarBBDD();
 		listaGuionista = guardarDatosAutoCompletado(sentenciaSQL, columna);
@@ -622,7 +642,7 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public List<String> listaDibujante() throws SQLException {
 
-		String sentenciaSQL = "SELECT nomDibujante from comicsbbdd";
+		String sentenciaSQL = "SELECT nomDibujante from comicsbbdd ORDER BY nomDibujante ASC";
 		String columna = "nomDibujante";
 		reiniciarBBDD();
 		listaDibujante = guardarDatosAutoCompletado(sentenciaSQL, columna);
@@ -709,12 +729,7 @@ public class DBLibreriaManager extends Comic {
 			connector = " AND ";
 			datosRellenados++;
 		}
-		if (comic.getNumCaja() != "") {
-
-			sql.append(connector).append("caja_deposito = " + comic.getNumCaja());
-			connector = " AND ";
-			datosRellenados++;
-		}else {
+		if (comic.getNumCaja().length() != 0) {
 			sql.append(connector).append("caja_deposito like'%" + comic.getNumCaja() + "%'");
 			connector = " AND ";
 			datosRellenados++;
@@ -959,6 +974,15 @@ public class DBLibreriaManager extends Comic {
 					this.numero = rs.getString("numComic");
 					this.variante = rs.getString("nomVariante");
 					this.firma = rs.getString("firma");
+					
+//	                if (this.firma.length() >= 9) {
+//	                    int mitad = this.firma.length() / 2;
+//	                    String parte1 = this.firma.substring(0, mitad);
+//	                    String parte2 = this.firma.substring(mitad);
+//
+//	                    this.firma = parte1 + "\n " + parte2;
+//	                }
+					
 					this.editorial = rs.getString("nomEditorial");
 					this.formato = rs.getString("formato");
 					this.procedencia = rs.getString("procedencia");
@@ -1244,14 +1268,6 @@ public class DBLibreriaManager extends Comic {
 			if (!rs.first()) {
 				return null;
 			}
-//		    String countQuery = "SELECT COUNT(*) FROM comicsbbdd";
-//		    PreparedStatement countStmt = conn.prepareStatement(countQuery);
-//		    ResultSet countResultSet = countStmt.executeQuery();
-//
-//		    if (countResultSet.next()) {
-//		        int count = countResultSet.getInt(1);
-//		        System.out.println("Count: " + count);
-//		    }
 			
 			return rs;
 
@@ -1647,7 +1663,11 @@ public class DBLibreriaManager extends Comic {
 			if (busquedaGeneral.length() != 0) {
 				listComic = FXCollections.observableArrayList(verBusquedaGeneral(busquedaGeneral));
 			} else {
-				listComic = FXCollections.observableArrayList(filtadroBBDD(comic));
+				try {
+					listComic = FXCollections.observableArrayList(filtadroBBDD(comic));
+				}catch(NullPointerException ex) {
+					ex.getStackTrace();
+				}
 			}
 		}
 		return listComic;
@@ -1723,6 +1743,47 @@ public class DBLibreriaManager extends Comic {
 		String excepcion = "No hay comics puntuados";
 
 		return comprobarLibreria(sentenciaSQL, excepcion);
+	}
+	
+	/**
+	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
+	 * "En posesion"
+	 *
+	 * @return una lista de cómics que coinciden con los criterios de búsqueda
+	 * @throws SQLException
+	 */
+	public List<Comic> libreriaSeleccionado(String datoSeleccionado) throws SQLException {
+		String sentenciaSQL = "SELECT * from comicsbbdd where nomVariante = '" + datoSeleccionado +  "' OR nomGuionista = '" + datoSeleccionado +  "' OR firma = '" + datoSeleccionado +  "' OR nomDibujante = '" + datoSeleccionado +  "' ORDER BY nomComic ASC";
+		String excepcion = "No hay comics relacionados con esa seleccion";
+
+		return comprobarLibreria(sentenciaSQL, excepcion);
+	}
+	
+	/**
+	 * Devuelve el numero total del resultado de la busqueda de un campo individual 
+	 * @param datoSeleccionado
+	 * @return
+	 * @throws SQLException
+	 */
+	public int numeroTotalSelecionado(String datoSeleccionado) throws SQLException {
+	    String sentenciaSQL = "SELECT COUNT(*) FROM comicsbbdd WHERE nomVariante = ? OR nomGuionista = ? OR nomDibujante = ?";
+	    int count = 0;
+
+	    try (PreparedStatement ps = conn.prepareStatement(sentenciaSQL)) {
+	        ps.setString(1, datoSeleccionado);
+	        ps.setString(2, datoSeleccionado);
+	        ps.setString(3, datoSeleccionado);
+
+	        try (ResultSet resultado = ps.executeQuery()) {
+	            if (resultado.next()) {
+	                count = resultado.getInt(1);
+	            }
+	        }
+	    } catch (SQLException ex) {
+	        ex.printStackTrace();
+	    }
+
+	    return count;
 	}
 
 	/**

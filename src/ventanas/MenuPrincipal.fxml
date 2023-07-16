@@ -57,7 +57,7 @@
           </Menu>
         </menus>
       </MenuBar>
-      <TextArea fx:id="prontInfo" editable="false" layoutX="850.0" layoutY="30.0" opacity="0.0" prefHeight="286.0" prefWidth="340.0" stylesheets="@../style/genericos_style.css" wrapText="true" />
+      <TextArea fx:id="prontInfo" editable="false" layoutX="850.0" layoutY="30.0" opacity="0.0" prefHeight="321.0" prefWidth="340.0" stylesheets="@../style/panel_info_style.css" wrapText="true" />
       <TextArea fx:id="prontFrases" editable="false" layoutX="849.0" layoutY="209.0" opacity="0.0" prefHeight="139.0" prefWidth="340.0" stylesheets="@../style/genericos_style.css" wrapText="true">
          <font>
             <Font name="Comic Sans MS" size="15.0" />
@@ -65,30 +65,27 @@
       </TextArea>
       <ImageView fx:id="imagencomic" fitHeight="337.0" fitWidth="252.0" layoutX="581.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true" />
 
-            <Label layoutX="18.0" layoutY="60.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Nombre">
+            <Label layoutX="18.0" layoutY="63.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Nombre">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
-            <ComboBox fx:id="nombreFormato" layoutX="141.0" layoutY="173.0" prefHeight="25.0" prefWidth="153.0" />
-            <Label layoutX="18.0" layoutY="88.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Numero">
+            <Label layoutX="18.0" layoutY="91.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Numero">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
-            <TextField fx:id="numeroComic" layoutX="141.0" layoutY="87.0" prefHeight="25.0" prefWidth="153.0" />
-            <Label layoutX="18.0" layoutY="117.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Variante">
+            <Label layoutX="18.0" layoutY="120.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Variante">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
-            <Label layoutX="18.0" layoutY="146.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Procedencia">
+            <Label layoutX="18.0" layoutY="147.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Origen">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
-            <ComboBox fx:id="nombreProcedencia" layoutX="141.0" layoutY="144.0" prefHeight="25.0" prefWidth="153.0" />
-            <Label layoutX="18.0" layoutY="175.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Formato">
+            <Label layoutX="18.0" layoutY="176.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Formato">
                <font>
                   <Font size="14.0" />
                </font>
@@ -113,40 +110,38 @@
                   <Font size="14.0" />
                </font>
             </Label>
-            <Label layoutX="16.0" layoutY="318.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Fecha publicacion">
+            <Label layoutX="16.0" layoutY="319.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Fecha publicacion">
                <font>
                   <Font size="13.0" />
                </font>
             </Label>
-            <DatePicker fx:id="fechaPublicacion" layoutX="141.0" layoutY="315.0" prefHeight="25.0" prefWidth="153.0" />
-            <Button fx:id="botonMostrarParametro" alignment="CENTER" contentDisplay="BOTTOM" layoutX="315.0" layoutY="87.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="32.0" prefWidth="153.0" stylesheets="@../style/genericos_style.css" text="Mostrar por parametros" />
-            <Button fx:id="botonLimpiar" layoutX="314.0" layoutY="332.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="25.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Limpiar" />
-            <Button fx:id="botonbbdd" layoutX="314.0" layoutY="33.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="43.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Ver todo" />
-            <Button fx:id="botonFrase" layoutX="314.0" layoutY="291.0" mnemonicParsing="false" onAction="#fraseRandom" prefHeight="25.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Frase random" />
-            <Label layoutX="16.0" layoutY="344.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Caja">
+            <DatePicker fx:id="fechaPublicacion" layoutX="143.0" layoutY="317.0" prefHeight="25.0" prefWidth="162.0" promptText="2000-01-01" />
+            <Button fx:id="botonMostrarParametro" alignment="CENTER" contentDisplay="BOTTOM" layoutX="320.0" layoutY="86.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="32.0" prefWidth="153.0" stylesheets="@../style/genericos_style.css" text="Mostrar por parametros" />
+            <Button fx:id="botonLimpiar" layoutX="319.0" layoutY="332.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="25.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Limpiar" />
+            <Button fx:id="botonbbdd" layoutX="319.0" layoutY="32.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="43.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Ver todo" />
+            <Button fx:id="botonFrase" layoutX="319.0" layoutY="291.0" mnemonicParsing="false" onAction="#fraseRandom" prefHeight="25.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Frase random" />
+            <Label layoutX="16.0" layoutY="346.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Caja">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
-            <ComboBox fx:id="nombreEditorial" layoutX="141.0" layoutY="260.0" prefHeight="25.0" prefWidth="153.0" />
-            <ComboBox fx:id="numeroCaja" layoutX="141.0" layoutY="343.0" prefHeight="25.0" prefWidth="153.0" />
-            <ComboBox fx:id="nombreDibujante" editable="true" layoutX="141.0" layoutY="202.0" prefHeight="25.0" prefWidth="153.0" promptText="Seleccionar dibujante" />
-            <ComboBox fx:id="nombreGuionista" editable="true" layoutX="141.0" layoutY="231.0" prefHeight="25.0" prefWidth="153.0" promptText="Seleccionar guionista" />
-            <ComboBox fx:id="nombreVariante" editable="true" layoutX="141.0" layoutY="115.0" prefHeight="25.0" prefWidth="153.0" promptText="Seleccionar variante" />
-            <ComboBox fx:id="nombreFirma" editable="true" layoutX="141.0" layoutY="288.0" prefHeight="25.0" prefWidth="153.0" promptText="Seleccionar firma" />
-            <ComboBox fx:id="nombreComic" editable="true" layoutX="141.0" layoutY="59.0" prefHeight="25.0" prefWidth="153.0" promptText="Seleccionar comic" />
+            <ComboBox fx:id="nombreDibujante" editable="true" layoutX="141.0" layoutY="203.0" prefHeight="25.0" prefWidth="162.0" promptText="Seleccionar dibujante" stylesheets="@../style/combobox_style.css" />
+            <ComboBox fx:id="nombreGuionista" editable="true" layoutX="141.0" layoutY="231.0" prefHeight="25.0" prefWidth="162.0" promptText="Seleccionar guionista" stylesheets="@../style/combobox_style.css" />
+            <ComboBox fx:id="nombreVariante" editable="true" layoutX="141.0" layoutY="118.0" prefHeight="25.0" prefWidth="162.0" promptText="Seleccionar variante" stylesheets="@../style/combobox_style.css" />
+            <ComboBox fx:id="nombreFirma" editable="true" layoutX="142.0" layoutY="288.0" prefHeight="25.0" prefWidth="162.0" promptText="Seleccionar firma" stylesheets="@../style/combobox_style.css" />
+            <ComboBox fx:id="nombreComic" editable="true" layoutX="141.0" layoutY="61.0" prefHeight="25.0" prefWidth="162.0" promptText="Seleccionar comic" stylesheets="@../style/combobox_style.css" />
 
       <TableView fx:id="tablaBBDD" layoutX="-1.0" layoutY="376.0" onKeyPressed="#teclasDireccion" onMouseClicked="#clickRaton" prefHeight="375.0" prefWidth="1198.0" stylesheets="@../style/tablas_style.css">
          <columns>
             <TableColumn fx:id="ID" prefWidth="47.0" text="ID" visible="false" />
             <TableColumn fx:id="nombre" editable="false" prefWidth="135.0" text="Nombre" />
-            <TableColumn fx:id="caja" prefWidth="39.0" text="Caja" visible="false" />
-            <TableColumn fx:id="numero" editable="false" prefWidth="161.0" text="Nº" />
-            <TableColumn fx:id="variante" editable="false" prefWidth="121.0" text="Variante" />
+            <TableColumn fx:id="caja" prefWidth="39.0" text="Caja" />
+            <TableColumn fx:id="numero" editable="false" prefWidth="95.0" text="Nº" />
+            <TableColumn fx:id="variante" editable="false" prefWidth="123.0" text="Variante" />
             <TableColumn fx:id="firma" editable="false" prefWidth="59.0" text="Firma" />
             <TableColumn fx:id="editorial" editable="false" prefWidth="61.0" text="Editorial" />
             <TableColumn fx:id="formato" editable="false" prefWidth="59.0" text="Formato" />
-            <TableColumn fx:id="procedencia" editable="false" text="Procedencia" />
+            <TableColumn fx:id="procedencia" editable="false" text="Origen" />
             <TableColumn fx:id="fecha" editable="false" prefWidth="65.0" text="Fecha" />
             <TableColumn fx:id="guionista" editable="false" prefWidth="182.0" text="Guionista" />
             <TableColumn fx:id="dibujante" editable="false" prefWidth="85.0" text="Dibujante" />
@@ -156,11 +151,16 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <Label layoutX="18.0" layoutY="30.0" prefHeight="25.0" prefWidth="117.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Busqueda general" wrapText="true">
+      <Label layoutX="18.0" layoutY="33.0" prefHeight="25.0" prefWidth="117.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Busqueda general" wrapText="true">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
-      <TextField fx:id="busquedaGeneral" layoutX="141.0" layoutY="31.0" prefHeight="25.0" prefWidth="153.0" />
+      <TextField fx:id="busquedaGeneral" layoutX="141.0" layoutY="34.0" prefHeight="25.0" prefWidth="162.0" promptText="Busqueda general" />
+      <ComboBox fx:id="nombreEditorial" editable="true" layoutX="141.0" layoutY="260.0" prefHeight="25.0" prefWidth="162.0" promptText="Seleccionar editorial" stylesheets="@../style/combobox_style.css" />
+      <ComboBox fx:id="nombreFormato" editable="true" layoutX="141.0" layoutY="174.0" prefHeight="25.0" prefWidth="162.0" promptText="Selecciona formato" stylesheets="@../style/combobox_style.css" />
+      <ComboBox fx:id="nombreProcedencia" editable="true" layoutX="141.0" layoutY="146.0" prefHeight="25.0" prefWidth="162.0" promptText="Selecciona procedencia" stylesheets="@../style/combobox_style.css" />
+      <ComboBox fx:id="numeroComic" editable="true" layoutX="141.0" layoutY="90.0" prefHeight="25.0" prefWidth="162.0" promptText="Seleccionar numero" stylesheets="@../style/combobox_style.css" />
+      <ComboBox fx:id="numeroCaja" editable="true" layoutX="142.0" layoutY="345.0" prefHeight="25.0" prefWidth="162.0" promptText="Selecciona caja" stylesheets="@../style/combobox_style.css" />
    </children>
 </Pane>

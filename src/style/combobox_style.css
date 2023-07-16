@@ -1,0 +1,25 @@
+.text-area {
+    -fx-background-color: #F4F4F4;
+    -fx-border-color: transparent;
+    -fx-padding: 4;
+    -fx-font-family: "Arial";
+    -fx-font-size: 12px;
+    -fx-text-fill: #333333;
+}
+
+.text-area:focused {
+    -fx-border-color: #0088FF;
+    -fx-border-width: 2px;
+}
+
+.text-area:hover {
+    -fx-background-color: #EDEDED;
+}
+
+.text-area:disabled {
+    -fx-opacity: 0.5;
+}
+
+.text-area:selected {
+    -fx-background-color: #B3D9FF;
+}
