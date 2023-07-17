@@ -269,26 +269,31 @@ public class MenuPrincipalController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		modificarColumnas();
 		libreria = new DBLibreriaManager();
 		try {
 			libreria.listasAutoCompletado();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
+		modificarColumnas();
 		rellenarComboBox();
 		listas_autocompletado();
 		restringir_entrada_datos();
-		mensaje_emergente();
 		seleccionarRaw();
-
+		
 	}
-	
+
 	/**
-	 * Funcion que permite restringir entrada de datos de todo aquello que no sea un numero entero en los comboBox numeroComic y caja_comic
+	 * Funcion que permite restringir entrada de datos de todo aquello que no sea un
+	 * numero entero en los comboBox numeroComic y caja_comic
 	 */
 	public void restringir_entrada_datos() {
+		numeroComic.getEditor().setTextFormatter(validador_Nenteros());
+		numeroCaja.getEditor().setTextFormatter(validador_Nenteros());
+	}
+	
+	public TextFormatter<Integer> validador_Nenteros() {
 		// Crear un validador para permitir solo números enteros
 		TextFormatter<Integer> textFormatter = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			if (change.getControlNewText().matches("\\d*")) {
@@ -296,22 +301,10 @@ public class MenuPrincipalController implements Initializable {
 			}
 			return null;
 		});
-
-		// Aplicar el validador al ComboBox
-		numeroComic.getEditor().setTextFormatter(textFormatter);
-
-		// Crear un validador para permitir solo números enteros
-		TextFormatter<Integer> textFormatter2 = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
-			if (change.getControlNewText().matches("\\d*")) {
-				return change;
-			}
-			return null;
-		});
-
-		// Aplicar el validador al ComboBox
-		numeroCaja.getEditor().setTextFormatter(textFormatter2);
+		
+		return textFormatter;
 	}
-	
+
 	/**
 	 * Permite rellenar los datos de los comboBox con los datos de las listas
 	 */
@@ -350,57 +343,47 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Cuando pasa el raton por encima, se colorea de color azul el raw donde el raton se encuentra
+	 * Cuando pasa el raton por encima, se colorea de color azul el raw donde el
+	 * raton se encuentra y muestra un mensaje emergente con datos del comic
 	 */
 	public void seleccionarRaw() {
-		tablaBBDD.setRowFactory(tv -> {
-			TableRow<Comic> row = new TableRow<>();
-			row.setOnMouseEntered(event -> {
-				if (!row.isEmpty()) {
-					row.setStyle("-fx-background-color: #BFEFFF;");
-				}
-			});
-			row.setOnMouseExited(event -> {
-				if (!row.isEmpty()) {
-					row.setStyle("");
-				}
-			});
-			return row;
-		});
-	}
-	
-	/**
-	 * Funcion que permite mostrar un mensaje emergente encima del raton cuando se pasa el raton por encima de un raw concreto
-	 */
-	public void mensaje_emergente() {
-		tablaBBDD.setRowFactory(tv -> {
-			javafx.scene.control.TableRow<Comic> row = new javafx.scene.control.TableRow<>();
-			Tooltip tooltip = new Tooltip();
-			tooltip.setShowDelay(Duration.ZERO);
-			tooltip.setHideDelay(Duration.ZERO);
+	    tablaBBDD.setRowFactory(tv -> {
+	        TableRow<Comic> row = new TableRow<>();
+	        Tooltip tooltip = new Tooltip();
+	        tooltip.setShowDelay(Duration.ZERO);
+	        tooltip.setHideDelay(Duration.ZERO);
 
-			row.setOnMouseEntered(event -> {
-				Comic comic = row.getItem();
-				if (comic != null && !tooltip.isShowing()) {
-					String mensaje = "Nombre: " + comic.getNombre() + "\nNumero: " + comic.getNumero() + "\nVariante: "
-							+ comic.getVariante() + "\nGuionista: " + comic.getGuionista() + "\nDibujante: "
-							+ comic.getDibujante();
-					if (!comic.getFirma().isEmpty()) {
-						mensaje += "\nFirma: " + comic.getFirma();
-					}
-					tooltip.setText(mensaje);
-					tooltip.show(row, event.getSceneX(), event.getSceneY());
-					tooltip.setX(event.getScreenX() + 10); // Ajusta el desplazamiento X según tus necesidades
-					tooltip.setY(event.getScreenY() - 20); // Ajusta el desplazamiento Y según tus necesidades
-				}
-			});
+	        row.setOnMouseEntered(event -> {
+	            if (!row.isEmpty()) {
+	                row.setStyle("-fx-background-color: #BFEFFF;");
 
-			row.setOnMouseExited(event -> {
-				tooltip.hide();
-			});
-			return row;
-		});
+	                Comic comic = row.getItem();
+	                if (comic != null && !tooltip.isShowing()) {
+	                    String mensaje = "Nombre: " + comic.getNombre() + "\nNumero: " + comic.getNumero() + "\nVariante: "
+	                            + comic.getVariante() + "\nGuionista: " + comic.getGuionista() + "\nDibujante: "
+	                            + comic.getDibujante();
+	                    if (!comic.getFirma().isEmpty()) {
+	                        mensaje += "\nFirma: " + comic.getFirma();
+	                    }
+	                    tooltip.setText(mensaje);
+	                    tooltip.show(row, event.getSceneX(), event.getSceneY());
+	                    tooltip.setX(event.getScreenX() + 10); // Ajusta el desplazamiento X según tus necesidades
+	                    tooltip.setY(event.getScreenY() - 20); // Ajusta el desplazamiento Y según tus necesidades
+	                }
+	            }
+	        });
+
+	        row.setOnMouseExited(event -> {
+	            if (!row.isEmpty()) {
+	                row.setStyle("");
+	                tooltip.hide();
+	            }
+	        });
+
+	        return row;
+	    });
 	}
+
 
 	/**
 	 * Funcion que permite el autocompletado en la parte Text del comboBox
@@ -442,7 +425,9 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Funcion que permite seleccionar en el comboBox "nombreFormato" y lo devuelve, para la busqueda de comic
+	 * Funcion que permite seleccionar en el comboBox "nombreFormato" y lo devuelve,
+	 * para la busqueda de comic
+	 * 
 	 * @return
 	 */
 	public String formatoActual() {
@@ -455,7 +440,9 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Funcion que permite seleccionar en el comboBox "nombreEditorial" y lo devuelve, para la busqueda de comic
+	 * Funcion que permite seleccionar en el comboBox "nombreEditorial" y lo
+	 * devuelve, para la busqueda de comic
+	 * 
 	 * @return
 	 */
 	public String editorialActual() {
@@ -470,7 +457,9 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Funcion que permite seleccionar en el comboBox "nombreDibujante" y lo devuelve, para la busqueda de comic
+	 * Funcion que permite seleccionar en el comboBox "nombreDibujante" y lo
+	 * devuelve, para la busqueda de comic
+	 * 
 	 * @return
 	 */
 	public String dibujanteActual() {
@@ -484,7 +473,9 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Funcion que permite seleccionar en el comboBox "nombreGuionista" y lo devuelve, para la busqueda de comic
+	 * Funcion que permite seleccionar en el comboBox "nombreGuionista" y lo
+	 * devuelve, para la busqueda de comic
+	 * 
 	 * @return
 	 */
 	public String guionistaActual() {
@@ -498,7 +489,9 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Funcion que permite seleccionar en el comboBox "nombreFirma" y lo devuelve, para la busqueda de comic
+	 * Funcion que permite seleccionar en el comboBox "nombreFirma" y lo devuelve,
+	 * para la busqueda de comic
+	 * 
 	 * @return
 	 */
 	public String firmaActual() {
@@ -512,7 +505,9 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Funcion que permite seleccionar en el comboBox "nombreComic" y lo devuelve, para la busqueda de comic
+	 * Funcion que permite seleccionar en el comboBox "nombreComic" y lo devuelve,
+	 * para la busqueda de comic
+	 * 
 	 * @return
 	 */
 	public String nombreActual() {
@@ -526,7 +521,9 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Funcion que permite seleccionar en el comboBox "numeroComic" y lo devuelve, para la busqueda de comic
+	 * Funcion que permite seleccionar en el comboBox "numeroComic" y lo devuelve,
+	 * para la busqueda de comic
+	 * 
 	 * @return
 	 */
 	public String numeroComicActual() {
@@ -540,7 +537,9 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Funcion que permite seleccionar en el comboBox "nombreVariante" y lo devuelve, para la busqueda de comic
+	 * Funcion que permite seleccionar en el comboBox "nombreVariante" y lo
+	 * devuelve, para la busqueda de comic
+	 * 
 	 * @return
 	 */
 	public String varianteActual() {
@@ -554,7 +553,9 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Funcion que permite seleccionar en el comboBox "caja_actual" y lo devuelve, para la busqueda de comic
+	 * Funcion que permite seleccionar en el comboBox "caja_actual" y lo devuelve,
+	 * para la busqueda de comic
+	 * 
 	 * @return
 	 */
 	public String cajaActual() {
@@ -634,6 +635,7 @@ public class MenuPrincipalController implements Initializable {
 
 	/**
 	 * Permite el cambio de ventana a la ventana de PuntuarDatosController
+	 * 
 	 * @param event
 	 */
 	@FXML
@@ -734,7 +736,7 @@ public class MenuPrincipalController implements Initializable {
 
 	}
 
-	void columnaSeleccionada(String rawSelecionado) throws SQLException {
+	public void columnaSeleccionada(String rawSelecionado) throws SQLException {
 		prontInfo.setOpacity(0);
 		limpiezaDeDatos();
 		libreria = new DBLibreriaManager();
@@ -982,10 +984,16 @@ public class MenuPrincipalController implements Initializable {
 		dibujante.setCellValueFactory(new PropertyValueFactory<>("Dibujante"));
 		puntuacion.setCellValueFactory(new PropertyValueFactory<>("Puntuacion"));
 
+		busquedaRaw(nombre);
 		busquedaRaw(variante);
 		busquedaRaw(guionista);
 		busquedaRaw(dibujante);
 		busquedaRaw(firma);
+		busquedaRaw(procedencia);
+		busquedaRaw(formato);
+		busquedaRaw(editorial);
+		busquedaRaw(fecha);
+
 	}
 
 	/**
@@ -996,51 +1004,60 @@ public class MenuPrincipalController implements Initializable {
 	 * @param columna
 	 */
 	public void busquedaRaw(TableColumn<Comic, String> columna) {
-		columna.setCellFactory(column -> {
-			return new TableCell<Comic, String>() {
-				private VBox vbox = new VBox();
+	    columna.setCellFactory(column -> {
+	        return new TableCell<Comic, String>() {
+	            private VBox vbox = new VBox();
 
-				@Override
-				protected void updateItem(String item, boolean empty) {
-					super.updateItem(item, empty);
+	            @Override
+	            protected void updateItem(String item, boolean empty) {
+	                super.updateItem(item, empty);
 
-					if (empty || item == null) {
-						setGraphic(null);
-					} else {
-						String[] nombres = item.split(" - "); // Dividir el dato en caso de contener " - "
-						vbox.getChildren().clear(); // Limpiar VBox antes de agregar nuevos elementos
+	                if (empty || item == null) {
+	                    setGraphic(null);
+	                } else {
+	                    String[] nombres = item.split(" - "); // Dividir el dato en caso de contener " - "
+	                    vbox.getChildren().clear(); // Limpiar VBox antes de agregar nuevos elementos
 
-						for (String nombre : nombres) {
-							if (!nombre.isEmpty()) {
-								Label label = new Label("◉ " + nombre + "\n"); // Agregar salto de línea para cada
-																				// nombre
-								label.getStyleClass().add("hyperlink"); // Agregar clase CSS
-								Hyperlink hyperlink = new Hyperlink();
-								hyperlink.setGraphic(label);
-								hyperlink.setOnAction(event -> {
-									try {
-										prontFrases.setText(null);
-										prontInfo.setText(null);
-										prontInfo.setOpacity(0);
-										prontFrases.setOpacity(0);
-										
-										columnaSeleccionada(nombre);
-										prontInfo.setOpacity(1);
-										prontInfo.setText("El número de cómics donde aparece la \nbúsqueda: " + nombre
-												+ " es: " + libreria.numeroTotalSelecionado(nombre));
-									} catch (SQLException e) {
-										e.printStackTrace();
-									}
-								});
-								vbox.getChildren().add(hyperlink);
-							}
-						}
-						setGraphic(vbox);
-					}
-				}
-			};
-		});
+	                    for (String nombre : nombres) {
+	                        if (!nombre.isEmpty()) {
+	                            Label label;
+	                            if (columna.getText().equalsIgnoreCase("fecha")
+	                                    || columna.getText().equalsIgnoreCase("editorial")
+	                                    || columna.getText().equalsIgnoreCase("formato")
+	                                    || columna.getText().equalsIgnoreCase("variante")
+	                                    || columna.getText().equalsIgnoreCase("origen")) {
+	                                label = new Label(nombre + "\n"); // No se agrega el símbolo en estas columnas
+	                            } else {
+	                                label = new Label("◉ " + nombre + "\n");
+	                            }
+                                label.getStyleClass().add("hyperlink"); // Agregar clase CSS
+	                            Hyperlink hyperlink = new Hyperlink();
+	                            hyperlink.setGraphic(label);
+	                            hyperlink.setOnAction(event -> {
+	                                try {
+	                                    prontFrases.setText(null);
+	                                    prontInfo.setText(null);
+	                                    prontInfo.setOpacity(0);
+	                                    prontFrases.setOpacity(0);
+
+	                                    columnaSeleccionada(nombre);
+	                                    prontInfo.setOpacity(1);
+	                                    prontInfo.setText("El número de cómics donde aparece la \nbúsqueda: " + nombre
+	                                            + " es: " + libreria.numeroTotalSelecionado(nombre));
+	                                } catch (SQLException e) {
+	                                    e.printStackTrace();
+	                                }
+	                            });
+	                            vbox.getChildren().add(hyperlink);
+	                        }
+	                    }
+	                    setGraphic(vbox);
+	                }
+	            }
+	        };
+	    });
 	}
+
 
 	/**
 	 * Funcion que modifica el tamaño de los TableColumn
@@ -1048,18 +1065,18 @@ public class MenuPrincipalController implements Initializable {
 	public void modificarColumnas() {
 
 		// Set the initial widths of the columns
-		nombre.setPrefWidth(150);
-		caja.setPrefWidth(40);
+		nombre.setPrefWidth(140);
+		caja.setPrefWidth(37);
 		numero.setPrefWidth(45);
-		firma.setPrefWidth(100);
-		editorial.setPrefWidth(72);
-		variante.setPrefWidth(150);
-		procedencia.setPrefWidth(52);
-		fecha.setPrefWidth(87);
-		guionista.setPrefWidth(150);
-		dibujante.setPrefWidth(155);
-		puntuacion.setPrefWidth(90);
-		formato.setPrefWidth(90);
+		firma.setPrefWidth(85);
+		editorial.setPrefWidth(78);
+		variante.setPrefWidth(148);
+		procedencia.setPrefWidth(75);
+		fecha.setPrefWidth(105);
+		guionista.setPrefWidth(145);
+		dibujante.setPrefWidth(150);
+		puntuacion.setPrefWidth(85);
+		formato.setPrefWidth(88);
 
 		// Set the resizing policy to unconstrained
 		tablaBBDD.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
@@ -1092,10 +1109,12 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Maneja el evento de clic del ratón en un elemento específico dentro del RAW y permite ver los datos de este mediante el TextArea, imagen incluida
+	 * Maneja el evento de clic del ratón en un elemento específico dentro del RAW y
+	 * permite ver los datos de este mediante el TextArea, imagen incluida
 	 *
 	 * @param event El evento del ratón desencadenado por el clic.
-	 * @throws IOException  Si ocurre una excepción de entrada o salida al trabajar con archivos.
+	 * @throws IOException  Si ocurre una excepción de entrada o salida al trabajar
+	 *                      con archivos.
 	 * @throws SQLException Si ocurre un error al acceder a la base de datos.
 	 */
 	@FXML
@@ -1119,10 +1138,12 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Maneja el evento de teclas direccionales (arriba/abajo) presionadas dentro del RAW y permite ver los datos de este mediante el TextArea, imagen incluida
+	 * Maneja el evento de teclas direccionales (arriba/abajo) presionadas dentro
+	 * del RAW y permite ver los datos de este mediante el TextArea, imagen incluida
 	 *
 	 * @param event El evento de teclado desencadenado por la pulsación de teclas.
-	 * @throws IOException  Si ocurre una excepción de entrada o salida al trabajar con archivos.
+	 * @throws IOException  Si ocurre una excepción de entrada o salida al trabajar
+	 *                      con archivos.
 	 * @throws SQLException Si ocurre un error al acceder a la base de datos.
 	 */
 	@FXML
@@ -1266,13 +1287,47 @@ public class MenuPrincipalController implements Initializable {
 			fecha = datos[8];
 		}
 
-		System.out.println(datos[12] + " " + datos[12].isEmpty());
-
 		comic = new Comic("", datos[1], datos[12], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7], fecha,
 				datos[9], datos[10], "", "", null);
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
+		resultadoBusquedaPront(comic);
 		busquedaGeneral.setText("");
+	}
+
+	/**
+	 * Según el dato que busquemos a la hora de realizar la búsqueda, aparecerá un
+	 * mensaje diferente en el pront.
+	 * 
+	 * @param comic El objeto Comic utilizado para la búsqueda.
+	 * @throws SQLException Si ocurre un error al acceder a la base de datos.
+	 */
+	public void resultadoBusquedaPront(Comic comic) throws SQLException {
+		String datoSeleccionado = "";
+
+		if (comic != null) {
+			String[] campos = { comic.getNombre(), comic.getVariante(), comic.getProcedencia(), comic.getFormato(),
+					comic.getEditorial(), comic.getFecha(), comic.getNumCaja(), comic.getGuionista(),
+					comic.getDibujante(), comic.getFirma() };
+
+			for (String campo : campos) {
+				if (!campo.isEmpty()) {
+					datoSeleccionado = campo;
+					break;
+				}
+			}
+		}
+
+		prontFrases.setText(null);
+		prontInfo.setText(null);
+		prontInfo.setOpacity(0);
+		prontFrases.setOpacity(0);
+
+		if (!datoSeleccionado.isEmpty()) {
+			prontInfo.setOpacity(1);
+			prontInfo.setText("El número de cómics donde aparece la búsqueda: " + datoSeleccionado + " es: "
+					+ libreria.numeroTotalSelecionado(datoSeleccionado));
+		}
 	}
 
 	/**

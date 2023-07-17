@@ -116,8 +116,8 @@
                </font>
             </Label>
             <DatePicker fx:id="fechaPublicacion" layoutX="143.0" layoutY="317.0" prefHeight="25.0" prefWidth="162.0" promptText="2000-01-01" />
-            <Button fx:id="botonMostrarParametro" alignment="CENTER" contentDisplay="BOTTOM" layoutX="320.0" layoutY="86.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="32.0" prefWidth="153.0" stylesheets="@../style/genericos_style.css" text="Mostrar por parametros" />
-            <Button fx:id="botonLimpiar" layoutX="319.0" layoutY="332.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="25.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Limpiar" />
+            <Button fx:id="botonMostrarParametro" alignment="CENTER" contentDisplay="BOTTOM" layoutX="320.0" layoutY="86.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="35.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Busqueda" />
+            <Button fx:id="botonLimpiar" layoutX="319.0" layoutY="332.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="35.0" prefWidth="60.0" stylesheets="@../style/genericos_style.css" text="Limpiar" />
             <Button fx:id="botonbbdd" layoutX="319.0" layoutY="32.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="43.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Ver todo" />
             <Button fx:id="botonFrase" layoutX="319.0" layoutY="291.0" mnemonicParsing="false" onAction="#fraseRandom" prefHeight="25.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Frase random" />
             <Label layoutX="16.0" layoutY="346.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Caja">

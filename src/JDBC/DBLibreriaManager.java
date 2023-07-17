@@ -419,12 +419,14 @@ public class DBLibreriaManager extends Comic {
 	}
 
 	/**
-	* Función que guarda los datos para autocompletado en una lista.
-	* @param sentenciaSQL La sentencia SQL para obtener los datos.
-	* @param columna El nombre de la columna que contiene los datos para autocompletado.
-	* @return Una lista de cadenas con los datos para autocompletado.
-	* @throws SQLException Si ocurre algún error al ejecutar la consulta SQL.
-	*/
+	 * Función que guarda los datos para autocompletado en una lista.
+	 * 
+	 * @param sentenciaSQL La sentencia SQL para obtener los datos.
+	 * @param columna      El nombre de la columna que contiene los datos para
+	 *                     autocompletado.
+	 * @return Una lista de cadenas con los datos para autocompletado.
+	 * @throws SQLException Si ocurre algún error al ejecutar la consulta SQL.
+	 */
 	private List<String> guardarDatosAutoCompletado(String sentenciaSQL, String columna) throws SQLException {
 		List<String> listaAutoCompletado = new ArrayList<>();
 		listaAutoCompletado.clear();
@@ -446,9 +448,7 @@ public class DBLibreriaManager extends Comic {
 					}
 				} while (rs.next());
 				listaAutoCompletado = Utilidades.listaArregladaAutoComplete(listaAutoCompletado);
-				
 
-				
 				return listaAutoCompletado;
 			}
 		} catch (SQLException e) {
@@ -460,8 +460,6 @@ public class DBLibreriaManager extends Comic {
 	// **************************************//
 	// ****FUNCIONES DE LA LIBRERIA**********//
 	// **************************************//
-
-
 
 	/**
 	 * Método estático que obtiene el último ID de la tabla "comicsbbdd".
@@ -510,7 +508,7 @@ public class DBLibreriaManager extends Comic {
 		return listaNombre;
 
 	}
-	
+
 	/**
 	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
 	 *
@@ -523,11 +521,11 @@ public class DBLibreriaManager extends Comic {
 		String columna = "numComic";
 		reiniciarBBDD();
 		listaNumeroComic = guardarDatosAutoCompletado(sentenciaSQL, columna);
-				
+
 		return listaNumeroComic;
 
 	}
-	
+
 	/**
 	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
 	 *
@@ -543,7 +541,7 @@ public class DBLibreriaManager extends Comic {
 		return listaCaja;
 
 	}
-	
+
 	/**
 	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
 	 *
@@ -558,7 +556,7 @@ public class DBLibreriaManager extends Comic {
 		listaProcedencia = guardarDatosAutoCompletado(sentenciaSQL, columna);
 		return listaProcedencia;
 	}
-	
+
 	/**
 	 * Devuelve todos los datos de la base de datos, tanto vendidos como no vendidos
 	 *
@@ -658,17 +656,16 @@ public class DBLibreriaManager extends Comic {
 	 * @throws SQLException Si ocurre algún error al ejecutar la consulta SQL.
 	 */
 	public List<Comic> verLibreria(String sentenciaSQL) throws SQLException {
-	    listaComics.clear(); // Limpiar la lista existente de cómics
+		listaComics.clear(); // Limpiar la lista existente de cómics
 
-	    ResultSet rs = obtenLibreria(sentenciaSQL); // Obtener el ResultSet
+		ResultSet rs = obtenLibreria(sentenciaSQL); // Obtener el ResultSet
 
-	    if (rs != null) {
-	        listaDatos(rs); // Llenar la lista de cómics con los datos del ResultSet
-	    }
+		if (rs != null) {
+			listaDatos(rs); // Llenar la lista de cómics con los datos del ResultSet
+		}
 
-	    return listaComics;
+		return listaComics;
 	}
-
 
 	/**
 	 * Devuelve datos de la base de datos segun el parametro.
@@ -974,7 +971,7 @@ public class DBLibreriaManager extends Comic {
 					this.numero = rs.getString("numComic");
 					this.variante = rs.getString("nomVariante");
 					this.firma = rs.getString("firma");
-					
+
 //	                if (this.firma.length() >= 9) {
 //	                    int mitad = this.firma.length() / 2;
 //	                    String parte1 = this.firma.substring(0, mitad);
@@ -982,7 +979,7 @@ public class DBLibreriaManager extends Comic {
 //
 //	                    this.firma = parte1 + "\n " + parte2;
 //	                }
-					
+
 					this.editorial = rs.getString("nomEditorial");
 					this.formato = rs.getString("formato");
 					this.procedencia = rs.getString("procedencia");
@@ -1268,7 +1265,7 @@ public class DBLibreriaManager extends Comic {
 			if (!rs.first()) {
 				return null;
 			}
-			
+
 			return rs;
 
 		} catch (NullPointerException ex) {
@@ -1634,11 +1631,11 @@ public class DBLibreriaManager extends Comic {
 	 * @throws SQLException
 	 */
 	public List<Comic> comprobarLibreria(String sentenciaSQL, String excepcion) throws SQLException {
-		
+
 		List<Comic> listComic = FXCollections.observableArrayList(verLibreria(sentenciaSQL));
-		
+
 		if (listComic.isEmpty()) {
-			
+
 			nav.alertaException(excepcion);
 		}
 
@@ -1665,7 +1662,7 @@ public class DBLibreriaManager extends Comic {
 			} else {
 				try {
 					listComic = FXCollections.observableArrayList(filtadroBBDD(comic));
-				}catch(NullPointerException ex) {
+				} catch (NullPointerException ex) {
 					ex.getStackTrace();
 				}
 			}
@@ -1698,7 +1695,6 @@ public class DBLibreriaManager extends Comic {
 		String query = "SELECT * FROM comicsbbdd ORDER BY nomComic,fecha_publicacion,numComic";
 
 		String excepcion = "No hay ningun comic guardado en la base de datos";
-
 
 		return comprobarLibreria(query, excepcion);
 	}
@@ -1744,7 +1740,7 @@ public class DBLibreriaManager extends Comic {
 
 		return comprobarLibreria(sentenciaSQL, excepcion);
 	}
-	
+
 	/**
 	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
 	 * "En posesion"
@@ -1753,37 +1749,69 @@ public class DBLibreriaManager extends Comic {
 	 * @throws SQLException
 	 */
 	public List<Comic> libreriaSeleccionado(String datoSeleccionado) throws SQLException {
-		String sentenciaSQL = "SELECT * from comicsbbdd where nomVariante = '" + datoSeleccionado +  "' OR nomGuionista = '" + datoSeleccionado +  "' OR firma = '" + datoSeleccionado +  "' OR nomDibujante = '" + datoSeleccionado +  "' ORDER BY nomComic ASC";
+		String sentenciaSQL = "SELECT * FROM comicsbbdd "
+				+ "WHERE nomVariante LIKE '%" + datoSeleccionado
+				+ "%' OR nomComic LIKE '%" + datoSeleccionado 
+		        + "%' OR nomGuionista LIKE '%" + datoSeleccionado 
+		        + "%' OR firma LIKE '%" + datoSeleccionado
+		        + "%' OR nomDibujante LIKE '%" + datoSeleccionado
+		        + "%' OR nomComic LIKE '%" + datoSeleccionado
+		        + "%' OR nomEditorial LIKE '%" + datoSeleccionado
+		        + "%' OR caja_deposito LIKE '%" + datoSeleccionado
+		        + "%' OR formato LIKE '%" + datoSeleccionado
+		        + "%' OR fecha_publicacion LIKE '%" + datoSeleccionado
+		        + "%' OR procedencia LIKE '%" + datoSeleccionado
+		        + "%' ORDER BY nomComic, fecha_publicacion, numComic ASC";
+		
 		String excepcion = "No hay comics relacionados con esa seleccion";
 
 		return comprobarLibreria(sentenciaSQL, excepcion);
 	}
-	
+
 	/**
-	 * Devuelve el numero total del resultado de la busqueda de un campo individual 
+	 * Devuelve el numero total del resultado de la busqueda de un campo individual
+	 * 
 	 * @param datoSeleccionado
 	 * @return
 	 * @throws SQLException
 	 */
 	public int numeroTotalSelecionado(String datoSeleccionado) throws SQLException {
-	    String sentenciaSQL = "SELECT COUNT(*) FROM comicsbbdd WHERE nomVariante = ? OR nomGuionista = ? OR nomDibujante = ?";
-	    int count = 0;
+		String sentenciaSQL = "SELECT COUNT(*) FROM comicsbbdd "
+				+ "WHERE nomVariante LIKE ? "
+				+ "OR nomComic LIKE ? "
+				+ "OR nomGuionista LIKE ? "
+				+ "OR nomDibujante LIKE ? "
+				+ "OR firma LIKE ? "
+				+ "OR nomComic LIKE ? "
+				+ "OR nomEditorial LIKE ? "
+				+ "OR caja_deposito LIKE ? "
+				+ "OR formato LIKE ? "
+				+ "OR fecha_publicacion LIKE ?"
+				+ "OR procedencia LIKE ?";
+		int count = 0;
 
-	    try (PreparedStatement ps = conn.prepareStatement(sentenciaSQL)) {
-	        ps.setString(1, datoSeleccionado);
-	        ps.setString(2, datoSeleccionado);
-	        ps.setString(3, datoSeleccionado);
+		try (PreparedStatement ps = conn.prepareStatement(sentenciaSQL)) {
+			ps.setString(1, "%" + datoSeleccionado + "%");
+			ps.setString(2, "%" + datoSeleccionado + "%");
+			ps.setString(3, "%" + datoSeleccionado + "%");
+			ps.setString(4, "%" + datoSeleccionado + "%");
+			ps.setString(5, "%" + datoSeleccionado + "%");
+			ps.setString(6, "%" + datoSeleccionado + "%");
+			ps.setString(7, "%" + datoSeleccionado + "%");
+			ps.setString(8, "%" + datoSeleccionado + "%");
+			ps.setString(9, "%" + datoSeleccionado + "%");
+			ps.setString(10, "%" + datoSeleccionado + "%");
+			ps.setString(11, "%" + datoSeleccionado + "%");
+			try (ResultSet resultado = ps.executeQuery()) {
+				if (resultado.next()) {
+					count = resultado.getInt(1);
+				}
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
 
-	        try (ResultSet resultado = ps.executeQuery()) {
-	            if (resultado.next()) {
-	                count = resultado.getInt(1);
-	            }
-	        }
-	    } catch (SQLException ex) {
-	        ex.printStackTrace();
-	    }
-
-	    return count;
+		return count;
 	}
 
 	/**
