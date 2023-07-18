@@ -329,8 +329,6 @@ public class ModificarDatosController implements Initializable {
 	                    comic_temp = libreria.comicDatos(idComicMod.getText());
 	                } catch (SQLException e) {
 	                    e.printStackTrace();
-	                } catch(IllegalArgumentException e) {
-	                	System.out.println("Test");
 	                }
 
 	                idComicMod.setText(idComicMod.getText());

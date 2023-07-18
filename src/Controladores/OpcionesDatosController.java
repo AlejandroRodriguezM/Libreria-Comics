@@ -31,7 +31,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import Funcionamiento.Ventanas;
@@ -39,13 +44,16 @@ import JDBC.DBManager;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.ToggleGroup;
@@ -101,10 +109,7 @@ public class OpcionesDatosController implements Initializable {
 	private ToggleGroup estado;
 
 	@FXML
-	private RadioButton noOffline;
-
-	@FXML
-	private TextField nombreBBDD;
+	private ComboBox<String> nombreBBDD;
 
 	@FXML
 	private TextField nombreHost;
@@ -118,10 +123,10 @@ public class OpcionesDatosController implements Initializable {
 	@FXML
 	private TextField usuario;
 
-	@FXML
-	private RadioButton siOnline;
-
 	private Timeline timeline;
+
+	@FXML
+	private ComboBox<String> tipoServidorSwitch;
 
 	private static Ventanas nav = new Ventanas();
 	private static AccesoBBDDController acceso = new AccesoBBDDController();
@@ -134,24 +139,75 @@ public class OpcionesDatosController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-
 		iniciarAnimacionEspera();
-
-		TextFormatter<Integer> textFormatterAni = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
-			String newText = change.getControlNewText();
-			if (newText.matches("\\d*")) {
-				return change;
-			}
-			return null;
-		});
-		puertobbdd.setTextFormatter(textFormatterAni);
-
+		restringir_entrada_datos();
 		acceso.crearEstructura();
 
+		rellenarComboBox();
+		formulario_local(); // Mostrar formulario local por defecto
+
+		tipoServidorSwitch.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+
+			// Actualizar la pantalla en tiempo real
+			Platform.runLater(() -> {
+				if (newValue.equals("Local")) {
+					limpiar_datos();
+					formulario_local();
+					iniciarAnimacionEspera();
+				} else if (newValue.equals("Online")) {
+					limpiar_datos();
+					formulario_online();
+					iniciarAnimacionEspera();
+				}
+
+				actualizarComboBoxNombreBBDD();
+			});
+
+		});
+
+		// Escuchador para el campo de texto "usuario"
+		usuario.textProperty().addListener((observable, oldValue, newValue) -> {
+			Platform.runLater(() -> {
+				actualizarComboBoxNombreBBDD();
+			});
+		});
+
+		// Escuchador para el campo de texto "password"
+		pass.textProperty().addListener((observable, oldValue, newValue) -> {
+			Platform.runLater(() -> {
+				actualizarComboBoxNombreBBDD();
+			});
+		});
+
+		// Escuchador para el campo de texto "puerto"
+		puertobbdd.textProperty().addListener((observable, oldValue, newValue) -> {
+			Platform.runLater(() -> {
+				actualizarComboBoxNombreBBDD();
+			});
+		});
+
+		// Escuchador para el campo de texto "nombreHost"
+		nombreHost.textProperty().addListener((observable, oldValue, newValue) -> {
+			Platform.runLater(() -> {
+				actualizarComboBoxNombreBBDD();
+			});
+		});
+	}
+
+	/**
+	 * Permite rellenar los datos de los comboBox con los datos de las listas
+	 */
+	public void rellenarComboBox() {
+		ObservableList<String> tipoServidor = FXCollections.observableArrayList("Local", "Online");
+		tipoServidorSwitch.setItems(tipoServidor);
+		tipoServidorSwitch.getSelectionModel().selectFirst();
+	}
+
+	public void formulario_local() {
 		String userHome = System.getProperty("user.home");
 		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
 		String carpetaLibreria = ubicacion + File.separator + "libreria";
-		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion.conf";
+		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion_local.conf";
 
 		try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
 			String line;
@@ -167,7 +223,41 @@ public class OpcionesDatosController implements Initializable {
 					puertobbdd.setText(puertoTexto);
 				} else if (line.startsWith("Database: ")) {
 					String databaseTexto = line.substring("Database: ".length());
-					nombreBBDD.setText(databaseTexto);
+					nombreBBDD.getSelectionModel().select(databaseTexto);
+				} else if (line.startsWith("Hosting: ")) {
+//					String hostingTexto = line.substring("Hosting: ".length());
+					nombreHost.setText("localhost");
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		actualizarComboBoxNombreBBDD();
+		nombreHost.setEditable(false);
+	}
+
+	public void formulario_online() {
+		String userHome = System.getProperty("user.home");
+		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
+		String carpetaLibreria = ubicacion + File.separator + "libreria";
+		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion_online.conf";
+		nombreHost.setText("");
+		try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				if (line.startsWith("Usuario: ")) {
+					String usuarioTexto = line.substring("Usuario: ".length());
+					usuario.setText(usuarioTexto);
+				} else if (line.startsWith("Password: ")) {
+					String passwordTexto = line.substring("Password: ".length());
+					pass.setText(passwordTexto);
+				} else if (line.startsWith("Puerto: ")) {
+					String puertoTexto = line.substring("Puerto: ".length());
+					puertobbdd.setText(puertoTexto);
+				} else if (line.startsWith("Database: ")) {
+					String databaseTexto = line.substring("Database: ".length());
+					nombreBBDD.getSelectionModel().select(databaseTexto);
 				} else if (line.startsWith("Hosting: ")) {
 					String hostingTexto = line.substring("Hosting: ".length());
 					nombreHost.setText(hostingTexto);
@@ -176,6 +266,136 @@ public class OpcionesDatosController implements Initializable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		actualizarComboBoxNombreBBDD();
+		nombreHost.setEditable(true);
+	}
+
+	private void actualizarComboBoxNombreBBDD() {
+		String usuario = this.usuario.getText();
+		String password = this.pass.getText();
+		String puerto = this.puertobbdd.getText();
+		String hosting = this.nombreHost.getText();
+
+		if (usuario.isEmpty() || password.isEmpty() || puerto.isEmpty() || hosting.isEmpty()) {
+			nombreBBDD.getSelectionModel().clearSelection();
+			nombreBBDD.setDisable(true);
+			nombreBBDD.setEditable(false);
+		} else {
+			nombreBBDD.getItems().clear();
+			nombreBBDD.setDisable(false);
+
+			// Lógica para obtener las opciones del ComboBox nombreBBDD
+			List<String> opciones = obtenerOpcionesNombreBBDD(usuario, password, puerto, hosting);
+
+			if (!opciones.isEmpty()) {
+				nombreBBDD.getItems().addAll(opciones);
+				nombreBBDD.getSelectionModel().selectFirst();
+			}
+		}
+	}
+
+	private List<String> obtenerOpcionesNombreBBDD(String usuario, String password, String puerto, String hosting) {
+		List<String> opciones = new ArrayList<>();
+
+		Connection connection = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+
+		try {
+			// Validar los datos de conexión
+
+			if (validarDatosConexion(usuario, password, puerto, hosting)) {
+				iniciarAnimacionEspera();
+
+				// Establecer conexión
+				String url = "jdbc:mysql://" + hosting + ":" + puerto + "/";
+				connection = DriverManager.getConnection(url, usuario, password);
+
+				// Crear una sentencia SQL
+				statement = connection.createStatement();
+
+				// Ejecutar consulta para obtener las bases de datos
+				resultSet = statement.executeQuery("SHOW DATABASES");
+
+				// Agregar los nombres de las bases de datos a la lista de opciones
+	            while (resultSet.next()) {
+	                String nombreBD = resultSet.getString(1);
+	                String urlBD = url + nombreBD;
+	                Connection dbConnection = DriverManager.getConnection(urlBD, usuario, password);
+	                Statement dbStatement = dbConnection.createStatement();
+	                ResultSet dbResultSet = dbStatement.executeQuery("SHOW TABLES LIKE 'comicsbbdd'");
+	                if (dbResultSet.next()) {
+	                    opciones.add(nombreBD);
+	                }
+	                dbResultSet.close();
+	                dbStatement.close();
+	                dbConnection.close();
+	            }
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			// Cerrar recursos
+			try {
+				if (resultSet != null) {
+					resultSet.close();
+				}
+				if (statement != null) {
+					statement.close();
+				}
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return opciones;
+	}
+
+	private boolean validarDatosConexion(String usuario, String password, String puerto, String hosting) {
+		try {
+
+			if (tipoServidorSwitch.getSelectionModel().getSelectedItem().equals("online")) {
+				return true;
+			}
+
+			String url = "jdbc:mysql://" + hosting + ":" + puerto + "/";
+			Connection connection = DriverManager.getConnection(url, usuario, password);
+			connection.close(); // Cerrar la conexión
+
+			detenerAnimacion();
+			prontEstadoFichero.setText(null);
+			return true; // La conexión se estableció correctamente
+
+		} catch (SQLException e) {
+			nombreBBDD.setEditable(false);
+			iniciarAnimacionDatosError(puerto);
+		}
+
+		return false; // La conexión no se pudo establecer
+	}
+
+	/**
+	 * Funcion que permite restringir entrada de datos de todo aquello que no sea un
+	 * numero entero en los comboBox numeroComic y caja_comic
+	 */
+	public void restringir_entrada_datos() {
+		puertobbdd.setTextFormatter(validador_Nenteros());
+	}
+
+	public TextFormatter<Integer> validador_Nenteros() {
+		// Crear un validador para permitir solo números enteros
+		TextFormatter<Integer> textFormatter = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+			if (change.getControlNewText().matches("\\d*")) {
+				return change;
+			}
+			return null;
+		});
+
+		return textFormatter;
 	}
 
 	/**
@@ -219,21 +439,32 @@ public class OpcionesDatosController implements Initializable {
 	 * relacionadas.
 	 *
 	 * @param event el evento que desencadena la acción
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	@FXML
 	void guardarDatos(ActionEvent event) throws SQLException {
-		
+		boolean esLocal = tipoServidorSwitch.getSelectionModel().getSelectedItem().equals("Local");
+
+		if (esLocal) {
+			guardar_datos_base_local();
+		} else {
+			guardar_datos_base_online();
+		}
+
+	}
+
+	public void guardar_datos_base_local() throws SQLException {
 		String userHome = System.getProperty("user.home");
 		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
 		String carpetaLibreria = ubicacion + File.separator + "libreria";
-		String carpetaBackup = carpetaLibreria + File.separator + nombreBBDD.getText() + File.separator + "backups";
-		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion.conf";
+		String carpetaBackup = carpetaLibreria + File.separator + nombreBBDD.getSelectionModel().getSelectedItem()
+				+ File.separator + "backups";
+		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion_local.conf";
 
 		try {
-			if(verificarDatos()) {
+			if (verificarDatos()) {
 				acceso.crearEstructura();
-				
+
 				FileWriter fileWriter = new FileWriter(archivoConfiguracion);
 				BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
@@ -249,7 +480,7 @@ public class OpcionesDatosController implements Initializable {
 				bufferedWriter.newLine();
 				bufferedWriter.write("Puerto: " + puertobbdd.getText());
 				bufferedWriter.newLine();
-				bufferedWriter.write("Database: " + nombreBBDD.getText());
+				bufferedWriter.write("Database: " + nombreBBDD.getSelectionModel().getSelectedItem());
 				bufferedWriter.newLine();
 				bufferedWriter.write("Hosting: " + nombreHost.getText());
 				bufferedWriter.newLine();
@@ -263,50 +494,104 @@ public class OpcionesDatosController implements Initializable {
 
 				prontEstadoFichero.setStyle("-fx-background-color: #A0F52D");
 				iniciarAnimacionConectado();
-			}else {
+			} else {
 				detenerAnimacion();
 				prontEstadoFichero.setStyle("-fx-background-color: #DD370F");
-				iniciarAnimacionBBDDError();			
+				iniciarAnimacionBBDDError();
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public void guardar_datos_base_online() throws SQLException {
+		String userHome = System.getProperty("user.home");
+		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
+		String carpetaLibreria = ubicacion + File.separator + "libreria";
+		String carpetaBackup = carpetaLibreria + File.separator + nombreBBDD.getSelectionModel().getSelectedItem()
+				+ File.separator + "backups";
+		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion_online.conf";
+
+		try {
+			if (verificarDatos()) {
+				acceso.crearEstructura();
+
+				FileWriter fileWriter = new FileWriter(archivoConfiguracion);
+				BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+
+				bufferedWriter.write("###############################");
+				bufferedWriter.newLine();
+				bufferedWriter.write("Fichero de configuracion de la libreria");
+				bufferedWriter.newLine();
+				bufferedWriter.write("###############################");
+				bufferedWriter.newLine();
+				bufferedWriter.write("Usuario: " + usuario.getText());
+				bufferedWriter.newLine();
+				bufferedWriter.write("Password: " + pass.getText());
+				bufferedWriter.newLine();
+				bufferedWriter.write("Puerto: " + puertobbdd.getText());
+				bufferedWriter.newLine();
+				bufferedWriter.write("Database: " + nombreBBDD.getSelectionModel().getSelectedItem());
+				bufferedWriter.newLine();
+				bufferedWriter.write("Hosting: " + nombreHost.getText());
+				bufferedWriter.newLine();
+
+				bufferedWriter.close();
+
+				File carpeta_backupsFile = new File(carpetaBackup);
+				if (!carpeta_backupsFile.exists()) {
+					carpeta_backupsFile.mkdir();
 				}
-			
+
+				prontEstadoFichero.setStyle("-fx-background-color: #A0F52D");
+				iniciarAnimacionConectado();
+			} else {
+				detenerAnimacion();
+				prontEstadoFichero.setStyle("-fx-background-color: #DD370F");
+				iniciarAnimacionBBDDError();
+			}
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
-	 * Comprueba si los datos ingresados coinciden con los datos en la base de datos.
+	 * Comprueba si los datos ingresados coinciden con los datos en la base de
+	 * datos.
 	 *
-	 * @return true si los datos coinciden, false si no coinciden o si hay un error en la conexión
+	 * @return true si los datos coinciden, false si no coinciden o si hay un error
+	 *         en la conexión
 	 * @throws SQLException si hay un error al consultar la base de datos
 	 */
 	private boolean verificarDatos() throws SQLException {
-		
-		String datos[] = new String[5];
-	    datos[0] = puertobbdd.getText();
-	    datos[1] = nombreBBDD.getText();
-		datos[2] = usuario.getText();
-	    datos[3] = pass.getText();
-	    datos[4] = nombreHost.getText();
 
-	    DBManager.datosBBDD(datos);
-	    
-	    Connection connection = DBManager.conexion();
-	    if (connection == null) {
+		String datos[] = new String[5];
+		datos[0] = puertobbdd.getText();
+		datos[1] = nombreBBDD.getSelectionModel().getSelectedItem();
+		datos[2] = usuario.getText();
+		datos[3] = pass.getText();
+		datos[4] = nombreHost.getText();
+
+		DBManager.datosBBDD(datos);
+
+		Connection connection = DBManager.conexion();
+		if (connection == null) {
 			prontEstadoFichero.setStyle("-fx-background-color: #DD370F");
-	        iniciarAnimacionBBDDError();
-	        return false;
+			iniciarAnimacionBBDDError();
+			return false;
 		}
 
 		if (JDBC.DBManager.isConnected()) {
 			return true;
-		}else {
+		} else {
 			prontEstadoFichero.setStyle("-fx-background-color: #DD370F");
-	        iniciarAnimacionBBDDError();
+			iniciarAnimacionBBDDError();
 			return false;
 		}
 	}
-
 
 	/**
 	 * Restaura la configuración a los valores predeterminados.
@@ -315,58 +600,33 @@ public class OpcionesDatosController implements Initializable {
 	 */
 	@FXML
 	void restaurarConfiguracion(ActionEvent event) {
-		try {
-			if (nav.borrarContenidoConfiguracion()) {
-				String userHome = System.getProperty("user.home");
-				String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
-				String carpetaLibreria = ubicacion + "\\libreria";
-				String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion.conf";
+		if (nav.borrarContenidoConfiguracion()) {
+			String userHome = System.getProperty("user.home");
+			String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
+			String carpetaLibreria = ubicacion + "\\libreria";
 
-				// Verificar y borrar la carpeta "libreria" si existe
-				File carpetaLibreriaFile = new File(carpetaLibreria);
-
-				// Crear la carpeta "libreria"
-				carpetaLibreriaFile.mkdir();
-
-				// Verificar y crear el archivo "configuracion.conf"
-				File archivoConfiguracionFile = new File(archivoConfiguracion);
-
-				archivoConfiguracionFile.createNewFile();
-
-				// Escribir líneas en el archivo
-				FileWriter fileWriter = new FileWriter(archivoConfiguracionFile);
-				BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-				bufferedWriter.write("###############################");
-				bufferedWriter.newLine();
-				bufferedWriter.write("Fichero de configuracion de la libreria");
-				bufferedWriter.newLine();
-				bufferedWriter.write("###############################");
-				bufferedWriter.newLine();
-				bufferedWriter.write("Usuario:");
-				bufferedWriter.newLine();
-				bufferedWriter.write("Password:");
-				bufferedWriter.newLine();
-				bufferedWriter.write("Puerto:");
-				bufferedWriter.newLine();
-				bufferedWriter.write("Database:");
-				bufferedWriter.newLine();
-				bufferedWriter.write("Hosting:");
-				bufferedWriter.newLine();
-
-				bufferedWriter.close();
-
-				limpiar_datos();
-				detenerAnimacion();
-				prontEstadoFichero.setStyle("-fx-background-color: #A0F52D");
-				iniciarAnimacionRestaurado();
-			} else {
-				detenerAnimacion();
-				prontEstadoFichero.setStyle("-fx-background-color: #DD370F");
-				iniciarAnimacionRestauradoError();
+			// Verificar y eliminar los archivos dentro de la carpeta "libreria"
+			File carpetaLibreriaFile = new File(carpetaLibreria);
+			File[] archivos = carpetaLibreriaFile.listFiles();
+			if (archivos != null) {
+				for (File archivo : archivos) {
+					if (archivo.isFile()) {
+						archivo.delete();
+					}
+				}
 			}
+			
+			// Volver a crear los archivos
+			acceso.crearEstructura();
 
-		} catch (IOException e) {
-			e.printStackTrace();
+			limpiar_datos();
+			detenerAnimacion();
+			prontEstadoFichero.setStyle("-fx-background-color: #A0F52D");
+			iniciarAnimacionRestaurado();
+		} else {
+			detenerAnimacion();
+			prontEstadoFichero.setStyle("-fx-background-color: #DD370F");
+			iniciarAnimacionRestauradoError();
 		}
 	}
 
@@ -380,49 +640,20 @@ public class OpcionesDatosController implements Initializable {
 
 		puertobbdd.setText("");
 
-		nombreBBDD.setText("");
+		nombreBBDD.getSelectionModel().clearSelection();
 
-		nombreHost.setText("");
-	}
-
-	/**
-	 * Selector para el tipo de host a utilizar.
-	 *
-	 * @param event el evento que desencadena la acción
-	 */
-	@FXML
-	void selectorBotonHost(ActionEvent event) {
-		selectorHost();
-	}
-
-	/**
-	 * Permite conectarse a un host online o usar el local.
-	 *
-	 * @return el nombre del host seleccionado
-	 */
-	public String selectorHost() {
-
-		String host = "localhost";
-
-		if (siOnline.isSelected()) {
-			etiquetaHost.setText("Nombre del host: ");
-			nombreHost.setDisable(false);
-			nombreHost.setOpacity(1);
-			host = nombreHost.getText();
+		if (tipoServidorSwitch.getSelectionModel().getSelectedItem().equals("online")) {
+			nombreHost.setText("");
 		}
-		if (noOffline.isSelected()) {
-			etiquetaHost.setText("Offline");
-			nombreHost.setDisable(true);
-			nombreHost.setOpacity(0);
-			host = "localhost";
-		}
-		return host;
 	}
 
 	/**
 	 * Inicia la animación de espera en la interfaz.
 	 */
 	private void iniciarAnimacionEspera() {
+
+		prontEstadoFichero.setOpacity(1);
+
 		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
 
@@ -510,7 +741,7 @@ public class OpcionesDatosController implements Initializable {
 		// Iniciar la animación
 		timeline.play();
 	}
-	
+
 	/**
 	 * Inicia la animación de restauración con error en la interfaz.
 	 */
@@ -534,12 +765,34 @@ public class OpcionesDatosController implements Initializable {
 	}
 
 	/**
+	 * Inicia la animación de restauración con error en la interfaz.
+	 */
+	private void iniciarAnimacionDatosError(String puerto) {
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarError = new KeyFrame(Duration.ZERO, new KeyValue(prontEstadoFichero.textProperty(),
+				"Los datos recibidos estan incorrectos."));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(prontEstadoFichero.textProperty(), ""));
+		KeyFrame mostrarError2 = new KeyFrame(Duration.seconds(1),
+				new KeyValue(prontEstadoFichero.textProperty(), "ERROR"));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarError, ocultarTexto, mostrarError2);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+
+	/**
 	 * Detiene la animación actual en la interfaz.
 	 */
 	private void detenerAnimacion() {
 		if (timeline != null) {
 			timeline.stop();
-	        timeline.getKeyFrames().clear(); // Eliminar los KeyFrames del Timeline
+			timeline.getKeyFrames().clear(); // Eliminar los KeyFrames del Timeline
 			timeline = null; // Destruir el objeto timeline
 		}
 	}

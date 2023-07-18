@@ -37,10 +37,13 @@ import JDBC.DBManager;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -75,6 +78,9 @@ public class AccesoBBDDController implements Initializable {
 	private Label prontEstadoConexion;
 
 	private Timeline timeline;
+	
+	@FXML
+	private ComboBox<String> tipoServidorSwitch;
 
 	private static Ventanas nav = new Ventanas();
 	private static CrearBBDDController cbd = null;
@@ -91,6 +97,10 @@ public class AccesoBBDDController implements Initializable {
 		crearEstructura();
 		detenerAnimacion();
 
+	    ObservableList<String> tipoServidor = FXCollections.observableArrayList("Local", "Online");
+	    tipoServidorSwitch.setItems(tipoServidor);
+	    tipoServidorSwitch.getSelectionModel().selectFirst();
+		
 		if (!JDBC.DBManager.isConnected()) {
 			iniciarAnimacionEspera();
 		} else {
@@ -151,61 +161,57 @@ public class AccesoBBDDController implements Initializable {
 	 */
 	@FXML
 	void enviarDatos(ActionEvent event) {
+	    JDBC.DBManager.loadDriver(); // Llamada a método que permite comprobar que el driver de conexión a la base de datos sea correcto y funcione
+	    boolean esLocal = tipoServidorSwitch.getSelectionModel().getSelectedItem().equals("Local");
+	    envioDatosBBDD(esLocal); // Llamada a método que manda los datos de los textField de la ventana hacia la clase DBManager.
+	    DBManager.conexion(); // Llamada a método que permite conectar con la base de datos.
+	    cbd = new CrearBBDDController();
 
-		JDBC.DBManager.loadDriver(); // Llamada a metodo que permite comprobar que el driver de conexion a la
-		// base de datos sea correcto y funcione
-		envioDatosBBDD(); // Llamada a metodo que manda los datos de los textField de la ventana hacia la
-		// clase DBManager.
-		DBManager.conexion(); // Llamada a metodo que permite conectar con la base de datos.
-		cbd = new CrearBBDDController();
+	    if (JDBC.DBManager.isConnected()) {
+	        if (cbd.chechTables()) {
+	            String userHome = System.getProperty("user.home");
+	            String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
+	            String carpetaLibreria = ubicacion + File.separator + "libreria";
+	            String carpetaBackup = carpetaLibreria + File.separator + obtenerDatoDespuesDeDosPuntos("Database", esLocal)
+	                    + File.separator + "backups";
 
-		if (JDBC.DBManager.isConnected()) {
-
-			if (cbd.chechTables()) {
-
-				String userHome = System.getProperty("user.home");
-				String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
-				String carpetaLibreria = ubicacion + File.separator + "libreria";
-				String carpetaBackup = carpetaLibreria + File.separator + obtenerDatoDespuesDeDosPuntos("Database")
-						+ File.separator + "backups";
-
-				try {
-					File carpeta_backupsFile = new File(carpetaBackup);
-
-					cbd.crearCarpeta();
-					if (!carpeta_backupsFile.exists()) {
-						carpeta_backupsFile.mkdirs();
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				detenerAnimacion();
-				prontEstadoConexion.setStyle("-fx-background-color: #A0F52D");
-				iniciarAnimacionConectado();
-			}
-		} else { // En caso contrario mostrara el siguiente mensaje
-			detenerAnimacion();
-			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
-			iniciarAnimacionError();
-		}
+	            try {
+	                File carpeta_backupsFile = new File(carpetaBackup);
+	                cbd.crearCarpeta();
+	                if (!carpeta_backupsFile.exists()) {
+	                    carpeta_backupsFile.mkdirs();
+	                }
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+	            detenerAnimacion();
+	            prontEstadoConexion.setStyle("-fx-background-color: #A0F52D");
+	            iniciarAnimacionConectado();
+	        }
+	    } else { // En caso contrario mostrará el siguiente mensaje
+	        detenerAnimacion();
+	        prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
+	        iniciarAnimacionError();
+	    }
 	}
+
 
 	/**
 	 * Funcion que permite mandar los datos a la clase DBManager
 	 *
 	 * @return
 	 */
-	public void envioDatosBBDD() {
-		detenerAnimacion();
-		cbd = new CrearBBDDController();
-		String datos[] = new String[5];
-		datos[0] = obtenerDatoDespuesDeDosPuntos("Puerto");
-		datos[1] = obtenerDatoDespuesDeDosPuntos("Database");
-		datos[2] = obtenerDatoDespuesDeDosPuntos("Usuario");
-		datos[3] = obtenerDatoDespuesDeDosPuntos("Password");
-		datos[4] = obtenerDatoDespuesDeDosPuntos("Hosting");
+	public void envioDatosBBDD(boolean esLocal) {
+	    detenerAnimacion();
+	    cbd = new CrearBBDDController();
+	    String datos[] = new String[5];
+	    datos[0] = obtenerDatoDespuesDeDosPuntos("Puerto", esLocal);
+	    datos[1] = obtenerDatoDespuesDeDosPuntos("Database", esLocal);
+	    datos[2] = obtenerDatoDespuesDeDosPuntos("Usuario", esLocal);
+	    datos[3] = obtenerDatoDespuesDeDosPuntos("Password", esLocal);
+	    datos[4] = obtenerDatoDespuesDeDosPuntos("Hosting", esLocal);
 
-		DBManager.datosBBDD(datos);
+	    DBManager.datosBBDD(datos);
 	}
 
 	/**
@@ -215,23 +221,29 @@ public class AccesoBBDDController implements Initializable {
 	 * @param linea la línea específica para buscar el dato
 	 * @return el dato encontrado o una cadena vacía si no se encuentra
 	 */
-	public String obtenerDatoDespuesDeDosPuntos(String linea) {
-		String userHome = System.getProperty("user.home");
-		String ubicacion = userHome + "\\AppData\\Roaming";
-		String carpetaLibreria = ubicacion + "\\libreria";
-		String archivoConfiguracion = carpetaLibreria + "\\configuracion.conf";
+	public String obtenerDatoDespuesDeDosPuntos(String linea, boolean esLocal) {
+	    String userHome = System.getProperty("user.home");
+	    String ubicacion = userHome + "\\AppData\\Roaming";
+	    String carpetaLibreria = ubicacion + "\\libreria";
+	    String archivoConfiguracion;
 
-		try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				if (line.startsWith(linea + ": ")) {
-					return line.substring(linea.length() + 2).trim();
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return "";
+	    if (esLocal) {
+	        archivoConfiguracion = carpetaLibreria + "\\configuracion_local.conf";
+	    } else {
+	        archivoConfiguracion = carpetaLibreria + "\\configuracion_online.conf";
+	    }
+
+	    try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
+	        String line;
+	        while ((line = reader.readLine()) != null) {
+	            if (line.startsWith(linea + ": ")) {
+	                return line.substring(linea.length() + 2).trim();
+	            }
+	        }
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+	    return "";
 	}
 
 	/**
@@ -274,51 +286,83 @@ public class AccesoBBDDController implements Initializable {
 	 * librería.
 	 */
 	public void crearEstructura() {
-		String userHome = System.getProperty("user.home");
-		String ubicacion = userHome + "\\AppData\\Roaming";
-		String carpetaLibreria = ubicacion + "\\libreria";
+	    String userHome = System.getProperty("user.home");
+	    String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
+	    String carpetaLibreria = ubicacion + File.separator + "libreria";
 
-		String archivoConfiguracion = carpetaLibreria + "\\configuracion.conf";
+	    // Verificar y crear la carpeta "libreria" si no existe
+	    File carpetaLibreriaFile = new File(carpetaLibreria);
+	    if (!carpetaLibreriaFile.exists()) {
+	        carpetaLibreriaFile.mkdir();
+	        carpetaLibreriaFile.setWritable(true);
+	    }
 
-		// Verificar y crear la carpeta "libreria" si no existe
-		File carpetaLibreriaFile = new File(carpetaLibreria);
-		if (!carpetaLibreriaFile.exists()) {
-			carpetaLibreriaFile.mkdir();
-			carpetaLibreriaFile.setWritable(true);
-		}
+	    // Verificar y crear los archivos de configuración si no existen
+	    String archivoConfiguracionLocal = carpetaLibreria + File.separator + "configuracion_local.conf";
+	    String archivoConfiguracionOnline = carpetaLibreria + File.separator + "configuracion_online.conf";
 
-		// Verificar y crear el archivo "configuracion.conf" si no existe
-		File archivoConfiguracionFile = new File(archivoConfiguracion);
-		if (!archivoConfiguracionFile.exists()) {
-			try {
-				archivoConfiguracionFile.createNewFile();
+	    File archivoConfiguracionLocalFile = new File(archivoConfiguracionLocal);
+	    File archivoConfiguracionOnlineFile = new File(archivoConfiguracionOnline);
 
-				// Escribir líneas en el archivo
-				FileWriter fileWriter = new FileWriter(archivoConfiguracionFile);
-				BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-				bufferedWriter.write("###############################");
-				bufferedWriter.newLine();
-				bufferedWriter.write("Fichero de configuracion de la libreria");
-				bufferedWriter.newLine();
-				bufferedWriter.write("###############################");
-				bufferedWriter.newLine();
-				bufferedWriter.write("Usuario:");
-				bufferedWriter.newLine();
-				bufferedWriter.write("Password:");
-				bufferedWriter.newLine();
-				bufferedWriter.write("Puerto:");
-				bufferedWriter.newLine();
-				bufferedWriter.write("Database:");
-				bufferedWriter.newLine();
-				bufferedWriter.write("Hosting:");
-				bufferedWriter.newLine();
+	    if (!archivoConfiguracionLocalFile.exists()) {
+	        try {
+	            archivoConfiguracionLocalFile.createNewFile();
 
-				bufferedWriter.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+	            // Escribir líneas en el archivo de configuración local
+	            FileWriter fileWriterLocal = new FileWriter(archivoConfiguracionLocalFile);
+	            BufferedWriter bufferedWriterLocal = new BufferedWriter(fileWriterLocal);
+	            bufferedWriterLocal.write("###############################");
+	            bufferedWriterLocal.newLine();
+	            bufferedWriterLocal.write("Fichero de configuracion local de la libreria");
+	            bufferedWriterLocal.newLine();
+	            bufferedWriterLocal.write("###############################");
+	            bufferedWriterLocal.newLine();
+	            bufferedWriterLocal.write("Usuario:");
+	            bufferedWriterLocal.newLine();
+	            bufferedWriterLocal.write("Password:");
+	            bufferedWriterLocal.newLine();
+	            bufferedWriterLocal.write("Puerto:");
+	            bufferedWriterLocal.newLine();
+	            bufferedWriterLocal.write("Database:");
+	            bufferedWriterLocal.newLine();
+	            bufferedWriterLocal.write("Hosting: Localhost");
+	            bufferedWriterLocal.newLine();
+	            bufferedWriterLocal.close();
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    if (!archivoConfiguracionOnlineFile.exists()) {
+	        try {
+	            archivoConfiguracionOnlineFile.createNewFile();
+
+	            // Escribir líneas en el archivo de configuración online
+	            FileWriter fileWriterOnline = new FileWriter(archivoConfiguracionOnlineFile);
+	            BufferedWriter bufferedWriterOnline = new BufferedWriter(fileWriterOnline);
+	            bufferedWriterOnline.write("###############################");
+	            bufferedWriterOnline.newLine();
+	            bufferedWriterOnline.write("Fichero de configuracion online de la libreria");
+	            bufferedWriterOnline.newLine();
+	            bufferedWriterOnline.write("###############################");
+	            bufferedWriterOnline.newLine();
+	            bufferedWriterOnline.write("Usuario:");
+	            bufferedWriterOnline.newLine();
+	            bufferedWriterOnline.write("Password:");
+	            bufferedWriterOnline.newLine();
+	            bufferedWriterOnline.write("Puerto:");
+	            bufferedWriterOnline.newLine();
+	            bufferedWriterOnline.write("Database:");
+	            bufferedWriterOnline.newLine();
+	            bufferedWriterOnline.write("Hosting:");
+	            bufferedWriterOnline.newLine();
+	            bufferedWriterOnline.close();
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	    }
 	}
+
 
 	/**
 	 * Metodo que permite crear una animacion

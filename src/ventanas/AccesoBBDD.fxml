@@ -1,25 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="318.0" prefWidth="271.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.AccesoBBDDController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="363.0" prefWidth="271.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.AccesoBBDDController">
    <children>
-      <ImageView fitHeight="332.0" fitWidth="271.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="332.0" fitWidth="271.0" layoutY="22.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagenes/Fondo%20AccederBBDD.jpg" />
          </image>
       </ImageView>
-      <ImageView fitHeight="46.0" fitWidth="84.0" layoutY="272.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="46.0" fitWidth="84.0" layoutY="316.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagenes/azul.jpg" />
          </image>
       </ImageView>
-      <ImageView fitHeight="46.0" fitWidth="84.0" layoutX="84.0" layoutY="272.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="46.0" fitWidth="116.0" layoutY="317.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagenes/azul.jpg" />
          </image>
@@ -29,7 +30,7 @@
             <Image url="@../imagenes/azul.jpg" />
          </image>
       </ImageView>
-      <ImageView fitHeight="46.0" fitWidth="84.0" layoutX="187.0" layoutY="272.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="46.0" fitWidth="84.0" layoutX="187.0" layoutY="316.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagenes/azul.jpg" />
          </image>
@@ -42,9 +43,45 @@
          <font>
             <Font size="18.0" />
          </font></Button>
-      <Button fx:id="botonOpciones" layoutX="7.0" layoutY="221.0" mnemonicParsing="false" onAction="#opcionesPrograma" prefHeight="33.0" prefWidth="116.0" stylesheets="@../style/acces_style.css" text="Opciones" />
-      <Button fx:id="botonSalir" layoutX="27.0" layoutY="271.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="38.0" prefWidth="216.0" stylesheets="@../style/acces_style.css" text="Salir" />
-      <Button fx:id="botonDescargaBBDD" layoutX="149.0" layoutY="222.0" mnemonicParsing="false" onAction="#accesoMySqlWorkbench" prefHeight="33.0" prefWidth="116.0" stylesheets="@../style/acces_style.css" text="Tutorial" wrapText="true" />
+      <Button fx:id="botonOpciones" layoutX="7.0" layoutY="264.0" mnemonicParsing="false" onAction="#opcionesPrograma" prefHeight="33.0" prefWidth="116.0" stylesheets="@../style/acces_style.css" text="Opciones" />
+      <Button fx:id="botonDescargaBBDD" layoutX="149.0" layoutY="265.0" mnemonicParsing="false" onAction="#accesoMySqlWorkbench" prefHeight="33.0" prefWidth="116.0" stylesheets="@../style/acces_style.css" text="Tutorial" wrapText="true" />
+      <ImageView fitHeight="46.0" fitWidth="116.0" layoutX="104.0" layoutY="317.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imagenes/azul.jpg" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="46.0" fitWidth="116.0" layoutX="71.0" layoutY="317.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imagenes/azul.jpg" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="46.0" fitWidth="116.0" layoutX="187.0" layoutY="317.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imagenes/azul.jpg" />
+         </image>
+      </ImageView>
+      <Button fx:id="botonSalir" layoutX="27.0" layoutY="314.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="38.0" prefWidth="216.0" stylesheets="@../style/acces_style.css" text="Salir" />
+      <ComboBox fx:id="tipoServidorSwitch" layoutX="65.0" layoutY="224.0" prefHeight="25.0" prefWidth="141.0" promptText="Tipo de servidor" />
+      <ImageView fitHeight="46.0" fitWidth="116.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imagenes/rojo.jpg" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="46.0" fitWidth="116.0" layoutX="84.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imagenes/rojo.jpg" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="46.0" fitWidth="116.0" layoutX="168.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imagenes/rojo.jpg" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="46.0" fitWidth="116.0" layoutX="187.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imagenes/rojo.jpg" />
+         </image>
+      </ImageView>
       <Label fx:id="prontEstadoConexion" alignment="CENTER" contentDisplay="TOP" layoutX="4.0" layoutY="4.0" mouseTransparent="true" prefHeight="90.0" prefWidth="262.0" style="-fx-background-color: #29B6CC;" stylesheets="@../style/acces_style.css" wrapText="true">
          <font>
             <Font name="Comic Sans MS" size="18.0" />

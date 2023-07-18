@@ -677,6 +677,7 @@ public class EliminarDatosController implements Initializable {
 		nombreEditorial.getEditor().clear();
 		nombreFirma.getEditor().clear();
 		numeroComic.getEditor().clear();
+		numeroCaja.getEditor().clear();
 		fechaPublicacion.setValue(null);
 		prontInfo.setText(null);
 		prontInfo.setOpacity(0);
@@ -776,8 +777,6 @@ public class EliminarDatosController implements Initializable {
 		libreria = new DBLibreriaManager();
 		String id_comic = idComicTratar.getText();
 		idComicTratar.setStyle("");
-
-		System.out.println(id_comic);
 
 		if (id_comic.length() == 0 || !libreria.comprobarID(id_comic)) {
 			String excepcion = "No puedes eliminar un comic si antes no pones un ID valido";
@@ -891,12 +890,6 @@ public class EliminarDatosController implements Initializable {
 		resultadoBusquedaPront(comic);
 	}
 
-	/**
-	 * Permite dar valor a las celdas de la TableView
-	 */
-	/**
-	 * Permite dar valor a las celdas de la TableView
-	 */
 	/**
 	 * Permite dar valor a las celdas de la TableView
 	 */

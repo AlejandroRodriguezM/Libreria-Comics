@@ -518,7 +518,7 @@ public class CrearBBDDController implements Initializable {
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
 		String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
-				+ acceso.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas";
+				+ acceso.obtenerDatoDespuesDeDosPuntos("Database",true) + File.separator + "portadas";
 		File portadasFolder = new File(defaultImagePath);
 
 		if (!portadasFolder.exists()) {
