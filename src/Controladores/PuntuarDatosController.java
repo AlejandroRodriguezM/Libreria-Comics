@@ -816,7 +816,12 @@ public class PuntuarDatosController implements Initializable {
 
 		String listaComicsTexto = DBLibreriaManager.listaComics.toString();
 		int indexComa = listaComicsTexto.indexOf(",");
-		String listaComicsSinComa = listaComicsTexto.substring(0, indexComa).replace("[", "");
+		String listaComicsSinComa;
+		if (indexComa != -1) {
+		    listaComicsSinComa = listaComicsTexto.substring(0, indexComa).replace("[", "");
+		} else {
+		    listaComicsSinComa = listaComicsTexto.replace("[", "");
+		}
 
 		prontInfo.setText(pantallaInfo + listaComicsSinComa);
 	}

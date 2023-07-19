@@ -96,8 +96,6 @@ public class FuncionesExcel {
 	private static DBLibreriaManager db = null;
 //	private static int ID = 0;
 
-	private static Utilidades utilidad = new Utilidades();
-
 	/**
 	 * Funcion que permite importar ficheros CSV a la base de datos.
 	 *
@@ -216,7 +214,7 @@ public class FuncionesExcel {
 
 		String ubicacion = userDir + File.separator + "AppData" + File.separator + "Roaming";
 		String direccion = ubicacion + File.separator + "libreria" + File.separator
-				+ utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "backups" + File.separator
+				+ DBManager.DB_NAME + File.separator + "backups" + File.separator
 				+ nombre_carpeta;
 		try {
 			File carpetaLibreria = new File(direccion);
@@ -448,19 +446,19 @@ public class FuncionesExcel {
 	public void lecturaCSV(String sql, BufferedReader lineReader) throws IOException {
 	    File directorio = carpetaPortadas();
 	    db = new DBLibreriaManager();
-	    utilidad = new Utilidades();
+	    new Utilidades();
 	    int batchSize = 20;
 
 	    String lineText = null;
 	    String userDir = System.getProperty("user.home");
 	    String documentsPath = userDir + File.separator + "Documents";
 	    String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
-	            + utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas";
+	            + DBManager.DB_NAME + File.separator + "portadas";
 	    Utilidades.convertirNombresCarpetas(defaultImagePath + File.separator);
 	    Utilidades.convertirNombresCarpetas(directorio.getAbsolutePath());
 
 	    String defaultImagePathBase = documentsPath + File.separator + "libreria_comics" + File.separator
-	            + utilidad.obtenerDatoDespuesDeDosPuntos("Database");
+	            + DBManager.DB_NAME;
 
 	    String logFileName = "log_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")) + ".txt";
 

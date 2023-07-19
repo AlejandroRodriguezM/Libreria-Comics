@@ -1,33 +1,9 @@
 package Funcionamiento;
 
-/**
- * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
- * Las ventanas graficas se realizan con JavaFX.
- * El programa permite:
- *  - Conectarse a la base de datos.
- *  - Ver la base de datos completa o parcial segun parametros introducidos.
- *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
- *  - Copia de seguridad de la base de datos en formato .sql
- *  - Introducir comics a la base de datos.
- *  - Modificar comics de la base de datos.
- *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
- *  - Ver frases de personajes de comics
- *  - Opcion de escoger algo para leer de forma aleatoria.
- *  - Puntuar comics que se encuentren dentro de la base de datos.
- *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
- *
- *  Version 5.3
- *
- *  @author Alejandro Rodriguez
- *
- */
-
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -51,6 +27,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import JDBC.DBManager;
 
 /**
  * Esta clase sirve para realizar diferentes funciones realizanas con la
@@ -260,7 +238,7 @@ public class Utilidades {
 			String userDir = System.getProperty("user.home");
 			String documentsPath = userDir + File.separator + "Documents";
 			String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
-					+ obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas";
+					+ DBManager.DB_NAME + File.separator + "portadas";
 
 			// Esto se modificara para hacerlo dinamico
 			String imagePath = defaultImagePath;
@@ -272,14 +250,6 @@ public class Utilidades {
 					throw new IOException("No se pudo crear la carpeta 'portadas'");
 				}
 			}
-//			String nombre_comic = datos.getNombre().replace(" ", "_").replace(":", "_").replace("-", "_");
-//			String numero_comic = datos.getNumero();
-//			String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_")
-//					.replace(":", "");
-//			String fecha_comic = datos.getFecha();
-//			String nombre_completo = nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic;
-//			String extension = ".jpg";
-//			String nuevoNombreArchivo = String.valueOf(nombre_completo) + extension;
 
 			File newFile = new File(portadasFolder.getPath() + File.separator + nuevoNombreArchivo + ".jpg");
 			Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -335,31 +305,31 @@ public class Utilidades {
 		}
 	}
 
-	public String obtenerDatoDespuesDeDosPuntos(String linea) {
-		String userHome = System.getProperty("user.home");
-		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
-		String carpetaLibreria = ubicacion + File.separator + "libreria";
-		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion.conf";
-
-		try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				if (line.startsWith(linea + ": ")) {
-					return line.substring(linea.length() + 2).trim();
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return "";
-	}
+//	public String obtenerDatoDespuesDeDosPuntos(String linea) {
+//		String userHome = System.getProperty("user.home");
+//		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
+//		String carpetaLibreria = ubicacion + File.separator + "libreria";
+//		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion.conf";
+//
+//		try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
+//			String line;
+//			while ((line = reader.readLine()) != null) {
+//				if (line.startsWith(linea + ": ")) {
+//					return line.substring(linea.length() + 2).trim();
+//				}
+//			}
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//
+//		return "";
+//	}
 
 	public String obtenerNombreCompleto(Comic datos) {
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
 		String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
-				+ obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas" + File.separator;
+				+ DBManager.DB_NAME + File.separator + "portadas" + File.separator;
 		String nombre_comic = datos.getNombre().replace(" ", "_").replace(":", "_").replace("-", "_");
 		String numero_comic = datos.getNumero();
 		String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_").replace(":",
@@ -406,12 +376,12 @@ public class Utilidades {
 			String userDir = System.getProperty("user.home");
 			String documentsPath = userDir + File.separator + "Documents";
 			String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator
-					+ obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas";
+					+ DBManager.DB_NAME + File.separator + "portadas";
 			File sourceFolder = new File(sourcePath);
 
 			String ubicacion = userDir + File.separator + "AppData" + File.separator + "Roaming";
 			String carpetaLibreria = ubicacion + File.separator + "libreria" + File.separator
-					+ obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "backups" + File.separator
+					+ DBManager.DB_NAME + File.separator + "backups" + File.separator
 					+ nombre_carpeta;
 //					File libreria_backup = new File(carpetaLibreria);
 
@@ -475,7 +445,7 @@ public class Utilidades {
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
 		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator
-				+ obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas";
+				+ DBManager.DB_NAME + File.separator + "portadas";
 
 		File carpeta = new File(sourcePath);
 		if (carpeta.exists() && carpeta.isDirectory()) {
@@ -493,14 +463,14 @@ public class Utilidades {
 	public void crearCopiaBaseDatos() {
 		try {
 
-			String ddbb = obtenerDatoDespuesDeDosPuntos("Database");
-			String usuario = obtenerDatoDespuesDeDosPuntos("Usuario");
-			String password = obtenerDatoDespuesDeDosPuntos("Password");
+//			String ddbb = obtenerDatoDespuesDeDosPuntos("Database");
+//			String usuario = obtenerDatoDespuesDeDosPuntos("Usuario");
+//			String password = obtenerDatoDespuesDeDosPuntos("Password");
 
 			String userHome = System.getProperty("user.home");
 			String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
 			String carpeta_backups = ubicacion + File.separator + "libreria" + File.separator + "backups"
-					+ File.separator + obtenerDatoDespuesDeDosPuntos("Database") + File.separator;
+					+ File.separator + DBManager.DB_NAME + File.separator;
 
 			String pathMySql = "C:\\Program Files\\MySQL";
 			String mysqlDump = pathMySql + "\\mysqldump.exe";
@@ -509,7 +479,7 @@ public class Utilidades {
 			File carpetaDestino = new File(carpeta_backups);
 			File archivoCopia = new File(carpetaDestino, nombreCopia);
 
-			String[] command = new String[] { mysqlDump, "-u" + usuario, "-p" + password, "-B", ddbb, "--hex-blob",
+			String[] command = new String[] { mysqlDump, "-u" + DBManager.DB_USER, "-p" + DBManager.DB_PASS, "-B", DBManager.DB_NAME, "--hex-blob",
 					"--routines=true", "--result-file=" + archivoCopia.getAbsolutePath() };
 
 			ProcessBuilder pb = new ProcessBuilder(command);

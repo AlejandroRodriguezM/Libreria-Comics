@@ -1395,7 +1395,7 @@ public class DBLibreriaManager extends Comic {
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
 		String imagePath = documentsPath + File.separator + "libreria_comics" + File.separator
-				+ utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas" + File.separator
+				+ DBManager.DB_NAME + File.separator + "portadas" + File.separator
 				+ nuevoNombreArchivo;
 
 		String sql = "UPDATE comicsbbdd SET portada = ? WHERE ID = ?";

@@ -1345,7 +1345,7 @@ public class ModificarDatosController implements Initializable {
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
 		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator
-				+ utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas";
+				+ DBManager.DB_NAME + File.separator + "portadas";
 		Utilidades.convertirNombresCarpetas(sourcePath);
 
 		if (nav.alertaModificar()) {
