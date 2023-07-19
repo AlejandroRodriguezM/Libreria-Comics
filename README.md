@@ -1,4 +1,4 @@
-Version Final 5.1.0.0 Este programa se encuentra en su fase final, los cambios que se realicen sera para solucionar posibles bugs.
+Version Final 5.3.0.0 Este programa se encuentra en su fase final, los cambios que se realicen sera para solucionar posibles bugs.
  - Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  - Las ventanas graficas se realizan con JavaFX.
  - Poder introducir imagenes en la base de datos en forma de direccion, se creara una copia en una carpeta especifica
