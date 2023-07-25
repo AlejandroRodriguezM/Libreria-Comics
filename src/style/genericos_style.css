@@ -59,6 +59,16 @@
     -fx-background-color: #e5b800;
 }
 
+.button#botonVolverMenu {
+    -fx-background-color: #ffd700; /* Amarillo */
+    -fx-border-color: #e5b800; /* Borde */
+    -fx-text-fill: black;
+}
+
+.button#botonVolverMenu:hover {
+    -fx-background-color: #e5b800;
+}
+
 .button#botonVender {
     -fx-background-color: #d9534f;
     -fx-border-color: #d43f3a;

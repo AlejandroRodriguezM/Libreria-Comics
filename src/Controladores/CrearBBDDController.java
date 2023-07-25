@@ -268,7 +268,6 @@ public class CrearBBDDController implements Initializable {
 		if (!datosBBDD() && checkDatabaseExists()) {
 			createDataBase();
 			createTable();
-			createProcedure();
 			crearCarpeta();
 			prontInformativo.setStyle("-fx-background-color: #A0F52D");
 			iniciarAnimacionBaseCreada();
@@ -423,78 +422,6 @@ public class CrearBBDDController implements Initializable {
 	}
 
 	/**
-	 * Crea los procedimientos almacenados en la base de datos.
-	 */
-	public void createProcedure() {
-		String url = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
-		try (Connection connection = DriverManager.getConnection(url, DB_USER, DB_PASS);
-				Statement statement = connection.createStatement()) {
-
-			// Creación de procedimientos almacenados
-			String[] procedures = { "numeroGrapas", "numeros_tapa_dura", "numeros_tapa_blanda", "numeros_libros",
-					"numeroMangas", "numeroDC", "numeroMarvel", "numeroDarkHorse", "numeroPanini", "numeroImage",
-					"numeroUSA", "numeroSpain", "total", "comicsLeidos", "comicsFirmados", "comicsComprados",
-					"comicsPosesion" };
-
-			for (String procedure : procedures) {
-				String procedureSQL = "CREATE PROCEDURE " + procedure + "()\n" + "BEGIN\n"
-						+ "SELECT COUNT(*) FROM comicsbbdd\n" + getProcedureCondition(procedure) + "END";
-
-				statement.execute(procedureSQL);
-			}
-		} catch (SQLException e) {
-			nav.alertaException(e.toString());
-		}
-	}
-
-	/**
-	 * Devuelve la condición WHERE correspondiente al procedimiento almacenado.
-	 *
-	 * @param procedure El nombre del procedimiento almacenado.
-	 * @return La condición WHERE correspondiente.
-	 */
-	private String getProcedureCondition(String procedure) {
-		switch (procedure) {
-		case "numeroGrapas":
-			return "WHERE formato = 'Grapa';";
-		case "numeros_tapa_dura":
-			return "WHERE formato = 'Tapa dura';";
-		case "numeros_tapa_blanda":
-			return "WHERE formato = 'Tapa blanda';";
-		case "numeros_libros":
-			return "WHERE formato = 'Libro';";
-		case "numeroMangas":
-			return "WHERE formato = 'Manga';";
-		case "numeroDC":
-			return "WHERE nomEditorial = 'DC';";
-		case "numeroMarvel":
-			return "WHERE nomEditorial = 'Marvel';";
-		case "numeroDarkHorse":
-			return "WHERE nomEditorial = 'Dark Horse';";
-		case "numeroPanini":
-			return "WHERE nomEditorial = 'Panini';";
-		case "numeroImage":
-			return "WHERE nomEditorial = 'Image Comics';";
-		case "numeroUSA":
-			return "WHERE procedencia = 'USA';";
-		case "numeroSpain":
-			return "WHERE procedencia = 'Spain';";
-		case "total":
-			return ";";
-		case "comicsLeidos":
-			return "WHERE puntuacion <> 'Sin puntuar';";
-		case "comicsFirmados":
-			return "WHERE firma <> '';";
-		case "comicsComprados":
-			return "WHERE estado = 'Comprado';";
-		case "comicsPosesion":
-			return "WHERE estado = 'En posesion';";
-		default:
-			return ";";
-		}
-	}
-
-	/**
 	 * Limpia los datos en pantalla
 	 *
 	 * @param event
@@ -561,7 +488,6 @@ public class CrearBBDDController implements Initializable {
 	public void reconstruirBBDD() {
 		if (nav.alertaTablaError()) {
 			createTable();
-			createProcedure();
 		} else {
 			String excepcion = "Debes de reconstruir la base de datos. Si no, no podras entrar";
 			nav.alertaException(excepcion);

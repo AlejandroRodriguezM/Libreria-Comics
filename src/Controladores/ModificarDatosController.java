@@ -28,11 +28,13 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 
 import Funcionamiento.Comic;
@@ -279,6 +281,23 @@ public class ModificarDatosController implements Initializable {
 	@FXML
 	private ImageView imagencomic;
 
+	private boolean isUserInput = true;
+	private boolean updatingComboBoxes = false; // New variable to keep track of ComboBox updates
+
+	private Map<ComboBox<String>, ObservableList<String>> originalComboBoxItems = new HashMap<>();
+	private ComboBox<String> currentComboBox; // New variable to keep track of the current ComboBox
+	
+	private AutoCompletionBinding<String> nombreComicAutoCompletion;
+	private AutoCompletionBinding<String> numeroComicAutoCompletion;
+	private AutoCompletionBinding<String> nombreFirmaAutoCompletion;
+	private AutoCompletionBinding<String> nombreGuionistaAutoCompletion;
+	private AutoCompletionBinding<String> nombreVarianteAutoCompletion;
+	private AutoCompletionBinding<String> numeroCajaAutoCompletion;
+	private AutoCompletionBinding<String> nombreProcedenciaAutoCompletion;
+	private AutoCompletionBinding<String> nombreFormatoAutoCompletion;
+	private AutoCompletionBinding<String> nombreEditorialAutoCompletion;
+	private AutoCompletionBinding<String> nombreDibujanteAutoCompletion;
+	
 	private static Ventanas nav = new Ventanas();
 	private static DBLibreriaManager libreria = null;
 	private static Utilidades utilidad = null;
@@ -304,12 +323,217 @@ public class ModificarDatosController implements Initializable {
 		listas_autocompletado();
 		restringir_entrada_datos();
 		seleccionarRaw();
+		lecturaComboBox();
 
 		restringirSimbolos(nombreGuionistaMod);
 		restringirSimbolos(nombreDibujanteMod);
 		restringirSimbolos(nombreVarianteMod);
+	}
+	
+	private Comic getComicFromComboBoxes() {
+		Comic comic = new Comic();
+		comic.setNombre(nombreComic.getValue() != null ? nombreComic.getValue() : "");
+		comic.setNumero(numeroComic.getValue() != null ? numeroComic.getValue() : "");
+		comic.setFirma(nombreFirma.getValue() != null ? nombreFirma.getValue() : "");
+		comic.setGuionista(nombreGuionista.getValue() != null ? nombreGuionista.getValue() : "");
+		comic.setVariante(nombreVariante.getValue() != null ? nombreVariante.getValue() : "");
+		comic.setNumCaja(numeroCaja.getValue() != null ? numeroCaja.getValue() : "");
+		comic.setProcedencia(nombreProcedencia.getValue() != null ? nombreProcedencia.getValue() : "");
+		comic.setFormato(nombreFormato.getValue() != null ? nombreFormato.getValue() : "");
+		comic.setEditorial(nombreEditorial.getValue() != null ? nombreEditorial.getValue() : "");
+		comic.setDibujante(nombreDibujante.getValue() != null ? nombreDibujante.getValue() : "");
+		return comic;
+	}
 
+	/**
+	 * Realiza la lectura y configuración de los ComboBoxes de la interfaz gráfica.
+	 * Asigna escuchadores para detectar cambios en los ComboBoxes y en sus campos
+	 * de texto. Actualiza los ComboBoxes según los cambios realizados por el
+	 * usuario. Además, comprueba si solo un ComboBox está lleno y llama a la
+	 * función rellenarComboBox().
+	 */
+	public void lecturaComboBox() {
+		libreria = new DBLibreriaManager();
+		isUserInput = true; // Establecemos isUserInput en true inicialmente.
 
+		// Configuración de los escuchadores para cada ComboBox mediante un bucle
+		for (ComboBox<String> comboBox : Arrays.asList(nombreComic, numeroComic, nombreFirma, nombreGuionista,
+				nombreVariante, numeroCaja, nombreProcedencia, nombreFormato, nombreEditorial, nombreDibujante)) {
+
+			// Guardar los elementos originales de cada ComboBox
+			originalComboBoxItems.put(comboBox, FXCollections.observableArrayList(comboBox.getItems()));
+
+			// Agregar el escuchador de cambios para detectar cuando se selecciona un valor
+			// en el ComboBox
+			comboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+				if (!isUserInput || updatingComboBoxes) {
+					return; // Ignorar cambios programáticos o cuando updatingComboBoxes es verdadero
+				}
+
+				if (newValue == null || newValue.isEmpty()) {
+					handleComboBoxEmptyChange(comboBox);
+					return;
+				} else {
+					return;
+				}
+			});
+
+			// Agregar el escuchador de cambios para detectar cuando se borra el texto en el
+			// ComboBox editor
+			comboBox.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+				if (!isUserInput || updatingComboBoxes) {
+					return; // Ignorar cambios programáticos o cuando updatingComboBoxes es verdadero
+				}
+
+				if (newValue == null || newValue.isEmpty()) {
+					handleComboBoxEmptyChange(comboBox);
+					return;
+				} else {
+					Comic comic = getComicFromComboBoxes();
+					actualizarComboBoxes(comic);
+					return;
+				}
+			});
+
+			// Agregar el escuchador de cambios para detectar cuando se presiona "Backspace"
+			// o "Delete"
+			comboBox.setOnKeyReleased(event -> {
+				KeyCode code = event.getCode();
+				if (code == KeyCode.BACK_SPACE || code == KeyCode.DELETE) {
+					comboBox.setValue(null); // Reset the ComboBox value
+					comboBox.getEditor().clear(); // Clear the ComboBox editor text
+					handleComboBoxEmptyChange(comboBox); // Handle the empty change after clearing
+				}
+			});
+		}
+	}
+
+	/**
+	 * Maneja los cambios en el ComboBox cuando su texto está vacío. Restablece el valor
+	 * del ComboBox a null y verifica si todos los campos de texto de los ComboBoxes están vacíos.
+	 * Si todos están vacíos, llama a la función "limpiezaDeDatos()".
+	 *
+	 * @param comboBox El ComboBox que ha cambiado su valor.
+	 */
+	private void handleComboBoxEmptyChange(ComboBox<String> comboBox) {
+		isUserInput = false;
+
+		// Restablecer el valor del ComboBox cuando el texto está vacío
+		currentComboBox = comboBox; // Actualizar el ComboBox actual
+		currentComboBox.setValue(null); // Establecer a null para restablecer la selección del ComboBox
+
+		isUserInput = true;
+		// Comprobar si todos los campos de texto de los ComboBoxes están vacíos
+		boolean allEmpty = true;
+		for (ComboBox<String> cb : originalComboBoxItems.keySet()) {
+			if (!cb.getEditor().getText().isEmpty()) {
+				allEmpty = false;
+				break;
+			}
+		}
+
+		// Si todos los campos de texto de los ComboBoxes están vacíos, llamar a
+		// limpiezaDeDatos()
+		if (allEmpty) {
+			borrar_datos();
+		}
+	}
+
+	/**
+	 * Actualiza los ComboBoxes con los resultados obtenidos de la base de datos según el Comic proporcionado.
+	 * Primero, se crea un Comic temporal sin algunos valores para utilizarlo en la consulta SQL.
+	 * Luego, se construye la consulta SQL a partir del Comic temporal y se obtienen los resultados
+	 * de la base de datos para cada campo de ComboBox. Finalmente, se actualizan los ComboBoxes con los
+	 * nuevos datos obtenidos.
+	 *
+	 * @param comic El Comic que se utilizará como base para obtener los resultados de la base de datos.
+	 */
+	public void actualizarComboBoxes(Comic comic) {
+
+		Comic comicTemp = new Comic("", comic.getNombre(), comic.getNumCaja(), comic.getNumero(), comic.getVariante(),
+				comic.getFirma(), comic.getEditorial(), comic.getFormato(), comic.getProcedencia(), "",
+				comic.getGuionista(), comic.getDibujante(), "", "", "");
+
+		String sql = libreria.datosConcatenados(comicTemp);
+
+		if (!sql.isEmpty()) {
+
+			isUserInput = false; // Disable user input during programmatic updates
+
+			DBLibreriaManager.nombreComicList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomComic");
+			DBLibreriaManager.nombreGuionistaList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomGuionista");
+			DBLibreriaManager.numeroComicList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "numComic");
+			DBLibreriaManager.nombreVarianteList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomVariante");
+			DBLibreriaManager.numeroCajaList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "caja_deposito");
+			DBLibreriaManager.nombreProcedenciaList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "procedencia");
+			DBLibreriaManager.nombreFormatoList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "formato");
+			DBLibreriaManager.nombreEditorialList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomEditorial");
+			DBLibreriaManager.nombreDibujanteList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomDibujante");
+			DBLibreriaManager.nombreFirmaList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "firma");
+
+			if (!DBLibreriaManager.nombreComicList.isEmpty() || !comic.getNombre().isEmpty()) {
+				ObservableList<String> nombresActuales = FXCollections
+						.observableArrayList(DBLibreriaManager.nombreComicList);
+				nombreComic.setItems(nombresActuales);
+			}
+
+			if (!DBLibreriaManager.numeroComicList.isEmpty()) {
+				ObservableList<String> numerosActuales = FXCollections
+						.observableArrayList(DBLibreriaManager.numeroComicList);
+				numeroComic.setItems(numerosActuales);
+			}
+
+			if (!DBLibreriaManager.nombreGuionistaList.isEmpty()) {
+				ObservableList<String> guionistasActuales = FXCollections
+						.observableArrayList(DBLibreriaManager.nombreGuionistaList);
+				nombreGuionista.setItems(guionistasActuales);
+			}
+
+			if (!DBLibreriaManager.nombreVarianteList.isEmpty()) {
+				ObservableList<String> variantesActuales = FXCollections
+						.observableArrayList(DBLibreriaManager.nombreVarianteList);
+				nombreVariante.setItems(variantesActuales);
+			}
+
+			if (!DBLibreriaManager.numeroCajaList.isEmpty()) {
+
+				ObservableList<String> cajaComics = FXCollections.observableArrayList(DBLibreriaManager.numeroCajaList);
+				numeroCaja.setItems(cajaComics);
+			}
+
+			if (!DBLibreriaManager.nombreProcedenciaList.isEmpty()) {
+
+				ObservableList<String> procedenciaEstadoActual = FXCollections
+						.observableArrayList(DBLibreriaManager.nombreProcedenciaList);
+				nombreProcedencia.setItems(procedenciaEstadoActual);
+			}
+
+			if (!DBLibreriaManager.nombreFormatoList.isEmpty()) {
+				ObservableList<String> formatoActual = FXCollections
+						.observableArrayList(DBLibreriaManager.nombreFormatoList);
+				nombreFormato.setItems(formatoActual);
+			}
+
+			if (!DBLibreriaManager.nombreEditorialList.isEmpty()) {
+				ObservableList<String> editoriales = FXCollections
+						.observableArrayList(DBLibreriaManager.nombreEditorialList);
+				nombreEditorial.setItems(editoriales);
+			}
+
+			if (!DBLibreriaManager.nombreDibujanteList.isEmpty()) {
+				ObservableList<String> dibujantesActuales = FXCollections
+						.observableArrayList(DBLibreriaManager.nombreDibujanteList);
+				nombreDibujante.setItems(dibujantesActuales);
+			}
+
+			if (!DBLibreriaManager.nombreFirmaList.isEmpty()) {
+				ObservableList<String> firmasActuales = FXCollections
+						.observableArrayList(DBLibreriaManager.nombreFirmaList);
+				nombreFirma.setItems(firmasActuales);
+			}
+			isUserInput = true; // Re-enable user input after programmatic updates
+
+		}
 	}
 	
 	public void autoRelleno() {
@@ -544,23 +768,30 @@ public class ModificarDatosController implements Initializable {
 
 	public void borrar_datos() {
 
-		nombreComic.getEditor().clear();
-		nombreVariante.getEditor().clear();
-		nombreProcedencia.getEditor().clear();
-		nombreFormato.getEditor().clear();
-		nombreDibujante.getEditor().clear();
-		nombreGuionista.getEditor().clear();
-		nombreEditorial.getEditor().clear();
-		nombreFirma.getEditor().clear();
-		numeroComic.getEditor().clear();
-		fechaPublicacion.setValue(null);
-		numeroCaja.getEditor().clear();
+		isUserInput = false; // Disable user input during cleanup
 
+		// Clear all ComboBox text fields and values
+		for (ComboBox<String> comboBox : Arrays.asList(nombreComic, numeroComic, nombreFirma, nombreGuionista,
+				nombreVariante, numeroCaja, nombreProcedencia, nombreFormato, nombreEditorial, nombreDibujante)) {
+			comboBox.setValue("");
+			comboBox.getEditor().setText("");
+		}
+
+		// Restore the original items for each ComboBox
+		for (ComboBox<String> comboBox : originalComboBoxItems.keySet()) {
+			ObservableList<String> originalItems = originalComboBoxItems.get(comboBox);
+			comboBox.setItems(originalItems);
+		}
+
+		// Clear additional UI elements
+		fechaPublicacion.setValue(null);
 		prontInfo.setText(null);
 		prontInfo.setOpacity(0);
 		tablaBBDD.getItems().clear();
-		botonNuevaPortada.setStyle(null);
 		imagencomic.setImage(null);
+
+		isUserInput = true; // Re-enable user input after cleanup
+		rellenarComboBox();
 	}
 
 	public void borrar_datos_mod() {
@@ -584,6 +815,28 @@ public class ModificarDatosController implements Initializable {
 	}
 
 	public void listas_autocompletado() {
+		
+		// Las vinculaciones se asignan a las variables miembro correspondientes
+		nombreComicAutoCompletion = TextFields.bindAutoCompletion(nombreComic.getEditor(),
+				DBLibreriaManager.listaNombre);
+		numeroComicAutoCompletion = TextFields.bindAutoCompletion(numeroComic.getEditor(),
+				DBLibreriaManager.listaNumeroComic);
+		nombreFirmaAutoCompletion = TextFields.bindAutoCompletion(nombreFirma.getEditor(),
+				DBLibreriaManager.listaFirma);
+		nombreEditorialAutoCompletion = TextFields.bindAutoCompletion(nombreEditorial.getEditor(),
+				DBLibreriaManager.listaEditorial);
+		nombreGuionistaAutoCompletion = TextFields.bindAutoCompletion(nombreGuionista.getEditor(),
+				DBLibreriaManager.listaGuionista);
+		nombreVarianteAutoCompletion = TextFields.bindAutoCompletion(nombreVariante.getEditor(),
+				DBLibreriaManager.listaVariante);
+		nombreDibujanteAutoCompletion = TextFields.bindAutoCompletion(nombreDibujante.getEditor(),
+				DBLibreriaManager.listaDibujante);
+		nombreProcedenciaAutoCompletion = TextFields.bindAutoCompletion(nombreProcedencia.getEditor(),
+				DBLibreriaManager.listaProcedencia);
+		nombreFormatoAutoCompletion = TextFields.bindAutoCompletion(nombreFormato.getEditor(),
+				DBLibreriaManager.listaFormato);
+		numeroCajaAutoCompletion = TextFields.bindAutoCompletion(numeroCaja.getEditor(), DBLibreriaManager.listaCaja);
+		
 		TextFields.bindAutoCompletion(nombreComic.getEditor(), DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(numeroComic.getEditor(), DBLibreriaManager.listaNumeroComic);
 		TextFields.bindAutoCompletion(nombreVariante.getEditor(), DBLibreriaManager.listaVariante);
@@ -612,6 +865,56 @@ public class ModificarDatosController implements Initializable {
 		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaDibujante);
 		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaEditorial);
 		DBLibreriaManager.listaNombre.clear();
+	}
+	
+	/**
+	 * Funcion que permite resetear las listas de autocompletado
+	 */
+	public void listas_reseteo() {
+		// Desvincular y limpiar los autocompletados
+		nombreComicAutoCompletion.dispose();
+		numeroComicAutoCompletion.dispose();
+		nombreFirmaAutoCompletion.dispose();
+		nombreEditorialAutoCompletion.dispose();
+		nombreGuionistaAutoCompletion.dispose();
+		nombreVarianteAutoCompletion.dispose();
+		nombreDibujanteAutoCompletion.dispose();
+		nombreProcedenciaAutoCompletion.dispose();
+		nombreFormatoAutoCompletion.dispose();
+		numeroCajaAutoCompletion.dispose();
+	}
+
+	public void listas_autocompletado_filtrado() {
+
+		nombreComicAutoCompletion = TextFields.bindAutoCompletion(nombreComic.getEditor(),
+				DBLibreriaManager.nombreComicList);
+		numeroComicAutoCompletion = TextFields.bindAutoCompletion(numeroComic.getEditor(),
+				DBLibreriaManager.numeroComicList);
+		nombreFirmaAutoCompletion = TextFields.bindAutoCompletion(nombreFirma.getEditor(),
+				DBLibreriaManager.nombreFirmaList);
+		nombreEditorialAutoCompletion = TextFields.bindAutoCompletion(nombreEditorial.getEditor(),
+				DBLibreriaManager.nombreEditorialList);
+		nombreGuionistaAutoCompletion = TextFields.bindAutoCompletion(nombreGuionista.getEditor(),
+				DBLibreriaManager.nombreGuionistaList);
+		nombreDibujanteAutoCompletion = TextFields.bindAutoCompletion(nombreDibujante.getEditor(),
+				DBLibreriaManager.nombreDibujanteList);
+		nombreProcedenciaAutoCompletion = TextFields.bindAutoCompletion(nombreProcedencia.getEditor(),
+				DBLibreriaManager.nombreProcedenciaList);
+		nombreFormatoAutoCompletion = TextFields.bindAutoCompletion(nombreFormato.getEditor(),
+				DBLibreriaManager.nombreFormatoList);
+		numeroCajaAutoCompletion = TextFields.bindAutoCompletion(numeroCaja.getEditor(),
+				DBLibreriaManager.numeroCajaList);
+
+		TextFields.bindAutoCompletion(nombreComic.getEditor(), DBLibreriaManager.nombreComicList);
+		TextFields.bindAutoCompletion(numeroComic.getEditor(), DBLibreriaManager.numeroCajaList);
+		TextFields.bindAutoCompletion(nombreVariante.getEditor(), DBLibreriaManager.nombreVarianteList);
+		TextFields.bindAutoCompletion(nombreFirma.getEditor(), DBLibreriaManager.nombreFirmaList);
+		TextFields.bindAutoCompletion(nombreEditorial.getEditor(), DBLibreriaManager.nombreEditorialList);
+		TextFields.bindAutoCompletion(nombreGuionista.getEditor(), DBLibreriaManager.nombreGuionistaList);
+		TextFields.bindAutoCompletion(nombreDibujante.getEditor(), DBLibreriaManager.nombreDibujanteList);
+		TextFields.bindAutoCompletion(nombreProcedencia.getEditor(), DBLibreriaManager.nombreProcedenciaList);
+		TextFields.bindAutoCompletion(nombreFormato.getEditor(), DBLibreriaManager.nombreFormatoList);
+		TextFields.bindAutoCompletion(numeroCaja.getEditor(), DBLibreriaManager.numeroCajaList);
 	}
 
 	/**
@@ -1101,7 +1404,8 @@ public class ModificarDatosController implements Initializable {
 		tablaBBDD.getItems().clear();
 		libreria = new DBLibreriaManager();
 		prontInfo.setOpacity(1);
-		prontInfo.setText(libreria.procedimientosEstadistica());
+		prontInfo.setText("Generando fichero de estadisticas . . . ");
+		libreria.generar_fichero_estadisticas();
 	}
 
 	/////////////////////////////////

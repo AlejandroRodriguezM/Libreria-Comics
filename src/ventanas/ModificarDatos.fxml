@@ -25,7 +25,6 @@
       </ImageView>
       <TextField fx:id="idComicMod" layoutX="446.0" layoutY="31.0" prefHeight="25.0" prefWidth="162.0" promptText="Introduce ID" />
       <Button fx:id="botonModificar" layoutX="748.0" layoutY="386.0" mnemonicParsing="false" onAction="#modificarDatos" prefHeight="42.0" prefWidth="113.0" stylesheets="@../style/genericos_style.css" text="Modificar comic" wrapText="true" />
-      <Button fx:id="botonLimpiarComic" layoutX="187.0" layoutY="378.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="42.0" prefWidth="61.0" stylesheets="@../style/genericos_style.css" text="Limpiar" wrapText="true" />
       <Button fx:id="botonMostrarParametro" layoutX="100.0" layoutY="379.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="42.0" prefWidth="61.0" stylesheets="@../style/genericos_style.css" text="Busqueda" wrapText="true" />
       <Button fx:id="botonbbdd" layoutX="12.0" layoutY="379.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="42.0" prefWidth="61.0" stylesheets="@../style/genericos_style.css" text="Ver todo" wrapText="true" />
       <Label fx:id="idMod" layoutX="325.0" layoutY="31.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="ID" />
@@ -47,7 +46,7 @@
                   <MenuItem fx:id="menu_archivo_cerrar" mnemonicParsing="false" onAction="#salirPrograma" text="Cerrar" />
                </items>
             </Menu>
-            <Menu fx:id="navegacion_comic" mnemonicParsing="false" text="Comic">
+            <Menu fx:id="navegacion_comic" mnemonicParsing="false" text="Ventanas">
                <items>
                   <MenuItem fx:id="menu_comic_aniadir" mnemonicParsing="false" onAction="#ventanaAniadir" text="Añadir Comic" />
                   <MenuItem fx:id="menu_comic_eliminar" mnemonicParsing="false" onAction="#ventanaEliminar" text="Eliminar Comic" />
@@ -190,5 +189,6 @@
       </Label>
       <ComboBox fx:id="numeroCajaMod" editable="true" layoutX="445.0" layoutY="378.0" prefHeight="25.0" prefWidth="162.0" promptText="Selecciona caja" stylesheets="@../style/combobox_style.css" />
       <ComboBox fx:id="numeroComicMod" editable="true" layoutX="445.0" layoutY="88.0" prefHeight="25.0" prefWidth="162.0" promptText="Introduce numero" stylesheets="@../style/combobox_style.css" />
+      <Button fx:id="botonLimpiarComic" layoutX="173.0" layoutY="377.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="49.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Limpiar/Reiniciar" />
    </children>
 </Pane>

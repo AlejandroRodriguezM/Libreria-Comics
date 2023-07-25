@@ -23,17 +23,16 @@
             <Image url="@../imagenes/Fondo%20puntuar.jpg" />
          </image>
       </ImageView>
-      <Button fx:id="botonbbdd" layoutX="303.0" layoutY="82.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="42.0" prefWidth="70.0" stylesheets="@../style/genericos_style.css" text="Ver todo" wrapText="true" />
+      <Button fx:id="botonbbdd" layoutX="303.0" layoutY="80.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="42.0" prefWidth="70.0" stylesheets="@../style/genericos_style.css" text="Ver todo" wrapText="true" />
       <Button fx:id="botonMostrarParametro" layoutX="304.0" layoutY="32.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="42.0" prefWidth="70.0" stylesheets="@../style/genericos_style.css" text="Busqueda" wrapText="true" />
-      <Button fx:id="botonLeidos" layoutX="304.0" layoutY="134.0" mnemonicParsing="false" onAction="#verComicsLeidos" prefHeight="35.0" prefWidth="86.0" stylesheets="@../style/genericos_style.css" text="Comics leidos" wrapText="true" />
-      <Button fx:id="botonLimpiarComic" layoutX="304.0" layoutY="176.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="34.0" prefWidth="100.0" stylesheets="@../style/genericos_style.css" text="Limpiar" />
-      <TextField fx:id="idPuntuar" layoutX="396.0" layoutY="220.0" prefHeight="25.0" prefWidth="128.0" />
-      <Button fx:id="botonAgregarPuntuacion" layoutX="304.0" layoutY="280.0" mnemonicParsing="false" onAction="#agregarPuntuacion" prefHeight="42.0" prefWidth="117.0" stylesheets="@../style/genericos_style.css" text="Añadir puntuación" />
+      <Button fx:id="botonLeidos" layoutX="304.0" layoutY="129.0" mnemonicParsing="false" onAction="#verComicsLeidos" prefHeight="35.0" prefWidth="86.0" stylesheets="@../style/genericos_style.css" text="Comics leidos" wrapText="true" />
+      <TextField fx:id="idPuntuar" layoutX="397.0" layoutY="223.0" prefHeight="25.0" prefWidth="128.0" />
+      <Button fx:id="botonAgregarPuntuacion" layoutX="304.0" layoutY="284.0" mnemonicParsing="false" onAction="#agregarPuntuacion" prefHeight="42.0" prefWidth="117.0" stylesheets="@../style/genericos_style.css" text="Añadir puntuación" />
       <TextArea fx:id="prontInfo" editable="false" layoutX="896.0" layoutY="30.0" opacity="0.0" prefHeight="317.0" prefWidth="293.0" stylesheets="@../style/panel_info_style.css" wrapText="true" />
-      <Label layoutX="304.0" layoutY="253.0" prefHeight="23.0" prefWidth="86.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Puntuación" />
-      <Label layoutX="303.0" layoutY="219.0" prefHeight="23.0" prefWidth="86.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="ID a Puntuar" />
-      <ComboBox fx:id="puntuacionMenu" layoutX="396.0" layoutY="249.0" prefHeight="25.0" prefWidth="128.0" />
-      <Button fx:id="botonBorrarOpinion" layoutX="304.0" layoutY="333.0" mnemonicParsing="false" onAction="#borrarPuntuacion" prefHeight="35.0" prefWidth="117.0" stylesheets="@../style/genericos_style.css" text="Borrar puntuación" />
+      <Label layoutX="305.0" layoutY="257.0" prefHeight="23.0" prefWidth="86.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Puntuación" />
+      <Label layoutX="304.0" layoutY="223.0" prefHeight="23.0" prefWidth="86.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="ID a Puntuar" />
+      <ComboBox fx:id="puntuacionMenu" layoutX="397.0" layoutY="253.0" prefHeight="25.0" prefWidth="128.0" />
+      <Button fx:id="botonBorrarOpinion" layoutX="304.0" layoutY="337.0" mnemonicParsing="false" onAction="#borrarPuntuacion" prefHeight="35.0" prefWidth="117.0" stylesheets="@../style/genericos_style.css" text="Borrar puntuación" />
       <ImageView fx:id="imagencomic" fitHeight="332.0" fitWidth="220.0" layoutX="630.0" layoutY="33.0" pickOnBounds="true" preserveRatio="true" />
       <MenuBar fx:id="menu_navegacion" prefHeight="25.0" prefWidth="1198.0">
          <menus>
@@ -49,7 +48,7 @@
                   <MenuItem fx:id="menu_archivo_cerrar" mnemonicParsing="false" onAction="#salirPrograma" text="Cerrar" />
                </items>
             </Menu>
-            <Menu fx:id="navegacion_comic" mnemonicParsing="false" text="Comic">
+            <Menu fx:id="navegacion_comic" mnemonicParsing="false" text="Ventanas">
                <items>
                   <MenuItem fx:id="menu_comic_aniadir" mnemonicParsing="false" onAction="#ventanaAniadir" text="Añadir Comic" />
                   <MenuItem fx:id="menu_comic_eliminar" mnemonicParsing="false" onAction="#ventanaEliminar" text="Eliminar Comic" />
@@ -162,5 +161,6 @@
       <ComboBox fx:id="nombreProcedencia" editable="true" layoutX="130.0" layoutY="143.0" prefHeight="25.0" prefWidth="162.0" promptText="Selecciona procedencia" stylesheets="@../style/combobox_style.css" />
       <ComboBox fx:id="numeroComic" editable="true" layoutX="130.0" layoutY="87.0" prefHeight="25.0" prefWidth="162.0" promptText="Seleccionar numero" stylesheets="@../style/combobox_style.css" />
       <ComboBox fx:id="numeroCaja" editable="true" layoutX="131.0" layoutY="342.0" prefHeight="25.0" prefWidth="162.0" promptText="Selecciona caja" stylesheets="@../style/combobox_style.css" />
+      <Button fx:id="botonLimpiarComic" layoutX="303.0" layoutY="169.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="49.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Limpiar/Reiniciar" />
    </children>
 </Pane>

@@ -1,5 +1,7 @@
 package JDBC;
 
+import java.awt.Desktop;
+
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  * Las ventanas graficas se realizan con JavaFX.
@@ -28,18 +30,25 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.lang.ProcessBuilder.Redirect;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import Funcionamiento.Comic;
 import Funcionamiento.FuncionesExcel;
@@ -72,6 +81,17 @@ public class DBLibreriaManager extends Comic {
 	public static List<String> listaProcedencia = new ArrayList<>();
 	public static List<String> listaCaja = new ArrayList<>();
 
+	public static ArrayList<String> nombreComicList = new ArrayList<>();
+	public static ArrayList<String> numeroComicList = new ArrayList<>();
+	public static ArrayList<String> nombreFirmaList = new ArrayList<>();
+	public static ArrayList<String> nombreGuionistaList = new ArrayList<>();
+	public static ArrayList<String> nombreVarianteList = new ArrayList<>();
+	public static ArrayList<String> numeroCajaList = new ArrayList<>();
+	public static ArrayList<String> nombreProcedenciaList = new ArrayList<>();
+	public static ArrayList<String> nombreFormatoList = new ArrayList<>();
+	public static ArrayList<String> nombreEditorialList = new ArrayList<>();
+	public static ArrayList<String> nombreDibujanteList = new ArrayList<>();
+
 	private static Ventanas nav = new Ventanas();
 	private static Connection conn = null;
 	private static Utilidades utilidad = new Utilidades();
@@ -92,6 +112,19 @@ public class DBLibreriaManager extends Comic {
 		listaProcedencia();
 		listaCajas();
 		listaNumeroComic();
+	}
+
+	public static void limpiarListas() {
+		nombreComicList.clear();
+		numeroComicList.clear();
+		nombreFirmaList.clear();
+		nombreGuionistaList.clear();
+		nombreVarianteList.clear();
+		numeroCajaList.clear();
+		nombreProcedenciaList.clear();
+		nombreFormatoList.clear();
+		nombreEditorialList.clear();
+		nombreDibujanteList.clear();
 	}
 
 	/**
@@ -237,163 +270,6 @@ public class DBLibreriaManager extends Comic {
 		} catch (Exception e) {
 			nav.alertaException(e.toString());
 		}
-	}
-
-	/**
-	 * Funcion que llamada a los procedimientos almacenados en la base de datos y
-	 * muestra diferentes datos.
-	 */
-	public String procedimientosEstadistica() {
-
-		int numGrapas, numDuro, numBlando, numLibros, numUsa, numEsp, numMarvel, numDC, numPanini, numDarkHorse,
-				numImage, numMangas, leidos, comprados, posesion, firmados, total;
-
-		String procedimientos[] = { "call numeroGrapas()", "call numeros_tapa_dura()", "call numeros_tapa_blanda()",
-				"call numeros_libros()", "call numeroSpain()", "call numeroUSA()", "call total()",
-				"call numeroPanini()", "call numeroMarvel()", "call numeroDC()", "call numeroDarkHorse()",
-				"call numeroImage()", "call numeroMangas()", "call comicsLeidos()", "call comicsComprados",
-				"call comicsPosesion()", "call comicsFirmados()" };
-
-		try {
-
-			ResultSet rs1 = ejecucionSQL(procedimientos[0]); // Executa el procedimiento almacenado
-			ResultSet rs2 = ejecucionSQL(procedimientos[1]); // Executa el procedimiento almacenado
-			ResultSet rs3 = ejecucionSQL(procedimientos[2]); // Executa el procedimiento almacenado
-			ResultSet rs4 = ejecucionSQL(procedimientos[3]); // Executa el procedimiento almacenado
-			ResultSet rs5 = ejecucionSQL(procedimientos[4]); // Executa el procedimiento almacenado
-			ResultSet rs6 = ejecucionSQL(procedimientos[5]); // Executa el procedimiento almacenado
-			ResultSet rs7 = ejecucionSQL(procedimientos[6]); // Executa el procedimiento almacenado
-			ResultSet rs8 = ejecucionSQL(procedimientos[7]); // Executa el procedimiento almacenado
-			ResultSet rs9 = ejecucionSQL(procedimientos[8]); // Executa el procedimiento almacenado
-			ResultSet rs10 = ejecucionSQL(procedimientos[9]); // Executa el procedimiento almacenado
-			ResultSet rs11 = ejecucionSQL(procedimientos[10]); // Executa el procedimiento almacenado
-			ResultSet rs12 = ejecucionSQL(procedimientos[11]); // Executa el procedimiento almacenado
-			ResultSet rs13 = ejecucionSQL(procedimientos[12]); // Executa el procedimiento almacenado
-			ResultSet rs14 = ejecucionSQL(procedimientos[13]); // Executa el procedimiento almacenado
-			ResultSet rs15 = ejecucionSQL(procedimientos[14]); // Executa el procedimiento almacenado
-			ResultSet rs16 = ejecucionSQL(procedimientos[15]); // Executa el procedimiento almacenado
-			ResultSet rs17 = ejecucionSQL(procedimientos[16]); // Executa el procedimiento almacenado
-
-			// Si no hay dato que comprobar, devolvera un 0
-			if (rs1.next()) {
-				numGrapas = rs1.getInt(1);
-			} else {
-				numGrapas = 0;
-			}
-			if (rs2.next()) {
-				numDuro = rs2.getInt(1);
-			} else {
-				numDuro = 0;
-			}
-			if (rs3.next()) {
-				numBlando = rs3.getInt(1);
-			} else {
-				numBlando = 0;
-			}
-			if (rs4.next()) {
-				numLibros = rs4.getInt(1);
-			} else {
-				numLibros = 0;
-			}
-			if (rs5.next()) {
-				numEsp = rs5.getInt(1);
-			} else {
-				numEsp = 0;
-			}
-			if (rs6.next()) {
-				numUsa = rs6.getInt(1);
-			} else {
-				numUsa = 0;
-			}
-			if (rs7.next()) {
-				total = rs7.getInt(1);
-			} else {
-				total = 0;
-			}
-			if (rs8.next()) {
-				numPanini = rs8.getInt(1);
-			} else {
-				numPanini = 0;
-			}
-			if (rs9.next()) {
-				numMarvel = rs9.getInt(1);
-			} else {
-				numMarvel = 0;
-			}
-
-			if (rs10.next()) {
-				numDC = rs10.getInt(1);
-			} else {
-				numDC = 0;
-			}
-			if (rs11.next()) {
-				numDarkHorse = rs11.getInt(1);
-			} else {
-				numDarkHorse = 0;
-			}
-			if (rs12.next()) {
-				numImage = rs12.getInt(1);
-			} else {
-				numImage = 0;
-			}
-			if (rs13.next()) {
-				numMangas = rs13.getInt(1);
-			} else {
-				numMangas = 0;
-			}
-			if (rs14.next()) {
-				leidos = rs14.getInt(1);
-			} else {
-				leidos = 0;
-			}
-			if (rs15.next()) {
-				comprados = rs15.getInt(1);
-			} else {
-				comprados = 0;
-			}
-			if (rs16.next()) {
-				posesion = rs16.getInt(1);
-			} else {
-				posesion = 0;
-			}
-			if (rs17.next()) {
-				firmados = rs17.getInt(1);
-			} else {
-				firmados = 0;
-			}
-
-			rs1.close();
-			rs2.close();
-			rs3.close();
-			rs4.close();
-			rs5.close();
-			rs6.close();
-			rs7.close();
-			rs8.close();
-			rs9.close();
-			rs10.close();
-			rs11.close();
-			rs12.close();
-			rs13.close();
-			rs14.close();
-			rs15.close();
-			rs16.close();
-			rs17.close();
-
-			return "Numero de grapas: " + numGrapas + "\nNumero de tomos de tapa dura: " + numDuro
-					+ "\nNumeros de tomos de tapa blanda: " + numBlando + "\nNumeros de libros: " + numLibros
-					+ "\nNumeros de comics en Castellano: " + numEsp + "\nNumero de comics en USA: " + numUsa
-					+ "\nNumero de comics Marvel: " + numMarvel + "\nNumero de comics DC: " + numDC
-					+ "\nNumero de comics Dark horse: " + numDarkHorse + "\nNumero de comics de Panini: " + numPanini
-					+ "\nNumero de comics de Image Comics: " + numImage + "\nNumero de mangas: " + numMangas
-					+ "\nComics leidos: " + leidos + "\nComics comprados: " + comprados + "\nComics en posesion: "
-					+ posesion + "\nComics firmados: " + firmados + "\nTotal: " + total;
-
-		} catch (SQLException e) {
-			nav.alertaException(e.toString());
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 	/**
@@ -778,11 +654,133 @@ public class DBLibreriaManager extends Comic {
 		}
 
 		if (datosRellenados != 0) {
-			System.out.println(sql.toString());
 			return sql.toString();
 		}
 
 		return "";
+	}
+
+	public boolean numeroResultados(Comic comic) {
+		int datosRellenados = 0;
+
+		String connector = " WHERE ";
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT COUNT(*) FROM comicsbbdd");
+
+		if (comic.getID().length() != 0) {
+			sql.append(connector).append("ID = " + comic.getID());
+			connector = " AND ";
+			datosRellenados++;
+		}
+		if (comic.getNombre().length() != 0) {
+			sql.append(connector).append("nomComic like'%" + comic.getNombre() + "%'");
+			connector = " AND ";
+			datosRellenados++;
+		}
+
+		if (comic.getNumCaja().length() != 0) {
+			sql.append(connector).append("caja_deposito like'%" + comic.getNumCaja() + "%'");
+			connector = " AND ";
+			datosRellenados++;
+		}
+		if (comic.getNumero().length() != 0) {
+			sql.append(connector).append("numComic = " + comic.getNumero());
+			connector = " AND ";
+			datosRellenados++;
+		}
+		if (comic.getVariante().length() != 0) {
+			sql.append(connector).append("nomVariante like'%" + comic.getVariante() + "%'");
+			connector = " AND ";
+			datosRellenados++;
+		}
+		if (comic.getFirma().length() != 0) {
+			sql.append(connector).append("firma like'%" + comic.getFirma() + "%'");
+			connector = " AND ";
+			datosRellenados++;
+		}
+		if (comic.getEditorial().length() != 0) {
+			sql.append(connector).append("nomEditorial like'%" + comic.getEditorial() + "%'");
+			connector = " AND ";
+			datosRellenados++;
+		}
+		if (comic.getFormato().length() != 0) {
+			sql.append(connector).append("formato like'%" + comic.getFormato() + "%'");
+			connector = " AND ";
+			datosRellenados++;
+		}
+		if (comic.getProcedencia().length() != 0) {
+			sql.append(connector).append("procedencia like'%" + comic.getProcedencia() + "%'");
+			connector = " AND ";
+			datosRellenados++;
+		}
+		if (comic.getFecha().length() != 0) {
+			sql.append(connector).append("fecha_publicacion like'%" + comic.getFecha() + "%'");
+			connector = " AND ";
+			datosRellenados++;
+		}
+		if (comic.getGuionista().length() != 0) {
+			sql.append(connector).append("nomGuionista like'%" + comic.getGuionista() + "%'");
+			connector = " AND ";
+			datosRellenados++;
+		}
+		if (comic.getDibujante().length() != 0) {
+			sql.append(connector).append("nomDibujante like'%" + comic.getDibujante() + "%'");
+			connector = " AND ";
+			datosRellenados++;
+		}
+		if (datosRellenados != 0) {
+			try {
+				PreparedStatement preparedStatement = conn.prepareStatement(sql.toString());
+				ResultSet resultSet = preparedStatement.executeQuery();
+
+				if (resultSet.next()) {
+					int count = resultSet.getInt(1);
+					if (count > 0) {
+						return true;
+					}
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+
+	public ArrayList<String> obtenerResultadosDeLaBaseDeDatos(String sql, String campo) {
+		HashMap<String, Integer> mapa = new HashMap<>();
+		ArrayList<String> resultados = new ArrayList<>();
+
+		try {
+			Connection conn = DBManager.conexion();
+			PreparedStatement statement = conn.prepareStatement(sql);
+			ResultSet resultSet = statement.executeQuery();
+
+			while (resultSet.next()) {
+				String valor = resultSet.getString(campo);
+				// Verificar si el valor es diferente de nulo y no está vacío
+				if (valor != null && !valor.isEmpty()) {
+					mapa.put(valor, mapa.getOrDefault(valor, 0) + 1);
+				}
+			}
+
+			resultSet.close();
+			statement.close();
+		} catch (SQLException e) {
+			// En caso de excepción, simplemente imprime un mensaje en lugar de mostrar el
+			// error completo
+			System.err.println("Error al obtener resultados de la base de datos: " + e.getMessage());
+		}
+
+		// Si el mapa está vacío, retorna una lista vacía
+		if (mapa.isEmpty()) {
+			return resultados;
+		}
+
+		for (String clave : mapa.keySet()) {
+			resultados.add(clave);
+		}
+
+		return resultados;
 	}
 
 	/**
@@ -971,15 +969,6 @@ public class DBLibreriaManager extends Comic {
 					this.numero = rs.getString("numComic");
 					this.variante = rs.getString("nomVariante");
 					this.firma = rs.getString("firma");
-
-//	                if (this.firma.length() >= 9) {
-//	                    int mitad = this.firma.length() / 2;
-//	                    String parte1 = this.firma.substring(0, mitad);
-//	                    String parte2 = this.firma.substring(mitad);
-//
-//	                    this.firma = parte1 + "\n " + parte2;
-//	                }
-
 					this.editorial = rs.getString("nomEditorial");
 					this.formato = rs.getString("formato");
 					this.procedencia = rs.getString("procedencia");
@@ -1394,9 +1383,8 @@ public class DBLibreriaManager extends Comic {
 
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
-		String imagePath = documentsPath + File.separator + "libreria_comics" + File.separator
-				+ DBManager.DB_NAME + File.separator + "portadas" + File.separator
-				+ nuevoNombreArchivo;
+		String imagePath = documentsPath + File.separator + "libreria_comics" + File.separator + DBManager.DB_NAME
+				+ File.separator + "portadas" + File.separator + nuevoNombreArchivo;
 
 		String sql = "UPDATE comicsbbdd SET portada = ? WHERE ID = ?";
 		try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -1749,20 +1737,14 @@ public class DBLibreriaManager extends Comic {
 	 * @throws SQLException
 	 */
 	public List<Comic> libreriaSeleccionado(String datoSeleccionado) throws SQLException {
-		String sentenciaSQL = "SELECT * FROM comicsbbdd "
-				+ "WHERE nomVariante LIKE '%" + datoSeleccionado
-				+ "%' OR nomComic LIKE '%" + datoSeleccionado 
-		        + "%' OR nomGuionista LIKE '%" + datoSeleccionado 
-		        + "%' OR firma LIKE '%" + datoSeleccionado
-		        + "%' OR nomDibujante LIKE '%" + datoSeleccionado
-		        + "%' OR nomComic LIKE '%" + datoSeleccionado
-		        + "%' OR nomEditorial LIKE '%" + datoSeleccionado
-		        + "%' OR caja_deposito LIKE '%" + datoSeleccionado
-		        + "%' OR formato LIKE '%" + datoSeleccionado
-		        + "%' OR fecha_publicacion LIKE '%" + datoSeleccionado
-		        + "%' OR procedencia LIKE '%" + datoSeleccionado
-		        + "%' ORDER BY nomComic, fecha_publicacion, numComic ASC";
-		
+		String sentenciaSQL = "SELECT * FROM comicsbbdd " + "WHERE nomVariante LIKE '%" + datoSeleccionado
+				+ "%' OR nomComic LIKE '%" + datoSeleccionado + "%' OR nomGuionista LIKE '%" + datoSeleccionado
+				+ "%' OR firma LIKE '%" + datoSeleccionado + "%' OR nomDibujante LIKE '%" + datoSeleccionado
+				+ "%' OR nomComic LIKE '%" + datoSeleccionado + "%' OR nomEditorial LIKE '%" + datoSeleccionado
+				+ "%' OR caja_deposito LIKE '%" + datoSeleccionado + "%' OR formato LIKE '%" + datoSeleccionado
+				+ "%' OR fecha_publicacion LIKE '%" + datoSeleccionado + "%' OR procedencia LIKE '%" + datoSeleccionado
+				+ "%' ORDER BY nomComic, fecha_publicacion, numComic ASC";
+
 		String excepcion = "No hay comics relacionados con esa seleccion";
 
 		return comprobarLibreria(sentenciaSQL, excepcion);
@@ -1775,19 +1757,98 @@ public class DBLibreriaManager extends Comic {
 	 * @return
 	 * @throws SQLException
 	 */
+	public int numeroTotalSelecionado(Comic comic) throws SQLException {
+		String sentenciaSQL = "SELECT COUNT(*) FROM comicsbbdd WHERE 1=1"; // Initialize with a true condition
+
+		if (!comic.getVariante().isEmpty()) {
+			sentenciaSQL += " AND nomVariante LIKE ?";
+		}
+		if (!comic.getNombre().isEmpty()) {
+			sentenciaSQL += " AND nomComic LIKE ?";
+		}
+		if (!comic.getNumero().isEmpty()) {
+			sentenciaSQL += " AND numComic = ?";
+		}
+		if (!comic.getGuionista().isEmpty()) {
+			sentenciaSQL += " AND nomGuionista LIKE ?";
+		}
+		if (!comic.getDibujante().isEmpty()) {
+			sentenciaSQL += " AND nomDibujante LIKE ?";
+		}
+		if (!comic.getFirma().isEmpty()) {
+			sentenciaSQL += " AND firma LIKE ?";
+		}
+		if (!comic.getEditorial().isEmpty()) {
+			sentenciaSQL += " AND nomEditorial LIKE ?";
+		}
+		if (!comic.getNumCaja().isEmpty()) {
+			sentenciaSQL += " AND caja_deposito = ?";
+		}
+		if (!comic.getFormato().isEmpty()) {
+			sentenciaSQL += " AND formato LIKE ?";
+		}
+		if (!comic.getFecha().isEmpty()) {
+			sentenciaSQL += " AND fecha_publicacion LIKE ?";
+		}
+		if (!comic.getProcedencia().isEmpty()) {
+			sentenciaSQL += " AND procedencia LIKE ?";
+		}
+
+		int count = 0;
+		try (PreparedStatement ps = conn.prepareStatement(sentenciaSQL)) {
+			int paramIndex = 1;
+
+			if (!comic.getVariante().isEmpty()) {
+				ps.setString(paramIndex++, "%" + comic.getVariante() + "%");
+			}
+			if (!comic.getNombre().isEmpty()) {
+				ps.setString(paramIndex++, "%" + comic.getNombre() + "%");
+			}
+			if (!comic.getNumero().isEmpty()) {
+				ps.setString(paramIndex++, comic.getNumero());
+			}
+			if (!comic.getGuionista().isEmpty()) {
+				ps.setString(paramIndex++, "%" + comic.getGuionista() + "%");
+			}
+			if (!comic.getDibujante().isEmpty()) {
+				ps.setString(paramIndex++, "%" + comic.getDibujante() + "%");
+			}
+			if (!comic.getFirma().isEmpty()) {
+				ps.setString(paramIndex++, "%" + comic.getFirma() + "%");
+			}
+			if (!comic.getEditorial().isEmpty()) {
+				ps.setString(paramIndex++, "%" + comic.getEditorial() + "%");
+			}
+			if (!comic.getNumCaja().isEmpty()) {
+				ps.setString(paramIndex++, comic.getNumCaja());
+			}
+			if (!comic.getFormato().isEmpty()) {
+				ps.setString(paramIndex++, "%" + comic.getFormato() + "%");
+			}
+			if (!comic.getFecha().isEmpty()) {
+				ps.setString(paramIndex++, "%" + comic.getFecha() + "%");
+			}
+			if (!comic.getProcedencia().isEmpty()) {
+				ps.setString(paramIndex++, "%" + comic.getProcedencia() + "%");
+			}
+
+			try (ResultSet resultado = ps.executeQuery()) {
+				if (resultado.next()) {
+					count = resultado.getInt(1);
+				}
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+
+		return count;
+	}
+
 	public int numeroTotalSelecionado(String datoSeleccionado) throws SQLException {
-		String sentenciaSQL = "SELECT COUNT(*) FROM comicsbbdd "
-				+ "WHERE nomVariante LIKE ? "
-				+ "OR nomComic LIKE ? "
-				+ "OR nomGuionista LIKE ? "
-				+ "OR nomDibujante LIKE ? "
-				+ "OR firma LIKE ? "
-				+ "OR nomComic LIKE ? "
-				+ "OR nomEditorial LIKE ? "
-				+ "OR caja_deposito LIKE ? "
-				+ "OR formato LIKE ? "
-				+ "OR fecha_publicacion LIKE ?"
-				+ "OR procedencia LIKE ?";
+		String sentenciaSQL = "SELECT COUNT(*) FROM comicsbbdd " + "WHERE nomVariante LIKE ? " + "OR nomComic LIKE ? "
+				+ "OR nomGuionista LIKE ? " + "OR nomDibujante LIKE ? " + "OR firma LIKE ? " + "OR nomComic LIKE ? "
+				+ "OR nomEditorial LIKE ? " + "OR caja_deposito LIKE ? " + "OR formato LIKE ? "
+				+ "OR fecha_publicacion LIKE ?" + "OR procedencia LIKE ?";
 		int count = 0;
 
 		try (PreparedStatement ps = conn.prepareStatement(sentenciaSQL)) {
@@ -1855,5 +1916,284 @@ public class DBLibreriaManager extends Comic {
 		}
 
 		return null;
+	}
+	
+	// Métodos para ordenar los HashMaps en orden ascendente (ASC) por valor
+	public static List<Map.Entry<String, Integer>> sortByValue(Map<String, Integer> map) {
+	    List<Map.Entry<String, Integer>> list = new LinkedList<>(map.entrySet());
+	    list.sort(Map.Entry.comparingByKey());
+	    return list;
+	}
+
+	public static List<Map.Entry<Integer, Integer>> sortByValueInt(Map<Integer, Integer> map) {
+	    List<Map.Entry<Integer, Integer>> list = new LinkedList<>(map.entrySet());
+	    list.sort(Map.Entry.comparingByValue());
+	    return list;
+	}
+
+	public void generar_fichero_estadisticas() {
+		// Crear HashMaps para almacenar los datos de cada campo sin repetición y sus
+		// conteos
+		Map<String, Integer> nomComicEstadistica = new HashMap<>();
+		Map<Integer, Integer> cajaDepositoEstadistica = new HashMap<>();
+		Map<String, Integer> nomVarianteEstadistica = new HashMap<>();
+		Map<String, Integer> firmaEstadistica = new HashMap<>();
+		Map<String, Integer> nomEditorialEstadistica = new HashMap<>();
+		Map<String, Integer> formatoEstadistica = new HashMap<>();
+		Map<String, Integer> procedenciaEstadistica = new HashMap<>();
+		Map<String, Integer> fechaPublicacionEstadistica = new HashMap<>();
+		Map<String, Integer> nomGuionistaEstadistica = new HashMap<>();
+		Map<String, Integer> nomDibujanteEstadistica = new HashMap<>();
+		Map<String, Integer> puntuacionEstadistica = new HashMap<>();
+		Map<String, Integer> estadoEstadistica = new HashMap<>();
+
+	    String consultaSql = "SELECT * FROM comicsbbdd";
+	    int totalComics = 0;
+		try {
+			Connection conn = DBManager.conexion();
+			// Realizar la consulta a la base de datos
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(consultaSql);
+
+			// Procesar los datos y generar la estadística
+			while (rs.next()) {
+				// Obtener los datos de cada campo
+				String nomComic = rs.getString("nomComic");
+				int cajaDeposito = rs.getInt("caja_deposito");
+				String nomVariante = rs.getString("nomVariante");
+				String firma = rs.getString("firma");
+				String nomEditorial = rs.getString("nomEditorial");
+				String formato = rs.getString("formato");
+				String procedencia = rs.getString("procedencia");
+				String fechaPublicacion = rs.getString("fecha_publicacion");
+				String nomGuionista = rs.getString("nomGuionista");
+				String nomDibujante = rs.getString("nomDibujante");
+				String puntuacion = rs.getString("puntuacion");
+				String estado = rs.getString("estado");
+
+				// Actualizar los HashMaps para cada campo
+				nomComicEstadistica.put(nomComic, nomComicEstadistica.getOrDefault(nomComic, 0) + 1);
+				cajaDepositoEstadistica.put(cajaDeposito, cajaDepositoEstadistica.getOrDefault(cajaDeposito, 0) + 1);
+
+				firmaEstadistica.put(firma, firmaEstadistica.getOrDefault(firma, 0) + 1);
+				nomEditorialEstadistica.put(nomEditorial, nomEditorialEstadistica.getOrDefault(nomEditorial, 0) + 1);
+				formatoEstadistica.put(formato, formatoEstadistica.getOrDefault(formato, 0) + 1);
+				procedenciaEstadistica.put(procedencia, procedenciaEstadistica.getOrDefault(procedencia, 0) + 1);
+				fechaPublicacionEstadistica.put(fechaPublicacion,
+						fechaPublicacionEstadistica.getOrDefault(fechaPublicacion, 0) + 1);
+
+				// Dividir los valores separados por guiones ("-") en cada campo y contarlos
+				// como entradas independientes en las estadísticas
+				String[] varianteList = nomVariante.split("-");
+				for (String variante : varianteList) {
+					variante = variante.trim(); // Remove leading and trailing spaces
+					nomVarianteEstadistica.put(variante, nomVarianteEstadistica.getOrDefault(variante, 0) + 1);
+				}
+
+				// Dividir los valores separados por guiones ("-") en cada campo y contarlos
+				// como entradas independientes en las estadísticas
+				String[] guionistaList = nomGuionista.split("-");
+				for (String guionista : guionistaList) {
+					guionista = guionista.trim(); // Remove leading and trailing spaces
+					nomGuionistaEstadistica.put(guionista, nomGuionistaEstadistica.getOrDefault(guionista, 0) + 1);
+				}
+				// Dividir los valores separados por guiones ("-") en cada campo y contarlos
+				// como entradas independientes en las estadísticas
+
+				String[] dibujanteList = nomDibujante.split("-");
+				for (String dibujante : dibujanteList) {
+					dibujante = dibujante.trim(); // Remove leading and trailing spaces
+					nomDibujanteEstadistica.put(dibujante, nomDibujanteEstadistica.getOrDefault(dibujante, 0) + 1);
+				}
+
+				// Dividir los valores separados por guiones ("-") en cada campo y contarlos
+				// como entradas independientes en las estadísticas
+				String[] firmaList = firma.split("-");
+				for (String firmaValor : firmaList) {
+					firmaValor = firmaValor.trim(); // Remove leading and trailing spaces
+					firmaEstadistica.put(firmaValor, firmaEstadistica.getOrDefault(firmaValor, 0) + 1);
+				}
+
+				// Dividir los valores separados por guiones ("-") en cada campo y contarlos
+				// como entradas independientes en las estadísticas
+				String[] procedenciaList = procedencia.split("-");
+				for (String procedenciaValor : procedenciaList) {
+					procedenciaValor = procedenciaValor.trim(); // Remove leading and trailing spaces
+					procedenciaEstadistica.put(procedenciaValor,
+							procedenciaEstadistica.getOrDefault(procedenciaValor, 0) + 1);
+				}
+
+				puntuacionEstadistica.put(puntuacion, puntuacionEstadistica.getOrDefault(puntuacion, 0) + 1);
+				estadoEstadistica.put(estado, estadoEstadistica.getOrDefault(estado, 0) + 1);
+				
+		        totalComics++; // Incrementar el contador de cómics
+
+			}
+
+			// Cerrar la conexión
+			rs.close();
+			stmt.close();
+
+		} catch (SQLException e) {
+			System.out.println("Error al conectar a la base de datos: " + e.getMessage());
+		}
+
+		// Generar la cadena de estadística
+		StringBuilder estadisticaStr = new StringBuilder();
+		String lineaDecorativa1 = "\n--------------------------------------------------------";
+		String lineaDecorativa2 = "--------------------------------------------------------\n";
+
+		estadisticaStr.append("Estadisticas de comics de la base de datos: " + DBManager.DB_NAME + ", a fecha de: "
+				+ obtenerFechaActual() + "\n");
+
+		// Agregar los valores de nomComic a la estadística
+		estadisticaStr.append(lineaDecorativa1);
+		estadisticaStr.append("\nEstadística de los nombres de comics:\n");
+		estadisticaStr.append(lineaDecorativa2);
+		List<Map.Entry<String, Integer>> nomComicList = sortByValue(nomComicEstadistica);
+		for (Map.Entry<String, Integer> entry : nomComicList) {
+		    estadisticaStr.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+		}
+
+		// Agregar los valores de cajaDeposito a la estadística
+		estadisticaStr.append(lineaDecorativa1);
+		estadisticaStr.append("\nEstadística de las cajas:\n");
+		estadisticaStr.append(lineaDecorativa2);
+		List<Map.Entry<Integer, Integer>> cajaDepositoList = sortByValueInt(cajaDepositoEstadistica);
+		for (Map.Entry<Integer, Integer> entry : cajaDepositoList) {
+		    estadisticaStr.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+		}
+
+		// Agregar los valores de nomVariante a la estadística
+		estadisticaStr.append(lineaDecorativa1);
+		estadisticaStr.append("\nEstadística de los nombres de variantes:\n");
+		estadisticaStr.append(lineaDecorativa2);
+		List<Map.Entry<String, Integer>> nomVarianteList = sortByValue(nomVarianteEstadistica);
+		for (Map.Entry<String, Integer> entry : nomVarianteList) {
+		    estadisticaStr.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+		}
+
+		// Agregar los valores de firma a la estadística
+		estadisticaStr.append(lineaDecorativa1);
+		estadisticaStr.append("\nEstadística de autores firma:\n");
+		estadisticaStr.append(lineaDecorativa2);
+		List<Map.Entry<String, Integer>> firmaList = sortByValue(firmaEstadistica);
+		for (Map.Entry<String, Integer> entry : firmaList) {
+		    estadisticaStr.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+		}
+
+		// Agregar los valores de nomGuionista a la estadística
+		estadisticaStr.append(lineaDecorativa1);
+		estadisticaStr.append("\nEstadística de guionistas:\n");
+		estadisticaStr.append(lineaDecorativa2);
+		List<Map.Entry<String, Integer>> nomGuionistaList = sortByValue(nomGuionistaEstadistica);
+		for (Map.Entry<String, Integer> entry : nomGuionistaList) {
+		    estadisticaStr.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+		}
+
+		// Agregar los valores de nomDibujante a la estadística
+		estadisticaStr.append(lineaDecorativa1);
+		estadisticaStr.append("\nEstadística de dibujantes:\n");
+		estadisticaStr.append(lineaDecorativa2);
+		List<Map.Entry<String, Integer>> nomDibujantesList = sortByValue(nomDibujanteEstadistica);
+		for (Map.Entry<String, Integer> entry : nomDibujantesList) {
+			estadisticaStr.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+		}
+		
+		// Agregar los valores de nomEditorial a la estadística
+		estadisticaStr.append(lineaDecorativa1);
+		estadisticaStr.append("\nEstadística de Editoriales:\n");
+		estadisticaStr.append(lineaDecorativa2);
+		List<Map.Entry<String, Integer>> nomEditorialList = sortByValue(nomEditorialEstadistica);
+		for (Map.Entry<String, Integer> entry : nomEditorialList) {
+		    estadisticaStr.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+		}
+
+		// Agregar los valores de procedencia a la estadística
+		estadisticaStr.append(lineaDecorativa1);
+		estadisticaStr.append("\nEstadística de procedencia:\n");
+		estadisticaStr.append(lineaDecorativa2);
+		List<Map.Entry<String, Integer>> procedenciaList = sortByValue(procedenciaEstadistica);
+		for (Map.Entry<String, Integer> entry : procedenciaList) {
+		    estadisticaStr.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+		}
+
+		// Agregar los valores de fechaPublicacion a la estadística
+		estadisticaStr.append(lineaDecorativa1);
+		estadisticaStr.append("\nEstadística de fecha publicacion:\n");
+		estadisticaStr.append(lineaDecorativa2);
+		List<Map.Entry<String, Integer>> fechaPublicacionList = sortByValue(fechaPublicacionEstadistica);
+		for (Map.Entry<String, Integer> entry : fechaPublicacionList) {
+		    estadisticaStr.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+		}
+
+		// Agregar los valores de puntuacion a la estadística
+		estadisticaStr.append(lineaDecorativa1);
+		estadisticaStr.append("\nEstadística de puntuacion:\n");
+		estadisticaStr.append(lineaDecorativa2);
+		List<Map.Entry<String, Integer>> puntuacionList = sortByValue(puntuacionEstadistica);
+		for (Map.Entry<String, Integer> entry : puntuacionList) {
+			estadisticaStr.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+		}
+
+		// Agregar los valores de estado a la estadística
+		estadisticaStr.append(lineaDecorativa1);
+		estadisticaStr.append("\nEstadística de estado:\n");
+		estadisticaStr.append(lineaDecorativa2);
+		List<Map.Entry<String, Integer>> estadoList = sortByValue(estadoEstadistica);
+		for (Map.Entry<String, Integer> entry : estadoList) {
+			estadisticaStr.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+		}
+		
+
+		// Agregar los valores de formato a la estadística
+		estadisticaStr.append(lineaDecorativa1);
+		estadisticaStr.append("\nEstadística de formato:\n");
+		estadisticaStr.append(lineaDecorativa2);
+		estadisticaStr.append("Comics en total: " + totalComics).append("\n");
+		List<Map.Entry<String, Integer>> formatoList = sortByValue(formatoEstadistica);
+		for (Map.Entry<String, Integer> entry : formatoList) {
+		    estadisticaStr.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+		}
+
+		estadisticaStr.append(lineaDecorativa1);
+
+		// Crear el archivo de estadística y escribir los datos en él
+		String nombreArchivo = "estadistica_" + obtenerFechaActual() + ".txt";
+		String userHome = System.getProperty("user.home");
+		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
+		String carpetaLibreria = ubicacion + File.separator + "libreria";
+		String rutaCompleta = carpetaLibreria + File.separator + nombreArchivo;
+
+		try (PrintWriter writer = new PrintWriter(new FileWriter(rutaCompleta))) {
+			writer.print(estadisticaStr);
+			System.out.println("Estadística generada y guardada en " + rutaCompleta);
+
+			// Abrir el archivo con el programa asociado en el sistema
+			abrirArchivoConProgramaAsociado(rutaCompleta);
+
+		} catch (IOException e) {
+			System.out.println("Error al guardar la estadística en el archivo: " + e.getMessage());
+		}
+	}
+
+	// Función para obtener la fecha y hora actual en el formato deseado
+	private String obtenerFechaActual() {
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm");
+		Date date = new Date();
+		return formatter.format(date);
+	}
+
+	// Función para abrir un archivo con el programa asociado en el sistema
+	private void abrirArchivoConProgramaAsociado(String rutaArchivo) {
+		try {
+			if (Desktop.isDesktopSupported()) {
+				Desktop.getDesktop().open(new File(rutaArchivo));
+			} else {
+				System.out.println("La apertura del archivo no es compatible con este sistema operativo.");
+			}
+		} catch (IOException e) {
+			System.out.println("Error al abrir el archivo: " + e.getMessage());
+		}
 	}
 }

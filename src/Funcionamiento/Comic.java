@@ -279,64 +279,33 @@ public class Comic {
 
 		return frases[n];
 	}
+	
+	private void appendIfNotEmpty(StringBuilder builder, String label, String value) {
+	    if (value != null && !value.isEmpty()) {
+	        builder.append(label).append(": ").append(value).append("\n");
+	    }
+	}
 
 	@Override
 	public String toString() {
-	    String contenidoComic = "ID: " + ID;
+	    StringBuilder contenidoComic = new StringBuilder();
 
-	    if (!nombre.isEmpty()) {
-	        contenidoComic += "\nNombre: " + nombre;
-	    }
+	    appendIfNotEmpty(contenidoComic, "ID", ID);
+	    appendIfNotEmpty(contenidoComic, "Nombre", nombre);
+	    appendIfNotEmpty(contenidoComic, "Numero", numero);
+	    appendIfNotEmpty(contenidoComic, "Variante", variante);
+	    appendIfNotEmpty(contenidoComic, "Firma", firma);
+	    appendIfNotEmpty(contenidoComic, "Editorial", editorial);
+	    appendIfNotEmpty(contenidoComic, "Formato", formato);
+	    appendIfNotEmpty(contenidoComic, "Procedencia", procedencia);
+	    appendIfNotEmpty(contenidoComic, "Fecha", fecha);
+	    appendIfNotEmpty(contenidoComic, "Guionista", guionista);
+	    appendIfNotEmpty(contenidoComic, "Dibujante", dibujante);
+	    appendIfNotEmpty(contenidoComic, "Puntuacion", puntuacion);
+	    appendIfNotEmpty(contenidoComic, "Estado", estado);
+	    appendIfNotEmpty(contenidoComic, "Caja", numCaja);
 
-	    if (!numero.isEmpty()) {
-	        contenidoComic += "\nNumero: " + numero;
-	    }
-
-	    if (!variante.isEmpty()) {
-	        contenidoComic += "\nVariante: " + variante;
-	    }
-
-	    if (!firma.isEmpty()) {
-	        contenidoComic += "\nFirma: " + firma;
-	    }
-
-	    if (!editorial.isEmpty()) {
-	        contenidoComic += "\nEditorial: " + editorial;
-	    }
-
-	    if (!formato.isEmpty()) {
-	        contenidoComic += "\nFormato: " + formato;
-	    }
-
-	    if (!procedencia.isEmpty()) {
-	        contenidoComic += "\nProcedencia: " + procedencia;
-	    }
-
-	    if (!fecha.isEmpty()) {
-	        contenidoComic += "\nFecha: " + fecha;
-	    }
-
-	    if (!guionista.isEmpty()) {
-	        contenidoComic += "\nGuionista: " + guionista;
-	    }
-
-	    if (!dibujante.isEmpty()) {
-	        contenidoComic += "\nDibujante: " + dibujante;
-	    }
-
-	    if (!puntuacion.isEmpty()) {
-	        contenidoComic += "\nPuntuacion: " + puntuacion;
-	    }
-
-	    if (!estado.isEmpty()) {
-	        contenidoComic += "\nEstado: " + estado;
-	    }
-
-	    if (!numCaja.isEmpty()) {
-	        contenidoComic += "\nCaja: " + numCaja;
-	    }
-
-	    return contenidoComic;
+	    return contenidoComic.toString();
 	}
 
 

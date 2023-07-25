@@ -117,6 +117,9 @@ public class RecomendacionesController {
 
 	@FXML
 	private Button botonVolver;
+	
+    @FXML
+    private Button botonVolverMenu;
 
 	@FXML
 	private TextArea printComicRecomendado;
