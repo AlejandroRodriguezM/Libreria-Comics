@@ -310,6 +310,21 @@ public class PuntuarDatosController implements Initializable {
 		listas_autocompletado();
 		restringir_entrada_datos();
 		lecturaComboBox();
+		
+	    // Desactivar el enfoque en el VBox para evitar que reciba eventos de teclado
+	    rootVBox.setFocusTraversable(false);
+
+	    // Agregar un filtro de eventos para capturar el enfoque en el TableView y desactivar el enfoque en el VBox
+	    tablaBBDD.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+	        rootVBox.setFocusTraversable(false);
+	        tablaBBDD.requestFocus();
+	    });
+
+	    // Agregar un filtro de eventos para capturar el enfoque en el VBox y desactivar el enfoque en el TableView
+	    rootVBox.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+	        tablaBBDD.setFocusTraversable(false);
+	        rootVBox.requestFocus();
+	    });
 
 	}
 
