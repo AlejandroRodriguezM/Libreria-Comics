@@ -434,6 +434,8 @@ public class MenuPrincipalController implements Initializable {
 
 		String sql = libreria.datosConcatenados(comicTemp);
 
+		comic.toString();
+		
 		if (!sql.isEmpty()) {
 
 			isUserInput = false; // Disable user input during programmatic updates
@@ -510,7 +512,6 @@ public class MenuPrincipalController implements Initializable {
 				nombreFirma.setItems(firmasActuales);
 			}
 			isUserInput = true; // Re-enable user input after programmatic updates
-
 		}
 	}
 
@@ -994,7 +995,6 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
-		limpiezaDeDatos();
 		modificarColumnas();
 		modificarColumnas();
 		prontInfo.setOpacity(0);

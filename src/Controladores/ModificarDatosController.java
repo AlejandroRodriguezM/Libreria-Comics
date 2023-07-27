@@ -1562,9 +1562,6 @@ public class ModificarDatosController implements Initializable {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
-		idComicMod.setText("");
-		borrar_datos_mod();
-		borrar_datos();
 		imagencomic.setImage(null);
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();

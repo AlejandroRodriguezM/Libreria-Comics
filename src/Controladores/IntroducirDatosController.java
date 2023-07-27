@@ -1359,8 +1359,6 @@ public class IntroducirDatosController implements Initializable {
 	 * @throws SQLException
 	 */
 	public void listaPorParametro() throws SQLException {
-		limpiezaDatosAni();
-		limpiezaDatos();
 		libreria = new DBLibreriaManager();
 		Comic comic = new Comic();
 		String datos[] = camposComicActuales();

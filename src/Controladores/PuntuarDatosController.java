@@ -1181,9 +1181,6 @@ public class PuntuarDatosController implements Initializable {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
-		idPuntuar.setText("");
-		idPuntuar.setStyle(null);
-		limpiezaDeDatos();
 		modificarColumnas();
 		modificarColumnas();
 		prontInfo.setOpacity(0);

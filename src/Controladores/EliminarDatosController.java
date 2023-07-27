@@ -1156,7 +1156,6 @@ public class EliminarDatosController implements Initializable {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
-		limpiezaDeDatos();
 		modificarColumnas();
 		modificarColumnas();
 		prontInfo.setOpacity(0);
