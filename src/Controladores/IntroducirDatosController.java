@@ -405,6 +405,8 @@ public class IntroducirDatosController implements Initializable {
 					handleComboBoxEmptyChange(comboBox);
 					return;
 				} else {
+					Comic comic = getComicFromComboBoxes();
+					actualizarComboBoxes(comic);
 					return;
 				}
 			});

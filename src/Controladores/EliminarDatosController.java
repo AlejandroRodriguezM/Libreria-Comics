@@ -437,6 +437,8 @@ public class EliminarDatosController implements Initializable {
 					handleComboBoxEmptyChange(comboBox);
 					return;
 				} else {
+					Comic comic = getComicFromComboBoxes();
+					actualizarComboBoxes(comic);
 					return;
 				}
 			});
