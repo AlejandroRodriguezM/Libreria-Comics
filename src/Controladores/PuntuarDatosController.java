@@ -263,6 +263,9 @@ public class PuntuarDatosController implements Initializable {
 
 	@FXML
 	private ImageView imagencomic;
+	
+    @FXML
+    private VBox rootVBox;
 
 	private boolean isUserInput = true;
 	private boolean updatingComboBoxes = false; // New variable to keep track of ComboBox updates
@@ -293,6 +296,7 @@ public class PuntuarDatosController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		Platform.runLater(() -> seleccionarRaw());
 
 		libreria = new DBLibreriaManager();
 		try {
@@ -305,7 +309,6 @@ public class PuntuarDatosController implements Initializable {
 		rellenarComboBox();
 		listas_autocompletado();
 		restringir_entrada_datos();
-		seleccionarRaw();
 		lecturaComboBox();
 
 	}
@@ -618,41 +621,50 @@ public class PuntuarDatosController implements Initializable {
 	 * raton se encuentra y muestra un mensaje emergente con datos del comic
 	 */
 	public void seleccionarRaw() {
-		tablaBBDD.setRowFactory(tv -> {
-			TableRow<Comic> row = new TableRow<>();
-			Tooltip tooltip = new Tooltip();
-			tooltip.setShowDelay(Duration.ZERO);
-			tooltip.setHideDelay(Duration.ZERO);
+	    tablaBBDD.setRowFactory(tv -> {
+	        TableRow<Comic> row = new TableRow<>();
+	        Tooltip tooltip = new Tooltip();
+	        tooltip.setShowDelay(Duration.ZERO);
+	        tooltip.setHideDelay(Duration.ZERO);
 
-			row.setOnMouseEntered(event -> {
-				if (!row.isEmpty()) {
-					row.setStyle("-fx-background-color: #BFEFFF;");
+	        row.setOnMouseEntered(event -> {
+	            if (!row.isEmpty()) {
+	                row.setStyle("-fx-background-color: #BFEFFF;");
 
-					Comic comic = row.getItem();
-					if (comic != null && !tooltip.isShowing()) {
-						String mensaje = "Nombre: " + comic.getNombre() + "\nNumero: " + comic.getNumero()
-								+ "\nVariante: " + comic.getVariante() + "\nGuionista: " + comic.getGuionista()
-								+ "\nDibujante: " + comic.getDibujante();
-						if (!comic.getFirma().isEmpty()) {
-							mensaje += "\nFirma: " + comic.getFirma();
-						}
-						tooltip.setText(mensaje);
-						tooltip.show(row, event.getSceneX(), event.getSceneY());
-						tooltip.setX(event.getScreenX() + 10); // Ajusta el desplazamiento X según tus necesidades
-						tooltip.setY(event.getScreenY() - 20); // Ajusta el desplazamiento Y según tus necesidades
-					}
-				}
-			});
+	                Comic comic = row.getItem();
+	                if (comic != null && !tooltip.isShowing()) {
+	                    String mensaje = "Nombre: " + comic.getNombre() + "\nNumero: " + comic.getNumero()
+	                            + "\nVariante: " + comic.getVariante() + "\nGuionista: " + comic.getGuionista()
+	                            + "\nDibujante: " + comic.getDibujante();
+	                    if (!comic.getFirma().isEmpty()) {
+	                        mensaje += "\nFirma: " + comic.getFirma();
+	                    }
+	                    tooltip.setText(mensaje);
+	                    tooltip.show(row, event.getSceneX(), event.getSceneY());
+	                    tooltip.setX(event.getScreenX() + 10); // Ajusta el desplazamiento X según tus necesidades
+	                    tooltip.setY(event.getScreenY() - 20); // Ajusta el desplazamiento Y según tus necesidades
+	                }
+	            }
+	        });
 
-			row.setOnMouseExited(event -> {
-				if (!row.isEmpty()) {
-					row.setStyle("");
-					tooltip.hide();
-				}
-			});
+	        row.setOnMouseExited(event -> {
+	            if (!row.isEmpty()) {
+	                row.setStyle("");
+	                tooltip.hide();
+	            }
+	        });
 
-			return row;
-		});
+	        return row;
+	    });
+
+	    // Deshabilitar el enfoque en el TableView
+	    tablaBBDD.setFocusTraversable(false);
+
+	    // Enfocar el VBox para evitar movimientos inesperados
+	    VBox root = (VBox) tablaBBDD.getScene().lookup("#rootVBox");
+	    if (root != null) {
+	        root.requestFocus();
+	    }
 	}
 
 	/**
@@ -1167,6 +1179,9 @@ public class PuntuarDatosController implements Initializable {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
+		idPuntuar.setText("");
+		idPuntuar.setStyle(null);
+		limpiezaDeDatos();
 		modificarColumnas();
 		modificarColumnas();
 		prontInfo.setOpacity(0);
@@ -1187,6 +1202,9 @@ public class PuntuarDatosController implements Initializable {
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
+		idPuntuar.setText("");
+		idPuntuar.setStyle(null);
+		limpiezaDeDatos();
 		modificarColumnas();
 		modificarColumnas();
 

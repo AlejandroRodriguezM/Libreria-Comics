@@ -14,6 +14,7 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1197.0" style="-fx-background-color: DFA394;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.ModificarDatosController">
@@ -139,26 +140,6 @@
       <ComboBox fx:id="nombreProcedencia" editable="true" layoutX="136.0" layoutY="144.0" prefHeight="25.0" prefWidth="162.0" promptText="Selecciona procedencia" stylesheets="@../style/combobox_style.css" />
       <ComboBox fx:id="numeroComic" editable="true" layoutX="136.0" layoutY="88.0" prefHeight="25.0" prefWidth="162.0" promptText="Seleccionar numero" stylesheets="@../style/combobox_style.css" />
       <ComboBox fx:id="numeroCaja" editable="true" layoutX="137.0" layoutY="343.0" prefHeight="25.0" prefWidth="162.0" promptText="Selecciona caja" stylesheets="@../style/combobox_style.css" />
-      <TableView fx:id="tablaBBDD" layoutX="-1.0" layoutY="440.0" onKeyPressed="#teclasDireccion" onMouseClicked="#clickRaton" prefHeight="360.0" prefWidth="1198.0" stylesheets="@../style/tablas_style.css">
-         <columns>
-            <TableColumn fx:id="ID" prefWidth="47.0" text="ID" visible="false" />
-            <TableColumn fx:id="nombre" editable="false" prefWidth="135.0" text="Nombre" />
-            <TableColumn fx:id="caja" prefWidth="39.0" text="Caja" />
-            <TableColumn fx:id="numero" editable="false" prefWidth="95.0" text="Nº" />
-            <TableColumn fx:id="variante" editable="false" prefWidth="123.0" text="Variante" />
-            <TableColumn fx:id="firma" editable="false" prefWidth="59.0" text="Firma" />
-            <TableColumn fx:id="editorial" editable="false" prefWidth="61.0" text="Editorial" />
-            <TableColumn fx:id="formato" editable="false" prefWidth="59.0" text="Formato" />
-            <TableColumn fx:id="procedencia" editable="false" text="Origen" />
-            <TableColumn fx:id="fecha" editable="false" prefWidth="65.0" text="Fecha" />
-            <TableColumn fx:id="guionista" editable="false" prefWidth="182.0" text="Guionista" />
-            <TableColumn fx:id="dibujante" editable="false" prefWidth="85.0" text="Dibujante" />
-            <TableColumn fx:id="puntuacion" editable="false" prefWidth="193.0" text="puntuacion" />
-         </columns>
-         <columnResizePolicy>
-            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-         </columnResizePolicy>
-      </TableView>
       <TextField fx:id="nombreComicMod" layoutX="446.0" layoutY="60.0" prefHeight="25.0" prefWidth="162.0" promptText="Introduce nombre comic" />
       <TextField fx:id="nombreVarianteMod" layoutX="446.0" layoutY="116.0" prefHeight="25.0" prefWidth="162.0" promptText="Introduce artista variante" />
       <TextField fx:id="nombreFirmaMod" layoutX="446.0" layoutY="145.0" prefHeight="25.0" prefWidth="162.0" promptText="Introduce artista firma" />
@@ -190,5 +171,29 @@
       <ComboBox fx:id="numeroCajaMod" editable="true" layoutX="445.0" layoutY="378.0" prefHeight="25.0" prefWidth="162.0" promptText="Selecciona caja" stylesheets="@../style/combobox_style.css" />
       <ComboBox fx:id="numeroComicMod" editable="true" layoutX="445.0" layoutY="88.0" prefHeight="25.0" prefWidth="162.0" promptText="Introduce numero" stylesheets="@../style/combobox_style.css" />
       <Button fx:id="botonLimpiarComic" layoutX="173.0" layoutY="377.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="49.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Limpiar/Reiniciar" />
+      <VBox fx:id="rootVBox" layoutX="-1.0" layoutY="440.0" prefHeight="360.0" prefWidth="1198.0">
+         <children>
+            <TableView fx:id="tablaBBDD" onKeyPressed="#teclasDireccion" onMouseClicked="#clickRaton" prefHeight="360.0" prefWidth="1198.0" stylesheets="@../style/tablas_style.css">
+               <columns>
+                  <TableColumn fx:id="ID" prefWidth="47.0" text="ID" visible="false" />
+                  <TableColumn fx:id="nombre" editable="false" prefWidth="135.0" text="Nombre" />
+                  <TableColumn fx:id="caja" prefWidth="39.0" text="Caja" />
+                  <TableColumn fx:id="numero" editable="false" prefWidth="95.0" text="Nº" />
+                  <TableColumn fx:id="variante" editable="false" prefWidth="123.0" text="Variante" />
+                  <TableColumn fx:id="firma" editable="false" prefWidth="59.0" text="Firma" />
+                  <TableColumn fx:id="editorial" editable="false" prefWidth="61.0" text="Editorial" />
+                  <TableColumn fx:id="formato" editable="false" prefWidth="59.0" text="Formato" />
+                  <TableColumn fx:id="procedencia" editable="false" text="Origen" />
+                  <TableColumn fx:id="fecha" editable="false" prefWidth="65.0" text="Fecha" />
+                  <TableColumn fx:id="guionista" editable="false" prefWidth="182.0" text="Guionista" />
+                  <TableColumn fx:id="dibujante" editable="false" prefWidth="85.0" text="Dibujante" />
+                  <TableColumn fx:id="puntuacion" editable="false" prefWidth="193.0" text="puntuacion" />
+               </columns>
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+            </TableView>
+         </children>
+      </VBox>
    </children>
 </Pane>

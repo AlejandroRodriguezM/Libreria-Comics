@@ -308,6 +308,9 @@ public class IntroducirDatosController implements Initializable {
 	@FXML
 	private ImageView imagencomic;
 	
+    @FXML
+    private VBox rootVBox;
+	
 	private static Ventanas nav = new Ventanas();
 	private static DBLibreriaManager libreria = null;
 	private static Utilidades utilidad = null;
@@ -338,6 +341,7 @@ public class IntroducirDatosController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		Platform.runLater(() -> seleccionarRaw());
 
 		libreria = new DBLibreriaManager();
 		try {
@@ -350,7 +354,6 @@ public class IntroducirDatosController implements Initializable {
 		modificarColumnas();
 		rellenarComboBox();
 		restringir_entrada_datos();
-		seleccionarRaw();
 		lecturaComboBox();
 
 		restringirSimbolos(guionistaAni);
@@ -686,41 +689,50 @@ public class IntroducirDatosController implements Initializable {
 	 * raton se encuentra y muestra un mensaje emergente con datos del comic
 	 */
 	public void seleccionarRaw() {
-		tablaBBDD.setRowFactory(tv -> {
-			TableRow<Comic> row = new TableRow<>();
-			Tooltip tooltip = new Tooltip();
-			tooltip.setShowDelay(Duration.ZERO);
-			tooltip.setHideDelay(Duration.ZERO);
+	    tablaBBDD.setRowFactory(tv -> {
+	        TableRow<Comic> row = new TableRow<>();
+	        Tooltip tooltip = new Tooltip();
+	        tooltip.setShowDelay(Duration.ZERO);
+	        tooltip.setHideDelay(Duration.ZERO);
 
-			row.setOnMouseEntered(event -> {
-				if (!row.isEmpty()) {
-					row.setStyle("-fx-background-color: #BFEFFF;");
+	        row.setOnMouseEntered(event -> {
+	            if (!row.isEmpty()) {
+	                row.setStyle("-fx-background-color: #BFEFFF;");
 
-					Comic comic = row.getItem();
-					if (comic != null && !tooltip.isShowing()) {
-						String mensaje = "Nombre: " + comic.getNombre() + "\nNumero: " + comic.getNumero()
-								+ "\nVariante: " + comic.getVariante() + "\nGuionista: " + comic.getGuionista()
-								+ "\nDibujante: " + comic.getDibujante();
-						if (!comic.getFirma().isEmpty()) {
-							mensaje += "\nFirma: " + comic.getFirma();
-						}
-						tooltip.setText(mensaje);
-						tooltip.show(row, event.getSceneX(), event.getSceneY());
-						tooltip.setX(event.getScreenX() + 10); // Ajusta el desplazamiento X según tus necesidades
-						tooltip.setY(event.getScreenY() - 20); // Ajusta el desplazamiento Y según tus necesidades
-					}
-				}
-			});
+	                Comic comic = row.getItem();
+	                if (comic != null && !tooltip.isShowing()) {
+	                    String mensaje = "Nombre: " + comic.getNombre() + "\nNumero: " + comic.getNumero()
+	                            + "\nVariante: " + comic.getVariante() + "\nGuionista: " + comic.getGuionista()
+	                            + "\nDibujante: " + comic.getDibujante();
+	                    if (!comic.getFirma().isEmpty()) {
+	                        mensaje += "\nFirma: " + comic.getFirma();
+	                    }
+	                    tooltip.setText(mensaje);
+	                    tooltip.show(row, event.getSceneX(), event.getSceneY());
+	                    tooltip.setX(event.getScreenX() + 10); // Ajusta el desplazamiento X según tus necesidades
+	                    tooltip.setY(event.getScreenY() - 20); // Ajusta el desplazamiento Y según tus necesidades
+	                }
+	            }
+	        });
 
-			row.setOnMouseExited(event -> {
-				if (!row.isEmpty()) {
-					row.setStyle("");
-					tooltip.hide();
-				}
-			});
+	        row.setOnMouseExited(event -> {
+	            if (!row.isEmpty()) {
+	                row.setStyle("");
+	                tooltip.hide();
+	            }
+	        });
 
-			return row;
-		});
+	        return row;
+	    });
+
+	    // Deshabilitar el enfoque en el TableView
+	    tablaBBDD.setFocusTraversable(false);
+
+	    // Enfocar el VBox para evitar movimientos inesperados
+	    VBox root = (VBox) tablaBBDD.getScene().lookup("#rootVBox");
+	    if (root != null) {
+	        root.requestFocus();
+	    }
 	}
 
 	public void listas_autocompletado() {
@@ -1326,7 +1338,8 @@ public class IntroducirDatosController implements Initializable {
 	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
 		modificarColumnas();
 		modificarColumnas();
-
+		limpiezaDatosAni();
+		limpiezaDatos();
 		tablaBBDD.refresh();
 		prontInfo.setOpacity(0);
 		imagencomic.setImage(null);
@@ -1344,6 +1357,8 @@ public class IntroducirDatosController implements Initializable {
 	 * @throws SQLException
 	 */
 	public void listaPorParametro() throws SQLException {
+		limpiezaDatosAni();
+		limpiezaDatos();
 		libreria = new DBLibreriaManager();
 		Comic comic = new Comic();
 		String datos[] = camposComicActuales();
