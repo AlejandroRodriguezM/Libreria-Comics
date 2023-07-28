@@ -44,15 +44,15 @@ public class Comic {
 	protected String fecha;
 	protected String guionista;
 	protected String dibujante;
+	protected String key_issue;
 	protected String estado;
 	protected String puntuacion;
 	protected String imagen;
-	
 
 	// Constructor
-	public Comic(String ID, String nombre,String numCaja, String numero, String variante, String firma, String editorial,
-			String formato, String procedencia, String fecha, String guionista, String dibujante, String estado,
-			String puntuacion, String imagen) {
+	public Comic(String ID, String nombre, String numCaja, String numero, String variante, String firma,
+			String editorial, String formato, String procedencia, String fecha, String guionista, String dibujante,
+			String estado, String key_issue, String puntuacion, String imagen) {
 		this.ID = ID;
 		this.nombre = nombre;
 		this.numCaja = numCaja;
@@ -65,10 +65,11 @@ public class Comic {
 		this.fecha = fecha;
 		this.guionista = guionista;
 		this.dibujante = dibujante;
+		this.key_issue = key_issue;
 		this.estado = estado;
 		this.puntuacion = puntuacion;
 		this.imagen = imagen;
-		
+
 	}
 
 	// Constructor
@@ -84,6 +85,7 @@ public class Comic {
 		this.fecha = "";
 		this.guionista = "";
 		this.dibujante = "";
+		this.key_issue = "";
 		this.estado = "";
 		this.puntuacion = "";
 		this.imagen = null;
@@ -143,9 +145,17 @@ public class Comic {
 	public String getPuntuacion() {
 		return puntuacion;
 	}
-	
+
 	public String getNumCaja() {
 		return numCaja;
+	}
+
+	public String getKey_issue() {
+		return key_issue;
+	}
+
+	public void setKey_issue(String key_issue) {
+		this.key_issue = key_issue;
 	}
 
 	public void setPuntuacion(String puntuacion) {
@@ -207,7 +217,7 @@ public class Comic {
 	public void setEstado(String estado) {
 		this.estado = estado;
 	}
-	
+
 	public void setNumCaja(String numCaja) {
 		this.numCaja = numCaja;
 	}
@@ -240,73 +250,66 @@ public class Comic {
 				"Tuviste una vida dura,  sabes quien mas tuvo una vida dura? Todo el mundo! \n-DeadPool",
 				"Planeamos dias y dias y cuando llega el momento, procedemos a improvisar \n-QuickSilver",
 				"No es quién soy debajo, sino lo que hago lo que me define. \n-Batman",
-			    "Un gran poder conlleva una gran responsabilidad. \n-Tío Ben, Spider\n-Man",
-			    "¡Hulk aplasta! \n-Hulk",
-			    "¡Yo soy el mejor en lo que hago, y lo que hago no es agradable! \n-Wolverine",
-			    "La verdad, la justicia y el estilo de vida americano. \n-Superman",
-			    "Soy el vengador más poderoso del mundo. \n-Thor",
-			    "Soy el murciélago de la noche, no el murciélago de la luz del día. \n-Batman",
-			    "Con grandes poderes, vienen grandes responsabilidades. \n-Spider\n-Man",
-			    "¡Vengadores, uníos! \n-Capitán América",
-			    "La única manera de hacer lo imposible posible es creer que es posible. \n-Alicia en el País de las Maravillas",
-			    "Yo soy Iron Man. \n-Iron Man",
-			    "La noche es más oscura justo antes del amanecer. \n-Batman",
-			    "¡Es hora de cortar la cabeza de la serpiente! \n-Wonder Woman",
-			    "¡Por Asgard! \n-Thor",
-			    "Nunca subestimes el poder de la fuerza de voluntad de un Jedi. \n-Luke Skywalker",
-			    "Con gran poder viene una gran responsabilidad, y una gran necesidad de una gran pizza. \n-Deadpool",
-			    "¡Nunca te rindas, nunca te rindas, nunca te rindas! \n-Capitán América",
-			    "La esperanza nunca muere. \n-Green Lantern",
-			    "Puedo hacer esto todo el día. \n-Capitán América",
-			    "El crimen no paga, a menos que seas bueno en ello. \n-Batman",
-			    "Tengo una misión que cumplir, y lo haré con o sin su ayuda. \n-Megamente",
-			    "¡Yo soy el mejor en lo que hago! \n-X\n-Men",
-			    "La justicia es ciega, pero yo no lo soy. \n-Daredevil",
-			    "Mi sentido arácnido está zumbando. \n-Spider\n-Man",
-			    "No me digas lo que no puedo hacer. \n-Lost",
-			    "¡Seré el héroe que necesitan! \n-Batman",
-			    "Con la gran capacidad, viene una gran responsabilidad. \n-Storm",
-			    "¿Soy tu amigo? ¡Soy tu padre! \n-Star Wars",
-			    "La grandeza de una civilización se mide por la forma en que trata a sus miembros más débiles. \n-X\n-Men",
-			    "No se trata de quién soy debajo, sino de lo que hago lo que me define. \n-Iron Man",
-			    "El poder sin control es peligroso. \n-Green Lantern",
-			    "¡El hombre de acero no se rinde! \n-Superman",
-			    "Hasta el más mínimo gesto de valentía es capaz de hacer la diferencia. \n-Peter Parker, Spider\n-Man",
-			    "¿Quién necesita una identidad secreta cuando puedes tener una buena mascara? \n-Iron Man",
-			    "El valor es la magia que convierte los sueños en realidad. \n-Walt Disney",
-			    "La lucha es lo que te define. \n-Green Arrow"};
+				"Un gran poder conlleva una gran responsabilidad. \n-Tío Ben, Spider\n-Man", "¡Hulk aplasta! \n-Hulk",
+				"¡Yo soy el mejor en lo que hago, y lo que hago no es agradable! \n-Wolverine",
+				"La verdad, la justicia y el estilo de vida americano. \n-Superman",
+				"Soy el vengador más poderoso del mundo. \n-Thor",
+				"Soy el murciélago de la noche, no el murciélago de la luz del día. \n-Batman",
+				"Con grandes poderes, vienen grandes responsabilidades. \n-Spider\n-Man",
+				"¡Vengadores, uníos! \n-Capitán América",
+				"La única manera de hacer lo imposible posible es creer que es posible. \n-Alicia en el País de las Maravillas",
+				"Yo soy Iron Man. \n-Iron Man", "La noche es más oscura justo antes del amanecer. \n-Batman",
+				"¡Es hora de cortar la cabeza de la serpiente! \n-Wonder Woman", "¡Por Asgard! \n-Thor",
+				"Nunca subestimes el poder de la fuerza de voluntad de un Jedi. \n-Luke Skywalker",
+				"Con gran poder viene una gran responsabilidad, y una gran necesidad de una gran pizza. \n-Deadpool",
+				"¡Nunca te rindas, nunca te rindas, nunca te rindas! \n-Capitán América",
+				"La esperanza nunca muere. \n-Green Lantern", "Puedo hacer esto todo el día. \n-Capitán América",
+				"El crimen no paga, a menos que seas bueno en ello. \n-Batman",
+				"Tengo una misión que cumplir, y lo haré con o sin su ayuda. \n-Megamente",
+				"¡Yo soy el mejor en lo que hago! \n-X\n-Men", "La justicia es ciega, pero yo no lo soy. \n-Daredevil",
+				"Mi sentido arácnido está zumbando. \n-Spider\n-Man", "No me digas lo que no puedo hacer. \n-Lost",
+				"¡Seré el héroe que necesitan! \n-Batman",
+				"Con la gran capacidad, viene una gran responsabilidad. \n-Storm",
+				"¿Soy tu amigo? ¡Soy tu padre! \n-Star Wars",
+				"La grandeza de una civilización se mide por la forma en que trata a sus miembros más débiles. \n-X\n-Men",
+				"No se trata de quién soy debajo, sino de lo que hago lo que me define. \n-Iron Man",
+				"El poder sin control es peligroso. \n-Green Lantern", "¡El hombre de acero no se rinde! \n-Superman",
+				"Hasta el más mínimo gesto de valentía es capaz de hacer la diferencia. \n-Peter Parker, Spider\n-Man",
+				"¿Quién necesita una identidad secreta cuando puedes tener una buena mascara? \n-Iron Man",
+				"El valor es la magia que convierte los sueños en realidad. \n-Walt Disney",
+				"La lucha es lo que te define. \n-Green Arrow" };
 		n = (int) (Math.random() * r.nextInt(frases.length));
 
 		return frases[n];
 	}
-	
+
 	private void appendIfNotEmpty(StringBuilder builder, String label, String value) {
-	    if (value != null && !value.isEmpty()) {
-	        builder.append(label).append(": ").append(value).append("\n");
-	    }
+		if (value != null && !value.isEmpty()) {
+			builder.append(label).append(": ").append(value).append("\n");
+		}
 	}
 
 	@Override
 	public String toString() {
-	    StringBuilder contenidoComic = new StringBuilder();
+		StringBuilder contenidoComic = new StringBuilder();
 
-	    appendIfNotEmpty(contenidoComic, "ID", ID);
-	    appendIfNotEmpty(contenidoComic, "Nombre", nombre);
-	    appendIfNotEmpty(contenidoComic, "Numero", numero);
-	    appendIfNotEmpty(contenidoComic, "Variante", variante);
-	    appendIfNotEmpty(contenidoComic, "Firma", firma);
-	    appendIfNotEmpty(contenidoComic, "Editorial", editorial);
-	    appendIfNotEmpty(contenidoComic, "Formato", formato);
-	    appendIfNotEmpty(contenidoComic, "Procedencia", procedencia);
-	    appendIfNotEmpty(contenidoComic, "Fecha", fecha);
-	    appendIfNotEmpty(contenidoComic, "Guionista", guionista);
-	    appendIfNotEmpty(contenidoComic, "Dibujante", dibujante);
-	    appendIfNotEmpty(contenidoComic, "Puntuacion", puntuacion);
-	    appendIfNotEmpty(contenidoComic, "Estado", estado);
-	    appendIfNotEmpty(contenidoComic, "Caja", numCaja);
+		appendIfNotEmpty(contenidoComic, "ID", ID);
+		appendIfNotEmpty(contenidoComic, "Nombre", nombre);
+		appendIfNotEmpty(contenidoComic, "Numero", numero);
+		appendIfNotEmpty(contenidoComic, "Variante", variante);
+		appendIfNotEmpty(contenidoComic, "Firma", firma);
+		appendIfNotEmpty(contenidoComic, "Editorial", editorial);
+		appendIfNotEmpty(contenidoComic, "Formato", formato);
+		appendIfNotEmpty(contenidoComic, "Procedencia", procedencia);
+		appendIfNotEmpty(contenidoComic, "Fecha", fecha);
+		appendIfNotEmpty(contenidoComic, "Guionista", guionista);
+		appendIfNotEmpty(contenidoComic, "Dibujante", dibujante);
+		appendIfNotEmpty(contenidoComic, "Key issue", key_issue);
+		appendIfNotEmpty(contenidoComic, "Puntuacion", puntuacion);
+		appendIfNotEmpty(contenidoComic, "Estado", estado);
+		appendIfNotEmpty(contenidoComic, "Caja", numCaja);
 
-	    return contenidoComic.toString();
+		return contenidoComic.toString();
 	}
-
 
 }

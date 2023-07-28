@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1197.0" style="-fx-background-color: DFA394;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.ModificarDatosController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="832.0" prefWidth="1197.0" style="-fx-background-color: DFA394;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.ModificarDatosController">
    <children>
       <ImageView fitHeight="692.0" fitWidth="1198.0" layoutX="-1.0" layoutY="24.0" pickOnBounds="true" preserveRatio="true">
          <image>
@@ -25,13 +25,13 @@
          </image>
       </ImageView>
       <TextField fx:id="idComicMod" layoutX="446.0" layoutY="31.0" prefHeight="25.0" prefWidth="162.0" promptText="Introduce ID" />
-      <Button fx:id="botonModificar" layoutX="748.0" layoutY="386.0" mnemonicParsing="false" onAction="#modificarDatos" prefHeight="42.0" prefWidth="113.0" stylesheets="@../style/genericos_style.css" text="Modificar comic" wrapText="true" />
-      <Button fx:id="botonMostrarParametro" layoutX="100.0" layoutY="379.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="42.0" prefWidth="61.0" stylesheets="@../style/genericos_style.css" text="Busqueda" wrapText="true" />
-      <Button fx:id="botonbbdd" layoutX="12.0" layoutY="379.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="42.0" prefWidth="61.0" stylesheets="@../style/genericos_style.css" text="Ver todo" wrapText="true" />
+      <Button fx:id="botonModificar" layoutX="748.0" layoutY="416.0" mnemonicParsing="false" onAction="#modificarDatos" prefHeight="42.0" prefWidth="113.0" stylesheets="@../style/genericos_style.css" text="Modificar comic" wrapText="true" />
+      <Button fx:id="botonMostrarParametro" layoutX="100.0" layoutY="408.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="42.0" prefWidth="61.0" stylesheets="@../style/genericos_style.css" text="Busqueda" wrapText="true" />
+      <Button fx:id="botonbbdd" layoutX="12.0" layoutY="408.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="42.0" prefWidth="61.0" stylesheets="@../style/genericos_style.css" text="Ver todo" wrapText="true" />
       <Label fx:id="idMod" layoutX="325.0" layoutY="31.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="ID" />
-      <TextArea fx:id="prontInfo" editable="false" layoutX="932.0" layoutY="32.0" opacity="0.0" prefHeight="334.0" prefWidth="258.0" stylesheets="@../style/panel_info_style.css" wrapText="true" />
-      <Button fx:id="botonNuevaPortada" layoutX="622.0" layoutY="385.0" mnemonicParsing="false" onAction="#nuevaPortada" prefHeight="42.0" prefWidth="113.0" stylesheets="@../style/genericos_style.css" text="Buscar portada" wrapText="true" />
-      <ImageView fx:id="imagencomic" fitHeight="340.0" fitWidth="216.0" layoutX="690.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true" />
+      <TextArea fx:id="prontInfo" editable="false" layoutX="894.0" layoutY="32.0" opacity="0.0" prefHeight="366.0" prefWidth="296.0" stylesheets="@../style/panel_info_style.css" wrapText="true" />
+      <Button fx:id="botonNuevaPortada" layoutX="622.0" layoutY="415.0" mnemonicParsing="false" onAction="#nuevaPortada" prefHeight="42.0" prefWidth="113.0" stylesheets="@../style/genericos_style.css" text="Buscar portada" wrapText="true" />
+      <ImageView fx:id="imagencomic" fitHeight="366.0" fitWidth="275.0" layoutX="640.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true" />
       <MenuBar fx:id="menu_navegacion" layoutX="-1.0" prefHeight="25.0" prefWidth="1197.0">
          <menus>
             <Menu fx:id="navegacion_cerrar" mnemonicParsing="false" text="Archivo">
@@ -56,16 +56,17 @@
                   <MenuItem fx:id="menu_comic_aleatoria" mnemonicParsing="false" onAction="#ventanaRecomendar" text="Lectura aleatoria" />
                </items>
             </Menu>
-                      <Menu fx:id="navegacion_estadistica" mnemonicParsing="false" text="Estadistica">
-            <items>
-                  <MenuItem fx:id="menu_estadistica_posesion" mnemonicParsing="false" onAction="#comicsEnPosesion" text="Comics en posesion" />
-                  <MenuItem fx:id="menu_estadistica_comprados" mnemonicParsing="false" onAction="#comicsComprados" text="Comics Comprados" />
-                  <MenuItem fx:id="menu_estadistica_vendidos" mnemonicParsing="false" onAction="#comicsVendidos" text="Comics vendidos" />
-                  <MenuItem fx:id="menu_estadistica_puntuados" mnemonicParsing="false" onAction="#comicsPuntuacion" text="Comics puntuados" />
-                  <MenuItem fx:id="menu_estadistica_firmados" mnemonicParsing="false" onAction="#comicsFirmados" text="Comics Firmados" />
-                  <MenuItem fx:id="menu_estadistica_estadistica" mnemonicParsing="false" onAction="#verEstadistica" text="Estadistica global" />
-            </items>
-          </Menu>
+				<Menu fx:id="navegacion_estadistica" mnemonicParsing="false" text="Estadistica">
+					<items>
+						<MenuItem fx:id="menu_estadistica_posesion" mnemonicParsing="false" onAction="#comicsEnPosesion" text="Comics en posesion" />
+						<MenuItem fx:id="menu_estadistica_comprados" mnemonicParsing="false" onAction="#comicsComprados" text="Comics Comprados" />
+						<MenuItem fx:id="menu_estadistica_vendidos" mnemonicParsing="false" onAction="#comicsVendidos" text="Comics vendidos" />
+						<MenuItem fx:id="menu_estadistica_puntuados" mnemonicParsing="false" onAction="#comicsPuntuacion" text="Comics puntuados" />
+						<MenuItem fx:id="menu_estadistica_firmados" mnemonicParsing="false" onAction="#comicsFirmados" text="Comics Firmados" />
+                  <MenuItem fx:id="menu_estadistica_key_issue" mnemonicParsing="false" onAction="#comicsKeyIssue" text="Comic con Key_issue" />
+						<MenuItem fx:id="menu_estadistica_estadistica" mnemonicParsing="false" onAction="#verEstadistica" text="Descargar estadistica global" />
+					</items>
+				</Menu>
          </menus>
       </MenuBar>
       <Label layoutX="13.0" layoutY="61.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Nombre">
@@ -142,24 +143,24 @@
       <ComboBox fx:id="numeroCaja" editable="true" layoutX="137.0" layoutY="343.0" prefHeight="25.0" prefWidth="162.0" promptText="Selecciona caja" stylesheets="@../style/combobox_style.css" />
       <TextField fx:id="nombreComicMod" layoutX="446.0" layoutY="60.0" prefHeight="25.0" prefWidth="162.0" promptText="Introduce nombre comic" />
       <TextField fx:id="nombreVarianteMod" layoutX="446.0" layoutY="116.0" prefHeight="25.0" prefWidth="162.0" promptText="Introduce artista variante" />
-      <TextField fx:id="nombreFirmaMod" layoutX="446.0" layoutY="145.0" prefHeight="25.0" prefWidth="162.0" promptText="Introduce artista firma" />
+      <TextField fx:id="nombreFirmaMod" layoutX="446.0" layoutY="144.0" prefHeight="25.0" prefWidth="162.0" promptText="Introduce artista firma" />
       <TextField fx:id="nombreEditorialMod" layoutX="446.0" layoutY="173.0" prefHeight="25.0" prefWidth="162.0" promptText="Introduce editorial comic" />
       <TextField fx:id="nombreGuionistaMod" layoutX="446.0" layoutY="291.0" prefHeight="25.0" prefWidth="162.0" promptText="Introduce guionista/s" />
       <TextField fx:id="nombreDibujanteMod" layoutX="446.0" layoutY="320.0" prefHeight="25.0" prefWidth="162.0" promptText="Introduce artista/s" />
-      <Label layoutX="324.0" layoutY="63.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Nombre nuevo" />
+      <Label layoutX="324.0" layoutY="61.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Nombre nuevo" />
       <Label layoutX="325.0" layoutY="292.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Guionista nuevo" />
       <Label layoutX="325.0" layoutY="321.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Dibujante nuevo" />
       <Label layoutX="324.0" layoutY="264.0" prefHeight="23.0" prefWidth="76.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Fecha nueva" />
       <Label layoutX="324.0" layoutY="204.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Formato nuevo" />
       <Label layoutX="324.0" layoutY="175.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Editorial nuevo" />
-      <Label layoutX="324.0" layoutY="118.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Variante nuevo" />
-      <Label layoutX="324.0" layoutY="89.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Numero nuevo" />
-      <Label layoutX="324.0" layoutY="147.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Firma nuevo" />
+      <Label layoutX="324.0" layoutY="117.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Variante nuevo" />
+      <Label layoutX="324.0" layoutY="90.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Numero nuevo" />
+      <Label layoutX="324.0" layoutY="146.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Firma nuevo" />
       <Label layoutX="324.0" layoutY="234.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Procedencia nuevo" />
-      <Label layoutX="325.0" layoutY="352.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Estado" />
+      <Label layoutX="325.0" layoutY="350.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Estado" />
       <ComboBox fx:id="estadoComic" layoutX="446.0" layoutY="349.0" prefHeight="25.0" prefWidth="162.0" promptText="En posesion" />
-      <Label layoutX="324.0" layoutY="407.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Portada" />
-      <TextField fx:id="direccionImagen" editable="false" layoutX="445.0" layoutY="407.0" prefHeight="25.0" prefWidth="162.0" promptText="URL local de la portada" />
+      <Label layoutX="325.0" layoutY="432.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Portada" />
+      <TextField fx:id="direccionImagen" editable="false" layoutX="445.0" layoutY="432.0" prefHeight="25.0" prefWidth="162.0" promptText="URL local de la portada" />
       <ComboBox fx:id="nombreProcedenciaMod" editable="true" layoutX="446.0" layoutY="232.0" prefHeight="25.0" prefWidth="162.0" promptText="Selecciona procedencia" />
       <ComboBox fx:id="nombreFormatoMod" editable="true" layoutX="446.0" layoutY="202.0" prefHeight="25.0" prefWidth="162.0" promptText="Selecciona formato" />
       <DatePicker fx:id="anioPublicacionMod" editable="false" layoutX="445.0" layoutY="262.0" prefHeight="25.0" prefWidth="162.0" promptText="2000-01-01" />
@@ -170,10 +171,10 @@
       </Label>
       <ComboBox fx:id="numeroCajaMod" editable="true" layoutX="445.0" layoutY="378.0" prefHeight="25.0" prefWidth="162.0" promptText="Selecciona caja" stylesheets="@../style/combobox_style.css" />
       <ComboBox fx:id="numeroComicMod" editable="true" layoutX="445.0" layoutY="88.0" prefHeight="25.0" prefWidth="162.0" promptText="Introduce numero" stylesheets="@../style/combobox_style.css" />
-      <Button fx:id="botonLimpiarComic" layoutX="173.0" layoutY="377.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="49.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Limpiar/Reiniciar" />
-      <VBox fx:id="rootVBox" layoutX="-1.0" layoutY="440.0" prefHeight="360.0" prefWidth="1198.0">
+      <Button fx:id="botonLimpiarComic" layoutX="173.0" layoutY="406.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="49.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Limpiar/Reiniciar" />
+      <VBox fx:id="rootVBox" layoutX="-1.0" layoutY="466.0" prefHeight="366.0" prefWidth="1198.0">
          <children>
-            <TableView fx:id="tablaBBDD" onKeyPressed="#teclasDireccion" onMouseClicked="#clickRaton" prefHeight="360.0" prefWidth="1198.0" stylesheets="@../style/tablas_style.css">
+            <TableView fx:id="tablaBBDD" onKeyPressed="#teclasDireccion" onMouseClicked="#clickRaton" prefHeight="397.0" prefWidth="1198.0" stylesheets="@../style/tablas_style.css">
                <columns>
                   <TableColumn fx:id="ID" prefWidth="47.0" text="ID" visible="false" />
                   <TableColumn fx:id="nombre" editable="false" prefWidth="135.0" text="Nombre" />
@@ -195,5 +196,7 @@
             </TableView>
          </children>
       </VBox>
+      <TextField fx:id="nombreKeyIssue" layoutX="445.0" layoutY="405.0" prefHeight="25.0" prefWidth="162.0" promptText="Introduce key issue" />
+      <Label layoutX="325.0" layoutY="406.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Key issue" />
    </children>
 </Pane>

@@ -58,16 +58,17 @@
                   <MenuItem fx:id="menu_comic_aleatoria" mnemonicParsing="false" onAction="#ventanaRecomendar" text="Lectura aleatoria" />
                </items>
             </Menu>
-                      <Menu fx:id="navegacion_estadistica" mnemonicParsing="false" text="Estadistica">
-            <items>
-                  <MenuItem fx:id="menu_estadistica_posesion" mnemonicParsing="false" onAction="#comicsEnPosesion" text="Comics en posesion" />
-                  <MenuItem fx:id="menu_estadistica_comprados" mnemonicParsing="false" onAction="#comicsComprados" text="Comics Comprados" />
-                  <MenuItem fx:id="menu_estadistica_vendidos" mnemonicParsing="false" onAction="#comicsVendidos" text="Comics vendidos" />
-                  <MenuItem fx:id="menu_estadistica_puntuados" mnemonicParsing="false" onAction="#comicsPuntuacion" text="Comics puntuados" />
-                  <MenuItem fx:id="menu_estadistica_firmados" mnemonicParsing="false" onAction="#comicsFirmados" text="Comics Firmados" />
-                  <MenuItem fx:id="menu_estadistica_estadistica" mnemonicParsing="false" onAction="#verEstadistica" text="Estadistica global" />
-            </items>
-          </Menu>
+				<Menu fx:id="navegacion_estadistica" mnemonicParsing="false" text="Estadistica">
+					<items>
+						<MenuItem fx:id="menu_estadistica_posesion" mnemonicParsing="false" onAction="#comicsEnPosesion" text="Comics en posesion" />
+						<MenuItem fx:id="menu_estadistica_comprados" mnemonicParsing="false" onAction="#comicsComprados" text="Comics Comprados" />
+						<MenuItem fx:id="menu_estadistica_vendidos" mnemonicParsing="false" onAction="#comicsVendidos" text="Comics vendidos" />
+						<MenuItem fx:id="menu_estadistica_puntuados" mnemonicParsing="false" onAction="#comicsPuntuacion" text="Comics puntuados" />
+						<MenuItem fx:id="menu_estadistica_firmados" mnemonicParsing="false" onAction="#comicsFirmados" text="Comics Firmados" />
+                  <MenuItem fx:id="menu_estadistica_key_issue" mnemonicParsing="false" onAction="#comicsKeyIssue" text="Comic con Key_issue" />
+						<MenuItem fx:id="menu_estadistica_estadistica" mnemonicParsing="false" onAction="#verEstadistica" text="Descargar estadistica global" />
+					</items>
+				</Menu>
          </menus>
       </MenuBar>
       <Label layoutX="7.0" layoutY="60.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Nombre">

@@ -181,15 +181,13 @@ public class Utilidades {
 	 * @param campos
 	 * @return
 	 */
-	public String[] comaPorGuion(String[] datos) {
-		for (int i = 0; i < datos.length; i++) {
+	public String comaPorGuion(String dato) {
 
-			if (datos[i].contains(",")) {
-				datos[i] = datos[i].replace(",", " - ");
-			}
+		if (dato.contains(",")) {
+			dato = dato.replace(",", " - ");
 		}
 
-		return datos;
+		return dato;
 	}
 
 	/**
@@ -298,8 +296,6 @@ public class Utilidades {
 					return FileVisitResult.CONTINUE;
 				}
 			});
-
-			System.out.println("Directorio copiado exitosamente.");
 		} catch (IOException e) {
 			System.err.println("Se produjo un error al copiar el directorio: " + e.getMessage());
 		}
@@ -375,14 +371,13 @@ public class Utilidades {
 
 			String userDir = System.getProperty("user.home");
 			String documentsPath = userDir + File.separator + "Documents";
-			String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator
-					+ DBManager.DB_NAME + File.separator + "portadas";
+			String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + DBManager.DB_NAME
+					+ File.separator + "portadas";
 			File sourceFolder = new File(sourcePath);
 
 			String ubicacion = userDir + File.separator + "AppData" + File.separator + "Roaming";
-			String carpetaLibreria = ubicacion + File.separator + "libreria" + File.separator
-					+ DBManager.DB_NAME + File.separator + "backups" + File.separator
-					+ nombre_carpeta;
+			String carpetaLibreria = ubicacion + File.separator + "libreria" + File.separator + DBManager.DB_NAME
+					+ File.separator + "backups" + File.separator + nombre_carpeta;
 //					File libreria_backup = new File(carpetaLibreria);
 
 			if (sourceFolder.exists()) {
@@ -444,8 +439,8 @@ public class Utilidades {
 
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
-		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator
-				+ DBManager.DB_NAME + File.separator + "portadas";
+		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + DBManager.DB_NAME
+				+ File.separator + "portadas";
 
 		File carpeta = new File(sourcePath);
 		if (carpeta.exists() && carpeta.isDirectory()) {
@@ -479,8 +474,9 @@ public class Utilidades {
 			File carpetaDestino = new File(carpeta_backups);
 			File archivoCopia = new File(carpetaDestino, nombreCopia);
 
-			String[] command = new String[] { mysqlDump, "-u" + DBManager.DB_USER, "-p" + DBManager.DB_PASS, "-B", DBManager.DB_NAME, "--hex-blob",
-					"--routines=true", "--result-file=" + archivoCopia.getAbsolutePath() };
+			String[] command = new String[] { mysqlDump, "-u" + DBManager.DB_USER, "-p" + DBManager.DB_PASS, "-B",
+					DBManager.DB_NAME, "--hex-blob", "--routines=true",
+					"--result-file=" + archivoCopia.getAbsolutePath() };
 
 			ProcessBuilder pb = new ProcessBuilder(command);
 			pb.redirectError(Redirect.INHERIT);
@@ -620,8 +616,6 @@ public class Utilidades {
 
 	public static void eliminarFichero(String direccion) {
 		File archivo = new File(direccion);
-
-		System.out.println(direccion);
 
 		archivo.delete();
 	}

@@ -146,6 +146,9 @@ public class PuntuarDatosController implements Initializable {
 
 	@FXML
 	private MenuItem menu_estadistica_vendidos;
+	
+    @FXML
+    private MenuItem menu_estadistica_key_issue;
 
 	@FXML
 	private MenuBar menu_navegacion;
@@ -325,7 +328,6 @@ public class PuntuarDatosController implements Initializable {
 	        tablaBBDD.setFocusTraversable(false);
 	        rootVBox.requestFocus();
 	    });
-
 	}
 
 	public void restablecerCampos() {
@@ -470,7 +472,7 @@ public class PuntuarDatosController implements Initializable {
 
 		Comic comicTemp = new Comic("", comic.getNombre(), comic.getNumCaja(), comic.getNumero(), comic.getVariante(),
 				comic.getFirma(), comic.getEditorial(), comic.getFormato(), comic.getProcedencia(), "",
-				comic.getGuionista(), comic.getDibujante(), "", "", "");
+				comic.getGuionista(), comic.getDibujante(),"", "", "", "");
 
 		String sql = libreria.datosConcatenados(comicTemp);
 
@@ -1357,7 +1359,7 @@ public class PuntuarDatosController implements Initializable {
 		String datos[] = camposComic();
 
 		Comic comic = new Comic("", datos[1], datos[11], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
-				datos[8], datos[9], datos[10], "", "", null);
+				datos[8], datos[9], datos[10],"", "", "", null);
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
 		busquedaGeneral.setText("");
@@ -1569,8 +1571,17 @@ public class PuntuarDatosController implements Initializable {
 		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(libreria.libreriaPuntuacion());
-
 	}
+	
+    @FXML
+    void comicsKeyIssue(ActionEvent event) throws SQLException {
+		prontInfo.setOpacity(0);
+		tablaBBDD.getItems().clear();
+		libreria = new DBLibreriaManager();
+		libreria.reiniciarBBDD();
+		nombreColumnas();
+		tablaBBDD(libreria.libreriaKeyIssue());
+    }
 
 	/**
 	 * Funcion que al pulsar el boton de 'botonVentas' se muestran aquellos comics

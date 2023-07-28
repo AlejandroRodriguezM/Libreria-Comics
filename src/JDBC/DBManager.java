@@ -41,6 +41,7 @@ public class DBManager {
 	public static String DB_HOST;
 	public static String DB_URL;
 
+
 	/**
 	 * Carga el controlador JDBC para el proyecto.
 	 * 
@@ -65,6 +66,7 @@ public class DBManager {
 	 */
 	public static boolean isConnected() {
 		try {
+			
 			if (conn != null && !conn.isClosed()) {
 				return true;
 			}

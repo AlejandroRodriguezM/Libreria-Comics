@@ -103,15 +103,14 @@ public class FuncionesExcel {
 	 * @return
 	 * @throws SQLException
 	 */
-	public boolean importarCSV(File fichero) {
-		String sql = "INSERT INTO comicsbbdd(ID,nomComic,caja_deposito,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,fecha_publicacion,nomGuionista,nomDibujante,puntuacion,portada,estado)"
-				+ " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+	public boolean importarCSV(File fichero) throws IOException {
+	    String sql = "INSERT INTO comicsbbdd(ID,nomComic,caja_deposito,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,fecha_publicacion,nomGuionista,nomDibujante,puntuacion,portada,key_issue,estado)"
+	            + " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-		if (comprobarCSV(fichero, sql)) // Llamada a funcion, en caso de devolver true, devolvera un true
-		{
-			return true;
+	    if (comprobarCSV(fichero, sql)) {
+		    return true;
 		} else {
-			return false;
+		    return false;
 		}
 	}
 
@@ -130,12 +129,8 @@ public class FuncionesExcel {
 		Sheet hoja;
 		Workbook libro;
 		String encabezado;
-//		String userDir = System.getProperty("user.home");
-//		String documentsPath = userDir + File.separator + "Documents";
-//		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator
-//				+ utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas" + File.separator;
 		String[] encabezados = { "ID", "nomComic", "caja_deposito", "numComic", "nomVariante", "Firma", "nomEditorial",
-				"Formato", "Procedencia", "fecha_publicacion", "nomGuionista", "nomDibujante", "puntuacion", "portada",
+				"Formato", "Procedencia", "fecha_publicacion", "nomGuionista", "nomDibujante", "puntuacion", "portada","key_issue",
 				"estado" };
 		int indiceFila = 0;
 
@@ -172,7 +167,8 @@ public class FuncionesExcel {
 				fila.createCell(11).setCellValue(comic.getDibujante());
 				fila.createCell(12).setCellValue(comic.getPuntuacion());
 				fila.createCell(13).setCellValue(comic.getImagen());
-				fila.createCell(14).setCellValue(comic.getEstado());
+				fila.createCell(14).setCellValue(comic.getKey_issue());
+				fila.createCell(15).setCellValue(comic.getEstado());
 				indiceFila++;
 			}
 			
@@ -203,14 +199,11 @@ public class FuncionesExcel {
 		Workbook libro;
 		String encabezado;
 		String[] encabezados = { "ID", "nomComic", "caja_deposito", "numComic", "nomVariante", "Firma", "nomEditorial",
-				"Formato", "Procedencia", "fecha_publicacion", "nomGuionista", "nomDibujante", "puntuacion", "portada",
+				"Formato", "Procedencia", "fecha_publicacion", "nomGuionista", "nomDibujante", "puntuacion", "portada","key_issue",
 				"estado" };
 		int indiceFila = 0;
 
 		String userDir = System.getProperty("user.home");
-//		String documentsPath = userDir + File.separator + "Documents";
-//		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator
-//				+ utilidad.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas" + File.separator;
 
 		String ubicacion = userDir + File.separator + "AppData" + File.separator + "Roaming";
 		String direccion = ubicacion + File.separator + "libreria" + File.separator
@@ -251,7 +244,8 @@ public class FuncionesExcel {
 				fila.createCell(11).setCellValue(comic.getDibujante());
 				fila.createCell(12).setCellValue(comic.getPuntuacion());
 				fila.createCell(13).setCellValue(comic.getImagen());
-				fila.createCell(14).setCellValue(comic.getEstado());
+				fila.createCell(14).setCellValue(comic.getKey_issue());
+				fila.createCell(15).setCellValue(comic.getEstado());
 
 				indiceFila++;
 			}
@@ -444,19 +438,22 @@ public class FuncionesExcel {
 	 * @throws IOException
 	 */
 	public void lecturaCSV(String sql, BufferedReader lineReader) throws IOException {
-	    File directorio = carpetaPortadas();
-	    db = new DBLibreriaManager();
-	    new Utilidades();
-	    int batchSize = 20;
-
+		
 	    String lineText = null;
 	    String userDir = System.getProperty("user.home");
 	    String documentsPath = userDir + File.separator + "Documents";
 	    String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
 	            + DBManager.DB_NAME + File.separator + "portadas";
+		
+	    File directorio = carpetaPortadas();
+	    if (directorio == null) {
+	    	directorio = new File(defaultImagePath + File.separator);
+	    }
+	    
+	    db = new DBLibreriaManager();
+	    int batchSize = 20;
 	    Utilidades.convertirNombresCarpetas(defaultImagePath + File.separator);
 	    Utilidades.convertirNombresCarpetas(directorio.getAbsolutePath());
-
 	    String defaultImagePathBase = documentsPath + File.separator + "libreria_comics" + File.separator
 	            + DBManager.DB_NAME;
 
@@ -488,10 +485,12 @@ public class FuncionesExcel {
 	            String direccion_portada = data[13];
 	            String nombre_portada = Utilidades.obtenerDespuesPortadas(direccion_portada);
 	            String nombre_modificado = Utilidades.convertirNombreArchivo(nombre_portada);
-	            String nombre_completo = defaultImagePath + File.separator + nombre_modificado;
-	            String estado = data[14];
+	            String nombre_completo_portada = defaultImagePath + File.separator + nombre_modificado;
+	            String key_issue = data[14];
+	            key_issue = key_issue.replaceAll("\\r|\\n", "");
+	            String estado = data[15];
 
-	            if (!existeArchivo(defaultImagePath, nombre_modificado)) {
+	            if (!existeArchivo(defaultImagePath, nombre_modificado) || directorio == null) {
 	                copiarPortadaPredeterminada(defaultImagePath, nombre_modificado);
 	                generarLogFaltaPortada(defaultImagePathBase, logFileName, nombre_modificado);
 	            }
@@ -509,8 +508,9 @@ public class FuncionesExcel {
 	            statement.setString(11, guionista);
 	            statement.setString(12, dibujante);
 	            statement.setString(13, puntuacion);
-	            statement.setString(14, nombre_completo);
-	            statement.setString(15, estado);
+	            statement.setString(14, nombre_completo_portada);
+	            statement.setString(15, key_issue);
+	            statement.setString(16, estado);
 
 	            statement.addBatch();
 
@@ -524,6 +524,7 @@ public class FuncionesExcel {
 	        abrirArchivoRegistro(defaultImagePathBase + File.separator + logFileName);
 	    } catch (SQLException e) {
 	        nav.alertaException(e.toString());
+	        e.printStackTrace();
 	    } catch (IOException e) {
 	        nav.alertaException(e.toString());
 	        e.printStackTrace();

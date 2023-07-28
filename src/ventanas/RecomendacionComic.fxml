@@ -53,7 +53,8 @@
                   <MenuItem disable="true" mnemonicParsing="false" text="Comics vendidos" />
                   <MenuItem disable="true" mnemonicParsing="false" text="Comics puntuados" />
                   <MenuItem disable="true" mnemonicParsing="false" text="Comics Firmados" />
-                  <MenuItem disable="true" mnemonicParsing="false" text="Estadistica global" />
+                  <Menu Itemdisable="true" mnemonicParsing="false" text="Comic con Key_issue" />
+                  <MenuItem disable="true" mnemonicParsing="false" text="Estadistica global" />       
             </items>
           </Menu>
          </menus>

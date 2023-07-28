@@ -136,6 +136,9 @@ public class MenuPrincipalController implements Initializable {
 
 	@FXML
 	private MenuItem menu_estadistica_vendidos;
+	
+    @FXML
+    private MenuItem menu_estadistica_key_issue;
 
 	@FXML
 	private MenuBar menu_navegacion;
@@ -253,9 +256,9 @@ public class MenuPrincipalController implements Initializable {
 
 	@FXML
 	private URL location;
-	
-    @FXML
-    private VBox rootVBox;
+
+	@FXML
+	private VBox rootVBox;
 
 	private static Ventanas nav = new Ventanas();
 
@@ -302,23 +305,25 @@ public class MenuPrincipalController implements Initializable {
 		modificarColumnas();
 		rellenarComboBox();
 		restringir_entrada_datos();
-				
+
 		lecturaComboBox();
-		
-	    // Desactivar el enfoque en el VBox para evitar que reciba eventos de teclado
-	    rootVBox.setFocusTraversable(false);
 
-	    // Agregar un filtro de eventos para capturar el enfoque en el TableView y desactivar el enfoque en el VBox
-	    tablaBBDD.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
-	        rootVBox.setFocusTraversable(false);
-	        tablaBBDD.requestFocus();
-	    });
+		// Desactivar el enfoque en el VBox para evitar que reciba eventos de teclado
+		rootVBox.setFocusTraversable(false);
 
-	    // Agregar un filtro de eventos para capturar el enfoque en el VBox y desactivar el enfoque en el TableView
-	    rootVBox.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
-	        tablaBBDD.setFocusTraversable(false);
-	        rootVBox.requestFocus();
-	    });
+		// Agregar un filtro de eventos para capturar el enfoque en el TableView y
+		// desactivar el enfoque en el VBox
+		tablaBBDD.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+			rootVBox.setFocusTraversable(false);
+			tablaBBDD.requestFocus();
+		});
+
+		// Agregar un filtro de eventos para capturar el enfoque en el VBox y desactivar
+		// el enfoque en el TableView
+		rootVBox.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+			tablaBBDD.setFocusTraversable(false);
+			rootVBox.requestFocus();
+		});
 	}
 
 	private Comic getComicFromComboBoxes() {
@@ -402,9 +407,10 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Maneja los cambios en el ComboBox cuando su texto está vacío. Restablece el valor
-	 * del ComboBox a null y verifica si todos los campos de texto de los ComboBoxes están vacíos.
-	 * Si todos están vacíos, llama a la función "limpiezaDeDatos()".
+	 * Maneja los cambios en el ComboBox cuando su texto está vacío. Restablece el
+	 * valor del ComboBox a null y verifica si todos los campos de texto de los
+	 * ComboBoxes están vacíos. Si todos están vacíos, llama a la función
+	 * "limpiezaDeDatos()".
 	 *
 	 * @param comboBox El ComboBox que ha cambiado su valor.
 	 */
@@ -433,24 +439,26 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Actualiza los ComboBoxes con los resultados obtenidos de la base de datos según el Comic proporcionado.
-	 * Primero, se crea un Comic temporal sin algunos valores para utilizarlo en la consulta SQL.
-	 * Luego, se construye la consulta SQL a partir del Comic temporal y se obtienen los resultados
-	 * de la base de datos para cada campo de ComboBox. Finalmente, se actualizan los ComboBoxes con los
-	 * nuevos datos obtenidos.
+	 * Actualiza los ComboBoxes con los resultados obtenidos de la base de datos
+	 * según el Comic proporcionado. Primero, se crea un Comic temporal sin algunos
+	 * valores para utilizarlo en la consulta SQL. Luego, se construye la consulta
+	 * SQL a partir del Comic temporal y se obtienen los resultados de la base de
+	 * datos para cada campo de ComboBox. Finalmente, se actualizan los ComboBoxes
+	 * con los nuevos datos obtenidos.
 	 *
-	 * @param comic El Comic que se utilizará como base para obtener los resultados de la base de datos.
+	 * @param comic El Comic que se utilizará como base para obtener los resultados
+	 *              de la base de datos.
 	 */
 	public void actualizarComboBoxes(Comic comic) {
 
 		Comic comicTemp = new Comic("", comic.getNombre(), comic.getNumCaja(), comic.getNumero(), comic.getVariante(),
 				comic.getFirma(), comic.getEditorial(), comic.getFormato(), comic.getProcedencia(), "",
-				comic.getGuionista(), comic.getDibujante(), "", "", "");
+				comic.getGuionista(), comic.getDibujante(), "", "", "", "");
 
 		String sql = libreria.datosConcatenados(comicTemp);
 
 		comic.toString();
-		
+
 		if (!sql.isEmpty()) {
 
 			isUserInput = false; // Disable user input during programmatic updates
@@ -593,50 +601,50 @@ public class MenuPrincipalController implements Initializable {
 	 * raton se encuentra y muestra un mensaje emergente con datos del comic
 	 */
 	public void seleccionarRaw() {
-	    tablaBBDD.setRowFactory(tv -> {
-	        TableRow<Comic> row = new TableRow<>();
-	        Tooltip tooltip = new Tooltip();
-	        tooltip.setShowDelay(Duration.ZERO);
-	        tooltip.setHideDelay(Duration.ZERO);
+		tablaBBDD.setRowFactory(tv -> {
+			TableRow<Comic> row = new TableRow<>();
+			Tooltip tooltip = new Tooltip();
+			tooltip.setShowDelay(Duration.ZERO);
+			tooltip.setHideDelay(Duration.ZERO);
 
-	        row.setOnMouseEntered(event -> {
-	            if (!row.isEmpty()) {
-	                row.setStyle("-fx-background-color: #BFEFFF;");
+			row.setOnMouseEntered(event -> {
+				if (!row.isEmpty()) {
+					row.setStyle("-fx-background-color: #BFEFFF;");
 
-	                Comic comic = row.getItem();
-	                if (comic != null && !tooltip.isShowing()) {
-	                    String mensaje = "Nombre: " + comic.getNombre() + "\nNumero: " + comic.getNumero()
-	                            + "\nVariante: " + comic.getVariante() + "\nGuionista: " + comic.getGuionista()
-	                            + "\nDibujante: " + comic.getDibujante();
-	                    if (!comic.getFirma().isEmpty()) {
-	                        mensaje += "\nFirma: " + comic.getFirma();
-	                    }
-	                    tooltip.setText(mensaje);
-	                    tooltip.show(row, event.getSceneX(), event.getSceneY());
-	                    tooltip.setX(event.getScreenX() + 10); // Ajusta el desplazamiento X según tus necesidades
-	                    tooltip.setY(event.getScreenY() - 20); // Ajusta el desplazamiento Y según tus necesidades
-	                }
-	            }
-	        });
+					Comic comic = row.getItem();
+					if (comic != null && !tooltip.isShowing()) {
+						String mensaje = "Nombre: " + comic.getNombre() + "\nNumero: " + comic.getNumero()
+								+ "\nVariante: " + comic.getVariante() + "\nGuionista: " + comic.getGuionista()
+								+ "\nDibujante: " + comic.getDibujante();
+						if (!comic.getFirma().isEmpty()) {
+							mensaje += "\nFirma: " + comic.getFirma();
+						}
+						tooltip.setText(mensaje);
+						tooltip.show(row, event.getSceneX(), event.getSceneY());
+						tooltip.setX(event.getScreenX() + 10); // Ajusta el desplazamiento X según tus necesidades
+						tooltip.setY(event.getScreenY() - 20); // Ajusta el desplazamiento Y según tus necesidades
+					}
+				}
+			});
 
-	        row.setOnMouseExited(event -> {
-	            if (!row.isEmpty()) {
-	                row.setStyle("");
-	                tooltip.hide();
-	            }
-	        });
+			row.setOnMouseExited(event -> {
+				if (!row.isEmpty()) {
+					row.setStyle("");
+					tooltip.hide();
+				}
+			});
 
-	        return row;
-	    });
+			return row;
+		});
 
-	    // Deshabilitar el enfoque en el TableView
-	    tablaBBDD.setFocusTraversable(false);
+		// Deshabilitar el enfoque en el TableView
+		tablaBBDD.setFocusTraversable(false);
 
-	    // Enfocar el VBox para evitar movimientos inesperados
-	    VBox root = (VBox) tablaBBDD.getScene().lookup("#rootVBox");
-	    if (root != null) {
-	        root.requestFocus();
-	    }
+		// Enfocar el VBox para evitar movimientos inesperados
+		VBox root = (VBox) tablaBBDD.getScene().lookup("#rootVBox");
+		if (root != null) {
+			root.requestFocus();
+		}
 	}
 
 	/**
@@ -1141,6 +1149,17 @@ public class MenuPrincipalController implements Initializable {
 		nombreColumnas();
 		tablaBBDD(libreria.libreriaPosesion());
 	}
+	
+    @FXML
+    void comicsKeyIssue(ActionEvent event) throws SQLException {
+		prontInfo.setOpacity(0);
+		limpiezaDeDatos();
+		utilidad = new Utilidades();
+		libreria = new DBLibreriaManager();
+		libreria.reiniciarBBDD();
+		nombreColumnas();
+		tablaBBDD(libreria.libreriaKeyIssue());
+    }
 
 	////////////////////////////
 	/// METODOS PARA EXPORTAR///
@@ -1287,7 +1306,7 @@ public class MenuPrincipalController implements Initializable {
 	 * Se llama a funcion que permite ver las estadisticas de la bbdd
 	 *
 	 * @param event
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	@FXML
 	void verEstadistica(ActionEvent event) throws IOException {
@@ -1344,6 +1363,7 @@ public class MenuPrincipalController implements Initializable {
 		columna.setCellFactory(column -> {
 			return new TableCell<Comic, String>() {
 				private VBox vbox = new VBox();
+				private String lastItem = null;
 
 				@Override
 				protected void updateItem(String item, boolean empty) {
@@ -1352,40 +1372,43 @@ public class MenuPrincipalController implements Initializable {
 					if (empty || item == null) {
 						setGraphic(null);
 					} else {
-						String[] nombres = item.split(" - "); // Dividir el dato en caso de contener " - "
-						vbox.getChildren().clear(); // Limpiar VBox antes de agregar nuevos elementos
+						if (!item.equals(lastItem)) { // Verificar si el contenido ha cambiado
+							lastItem = item;
+							String[] nombres = item.split(" - ");
+							vbox.getChildren().clear();
 
-						for (String nombre : nombres) {
-							if (!nombre.isEmpty()) {
-								Label label;
-								if (columna.getText().equalsIgnoreCase("fecha")
-										|| columna.getText().equalsIgnoreCase("editorial")
-										|| columna.getText().equalsIgnoreCase("formato")
-										|| columna.getText().equalsIgnoreCase("variante")
-										|| columna.getText().equalsIgnoreCase("origen")) {
-									label = new Label(nombre + "\n"); // No se agrega el símbolo en estas columnas
-								} else {
-									label = new Label("◉ " + nombre + "\n");
-								}
-								label.getStyleClass().add("hyperlink"); // Agregar clase CSS
-								Hyperlink hyperlink = new Hyperlink();
-								hyperlink.setGraphic(label);
-								hyperlink.setOnAction(event -> {
-									try {
-										prontFrases.setText(null);
-										prontInfo.setText(null);
-										prontInfo.setOpacity(0);
-										prontFrases.setOpacity(0);
-
-										columnaSeleccionada(nombre);
-										prontInfo.setOpacity(1);
-										prontInfo.setText("El número de cómics donde aparece la \nbúsqueda: " + nombre
-												+ " es: " + libreria.numeroTotalSelecionado(nombre));
-									} catch (SQLException e) {
-										e.printStackTrace();
+							for (String nombre : nombres) {
+								if (!nombre.isEmpty()) {
+									Label label;
+									if (columna.getText().equalsIgnoreCase("fecha")
+											|| columna.getText().equalsIgnoreCase("editorial")
+											|| columna.getText().equalsIgnoreCase("formato")
+											|| columna.getText().equalsIgnoreCase("variante")
+											|| columna.getText().equalsIgnoreCase("origen")) {
+										label = new Label(nombre + "\n");
+									} else {
+										label = new Label("◉ " + nombre + "\n");
 									}
-								});
-								vbox.getChildren().add(hyperlink);
+									label.getStyleClass().add("hyperlink");
+									Hyperlink hyperlink = new Hyperlink();
+									hyperlink.setGraphic(label);
+									hyperlink.setOnAction(event -> {
+										try {
+											prontFrases.setText(null);
+											prontInfo.setText(null);
+											prontInfo.setOpacity(0);
+											prontFrases.setOpacity(0);
+
+											columnaSeleccionada(nombre);
+											prontInfo.setOpacity(1);
+											prontInfo.setText("El número de cómics donde aparece la \nbúsqueda: "
+													+ nombre + " es: " + libreria.numeroTotalSelecionado(nombre));
+										} catch (SQLException e) {
+											e.printStackTrace();
+										}
+									});
+									vbox.getChildren().add(hyperlink);
+								}
 							}
 						}
 						setGraphic(vbox);
@@ -1553,6 +1576,8 @@ public class MenuPrincipalController implements Initializable {
 				if (excelFuntions.importarCSV(fichero)) { // Si se ha importado el fichero CSV correctamente, se vera el
 					// siguiente mensaje
 					listas_autocompletado();
+					rellenarComboBox();
+					lecturaComboBox();
 					prontInfo.setOpacity(1);
 					prontInfo.setStyle("-fx-background-color: #A0F52D");
 					prontInfo.setText("Fichero CSV importado de forma correcta");
@@ -1623,7 +1648,7 @@ public class MenuPrincipalController implements Initializable {
 		}
 
 		comic = new Comic("", datos[1], datos[12], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7], fecha,
-				datos[9], datos[10], "", "", null);
+				datos[9], datos[10], "", "", "", null);
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
 		resultadoBusquedaPront(comic);
@@ -1670,16 +1695,14 @@ public class MenuPrincipalController implements Initializable {
 		prontFrases.setOpacity(0);
 
 		String datoSeleccionado = datoSeleccionadoBuilder.toString();
-		if (!libreria.numeroResultados(comic) && !datoSeleccionado.isEmpty() ) {
+		if (!libreria.numeroResultados(comic) && !datoSeleccionado.isEmpty()) {
 			// Show error message in red when no search fields are specified
 			prontInfo.setStyle("-fx-text-fill: red;");
 			prontInfo.setText("Error: No existe comic con los datos: " + datoSeleccionado);
-		} else if(datoSeleccionado.isEmpty()) {
+		} else if (datoSeleccionado.isEmpty()) {
 			prontInfo.setStyle("-fx-text-fill: red;");
-			prontInfo.setText(
-					"Error: No has seleccionado ningun comic para filtrar, se muestran todos.");
-		}
-		else {
+			prontInfo.setText("Error: No has seleccionado ningun comic para filtrar, se muestran todos.");
+		} else {
 			int totalComics = libreria.numeroTotalSelecionado(comic);
 			prontInfo.setStyle("-fx-text-fill: black;"); // Reset the text color to black
 			prontInfo.setText(

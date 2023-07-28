@@ -167,7 +167,7 @@ public class CrearBBDDController implements Initializable {
 		String userHome = System.getProperty("user.home");
 		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
 		String carpetaLibreria = ubicacion + File.separator + "libreria";
-		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion.conf";
+		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion_local.conf";
 
 		try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
 			String line;
@@ -403,14 +403,25 @@ public class CrearBBDDController implements Initializable {
 			statement = connection.createStatement();
 
 			String dropTableSQL = "DROP TABLE IF EXISTS comicsbbdd";
-			String createTableSQL = "CREATE TABLE comicsbbdd (" + "ID INT NOT NULL AUTO_INCREMENT, "
-					+ "nomComic VARCHAR(150) NOT NULL, " + "caja_deposito TEXT, " + "numComic INT NOT NULL, "
-					+ "nomVariante VARCHAR(150) NOT NULL, " + "firma VARCHAR(150) NOT NULL, "
-					+ "nomEditorial VARCHAR(150) NOT NULL, " + "formato VARCHAR(150) NOT NULL, "
-					+ "procedencia VARCHAR(150) NOT NULL, " + "fecha_publicacion DATE NOT NULL, "
-					+ "nomGuionista TEXT NOT NULL, " + "nomDibujante TEXT NOT NULL, "
-					+ "puntuacion VARCHAR(300) NOT NULL, " + "portada TEXT, " + "estado TEXT NOT NULL, "
-					+ "PRIMARY KEY (ID)) " + "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+			String createTableSQL = "CREATE TABLE comicsbbdd (" +
+			        "ID INT NOT NULL AUTO_INCREMENT, " +
+			        "nomComic VARCHAR(150) NOT NULL, " +
+			        "caja_deposito TEXT, " +
+			        "numComic INT NOT NULL, " +
+			        "nomVariante VARCHAR(150) NOT NULL, " +
+			        "firma VARCHAR(150) NOT NULL, " +
+			        "nomEditorial VARCHAR(150) NOT NULL, " +
+			        "formato VARCHAR(150) NOT NULL, " +
+			        "procedencia VARCHAR(150) NOT NULL, " +
+			        "fecha_publicacion DATE NOT NULL, " +
+			        "nomGuionista TEXT NOT NULL, " +
+			        "nomDibujante TEXT NOT NULL, " +
+			        "puntuacion VARCHAR(300) NOT NULL, " +
+			        "portada TEXT, " +
+			        "key_issue TEXT, " + // Allow NULL values for key_issue
+			        "estado TEXT NOT NULL, " +
+			        "PRIMARY KEY (ID)) " +
+			        "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
 			statement.executeUpdate(dropTableSQL);
 			statement.executeUpdate(createTableSQL);
 

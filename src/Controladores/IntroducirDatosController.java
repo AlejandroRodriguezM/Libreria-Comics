@@ -56,6 +56,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
@@ -148,6 +150,9 @@ public class IntroducirDatosController implements Initializable {
 
 	@FXML
 	private MenuItem menu_estadistica_vendidos;
+	
+    @FXML
+    private MenuItem menu_estadistica_key_issue;
 
 	@FXML
 	private MenuBar menu_navegacion;
@@ -217,6 +222,9 @@ public class IntroducirDatosController implements Initializable {
 
 	@FXML
 	private TextField direccionImagen;
+	
+    @FXML
+    private TextField nombreKeyIssue;
 
 	@FXML
 	private ComboBox<String> numeroCajaAni;
@@ -503,7 +511,7 @@ public class IntroducirDatosController implements Initializable {
 
 		Comic comicTemp = new Comic("", comic.getNombre(), comic.getNumCaja(), comic.getNumero(), comic.getVariante(),
 				comic.getFirma(), comic.getEditorial(), comic.getFormato(), comic.getProcedencia(), "",
-				comic.getGuionista(), comic.getDibujante(), "", "", "");
+				comic.getGuionista(), comic.getDibujante(),"", "", "", "");
 
 		String sql = libreria.datosConcatenados(comicTemp);
 
@@ -583,7 +591,6 @@ public class IntroducirDatosController implements Initializable {
 				nombreFirma.setItems(firmasActuales);
 			}
 			isUserInput = true; // Re-enable user input after programmatic updates
-
 		}
 	}
 
@@ -592,7 +599,6 @@ public class IntroducirDatosController implements Initializable {
 	 * numero entero en los comboBox numeroComic y caja_comic
 	 */
 	public void restringir_entrada_datos() {
-
 		numeroComic.getEditor().setTextFormatter(validador_Nenteros());
 		numeroAni.getEditor().setTextFormatter(validador_Nenteros());
 		numeroCaja.getEditor().setTextFormatter(validador_Nenteros());
@@ -753,8 +759,6 @@ public class IntroducirDatosController implements Initializable {
 	}
 
 	public void listas_autocompletado() {
-		
-		
 		// Las vinculaciones se asignan a las variables miembro correspondientes
 		nombreComicAutoCompletion = TextFields.bindAutoCompletion(nombreComic.getEditor(),
 				DBLibreriaManager.listaNombre);
@@ -905,6 +909,8 @@ public class IntroducirDatosController implements Initializable {
 
 			String cajaAni = comic_temp.getNumCaja();
 			numeroCajaAni.getSelectionModel().select(cajaAni);
+			
+			nombreKeyIssue.setText(comic_temp.getKey_issue());
 
 			prontInfo.setOpacity(1);
 			prontInfo.setText(libreria.comicDatos(id_comic).toString().replace("[", "").replace("]", ""));
@@ -956,6 +962,7 @@ public class IntroducirDatosController implements Initializable {
 
 				String cajaAni = comic_temp.getNumCaja();
 				numeroCajaAni.getSelectionModel().select(cajaAni);
+				nombreKeyIssue.setText(comic_temp.getKey_issue());
 
 				prontInfo.setOpacity(1);
 				prontInfo.setText(libreria.comicDatos(id_comic).toString().replace("[", "").replace("]", ""));
@@ -990,6 +997,7 @@ public class IntroducirDatosController implements Initializable {
 		numeroCajaAni.getEditor().clear();
 		prontInfo.setText(null);
 		prontInfo.setOpacity(0);
+		nombreKeyIssue.setText("");
 		tablaBBDD.getItems().clear();
 		botonNuevaPortada.setStyle(null);
 		imagencomic.setImage(null);
@@ -1386,7 +1394,7 @@ public class IntroducirDatosController implements Initializable {
 		}
 
 		comic = new Comic("", datos[1], datos[12], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7], fecha,
-				datos[9], datos[10], "", "", null);
+				datos[9], datos[10],"", "", "", null);
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
 		resultadoBusquedaPront(comic);
@@ -1621,9 +1629,19 @@ public class IntroducirDatosController implements Initializable {
 			} else {
 				numCaja = "0";
 			}
+			
+			String key_issue = "Vacio";
+			String key_issue_sinEspacios = datos[13].trim();
+
+			Pattern pattern = Pattern.compile(".*\\w+.*");
+			Matcher matcher = pattern.matcher(key_issue_sinEspacios);
+
+			if (!key_issue_sinEspacios.isEmpty() && matcher.matches()) {
+			    key_issue = key_issue_sinEspacios;
+			}
 
 			Comic comic = new Comic("", nombre, numCaja, numero, variante, firma, editorial, formato, procedencia,
-					fecha_comic.toString(), guionista, dibujante, estado, "Sin puntuar", portada);
+					fecha_comic.toString(), guionista, dibujante, estado,key_issue, "Sin puntuar", portada);
 
 			if (nombre.length() == 0 || numero.length() == 0 || editorial.length() == 0 || guionista.length() == 0
 					|| dibujante.length() == 0) {
@@ -1650,7 +1668,7 @@ public class IntroducirDatosController implements Initializable {
 				prontInfo.setOpacity(1);
 				prontInfo.setStyle("-fx-background-color: #A0F52D");
 				prontInfo.setText(
-						"Has introducido correctamente: " + comic.toString().replace("[", "").replace("]", ""));
+						"Has introducido correctamente: \n" + comic.toString().replace("[", "").replace("]", ""));
 				libreria.listasAutoCompletado();
 				nombreColumnas(); // Llamada a funcion
 				tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
@@ -1789,15 +1807,15 @@ public class IntroducirDatosController implements Initializable {
 
 		utilidad = new Utilidades();
 
-		String campos[] = new String[13];
+		String campos[] = new String[14];
 
-		campos[0] = nombreAni.getText();
+		campos[0] = utilidad.comaPorGuion(nombreAni.getText());
 
 		campos[1] = numeroComicNuevo();
 
-		campos[2] = varianteAni.getText();
+		campos[2] = utilidad.comaPorGuion(varianteAni.getText());
 
-		campos[3] = firmaAni.getText();
+		campos[3] = utilidad.comaPorGuion(firmaAni.getText());
 
 		campos[4] = editorialAni.getText();
 
@@ -1812,9 +1830,9 @@ public class IntroducirDatosController implements Initializable {
 			campos[7] = "2000-01-01";
 		}
 
-		campos[8] = guionistaAni.getText();
+		campos[8] = utilidad.comaPorGuion(guionistaAni.getText());
 
-		campos[9] = dibujanteAni.getText();
+		campos[9] = utilidad.comaPorGuion(dibujanteAni.getText());
 
 		campos[10] = direccionImagen.getText();
 
@@ -1822,7 +1840,9 @@ public class IntroducirDatosController implements Initializable {
 
 		campos[12] = cajaNueva();
 
-		return utilidad.comaPorGuion(campos);
+		campos[13] = nombreKeyIssue.getText();
+		
+		return campos;
 	}
 
 	/**
@@ -1854,6 +1874,15 @@ public class IntroducirDatosController implements Initializable {
 		busquedaRaw(editorial);
 		busquedaRaw(fecha);
 	}
+	
+    @FXML
+    void comicsKeyIssue(ActionEvent event) throws SQLException {
+		prontInfo.setOpacity(0);
+		libreria = new DBLibreriaManager();
+		libreria.reiniciarBBDD();
+		nombreColumnas();
+		tablaBBDD(libreria.libreriaKeyIssue());
+    }
 
 	/**
 	 * Funcion que al pulsar el boton de 'botonPuntuacion' se muestran aquellos
