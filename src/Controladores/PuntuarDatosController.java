@@ -444,10 +444,6 @@ public class PuntuarDatosController implements Initializable {
 		// Verificar si el TextField idComicTratar está relleno
 		idPuntuar.textProperty().addListener((observable, oldValue, newValue) -> {
 
-			if (idPuntuar.getText().isEmpty() || idPuntuar == null) {
-				limpiezaDeDatos();
-			}
-
 			// Verificar si el nuevo valor del TextField está vacío
 			if (!newValue.trim().isEmpty() && idPuntuar.getText() != null) {
 				isUserInput = false; // Establecemos isUserInput en false si el TextField está relleno.
@@ -542,7 +538,7 @@ public class PuntuarDatosController implements Initializable {
 
 		// Si todos los campos de texto de los ComboBoxes están vacíos, llamar a
 		// limpiezaDeDatos()
-		if (allEmpty || !isUserInput) {
+		if (allEmpty) {
 			limpiezaDeDatos();
 		}
 	}
@@ -583,9 +579,7 @@ public class PuntuarDatosController implements Initializable {
 				DBLibreriaManager.nombreFirmaList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "firma");
 			}
 			
-
-
-			if (!DBLibreriaManager.nombreComicList.isEmpty() || !comic.getNombre().isEmpty()) {
+			if (!DBLibreriaManager.nombreComicList.isEmpty()) {
 				ObservableList<String> nombresActuales = FXCollections
 						.observableArrayList(DBLibreriaManager.nombreComicList);
 				nombreComic.setItems(nombresActuales);
@@ -1135,6 +1129,9 @@ public class PuntuarDatosController implements Initializable {
 	 */
 	@FXML
 	void clickRaton(MouseEvent event) throws IOException, SQLException {
+		
+		isUserInput = false;
+		
 		libreria = new DBLibreriaManager();
 		libreria.libreriaCompleta();
 		utilidad = new Utilidades();
@@ -1158,6 +1155,9 @@ public class PuntuarDatosController implements Initializable {
 
 	@FXML
 	void teclasDireccion(KeyEvent event) throws IOException, SQLException {
+		
+		isUserInput = false;
+		
 		if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
 			libreria = new DBLibreriaManager();
 			libreria.libreriaCompleta();
@@ -1314,7 +1314,7 @@ public class PuntuarDatosController implements Initializable {
 	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
 		idPuntuar.setText("");
 		idPuntuar.setStyle(null);
-		limpiezaDeDatos();
+//		limpiezaDeDatos();
 		modificarColumnas();
 		modificarColumnas();
 

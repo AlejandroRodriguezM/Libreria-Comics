@@ -353,7 +353,7 @@ public class EliminarDatosController implements Initializable {
 		double textHeight = text.getLayoutBounds().getHeight() + 40;
 
 		double newWidth = Math.min(textWidth + 20, maxWidth);
-		double newHeight = Math.min(textHeight + 20, maxHeight);
+		double newHeight = Math.min(textHeight, maxHeight);
 
 		vbox.setPrefWidth(newWidth);
 		vbox.setPrefHeight(newHeight);
@@ -479,7 +479,7 @@ public class EliminarDatosController implements Initializable {
 					limpiezaDeDatos();
 				}
 			} else {
-				limpiezaDeDatos();
+				limpiarCombobox();
 			}
 		});
 	}
@@ -512,10 +512,6 @@ public class EliminarDatosController implements Initializable {
 
 		// Verificar si el TextField idComicTratar está relleno
 		idComicTratar.textProperty().addListener((observable, oldValue, newValue) -> {
-
-			if (idComicTratar.getText().isEmpty() || idComicTratar == null) {
-				limpiezaDeDatos();
-			}
 
 			// Verificar si el nuevo valor del TextField está vacío
 			if (!newValue.trim().isEmpty() && idComicTratar.getText() != null) {
@@ -611,7 +607,7 @@ public class EliminarDatosController implements Initializable {
 
 		// Si todos los campos de texto de los ComboBoxes están vacíos, llamar a
 		// limpiezaDeDatos()
-		if (allEmpty || !isUserInput) {
+		if (allEmpty) {
 			limpiezaDeDatos();
 		}
 	}
@@ -654,7 +650,7 @@ public class EliminarDatosController implements Initializable {
 			
 
 
-			if (!DBLibreriaManager.nombreComicList.isEmpty() || !comic.getNombre().isEmpty()) {
+			if (!DBLibreriaManager.nombreComicList.isEmpty()) {
 				ObservableList<String> nombresActuales = FXCollections
 						.observableArrayList(DBLibreriaManager.nombreComicList);
 				nombreComic.setItems(nombresActuales);
@@ -1090,6 +1086,8 @@ public class EliminarDatosController implements Initializable {
 	@FXML
 	void limpiarDatos(ActionEvent event) { // Metodo que permite limpiar los datos de los diferentes campos
 		limpiezaDeDatos();
+		prontInfo.setText(null);
+		prontInfo.setOpacity(0);
 	}
 
 	public void limpiezaDeDatos() {
@@ -1110,13 +1108,28 @@ public class EliminarDatosController implements Initializable {
 		ID.setText("");
 		// Clear additional UI elements
 		fechaPublicacion.setValue(null);
-		prontInfo.setText(null);
-		prontInfo.setOpacity(0);
 		tablaBBDD.getItems().clear();
 		imagencomic.setImage(null);
 
 		isUserInput = true; // Re-enable user input after cleanup
 		rellenarComboBox();
+	}
+	
+	public void limpiarCombobox() {
+		
+		isUserInput = false; // Disable user input during cleanup
+
+		
+		// Clear all ComboBox text fields and values
+		for (ComboBox<String> comboBox : Arrays.asList(nombreComic, numeroComic, nombreFirma, nombreGuionista,
+				nombreVariante, numeroCaja, nombreProcedencia, nombreFormato, nombreEditorial, nombreDibujante)) {
+			comboBox.setValue("");
+			comboBox.getEditor().setText("");
+		}
+		
+		ID.setText("");
+		// Clear additional UI elements
+		fechaPublicacion.setValue(null);
 	}
 
 	public void restablecerCampos() {
@@ -1144,6 +1157,9 @@ public class EliminarDatosController implements Initializable {
 	 */
 	@FXML
 	void clickRaton(MouseEvent event) throws IOException, SQLException {
+		
+		isUserInput = false;
+		
 		libreria = new DBLibreriaManager();
 		libreria.libreriaCompleta();
 		utilidad = new Utilidades();
@@ -1175,6 +1191,9 @@ public class EliminarDatosController implements Initializable {
 	 */
 	@FXML
 	void teclasDireccion(KeyEvent event) throws IOException, SQLException {
+		
+		isUserInput = false;
+		
 		if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
 			libreria = new DBLibreriaManager();
 			libreria.libreriaCompleta();
@@ -1293,7 +1312,7 @@ public class EliminarDatosController implements Initializable {
 	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
 		modificarColumnas();
 		modificarColumnas();
-		limpiezaDeDatos();
+//		limpiezaDeDatos();
 		tablaBBDD.refresh();
 		prontInfo.setOpacity(0);
 		imagencomic.setImage(null);
