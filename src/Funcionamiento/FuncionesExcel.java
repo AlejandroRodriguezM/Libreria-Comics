@@ -16,7 +16,7 @@ package Funcionamiento;
  *  - Puntuar comics que se encuentren dentro de la base de datos.
  *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
  *
- *  Version 5.3
+ *  Version 5.5.0.1
  *
  *  @author Alejandro Rodriguez
  *
@@ -69,6 +69,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -80,6 +82,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import JDBC.DBLibreriaManager;
 import JDBC.DBManager;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.stage.DirectoryChooser;
 
 /**
@@ -94,7 +98,6 @@ public class FuncionesExcel {
 	private static Connection conn = DBManager.conexion();
 	private static Ventanas nav = new Ventanas();
 	private static DBLibreriaManager db = null;
-//	private static int ID = 0;
 
 	/**
 	 * Funcion que permite importar ficheros CSV a la base de datos.
@@ -191,7 +194,7 @@ public class FuncionesExcel {
 		return false;
 	}
 
-	public void savedataExcel(String nombre_carpeta) throws SQLException {
+	public void savedataExcel(String nombre_carpeta) {
 		FileOutputStream outputStream;
 		Cell celda;
 		Row fila;
@@ -368,7 +371,7 @@ public class FuncionesExcel {
 
 		try {
 			BufferedReader lineReader = new BufferedReader(new FileReader(fichero));
-			lecturaCSV(sql, lineReader);
+			lecturaCSVTask(sql, lineReader);
 			return true;
 		} catch (Exception e) {
 			try {
@@ -389,10 +392,24 @@ public class FuncionesExcel {
 	 * @return
 	 */
 	public File carpetaPortadas() {
-		DirectoryChooser directoryChooser = new DirectoryChooser();
-		File directorio = directoryChooser.showDialog(null);
-		return directorio;
+	    final File[] directorio = new File[1];
+	    CountDownLatch latch = new CountDownLatch(1);
+
+	    Platform.runLater(() -> {
+	        DirectoryChooser directoryChooser = new DirectoryChooser();
+	        directorio[0] = directoryChooser.showDialog(null);
+	        latch.countDown();
+	    });
+
+	    try {
+	        latch.await(); // Esperar hasta que se complete la selección del directorio
+	    } catch (InterruptedException e) {
+	        e.printStackTrace();
+	    }
+
+	    return directorio[0];
 	}
+
 
 	/**
 	 * Funcion que carga la imagen a la hora de importar el csv
@@ -437,99 +454,116 @@ public class FuncionesExcel {
 	 * @param lineReader
 	 * @throws IOException
 	 */
-	public void lecturaCSV(String sql, BufferedReader lineReader) throws IOException {
-		
-	    String lineText = null;
-	    String userDir = System.getProperty("user.home");
-	    String documentsPath = userDir + File.separator + "Documents";
-	    String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
-	            + DBManager.DB_NAME + File.separator + "portadas";
-		
-	    File directorio = carpetaPortadas();
-	    if (directorio == null) {
-	    	directorio = new File(defaultImagePath + File.separator);
-	    }
-	    
-	    db = new DBLibreriaManager();
-	    int batchSize = 20;
-	    Utilidades.convertirNombresCarpetas(defaultImagePath + File.separator);
-	    Utilidades.convertirNombresCarpetas(directorio.getAbsolutePath());
-	    String defaultImagePathBase = documentsPath + File.separator + "libreria_comics" + File.separator
-	            + DBManager.DB_NAME;
+	public Task<Void> lecturaCSVTask(String sql, BufferedReader lineReader) {
+	    Task<Void> task = new Task<Void>() {
+	        @Override
+	        protected Void call() throws Exception {
+	            try {
+	                String lineText = null;
+	                String userDir = System.getProperty("user.home");
+	                String documentsPath = userDir + File.separator + "Documents";
+	                String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
+	                        + DBManager.DB_NAME + File.separator + "portadas";
+	                File directorio = new File("");
+	                CompletableFuture<Boolean> confirmacionFuture = nav.cancelar_subida_portadas();
 
-	    String logFileName = "log_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")) + ".txt";
+	                boolean continuarSubida = confirmacionFuture.join();
+	                if (continuarSubida) {
+	                    directorio = carpetaPortadas();
 
-	    try {
-	        PreparedStatement statement = conn.prepareStatement(sql);
-	        int count = 0;
-	        int nuevoID = db.countRows();
-	        lineReader.readLine();
-	        Utilidades.copyDirectory(directorio.getAbsolutePath(), defaultImagePath);
+	                    if (directorio == null) {
+	                        directorio = new File(defaultImagePath + File.separator);
+	                    }
 
-	        // Se leerán los datos hasta que no existan más datos
-	        while ((lineText = lineReader.readLine()) != null) {
-	            String[] data = lineText.split(";");
-	            String id = Integer.toString(nuevoID);
-	            String nombre = data[1];
-	            String numCaja = data[2];
-	            String numero = data[3];
-	            String variante = data[4];
-	            String firma = data[5];
-	            String editorial = data[6];
-	            String formato = data[7];
-	            String procedencia = obtenerProcedencia(data[8]);
-	            String fecha = data[9];
-	            String guionista = data[10];
-	            String dibujante = data[11];
-	            String puntuacion = obtenerPuntuacion(data[11], data[12]);
-	            String direccion_portada = data[13];
-	            String nombre_portada = Utilidades.obtenerDespuesPortadas(direccion_portada);
-	            String nombre_modificado = Utilidades.convertirNombreArchivo(nombre_portada);
-	            String nombre_completo_portada = defaultImagePath + File.separator + nombre_modificado;
-	            String key_issue = data[14];
-	            key_issue = key_issue.replaceAll("\\r|\\n", "");
-	            String estado = data[15];
+	                } else {
+	                    directorio = new File(defaultImagePath + File.separator);
+	                }
 
-	            if (!existeArchivo(defaultImagePath, nombre_modificado) || directorio == null) {
-	                copiarPortadaPredeterminada(defaultImagePath, nombre_modificado);
-	                generarLogFaltaPortada(defaultImagePathBase, logFileName, nombre_modificado);
-	            }
+	                db = new DBLibreriaManager();
+	                int batchSize = 20;
+	                Utilidades.convertirNombresCarpetas(defaultImagePath + File.separator);
+	                Utilidades.convertirNombresCarpetas(directorio.getAbsolutePath());
+	                String defaultImagePathBase = documentsPath + File.separator + "libreria_comics" + File.separator
+	                        + DBManager.DB_NAME;
 
-	            statement.setString(1, id);
-	            statement.setString(2, nombre);
-	            statement.setString(3, numCaja);
-	            statement.setString(4, numero);
-	            statement.setString(5, variante);
-	            statement.setString(6, firma);
-	            statement.setString(7, editorial);
-	            statement.setString(8, formato);
-	            statement.setString(9, procedencia);
-	            statement.setString(10, fecha);
-	            statement.setString(11, guionista);
-	            statement.setString(12, dibujante);
-	            statement.setString(13, puntuacion);
-	            statement.setString(14, nombre_completo_portada);
-	            statement.setString(15, key_issue);
-	            statement.setString(16, estado);
+	                String logFileName = "log_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")) + ".txt";
 
-	            statement.addBatch();
+	                PreparedStatement statement = conn.prepareStatement(sql);
+	                int count = 0;
+	                int nuevoID = db.countRows();
+	                lineReader.readLine();
+	                Utilidades.copyDirectory(directorio.getAbsolutePath(), defaultImagePath);
+	                // Se leerán los datos hasta que no existan más datos
+	                while ((lineText = lineReader.readLine()) != null) {
+	                    String[] data = lineText.split(";");
+	                    String id = Integer.toString(nuevoID);
+	                    String nombre = data[1];
+	                    String numCaja = data[2];
+	                    String numero = data[3];
+	                    String variante = data[4];
+	                    String firma = data[5];
+	                    String editorial = data[6];
+	                    String formato = data[7];
+	                    String procedencia = obtenerProcedencia(data[8]);
+	                    String fecha = data[9];
+	                    String guionista = data[10];
+	                    String dibujante = data[11];
+	                    String puntuacion = obtenerPuntuacion(data[11], data[12]);
+	                    String direccion_portada = data[13];
+	                    String nombre_portada = Utilidades.obtenerDespuesPortadas(direccion_portada);
+	                    String nombre_modificado = Utilidades.convertirNombreArchivo(nombre_portada);
+	                    String nombre_completo_portada = defaultImagePath + File.separator + nombre_modificado;
+	                    String key_issue = data[14];
+	                    key_issue = key_issue.replaceAll("\\r|\\n", "");
+	                    String estado = data[15];
 
-	            if (count % batchSize == 0) {
+	                    if (!existeArchivo(defaultImagePath, nombre_modificado) || directorio == null) {
+	                        copiarPortadaPredeterminada(defaultImagePath, nombre_modificado);
+	                        generarLogFaltaPortada(defaultImagePathBase, logFileName, nombre_modificado);
+	                    }
+
+	                    statement.setString(1, id);
+	                    statement.setString(2, nombre);
+	                    statement.setString(3, numCaja);
+	                    statement.setString(4, numero);
+	                    statement.setString(5, variante);
+	                    statement.setString(6, firma);
+	                    statement.setString(7, editorial);
+	                    statement.setString(8, formato);
+	                    statement.setString(9, procedencia);
+	                    statement.setString(10, fecha);
+	                    statement.setString(11, guionista);
+	                    statement.setString(12, dibujante);
+	                    statement.setString(13, puntuacion);
+	                    statement.setString(14, nombre_completo_portada);
+	                    statement.setString(15, key_issue);
+	                    statement.setString(16, estado);
+
+	                    statement.addBatch();
+
+	                    if (count % batchSize == 0) {
+	                        statement.executeBatch();
+	                    }
+	                }
+
+	                lineReader.close();
 	                statement.executeBatch();
+	                abrirArchivoRegistro(defaultImagePathBase + File.separator + logFileName);
+	            } catch (SQLException e) {
+	                e.printStackTrace();
+	                Platform.runLater(() -> nav.alertaException("Error al guardar datos en la base de datos: " + e.getMessage()));
+	            } catch (IOException e) {
+	                e.printStackTrace();
+	                Platform.runLater(() -> nav.alertaException("Error al leer el archivo CSV: " + e.getMessage()));
 	            }
-	        }
 
-	        lineReader.close();
-	        statement.executeBatch();
-	        abrirArchivoRegistro(defaultImagePathBase + File.separator + logFileName);
-	    } catch (SQLException e) {
-	        nav.alertaException(e.toString());
-	        e.printStackTrace();
-	    } catch (IOException e) {
-	        nav.alertaException(e.toString());
-	        e.printStackTrace();
-	    }
+	            return null;
+	        }
+	    };
+
+	    return task;
 	}
+
 	
 	private void abrirArchivoRegistro(String filePath) {
 	    File file = new File(filePath);

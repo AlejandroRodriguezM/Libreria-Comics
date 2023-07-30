@@ -17,7 +17,7 @@ import Controladores.VentanaPrincipalController;
  * Esta clase permite acceder a la base de datos introduciendo los diferentes
  * datos que nos pide.
  *
- * Version Final
+ * Version 5.5.0.1
  *
  * Por Alejandro Rodriguez
  *

@@ -49,12 +49,14 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import Funcionamiento.Comic;
 import Funcionamiento.FuncionesExcel;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
 import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
 
@@ -165,26 +167,81 @@ public class DBLibreriaManager extends Comic {
 	 * @return
 	 * @throws SQLException
 	 */
-	public String[] deleteTable() throws SQLException {
-		String sentencia[] = new String[2];
-		sentencia[0] = "delete from comicsbbdd";
-		sentencia[1] = "alter table comicsbbdd AUTO_INCREMENT = 1;";
+	public CompletableFuture<Boolean> deleteTable() {
+        CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
 
-		utilidad.copia_seguridad();
-		utilidad.eliminarArchivosEnCarpeta();
-		listaNombre.clear();
-		listaNumeroComic.clear();
-		listaVariante.clear();
-		listaFirma.clear();
-		listaEditorial.clear();
-		listaGuionista.clear();
-		listaDibujante.clear();
-		listaFecha.clear();
-		listaFormato.clear();
-		listaProcedencia.clear();
-		listaCaja.clear();
-		return sentencia;
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                try {
+                    String sentencia[] = new String[2];
+                    sentencia[0] = "delete from comicsbbdd";
+                    sentencia[1] = "alter table comicsbbdd AUTO_INCREMENT = 1;";
+
+                    utilidad.copia_seguridad();
+                    utilidad.eliminarArchivosEnCarpeta();
+                    listaNombre.clear();
+                    listaNumeroComic.clear();
+                    listaVariante.clear();
+                    listaFirma.clear();
+                    listaEditorial.clear();
+                    listaGuionista.clear();
+                    listaDibujante.clear();
+                    listaFecha.clear();
+                    listaFormato.clear();
+                    listaProcedencia.clear();
+                    listaCaja.clear();
+
+                    // Ejecutar el PreparedStatement asíncronamente
+                    CompletableFuture<Boolean> ejecucionResult = ejecutarPreparedStatementAsync(sentencia);
+                    boolean ejecucionExitosa = ejecucionResult.join();
+
+                    futureResult.complete(ejecucionExitosa); // Completar la CompletableFuture con el resultado
+                } catch (Exception e) {
+                    futureResult.completeExceptionally(e);
+                }
+                return null;
+            }
+        };
+
+        task.setOnFailed(e -> futureResult.completeExceptionally(task.getException()));
+
+        Thread thread = new Thread(task);
+        thread.start();
+
+        return futureResult;
+    }
+	
+	public boolean contenidoTabla() {
+	    String sql = "SELECT COUNT(*) FROM comicsbbdd";
+	    boolean existeMasDeUnRegistro = false;
+
+	    try {
+	        // Obtener la conexión a la base de datos y crear la sentencia
+	        Connection conn = DBManager.conexion();
+	        Statement statement = conn.createStatement();
+
+	        // Ejecutar la consulta y obtener el resultado
+	        ResultSet resultSet = statement.executeQuery(sql);
+	        if (resultSet.next()) {
+	            int count = resultSet.getInt(1);
+	            existeMasDeUnRegistro = count >= 1;
+	        }
+
+	        // Cerrar recursos
+	        resultSet.close();
+	        statement.close();
+	        conn.close();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        // Manejar la excepción según tus necesidades
+	    }
+
+	    return existeMasDeUnRegistro;
 	}
+
+
+
 
 	/**
 	 * Función que ejecuta un conjunto de sentencias PreparedStatement en la base de
@@ -195,24 +252,36 @@ public class DBLibreriaManager extends Comic {
 	 * @return true si las sentencias se ejecutaron correctamente, false en caso
 	 *         contrario.
 	 */
-	public boolean ejecucionPreparedStatement(String[] sentencia) {
-		conn = DBManager.conexion();
+	public CompletableFuture<Boolean> ejecutarPreparedStatementAsync(String[] sentencia) {
+	    CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
 
-		try {
-			PreparedStatement statement1 = conn.prepareStatement(sentencia[0]);
-			PreparedStatement statement2 = conn.prepareStatement(sentencia[1]);
-			statement1.executeUpdate();
-			statement2.executeUpdate();
-			reiniciarBBDD();
-			statement1.close();
-			statement2.close();
-			return true;
-		} catch (SQLException e) {
-			nav.alertaException(e.toString());
-		}
+	    Task<Void> task = new Task<Void>() {
+	        @Override
+	        protected Void call() throws Exception {
+	            try {
+	                conn = DBManager.conexion();
+	                PreparedStatement statement1 = conn.prepareStatement(sentencia[0]);
+	                PreparedStatement statement2 = conn.prepareStatement(sentencia[1]);
+	                statement1.executeUpdate();
+	                statement2.executeUpdate();
+	                statement1.close();
+	                statement2.close();
+	                futureResult.complete(true); // Si llega hasta aquí, se asume éxito
+	            } catch (Exception e) {
+	                futureResult.completeExceptionally(e);
+	            }
+	            return null;
+	        }
+	    };
 
-		return false;
+	    task.setOnFailed(e -> futureResult.completeExceptionally(task.getException()));
+
+	    Thread thread = new Thread(task);
+	    thread.start();
+
+	    return futureResult;
 	}
+
 
 	/////////////////////////////////
 	//// FUNCIONES CREACION FICHEROS//
@@ -532,7 +601,7 @@ public class DBLibreriaManager extends Comic {
 	 * @return Una lista de objetos Comic que representan los cómics de la librería.
 	 * @throws SQLException Si ocurre algún error al ejecutar la consulta SQL.
 	 */
-	public List<Comic> verLibreria(String sentenciaSQL) throws SQLException {
+	public List<Comic> verLibreria(String sentenciaSQL) {
 		listaComics.clear(); // Limpiar la lista existente de cómics
 
 		ResultSet rs = obtenLibreria(sentenciaSQL); // Obtener el ResultSet
@@ -751,8 +820,7 @@ public class DBLibreriaManager extends Comic {
 		HashMap<String, Integer> mapa = new HashMap<>();
 		ArrayList<String> resultados = new ArrayList<>();
 
-		try {
-			Connection conn = DBManager.conexion();
+		try (Connection conn = DBManager.conexion()) {
 			PreparedStatement statement = conn.prepareStatement(sql);
 			ResultSet resultSet = statement.executeQuery();
 
@@ -1239,7 +1307,7 @@ public class DBLibreriaManager extends Comic {
 	 * @return
 	 * @throws SQLException
 	 */
-	public ResultSet obtenLibreria(String sentenciaSQL) throws SQLException {
+	public ResultSet obtenLibreria(String sentenciaSQL) {
 
 		conn = DBManager.conexion();
 		PreparedStatement stmt = null;
@@ -1618,7 +1686,7 @@ public class DBLibreriaManager extends Comic {
 	 * @return una lista de cómics obtenidos de la base de datos
 	 * @throws SQLException
 	 */
-	public List<Comic> comprobarLibreria(String sentenciaSQL, String excepcion) throws SQLException {
+	public List<Comic> comprobarLibreria(String sentenciaSQL, String excepcion) {
 
 		List<Comic> listComic = FXCollections.observableArrayList(verLibreria(sentenciaSQL));
 
@@ -1693,7 +1761,7 @@ public class DBLibreriaManager extends Comic {
 	 * @throws IOException
 	 * @throws SQLException
 	 */
-	public List<Comic> libreriaCompleta() throws IOException, SQLException {
+	public List<Comic> libreriaCompleta() throws IOException {
 		String query = "SELECT * FROM comicsbbdd ORDER BY nomComic,fecha_publicacion,numComic";
 
 		String excepcion = "No hay ningun comic guardado en la base de datos";

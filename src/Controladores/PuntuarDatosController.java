@@ -16,7 +16,7 @@ package Controladores;
  *  - Puntuar comics que se encuentren dentro de la base de datos.
  *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
  *
- *  Version 5.3
+ *  Version 5.5.0.1
  *
  *  @author Alejandro Rodriguez
  *
@@ -94,6 +94,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.converter.IntegerStringConverter;
@@ -146,9 +147,9 @@ public class PuntuarDatosController implements Initializable {
 
 	@FXML
 	private MenuItem menu_estadistica_vendidos;
-	
-    @FXML
-    private MenuItem menu_estadistica_key_issue;
+
+	@FXML
+	private MenuItem menu_estadistica_key_issue;
 
 	@FXML
 	private MenuBar menu_navegacion;
@@ -158,6 +159,9 @@ public class PuntuarDatosController implements Initializable {
 
 	@FXML
 	private Button botonBorrarOpinion;
+
+	@FXML
+	private Button botonbbdd;
 
 	@FXML
 	private Button botonLeidos;
@@ -266,9 +270,12 @@ public class PuntuarDatosController implements Initializable {
 
 	@FXML
 	private ImageView imagencomic;
+
+	@FXML
+	private VBox rootVBox;
 	
     @FXML
-    private VBox rootVBox;
+    private VBox vboxContenido;
 
 	private boolean isUserInput = true;
 	private boolean updatingComboBoxes = false; // New variable to keep track of ComboBox updates
@@ -286,7 +293,7 @@ public class PuntuarDatosController implements Initializable {
 	private AutoCompletionBinding<String> nombreFormatoAutoCompletion;
 	private AutoCompletionBinding<String> nombreEditorialAutoCompletion;
 	private AutoCompletionBinding<String> nombreDibujanteAutoCompletion;
-	
+
 	private static Ventanas nav = new Ventanas();
 	private static DBLibreriaManager libreria = null;
 	private static Utilidades utilidad = null;
@@ -299,6 +306,15 @@ public class PuntuarDatosController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+
+		prontInfo.textProperty().addListener((observable, oldValue, newValue) -> {
+			ajustarAnchoVBox(prontInfo, vboxContenido);
+		});
+
+		// Asegurarnos de que el VBox ajuste su tamaño correctamente al inicio
+		Platform.runLater(() -> ajustarAnchoVBox(prontInfo, vboxContenido));
+
+		Platform.runLater(() -> asignarTooltips());
 		Platform.runLater(() -> seleccionarRaw());
 
 		libreria = new DBLibreriaManager();
@@ -313,21 +329,75 @@ public class PuntuarDatosController implements Initializable {
 		listas_autocompletado();
 		restringir_entrada_datos();
 		lecturaComboBox();
-		
-	    // Desactivar el enfoque en el VBox para evitar que reciba eventos de teclado
-	    rootVBox.setFocusTraversable(false);
 
-	    // Agregar un filtro de eventos para capturar el enfoque en el TableView y desactivar el enfoque en el VBox
-	    tablaBBDD.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
-	        rootVBox.setFocusTraversable(false);
-	        tablaBBDD.requestFocus();
-	    });
+		// Desactivar el enfoque en el VBox para evitar que reciba eventos de teclado
+		rootVBox.setFocusTraversable(false);
 
-	    // Agregar un filtro de eventos para capturar el enfoque en el VBox y desactivar el enfoque en el TableView
-	    rootVBox.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
-	        tablaBBDD.setFocusTraversable(false);
-	        rootVBox.requestFocus();
-	    });
+		// Agregar un filtro de eventos para capturar el enfoque en el TableView y
+		// desactivar el enfoque en el VBox
+		tablaBBDD.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+			rootVBox.setFocusTraversable(false);
+			tablaBBDD.requestFocus();
+		});
+
+		// Agregar un filtro de eventos para capturar el enfoque en el VBox y desactivar
+		// el enfoque en el TableView
+		rootVBox.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+			tablaBBDD.setFocusTraversable(false);
+			rootVBox.requestFocus();
+		});
+	}
+
+	private void ajustarAnchoVBox(TextArea textArea, VBox vbox) {
+		// Crear un objeto Text con el contenido del TextArea
+		Text text = new Text(textArea.getText());
+
+		// Configurar el mismo estilo que tiene el TextArea
+		text.setFont(textArea.getFont());
+
+		// Configurar el ancho y alto del VBox según los límites originales del VBox y
+		// el ancho del texto más un margen (opcional)
+		double maxWidth = vbox.getMaxWidth();
+		double maxHeight = vbox.getMaxHeight();
+
+		// Medir el ancho y alto del texto
+		double textWidth = text.getLayoutBounds().getWidth();
+		double textHeight = text.getLayoutBounds().getHeight() + 40;
+
+		double newWidth = Math.min(textWidth + 20, maxWidth);
+		double newHeight = Math.min(textHeight + 20, maxHeight);
+
+		vbox.setPrefWidth(newWidth);
+		vbox.setPrefHeight(newHeight);
+
+		textArea.setPrefHeight(textHeight);
+	}
+
+	private void asignarTooltips() {
+		asignarTooltip(botonbbdd, "Muestra toda la base de datos");
+		asignarTooltip(botonLimpiarComic, "Limpia la pantalla y reinicia todos los valores");
+		asignarTooltip(botonMostrarParametro, "Muestra los comics o libros o mangas por parametro");
+
+		asignarTooltip(nombreComic, "Nombre de los cómics / libros / mangas");
+		asignarTooltip(numeroComic, "Número del cómic / libro / manga");
+		asignarTooltip(nombreFirma, "Nombre de la firma del cómic / libro / manga");
+		asignarTooltip(nombreGuionista, "Nombre del guionista del cómic / libro / manga");
+		asignarTooltip(nombreVariante, "Nombre de la variante del cómic / libro / manga");
+		asignarTooltip(numeroCaja, "Número de la caja donde se guarda el cómic / libro / manga");
+		asignarTooltip(nombreProcedencia, "Nombre de la procedencia del cómic / libro / manga");
+		asignarTooltip(nombreFormato, "Nombre del formato del cómic / libro / manga");
+		asignarTooltip(nombreEditorial, "Nombre de la editorial del cómic / libro / manga");
+		asignarTooltip(nombreDibujante, "Nombre del dibujante del cómic / libro / manga");
+	}
+
+	private void asignarTooltip(Button boton, String mensaje) {
+		Tooltip tooltip = new Tooltip(mensaje);
+		boton.setTooltip(tooltip);
+	}
+
+	private void asignarTooltip(ComboBox<?> comboBox, String mensaje) {
+		Tooltip tooltip = new Tooltip(mensaje);
+		comboBox.setTooltip(tooltip);
 	}
 
 	public void restablecerCampos() {
@@ -370,6 +440,26 @@ public class PuntuarDatosController implements Initializable {
 	public void lecturaComboBox() {
 		libreria = new DBLibreriaManager();
 		isUserInput = true; // Establecemos isUserInput en true inicialmente.
+
+		// Verificar si el TextField idComicTratar está relleno
+		idPuntuar.textProperty().addListener((observable, oldValue, newValue) -> {
+
+			if (idPuntuar.getText().isEmpty() || idPuntuar == null) {
+				limpiezaDeDatos();
+			}
+
+			// Verificar si el nuevo valor del TextField está vacío
+			if (!newValue.trim().isEmpty() && idPuntuar.getText() != null) {
+				isUserInput = false; // Establecemos isUserInput en false si el TextField está relleno.
+			} else {
+				isUserInput = true; // Establecemos isUserInput en true si el TextField está vacío.
+			}
+			rellenarComboboxEscucha();
+
+		});
+	}
+
+	private void rellenarComboboxEscucha() {
 
 		// Configuración de los escuchadores para cada ComboBox mediante un bucle
 		for (ComboBox<String> comboBox : Arrays.asList(nombreComic, numeroComic, nombreFirma, nombreGuionista,
@@ -452,7 +542,7 @@ public class PuntuarDatosController implements Initializable {
 
 		// Si todos los campos de texto de los ComboBoxes están vacíos, llamar a
 		// limpiezaDeDatos()
-		if (allEmpty) {
+		if (allEmpty || !isUserInput) {
 			limpiezaDeDatos();
 		}
 	}
@@ -472,7 +562,7 @@ public class PuntuarDatosController implements Initializable {
 
 		Comic comicTemp = new Comic("", comic.getNombre(), comic.getNumCaja(), comic.getNumero(), comic.getVariante(),
 				comic.getFirma(), comic.getEditorial(), comic.getFormato(), comic.getProcedencia(), "",
-				comic.getGuionista(), comic.getDibujante(),"", "", "", "");
+				comic.getGuionista(), comic.getDibujante(), "", "", "", "");
 
 		String sql = libreria.datosConcatenados(comicTemp);
 
@@ -480,16 +570,20 @@ public class PuntuarDatosController implements Initializable {
 
 			isUserInput = false; // Disable user input during programmatic updates
 
-			DBLibreriaManager.nombreComicList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomComic");
-			DBLibreriaManager.nombreGuionistaList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomGuionista");
-			DBLibreriaManager.numeroComicList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "numComic");
-			DBLibreriaManager.nombreVarianteList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomVariante");
-			DBLibreriaManager.numeroCajaList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "caja_deposito");
-			DBLibreriaManager.nombreProcedenciaList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "procedencia");
-			DBLibreriaManager.nombreFormatoList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "formato");
-			DBLibreriaManager.nombreEditorialList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomEditorial");
-			DBLibreriaManager.nombreDibujanteList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomDibujante");
-			DBLibreriaManager.nombreFirmaList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "firma");
+			if(idPuntuar.getText().isEmpty()) {
+				DBLibreriaManager.nombreComicList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomComic");
+				DBLibreriaManager.nombreGuionistaList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomGuionista");
+				DBLibreriaManager.numeroComicList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "numComic");
+				DBLibreriaManager.nombreVarianteList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomVariante");
+				DBLibreriaManager.numeroCajaList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "caja_deposito");
+				DBLibreriaManager.nombreProcedenciaList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "procedencia");
+				DBLibreriaManager.nombreFormatoList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "formato");
+				DBLibreriaManager.nombreEditorialList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomEditorial");
+				DBLibreriaManager.nombreDibujanteList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomDibujante");
+				DBLibreriaManager.nombreFirmaList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "firma");
+			}
+			
+
 
 			if (!DBLibreriaManager.nombreComicList.isEmpty() || !comic.getNombre().isEmpty()) {
 				ObservableList<String> nombresActuales = FXCollections
@@ -640,50 +734,50 @@ public class PuntuarDatosController implements Initializable {
 	 * raton se encuentra y muestra un mensaje emergente con datos del comic
 	 */
 	public void seleccionarRaw() {
-	    tablaBBDD.setRowFactory(tv -> {
-	        TableRow<Comic> row = new TableRow<>();
-	        Tooltip tooltip = new Tooltip();
-	        tooltip.setShowDelay(Duration.ZERO);
-	        tooltip.setHideDelay(Duration.ZERO);
+		tablaBBDD.setRowFactory(tv -> {
+			TableRow<Comic> row = new TableRow<>();
+			Tooltip tooltip = new Tooltip();
+			tooltip.setShowDelay(Duration.ZERO);
+			tooltip.setHideDelay(Duration.ZERO);
 
-	        row.setOnMouseEntered(event -> {
-	            if (!row.isEmpty()) {
-	                row.setStyle("-fx-background-color: #BFEFFF;");
+			row.setOnMouseEntered(event -> {
+				if (!row.isEmpty()) {
+					row.setStyle("-fx-background-color: #BFEFFF;");
 
-	                Comic comic = row.getItem();
-	                if (comic != null && !tooltip.isShowing()) {
-	                    String mensaje = "Nombre: " + comic.getNombre() + "\nNumero: " + comic.getNumero()
-	                            + "\nVariante: " + comic.getVariante() + "\nGuionista: " + comic.getGuionista()
-	                            + "\nDibujante: " + comic.getDibujante();
-	                    if (!comic.getFirma().isEmpty()) {
-	                        mensaje += "\nFirma: " + comic.getFirma();
-	                    }
-	                    tooltip.setText(mensaje);
-	                    tooltip.show(row, event.getSceneX(), event.getSceneY());
-	                    tooltip.setX(event.getScreenX() + 10); // Ajusta el desplazamiento X según tus necesidades
-	                    tooltip.setY(event.getScreenY() - 20); // Ajusta el desplazamiento Y según tus necesidades
-	                }
-	            }
-	        });
+					Comic comic = row.getItem();
+					if (comic != null && !tooltip.isShowing()) {
+						String mensaje = "Nombre: " + comic.getNombre() + "\nNumero: " + comic.getNumero()
+								+ "\nVariante: " + comic.getVariante() + "\nGuionista: " + comic.getGuionista()
+								+ "\nDibujante: " + comic.getDibujante();
+						if (!comic.getFirma().isEmpty()) {
+							mensaje += "\nFirma: " + comic.getFirma();
+						}
+						tooltip.setText(mensaje);
+						tooltip.show(row, event.getSceneX(), event.getSceneY());
+						tooltip.setX(event.getScreenX() + 10); // Ajusta el desplazamiento X según tus necesidades
+						tooltip.setY(event.getScreenY() - 20); // Ajusta el desplazamiento Y según tus necesidades
+					}
+				}
+			});
 
-	        row.setOnMouseExited(event -> {
-	            if (!row.isEmpty()) {
-	                row.setStyle("");
-	                tooltip.hide();
-	            }
-	        });
+			row.setOnMouseExited(event -> {
+				if (!row.isEmpty()) {
+					row.setStyle("");
+					tooltip.hide();
+				}
+			});
 
-	        return row;
-	    });
+			return row;
+		});
 
-	    // Deshabilitar el enfoque en el TableView
-	    tablaBBDD.setFocusTraversable(false);
+		// Deshabilitar el enfoque en el TableView
+		tablaBBDD.setFocusTraversable(false);
 
-	    // Enfocar el VBox para evitar movimientos inesperados
-	    VBox root = (VBox) tablaBBDD.getScene().lookup("#rootVBox");
-	    if (root != null) {
-	        root.requestFocus();
-	    }
+		// Enfocar el VBox para evitar movimientos inesperados
+		VBox root = (VBox) tablaBBDD.getScene().lookup("#rootVBox");
+		if (root != null) {
+			root.requestFocus();
+		}
 	}
 
 	/**
@@ -1359,7 +1453,7 @@ public class PuntuarDatosController implements Initializable {
 		String datos[] = camposComic();
 
 		Comic comic = new Comic("", datos[1], datos[11], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
-				datos[8], datos[9], datos[10],"", "", "", null);
+				datos[8], datos[9], datos[10], "", "", "", null);
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
 		busquedaGeneral.setText("");
@@ -1572,16 +1666,16 @@ public class PuntuarDatosController implements Initializable {
 		nombreColumnas();
 		tablaBBDD(libreria.libreriaPuntuacion());
 	}
-	
-    @FXML
-    void comicsKeyIssue(ActionEvent event) throws SQLException {
+
+	@FXML
+	void comicsKeyIssue(ActionEvent event) throws SQLException {
 		prontInfo.setOpacity(0);
 		tablaBBDD.getItems().clear();
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(libreria.libreriaKeyIssue());
-    }
+	}
 
 	/**
 	 * Funcion que al pulsar el boton de 'botonVentas' se muestran aquellos comics

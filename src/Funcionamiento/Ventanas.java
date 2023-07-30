@@ -16,13 +16,15 @@ package Funcionamiento;
  *  - Puntuar comics que se encuentren dentro de la base de datos.
  *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
  *
- *  Version 5.3
+ *  Version 5.5.0.1
  *
  *  @author Alejandro Rodriguez
  *
  */
 
 import java.io.IOException;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import Controladores.AccesoBBDDController;
 import Controladores.CrearBBDDController;
@@ -597,30 +599,41 @@ public class Ventanas {
 	 *
 	 * @return
 	 */
-	public boolean borrarContenidoTabla() {
-		Alert alert = new Alert(AlertType.CONFIRMATION);
-		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-		stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
-		alert.setTitle("Borrando . . .");
-		alert.setHeaderText("Estas a punto de borrar el contenido.");
-		alert.setContentText("Estas seguro que quieres borrarlo todo?");
-		if (alert.showAndWait().get() == ButtonType.OK) {
+	public CompletableFuture<Boolean> borrarContenidoTabla() {
+	    CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
 
-			Alert alert2 = new Alert(AlertType.CONFIRMATION);
-			Stage stage2 = (Stage) alert2.getDialogPane().getScene().getWindow();
-			stage2.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
-			alert.setTitle("Borrando . . .");
-			alert.setHeaderText("Estas seguro?");
-			alert.setContentText("De verdad de verdad quieres borrarlo todo?");
-			if (alert.showAndWait().get() == ButtonType.OK) {
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
+	    Platform.runLater(() -> {
+	        Alert alert1 = new Alert(AlertType.CONFIRMATION);
+	        Stage stage1 = (Stage) alert1.getDialogPane().getScene().getWindow();
+	        stage1.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
+	        alert1.setTitle("Borrando . . .");
+	        alert1.setHeaderText("Estás a punto de borrar el contenido.");
+	        alert1.setContentText("¿Estás seguro que quieres borrarlo todo?");
+
+	        Optional<ButtonType> result1 = alert1.showAndWait();
+	        if (result1.isPresent() && result1.get() == ButtonType.OK) {
+	            Alert alert2 = new Alert(AlertType.CONFIRMATION);
+	            Stage stage2 = (Stage) alert2.getDialogPane().getScene().getWindow();
+	            stage2.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
+	            alert2.setTitle("Borrando . . .");
+	            alert2.setHeaderText("¿Estás seguro?");
+	            alert2.setContentText("¿De verdad de verdad quieres borrarlo todo?");
+
+	            alert2.showAndWait().ifPresent(result2 -> {
+	                if (result2 == ButtonType.OK) {
+	                    futureResult.complete(true);
+	                } else {
+	                    futureResult.complete(false);
+	                }
+	            });
+	        } else {
+	            futureResult.complete(false);
+	        }
+	    });
+
+	    return futureResult;
 	}
+
 
 	/**
 	 * Funcion que permite borrar el contenido de la tabla de la base de datos.
@@ -642,17 +655,47 @@ public class Ventanas {
 	}
 
 	/**
+	 * Funcion que permite borrar el contenido de la tabla de la base de datos.
+	 *
+	 * @return
+	 */
+
+	public CompletableFuture<Boolean> cancelar_subida_portadas() {
+	    CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
+
+	    Platform.runLater(() -> {
+	        Alert alert = new Alert(AlertType.CONFIRMATION);
+	        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+	        stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
+	        alert.setTitle("Subiendo datos . . .");
+	        alert.setHeaderText("Estas apunto de seleccionar la carpeta con las portadas");
+	        alert.setContentText("¿Quieres continuar? En caso de cancelar, se subirán portadas predeterminadas.");
+
+	        Optional<ButtonType> result = alert.showAndWait();
+	        if (result.isPresent() && result.get() == ButtonType.OK) {
+	            futureResult.complete(true);
+	        } else {
+	            futureResult.complete(false);
+	        }
+	    });
+
+	    return futureResult;
+	}
+
+
+	/**
 	 * Llama a una ventana de alarma que avisa si hay una excepcion.
 	 *
 	 * @param excepcion
 	 */
 	public void alertaException(String excepcion) {
-	    Platform.runLater(() -> {
-	        Alert dialog = new Alert(AlertType.ERROR, excepcion, ButtonType.OK);
-	        Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
-	        stage.getIcons().add(new Image("/Icono/icon.png"));  // Reemplaza "path/to/your/icon.png" con la ruta de tu icono
-	        
-	        dialog.show();
-	    });
+		Platform.runLater(() -> {
+			Alert dialog = new Alert(AlertType.ERROR, excepcion, ButtonType.OK);
+			Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+			stage.getIcons().add(new Image("/Icono/icon.png")); // Reemplaza "path/to/your/icon.png" con la ruta de tu
+																// icono
+
+			dialog.show();
+		});
 	}
 }

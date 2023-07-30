@@ -16,7 +16,7 @@ package Controladores;
  *  - Puntuar comics que se encuentren dentro de la base de datos.
  *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
  *
- *  Version 5.3
+ *  Version 5.5.0.1
  *
  *  @author Alejandro Rodriguez
  *
@@ -76,6 +76,7 @@ import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.converter.IntegerStringConverter;
@@ -146,9 +147,9 @@ public class EliminarDatosController implements Initializable {
 
 	@FXML
 	private MenuItem menu_estadistica_vendidos;
-	
-    @FXML
-    private MenuItem menu_estadistica_key_issue;
+
+	@FXML
+	private MenuItem menu_estadistica_key_issue;
 
 	@FXML
 	private Button botonEliminar;
@@ -254,9 +255,12 @@ public class EliminarDatosController implements Initializable {
 
 	@FXML
 	private ComboBox<String> nombreDibujante;
-	
-    @FXML
-    private VBox rootVBox;
+
+	@FXML
+	private VBox rootVBox;
+
+	@FXML
+	private VBox vboxContenido;
 
 	private Timeline parpadeo;
 
@@ -265,7 +269,7 @@ public class EliminarDatosController implements Initializable {
 
 	private Map<ComboBox<String>, ObservableList<String>> originalComboBoxItems = new HashMap<>();
 	private ComboBox<String> currentComboBox; // New variable to keep track of the current ComboBox
-	
+
 	private AutoCompletionBinding<String> nombreComicAutoCompletion;
 	private AutoCompletionBinding<String> numeroComicAutoCompletion;
 	private AutoCompletionBinding<String> nombreFirmaAutoCompletion;
@@ -276,7 +280,7 @@ public class EliminarDatosController implements Initializable {
 	private AutoCompletionBinding<String> nombreFormatoAutoCompletion;
 	private AutoCompletionBinding<String> nombreEditorialAutoCompletion;
 	private AutoCompletionBinding<String> nombreDibujanteAutoCompletion;
-	
+
 	private static Ventanas nav = new Ventanas();
 	private static DBLibreriaManager libreria = null;
 	private static Utilidades utilidad = null;
@@ -289,6 +293,15 @@ public class EliminarDatosController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+
+		prontInfo.textProperty().addListener((observable, oldValue, newValue) -> {
+			ajustarAnchoVBox(prontInfo, vboxContenido);
+		});
+
+		// Asegurarnos de que el VBox ajuste su tamaño correctamente al inicio
+		Platform.runLater(() -> ajustarAnchoVBox(prontInfo, vboxContenido));
+
+		Platform.runLater(() -> asignarTooltips());
 		Platform.runLater(() -> seleccionarRaw());
 
 		libreria = new DBLibreriaManager();
@@ -304,21 +317,75 @@ public class EliminarDatosController implements Initializable {
 		rellenarComboBox();
 		restringir_entrada_datos();
 		lecturaComboBox();
-		
-	    // Desactivar el enfoque en el VBox para evitar que reciba eventos de teclado
-	    rootVBox.setFocusTraversable(false);
 
-	    // Agregar un filtro de eventos para capturar el enfoque en el TableView y desactivar el enfoque en el VBox
-	    tablaBBDD.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
-	        rootVBox.setFocusTraversable(false);
-	        tablaBBDD.requestFocus();
-	    });
+		// Desactivar el enfoque en el VBox para evitar que reciba eventos de teclado
+		rootVBox.setFocusTraversable(false);
 
-	    // Agregar un filtro de eventos para capturar el enfoque en el VBox y desactivar el enfoque en el TableView
-	    rootVBox.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
-	        tablaBBDD.setFocusTraversable(false);
-	        rootVBox.requestFocus();
-	    });
+		// Agregar un filtro de eventos para capturar el enfoque en el TableView y
+		// desactivar el enfoque en el VBox
+		tablaBBDD.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+			rootVBox.setFocusTraversable(false);
+			tablaBBDD.requestFocus();
+		});
+
+		// Agregar un filtro de eventos para capturar el enfoque en el VBox y desactivar
+		// el enfoque en el TableView
+		rootVBox.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+			tablaBBDD.setFocusTraversable(false);
+			rootVBox.requestFocus();
+		});
+	}
+
+	private void ajustarAnchoVBox(TextArea textArea, VBox vbox) {
+		// Crear un objeto Text con el contenido del TextArea
+		Text text = new Text(textArea.getText());
+
+		// Configurar el mismo estilo que tiene el TextArea
+		text.setFont(textArea.getFont());
+
+		// Configurar el ancho y alto del VBox según los límites originales del VBox y
+		// el ancho del texto más un margen (opcional)
+		double maxWidth = vbox.getMaxWidth();
+		double maxHeight = vbox.getMaxHeight();
+
+		// Medir el ancho y alto del texto
+		double textWidth = text.getLayoutBounds().getWidth();
+		double textHeight = text.getLayoutBounds().getHeight() + 40;
+
+		double newWidth = Math.min(textWidth + 20, maxWidth);
+		double newHeight = Math.min(textHeight + 20, maxHeight);
+
+		vbox.setPrefWidth(newWidth);
+		vbox.setPrefHeight(newHeight);
+
+		textArea.setPrefHeight(textHeight);
+	}
+
+	private void asignarTooltips() {
+		asignarTooltip(botonbbdd, "Muestra toda la base de datos");
+		asignarTooltip(botonLimpiarComic, "Limpia la pantalla y reinicia todos los valores");
+		asignarTooltip(botonMostrarParametro, "Muestra los comics o libros o mangas por parametro");
+
+		asignarTooltip(nombreComic, "Nombre de los cómics / libros / mangas");
+		asignarTooltip(numeroComic, "Número del cómic / libro / manga");
+		asignarTooltip(nombreFirma, "Nombre de la firma del cómic / libro / manga");
+		asignarTooltip(nombreGuionista, "Nombre del guionista del cómic / libro / manga");
+		asignarTooltip(nombreVariante, "Nombre de la variante del cómic / libro / manga");
+		asignarTooltip(numeroCaja, "Número de la caja donde se guarda el cómic / libro / manga");
+		asignarTooltip(nombreProcedencia, "Nombre de la procedencia del cómic / libro / manga");
+		asignarTooltip(nombreFormato, "Nombre del formato del cómic / libro / manga");
+		asignarTooltip(nombreEditorial, "Nombre de la editorial del cómic / libro / manga");
+		asignarTooltip(nombreDibujante, "Nombre del dibujante del cómic / libro / manga");
+	}
+
+	private void asignarTooltip(Button boton, String mensaje) {
+		Tooltip tooltip = new Tooltip(mensaje);
+		boton.setTooltip(tooltip);
+	}
+
+	private void asignarTooltip(ComboBox<?> comboBox, String mensaje) {
+		Tooltip tooltip = new Tooltip(mensaje);
+		comboBox.setTooltip(tooltip);
 	}
 
 	public void animacion() {
@@ -334,83 +401,89 @@ public class EliminarDatosController implements Initializable {
 	}
 
 	public void autoRelleno() {
-	    // Agregar el ChangeListener al TextField idComicTratar
-	    idComicTratar.textProperty().addListener((observable, oldValue, newValue) -> {
-	        if (!newValue.isEmpty()) {
-	            boolean existeComic = false;
-	            try {
-	                existeComic = libreria.checkID(newValue);
-	            } catch (SQLException e) {
-	                e.printStackTrace();
-	            }
-	            if (existeComic || newValue.isEmpty()) {
+		// Agregar el ChangeListener al TextField idComicTratar
+		idComicTratar.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (!newValue.isEmpty()) {
+				boolean existeComic = false;
+				try {
+					existeComic = libreria.checkID(newValue);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				if (existeComic || newValue.isEmpty()) {
 
-	                Comic comic_temp = null;
-	                try {
-	                    comic_temp = libreria.comicDatos(idComicTratar.getText());
-	                } catch (SQLException e) {
-	                    e.printStackTrace();
-	                }
+					Comic comic_temp = null;
+					try {
 
-	                idComicTratar.setText(idComicTratar.getText());
+						if (idComicTratar == null) {
+							idComicTratar.setText("");
+						}
 
-	                restablecerCampos();
+						comic_temp = libreria.comicDatos(idComicTratar.getText());
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
 
-	                String nombreCampo = comic_temp.getNombre();
-	                nombreComic.getSelectionModel().select(nombreCampo);
+					idComicTratar.setText(idComicTratar.getText());
 
-	                String numeroCampo = comic_temp.getNumero();
-	                numeroComic.getSelectionModel().select(numeroCampo);
+//	                restablecerCampos();
 
-	                String varianteCampo = comic_temp.getVariante();
-	                nombreVariante.getSelectionModel().select(varianteCampo);
+					String nombreCampo = comic_temp.getNombre();
+					nombreComic.getSelectionModel().select(nombreCampo);
 
-	                String firmaCampo = comic_temp.getFirma();
-	                nombreFirma.getSelectionModel().select(firmaCampo);
+					String numeroCampo = comic_temp.getNumero();
+					numeroComic.getSelectionModel().select(numeroCampo);
 
-	                String editorialCampo = comic_temp.getEditorial();
-	                nombreEditorial.getSelectionModel().select(editorialCampo);
+					String varianteCampo = comic_temp.getVariante();
+					nombreVariante.getSelectionModel().select(varianteCampo);
 
-	                String formato = comic_temp.getFormato();
-	                nombreFormato.getSelectionModel().select(formato);
+					String firmaCampo = comic_temp.getFirma();
+					nombreFirma.getSelectionModel().select(firmaCampo);
 
-	                String procedencia = comic_temp.getProcedencia();
-	                nombreProcedencia.getSelectionModel().select(procedencia);
+					String editorialCampo = comic_temp.getEditorial();
+					nombreEditorial.getSelectionModel().select(editorialCampo);
 
-	                String fechaString = comic_temp.getFecha();
-	                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+					String formato = comic_temp.getFormato();
+					nombreFormato.getSelectionModel().select(formato);
 
-	                LocalDate fecha = LocalDate.parse(fechaString, formatter);
-	                fechaPublicacion.setValue(fecha);
+					String procedencia = comic_temp.getProcedencia();
+					nombreProcedencia.getSelectionModel().select(procedencia);
 
-	                String guionistaCampo = comic_temp.getGuionista();
-	                nombreGuionista.getSelectionModel().select(guionistaCampo);
+					String fechaString = comic_temp.getFecha();
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-	                String dibujanteCampo = comic_temp.getDibujante();
-	                nombreDibujante.getSelectionModel().select(dibujanteCampo);
+					LocalDate fecha = LocalDate.parse(fechaString, formatter);
+					fechaPublicacion.setValue(fecha);
 
-	                String cajaCampo = comic_temp.getNumCaja();
-	                numeroCaja.getSelectionModel().select(cajaCampo);
+					String guionistaCampo = comic_temp.getGuionista();
+					nombreGuionista.getSelectionModel().select(guionistaCampo);
 
-	                prontInfo.clear();
-	                prontInfo.setOpacity(1);
-	                try {
-	                    prontInfo.setText(libreria.comicDatos(idComicTratar.getText()).toString().replace("[", "").replace("]", ""));
-	                    imagencomic.setImage(libreria.selectorImage(idComicTratar.getText()));
+					String dibujanteCampo = comic_temp.getDibujante();
+					nombreDibujante.getSelectionModel().select(dibujanteCampo);
 
-	                } catch (SQLException e) {
-	                    e.printStackTrace();
-	                }
-	                imagencomic.setImage(libreria.selectorImage(idComicTratar.getText()));
-	            } else {
-	                limpiezaDeDatos();
-	            }
-	        } else {
-	            limpiezaDeDatos();
-	        }
-	    });
+					String cajaCampo = comic_temp.getNumCaja();
+					numeroCaja.getSelectionModel().select(cajaCampo);
+
+					prontInfo.clear();
+					prontInfo.setOpacity(1);
+					try {
+						prontInfo.setText(libreria.comicDatos(idComicTratar.getText()).toString().replace("[", "")
+								.replace("]", ""));
+						imagencomic.setImage(libreria.selectorImage(idComicTratar.getText()));
+
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+					imagencomic.setImage(libreria.selectorImage(idComicTratar.getText()));
+				} else {
+					limpiezaDeDatos();
+				}
+			} else {
+				limpiezaDeDatos();
+			}
+		});
 	}
-	
+
 	private Comic getComicFromComboBoxes() {
 		Comic comic = new Comic();
 		comic.setNombre(nombreComic.getValue() != null ? nombreComic.getValue() : "");
@@ -436,6 +509,26 @@ public class EliminarDatosController implements Initializable {
 	public void lecturaComboBox() {
 		libreria = new DBLibreriaManager();
 		isUserInput = true; // Establecemos isUserInput en true inicialmente.
+
+		// Verificar si el TextField idComicTratar está relleno
+		idComicTratar.textProperty().addListener((observable, oldValue, newValue) -> {
+
+			if (idComicTratar.getText().isEmpty() || idComicTratar == null) {
+				limpiezaDeDatos();
+			}
+
+			// Verificar si el nuevo valor del TextField está vacío
+			if (!newValue.trim().isEmpty() && idComicTratar.getText() != null) {
+				isUserInput = false; // Establecemos isUserInput en false si el TextField está relleno.
+			} else {
+				isUserInput = true; // Establecemos isUserInput en true si el TextField está vacío.
+			}
+			rellenarComboboxEscucha();
+
+		});
+	}
+
+	private void rellenarComboboxEscucha() {
 
 		// Configuración de los escuchadores para cada ComboBox mediante un bucle
 		for (ComboBox<String> comboBox : Arrays.asList(nombreComic, numeroComic, nombreFirma, nombreGuionista,
@@ -492,9 +585,10 @@ public class EliminarDatosController implements Initializable {
 	}
 
 	/**
-	 * Maneja los cambios en el ComboBox cuando su texto está vacío. Restablece el valor
-	 * del ComboBox a null y verifica si todos los campos de texto de los ComboBoxes están vacíos.
-	 * Si todos están vacíos, llama a la función "limpiezaDeDatos()".
+	 * Maneja los cambios en el ComboBox cuando su texto está vacío. Restablece el
+	 * valor del ComboBox a null y verifica si todos los campos de texto de los
+	 * ComboBoxes están vacíos. Si todos están vacíos, llama a la función
+	 * "limpiezaDeDatos()".
 	 *
 	 * @param comboBox El ComboBox que ha cambiado su valor.
 	 */
@@ -517,25 +611,27 @@ public class EliminarDatosController implements Initializable {
 
 		// Si todos los campos de texto de los ComboBoxes están vacíos, llamar a
 		// limpiezaDeDatos()
-		if (allEmpty) {
+		if (allEmpty || !isUserInput) {
 			limpiezaDeDatos();
 		}
 	}
 
 	/**
-	 * Actualiza los ComboBoxes con los resultados obtenidos de la base de datos según el Comic proporcionado.
-	 * Primero, se crea un Comic temporal sin algunos valores para utilizarlo en la consulta SQL.
-	 * Luego, se construye la consulta SQL a partir del Comic temporal y se obtienen los resultados
-	 * de la base de datos para cada campo de ComboBox. Finalmente, se actualizan los ComboBoxes con los
-	 * nuevos datos obtenidos.
+	 * Actualiza los ComboBoxes con los resultados obtenidos de la base de datos
+	 * según el Comic proporcionado. Primero, se crea un Comic temporal sin algunos
+	 * valores para utilizarlo en la consulta SQL. Luego, se construye la consulta
+	 * SQL a partir del Comic temporal y se obtienen los resultados de la base de
+	 * datos para cada campo de ComboBox. Finalmente, se actualizan los ComboBoxes
+	 * con los nuevos datos obtenidos.
 	 *
-	 * @param comic El Comic que se utilizará como base para obtener los resultados de la base de datos.
+	 * @param comic El Comic que se utilizará como base para obtener los resultados
+	 *              de la base de datos.
 	 */
 	public void actualizarComboBoxes(Comic comic) {
 
 		Comic comicTemp = new Comic("", comic.getNombre(), comic.getNumCaja(), comic.getNumero(), comic.getVariante(),
 				comic.getFirma(), comic.getEditorial(), comic.getFormato(), comic.getProcedencia(), "",
-				comic.getGuionista(), comic.getDibujante(),"", "", "", "");
+				comic.getGuionista(), comic.getDibujante(), "", "", "", "");
 
 		String sql = libreria.datosConcatenados(comicTemp);
 
@@ -543,16 +639,20 @@ public class EliminarDatosController implements Initializable {
 
 			isUserInput = false; // Disable user input during programmatic updates
 
-			DBLibreriaManager.nombreComicList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomComic");
-			DBLibreriaManager.nombreGuionistaList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomGuionista");
-			DBLibreriaManager.numeroComicList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "numComic");
-			DBLibreriaManager.nombreVarianteList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomVariante");
-			DBLibreriaManager.numeroCajaList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "caja_deposito");
-			DBLibreriaManager.nombreProcedenciaList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "procedencia");
-			DBLibreriaManager.nombreFormatoList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "formato");
-			DBLibreriaManager.nombreEditorialList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomEditorial");
-			DBLibreriaManager.nombreDibujanteList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomDibujante");
-			DBLibreriaManager.nombreFirmaList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "firma");
+			if(idComicTratar.getText().isEmpty()) {
+				DBLibreriaManager.nombreComicList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomComic");
+				DBLibreriaManager.nombreGuionistaList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomGuionista");
+				DBLibreriaManager.numeroComicList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "numComic");
+				DBLibreriaManager.nombreVarianteList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomVariante");
+				DBLibreriaManager.numeroCajaList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "caja_deposito");
+				DBLibreriaManager.nombreProcedenciaList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "procedencia");
+				DBLibreriaManager.nombreFormatoList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "formato");
+				DBLibreriaManager.nombreEditorialList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomEditorial");
+				DBLibreriaManager.nombreDibujanteList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomDibujante");
+				DBLibreriaManager.nombreFirmaList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "firma");
+			}
+			
+
 
 			if (!DBLibreriaManager.nombreComicList.isEmpty() || !comic.getNombre().isEmpty()) {
 				ObservableList<String> nombresActuales = FXCollections
@@ -619,56 +719,55 @@ public class EliminarDatosController implements Initializable {
 		}
 	}
 
-
 	/**
 	 * Cuando pasa el raton por encima, se colorea de color azul el raw donde el
 	 * raton se encuentra y muestra un mensaje emergente con datos del comic
 	 */
 	public void seleccionarRaw() {
-	    tablaBBDD.setRowFactory(tv -> {
-	        TableRow<Comic> row = new TableRow<>();
-	        Tooltip tooltip = new Tooltip();
-	        tooltip.setShowDelay(Duration.ZERO);
-	        tooltip.setHideDelay(Duration.ZERO);
+		tablaBBDD.setRowFactory(tv -> {
+			TableRow<Comic> row = new TableRow<>();
+			Tooltip tooltip = new Tooltip();
+			tooltip.setShowDelay(Duration.ZERO);
+			tooltip.setHideDelay(Duration.ZERO);
 
-	        row.setOnMouseEntered(event -> {
-	            if (!row.isEmpty()) {
-	                row.setStyle("-fx-background-color: #BFEFFF;");
+			row.setOnMouseEntered(event -> {
+				if (!row.isEmpty()) {
+					row.setStyle("-fx-background-color: #BFEFFF;");
 
-	                Comic comic = row.getItem();
-	                if (comic != null && !tooltip.isShowing()) {
-	                    String mensaje = "Nombre: " + comic.getNombre() + "\nNumero: " + comic.getNumero()
-	                            + "\nVariante: " + comic.getVariante() + "\nGuionista: " + comic.getGuionista()
-	                            + "\nDibujante: " + comic.getDibujante();
-	                    if (!comic.getFirma().isEmpty()) {
-	                        mensaje += "\nFirma: " + comic.getFirma();
-	                    }
-	                    tooltip.setText(mensaje);
-	                    tooltip.show(row, event.getSceneX(), event.getSceneY());
-	                    tooltip.setX(event.getScreenX() + 10); // Ajusta el desplazamiento X según tus necesidades
-	                    tooltip.setY(event.getScreenY() - 20); // Ajusta el desplazamiento Y según tus necesidades
-	                }
-	            }
-	        });
+					Comic comic = row.getItem();
+					if (comic != null && !tooltip.isShowing()) {
+						String mensaje = "Nombre: " + comic.getNombre() + "\nNumero: " + comic.getNumero()
+								+ "\nVariante: " + comic.getVariante() + "\nGuionista: " + comic.getGuionista()
+								+ "\nDibujante: " + comic.getDibujante();
+						if (!comic.getFirma().isEmpty()) {
+							mensaje += "\nFirma: " + comic.getFirma();
+						}
+						tooltip.setText(mensaje);
+						tooltip.show(row, event.getSceneX(), event.getSceneY());
+						tooltip.setX(event.getScreenX() + 10); // Ajusta el desplazamiento X según tus necesidades
+						tooltip.setY(event.getScreenY() - 20); // Ajusta el desplazamiento Y según tus necesidades
+					}
+				}
+			});
 
-	        row.setOnMouseExited(event -> {
-	            if (!row.isEmpty()) {
-	                row.setStyle("");
-	                tooltip.hide();
-	            }
-	        });
+			row.setOnMouseExited(event -> {
+				if (!row.isEmpty()) {
+					row.setStyle("");
+					tooltip.hide();
+				}
+			});
 
-	        return row;
-	    });
+			return row;
+		});
 
-	    // Deshabilitar el enfoque en el TableView
-	    tablaBBDD.setFocusTraversable(false);
+		// Deshabilitar el enfoque en el TableView
+		tablaBBDD.setFocusTraversable(false);
 
-	    // Enfocar el VBox para evitar movimientos inesperados
-	    VBox root = (VBox) tablaBBDD.getScene().lookup("#rootVBox");
-	    if (root != null) {
-	        root.requestFocus();
-	    }
+		// Enfocar el VBox para evitar movimientos inesperados
+		VBox root = (VBox) tablaBBDD.getScene().lookup("#rootVBox");
+		if (root != null) {
+			root.requestFocus();
+		}
 	}
 
 	/**
@@ -733,7 +832,7 @@ public class EliminarDatosController implements Initializable {
 	 * Funcion que permite el autocompletado en la parte Text del comboBox
 	 */
 	public void listas_autocompletado() {
-		
+
 		// Las vinculaciones se asignan a las variables miembro correspondientes
 		nombreComicAutoCompletion = TextFields.bindAutoCompletion(nombreComic.getEditor(),
 				DBLibreriaManager.listaNombre);
@@ -754,7 +853,7 @@ public class EliminarDatosController implements Initializable {
 		nombreFormatoAutoCompletion = TextFields.bindAutoCompletion(nombreFormato.getEditor(),
 				DBLibreriaManager.listaFormato);
 		numeroCajaAutoCompletion = TextFields.bindAutoCompletion(numeroCaja.getEditor(), DBLibreriaManager.listaCaja);
-		
+
 		TextFields.bindAutoCompletion(nombreComic.getEditor(), DBLibreriaManager.listaNombre);
 		TextFields.bindAutoCompletion(numeroComic.getEditor(), DBLibreriaManager.listaNumeroComic);
 		TextFields.bindAutoCompletion(nombreVariante.getEditor(), DBLibreriaManager.listaVariante);
@@ -771,10 +870,8 @@ public class EliminarDatosController implements Initializable {
 		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaDibujante);
 		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaEditorial);
-
-		DBLibreriaManager.listaNombre.clear();
 	}
-	
+
 	/**
 	 * Funcion que permite resetear las listas de autocompletado
 	 */
@@ -1021,20 +1118,20 @@ public class EliminarDatosController implements Initializable {
 		isUserInput = true; // Re-enable user input after cleanup
 		rellenarComboBox();
 	}
-	
+
 	public void restablecerCampos() {
-        // Restablecer todos los campos de selección
-        nombreComic.getSelectionModel().clearSelection();
-        numeroComic.getSelectionModel().clearSelection();
-        nombreVariante.getSelectionModel().clearSelection();
-        nombreFirma.getSelectionModel().clearSelection();
-        nombreEditorial.getSelectionModel().clearSelection();
-        nombreFormato.getSelectionModel().clearSelection();
-        nombreProcedencia.getSelectionModel().clearSelection();
-        fechaPublicacion.setValue(null);
-        nombreGuionista.getSelectionModel().clearSelection();
-        nombreDibujante.getSelectionModel().clearSelection();
-        numeroCaja.getSelectionModel().clearSelection();
+		// Restablecer todos los campos de selección
+		nombreComic.getSelectionModel().clearSelection();
+		numeroComic.getSelectionModel().clearSelection();
+		nombreVariante.getSelectionModel().clearSelection();
+		nombreFirma.getSelectionModel().clearSelection();
+		nombreEditorial.getSelectionModel().clearSelection();
+		nombreFormato.getSelectionModel().clearSelection();
+		nombreProcedencia.getSelectionModel().clearSelection();
+		fechaPublicacion.setValue(null);
+		nombreGuionista.getSelectionModel().clearSelection();
+		nombreDibujante.getSelectionModel().clearSelection();
+		numeroCaja.getSelectionModel().clearSelection();
 	}
 
 	/**
@@ -1219,11 +1316,11 @@ public class EliminarDatosController implements Initializable {
 		String datos[] = camposComic();
 
 		Comic comic = new Comic("", datos[1], datos[11], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
-				datos[8], datos[9], datos[10],"", "", "", null);
+				datos[8], datos[9], datos[10], "", "", "", null);
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
 		busquedaGeneral.setText("");
-		
+
 		resultadoBusquedaPront(comic);
 	}
 
@@ -1376,9 +1473,9 @@ public class EliminarDatosController implements Initializable {
 			}
 		});
 	}
-	
-    @FXML
-    void comicsKeyIssue(ActionEvent event) throws SQLException {
+
+	@FXML
+	void comicsKeyIssue(ActionEvent event) throws SQLException {
 		prontInfo.setOpacity(0);
 		limpiezaDeDatos();
 		utilidad = new Utilidades();
@@ -1386,7 +1483,7 @@ public class EliminarDatosController implements Initializable {
 		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(libreria.libreriaKeyIssue());
-    }
+	}
 
 	/**
 	 * Funcion que al pulsar el boton de 'botonPuntuacion' se muestran aquellos
@@ -1489,7 +1586,7 @@ public class EliminarDatosController implements Initializable {
 		prontInfo.setText("Generando fichero de estadisticas . . . ");
 		libreria.generar_fichero_estadisticas();
 	}
-	
+
 	/**
 	 * Según el dato que busquemos a la hora de realizar la búsqueda, aparecerá un
 	 * mensaje diferente en el pront.

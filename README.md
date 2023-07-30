@@ -1,4 +1,4 @@
-# Comic Database Manager - Version 5.4.0.0
+# Comic Database Manager - Version 5.5.0.1
 
 ## Descripción
 

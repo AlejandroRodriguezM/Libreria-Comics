@@ -29,7 +29,6 @@
       <Button fx:id="botonLeidos" layoutX="304.0" layoutY="129.0" mnemonicParsing="false" onAction="#verComicsLeidos" prefHeight="35.0" prefWidth="86.0" stylesheets="@../style/genericos_style.css" text="Comics leidos" wrapText="true" />
       <TextField fx:id="idPuntuar" layoutX="397.0" layoutY="223.0" prefHeight="25.0" prefWidth="128.0" />
       <Button fx:id="botonAgregarPuntuacion" layoutX="304.0" layoutY="284.0" mnemonicParsing="false" onAction="#agregarPuntuacion" prefHeight="42.0" prefWidth="117.0" stylesheets="@../style/genericos_style.css" text="Añadir puntuación" />
-      <TextArea fx:id="prontInfo" editable="false" layoutX="896.0" layoutY="30.0" opacity="0.0" prefHeight="317.0" prefWidth="293.0" stylesheets="@../style/panel_info_style.css" wrapText="true" />
       <Label layoutX="305.0" layoutY="257.0" prefHeight="23.0" prefWidth="86.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Puntuación" />
       <Label layoutX="304.0" layoutY="223.0" prefHeight="23.0" prefWidth="86.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="ID a Puntuar" />
       <ComboBox fx:id="puntuacionMenu" layoutX="397.0" layoutY="253.0" prefHeight="25.0" prefWidth="128.0" />
@@ -167,5 +166,10 @@
                </columnResizePolicy>
             </TableView>
          </children></VBox>
+      <VBox fx:id="vboxContenido" layoutX="890.0" layoutY="30.0" prefHeight="317.0" prefWidth="293.0">
+         <children>
+            <TextArea fx:id="prontInfo" editable="false" opacity="0.0" prefHeight="317.0" prefWidth="293.0" stylesheets="@../style/panel_info_style.css" wrapText="true" />
+         </children>
+      </VBox>
    </children>
 </Pane>

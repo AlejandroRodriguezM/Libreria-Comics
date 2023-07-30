@@ -29,7 +29,6 @@
       <Button fx:id="botonMostrarParametro" layoutX="100.0" layoutY="408.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="42.0" prefWidth="61.0" stylesheets="@../style/genericos_style.css" text="Busqueda" wrapText="true" />
       <Button fx:id="botonbbdd" layoutX="12.0" layoutY="408.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="42.0" prefWidth="61.0" stylesheets="@../style/genericos_style.css" text="Ver todo" wrapText="true" />
       <Label fx:id="idMod" layoutX="325.0" layoutY="31.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="ID" />
-      <TextArea fx:id="prontInfo" editable="false" layoutX="894.0" layoutY="32.0" opacity="0.0" prefHeight="366.0" prefWidth="296.0" stylesheets="@../style/panel_info_style.css" wrapText="true" />
       <Button fx:id="botonNuevaPortada" layoutX="622.0" layoutY="415.0" mnemonicParsing="false" onAction="#nuevaPortada" prefHeight="42.0" prefWidth="113.0" stylesheets="@../style/genericos_style.css" text="Buscar portada" wrapText="true" />
       <ImageView fx:id="imagencomic" fitHeight="366.0" fitWidth="275.0" layoutX="640.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true" />
       <MenuBar fx:id="menu_navegacion" layoutX="-1.0" prefHeight="25.0" prefWidth="1197.0">
@@ -198,5 +197,10 @@
       </VBox>
       <TextField fx:id="nombreKeyIssue" layoutX="445.0" layoutY="405.0" prefHeight="25.0" prefWidth="162.0" promptText="Introduce key issue" />
       <Label layoutX="325.0" layoutY="406.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Key issue" />
+      <VBox fx:id="vboxContenido" layoutX="942.0" layoutY="33.0" prefHeight="366.0" prefWidth="241.0">
+         <children>
+            <TextArea fx:id="prontInfo" editable="false" opacity="0.0" prefHeight="366.0" prefWidth="241.0" stylesheets="@../style/panel_info_style.css" wrapText="true" />
+         </children>
+      </VBox>
    </children>
 </Pane>

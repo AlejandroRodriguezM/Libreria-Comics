@@ -16,7 +16,6 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -363,7 +362,7 @@ public class Utilidades {
 		return nombreArchivo;
 	}
 
-	public void copia_seguridad() throws SQLException {
+	public void copia_seguridad() {
 		// Realizar copia de seguridad
 		try {
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
@@ -672,4 +671,7 @@ public class Utilidades {
 		return codigo.toString();
 	}
 
+	
+
+	
 }

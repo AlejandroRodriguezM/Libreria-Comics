@@ -1,5 +1,7 @@
 package Controladores;
 
+import java.io.BufferedReader;
+
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  * Las ventanas graficas se realizan con JavaFX.
@@ -16,13 +18,14 @@ package Controladores;
  *  - Puntuar comics que se encuentren dentro de la base de datos.
  *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
  *
- *  Version 5.3
+ *  Version 5.5.0.1
  *
  *  Por Alejandro Rodriguez
  *
  */
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -32,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
 
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
@@ -45,6 +49,7 @@ import JDBC.DBManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -56,6 +61,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
@@ -70,6 +76,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -136,9 +143,9 @@ public class MenuPrincipalController implements Initializable {
 
 	@FXML
 	private MenuItem menu_estadistica_vendidos;
-	
-    @FXML
-    private MenuItem menu_estadistica_key_issue;
+
+	@FXML
+	private MenuItem menu_estadistica_key_issue;
 
 	@FXML
 	private MenuBar menu_navegacion;
@@ -259,6 +266,15 @@ public class MenuPrincipalController implements Initializable {
 
 	@FXML
 	private VBox rootVBox;
+	
+    @FXML
+    private VBox vboxContenido;
+
+    @FXML
+    private VBox vboxFrases;
+
+	@FXML
+	private ProgressIndicator progresoCarga;
 
 	private static Ventanas nav = new Ventanas();
 
@@ -293,7 +309,25 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		
+		prontInfo.textProperty().addListener((observable, oldValue, newValue) -> {
+		    ajustarAnchoVBox(prontInfo, vboxContenido);
+		});
+		
+	    
+		 prontFrases.textProperty().addListener((observable, oldValue, newValue) -> {
+		    ajustarAnchoVBox( prontFrases, vboxFrases);
+		});
+
+		// Asegurarnos de que el VBox ajuste su tamaño correctamente al inicio
+		Platform.runLater(() -> ajustarAnchoVBox(prontInfo, vboxContenido));
+
+		// Asegurarnos de que el VBox ajuste su tamaño correctamente al inicio
+		Platform.runLater(() -> ajustarAnchoVBox( prontFrases, vboxContenido));
+	    
 		Platform.runLater(() -> seleccionarRaw());
+		Platform.runLater(() -> asignarTooltips());
+
 		libreria = new DBLibreriaManager();
 		try {
 			libreria.listasAutoCompletado();
@@ -325,6 +359,60 @@ public class MenuPrincipalController implements Initializable {
 			rootVBox.requestFocus();
 		});
 	}
+
+	private void ajustarAnchoVBox(TextArea textArea, VBox vbox) {
+	    // Crear un objeto Text con el contenido del TextArea
+	    Text text = new Text(textArea.getText());
+
+	    // Configurar el mismo estilo que tiene el TextArea
+	    text.setFont(textArea.getFont());
+
+	    // Configurar el ancho y alto del VBox según los límites originales del VBox y el ancho del texto más un margen (opcional)
+	    double maxWidth = vbox.getMaxWidth();
+	    double maxHeight = vbox.getMaxHeight();
+	    
+	    // Medir el ancho y alto del texto
+	    double textWidth = text.getLayoutBounds().getWidth();
+	    double textHeight = text.getLayoutBounds().getHeight() + 40;
+
+	    double newWidth = Math.min(textWidth + 20, maxWidth);
+	    double newHeight = Math.min(textHeight + 20, maxHeight);
+
+	    vbox.setPrefWidth(newWidth);
+	    vbox.setPrefHeight(newHeight);
+	    
+	    textArea.setPrefHeight(textHeight);
+	}
+
+
+	
+    private void asignarTooltips() {
+        asignarTooltip(botonbbdd, "Muestra toda la base de datos");
+        asignarTooltip(botonLimpiar, "Limpia la pantalla y reinicia todos los valores");
+        asignarTooltip(botonMostrarParametro, "Muestra los comics o libros o mangas por parametro");
+        asignarTooltip(botonFrase, "Muestra una frase aleatoria de personaje de comics");
+
+        asignarTooltip(nombreComic, "Nombre de los cómics / libros / mangas");
+        asignarTooltip(numeroComic, "Número del cómic / libro / manga");
+        asignarTooltip(nombreFirma, "Nombre de la firma del cómic / libro / manga");
+        asignarTooltip(nombreGuionista, "Nombre del guionista del cómic / libro / manga");
+        asignarTooltip(nombreVariante, "Nombre de la variante del cómic / libro / manga");
+        asignarTooltip(numeroCaja, "Número de la caja donde se guarda el cómic / libro / manga");
+        asignarTooltip(nombreProcedencia, "Nombre de la procedencia del cómic / libro / manga");
+        asignarTooltip(nombreFormato, "Nombre del formato del cómic / libro / manga");
+        asignarTooltip(nombreEditorial, "Nombre de la editorial del cómic / libro / manga");
+        asignarTooltip(nombreDibujante, "Nombre del dibujante del cómic / libro / manga");
+    }
+
+    private void asignarTooltip(Button boton, String mensaje) {
+        Tooltip tooltip = new Tooltip(mensaje);
+        boton.setTooltip(tooltip);
+    }
+
+    private void asignarTooltip(ComboBox<?> comboBox, String mensaje) {
+        Tooltip tooltip = new Tooltip(mensaje);
+        comboBox.setTooltip(tooltip);
+    }
 
 	private Comic getComicFromComboBoxes() {
 		Comic comic = new Comic();
@@ -1149,9 +1237,9 @@ public class MenuPrincipalController implements Initializable {
 		nombreColumnas();
 		tablaBBDD(libreria.libreriaPosesion());
 	}
-	
-    @FXML
-    void comicsKeyIssue(ActionEvent event) throws SQLException {
+
+	@FXML
+	void comicsKeyIssue(ActionEvent event) throws SQLException {
 		prontInfo.setOpacity(0);
 		limpiezaDeDatos();
 		utilidad = new Utilidades();
@@ -1159,7 +1247,7 @@ public class MenuPrincipalController implements Initializable {
 		libreria.reiniciarBBDD();
 		nombreColumnas();
 		tablaBBDD(libreria.libreriaKeyIssue());
-    }
+	}
 
 	////////////////////////////
 	/// METODOS PARA EXPORTAR///
@@ -1276,31 +1364,131 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Borra el contenido de la base de datos, soltamente el contenido de las
-	 * tablas.
+	 * Método manejador del evento de clic en el botón "Borrar Contenido de la Tabla".
+	 * Este método borra el contenido de la tabla de la base de datos de forma asíncrona,
+	 * basándose en la confirmación del usuario.
 	 *
-	 * @param event
-	 * @throws SQLException
+	 * @param event El evento de ActionEvent generado por el clic en el botón.
+	 * @throws SQLException Si hay un error en la operación de la base de datos.
 	 */
 	@FXML
 	void borrarContenidoTabla(ActionEvent event) throws SQLException {
+	    // Crear una tarea (Task) para realizar la operación de borrado de contenido de la tabla
+	    Task<Boolean> task = new Task<Boolean>() {
+	        @Override
+	        protected Boolean call() throws Exception {
+	            // Obtener la CompletableFuture<Boolean> del método borrarContenidoTabla de la clase nav
+	            CompletableFuture<Boolean> futureResult = nav.borrarContenidoTabla();
+	            // Obtener el resultado real (Boolean) de la CompletableFuture utilizando join()
+	            boolean result = futureResult.join();
+	            return result; // Devolver el resultado actual
+	        }
+	    };
 
-		libreria = new DBLibreriaManager();
-		prontInfo.setOpacity(0);
-		prontFrases.setOpacity(0);
-		if (nav.borrarContenidoTabla()) {
-			libreria.ejecucionPreparedStatement(libreria.deleteTable());
-			prontInfo.setOpacity(1);
-			prontInfo.setStyle("-fx-background-color: #A0F52D");
-			prontInfo.setText("Has borrado correctamente el contenido de la base de datos.");
-			tablaBBDD.getItems().clear();
-			imagencomic.setImage(null);
-		} else {
-			prontInfo.setOpacity(1);
-			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("Has cancelado el borrado de la base de datos.");
-		}
+	    // Configurar el comportamiento cuando la tarea está en ejecución
+	    task.setOnRunning(e -> {
+	        // Ocultar los elementos de información y frases
+	        prontInfo.setOpacity(0);
+	        prontInfo.setText(null);
+	        prontFrases.setOpacity(0);
+	        prontFrases.setText(null);
+	        // Iniciar la animación
+	        iniciarAnimacion();
+	    });
+
+	    // Configurar el comportamiento cuando la tarea se completa con éxito
+	    task.setOnSucceeded(e -> {
+	        // Obtener el resultado de la tarea
+	        Boolean resultado = task.getValue();
+	        /* Tu condición aquí basada en el resultado */
+
+	        if (resultado) {
+	            // Ejecutar el método deleteTable en su propio hilo
+	            Task<Boolean> deleteTask = new Task<Boolean>() {
+	                @Override
+	                protected Boolean call() throws Exception {
+	                    // Verificar si la tabla tiene contenido
+	                    boolean result = false;
+	                    if (libreria.contenidoTabla()) {
+	                        // Si hay contenido, borrar el contenido de la tabla en un hilo separado
+	                        CompletableFuture<Boolean> futureResult = libreria.deleteTable();
+	                        result = futureResult.join(); // Esperar a que la tarea asíncrona se complete y obtener el resultado
+	                    } else {
+	                        // Si no hay contenido, mostrar un mensaje de error
+	                        prontInfo.setOpacity(1);
+	                        prontInfo.setStyle("-fx-background-color: #F53636");
+	                        prontInfo.setText("No hay contenido en la base de datos");
+	                        Platform.runLater(() -> nav.alertaException("Error. No hay contenido en la base de datos"));
+	                        detenerAnimacion();
+	                    }
+	                    return result; // Devolver el resultado actual
+	                }
+	            };
+
+	            // Configurar el comportamiento cuando la tarea de borrado se completa con éxito
+	            deleteTask.setOnSucceeded(ev -> {
+	                // Obtener el resultado de la tarea de borrado
+	                boolean result = deleteTask.getValue();
+	                if (result) {
+	                    // Mostrar el mensaje de éxito y limpiar la tabla y la imagen
+	                    Platform.runLater(() -> {
+	                        prontInfo.setOpacity(1);
+	                        prontInfo.setStyle("-fx-background-color: #A0F52D");
+	                        prontInfo.setText("Has borrado correctamente el contenido de la base de datos.");
+	                        tablaBBDD.getItems().clear();
+	                        imagencomic.setImage(null);
+	                        detenerAnimacion();
+	                    });
+	                }
+	            });
+
+	            // Configurar el comportamiento cuando la tarea de borrado falla
+	            deleteTask.setOnFailed(ev -> {
+	                // Detener la animación y mostrar el mensaje de error
+	                detenerAnimacion();
+	                Throwable exception = deleteTask.getException();
+	                if (exception != null) {
+	                    exception.printStackTrace();
+	                    Platform.runLater(() -> nav.alertaException("Error al borrar el contenido de la base de datos: " + exception.getMessage()));
+	                } else {
+	                    Platform.runLater(() -> nav.alertaException("Error desconocido al borrar el contenido de la base de datos"));
+	                }
+	            });
+
+	            // Iniciar la tarea de borrado en un hilo separado
+	            Thread deleteThread = new Thread(deleteTask);
+	            deleteThread.start();
+	        } else {
+	            // Si el resultado es falso, mostrar el mensaje de cancelación
+	            Platform.runLater(() -> {
+	                prontInfo.setOpacity(1);
+	                prontInfo.setStyle("-fx-background-color: #F53636");
+	                prontInfo.setText("Has cancelado el borrado de la base de datos.");
+	                detenerAnimacion();
+	            });
+	        }
+	    });
+
+	    // Configurar el comportamiento cuando la tarea falla
+	    task.setOnFailed(e -> {
+	        // Detener la animación y mostrar el mensaje de error
+	        detenerAnimacion();
+	        Throwable exception = task.getException();
+	        if (exception != null) {
+	            exception.printStackTrace();
+	            Platform.runLater(() -> nav.alertaException("Error al importar el fichero CSV: " + exception.getMessage()));
+	        } else {
+	            Platform.runLater(() -> nav.alertaException("Error desconocido al importar el fichero CSV."));
+	        }
+	    });
+
+	    // Iniciar la tarea principal de borrado en un hilo separado
+	    Thread thread = new Thread(task);
+	    thread.start();
 	}
+
+
+
 
 	/**
 	 * Se llama a funcion que permite ver las estadisticas de la bbdd
@@ -1563,38 +1751,149 @@ public class MenuPrincipalController implements Initializable {
 		}
 	}
 
+
 	/**
-	 * Funcion que compruba si se ha importado el fichero CSV
+	 * Importa un archivo CSV y guarda su contenido en una base de datos de forma asíncrona.
 	 *
-	 * @param fichero
+	 * @param fichero El archivo CSV a importar.
 	 */
 	public void importCSV(File fichero) {
-		excelFuntions = new FuncionesExcel();
-		prontInfo.setOpacity(0);
-		try {
-			if (fichero != null) {
-				if (excelFuntions.importarCSV(fichero)) { // Si se ha importado el fichero CSV correctamente, se vera el
-					// siguiente mensaje
-					listas_autocompletado();
-					rellenarComboBox();
-					lecturaComboBox();
-					prontInfo.setOpacity(1);
-					prontInfo.setStyle("-fx-background-color: #A0F52D");
-					prontInfo.setText("Fichero CSV importado de forma correcta");
-				} else { // Si no se ha podido crear importar el fichero se vera el siguiente mensaje
-					prontInfo.setOpacity(1);
-					prontInfo.setStyle("-fx-background-color: #F53636");
-					prontInfo.setText("ERROR. No se ha podido importar correctamente.");
-				}
-			} else { // En caso de cancelar la importacion del fichero, se mostrara el siguiente
-				// mensaje.
-				prontInfo.setOpacity(1);
-				prontInfo.setStyle("-fx-background-color: #F53636");
-				prontInfo.setText("ERROR. Se ha cancelado la importacion.");
-			}
-		} catch (Exception e) {
-			nav.alertaException(e.toString());
-		}
+	    // Crear una tarea (Task) para realizar la importación del archivo CSV
+	    Task<Boolean> task = new Task<Boolean>() {
+	        @Override
+	        protected Boolean call() throws Exception {
+	            try {
+	                // Crear una instancia de FuncionesExcel para realizar la importación
+	                excelFuntions = new FuncionesExcel();
+	                // Llamar al método importarCSV para importar el archivo CSV y obtener el resultado
+	                return excelFuntions.importarCSV(fichero);
+	            } catch (IOException e) {
+	                // Si ocurre un error al importar, mostrar un mensaje de error y detener la animación
+	                e.printStackTrace();
+	                Platform.runLater(() -> nav.alertaException("Error al importar el fichero CSV: " + e.getMessage()));
+	                detenerAnimacion();
+	                return false;
+	            } catch (Exception e) {
+	                // Si ocurre un error desconocido al importar, mostrar un mensaje de error y detener la animación
+	                e.printStackTrace();
+	                Platform.runLater(() -> nav.alertaException("Error desconocido al importar el fichero CSV: " + e.getMessage()));
+	                detenerAnimacion();
+	                return false;
+	            }
+	        }
+	    };
+
+	    // Configurar el comportamiento cuando la tarea está en ejecución
+	    task.setOnRunning(e -> {
+	        // Ocultar los elementos de información y frases
+	        prontInfo.setOpacity(0);
+	        prontInfo.setText(null);
+	        prontFrases.setOpacity(0);
+	        prontFrases.setText(null);
+	        // Iniciar la animación
+	        iniciarAnimacion();
+	    });
+
+	    // Configurar el comportamiento cuando la tarea se completa con éxito
+	    task.setOnSucceeded(e -> {
+	        // Obtener el resultado de la tarea
+	        Boolean resultado = task.getValue();
+	        /* Tu condición aquí basada en el resultado */
+
+	        if (resultado) {
+	            // Si la importación del CSV fue exitosa, continuar con la inserción en la base de datos
+	            Platform.runLater(() -> {
+	                prontInfo.setOpacity(0); // Ocultar el mensaje inicial antes de iniciar la lectura y guardado
+
+	                // Definir la sentencia SQL para insertar los datos en la base de datos
+	                String sql = "INSERT INTO comicsbbdd(ID,nomComic,caja_deposito,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,fecha_publicacion,nomGuionista,nomDibujante,puntuacion,portada,key_issue,estado)"
+	                        + " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+
+	                try {
+	                    // Continuar con la conexión a la base de datos y el proceso de guardado
+	                    BufferedReader lineReader = new BufferedReader(new FileReader(fichero));
+	                    // Crear una nueva tarea (Task) para realizar la lectura y guardado en la base de datos
+	                    Task<Void> lecturaTask = excelFuntions.lecturaCSVTask(sql, lineReader);
+
+	                    // Configurar el comportamiento cuando la tarea de lectura y guardado se completa con éxito
+	                    lecturaTask.setOnSucceeded(event -> {
+	                        // La operación de inserción en la base de datos ha finalizado con éxito
+	                        // Mostrar el mensaje de éxito después de la lectura y guardado
+	                        prontInfo.setOpacity(1);
+	                        prontInfo.setStyle("-fx-background-color: #A0F52D");
+	                        prontInfo.setText("Fichero CSV importado de forma correcta");
+	                        detenerAnimacion();
+	                    });
+
+	                    // Configurar el comportamiento cuando la tarea de lectura y guardado falla
+	                    lecturaTask.setOnFailed(event -> {
+	                        // Ha ocurrido un error durante la operación de inserción en la base de datos
+	                        Throwable exception = lecturaTask.getException();
+	                        if (exception != null) {
+	                            exception.printStackTrace();
+	                            Platform.runLater(() -> nav.alertaException("Error al guardar datos en la base de datos: " + exception.getMessage()));
+	                            detenerAnimacion();
+	                        }
+	                        prontInfo.setOpacity(1);
+	                        prontInfo.setStyle("-fx-background-color: #F53636");
+	                        prontInfo.setText("ERROR. No se ha podido guardar correctamente en la base de datos.");
+	                        detenerAnimacion();
+	                    });
+
+	                    // Iniciar la tarea de lectura y guardado en un hilo separado
+	                    Thread thread = new Thread(lecturaTask);
+	                    thread.start();
+
+	                } catch (IOException ex) {
+	                    // Si ocurre un error al importar, mostrar un mensaje de error y detener la animación
+	                    ex.printStackTrace();
+	                    Platform.runLater(() -> nav.alertaException("Error al importar el fichero CSV: " + ex.getMessage()));
+	                    prontInfo.setOpacity(1);
+	                    prontInfo.setStyle("-fx-background-color: #F53636");
+	                    prontInfo.setText("ERROR. No se ha podido importar correctamente.");
+	                    detenerAnimacion();
+	                }
+	            });
+	        } else {
+	            // Si la importación del CSV falló, mostrar un mensaje de error
+	            Platform.runLater(() -> {
+	                prontInfo.setOpacity(1);
+	                prontInfo.setStyle("-fx-background-color: #F53636");
+	                prontInfo.setText("ERROR. No se ha podido importar correctamente.");
+	                detenerAnimacion();
+	            });
+	        }
+	    });
+
+	    // Configurar el comportamiento cuando la tarea falla
+	    task.setOnFailed(e -> {
+	        // Detener la animación y mostrar un mensaje de error en caso de que la tarea falle
+	        detenerAnimacion();
+	        Throwable exception = task.getException();
+	        if (exception != null) {
+	            exception.printStackTrace();
+	            Platform.runLater(() -> nav.alertaException("Error al importar el fichero CSV: " + exception.getMessage()));
+	            detenerAnimacion();
+	        } else {
+	            Platform.runLater(() -> nav.alertaException("Error desconocido al importar el fichero CSV."));
+	            detenerAnimacion();
+	        }
+	    });
+
+	    // Iniciar la tarea principal de importación en un hilo separado
+	    Thread thread = new Thread(task);
+	    thread.start();
+	}
+
+
+	// Función para iniciar la animación
+	public void iniciarAnimacion() {
+		progresoCarga.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
+	}
+
+	// Función para detener la animación
+	public void detenerAnimacion() {
+		progresoCarga.setProgress(0); // Establece el progreso en 0 para detener la animación
 	}
 
 	/**
