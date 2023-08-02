@@ -999,7 +999,6 @@ public class ModificarDatosController implements Initializable {
 		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaDibujante);
 		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaEditorial);
-		DBLibreriaManager.listaNombre.clear();
 	}
 
 	/**
@@ -1695,6 +1694,9 @@ public class ModificarDatosController implements Initializable {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
+		modificarColumnas();
+		modificarColumnas();
+		prontInfo.setOpacity(0);
 		imagencomic.setImage(null);
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
@@ -1733,14 +1735,55 @@ public class ModificarDatosController implements Initializable {
 	 */
 	public void listaPorParametro() throws SQLException {
 		libreria = new DBLibreriaManager();
-
+		Comic comic = new Comic();
 		String datos[] = camposComicActuales();
+		String fecha = datos[8];
 
-		Comic comic = new Comic("", datos[1], datos[11], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
-				datos[8], datos[9], datos[10], "", "", "", null);
+		if (datos[8].isEmpty()) {
+			fecha = "";
+		} else {
+			fecha = datos[8];
+		}
+
+		comic = new Comic("", datos[1], datos[12], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7], fecha,
+				datos[9], datos[10],"", "", "", null);
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
+		resultadoBusquedaPront(comic);
 		busquedaGeneral.setText("");
+	}
+	
+	/**
+	 * Según el dato que busquemos a la hora de realizar la búsqueda, aparecerá un
+	 * mensaje diferente en el pront.
+	 * 
+	 * @param comic El objeto Comic utilizado para la búsqueda.
+	 * @throws SQLException Si ocurre un error al acceder a la base de datos.
+	 */
+	public void resultadoBusquedaPront(Comic comic) throws SQLException {
+		String datoSeleccionado = "";
+
+		if (comic != null) {
+			String[] campos = { comic.getNombre(), comic.getVariante(), comic.getProcedencia(), comic.getFormato(),
+					comic.getEditorial(), comic.getFecha(), comic.getNumCaja(), comic.getGuionista(),
+					comic.getDibujante(), comic.getFirma() };
+
+			for (String campo : campos) {
+				if (!campo.isEmpty()) {
+					datoSeleccionado = campo;
+					break;
+				}
+			}
+		}
+
+		prontInfo.setText(null);
+		prontInfo.setOpacity(0);
+
+		if (!datoSeleccionado.isEmpty()) {
+			prontInfo.setOpacity(1);
+			prontInfo.setText("El número de cómics donde aparece la búsqueda: " + datoSeleccionado + " es: "
+					+ libreria.numeroTotalSelecionado(datoSeleccionado));
+		}
 	}
 
 	/**
