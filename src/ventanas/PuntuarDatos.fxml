@@ -30,7 +30,7 @@
       <TextField fx:id="idPuntuar" layoutX="397.0" layoutY="223.0" prefHeight="25.0" prefWidth="128.0" />
       <Button fx:id="botonAgregarPuntuacion" layoutX="304.0" layoutY="284.0" mnemonicParsing="false" onAction="#agregarPuntuacion" prefHeight="42.0" prefWidth="117.0" stylesheets="@../style/genericos_style.css" text="Añadir puntuación" />
       <Label layoutX="305.0" layoutY="257.0" prefHeight="23.0" prefWidth="86.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Puntuación" />
-      <Label layoutX="304.0" layoutY="223.0" prefHeight="23.0" prefWidth="86.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="ID a Puntuar" />
+      <Label layoutX="304.0" layoutY="223.0" prefHeight="23.0" prefWidth="86.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="ID a Puntuar*" />
       <ComboBox fx:id="puntuacionMenu" layoutX="397.0" layoutY="253.0" prefHeight="25.0" prefWidth="128.0" />
       <Button fx:id="botonBorrarOpinion" layoutX="304.0" layoutY="337.0" mnemonicParsing="false" onAction="#borrarPuntuacion" prefHeight="35.0" prefWidth="117.0" stylesheets="@../style/genericos_style.css" text="Borrar puntuación" />
       <ImageView fx:id="imagencomic" fitHeight="332.0" fitWidth="220.0" layoutX="630.0" layoutY="33.0" pickOnBounds="true" preserveRatio="true" />

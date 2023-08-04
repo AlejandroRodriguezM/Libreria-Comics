@@ -1359,7 +1359,7 @@ public class ModificarDatosController implements Initializable {
 	 */
 	public String cajaActual() {
 
-		String cajaComics = "";
+		String cajaComics = "0";
 
 		if (numeroCaja.getSelectionModel().getSelectedItem() != null) {
 			cajaComics = numeroCaja.getSelectionModel().getSelectedItem().toString();
@@ -1628,7 +1628,7 @@ public class ModificarDatosController implements Initializable {
 		}
 
 		if (cajaActual().isEmpty() || cajaActual().equals("0")) {
-			campos[12] = "";
+			campos[12] = "0";
 		} else {
 			campos[12] = cajaActual();
 		}
@@ -1981,8 +1981,9 @@ public class ModificarDatosController implements Initializable {
 
 			Comic comic = new Comic(id_comic, nombre, numCaja, numero, variante, firma, editorial, formato, procedencia,
 					fecha, guionista, dibujante, estado, nombreKeyIssue, puntuacion, portada);
-
-			if (id_comic.length() == 0 || !libreria.comprobarID(id_comic)) {
+			
+			if (id_comic.length() == 0 || !libreria.comprobarID(id_comic) || nombre.length() == 0 || numero.length() == 0 || editorial.length() == 0 || guionista.length() == 0
+					|| dibujante.length() == 0 || procedencia.length() == 0) {
 				String excepcion = "No puedes modificar un comic si antes no pones un ID valido";
 				nav.alertaException(excepcion);
 				prontInfo.setOpacity(1);
@@ -1990,7 +1991,7 @@ public class ModificarDatosController implements Initializable {
 				prontInfo.setText("Error. Debes de introducir los datos correctos");
 			} else {
 				libreria.actualizar_comic(comic);
-
+				listas_autocompletado();
 				Utilidades.eliminarFichero(comic_temp.getImagen());
 
 				imagencomic.setImage(imagen);

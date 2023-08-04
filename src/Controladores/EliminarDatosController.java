@@ -1245,6 +1245,7 @@ public class EliminarDatosController implements Initializable {
 			libreria.reiniciarBBDD();
 			libreria.listasAutoCompletado();
 			nombreColumnas(); // Llamada a funcion
+			listas_autocompletado();
 			tablaBBDD(libreria.libreriaCompleta()); // Llamada a funcion
 		}
 	}
