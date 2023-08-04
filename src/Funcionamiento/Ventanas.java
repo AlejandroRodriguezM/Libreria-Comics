@@ -74,6 +74,7 @@ public class Ventanas {
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("/style/acces_style.css").toExternalForm());
 			Stage stage = new Stage();
+			stage.setResizable(false);
 			stage.setTitle("Aplicacion bbdd comics"); // Titulo de la aplicacion.
 
 			stage.getIcons().add(new Image("/Icono/icon2.png"));
@@ -605,6 +606,7 @@ public class Ventanas {
 	    Platform.runLater(() -> {
 	        Alert alert1 = new Alert(AlertType.CONFIRMATION);
 	        Stage stage1 = (Stage) alert1.getDialogPane().getScene().getWindow();
+	        stage1.setResizable(false);
 	        stage1.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
 	        alert1.setTitle("Borrando . . .");
 	        alert1.setHeaderText("Estás a punto de borrar el contenido.");
@@ -614,6 +616,7 @@ public class Ventanas {
 	        if (result1.isPresent() && result1.get() == ButtonType.OK) {
 	            Alert alert2 = new Alert(AlertType.CONFIRMATION);
 	            Stage stage2 = (Stage) alert2.getDialogPane().getScene().getWindow();
+		        stage2.setResizable(false);
 	            stage2.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
 	            alert2.setTitle("Borrando . . .");
 	            alert2.setHeaderText("¿Estás seguro?");
@@ -643,6 +646,7 @@ public class Ventanas {
 	public boolean borrarContenidoConfiguracion() {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.setResizable(false);
 		stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
 		alert.setTitle("Borrando . . .");
 		alert.setHeaderText("Estas a punto de borrar el contenido.");
