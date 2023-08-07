@@ -343,20 +343,7 @@ public class EliminarDatosController implements Initializable {
 		// Configurar el mismo estilo que tiene el TextArea
 		text.setFont(textArea.getFont());
 
-		// Configurar el ancho y alto del VBox según los límites originales del VBox y
-		// el ancho del texto más un margen (opcional)
-		double maxWidth = vbox.getMaxWidth();
-		double maxHeight = vbox.getMaxHeight();
-
-		// Medir el ancho y alto del texto
-		double textWidth = text.getLayoutBounds().getWidth();
 		double textHeight = text.getLayoutBounds().getHeight();
-
-		double newWidth = Math.min(textWidth + 20, maxWidth);
-		double newHeight = Math.min(textHeight + 20, maxHeight);
-
-		vbox.setPrefWidth(newWidth);
-		vbox.setPrefHeight(newHeight);
 
 		textArea.setPrefHeight(textHeight);
 	}

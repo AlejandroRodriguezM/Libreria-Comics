@@ -178,6 +178,10 @@
       <ComboBox fx:id="numeroCajaMod" editable="true" layoutX="445.0" layoutY="336.0" prefHeight="25.0" prefWidth="162.0" promptText="Selecciona caja" stylesheets="@../style/combobox_style.css" />
       <ComboBox fx:id="numeroComicMod" editable="true" layoutX="445.0" layoutY="77.0" prefHeight="25.0" prefWidth="162.0" promptText="Introduce numero" stylesheets="@../style/combobox_style.css" />
       <Button fx:id="botonLimpiarComic" layoutX="164.0" layoutY="405.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="49.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Limpiar/Reiniciar" />
+      <TextField fx:id="nombreKeyIssue" layoutX="445.0" layoutY="365.0" prefHeight="21.0" prefWidth="162.0" promptText="Introduce key issue">
+         <font>
+            <Font size="10.0" />
+         </font></TextField>
       <VBox fx:id="rootVBox" layoutX="-1.0" layoutY="466.0" prefHeight="366.0" prefWidth="1198.0">
          <children>
             <TableView fx:id="tablaBBDD" onKeyPressed="#teclasDireccion" onMouseClicked="#clickRaton" prefHeight="372.0" prefWidth="1198.0" stylesheets="@../style/tablas_style.css">
@@ -202,10 +206,6 @@
             </TableView>
          </children>
       </VBox>
-      <TextField fx:id="nombreKeyIssue" layoutX="445.0" layoutY="365.0" prefHeight="21.0" prefWidth="162.0" promptText="Introduce key issue">
-         <font>
-            <Font size="10.0" />
-         </font></TextField>
       <VBox fx:id="vboxContenido" layoutX="893.0" layoutY="32.0" prefHeight="366.0" prefWidth="296.0">
          <children>
             <TextArea fx:id="prontInfo" editable="false" opacity="0.0" prefHeight="367.0" prefWidth="296.0" stylesheets="@../style/panel_info_style.css" wrapText="true" />
