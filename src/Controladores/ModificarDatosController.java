@@ -77,6 +77,7 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 
 /**
@@ -219,6 +220,12 @@ public class ModificarDatosController implements Initializable {
 	private TextField nombreKeyIssue;
 
 	@FXML
+	private TextField precioComic;
+
+	@FXML
+	private TextField urlReferencia;
+
+	@FXML
 	private ComboBox<String> numeroCaja;
 
 	@FXML
@@ -267,7 +274,7 @@ public class ModificarDatosController implements Initializable {
 	private TableColumn<Comic, String> variante;
 
 	@FXML
-	private TableColumn<Comic, String> puntuacion;
+	private TableColumn<Comic, String> referencia;
 
 	@FXML
 	public TableView<Comic> tablaBBDD;
@@ -292,9 +299,9 @@ public class ModificarDatosController implements Initializable {
 
 	@FXML
 	private VBox rootVBox;
-	
-    @FXML
-    private VBox vboxContenido;
+
+	@FXML
+	private VBox vboxContenido;
 
 	private boolean isUserInput = true;
 	private boolean updatingComboBoxes = false; // New variable to keep track of ComboBox updates
@@ -315,7 +322,7 @@ public class ModificarDatosController implements Initializable {
 
 	private static Ventanas nav = new Ventanas();
 	private static DBLibreriaManager libreria = null;
-	private static Utilidades utilidad = null;
+//	private static Utilidades utilidad = null;
 
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
@@ -385,7 +392,7 @@ public class ModificarDatosController implements Initializable {
 
 		// Medir el ancho y alto del texto
 		double textWidth = text.getLayoutBounds().getWidth();
-		double textHeight = text.getLayoutBounds().getHeight() + 40;
+		double textHeight = text.getLayoutBounds().getHeight();
 
 		double newWidth = Math.min(textWidth + 20, maxWidth);
 		double newHeight = Math.min(textHeight + 20, maxHeight);
@@ -559,7 +566,7 @@ public class ModificarDatosController implements Initializable {
 
 		Comic comicTemp = new Comic("", comic.getNombre(), comic.getNumCaja(), comic.getNumero(), comic.getVariante(),
 				comic.getFirma(), comic.getEditorial(), comic.getFormato(), comic.getProcedencia(), "",
-				comic.getGuionista(), comic.getDibujante(), "", "", "", "");
+				comic.getGuionista(), comic.getDibujante(), "", "", "", "", "", "");
 
 		String sql = libreria.datosConcatenados(comicTemp);
 
@@ -732,12 +739,26 @@ public class ModificarDatosController implements Initializable {
 		numeroComicMod.getEditor().setTextFormatter(validador_Nenteros());
 		numeroCaja.getEditor().setTextFormatter(validador_Nenteros());
 		numeroCajaMod.getEditor().setTextFormatter(validador_Nenteros());
+		precioComic.setTextFormatter(validador_Ndecimales());
 	}
 
 	public TextFormatter<Integer> validador_Nenteros() {
 		// Crear un validador para permitir solo números enteros
 		TextFormatter<Integer> textFormatter = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			if (change.getControlNewText().matches("\\d*")) {
+				return change;
+			}
+			return null;
+		});
+
+		return textFormatter;
+	}
+
+	public TextFormatter<Double> validador_Ndecimales() {
+		// Crear un validador para permitir solo números decimales (double)
+		TextFormatter<Double> textFormatter = new TextFormatter<>(new DoubleStringConverter(), 0.0, change -> {
+			String newText = change.getControlNewText();
+			if (newText.matches("\\d*\\.?\\d*")) {
 				return change;
 			}
 			return null;
@@ -816,16 +837,28 @@ public class ModificarDatosController implements Initializable {
 		ObservableList<String> cajaComics = FXCollections.observableArrayList(DBLibreriaManager.listaCaja);
 		numeroCaja.setItems(cajaComics);
 
-		ObservableList<String> formatoNuevo = FXCollections.observableArrayList(DBLibreriaManager.listaFormato);
+		ObservableList<String> formatoNuevo = FXCollections.observableArrayList("Grapa (Issue individual)",
+				"Tapa blanda (Paperback)", "Cómic de bolsillo (Pocket)", "Edición de lujo (Deluxe Edition)",
+				"Edición omnibus (Omnibus)", "Edición integral (Integral)", "Tapa dura (Hardcover)",
+				"eBook (libro electrónico)", "Cómic digital (Digital Comic)", "Manga digital (Digital Manga)",
+				"PDF (Portable Document Format)", "Revista (Magazine)",
+				"Edición de coleccionista (Collector's Edition)", "Edición especial (Special Edition)",
+				"Edición con extras (Bonus Edition)");
 		nombreFormatoMod.setItems(formatoNuevo);
-
+		nombreFormatoMod.getSelectionModel().selectFirst();
 		ObservableList<String> numeroComicsNuevo = FXCollections
 				.observableArrayList(DBLibreriaManager.listaNumeroComic);
 		numeroComicMod.setItems(numeroComicsNuevo);
 
-		ObservableList<String> procedenciaEstadoNuevo = FXCollections
-				.observableArrayList(DBLibreriaManager.listaProcedencia);
+		ObservableList<String> procedenciaEstadoNuevo = FXCollections.observableArrayList(
+				"Estados Unidos (United States)", "Japón (Japan)", "Francia (France)", "Italia (Italy)",
+				"España (Spain)", "Reino Unido (United Kingdom)", "Alemania (Germany)", "Brasil (Brazil)",
+				"Corea del Sur (South Korea)", "México (Mexico)", "Canadá (Canada)", "China (China)",
+				"Australia (Australia)", "Argentina (Argentina)", "India (India)", "Bélgica (Belgium)",
+				"Países Bajos (Netherlands)", "Portugal (Portugal)", "Suecia (Sweden)", "Suiza (Switzerland)",
+				"Finlandia (Finland)", "Noruega (Norway)", "Dinamarca (Denmark)");
 		nombreProcedenciaMod.setItems(procedenciaEstadoNuevo);
+		nombreProcedenciaMod.getSelectionModel().selectFirst();
 
 		ObservableList<String> cajaComicsNuevo = FXCollections.observableArrayList(DBLibreriaManager.listaCaja);
 		numeroCajaMod.setItems(cajaComicsNuevo);
@@ -1063,21 +1096,57 @@ public class ModificarDatosController implements Initializable {
 	void clickRaton(MouseEvent event) throws IOException, SQLException {
 		libreria = new DBLibreriaManager();
 		libreria.libreriaCompleta();
-		utilidad = new Utilidades();
 		String id_comic;
-
 		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
+		prontInfo.setStyle("");
 
 		if (idRow != null) {
 			id_comic = idRow.getID();
+
 			idComicMod.setStyle("");
 			idComicMod.setText(id_comic);
-			prontInfo.setStyle("");
+
+			Comic comic_temp = libreria.comicDatos(id_comic);
+
+			nombreComicMod.setText(comic_temp.getNombre());
+
+			String numeroNuevo = comic_temp.getNumero();
+			numeroComicMod.getSelectionModel().select(numeroNuevo);
+
+			nombreVarianteMod.setText(comic_temp.getVariante());
+
+			nombreFirmaMod.setText(comic_temp.getFirma());
+
+			nombreEditorialMod.setText(comic_temp.getEditorial());
+
+			String formato = comic_temp.getFormato();
+			nombreFormatoMod.getSelectionModel().select(formato);
+
+			String procedencia = comic_temp.getProcedencia();
+			nombreProcedenciaMod.getSelectionModel().select(procedencia);
+
+			String fechaString = comic_temp.getFecha();
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+			LocalDate fecha = LocalDate.parse(fechaString, formatter);
+			anioPublicacionMod.setValue(fecha);
+
+			nombreGuionistaMod.setText(comic_temp.getGuionista());
+
+			nombreDibujanteMod.setText(comic_temp.getDibujante());
+
+			String cajaAni = comic_temp.getNumCaja();
+			numeroCajaMod.getSelectionModel().select(cajaAni);
+
+			nombreKeyIssue.setText(comic_temp.getKey_issue());
+			estadoComic.getSelectionModel().select(comic_temp.getEstado());
+
+			precioComic.setText(comic_temp.getPrecio_comic());
+			urlReferencia.setText(comic_temp.getUrl_referencia());
+
 			prontInfo.setOpacity(1);
 			prontInfo.setText(libreria.comicDatos(id_comic).toString().replace("[", "").replace("]", ""));
-
 			imagencomic.setImage(libreria.selectorImage(id_comic));
-			utilidad.deleteImage();
 		}
 		DBManager.resetConnection();
 	}
@@ -1095,21 +1164,57 @@ public class ModificarDatosController implements Initializable {
 		if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
 			libreria = new DBLibreriaManager();
 			libreria.libreriaCompleta();
-			utilidad = new Utilidades();
 			String id_comic;
 
 			Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 
 			if (idRow != null) {
 				id_comic = idRow.getID();
+
 				idComicMod.setStyle("");
 				idComicMod.setText(id_comic);
-				prontInfo.setStyle("");
+
+				Comic comic_temp = libreria.comicDatos(id_comic);
+
+				nombreComicMod.setText(comic_temp.getNombre());
+
+				String numeroNuevo = comic_temp.getNumero();
+				numeroComicMod.getSelectionModel().select(numeroNuevo);
+
+				nombreVarianteMod.setText(comic_temp.getVariante());
+
+				nombreFirmaMod.setText(comic_temp.getFirma());
+
+				nombreEditorialMod.setText(comic_temp.getEditorial());
+
+				String formato = comic_temp.getFormato();
+				nombreFormatoMod.getSelectionModel().select(formato);
+
+				String procedencia = comic_temp.getProcedencia();
+				nombreProcedenciaMod.getSelectionModel().select(procedencia);
+
+				String fechaString = comic_temp.getFecha();
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+				LocalDate fecha = LocalDate.parse(fechaString, formatter);
+				anioPublicacionMod.setValue(fecha);
+
+				nombreGuionistaMod.setText(comic_temp.getGuionista());
+
+				nombreDibujanteMod.setText(comic_temp.getDibujante());
+
+				String cajaAni = comic_temp.getNumCaja();
+				numeroCajaMod.getSelectionModel().select(cajaAni);
+
+				nombreKeyIssue.setText(comic_temp.getKey_issue());
+				estadoComic.getSelectionModel().select(comic_temp.getEstado());
+
+				precioComic.setText(comic_temp.getPrecio_comic());
+				urlReferencia.setText(comic_temp.getUrl_referencia());
+
 				prontInfo.setOpacity(1);
 				prontInfo.setText(libreria.comicDatos(id_comic).toString().replace("[", "").replace("]", ""));
-
 				imagencomic.setImage(libreria.selectorImage(id_comic));
-				utilidad.deleteImage();
 			}
 			DBManager.resetConnection();
 		}
@@ -1154,13 +1259,13 @@ public class ModificarDatosController implements Initializable {
 		numero.setPrefWidth(45);
 		firma.setPrefWidth(85);
 		editorial.setPrefWidth(78);
-		variante.setPrefWidth(148);
+		variante.setPrefWidth(135);
 		procedencia.setPrefWidth(75);
 		fecha.setPrefWidth(105);
 		guionista.setPrefWidth(145);
 		dibujante.setPrefWidth(150);
-		puntuacion.setPrefWidth(85);
-		formato.setPrefWidth(88);
+		referencia.setPrefWidth(90);
+		formato.setPrefWidth(92);
 
 		// Set the resizing policy to unconstrained
 		tablaBBDD.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
@@ -1177,7 +1282,7 @@ public class ModificarDatosController implements Initializable {
 		originalWidths.put(fecha, fecha.getWidth());
 		originalWidths.put(guionista, guionista.getWidth());
 		originalWidths.put(dibujante, dibujante.getWidth());
-		originalWidths.put(puntuacion, puntuacion.getWidth());
+		originalWidths.put(referencia, referencia.getWidth());
 		originalWidths.put(formato, formato.getWidth());
 
 		// Reiniciar el tamaño de las columnas
@@ -1393,10 +1498,7 @@ public class ModificarDatosController implements Initializable {
 	 */
 	public String formatoNuevo() {
 
-		String formatoEstado = "";
-		if (nombreFormatoMod.getSelectionModel().getSelectedItem() != null) {
-			formatoEstado = nombreFormatoMod.getSelectionModel().getSelectedItem().toString();
-		}
+		String formatoEstado = nombreFormatoMod.getSelectionModel().getSelectedItem().toString();
 		return formatoEstado;
 	}
 
@@ -1408,10 +1510,7 @@ public class ModificarDatosController implements Initializable {
 	 */
 	public String procedenciaMod() {
 
-		String procedenciaEstadoNuevo = "";
-		if (nombreProcedenciaMod.getSelectionModel().getSelectedItem() != null) {
-			procedenciaEstadoNuevo = nombreProcedenciaMod.getSelectionModel().getSelectedItem().toString();
-		}
+		String procedenciaEstadoNuevo = nombreProcedenciaMod.getSelectionModel().getSelectedItem().toString();
 		return procedenciaEstadoNuevo;
 	}
 
@@ -1513,7 +1612,6 @@ public class ModificarDatosController implements Initializable {
 	void comicsComprados(ActionEvent event) throws SQLException {
 		prontInfo.setOpacity(0);
 		tablaBBDD.getItems().clear();
-		utilidad = new Utilidades();
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
@@ -1531,7 +1629,6 @@ public class ModificarDatosController implements Initializable {
 	void comicsEnPosesion(ActionEvent event) throws SQLException {
 		prontInfo.setOpacity(0);
 		tablaBBDD.getItems().clear();
-		utilidad = new Utilidades();
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		nombreColumnas();
@@ -1563,7 +1660,7 @@ public class ModificarDatosController implements Initializable {
 	 * @return
 	 */
 	public String[] camposComicActuales() {
-		String campos[] = new String[13];
+		String campos[] = new String[12];
 
 		if (nombreActual().isEmpty()) {
 			campos[1] = "";
@@ -1605,9 +1702,7 @@ public class ModificarDatosController implements Initializable {
 			campos[7] = "";
 		} else {
 			campos[7] = procedenciaActual();
-
 		}
-
 		LocalDate fecha = fechaPublicacion.getValue();
 		if (fecha != null) {
 			campos[8] = fecha.toString();
@@ -1628,9 +1723,9 @@ public class ModificarDatosController implements Initializable {
 		}
 
 		if (cajaActual().isEmpty() || cajaActual().equals("0")) {
-			campos[12] = "0";
+			campos[11] = "";
 		} else {
-			campos[12] = cajaActual();
+			campos[11] = cajaActual();
 		}
 
 		return campos;
@@ -1646,7 +1741,7 @@ public class ModificarDatosController implements Initializable {
 
 		Utilidades utilidad = new Utilidades();
 
-		String campos[] = new String[15];
+		String campos[] = new String[17];
 
 		campos[0] = idComicMod.getText();
 
@@ -1683,6 +1778,10 @@ public class ModificarDatosController implements Initializable {
 			campos[14] = "";
 		}
 
+		campos[15] = urlReferencia.getText();
+
+		campos[16] = precioComic.getText();
+
 		return campos;
 	}
 
@@ -1714,11 +1813,13 @@ public class ModificarDatosController implements Initializable {
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
+		modificarColumnas();
+		modificarColumnas();
+
 		idComicMod.setText("");
 		borrar_datos_mod();
 		borrar_datos();
 		imagencomic.setImage(null);
-		utilidad = new Utilidades();
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		nombreColumnas(); // Llamada a funcion
@@ -1735,24 +1836,16 @@ public class ModificarDatosController implements Initializable {
 	 */
 	public void listaPorParametro() throws SQLException {
 		libreria = new DBLibreriaManager();
-		Comic comic = new Comic();
 		String datos[] = camposComicActuales();
-		String fecha = datos[8];
 
-		if (datos[8].isEmpty()) {
-			fecha = "";
-		} else {
-			fecha = datos[8];
-		}
-
-		comic = new Comic("", datos[1], datos[12], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7], fecha,
-				datos[9], datos[10],"", "", "", null);
+		Comic comic = new Comic("", datos[1], datos[11], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
+				datos[8], datos[9], datos[10], "", "", "", null, "", "");
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
 		resultadoBusquedaPront(comic);
 		busquedaGeneral.setText("");
 	}
-	
+
 	/**
 	 * Según el dato que busquemos a la hora de realizar la búsqueda, aparecerá un
 	 * mensaje diferente en el pront.
@@ -1822,7 +1915,7 @@ public class ModificarDatosController implements Initializable {
 	@SuppressWarnings("unchecked")
 	public void tablaBBDD(List<Comic> listaComic) {
 		tablaBBDD.getColumns().setAll(nombre, caja, numero, variante, firma, editorial, formato, procedencia, fecha,
-				guionista, dibujante, puntuacion);
+				guionista, dibujante, referencia);
 		tablaBBDD.getItems().setAll(listaComic);
 	}
 
@@ -1834,7 +1927,6 @@ public class ModificarDatosController implements Initializable {
 	 */
 	public void modificacionComic() throws NumberFormatException, SQLException, IOException {
 		libreria = new DBLibreriaManager();
-		utilidad = new Utilidades();
 		Comic comic_temp = new Comic();
 		Image imagen = null;
 		String userDir = System.getProperty("user.home");
@@ -1851,157 +1943,186 @@ public class ModificarDatosController implements Initializable {
 
 			if (libreria.comprobarID(id_comic)) {
 				comic_temp = libreria.comicDatos(id_comic);
-			}
 
-			String nombre = "";
+				String nombre = "";
 
-			String numero = "";
+				String numero = "";
 
-			String variante = "";
+				String variante = "";
 
-			String firma = "";
+				String firma = "";
 
-			String editorial = "";
+				String editorial = "";
 
-			String formato = "";
+				String formato = "";
 
-			String procedencia = "";
+				String procedencia = "";
 
-			String fecha = "";
+				String fecha = "";
 
-			String guionista = datos[9];
+				String guionista = datos[9];
 
-			String dibujante = datos[10];
+				String dibujante = datos[10];
 
-			String estado = datos[12];
+				String estado = datos[12];
 
-			String numCaja = "";
+				String numCaja = "";
 
-			String portada = "";
+				String portada = "";
 
-			String puntuacion = "";
+				String puntuacion = "";
 
-			String nombreKeyIssue = "";
+				String nombreKeyIssue = "";
 
-			if (datos[1].length() == 0) {
-				nombre = comic_temp.getNombre();
+				String url_referencia = "";
+
+				String precio_comic = "";
+
+				if (datos[1].isEmpty()) {
+					nombre = comic_temp.getNombre();
+				} else {
+					nombre = datos[1];
+				}
+
+				if (datos[2].isEmpty()) {
+					numero = comic_temp.getNumero();
+				} else {
+					numero = datos[2];
+				}
+
+				if (datos[3].isEmpty()) {
+					variante = comic_temp.getVariante();
+				} else {
+					variante = datos[3];
+				}
+
+				if (datos[4].isEmpty()) {
+					firma = comic_temp.getFirma();
+				} else {
+					firma = datos[4];
+				}
+
+				if (datos[5].isEmpty()) {
+					editorial = comic_temp.getEditorial();
+				} else {
+					editorial = datos[5];
+				}
+
+				if (datos[6].isEmpty()) {
+					formato = comic_temp.getFormato();
+				} else {
+					formato = datos[6];
+				}
+
+				if (datos[7].isEmpty()) {
+					procedencia = comic_temp.getProcedencia();
+				} else {
+					procedencia = datos[7];
+				}
+
+				if (datos[8].isEmpty()) {
+					fecha = comic_temp.getFecha();
+				} else {
+					fecha = datos[8];
+				}
+
+				if (datos[9].isEmpty()) {
+					guionista = comic_temp.getGuionista();
+				} else {
+					guionista = datos[9];
+				}
+
+				if (datos[10].isEmpty()) {
+					dibujante = comic_temp.getDibujante();
+				} else {
+					dibujante = datos[10];
+				}
+
+				if (datos[11].isEmpty()) {
+					portada = comic_temp.getImagen();
+					imagen = new Image(portada);
+				} else {
+					portada = datos[11];
+					imagen = new Image(portada);
+				}
+
+				if (datos[12].isEmpty()) {
+					estado = comic_temp.getEstado();
+				} else {
+					estado = datos[12];
+				}
+
+				if (datos[13].isEmpty()) {
+					numCaja = comic_temp.getNumCaja();
+
+				} else {
+					numCaja = datos[13];
+				}
+
+				if (!comic_temp.getPuntuacion().equals("Sin puntuar")) {
+					puntuacion = comic_temp.getPuntuacion();
+				} else {
+					puntuacion = "Sin puntuar";
+				}
+
+				nombreKeyIssue = "Vacio";
+				String key_issue_sinEspacios = datos[14].trim();
+
+				Pattern pattern = Pattern.compile(".*\\w+.*");
+				Matcher matcher = pattern.matcher(key_issue_sinEspacios);
+
+				if (!key_issue_sinEspacios.isEmpty() && matcher.matches()) {
+					nombreKeyIssue = key_issue_sinEspacios;
+				}
+
+				if (datos[15].isEmpty()) {
+					url_referencia = comic_temp.getUrl_referencia();
+				} else {
+					url_referencia = datos[15];
+				}
+
+				if (datos[16].isEmpty()) {
+					precio_comic = comic_temp.getPrecio_comic();
+				} else {
+					precio_comic = datos[16];
+				}
+
+				double valor_comic = Double.parseDouble(precio_comic);
+
+				precio_comic = String.valueOf(Utilidades.convertirMonedaADolar(procedencia, valor_comic));
+
+				Comic comic = new Comic(id_comic, nombre, numCaja, numero, variante, firma, editorial, formato,
+						procedencia, fecha, guionista, dibujante, estado, nombreKeyIssue, puntuacion, portada,
+						url_referencia, precio_comic);
+
+				if (id_comic.length() == 0 || !libreria.comprobarID(id_comic) || nombre.length() == 0
+						|| numero.length() == 0 || editorial.length() == 0 || guionista.length() == 0
+						|| dibujante.length() == 0 || procedencia.length() == 0) {
+
+					String excepcion = "ERROR.Faltan datos por rellenar";
+					nav.alertaException(excepcion);
+					prontInfo.setOpacity(1);
+					prontInfo.setStyle("-fx-background-color: #F53636");
+					prontInfo.setText("Error. Debes de introducir los datos correctos");
+				} else {
+					libreria.actualizar_comic(comic);
+					listas_autocompletado();
+					Utilidades.eliminarFichero(comic_temp.getImagen());
+
+					imagencomic.setImage(imagen);
+					prontInfo.setOpacity(1);
+					prontInfo.setStyle("-fx-background-color: #A0F52D");
+					prontInfo.setText(
+							"Has modificado correctamente: " + comic.toString().replace("[", "").replace("]", ""));
+					libreria.listasAutoCompletado();
+				}
 			} else {
-				nombre = datos[1];
-			}
-
-			if (datos[2].length() == 0) {
-				numero = comic_temp.getNumero();
-			} else {
-				numero = datos[2];
-			}
-
-			if (datos[3].length() == 0) {
-				variante = comic_temp.getVariante();
-			} else {
-				variante = datos[3];
-			}
-
-			if (datos[4].length() == 0) {
-				firma = comic_temp.getFirma();
-			} else {
-				firma = datos[4];
-			}
-
-			if (datos[5].length() == 0) {
-				editorial = comic_temp.getEditorial();
-			} else {
-				editorial = datos[5];
-			}
-
-			if (datos[6].length() == 0) {
-				formato = comic_temp.getFormato();
-			} else {
-				formato = datos[6];
-			}
-
-			if (datos[7].length() == 0) {
-				procedencia = comic_temp.getProcedencia();
-			} else {
-				procedencia = datos[7];
-			}
-
-			if (datos[8].length() == 0) {
-				fecha = comic_temp.getFecha();
-			} else {
-				fecha = datos[8];
-			}
-
-			if (datos[9].length() == 0) {
-				guionista = comic_temp.getGuionista();
-			} else {
-				guionista = datos[9];
-			}
-
-			if (datos[10].length() == 0) {
-				dibujante = comic_temp.getDibujante();
-			} else {
-				dibujante = datos[10];
-			}
-
-			if (datos[11].length() == 0) {
-				portada = comic_temp.getImagen();
-				imagen = new Image(portada);
-			} else {
-				portada = datos[11];
-				imagen = new Image(portada);
-			}
-
-			if (datos[12].length() == 0) {
-				estado = comic_temp.getEstado();
-			} else {
-				estado = datos[12];
-			}
-
-			if (datos[13].length() == 0) {
-				numCaja = datos[13];
-			} else {
-				numCaja = comic_temp.getNumCaja();
-			}
-
-			if (!comic_temp.getPuntuacion().equals("Sin puntuar")) {
-				puntuacion = comic_temp.getPuntuacion();
-			} else {
-				puntuacion = "Sin puntuar";
-			}
-
-			nombreKeyIssue = "Vacio";
-			String key_issue_sinEspacios = datos[14].trim();
-
-			Pattern pattern = Pattern.compile(".*\\w+.*");
-			Matcher matcher = pattern.matcher(key_issue_sinEspacios);
-
-			if (!key_issue_sinEspacios.isEmpty() && matcher.matches()) {
-				nombreKeyIssue = key_issue_sinEspacios;
-			}
-
-			Comic comic = new Comic(id_comic, nombre, numCaja, numero, variante, firma, editorial, formato, procedencia,
-					fecha, guionista, dibujante, estado, nombreKeyIssue, puntuacion, portada);
-			
-			if (id_comic.length() == 0 || !libreria.comprobarID(id_comic) || nombre.length() == 0 || numero.length() == 0 || editorial.length() == 0 || guionista.length() == 0
-					|| dibujante.length() == 0 || procedencia.length() == 0) {
 				String excepcion = "No puedes modificar un comic si antes no pones un ID valido";
 				nav.alertaException(excepcion);
 				prontInfo.setOpacity(1);
 				prontInfo.setStyle("-fx-background-color: #F53636");
-				prontInfo.setText("Error. Debes de introducir los datos correctos");
-			} else {
-				libreria.actualizar_comic(comic);
-				listas_autocompletado();
-				Utilidades.eliminarFichero(comic_temp.getImagen());
-
-				imagencomic.setImage(imagen);
-				prontInfo.setOpacity(1);
-				prontInfo.setStyle("-fx-background-color: #A0F52D");
-				prontInfo
-						.setText("Has modificado correctamente: " + comic.toString().replace("[", "").replace("]", ""));
-				libreria.listasAutoCompletado();
+				prontInfo.setText("Error. Debes de introducir un ID valido");
 			}
-
 		} else {
 			prontInfo.setOpacity(1);
 			prontInfo.setStyle("-fx-background-color: #F53636");
@@ -2009,9 +2130,6 @@ public class ModificarDatosController implements Initializable {
 		}
 	}
 
-	/**
-	 * Permite dar valor a las celdas de la TableView
-	 */
 	/**
 	 * Permite dar valor a las celdas de la TableView
 	 */
@@ -2029,7 +2147,7 @@ public class ModificarDatosController implements Initializable {
 		fecha.setCellValueFactory(new PropertyValueFactory<>("Fecha"));
 		guionista.setCellValueFactory(new PropertyValueFactory<>("Guionista"));
 		dibujante.setCellValueFactory(new PropertyValueFactory<>("Dibujante"));
-		puntuacion.setCellValueFactory(new PropertyValueFactory<>("Puntuacion"));
+		referencia.setCellValueFactory(new PropertyValueFactory<>("url_referencia"));
 
 		busquedaRaw(nombre);
 		busquedaRaw(variante);
@@ -2040,6 +2158,7 @@ public class ModificarDatosController implements Initializable {
 		busquedaRaw(formato);
 		busquedaRaw(editorial);
 		busquedaRaw(fecha);
+		Utilidades.busquedaHyperLink(referencia);
 	}
 
 	/**

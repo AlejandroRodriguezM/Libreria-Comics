@@ -48,11 +48,14 @@ public class Comic {
 	protected String estado;
 	protected String puntuacion;
 	protected String imagen;
+	protected String url_referencia;
+	protected String precio_comic;
 
 	// Constructor
 	public Comic(String ID, String nombre, String numCaja, String numero, String variante, String firma,
 			String editorial, String formato, String procedencia, String fecha, String guionista, String dibujante,
-			String estado, String key_issue, String puntuacion, String imagen) {
+			String estado, String key_issue, String puntuacion, String imagen, String url_referencia,
+			String precio_comic) {
 		this.ID = ID;
 		this.nombre = nombre;
 		this.numCaja = numCaja;
@@ -69,6 +72,8 @@ public class Comic {
 		this.estado = estado;
 		this.puntuacion = puntuacion;
 		this.imagen = imagen;
+		this.url_referencia = url_referencia;
+		this.precio_comic = precio_comic;
 
 	}
 
@@ -90,6 +95,8 @@ public class Comic {
 		this.puntuacion = "";
 		this.imagen = null;
 		this.numCaja = "";
+		this.url_referencia = "";
+		this.precio_comic = "";
 	}
 
 	// Getters y setters
@@ -164,6 +171,22 @@ public class Comic {
 
 	public String getImagen() {
 		return imagen;
+	}
+
+	public String getUrl_referencia() {
+		return url_referencia;
+	}
+
+	public String getPrecio_comic() {
+		return precio_comic;
+	}
+
+	public void setUrl_referencia(String url_referencia) {
+		this.url_referencia = url_referencia;
+	}
+
+	public void setPrecio_comic(String precio_comic) {
+		this.precio_comic = precio_comic;
 	}
 
 	public void setImagen(String imagen) {
@@ -295,7 +318,8 @@ public class Comic {
 
 		appendIfNotEmpty(contenidoComic, "ID", ID);
 		appendIfNotEmpty(contenidoComic, "Nombre", nombre);
-		appendIfNotEmpty(contenidoComic, "Numero", numero);
+		appendIfNotEmpty(contenidoComic, "Numero", numero) ;
+		appendIfNotEmpty(contenidoComic, "Precio", precio_comic + " $");
 		appendIfNotEmpty(contenidoComic, "Variante", variante);
 		appendIfNotEmpty(contenidoComic, "Firma", firma);
 		appendIfNotEmpty(contenidoComic, "Editorial", editorial);
@@ -307,6 +331,7 @@ public class Comic {
 		appendIfNotEmpty(contenidoComic, "Key issue", key_issue);
 		appendIfNotEmpty(contenidoComic, "Puntuacion", puntuacion);
 		appendIfNotEmpty(contenidoComic, "Estado", estado);
+		appendIfNotEmpty(contenidoComic, "Url referencia", url_referencia);
 		appendIfNotEmpty(contenidoComic, "Caja", numCaja);
 
 		return contenidoComic.toString();

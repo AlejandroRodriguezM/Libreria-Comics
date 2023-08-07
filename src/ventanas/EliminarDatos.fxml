@@ -160,7 +160,7 @@
                   <TableColumn fx:id="fecha" editable="false" prefWidth="65.0" text="Fecha" />
                   <TableColumn fx:id="guionista" editable="false" prefWidth="182.0" text="Guionista" />
                   <TableColumn fx:id="dibujante" editable="false" prefWidth="85.0" text="Dibujante" />
-                  <TableColumn fx:id="puntuacion" editable="false" prefWidth="193.0" text="puntuacion" />
+                  <TableColumn fx:id="referencia" editable="false" prefWidth="193.0" text="Referencia" />
                </columns>
                <columnResizePolicy>
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

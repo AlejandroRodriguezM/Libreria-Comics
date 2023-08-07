@@ -227,7 +227,7 @@ public class PuntuarDatosController implements Initializable {
 	private TableColumn<Comic, String> variante;
 
 	@FXML
-	private TableColumn<Comic, String> puntuacion;
+	private TableColumn<Comic, String> referencia;
 
 	@FXML
 	private ComboBox<String> procedenciaParametro;
@@ -362,7 +362,7 @@ public class PuntuarDatosController implements Initializable {
 
 		// Medir el ancho y alto del texto
 		double textWidth = text.getLayoutBounds().getWidth();
-		double textHeight = text.getLayoutBounds().getHeight() + 40;
+		double textHeight = text.getLayoutBounds().getHeight();
 
 		double newWidth = Math.min(textWidth + 20, maxWidth);
 		double newHeight = Math.min(textHeight + 20, maxHeight);
@@ -558,7 +558,7 @@ public class PuntuarDatosController implements Initializable {
 
 		Comic comicTemp = new Comic("", comic.getNombre(), comic.getNumCaja(), comic.getNumero(), comic.getVariante(),
 				comic.getFirma(), comic.getEditorial(), comic.getFormato(), comic.getProcedencia(), "",
-				comic.getGuionista(), comic.getDibujante(), "", "", "", "");
+				comic.getGuionista(), comic.getDibujante(), "", "", "", "","","");
 
 		String sql = libreria.datosConcatenados(comicTemp);
 
@@ -1358,7 +1358,7 @@ public class PuntuarDatosController implements Initializable {
 	@SuppressWarnings("unchecked")
 	public void tablaBBDD(List<Comic> listaComic) {
 		tablaBBDD.getColumns().setAll(nombre, caja, numero, variante, firma, editorial, formato, procedencia, fecha,
-				guionista, dibujante, puntuacion);
+				guionista, dibujante, referencia);
 		tablaBBDD.getItems().setAll(listaComic);
 	}
 
@@ -1453,7 +1453,7 @@ public class PuntuarDatosController implements Initializable {
 		String datos[] = camposComic();
 
 		Comic comic = new Comic("", datos[1], datos[11], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
-				datos[8], datos[9], datos[10], "", "", "", null);
+				datos[8], datos[9], datos[10], "", "", "", null,"","");
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
 		busquedaGeneral.setText("");
@@ -1575,13 +1575,13 @@ public class PuntuarDatosController implements Initializable {
 		numero.setPrefWidth(45);
 		firma.setPrefWidth(85);
 		editorial.setPrefWidth(78);
-		variante.setPrefWidth(148);
+		variante.setPrefWidth(135);
 		procedencia.setPrefWidth(75);
 		fecha.setPrefWidth(105);
 		guionista.setPrefWidth(145);
 		dibujante.setPrefWidth(150);
-		puntuacion.setPrefWidth(85);
-		formato.setPrefWidth(88);
+		referencia.setPrefWidth(90);
+		formato.setPrefWidth(92);
 
 		// Set the resizing policy to unconstrained
 		tablaBBDD.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
@@ -1598,7 +1598,7 @@ public class PuntuarDatosController implements Initializable {
 		originalWidths.put(fecha, fecha.getWidth());
 		originalWidths.put(guionista, guionista.getWidth());
 		originalWidths.put(dibujante, dibujante.getWidth());
-		originalWidths.put(puntuacion, puntuacion.getWidth());
+		originalWidths.put(referencia, referencia.getWidth());
 		originalWidths.put(formato, formato.getWidth());
 
 		// Reiniciar el tamaño de las columnas
@@ -1630,7 +1630,7 @@ public class PuntuarDatosController implements Initializable {
 		fecha.setCellValueFactory(new PropertyValueFactory<>("Fecha"));
 		guionista.setCellValueFactory(new PropertyValueFactory<>("Guionista"));
 		dibujante.setCellValueFactory(new PropertyValueFactory<>("Dibujante"));
-		puntuacion.setCellValueFactory(new PropertyValueFactory<>("Puntuacion"));
+		referencia.setCellValueFactory(new PropertyValueFactory<>("url_referencia"));
 
 		busquedaRaw(nombre);
 		busquedaRaw(variante);
@@ -1641,7 +1641,7 @@ public class PuntuarDatosController implements Initializable {
 		busquedaRaw(formato);
 		busquedaRaw(editorial);
 		busquedaRaw(fecha);
-
+		Utilidades.busquedaHyperLink(referencia);
 	}
 
 	/**

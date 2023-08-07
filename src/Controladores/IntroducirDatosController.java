@@ -100,6 +100,7 @@ import javafx.stage.Stage;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.Tooltip;
 import javafx.util.Duration;
+import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 
 /**
@@ -228,6 +229,12 @@ public class IntroducirDatosController implements Initializable {
 	private TextField nombreKeyIssue;
 
 	@FXML
+	private TextField precioComic;
+
+	@FXML
+	private TextField urlReferencia;
+
+	@FXML
 	private ComboBox<String> numeroCajaAni;
 
 	@FXML
@@ -273,7 +280,7 @@ public class IntroducirDatosController implements Initializable {
 	private TableColumn<Comic, String> nombre;
 
 	@FXML
-	private TableColumn<Comic, String> puntuacion;
+	private TableColumn<Comic, String> referencia;
 
 	@FXML
 	private ComboBox<String> formatoAni;
@@ -412,7 +419,7 @@ public class IntroducirDatosController implements Initializable {
 
 		// Medir el ancho y alto del texto
 		double textWidth = text.getLayoutBounds().getWidth();
-		double textHeight = text.getLayoutBounds().getHeight() + 40;
+		double textHeight = text.getLayoutBounds().getHeight();
 
 		double newWidth = Math.min(textWidth + 20, maxWidth);
 		double newHeight = Math.min(textHeight + 20, maxHeight);
@@ -585,7 +592,7 @@ public class IntroducirDatosController implements Initializable {
 
 		Comic comicTemp = new Comic("", comic.getNombre(), comic.getNumCaja(), comic.getNumero(), comic.getVariante(),
 				comic.getFirma(), comic.getEditorial(), comic.getFormato(), comic.getProcedencia(), "",
-				comic.getGuionista(), comic.getDibujante(), "", "", "", "");
+				comic.getGuionista(), comic.getDibujante(), "", "", "", "", "", "");
 
 		String sql = libreria.datosConcatenados(comicTemp);
 
@@ -677,12 +684,26 @@ public class IntroducirDatosController implements Initializable {
 		numeroAni.getEditor().setTextFormatter(validador_Nenteros());
 		numeroCaja.getEditor().setTextFormatter(validador_Nenteros());
 		numeroCajaAni.getEditor().setTextFormatter(validador_Nenteros());
+		precioComic.setTextFormatter(validador_Ndecimales());
 	}
 
 	public TextFormatter<Integer> validador_Nenteros() {
 		// Crear un validador para permitir solo números enteros
 		TextFormatter<Integer> textFormatter = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			if (change.getControlNewText().matches("\\d*")) {
+				return change;
+			}
+			return null;
+		});
+
+		return textFormatter;
+	}
+
+	public TextFormatter<Double> validador_Ndecimales() {
+		// Crear un validador para permitir solo números decimales (double)
+		TextFormatter<Double> textFormatter = new TextFormatter<>(new DoubleStringConverter(), 0.0, change -> {
+			String newText = change.getControlNewText();
+			if (newText.matches("\\d*\\.?\\d*")) {
 				return change;
 			}
 			return null;
@@ -761,16 +782,29 @@ public class IntroducirDatosController implements Initializable {
 		ObservableList<String> cajaComics = FXCollections.observableArrayList(DBLibreriaManager.listaCaja);
 		numeroCaja.setItems(cajaComics);
 
-		ObservableList<String> formatoNuevo = FXCollections.observableArrayList(DBLibreriaManager.listaFormato);
+		ObservableList<String> formatoNuevo = FXCollections.observableArrayList("Grapa (Issue individual)",
+				"Tapa blanda (Paperback)", "Cómic de bolsillo (Pocket)", "Edición de lujo (Deluxe Edition)",
+				"Edición omnibus (Omnibus)", "Edición integral (Integral)", "Tapa dura (Hardcover)",
+				"eBook (libro electrónico)", "Cómic digital (Digital Comic)", "Manga digital (Digital Manga)", "Manga (Manga tome)",
+				"PDF (Portable Document Format)", "Revista (Magazine)",
+				"Edición de coleccionista (Collector's Edition)", "Edición especial (Special Edition)",
+				"Edición con extras (Bonus Edition)" , "Libro (Book)");
 		formatoAni.setItems(formatoNuevo);
+		formatoAni.getSelectionModel().selectFirst();
 
 		ObservableList<String> numeroComicsNuevo = FXCollections
 				.observableArrayList(DBLibreriaManager.listaNumeroComic);
 		numeroAni.setItems(numeroComicsNuevo);
 
-		ObservableList<String> procedenciaEstadoNuevo = FXCollections
-				.observableArrayList(DBLibreriaManager.listaProcedencia);
+		ObservableList<String> procedenciaEstadoNuevo = FXCollections.observableArrayList(
+				"Estados Unidos (United States)", "Japón (Japan)", "Francia (France)", "Italia (Italy)",
+				"España (Spain)", "Reino Unido (United Kingdom)", "Alemania (Germany)", "Brasil (Brazil)",
+				"Corea del Sur (South Korea)", "México (Mexico)", "Canadá (Canada)", "China (China)",
+				"Australia (Australia)", "Argentina (Argentina)", "India (India)", "Bélgica (Belgium)",
+				"Países Bajos (Netherlands)", "Portugal (Portugal)", "Suecia (Sweden)", "Suiza (Switzerland)",
+				"Finlandia (Finland)", "Noruega (Norway)", "Dinamarca (Denmark)");
 		procedenciaAni.setItems(procedenciaEstadoNuevo);
+		procedenciaAni.getSelectionModel().selectFirst();
 
 		ObservableList<String> cajaComicsNuevo = FXCollections.observableArrayList(DBLibreriaManager.listaCaja);
 		numeroCajaAni.setItems(cajaComicsNuevo);
@@ -984,6 +1018,10 @@ public class IntroducirDatosController implements Initializable {
 			numeroCajaAni.getSelectionModel().select(cajaAni);
 
 			nombreKeyIssue.setText(comic_temp.getKey_issue());
+			estadoComic.getSelectionModel().select(comic_temp.getEstado());
+
+			precioComic.setText(comic_temp.getPrecio_comic());
+			urlReferencia.setText(comic_temp.getUrl_referencia());
 
 			prontInfo.setOpacity(1);
 			prontInfo.setText(libreria.comicDatos(id_comic).toString().replace("[", "").replace("]", ""));
@@ -1035,11 +1073,15 @@ public class IntroducirDatosController implements Initializable {
 
 				String cajaAni = comic_temp.getNumCaja();
 				numeroCajaAni.getSelectionModel().select(cajaAni);
+
 				nombreKeyIssue.setText(comic_temp.getKey_issue());
+				estadoComic.getSelectionModel().select(comic_temp.getEstado());
+
+				precioComic.setText(comic_temp.getPrecio_comic());
+				urlReferencia.setText(comic_temp.getUrl_referencia());
 
 				prontInfo.setOpacity(1);
 				prontInfo.setText(libreria.comicDatos(id_comic).toString().replace("[", "").replace("]", ""));
-
 				imagencomic.setImage(libreria.selectorImage(id_comic));
 			}
 			DBManager.resetConnection();
@@ -1372,10 +1414,8 @@ public class IntroducirDatosController implements Initializable {
 	 */
 	public String formatoNuevo() {
 
-		String formatoEstado = "Grapa";
-		if (nombreFormato.getSelectionModel().getSelectedItem() != null) {
-			formatoEstado = formatoAni.getSelectionModel().getSelectedItem().toString();
-		}
+		String formatoEstado = formatoAni.getSelectionModel().getSelectedItem().toString();
+
 		return formatoEstado;
 	}
 
@@ -1387,10 +1427,8 @@ public class IntroducirDatosController implements Initializable {
 	 */
 	public String procedenciaNueva() {
 
-		String procedenciaEstadoNuevo = "USA";
-		if (nombreProcedencia.getSelectionModel().getSelectedItem() != null) {
-			procedenciaEstadoNuevo = procedenciaAni.getSelectionModel().getSelectedItem().toString();
-		}
+		String procedenciaEstadoNuevo = procedenciaAni.getSelectionModel().getSelectedItem().toString();
+
 		return procedenciaEstadoNuevo;
 	}
 
@@ -1465,7 +1503,7 @@ public class IntroducirDatosController implements Initializable {
 		}
 
 		comic = new Comic("", datos[1], datos[12], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7], fecha,
-				datos[9], datos[10], "", "", "", null);
+				datos[9], datos[10], "", "", "", null, "", "");
 
 		tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()));
 		resultadoBusquedaPront(comic);
@@ -1576,13 +1614,13 @@ public class IntroducirDatosController implements Initializable {
 		numero.setPrefWidth(45);
 		firma.setPrefWidth(85);
 		editorial.setPrefWidth(78);
-		variante.setPrefWidth(148);
+		variante.setPrefWidth(135);
 		procedencia.setPrefWidth(75);
 		fecha.setPrefWidth(105);
 		guionista.setPrefWidth(145);
 		dibujante.setPrefWidth(150);
-		puntuacion.setPrefWidth(85);
-		formato.setPrefWidth(88);
+		referencia.setPrefWidth(90);
+		formato.setPrefWidth(92);
 
 		// Set the resizing policy to unconstrained
 		tablaBBDD.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
@@ -1599,7 +1637,7 @@ public class IntroducirDatosController implements Initializable {
 		originalWidths.put(fecha, fecha.getWidth());
 		originalWidths.put(guionista, guionista.getWidth());
 		originalWidths.put(dibujante, dibujante.getWidth());
-		originalWidths.put(puntuacion, puntuacion.getWidth());
+		originalWidths.put(referencia, referencia.getWidth());
 		originalWidths.put(formato, formato.getWidth());
 
 		// Reiniciar el tamaño de las columnas
@@ -1623,7 +1661,7 @@ public class IntroducirDatosController implements Initializable {
 	@SuppressWarnings("unchecked")
 	public void tablaBBDD(List<Comic> listaComic) {
 		tablaBBDD.getColumns().setAll(nombre, caja, numero, variante, firma, editorial, formato, procedencia, fecha,
-				guionista, dibujante, puntuacion);
+				guionista, dibujante, referencia);
 		tablaBBDD.getItems().setAll(listaComic);
 	}
 
@@ -1695,6 +1733,10 @@ public class IntroducirDatosController implements Initializable {
 
 			String numCaja = datos[12];
 
+			if (numCaja.isEmpty()) {
+				numCaja = "0";
+			}
+
 			String key_issue = "Vacio";
 			String key_issue_sinEspacios = datos[13].trim();
 
@@ -1705,11 +1747,27 @@ public class IntroducirDatosController implements Initializable {
 				key_issue = key_issue_sinEspacios;
 			}
 
-			Comic comic = new Comic("", nombre, numCaja, numero, variante, firma, editorial, formato, procedencia,
-					fecha_comic.toString(), guionista, dibujante, estado, key_issue, "Sin puntuar", portada);
+			String url_referencia = datos[14];
+			String precio_comic = datos[15];
 
-			if (nombre.length() == 0 || numero.length() == 0 || editorial.length() == 0 || guionista.length() == 0
-					|| dibujante.length() == 0) {
+			if (precio_comic.isEmpty()) {
+				precio_comic = "0";
+			}
+
+			double valor_comic = Double.parseDouble(precio_comic);
+
+			precio_comic = String.valueOf(Utilidades.convertirMonedaADolar(procedencia, valor_comic));
+
+			if (url_referencia.isEmpty()) {
+				url_referencia = "Sin referencia";
+			}
+
+			Comic comic = new Comic("", nombre, numCaja, numero, variante, firma, editorial, formato, procedencia,
+					fecha_comic.toString(), guionista, dibujante, estado, key_issue, "Sin puntuar", portada,
+					url_referencia, precio_comic);
+
+			if (nombre.isEmpty() || numero.isEmpty() || editorial.isEmpty() || guionista.isEmpty()
+					|| dibujante.isEmpty()) {
 				String excepcion = "No puedes introducir un comic si no has completado todos los datos";
 
 				validateComicFields(comic);
@@ -1723,10 +1781,7 @@ public class IntroducirDatosController implements Initializable {
 
 				String codigo_imagen = Utilidades.generarCodigoUnico(sourcePath + File.separator);
 
-				utilidad.nueva_imagen(portada, codigo_imagen); // Se genera el fichero del comic y el nuevo nombre de
-																// este
-
-//				String nueva_portada = utilidad.obtenerNombreCompleto(comic);
+				utilidad.nueva_imagen(portada, codigo_imagen);
 				comic.setImagen(sourcePath + File.separator + codigo_imagen + ".jpg");
 				libreria.insertarDatos(comic);
 
@@ -1873,7 +1928,7 @@ public class IntroducirDatosController implements Initializable {
 
 		utilidad = new Utilidades();
 
-		String campos[] = new String[14];
+		String campos[] = new String[16];
 
 		campos[0] = utilidad.comaPorGuion(nombreAni.getText());
 
@@ -1908,6 +1963,10 @@ public class IntroducirDatosController implements Initializable {
 
 		campos[13] = nombreKeyIssue.getText();
 
+		campos[14] = urlReferencia.getText();
+
+		campos[15] = precioComic.getText();
+
 		return campos;
 	}
 
@@ -1928,7 +1987,7 @@ public class IntroducirDatosController implements Initializable {
 		fecha.setCellValueFactory(new PropertyValueFactory<>("Fecha"));
 		guionista.setCellValueFactory(new PropertyValueFactory<>("Guionista"));
 		dibujante.setCellValueFactory(new PropertyValueFactory<>("Dibujante"));
-		puntuacion.setCellValueFactory(new PropertyValueFactory<>("Puntuacion"));
+		referencia.setCellValueFactory(new PropertyValueFactory<>("url_referencia"));
 
 		busquedaRaw(nombre);
 		busquedaRaw(variante);
@@ -1939,6 +1998,7 @@ public class IntroducirDatosController implements Initializable {
 		busquedaRaw(formato);
 		busquedaRaw(editorial);
 		busquedaRaw(fecha);
+		Utilidades.busquedaHyperLink(referencia);
 	}
 
 	@FXML

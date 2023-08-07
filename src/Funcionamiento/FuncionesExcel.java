@@ -99,100 +99,7 @@ public class FuncionesExcel {
 	private static Ventanas nav = new Ventanas();
 	private static DBLibreriaManager db = null;
 
-	/**
-	 * Funcion que permite importar ficheros CSV a la base de datos.
-	 *
-	 * @param fichero
-	 * @return
-	 * @throws SQLException
-	 */
-	public boolean importarCSV(File fichero) throws IOException {
-	    String sql = "INSERT INTO comicsbbdd(ID,nomComic,caja_deposito,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,fecha_publicacion,nomGuionista,nomDibujante,puntuacion,portada,key_issue,estado)"
-	            + " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-	    if (comprobarCSV(fichero, sql)) {
-		    return true;
-		} else {
-		    return false;
-		}
-	}
-
-	/**
-	 * Funcion que permite crear tanto un fichero XLSX cini un fichero CSV
-	 *
-	 * @param fichero
-	 * @return
-	 * @throws SQLException 
-	 */
-	public boolean crearExcel(File fichero) throws SQLException {
-
-		FileOutputStream outputStream;
-		Cell celda;
-		Row fila;
-		Sheet hoja;
-		Workbook libro;
-		String encabezado;
-		String[] encabezados = { "ID", "nomComic", "caja_deposito", "numComic", "nomVariante", "Firma", "nomEditorial",
-				"Formato", "Procedencia", "fecha_publicacion", "nomGuionista", "nomDibujante", "puntuacion", "portada","key_issue",
-				"estado" };
-		int indiceFila = 0;
-
-		try {
-			fichero.createNewFile();
-			List<Comic> listaComics = libreria.libreriaCompleta();
-
-			libro = new XSSFWorkbook();
-
-			hoja = libro.createSheet("Base de datos comics");
-
-			fila = hoja.createRow(indiceFila);
-			for (int i = 0; i < encabezados.length; i++) {
-				encabezado = encabezados[i];
-				celda = fila.createCell(i);
-				celda.setCellValue(encabezado);
-				celda.getStringCellValue().getBytes(Charset.forName("UTF-8"));
-			}
-
-			indiceFila++;
-			for (Comic comic : listaComics) {
-				fila = hoja.createRow(indiceFila);
-				fila.createCell(0).setCellValue("");
-				fila.createCell(1).setCellValue(comic.getNombre());
-				fila.createCell(2).setCellValue(comic.getNumCaja());
-				fila.createCell(3).setCellValue(comic.getNumero());
-				fila.createCell(4).setCellValue(comic.getVariante());
-				fila.createCell(5).setCellValue(comic.getFirma());
-				fila.createCell(6).setCellValue(comic.getEditorial());
-				fila.createCell(7).setCellValue(comic.getFormato());
-				fila.createCell(8).setCellValue(comic.getProcedencia());
-				fila.createCell(9).setCellValue(comic.getFecha());
-				fila.createCell(10).setCellValue(comic.getGuionista());
-				fila.createCell(11).setCellValue(comic.getDibujante());
-				fila.createCell(12).setCellValue(comic.getPuntuacion());
-				fila.createCell(13).setCellValue(comic.getImagen());
-				fila.createCell(14).setCellValue(comic.getKey_issue());
-				fila.createCell(15).setCellValue(comic.getEstado());
-				indiceFila++;
-			}
-			
-			try {
-				outputStream = new FileOutputStream(fichero);
-				libro.write(outputStream);
-				libro.close();
-				outputStream.close();
-				createCSV(fichero);
-				libreria.saveImageFromDataBase();
-				return true;
-			} catch (FileNotFoundException ex) {
-				nav.alertaException(ex.toString());
-			} catch (IOException ex) {
-				nav.alertaException(ex.toString());
-			}
-		} catch (IOException e) {
-			nav.alertaException(e.toString());
-		}
-		return false;
-	}
 
 	public void savedataExcel(String nombre_carpeta) {
 		FileOutputStream outputStream;
@@ -201,9 +108,9 @@ public class FuncionesExcel {
 		Sheet hoja;
 		Workbook libro;
 		String encabezado;
-		String[] encabezados = { "ID", "nomComic", "caja_deposito", "numComic", "nomVariante", "Firma", "nomEditorial",
+		String[] encabezados = { "ID", "nomComic", "caja_deposito","precio_comic", "numComic", "nomVariante", "Firma", "nomEditorial",
 				"Formato", "Procedencia", "fecha_publicacion", "nomGuionista", "nomDibujante", "puntuacion", "portada","key_issue",
-				"estado" };
+				"url_referencia","estado" };
 		int indiceFila = 0;
 
 		String userDir = System.getProperty("user.home");
@@ -236,19 +143,21 @@ public class FuncionesExcel {
 				fila.createCell(0).setCellValue("");
 				fila.createCell(1).setCellValue(comic.getNombre());
 				fila.createCell(2).setCellValue(comic.getNumCaja());
-				fila.createCell(3).setCellValue(comic.getNumero());
-				fila.createCell(4).setCellValue(comic.getVariante());
-				fila.createCell(5).setCellValue(comic.getFirma());
-				fila.createCell(6).setCellValue(comic.getEditorial());
-				fila.createCell(7).setCellValue(comic.getFormato());
-				fila.createCell(8).setCellValue(comic.getProcedencia());
-				fila.createCell(9).setCellValue(comic.getFecha());
-				fila.createCell(10).setCellValue(comic.getGuionista());
-				fila.createCell(11).setCellValue(comic.getDibujante());
-				fila.createCell(12).setCellValue(comic.getPuntuacion());
-				fila.createCell(13).setCellValue(comic.getImagen());
-				fila.createCell(14).setCellValue(comic.getKey_issue());
-				fila.createCell(15).setCellValue(comic.getEstado());
+				fila.createCell(3).setCellValue(comic.getPrecio_comic());
+				fila.createCell(4).setCellValue(comic.getNumero());
+				fila.createCell(5).setCellValue(comic.getVariante());
+				fila.createCell(6).setCellValue(comic.getFirma());
+				fila.createCell(7).setCellValue(comic.getEditorial());
+				fila.createCell(8).setCellValue(comic.getFormato());
+				fila.createCell(9).setCellValue(comic.getProcedencia());
+				fila.createCell(10).setCellValue(comic.getFecha());
+				fila.createCell(11).setCellValue(comic.getGuionista());
+				fila.createCell(12).setCellValue(comic.getDibujante());
+				fila.createCell(13).setCellValue(comic.getPuntuacion());
+				fila.createCell(14).setCellValue(comic.getImagen());
+				fila.createCell(15).setCellValue(comic.getKey_issue());
+				fila.createCell(16).setCellValue(comic.getUrl_referencia());
+				fila.createCell(17).setCellValue(comic.getEstado());
 
 				indiceFila++;
 			}
@@ -392,6 +301,16 @@ public class FuncionesExcel {
 	 * @return
 	 */
 	public File carpetaPortadas() {
+		DirectoryChooser directoryChooser = new DirectoryChooser();
+		File directorio = directoryChooser.showDialog(null);
+		return directorio;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public File carpetaPortadasTask() {
 	    final File[] directorio = new File[1];
 	    CountDownLatch latch = new CountDownLatch(1);
 
@@ -409,43 +328,85 @@ public class FuncionesExcel {
 
 	    return directorio[0];
 	}
-
-
+	
 	/**
-	 * Funcion que carga la imagen a la hora de importar el csv
+	 * Funcion que permite crear tanto un fichero XLSX como un fichero CSV
 	 *
+	 * @param fichero
 	 * @return
-	 * @throws IOException
+	 * @throws SQLException 
 	 */
-//	public void subirImagenes(File directorio, Comic datos) throws IOException {
-//	    ID++;
-//	    File portada = new File(directorio.toString() + "/" + ID + ".jpg");
-//	    try {
-//	        if (directorio.exists()) {
-//	            if (portada.exists()) {
-//	                String userDir = System.getProperty("user.home");
-//	                String documentsPath = userDir + File.separator + "Documents";
-//	                String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator + "portadas" + File.separator;
-//
-//	                File carpetaDestinoFile = new File(defaultImagePath);
-//	                if (!carpetaDestinoFile.exists() && !carpetaDestinoFile.mkdirs()) {
-//	                    throw new IOException("No se pudo crear la carpeta de destino.");
-//	                }
-//					
-//	                String nuevo_nombre = defaultImagePath + utilidad.crearNuevoNombre(datos);
-//
-//	                File copia_imagen = new File(nuevo_nombre);
-//	                Files.copy(portada.toPath(), copia_imagen.toPath(), StandardCopyOption.REPLACE_EXISTING);
-//	            } else {
-//	                // Manejo si no existe la imagen
-//	                System.out.println("La imagen no existe en el directorio especificado.");
-//	            }
-//	        }
-//	    } catch (FileNotFoundException e) {
-//	        String error = "ERROR. Ha cancelado la subida de imágenes de portada. Se van a subir imágenes predeterminadas.";
-//	        nav.alertaException(error);
-//	    }
-//	}
+	public boolean crearExcel(File fichero) throws SQLException {
+
+		FileOutputStream outputStream;
+		Cell celda;
+		Row fila;
+		Sheet hoja;
+		Workbook libro;
+		String encabezado;
+		String[] encabezados = { "ID", "nomComic", "caja_deposito","precio_comic", "numComic", "nomVariante", "Firma", "nomEditorial",
+				"Formato", "Procedencia", "fecha_publicacion", "nomGuionista", "nomDibujante", "puntuacion", "portada","key_issue",
+				"url_referencia","estado" };
+		int indiceFila = 0;
+
+		try {
+			fichero.createNewFile();
+			List<Comic> listaComics = libreria.libreriaCompleta();
+
+			libro = new XSSFWorkbook();
+
+			hoja = libro.createSheet("Base de datos comics");
+
+			fila = hoja.createRow(indiceFila);
+			for (int i = 0; i < encabezados.length; i++) {
+				encabezado = encabezados[i];
+				celda = fila.createCell(i);
+				celda.setCellValue(encabezado);
+				celda.getStringCellValue().getBytes(Charset.forName("UTF-8"));
+			}
+
+			indiceFila++;
+			for (Comic comic : listaComics) {
+				fila = hoja.createRow(indiceFila);
+				fila.createCell(0).setCellValue("");
+				fila.createCell(1).setCellValue(comic.getNombre());
+				fila.createCell(2).setCellValue(comic.getNumCaja());
+				fila.createCell(3).setCellValue(comic.getPrecio_comic());
+				fila.createCell(4).setCellValue(comic.getNumero());
+				fila.createCell(5).setCellValue(comic.getVariante());
+				fila.createCell(6).setCellValue(comic.getFirma());
+				fila.createCell(7).setCellValue(comic.getEditorial());
+				fila.createCell(8).setCellValue(comic.getFormato());
+				fila.createCell(9).setCellValue(comic.getProcedencia());
+				fila.createCell(10).setCellValue(comic.getFecha());
+				fila.createCell(11).setCellValue(comic.getGuionista());
+				fila.createCell(12).setCellValue(comic.getDibujante());
+				fila.createCell(13).setCellValue(comic.getPuntuacion());
+				fila.createCell(14).setCellValue(comic.getImagen());
+				fila.createCell(15).setCellValue(comic.getKey_issue());
+				fila.createCell(16).setCellValue(comic.getUrl_referencia());
+				fila.createCell(17).setCellValue(comic.getEstado());
+				indiceFila++;
+			}
+			
+			try {
+				outputStream = new FileOutputStream(fichero);
+				libro.write(outputStream);
+				libro.close();
+				outputStream.close();
+				createCSV(fichero);
+				libreria.saveImageFromDataBase();
+				return true;
+			} catch (FileNotFoundException ex) {
+				nav.alertaException(ex.toString());
+			} catch (IOException ex) {
+				nav.alertaException(ex.toString());
+			}
+		} catch (IOException e) {
+			nav.alertaException(e.toString());
+		}
+		return false;
+	}
 
 	/**
 	 * Función que permite leer un fichero CSV
@@ -469,7 +430,7 @@ public class FuncionesExcel {
 
 	                boolean continuarSubida = confirmacionFuture.join();
 	                if (continuarSubida) {
-	                    directorio = carpetaPortadas();
+	                    directorio = carpetaPortadasTask();
 
 	                    if (directorio == null) {
 	                        directorio = new File(defaultImagePath + File.separator);
@@ -499,24 +460,34 @@ public class FuncionesExcel {
 	                    String id = Integer.toString(nuevoID);
 	                    String nombre = data[1];
 	                    String numCaja = data[2];
-	                    String numero = data[3];
-	                    String variante = data[4];
-	                    String firma = data[5];
-	                    String editorial = data[6];
-	                    String formato = data[7];
-	                    String procedencia = obtenerProcedencia(data[8]);
-	                    String fecha = data[9];
-	                    String guionista = data[10];
-	                    String dibujante = data[11];
-	                    String puntuacion = obtenerPuntuacion(data[11], data[12]);
-	                    String direccion_portada = data[13];
+	                    String precio_comic = data[3];
+	                    String numero = data[4];
+	                    String variante = data[5];
+	                    String firma = data[6];
+	                    String editorial = data[7];
+	                    String formato = data[8];
+	                    String procedencia = obtenerProcedencia(data[9]);
+	                    String fecha = data[10];
+	                    String guionista = data[11];
+	                    String dibujante = data[12];
+	                    String puntuacion = obtenerPuntuacion(data[12], data[13]);
+	                    String direccion_portada = data[14];
 	                    String nombre_portada = Utilidades.obtenerDespuesPortadas(direccion_portada);
 	                    String nombre_modificado = Utilidades.convertirNombreArchivo(nombre_portada);
 	                    String nombre_completo_portada = defaultImagePath + File.separator + nombre_modificado;
-	                    String key_issue = data[14];
+	                    String key_issue = data[15];
 	                    key_issue = key_issue.replaceAll("\\r|\\n", "");
-	                    String estado = data[15];
-
+	                    String url_referencia = data[16];
+	                    String estado = data[17];
+	                    
+	                    if(precio_comic.isEmpty()) {
+	                    	precio_comic = "0";
+	                    }
+	                    
+	                    if(url_referencia.isEmpty()) {
+	                    	url_referencia = "Sin referencia";
+	                    }
+	                    
 	                    if (!existeArchivo(defaultImagePath, nombre_modificado) || directorio == null) {
 	                        copiarPortadaPredeterminada(defaultImagePath, nombre_modificado);
 	                        generarLogFaltaPortada(defaultImagePathBase, logFileName, nombre_modificado);
@@ -525,19 +496,21 @@ public class FuncionesExcel {
 	                    statement.setString(1, id);
 	                    statement.setString(2, nombre);
 	                    statement.setString(3, numCaja);
-	                    statement.setString(4, numero);
-	                    statement.setString(5, variante);
-	                    statement.setString(6, firma);
-	                    statement.setString(7, editorial);
-	                    statement.setString(8, formato);
-	                    statement.setString(9, procedencia);
-	                    statement.setString(10, fecha);
-	                    statement.setString(11, guionista);
-	                    statement.setString(12, dibujante);
-	                    statement.setString(13, puntuacion);
-	                    statement.setString(14, nombre_completo_portada);
-	                    statement.setString(15, key_issue);
-	                    statement.setString(16, estado);
+	                    statement.setString(4, precio_comic);
+	                    statement.setString(5, numero);
+	                    statement.setString(6, variante);
+	                    statement.setString(7, firma);
+	                    statement.setString(8, editorial);
+	                    statement.setString(9, formato);
+	                    statement.setString(10, procedencia);
+	                    statement.setString(11, fecha);
+	                    statement.setString(12, guionista);
+	                    statement.setString(13, dibujante);
+	                    statement.setString(14, puntuacion);
+	                    statement.setString(15, nombre_completo_portada);
+	                    statement.setString(16, key_issue);
+	                    statement.setString(17, url_referencia);
+	                    statement.setString(18, estado);
 
 	                    statement.addBatch();
 
@@ -652,7 +625,6 @@ public class FuncionesExcel {
 	    }
 	}
 
-
 	/**
 	 * Función que genera el log cuando falta una portada
 	 *
@@ -670,17 +642,4 @@ public class FuncionesExcel {
 	        e.printStackTrace();
 	    }
 	}
-
-
-//	private String convertirFecha(String fecha) {
-//	    try {
-//	        SimpleDateFormat formatoEntrada = new SimpleDateFormat("dd/MM/yyyy");
-//	        SimpleDateFormat formatoSalida = new SimpleDateFormat("yyyy/MM/dd");
-//	        Date fechaDate = formatoEntrada.parse(fecha);
-//	        return formatoSalida.format(fechaDate);
-//	    } catch (ParseException e) {
-//	        e.printStackTrace();
-//	    }
-//	    return null;
-//	}
 }

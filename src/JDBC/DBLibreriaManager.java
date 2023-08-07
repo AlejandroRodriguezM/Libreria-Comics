@@ -168,80 +168,77 @@ public class DBLibreriaManager extends Comic {
 	 * @throws SQLException
 	 */
 	public CompletableFuture<Boolean> deleteTable() {
-        CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
+		CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
 
-        Task<Void> task = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                try {
-                    String sentencia[] = new String[2];
-                    sentencia[0] = "delete from comicsbbdd";
-                    sentencia[1] = "alter table comicsbbdd AUTO_INCREMENT = 1;";
+		Task<Void> task = new Task<Void>() {
+			@Override
+			protected Void call() throws Exception {
+				try {
+					String sentencia[] = new String[2];
+					sentencia[0] = "delete from comicsbbdd";
+					sentencia[1] = "alter table comicsbbdd AUTO_INCREMENT = 1;";
 
-                    utilidad.copia_seguridad();
-                    utilidad.eliminarArchivosEnCarpeta();
-                    listaNombre.clear();
-                    listaNumeroComic.clear();
-                    listaVariante.clear();
-                    listaFirma.clear();
-                    listaEditorial.clear();
-                    listaGuionista.clear();
-                    listaDibujante.clear();
-                    listaFecha.clear();
-                    listaFormato.clear();
-                    listaProcedencia.clear();
-                    listaCaja.clear();
+					utilidad.copia_seguridad();
+					utilidad.eliminarArchivosEnCarpeta();
+					listaNombre.clear();
+					listaNumeroComic.clear();
+					listaVariante.clear();
+					listaFirma.clear();
+					listaEditorial.clear();
+					listaGuionista.clear();
+					listaDibujante.clear();
+					listaFecha.clear();
+					listaFormato.clear();
+					listaProcedencia.clear();
+					listaCaja.clear();
 
-                    // Ejecutar el PreparedStatement asíncronamente
-                    CompletableFuture<Boolean> ejecucionResult = ejecutarPreparedStatementAsync(sentencia);
-                    boolean ejecucionExitosa = ejecucionResult.join();
+					// Ejecutar el PreparedStatement asíncronamente
+					CompletableFuture<Boolean> ejecucionResult = ejecutarPreparedStatementAsync(sentencia);
+					boolean ejecucionExitosa = ejecucionResult.join();
 
-                    futureResult.complete(ejecucionExitosa); // Completar la CompletableFuture con el resultado
-                } catch (Exception e) {
-                    futureResult.completeExceptionally(e);
-                }
-                return null;
-            }
-        };
+					futureResult.complete(ejecucionExitosa); // Completar la CompletableFuture con el resultado
+				} catch (Exception e) {
+					futureResult.completeExceptionally(e);
+				}
+				return null;
+			}
+		};
 
-        task.setOnFailed(e -> futureResult.completeExceptionally(task.getException()));
+		task.setOnFailed(e -> futureResult.completeExceptionally(task.getException()));
 
-        Thread thread = new Thread(task);
-        thread.start();
+		Thread thread = new Thread(task);
+		thread.start();
 
-        return futureResult;
-    }
-	
-	public boolean contenidoTabla() {
-	    String sql = "SELECT COUNT(*) FROM comicsbbdd";
-	    boolean existeMasDeUnRegistro = false;
-
-	    try {
-	        // Obtener la conexión a la base de datos y crear la sentencia
-	        Connection conn = DBManager.conexion();
-	        Statement statement = conn.createStatement();
-
-	        // Ejecutar la consulta y obtener el resultado
-	        ResultSet resultSet = statement.executeQuery(sql);
-	        if (resultSet.next()) {
-	            int count = resultSet.getInt(1);
-	            existeMasDeUnRegistro = count >= 1;
-	        }
-
-	        // Cerrar recursos
-	        resultSet.close();
-	        statement.close();
-	        conn.close();
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	        // Manejar la excepción según tus necesidades
-	    }
-
-	    return existeMasDeUnRegistro;
+		return futureResult;
 	}
 
+	public boolean contenidoTabla() {
+		String sql = "SELECT COUNT(*) FROM comicsbbdd";
+		boolean existeMasDeUnRegistro = false;
 
+		try {
+			// Obtener la conexión a la base de datos y crear la sentencia
+			Connection conn = DBManager.conexion();
+			Statement statement = conn.createStatement();
 
+			// Ejecutar la consulta y obtener el resultado
+			ResultSet resultSet = statement.executeQuery(sql);
+			if (resultSet.next()) {
+				int count = resultSet.getInt(1);
+				existeMasDeUnRegistro = count >= 1;
+			}
+
+			// Cerrar recursos
+			resultSet.close();
+			statement.close();
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			// Manejar la excepción según tus necesidades
+		}
+
+		return existeMasDeUnRegistro;
+	}
 
 	/**
 	 * Función que ejecuta un conjunto de sentencias PreparedStatement en la base de
@@ -253,35 +250,34 @@ public class DBLibreriaManager extends Comic {
 	 *         contrario.
 	 */
 	public CompletableFuture<Boolean> ejecutarPreparedStatementAsync(String[] sentencia) {
-	    CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
+		CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
 
-	    Task<Void> task = new Task<Void>() {
-	        @Override
-	        protected Void call() throws Exception {
-	            try {
-	                conn = DBManager.conexion();
-	                PreparedStatement statement1 = conn.prepareStatement(sentencia[0]);
-	                PreparedStatement statement2 = conn.prepareStatement(sentencia[1]);
-	                statement1.executeUpdate();
-	                statement2.executeUpdate();
-	                statement1.close();
-	                statement2.close();
-	                futureResult.complete(true); // Si llega hasta aquí, se asume éxito
-	            } catch (Exception e) {
-	                futureResult.completeExceptionally(e);
-	            }
-	            return null;
-	        }
-	    };
+		Task<Void> task = new Task<Void>() {
+			@Override
+			protected Void call() throws Exception {
+				try {
+					conn = DBManager.conexion();
+					PreparedStatement statement1 = conn.prepareStatement(sentencia[0]);
+					PreparedStatement statement2 = conn.prepareStatement(sentencia[1]);
+					statement1.executeUpdate();
+					statement2.executeUpdate();
+					statement1.close();
+					statement2.close();
+					futureResult.complete(true); // Si llega hasta aquí, se asume éxito
+				} catch (Exception e) {
+					futureResult.completeExceptionally(e);
+				}
+				return null;
+			}
+		};
 
-	    task.setOnFailed(e -> futureResult.completeExceptionally(task.getException()));
+		task.setOnFailed(e -> futureResult.completeExceptionally(task.getException()));
 
-	    Thread thread = new Thread(task);
-	    thread.start();
+		Thread thread = new Thread(task);
+		thread.start();
 
-	    return futureResult;
+		return futureResult;
 	}
-
 
 	/////////////////////////////////
 	//// FUNCIONES CREACION FICHEROS//
@@ -1042,10 +1038,13 @@ public class DBLibreriaManager extends Comic {
 					this.estado = rs.getString("estado");
 					this.puntuacion = rs.getString("puntuacion");
 					this.imagen = rs.getString("portada");
+					this.url_referencia = rs.getString("url_referencia");
+					this.precio_comic = rs.getString("precio_comic");
 
 					comic = new Comic(this.ID, this.nombre, this.numCaja, this.numero, this.variante, this.firma,
 							this.editorial, this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante,
-							this.estado,this.key_issue, this.puntuacion, this.imagen);
+							this.estado, this.key_issue, this.puntuacion, this.imagen, this.url_referencia,
+							this.precio_comic);
 
 					listaComics.add(comic);
 				} while (rs.next());
@@ -1114,9 +1113,10 @@ public class DBLibreriaManager extends Comic {
 				String key_issue = rs.getString("key_issue");
 				String puntuacion = rs.getString("puntuacion");
 				String imagen = rs.getString("portada");
-
+				String url_referencia = rs.getString("url_referencia");
+				String precio_comic = rs.getString("precio_comic");
 				comic = new Comic(ID, nombre, numCaja, numero, variante, firma, editorial, formato, procedencia, fecha,
-						guionista, dibujante, estado,key_issue, puntuacion, imagen);
+						guionista, dibujante, estado, key_issue, puntuacion, imagen, url_referencia, precio_comic);
 			}
 		} catch (SQLException e) {
 			nav.alertaException(e.toString());
@@ -1175,7 +1175,6 @@ public class DBLibreriaManager extends Comic {
 		String sentenciaSQL = "SELECT * FROM comicsbbdd";
 
 		conn = DBManager.conexion();
-		carpeta = new FuncionesExcel();
 		File directorio = carpeta.carpetaPortadas();
 		InputStream input = null;
 		PreparedStatement preparedStatement = null;
@@ -1186,7 +1185,7 @@ public class DBLibreriaManager extends Comic {
 
 			if (directorio != null) {
 				while (rs.next()) {
-					String direccionImagen = rs.getString(14);
+					String direccionImagen = rs.getString(15);
 
 					String nombreImagen = utilidad.obtenerNombreArchivo(direccionImagen);
 
@@ -1340,7 +1339,7 @@ public class DBLibreriaManager extends Comic {
 	 * @throws SQLException si ocurre un error al ejecutar la consulta SQL
 	 */
 	public void insertarDatos(Comic comic_datos) throws IOException, SQLException {
-		String sentenciaSQL = "INSERT INTO comicsbbdd (nomComic, caja_deposito, numComic, nomVariante, firma, nomEditorial, formato, procedencia, fecha_publicacion, nomGuionista, nomDibujante, puntuacion, portada,key_issue, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		String sentenciaSQL = "INSERT INTO comicsbbdd (nomComic, caja_deposito,precio_comic, numComic, nomVariante, firma, nomEditorial, formato, procedencia, fecha_publicacion, nomGuionista, nomDibujante, puntuacion, portada,key_issue,url_referencia, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		subirComic(sentenciaSQL, comic_datos);
 	}
 
@@ -1364,19 +1363,21 @@ public class DBLibreriaManager extends Comic {
 			} else {
 				statement.setString(2, datos.getNumCaja());
 			}
-			statement.setString(3, datos.getNumero());
-			statement.setString(4, datos.getVariante());
-			statement.setString(5, datos.getFirma());
-			statement.setString(6, datos.getEditorial());
-			statement.setString(7, datos.getFormato());
-			statement.setString(8, datos.getProcedencia());
-			statement.setString(9, datos.getFecha());
-			statement.setString(10, datos.getGuionista());
-			statement.setString(11, datos.getDibujante());
-			statement.setString(12, "Sin puntuar");
-			statement.setString(13, datos.getImagen());
-			statement.setString(14, datos.getKey_issue());
-			statement.setString(15, "En posesion");
+			statement.setString(3, datos.getPrecio_comic());
+			statement.setString(4, datos.getNumero());
+			statement.setString(5, datos.getVariante());
+			statement.setString(6, datos.getFirma());
+			statement.setString(7, datos.getEditorial());
+			statement.setString(8, datos.getFormato());
+			statement.setString(9, datos.getProcedencia());
+			statement.setString(10, datos.getFecha());
+			statement.setString(11, datos.getGuionista());
+			statement.setString(12, datos.getDibujante());
+			statement.setString(13, "Sin puntuar");
+			statement.setString(14, datos.getImagen());
+			statement.setString(15, datos.getKey_issue());
+			statement.setString(16, datos.getUrl_referencia());
+			statement.setString(17, datos.getEstado());
 
 			statement.executeUpdate();
 		} catch (SQLException ex) {
@@ -1420,9 +1421,11 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public void actualizar_comic(Comic datos) {
 		utilidad = new Utilidades();
-		String sentenciaSQL = "UPDATE comicsbbdd set nomComic = ?,caja_deposito = ? ,numComic = ?,nomVariante = ?,"
-				+ "Firma = ?,nomEditorial = ?,formato = ?,Procedencia = ?,fecha_publicacion = ?,"
-				+ "nomGuionista = ?,nomDibujante = ?,key_issue = ?,portada = ?,estado = ? where ID = ?";
+		String sentenciaSQL = "UPDATE comicsbbdd SET nomComic = ?, caja_deposito = ?, numComic = ?, nomVariante = ?, "
+		        + "Firma = ?, nomEditorial = ?, formato = ?, Procedencia = ?, fecha_publicacion = ?, "
+		        + "nomGuionista = ?, nomDibujante = ?, key_issue = ?, portada = ?, estado = ?, url_referencia = ?, precio_comic = ? "
+		        + "WHERE ID = ?";
+
 
 		try {
 			if (comprobarID(datos.getID())) { // Comprueba si la ID introducida existe en la base de datos
@@ -1490,31 +1493,36 @@ public class DBLibreriaManager extends Comic {
 		String estado = datos.getEstado();
 		String portada_final = datos.getImagen();
 		String key_issue = datos.getKey_issue();
+		String url_referencia = datos.getUrl_referencia();
+		String precio_comic = datos.getPrecio_comic();
 		String codigo_imagen = Utilidades.generarCodigoUnico(portada_final + File.separator);
 
 		PreparedStatement ps = null;
 		try {
-			ps = conn.prepareStatement(sentenciaSQL);
+		    ps = conn.prepareStatement(sentenciaSQL);
 
-			ps.setString(1, nombre);
-			ps.setString(2, numCaja);
-			ps.setString(3, numero);
-			ps.setString(4, variante);
-			ps.setString(5, firma);
-			ps.setString(6, editorial);
-			ps.setString(7, formato);
-			ps.setString(8, procedencia);
-			ps.setString(9, fecha);
-			ps.setString(10, guionista);
-			ps.setString(11, dibujante);
-			ps.setString(12, key_issue);
-			ps.setString(13, portada_final);
-			ps.setString(14, estado);
-			ps.setString(15, ID);
+		    ps.setString(1, nombre);
+		    ps.setString(2, numCaja);
+		    ps.setString(3, numero);
+		    ps.setString(4, variante);
+		    ps.setString(5, firma);
+		    ps.setString(6, editorial);
+		    ps.setString(7, formato);
+		    ps.setString(8, procedencia);
+		    ps.setString(9, fecha);
+		    ps.setString(10, guionista);
+		    ps.setString(11, dibujante);
+		    ps.setString(12, key_issue);
+		    ps.setString(13, portada_final);
+		    ps.setString(14, estado);
+		    ps.setString(15, url_referencia);
+		    ps.setString(16, precio_comic);
+		    ps.setString(17, ID);
 
 			if (ps.executeUpdate() == 1) {
 				Comic nuevo_comic = new Comic("", nombre, numCaja, numero, variante, firma, editorial, formato,
-						procedencia, fecha, guionista, dibujante, estado,key_issue, "", portada_final);
+						procedencia, fecha, guionista, dibujante, estado, key_issue, "", portada_final, url_referencia,
+						precio_comic);
 
 				String carpeta = Utilidades.eliminarDespuesUltimoPortadas(codigo_imagen);
 				utilidad.nueva_imagen(portada_final, carpeta);
@@ -1524,6 +1532,7 @@ public class DBLibreriaManager extends Comic {
 			}
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
+			ex.printStackTrace();
 		} finally {
 			if (ps != null) {
 				ps.close();
@@ -1739,7 +1748,7 @@ public class DBLibreriaManager extends Comic {
 
 		return comprobarLibreria(sentenciaSQL, excepcion);
 	}
-	
+
 	/**
 	 * Funcion que muestra todos los comics de la base de datos
 	 *
@@ -2030,7 +2039,6 @@ public class DBLibreriaManager extends Comic {
 		Map<String, Integer> estadoEstadistica = new HashMap<>();
 		List<String> keyIssueDataList = new ArrayList<>();
 
-
 		String consultaSql = "SELECT * FROM comicsbbdd";
 		int totalComics = 0;
 		try {
@@ -2070,17 +2078,19 @@ public class DBLibreriaManager extends Comic {
 
 				// Dividir los valores separados por guiones ("-") en cada campo y contarlos
 				// como entradas independientes en las estadísticas
-			    String[] claveList = clave_comic.split("-");
-			    for (String clave : claveList) {
-			        clave = clave.trim(); // Remove leading and trailing spaces
+				String[] claveList = clave_comic.split("-");
+				for (String clave : claveList) {
+					clave = clave.trim(); // Remove leading and trailing spaces
 
-			        // Aquí verificamos si clave_comic no es "Vacio" ni está vacío antes de agregar a keyIssueDataList
-			        if (!clave.equalsIgnoreCase("Vacio") && !clave.isEmpty()) {
-			            String keyIssueData = "Nombre del comic: " + nomComic + " - " + "Numero: " + numComic + " - Key issue:  " + clave;
-			            keyIssueDataList.add(keyIssueData);
-			        }
-			    }
-				
+					// Aquí verificamos si clave_comic no es "Vacio" ni está vacío antes de agregar
+					// a keyIssueDataList
+					if (!clave.equalsIgnoreCase("Vacio") && !clave.isEmpty()) {
+						String keyIssueData = "Nombre del comic: " + nomComic + " - " + "Numero: " + numComic
+								+ " - Key issue:  " + clave;
+						keyIssueDataList.add(keyIssueData);
+					}
+				}
+
 				// Dividir los valores separados por guiones ("-") en cada campo y contarlos
 				// como entradas independientes en las estadísticas
 				String[] varianteList = nomVariante.split("-");
@@ -2243,13 +2253,13 @@ public class DBLibreriaManager extends Comic {
 		for (Map.Entry<String, Integer> entry : estadoList) {
 			estadisticaStr.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
 		}
-		
+
 		// Agregar los valores de formato a la estadística
 		estadisticaStr.append(lineaDecorativa1);
 		estadisticaStr.append("\nEstadística de key issue:\n");
 		estadisticaStr.append(lineaDecorativa2);
 		for (String keyIssueData : keyIssueDataList) {
-		    estadisticaStr.append(keyIssueData).append("\n");
+			estadisticaStr.append(keyIssueData).append("\n");
 		}
 
 		// Agregar los valores de formato a la estadística
@@ -2278,7 +2288,7 @@ public class DBLibreriaManager extends Comic {
 			abrirArchivoConProgramaAsociado(rutaCompleta);
 
 		} catch (IOException e) {
-			
+
 			ventanas.alertaException("Error al guardar la estadística en el archivo: " + e.getMessage());
 		}
 	}

@@ -1,5 +1,6 @@
 package Funcionamiento;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -8,6 +9,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ProcessBuilder.Redirect;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -24,10 +27,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import JDBC.DBManager;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 
 /**
  * Esta clase sirve para realizar diferentes funciones realizanas con la
@@ -671,7 +681,109 @@ public class Utilidades {
 		return codigo.toString();
 	}
 
-	
+	private static final Map<String, Double> tasasDeCambio = new HashMap<>();
+	static {
+		// Añadir las tasas de cambio para cada país
+		tasasDeCambio.put("Japón (Japan)", 141.75);
+		tasasDeCambio.put("Estados Unidos (United States)", 1.0);
+		tasasDeCambio.put("Francia (France)", 0.9085);
+		tasasDeCambio.put("Italia (Italy)", 0.9085);
+		tasasDeCambio.put("España (Spain)", 0.9085);
+		tasasDeCambio.put("Reino Unido (United Kingdom)", 0.78);
+		tasasDeCambio.put("Alemania (Germany)", 0.9085);
+		tasasDeCambio.put("Brasil (Brazil)", 4.87);
+		tasasDeCambio.put("Corea del Sur (South Korea)", 1304.04);
+		tasasDeCambio.put("México (Mexico)", 17.08);
+		tasasDeCambio.put("Canadá (Canada)", 1.34);
+		tasasDeCambio.put("China (China)", 7.17);
+		tasasDeCambio.put("Australia (Australia)", 1.67);
+		tasasDeCambio.put("Argentina (Argentina)", 276.01);
+		tasasDeCambio.put("India (India)", 82.68);
+		tasasDeCambio.put("Bélgica (Belgium)", 0.9085);
+		tasasDeCambio.put("Países Bajos (Netherlands)", 0.9085);
+		tasasDeCambio.put("Portugal (Portugal)", 0.9085);
+		tasasDeCambio.put("Suecia (Sweden)", 10.59);
+		tasasDeCambio.put("Suiza (Switzerland)", 0.87);
+		tasasDeCambio.put("Finlandia (Finland)", 0.9085);
+		tasasDeCambio.put("Noruega (Norway)", 10.14);
+		tasasDeCambio.put("Dinamarca (Denmark)", 6.77);
+	}
 
-	
+	public static double convertirMonedaADolar(String pais, double cantidadMonedaLocal) {
+
+		if (tasasDeCambio.containsKey(pais)) {
+			double tasaDeCambio = tasasDeCambio.get(pais);
+			if (cantidadMonedaLocal > 0) {
+				return cantidadMonedaLocal / tasaDeCambio;
+			}
+		}
+		return 0; // Devolver 0 si el país no está en la lista o si la cantidad es negativa
+	}
+
+	/**
+	 * Funcion que permite que los diferentes raw de los TableColumn se puedan
+	 * pinchar. Al hacer, se abre una URL en tu navegador
+	 * 
+	 * @param columna
+	 */
+	public static void busquedaHyperLink(TableColumn<Comic, String> columna) {
+		columna.setCellFactory(column -> {
+			return new TableCell<Comic, String>() {
+				private VBox vbox = new VBox();
+				private String lastItem = null;
+
+				@Override
+				protected void updateItem(String item, boolean empty) {
+					super.updateItem(item, empty);
+
+					if (empty || item == null) {
+						setGraphic(null);
+					} else {
+						if (!item.equals(lastItem)) { // Verificar si el contenido ha cambiado
+							lastItem = item;
+							vbox.getChildren().clear();
+
+							if (columna.getText().equalsIgnoreCase("Referencia")) {
+								VBox hyperlinkVBox = new VBox();
+								Hyperlink hyperlink;
+								if (Utilidades.isValidUrl(item)) {
+									ReferenciaHyperlink referenciaHyperlink = new ReferenciaHyperlink("Referencia",
+											item);
+									hyperlink = new Hyperlink(referenciaHyperlink.getDisplayText());
+									hyperlink.setOnAction(event -> {
+										// Implement the behavior when the hyperlink is clicked
+										if (Desktop.isDesktopSupported()) {
+											try {
+												Desktop.getDesktop().browse(new URI(referenciaHyperlink.getUrl()));
+											} catch (IOException | URISyntaxException e) {
+												e.printStackTrace();
+											}
+										}
+									});
+								} else {
+									// Not a valid URL, set the displayed text as "Sin Referencia" (non-clickable)
+									Text text = new Text("Sin \nReferencia");
+									hyperlinkVBox.getChildren().add(text);
+									hyperlink = new Hyperlink();
+								}
+
+								hyperlink.getStyleClass().add("hyperlink");
+								hyperlinkVBox.getChildren().add(hyperlink);
+								vbox.getChildren().add(hyperlinkVBox);
+							}
+						}
+						setGraphic(vbox);
+					}
+				}
+			};
+		});
+	}
+
+	// Check if a given string is a valid URL
+	public static boolean isValidUrl(String url) {
+		String urlRegex = "^(https?|ftp)://.*$";
+		Pattern pattern = Pattern.compile(urlRegex);
+		Matcher matcher = pattern.matcher(url);
+		return matcher.matches();
+	}
 }

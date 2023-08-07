@@ -407,6 +407,7 @@ public class CrearBBDDController implements Initializable {
 			        "ID INT NOT NULL AUTO_INCREMENT, " +
 			        "nomComic VARCHAR(150) NOT NULL, " +
 			        "caja_deposito TEXT, " +
+			        "precio_comic DOUBLE NOT NULL, " + // Cambiado el tipo a DOUBLE
 			        "numComic INT NOT NULL, " +
 			        "nomVariante VARCHAR(150) NOT NULL, " +
 			        "firma VARCHAR(150) NOT NULL, " +
@@ -419,6 +420,7 @@ public class CrearBBDDController implements Initializable {
 			        "puntuacion VARCHAR(300) NOT NULL, " +
 			        "portada TEXT, " +
 			        "key_issue TEXT, " + // Allow NULL values for key_issue
+			        "url_referencia TEXT NOT NULL, " +
 			        "estado TEXT NOT NULL, " +
 			        "PRIMARY KEY (ID)) " +
 			        "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
