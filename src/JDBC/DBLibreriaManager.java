@@ -83,16 +83,16 @@ public class DBLibreriaManager extends Comic {
 	public static List<String> listaProcedencia = new ArrayList<>();
 	public static List<String> listaCaja = new ArrayList<>();
 
-	public static ArrayList<String> nombreComicList = new ArrayList<>();
-	public static ArrayList<String> numeroComicList = new ArrayList<>();
-	public static ArrayList<String> nombreFirmaList = new ArrayList<>();
-	public static ArrayList<String> nombreGuionistaList = new ArrayList<>();
-	public static ArrayList<String> nombreVarianteList = new ArrayList<>();
-	public static ArrayList<String> numeroCajaList = new ArrayList<>();
-	public static ArrayList<String> nombreProcedenciaList = new ArrayList<>();
-	public static ArrayList<String> nombreFormatoList = new ArrayList<>();
-	public static ArrayList<String> nombreEditorialList = new ArrayList<>();
-	public static ArrayList<String> nombreDibujanteList = new ArrayList<>();
+	public static List<String> nombreComicList = new ArrayList<>();
+	public static List<String> numeroComicList = new ArrayList<>();
+	public static List<String> nombreFirmaList = new ArrayList<>();
+	public static List<String> nombreGuionistaList = new ArrayList<>();
+	public static List<String> nombreVarianteList = new ArrayList<>();
+	public static List<String> numeroCajaList = new ArrayList<>();
+	public static List<String> nombreProcedenciaList = new ArrayList<>();
+	public static List<String> nombreFormatoList = new ArrayList<>();
+	public static List<String> nombreEditorialList = new ArrayList<>();
+	public static List<String> nombreDibujanteList = new ArrayList<>();
 
 	private static Ventanas nav = new Ventanas();
 	private static Connection conn = null;
