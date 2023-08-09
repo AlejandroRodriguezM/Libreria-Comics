@@ -1,6 +1,5 @@
 package Funcionamiento;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -9,8 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ProcessBuilder.Redirect;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -27,17 +24,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import JDBC.DBManager;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 
 /**
  * Esta clase sirve para realizar diferentes funciones realizanas con la
@@ -51,6 +41,7 @@ public class Utilidades {
 	public static List<Comic> listaLimpia = new ArrayList<>();
 	public static List<String> listaLimpiaAutoCompletado = new ArrayList<>();
 	private static FuncionesExcel excel = new FuncionesExcel();
+	
 
 	private static Ventanas nav = new Ventanas();
 
@@ -720,70 +711,5 @@ public class Utilidades {
 		return 0; // Devolver 0 si el país no está en la lista o si la cantidad es negativa
 	}
 
-	/**
-	 * Funcion que permite que los diferentes raw de los TableColumn se puedan
-	 * pinchar. Al hacer, se abre una URL en tu navegador
-	 * 
-	 * @param columna
-	 */
-	public static void busquedaHyperLink(TableColumn<Comic, String> columna) {
-		columna.setCellFactory(column -> {
-			return new TableCell<Comic, String>() {
-				private VBox vbox = new VBox();
-				private String lastItem = null;
 
-				@Override
-				protected void updateItem(String item, boolean empty) {
-					super.updateItem(item, empty);
-
-					if (empty || item == null) {
-						setGraphic(null);
-					} else {
-						if (!item.equals(lastItem)) { // Verificar si el contenido ha cambiado
-							lastItem = item;
-							vbox.getChildren().clear();
-
-							if (columna.getText().equalsIgnoreCase("Referencia")) {
-								VBox hyperlinkVBox = new VBox();
-								Hyperlink hyperlink;
-								if (Utilidades.isValidUrl(item)) {
-									ReferenciaHyperlink referenciaHyperlink = new ReferenciaHyperlink("Referencia",
-											item);
-									hyperlink = new Hyperlink(referenciaHyperlink.getDisplayText());
-									hyperlink.setOnAction(event -> {
-										// Implement the behavior when the hyperlink is clicked
-										if (Desktop.isDesktopSupported()) {
-											try {
-												Desktop.getDesktop().browse(new URI(referenciaHyperlink.getUrl()));
-											} catch (IOException | URISyntaxException e) {
-												e.printStackTrace();
-											}
-										}
-									});
-								} else {
-									// Not a valid URL, set the displayed text as "Sin Referencia" (non-clickable)
-									Text text = new Text("Sin \nReferencia");
-									hyperlinkVBox.getChildren().add(text);
-									hyperlink = new Hyperlink();
-								}
-
-								hyperlink.getStyleClass().add("hyperlink");
-								hyperlinkVBox.getChildren().add(hyperlink);
-								vbox.getChildren().add(hyperlinkVBox);
-							}
-						}
-						setGraphic(vbox);
-					}
-				}
-			};
-		});
-	}
-
-	// Check if a given string is a valid URL
-	public static boolean isValidUrl(String url) {
-		String urlRegex = "^(https?|ftp)://.*$";
-		Pattern pattern = Pattern.compile(urlRegex);
-		Matcher matcher = pattern.matcher(url);
-		return matcher.matches();
-	}
 }
