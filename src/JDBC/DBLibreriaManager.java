@@ -2312,4 +2312,8 @@ public class DBLibreriaManager extends Comic {
 			System.out.println("Error al abrir el archivo: " + e.getMessage());
 		}
 	}
+	
+
+	
+
 }

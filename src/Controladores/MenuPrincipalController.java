@@ -317,6 +317,7 @@ public class MenuPrincipalController implements Initializable {
 		Platform.runLater(() -> ajustarAnchoVBox(prontFrases));
 
 		Platform.runLater(() -> funcionesTabla.seleccionarRaw(tablaBBDD));
+		
 		Platform.runLater(() -> asignarTooltips());
 
 		List<TableColumn<Comic, String>> columnListCarga = Arrays.asList(nombre, caja, numero, variante, firma,
@@ -752,7 +753,7 @@ public class MenuPrincipalController implements Initializable {
 		prontFrases.setOpacity(0);
 		imagencomic.setImage(null);
 
-		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion // Llamada a funcion
+		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 		funcionesTabla.tablaBBDD(libreria.libreriaCompleta(), tablaBBDD, columnList); // Llamada a funcion
 	}
 
@@ -1115,7 +1116,7 @@ public class MenuPrincipalController implements Initializable {
 			ID = idRow.getID();
 			prontInfo.setOpacity(1);
 			prontInfo.setText(libreria.comicDatos(ID).toString().replace("[", "").replace("]", ""));
-
+			funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 			imagencomic.setImage(libreria.selectorImage(ID));
 			utilidad.deleteImage();
 		}

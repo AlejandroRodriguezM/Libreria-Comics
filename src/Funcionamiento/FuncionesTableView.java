@@ -120,8 +120,8 @@ public class FuncionesTableView {
 						}
 						tooltip.setText(mensaje);
 						tooltip.show(row, event.getSceneX(), event.getSceneY());
-						tooltip.setX(event.getScreenX() + 10); // Ajusta el desplazamiento X según tus necesidades
-						tooltip.setY(event.getScreenY() - 20); // Ajusta el desplazamiento Y según tus necesidades
+						tooltip.setX(event.getScreenX() + 10);
+						tooltip.setY(event.getScreenY() - 20); 
 					}
 				}
 			});
@@ -306,9 +306,6 @@ public class FuncionesTableView {
 	        column.setCellValueFactory(valueFactory);
 	        
 	        busquedaRaw(column,tablaBBDD,columnList);
-//	        if (columnName.equals("referencia")) {
-//	            
-//	        }
 	    }
 	}
 	
