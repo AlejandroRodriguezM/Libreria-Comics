@@ -1,13 +1,17 @@
 package Funcionamiento;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ProcessBuilder.Redirect;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -28,6 +32,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import JDBC.DBManager;
+import javafx.scene.control.TextField;
 
 /**
  * Esta clase sirve para realizar diferentes funciones realizanas con la
@@ -710,6 +715,39 @@ public class Utilidades {
 		}
 		return 0; // Devolver 0 si el país no está en la lista o si la cantidad es negativa
 	}
+	
+    public static boolean isInternetAvailable() {
+        try {
+            InetAddress address = InetAddress.getByName("google.com");
+            return !address.equals("");
+        } catch (UnknownHostException e) {
+            return false;
+        }
+    }
+    
+    public static void guardarUsuario(TextField usuario,String pass) throws IOException {
+    	
+		String userHome = System.getProperty("user.home");
+		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
+		String carpetaLibreria = ubicacion + File.separator + "libreria";
+		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion_usuario.conf";
+    	
+		FileWriter fileWriter = new FileWriter(archivoConfiguracion);
+		BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+
+		bufferedWriter.write("###############################");
+		bufferedWriter.newLine();
+		bufferedWriter.write("Usuario y contraseño del usuario");
+		bufferedWriter.newLine();
+		bufferedWriter.write("###############################");
+		bufferedWriter.newLine();
+		bufferedWriter.write("Usuario: " + usuario.getText());
+		bufferedWriter.newLine();
+		bufferedWriter.write("Password: " + pass);
+		bufferedWriter.newLine();
+
+		bufferedWriter.close();
+    }
 
 
 }

@@ -73,10 +73,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.converter.IntegerStringConverter;
@@ -89,52 +90,51 @@ import javafx.util.converter.IntegerStringConverter;
  */
 public class CrearBBDDController implements Initializable {
 
-	@FXML
-	private Button botonCrearBBDD;
+    @FXML
+    private Button botonCrearBBDD;
 
-	@FXML
-	private Button botonLimpiarDatos;
+    @FXML
+    private Button botonLimpiarDatos;
 
-	@FXML
-	private Button botonSalir;
+    @FXML
+    private Button botonSalir;
 
-	@FXML
-	private Button botonVolver;
+    @FXML
+    private Button botonVolver;
 
-	@FXML
-	private TextField nombreBBDD;
+    @FXML
+    private Label etiquetaHost;
 
-	@FXML
-	private TextField userBBDD;
+    @FXML
+    private TextField nombreBBDD;
 
-	@FXML
-	private TextField puertoBBDD;
+    @FXML
+    private TextField nombreHost;
 
-	@FXML
-	private ToggleGroup estado;
+    @FXML
+    private PasswordField passBBDD;
 
-	@FXML
-	private PasswordField passBBDD;
+    @FXML
+    private TextField passUsuarioText;
 
-	@FXML
-	private PasswordField nombreHost;
+    @FXML
+    private Label prontInformativo;
 
-	@FXML
-	private Label prontInformativo;
+    @FXML
+    private TextField puertoBBDD;
 
-	@FXML
-	private Label etiquetaHost;
+    @FXML
+    private ToggleButton toggleEye;
 
-	@FXML
-	private RadioButton noOffline;
+    @FXML
+    private ImageView toggleEyeImageView;
 
-	@FXML
-	private RadioButton siOnline;
+    @FXML
+    private TextField userBBDD;
 
 	private static Ventanas nav = new Ventanas();
 
 	private static AccesoBBDDController acceso = new AccesoBBDDController();
-
 	private static CrearBBDDController cbd = null;
 	public static String DB_USER;
 	public static String DB_PASS;
@@ -151,7 +151,7 @@ public class CrearBBDDController implements Initializable {
 	 * @param resources los recursos utilizados por la vista
 	 */
 	@Override
-	public void initialize(URL arg0, ResourceBundle arg1) {
+	public void initialize(URL location, ResourceBundle resources) {
 		detenerAnimacion();
 		iniciarAnimacionEspera();
 
@@ -191,6 +191,48 @@ public class CrearBBDDController implements Initializable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		Image eyeOpenImage = new Image(getClass().getResourceAsStream("/imagenes/visible.png"), 20, 20, true, true);
+        Image eyeClosedImage = new Image(getClass().getResourceAsStream("/imagenes/hide.png"), 20, 20, true, true);
+        
+
+        // Configurar el ImageView con la imagen de ojo abierto inicialmente
+		toggleEyeImageView.setImage(eyeClosedImage);
+
+		// Establecer el manejador de eventos para el ImageView
+		toggleEyeImageView.setOnMouseClicked(event -> {
+			if (toggleEyeImageView.getImage() == eyeOpenImage) {
+				passUsuarioText.setVisible(false);
+				passUsuarioText.setDisable(true);
+				passBBDD.setVisible(true);
+				passBBDD.setDisable(false);
+
+				passBBDD.setPromptText(passBBDD.getPromptText());
+				passUsuarioText.setText(passBBDD.getText());
+				toggleEyeImageView.setImage(eyeClosedImage); // Cambiar a la imagen de ojo cerrado
+			} else {
+				passUsuarioText.setVisible(true);
+				passUsuarioText.setDisable(false);
+				passBBDD.setVisible(false);
+				passBBDD.setDisable(true);
+
+				passBBDD.setText(passUsuarioText.getText());
+				passBBDD.setPromptText(passBBDD.getPromptText());
+				toggleEyeImageView.setImage(eyeOpenImage); // Cambiar a la imagen de ojo abierto
+			}
+		});
+        
+		// Escuchador para el campo de texto "password"
+        passBBDD.textProperty().addListener((observable, oldValue, newValue) -> {
+
+        	passUsuarioText.setText(passBBDD.getText());
+		});
+
+		// Escuchador para el campo de texto "puerto"
+        passBBDD.textProperty().addListener((observable, oldValue, newValue) -> {
+        	passBBDD.setText(passUsuarioText.getText());
+		});
+		
 	}
 
 	/**
@@ -345,20 +387,7 @@ public class CrearBBDDController implements Initializable {
 	 */
 	public String selectorHost() {
 
-		String host = "localhost";
-
-		if (siOnline.isSelected()) {
-			etiquetaHost.setText("Nombre del host: ");
-			nombreHost.setDisable(false);
-			nombreHost.setOpacity(1);
-			host = nombreHost.getText();
-		}
-		if (noOffline.isSelected()) {
-			etiquetaHost.setText("Offline");
-			nombreHost.setDisable(true);
-			nombreHost.setOpacity(0);
-			host = "localhost";
-		}
+		String host = nombreHost.getText();
 		return host;
 	}
 
@@ -458,7 +487,7 @@ public class CrearBBDDController implements Initializable {
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
 		String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
-				+ acceso.obtenerDatoDespuesDeDosPuntos("Database",true) + File.separator + "portadas";
+				+ acceso.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas";
 		File portadasFolder = new File(defaultImagePath);
 
 		if (!portadasFolder.exists()) {

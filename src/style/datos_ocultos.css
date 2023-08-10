@@ -1,0 +1,63 @@
+/* Estilo para toda la ventana */
+.root {
+    -fx-background-color: #f2f2f2;
+}
+
+/* Estilo para los labels */
+#nomUsuarioLabel,
+#passUsuarioLabel {
+    -fx-font-size: 14px;
+    -fx-text-fill: #333333;
+    -fx-font-weight: bold;
+    -fx-padding: 5px 0;
+    -fx-background-color: #f9f9f9;
+    -fx-background-radius: 5px;
+    -fx-padding: 5px 10px;
+}
+
+/* Estilo para los campos de texto */
+#nomUsuarioText,
+#passUsuarioText,#passUsuarioTextField {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cccccc;
+    -fx-font-size: 14px;
+    -fx-prompt-text-fill: #999999;
+    -fx-padding: 5px;
+}
+
+#nomUsuarioText:focused,
+#passUsuarioText:focused,#passUsuarioTextField:focused {
+    -fx-border-color: #6ab04c;
+}
+
+/* Estilo para el CheckBox */
+#checkRecordar {
+    -fx-font-size: 14px;
+    -fx-text-fill: #333333;
+    -fx-padding: 5px 0;
+    -fx-background-color: #f9f9f9;
+    -fx-background-radius: 5px;
+    -fx-padding: 5px 10px;
+}
+
+#checkRecordar .text {
+    -fx-background-color: #f9f9f9;
+    -fx-padding: 5px;
+}
+
+/* Estilo para el botón */
+#botonAccesobbddOnline {
+    -fx-background-color: #6ab04c;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 20px;
+}
+
+#botonAccesobbddOnline:hover {
+    -fx-background-color: #4d8c3c;
+}
+
+#botonAccesobbddOnline:pressed {
+    -fx-background-color: #3a692c;
+}

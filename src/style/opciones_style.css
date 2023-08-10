@@ -1,4 +1,4 @@
-#prontEstadoConexion {
+#prontEstadoConexion, #prontEstadoFichero {
     -fx-font-size: 22.0px;
     -fx-font-weight: bold;
     -fx-text-fill: #333333;
@@ -9,12 +9,23 @@
     -fx-border-radius: 4.0px;
 }
 
-#prontEstadoConexion:hover {
+#prontEstadoFichero {
+    -fx-font-size: 16.0px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+    -fx-background-color: #ffffff;
+    -fx-padding: 8.0px;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1.0px;
+    -fx-border-radius: 4.0px;
+}
+
+#prontEstadoConexion:hover,#prontEstadoFichero:hover {
     -fx-background-color: #f0f0f0;
     -fx-cursor: hand;
 }
 
-#prontEstadoConexion:pressed {
+#prontEstadoConexion:pressed,#prontEstadoFichero:pressed {
     -fx-background-color: #dddddd;
 }
 
@@ -94,8 +105,8 @@
     -fx-opacity: 0.8;
 }
 
-.label {
-    -fx-font-size: 12.0px;
+#etiquetaHost,#nombre_label,#password_label,#puerto_label,#usuario_label {
+    -fx-font-size: 10px;
     -fx-font-weight: bold;
     -fx-text-fill: #333333;
     -fx-padding: 2.0px 2.0px;
@@ -105,15 +116,15 @@
     -fx-border-radius: 4.0px;
 }
 
-.label:hover {
+#etiquetaHost:hover, #nombre_label:hover, #password_label:hover, #puerto_label:hover, #usuario_label:hover {
     -fx-background-color: #e0e0e0;
 }
 
-.label:focused {
+#etiquetaHost:focused, #nombre_label:focused, #password_label:focused, #puerto_label:focused, #usuario_label:focused {
     -fx-background-color: #ffffff;
     -fx-border-color: #4a90e2;
 }
 
-.label:disabled {
+#etiquetaHost:disabled, #nombre_label:disabled, #password_label:disabled, #puerto_label:disabled, #usuario_label:disabled {
     -fx-opacity: 0.6;
 }

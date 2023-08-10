@@ -29,6 +29,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -39,14 +41,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBManager;
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -56,7 +58,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.converter.IntegerStringConverter;
@@ -70,22 +75,13 @@ import javafx.util.converter.IntegerStringConverter;
 public class OpcionesDatosController implements Initializable {
 
 	@FXML
-	private Label password_label;
+	private Label alarmaConexion;
 
 	@FXML
-	private Label puerto_label;
-
+	private Label alarmaConexionInternet;
+	
 	@FXML
-	private Label nombre_label;
-
-	@FXML
-	private Label host_label;
-
-	@FXML
-	private Label etiquetaHost;
-
-	@FXML
-	private Label prontEstadoFichero;
+	private Label alarmaConexionSql;
 
 	@FXML
 	private Button botonCrearBBDD;
@@ -106,7 +102,7 @@ public class OpcionesDatosController implements Initializable {
 	private Button boton_restaurar;
 
 	@FXML
-	private ToggleGroup estado;
+	private Label etiquetaHost;
 
 	@FXML
 	private ComboBox<String> nombreBBDD;
@@ -115,19 +111,45 @@ public class OpcionesDatosController implements Initializable {
 	private TextField nombreHost;
 
 	@FXML
+	private Label nombre_label;
+
+	@FXML
 	private PasswordField pass;
+
+	@FXML
+	private TextField passUsuarioTextField;
+
+	@FXML
+	private Label password_label;
+
+	@FXML
+	private Label prontEstadoFichero;
+
+	@FXML
+	private Label puerto_label;
 
 	@FXML
 	private TextField puertobbdd;
 
 	@FXML
+	private ToggleButton toggleEye;
+
+	@FXML
+	private ImageView toggleEyeImageView;
+
+	@FXML
 	private TextField usuario;
+
+	@FXML
+	private Label usuario_label;
 
 	private Timeline timeline;
 
-	@FXML
-	private ComboBox<String> tipoServidorSwitch;
-
+	private Timeline animacionAlarmaTimeline;
+	private Timeline animacionAlarmaOnlineTimeline;
+	private Timeline animacionAlarmaTimelineInternet;
+	private Timeline animacionAlarmaTimelineMySql;
+	
 	private static Ventanas nav = new Ventanas();
 	private static AccesoBBDDController acceso = new AccesoBBDDController();
 
@@ -138,32 +160,90 @@ public class OpcionesDatosController implements Initializable {
 	 * @param resources los recursos utilizados por la vista
 	 */
 	@Override
-	public void initialize(URL arg0, ResourceBundle arg1) {
+	public void initialize(URL location, ResourceBundle resources) {
+
+		Thread checkerThread = new Thread(() -> {
+			try {
+				while (true) {
+					boolean estadoInternet = Utilidades.isInternetAvailable();
+					String port = obtenerDatoDespuesDeDosPuntos("Puerto");
+					String host = obtenerDatoDespuesDeDosPuntos("Hosting");
+					Platform.runLater(() -> {
+					if (estadoInternet) {
+
+						if (animacionAlarmaTimelineInternet != null) {
+							animacionAlarmaTimelineInternet.stop();
+						}
+						asignarTooltip(alarmaConexionInternet, "Tienes conexion a internet");
+
+						alarmaConexionInternet.setStyle("-fx-background-color: blue;");
+					} else {
+						asignarTooltip(alarmaConexionInternet, "No tienes conexion a internet");
+
+						iniciarAnimacionInternet();
+					}
+
+					if (isMySQLServiceRunning(host, port)) {
+						if (animacionAlarmaTimelineMySql != null && animacionAlarmaTimelineMySql.getStatus() == Animation.Status.RUNNING) {
+						    animacionAlarmaTimelineMySql.stop();
+						}
+						asignarTooltip(alarmaConexionSql, "Servicio de MySql activado");
+
+						alarmaConexionSql.setStyle("-fx-background-color: green;");
+					} else {
+						asignarTooltip(alarmaConexionSql, "Servicio de MySql desactivado");
+
+						iniciarAnimacionSql();
+					}
+					});
+					asignarTooltip(alarmaConexion, "Esperando guardado/modificacion de datos de la base de datos local");
+					Thread.sleep(15000); // Espera 15 segundos
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		});
+
+		checkerThread.setDaemon(true); // Marcar el hilo como daemon
+		checkerThread.start();
+
+		Image eyeOpenImage = new Image(getClass().getResourceAsStream("/imagenes/visible.png"), 20, 20, true, true);
+		Image eyeClosedImage = new Image(getClass().getResourceAsStream("/imagenes/hide.png"), 20, 20, true, true);
+
+		// Configurar el ImageView con la imagen de ojo abierto inicialmente
+		toggleEyeImageView.setImage(eyeClosedImage);
+
+		// Establecer el manejador de eventos para el ImageView
+		toggleEyeImageView.setOnMouseClicked(event -> {
+			if (toggleEyeImageView.getImage() == eyeOpenImage) {
+				passUsuarioTextField.setVisible(false);
+				passUsuarioTextField.setDisable(true);
+				pass.setVisible(true);
+				pass.setDisable(false);
+
+				pass.setPromptText(pass.getPromptText());
+				passUsuarioTextField.setText(pass.getText());
+				toggleEyeImageView.setImage(eyeClosedImage); // Cambiar a la imagen de ojo cerrado
+			} else {
+				passUsuarioTextField.setVisible(true);
+				passUsuarioTextField.setDisable(false);
+				pass.setVisible(false);
+				pass.setDisable(true);
+
+				pass.setText(passUsuarioTextField.getText());
+				pass.setPromptText(pass.getPromptText());
+				toggleEyeImageView.setImage(eyeOpenImage); // Cambiar a la imagen de ojo abierto
+			}
+		});
+
 		iniciarAnimacionEspera();
 		restringir_entrada_datos();
 		acceso.crearEstructura();
-
-		rellenarComboBox();
 		formulario_local(); // Mostrar formulario local por defecto
 
-		tipoServidorSwitch.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-
-			// Actualizar la pantalla en tiempo real
-			Platform.runLater(() -> {
-				if (newValue.equals("Local")) {
-					limpiar_datos();
-					formulario_local();
-					iniciarAnimacionEspera();
-				} else if (newValue.equals("Online")) {
-					limpiar_datos();
-					formulario_online();
-					iniciarAnimacionEspera();
-				}
-
-				actualizarComboBoxNombreBBDD();
-			});
-
-		});
+		limpiar_datos();
+		formulario_local();
+		iniciarAnimacionEspera();
 
 		// Escuchador para el campo de texto "usuario"
 		usuario.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -177,6 +257,15 @@ public class OpcionesDatosController implements Initializable {
 			Platform.runLater(() -> {
 				actualizarComboBoxNombreBBDD();
 			});
+			passUsuarioTextField.setText(pass.getText());
+		});
+
+		// Escuchador para el campo de texto "password"
+		passUsuarioTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+			Platform.runLater(() -> {
+				actualizarComboBoxNombreBBDD();
+			});
+			pass.setText(passUsuarioTextField.getText());
 		});
 
 		// Escuchador para el campo de texto "puerto"
@@ -192,15 +281,25 @@ public class OpcionesDatosController implements Initializable {
 				actualizarComboBoxNombreBBDD();
 			});
 		});
+		alarmaConexion.setStyle("-fx-background-color: yellow;");
+		iniciarAnimacionAlarma();
 	}
-
-	/**
-	 * Permite rellenar los datos de los comboBox con los datos de las listas
-	 */
-	public void rellenarComboBox() {
-		ObservableList<String> tipoServidor = FXCollections.observableArrayList("Local", "Online");
-		tipoServidorSwitch.setItems(tipoServidor);
-		tipoServidorSwitch.getSelectionModel().selectFirst();
+	
+	private void asignarTooltip(Label label, String mensaje) {
+		Tooltip tooltip = new Tooltip(mensaje);
+		label.setTooltip(tooltip);
+	}
+	
+	public static boolean isMySQLServiceRunning(String host, String portString) {
+		try {
+			int port = Integer.parseInt(portString); // Convertir la cadena a un entero
+			InetAddress address = InetAddress.getByName(host);
+			Socket socket = new Socket(address, port);
+			socket.close();
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 	public void formulario_local() {
@@ -237,43 +336,11 @@ public class OpcionesDatosController implements Initializable {
 		nombreHost.setEditable(false);
 	}
 
-	public void formulario_online() {
-		String userHome = System.getProperty("user.home");
-		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
-		String carpetaLibreria = ubicacion + File.separator + "libreria";
-		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion_online.conf";
-		nombreHost.setText("");
-		try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				if (line.startsWith("Usuario: ")) {
-					String usuarioTexto = line.substring("Usuario: ".length());
-					usuario.setText(usuarioTexto);
-				} else if (line.startsWith("Password: ")) {
-					String passwordTexto = line.substring("Password: ".length());
-					pass.setText(passwordTexto);
-				} else if (line.startsWith("Puerto: ")) {
-					String puertoTexto = line.substring("Puerto: ".length());
-					puertobbdd.setText(puertoTexto);
-				} else if (line.startsWith("Database: ")) {
-					String databaseTexto = line.substring("Database: ".length());
-					nombreBBDD.getSelectionModel().select(databaseTexto);
-				} else if (line.startsWith("Hosting: ")) {
-					String hostingTexto = line.substring("Hosting: ".length());
-					nombreHost.setText(hostingTexto);
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		actualizarComboBoxNombreBBDD();
-		nombreHost.setEditable(true);
-	}
-
 	private void actualizarComboBoxNombreBBDD() {
 		String usuario = this.usuario.getText();
 		String password = this.pass.getText();
+		;
+
 		String puerto = this.puertobbdd.getText();
 		String hosting = this.nombreHost.getText();
 
@@ -284,8 +351,8 @@ public class OpcionesDatosController implements Initializable {
 		} else {
 			nombreBBDD.getItems().clear();
 			nombreBBDD.setDisable(false);
-
 			// Lógica para obtener las opciones del ComboBox nombreBBDD
+
 			List<String> opciones = obtenerOpcionesNombreBBDD(usuario, password, puerto, hosting);
 
 			if (!opciones.isEmpty()) {
@@ -319,19 +386,19 @@ public class OpcionesDatosController implements Initializable {
 				resultSet = statement.executeQuery("SHOW DATABASES");
 
 				// Agregar los nombres de las bases de datos a la lista de opciones
-	            while (resultSet.next()) {
-	                String nombreBD = resultSet.getString(1);
-	                String urlBD = url + nombreBD;
-	                Connection dbConnection = DriverManager.getConnection(urlBD, usuario, password);
-	                Statement dbStatement = dbConnection.createStatement();
-	                ResultSet dbResultSet = dbStatement.executeQuery("SHOW TABLES LIKE 'comicsbbdd'");
-	                if (dbResultSet.next()) {
-	                    opciones.add(nombreBD);
-	                }
-	                dbResultSet.close();
-	                dbStatement.close();
-	                dbConnection.close();
-	            }
+				while (resultSet.next()) {
+					String nombreBD = resultSet.getString(1);
+					String urlBD = url + nombreBD;
+					Connection dbConnection = DriverManager.getConnection(urlBD, usuario, password);
+					Statement dbStatement = dbConnection.createStatement();
+					ResultSet dbResultSet = dbStatement.executeQuery("SHOW TABLES LIKE 'comicsbbdd'");
+					if (dbResultSet.next()) {
+						opciones.add(nombreBD);
+					}
+					dbResultSet.close();
+					dbStatement.close();
+					dbConnection.close();
+				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -357,10 +424,6 @@ public class OpcionesDatosController implements Initializable {
 
 	private boolean validarDatosConexion(String usuario, String password, String puerto, String hosting) {
 		try {
-
-			if (tipoServidorSwitch.getSelectionModel().getSelectedItem().equals("online")) {
-				return true;
-			}
 
 			String url = "jdbc:mysql://" + hosting + ":" + puerto + "/";
 			Connection connection = DriverManager.getConnection(url, usuario, password);
@@ -443,13 +506,8 @@ public class OpcionesDatosController implements Initializable {
 	 */
 	@FXML
 	void guardarDatos(ActionEvent event) throws SQLException {
-		boolean esLocal = tipoServidorSwitch.getSelectionModel().getSelectedItem().equals("Local");
 
-		if (esLocal) {
-			guardar_datos_base_local();
-		} else {
-			guardar_datos_base_online();
-		}
+		guardar_datos_base_local();
 
 	}
 
@@ -491,66 +549,24 @@ public class OpcionesDatosController implements Initializable {
 				if (!carpeta_backupsFile.exists()) {
 					carpeta_backupsFile.mkdir();
 				}
-
+				detenerAnimacion();
 				prontEstadoFichero.setStyle("-fx-background-color: #A0F52D");
-				iniciarAnimacionConectado();
+				iniciarAnimacionGuardado();
+
+				
+				alarmaConexion.setStyle("-fx-background-color: green;");
+				iniciarAnimacionAlarmaOnline();
+				asignarTooltip(alarmaConexion, "Datos guardados correctamente.");
+
 			} else {
+				asignarTooltip(alarmaConexion, "No hay datos para poder guardar");
+
 				detenerAnimacion();
 				prontEstadoFichero.setStyle("-fx-background-color: #DD370F");
 				iniciarAnimacionBBDDError();
-			}
+				alarmaConexion.setStyle("-fx-background-color: yellow;");
+				iniciarAnimacionAlarma();
 
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	public void guardar_datos_base_online() throws SQLException {
-		String userHome = System.getProperty("user.home");
-		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
-		String carpetaLibreria = ubicacion + File.separator + "libreria";
-		String carpetaBackup = carpetaLibreria + File.separator + nombreBBDD.getSelectionModel().getSelectedItem()
-				+ File.separator + "backups";
-		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion_online.conf";
-
-		try {
-			if (verificarDatos()) {
-				acceso.crearEstructura();
-
-				FileWriter fileWriter = new FileWriter(archivoConfiguracion);
-				BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-
-				bufferedWriter.write("###############################");
-				bufferedWriter.newLine();
-				bufferedWriter.write("Fichero de configuracion de la libreria");
-				bufferedWriter.newLine();
-				bufferedWriter.write("###############################");
-				bufferedWriter.newLine();
-				bufferedWriter.write("Usuario: " + usuario.getText());
-				bufferedWriter.newLine();
-				bufferedWriter.write("Password: " + pass.getText());
-				bufferedWriter.newLine();
-				bufferedWriter.write("Puerto: " + puertobbdd.getText());
-				bufferedWriter.newLine();
-				bufferedWriter.write("Database: " + nombreBBDD.getSelectionModel().getSelectedItem());
-				bufferedWriter.newLine();
-				bufferedWriter.write("Hosting: " + nombreHost.getText());
-				bufferedWriter.newLine();
-
-				bufferedWriter.close();
-
-				File carpeta_backupsFile = new File(carpetaBackup);
-				if (!carpeta_backupsFile.exists()) {
-					carpeta_backupsFile.mkdir();
-				}
-
-				prontEstadoFichero.setStyle("-fx-background-color: #A0F52D");
-				iniciarAnimacionConectado();
-			} else {
-				detenerAnimacion();
-				prontEstadoFichero.setStyle("-fx-background-color: #DD370F");
-				iniciarAnimacionBBDDError();
 			}
 
 		} catch (IOException e) {
@@ -585,12 +601,16 @@ public class OpcionesDatosController implements Initializable {
 		}
 
 		if (JDBC.DBManager.isConnected()) {
+			DBManager.close();
 			return true;
 		} else {
 			prontEstadoFichero.setStyle("-fx-background-color: #DD370F");
 			iniciarAnimacionBBDDError();
 			return false;
 		}
+		
+		
+		
 	}
 
 	/**
@@ -615,13 +635,13 @@ public class OpcionesDatosController implements Initializable {
 					}
 				}
 			}
-			
+
 			// Volver a crear los archivos
 			acceso.crearEstructura();
 
 			limpiar_datos();
 			detenerAnimacion();
-			prontEstadoFichero.setStyle("-fx-background-color: #A0F52D");
+			prontEstadoFichero.setStyle("-fx-background-color: #f5af2d");
 			iniciarAnimacionRestaurado();
 		} else {
 			detenerAnimacion();
@@ -641,10 +661,34 @@ public class OpcionesDatosController implements Initializable {
 		puertobbdd.setText("");
 
 		nombreBBDD.getSelectionModel().clearSelection();
+	}
+	
+	/**
+	 * Obtiene el dato que sigue a dos puntos (:) en una línea específica del
+	 * archivo de configuración.
+	 *
+	 * @param linea la línea específica para buscar el dato
+	 * @return el dato encontrado o una cadena vacía si no se encuentra
+	 */
+	public String obtenerDatoDespuesDeDosPuntos(String linea) {
+		String userHome = System.getProperty("user.home");
+		String ubicacion = userHome + "\\AppData\\Roaming";
+		String carpetaLibreria = ubicacion + "\\libreria";
+		String archivoConfiguracion;
 
-		if (tipoServidorSwitch.getSelectionModel().getSelectedItem().equals("online")) {
-			nombreHost.setText("");
+		archivoConfiguracion = carpetaLibreria + "\\configuracion_local.conf";
+
+		try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				if (line.startsWith(linea + ": ")) {
+					return line.substring(linea.length() + 2).trim();
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+		return "";
 	}
 
 	/**
@@ -675,11 +719,33 @@ public class OpcionesDatosController implements Initializable {
 		// Iniciar la animación
 		timeline.play();
 	}
+	
+	private void iniciarAnimacionSql() {
+		animacionAlarmaTimelineMySql = new Timeline();
+		animacionAlarmaTimelineMySql.setCycleCount(Timeline.INDEFINITE);
+
+		KeyFrame mostrarAmarillo1 = new KeyFrame(Duration.ZERO,
+				new KeyValue(alarmaConexionSql.styleProperty(), "-fx-background-color: orange;"));
+		KeyFrame mostratRojo1 = new KeyFrame(Duration.seconds(0.0),
+				new KeyValue(alarmaConexionSql.styleProperty(), "-fx-background-color: yellow;"));
+		KeyFrame mostrarAmarillo2 = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(alarmaConexionSql.styleProperty(), "-fx-background-color: orange;"));
+		KeyFrame mostratRojo2 = new KeyFrame(Duration.seconds(1.0),
+				new KeyValue(alarmaConexionSql.styleProperty(), "-fx-background-color: yellow;"));
+		KeyFrame mostrarAmarillo3 = new KeyFrame(Duration.seconds(1.5),
+				new KeyValue(alarmaConexionSql.styleProperty(), "-fx-background-color: orange;"));
+		KeyFrame mostratRojo3 = new KeyFrame(Duration.seconds(2.0),
+				new KeyValue(alarmaConexionSql.styleProperty(), "-fx-background-color: yellow;"));
+
+		animacionAlarmaTimelineMySql.getKeyFrames().addAll(mostrarAmarillo1, mostratRojo1, mostrarAmarillo2,
+				mostratRojo2, mostrarAmarillo3, mostratRojo3);
+		animacionAlarmaTimelineMySql.play();
+	}
 
 	/**
 	 * Inicia la animación de conexión exitosa en la interfaz.
 	 */
-	private void iniciarAnimacionConectado() {
+	private void iniciarAnimacionGuardado() {
 		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
 
@@ -711,13 +777,75 @@ public class OpcionesDatosController implements Initializable {
 		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
 				new KeyValue(prontEstadoFichero.textProperty(), ""));
 		KeyFrame mostrarError2 = new KeyFrame(Duration.seconds(1),
-				new KeyValue(prontEstadoFichero.textProperty(), "ERROR"));
+				new KeyValue(prontEstadoFichero.textProperty(), ""));
 
 		// Agregar los keyframes al timeline
 		timeline.getKeyFrames().addAll(mostrarError, ocultarTexto, mostrarError2);
 
 		// Iniciar la animación
 		timeline.play();
+		
+		iniciarAnimacionAlarma();
+	}
+
+	private void iniciarAnimacionAlarma() {
+		animacionAlarmaTimeline = new Timeline();
+		animacionAlarmaTimeline.setCycleCount(Timeline.INDEFINITE);
+
+		KeyFrame mostrarAmarillo = new KeyFrame(Duration.ZERO,
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: yellow;"));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.0),
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
+		KeyFrame mostrarTransparente = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: yellow;"));
+
+		KeyFrame mostrarAmarilloNuevamente = new KeyFrame(Duration.seconds(1.0),
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
+
+		animacionAlarmaTimeline.getKeyFrames().addAll(mostrarAmarillo, ocultarTexto, mostrarTransparente,
+				mostrarAmarilloNuevamente);
+
+		animacionAlarmaTimeline.play();
+	}
+
+	private void iniciarAnimacionAlarmaOnline() {
+		animacionAlarmaOnlineTimeline = new Timeline();
+		animacionAlarmaOnlineTimeline.setCycleCount(Timeline.INDEFINITE);
+
+		KeyFrame mostrarVerde = new KeyFrame(Duration.ZERO,
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: green;"));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.0),
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
+		KeyFrame mostrarTransparente = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: green;"));
+		KeyFrame mostrarVerdeNuevamente = new KeyFrame(Duration.seconds(1.0),
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
+
+		animacionAlarmaOnlineTimeline.getKeyFrames().addAll(mostrarVerde, ocultarTexto, mostrarTransparente,
+				mostrarVerdeNuevamente);
+		animacionAlarmaOnlineTimeline.play();
+	}
+
+	private void iniciarAnimacionInternet() {
+		animacionAlarmaTimelineInternet = new Timeline();
+		animacionAlarmaTimelineInternet.setCycleCount(Timeline.INDEFINITE);
+
+		KeyFrame mostrarAmarillo1 = new KeyFrame(Duration.ZERO,
+				new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: orange;"));
+		KeyFrame mostratRojo1 = new KeyFrame(Duration.seconds(0.0),
+				new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: red;"));
+		KeyFrame mostrarAmarillo2 = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: orange;"));
+		KeyFrame mostratRojo2 = new KeyFrame(Duration.seconds(1.0),
+				new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: red;"));
+		KeyFrame mostrarAmarillo3 = new KeyFrame(Duration.seconds(1.5),
+				new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: orange;"));
+		KeyFrame mostratRojo3 = new KeyFrame(Duration.seconds(2.0),
+				new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: red;"));
+
+		animacionAlarmaTimelineInternet.getKeyFrames().addAll(mostrarAmarillo1, mostratRojo1, mostrarAmarillo2,
+				mostratRojo2, mostrarAmarillo3, mostratRojo3);
+		animacionAlarmaTimelineInternet.play();
 	}
 
 	/**
@@ -772,8 +900,8 @@ public class OpcionesDatosController implements Initializable {
 		timeline.setCycleCount(Timeline.INDEFINITE);
 
 		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarError = new KeyFrame(Duration.ZERO, new KeyValue(prontEstadoFichero.textProperty(),
-				"Los datos recibidos estan incorrectos."));
+		KeyFrame mostrarError = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontEstadoFichero.textProperty(), "Los datos recibidos estan incorrectos."));
 		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
 				new KeyValue(prontEstadoFichero.textProperty(), ""));
 		KeyFrame mostrarError2 = new KeyFrame(Duration.seconds(1),

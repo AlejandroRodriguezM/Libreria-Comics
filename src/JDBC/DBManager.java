@@ -86,12 +86,17 @@ public class DBManager {
 	 * @param contraBBDD
 	 */
 	public static void datosBBDD(String[] datos) {
-
-		DB_PORT = datos[0];
-		DB_NAME = datos[1];
-		DB_USER = datos[2];
-		DB_PASS = datos[3];
-		DB_HOST = datos[4];
+	        DB_PORT = datos[0];
+	        DB_NAME = datos[1];
+	        DB_USER = datos[2];
+	        DB_PASS = datos[3];
+	        DB_HOST = datos[4];
+	}
+	
+	public static boolean datosConexionCorrectos() {
+	    return !(DB_HOST == null || DB_HOST.isEmpty() || DB_PORT == null || DB_PORT.isEmpty() ||
+	             DB_NAME == null || DB_NAME.isEmpty() || DB_USER == null || DB_USER.isEmpty() ||
+	             DB_PASS == null || DB_PASS.isEmpty());
 	}
 
 	/**
@@ -104,10 +109,8 @@ public class DBManager {
 	 * @return objeto Connection
 	 */
 	public static Connection conexion() {
-	    if (DB_HOST == null || DB_HOST.isEmpty() || DB_PORT == null || DB_PORT.isEmpty() ||
-	        DB_NAME == null || DB_NAME.isEmpty() || DB_USER == null || DB_USER.isEmpty() ||
-	        DB_PASS == null || DB_PASS.isEmpty()) {
-	        nav.alertaException("Los datos de conexión son incorrectos");
+	    if (!datosConexionCorrectos()) {
+//	        nav.alertaException("Los datos de conexión son incorrectos");
 	        return null;
 	    }
 

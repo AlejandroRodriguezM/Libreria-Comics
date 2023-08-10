@@ -1,0 +1,24 @@
+#toogleButton {
+    -fx-background-color: #dddddd;
+    -fx-padding: 5px;
+    -fx-border-radius: 15px;
+    -fx-background-radius: 15px;
+
+}
+
+#toogleButton:selected {
+    -fx-background-color: #6ab04c;
+}
+
+#toogleButton:selected .toggle-button {
+    -fx-translate-x: 40px;
+}
+
+#labelServidor {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+    -fx-background-color: #ffffff;
+    -fx-padding: 5px 10px;
+    -fx-border-radius: 5px;
+}
