@@ -43,15 +43,15 @@ public class FuncionesTableView {
 				@Override
 				protected void updateItem(String item, boolean empty) {
 					super.updateItem(item, empty);
-
 					if (empty || item == null) {
 						setGraphic(null);
-					} else {
+						System.out.println("Hola");
+					} 
+					else {
 						if (!item.equals(lastItem)) { // Verificar si el contenido ha cambiado
 							lastItem = item;
 							vbox.getChildren().clear();
 
-							if (columna.getText().equalsIgnoreCase("Referencia")) {
 								VBox hyperlinkVBox = new VBox();
 								Hyperlink hyperlink;
 								if (isValidUrl(item)) {
@@ -78,7 +78,6 @@ public class FuncionesTableView {
 								hyperlink.getStyleClass().add("hyperlink");
 								hyperlinkVBox.getChildren().add(hyperlink);
 								vbox.getChildren().add(hyperlinkVBox);
-							}
 						}
 						setGraphic(vbox);
 					}
@@ -153,10 +152,7 @@ public class FuncionesTableView {
 	 * 
 	 * @param columna
 	 */
-	public TextArea busquedaRaw(TableColumn<Comic, String> columna, TableView<Comic> tablaBBDD, List<TableColumn<Comic, String>> columnList) {
-		
-        TextArea prontInfoTable = new TextArea(); // Crear un nuevo TextArea
-
+	public void actualizarBusquedaRaw(TableColumn<Comic, String> columna, TableView<Comic> tablaBBDD, List<TableColumn<Comic, String>> columnList) {
 	    columna.setCellFactory(column -> {
 	        return new TableCell<Comic, String>() {
 	            private VBox vbox = new VBox();
@@ -198,9 +194,6 @@ public class FuncionesTableView {
 	                                hyperlink.setOnAction(event -> {
 	                                    try {
 	                                        columnaSeleccionada(tablaBBDD, columnList, nombre);
-	                                        prontInfoTable.setOpacity(1);
-	                                        prontInfoTable.setText("El número de cómics donde aparece la \nbúsqueda: "
-	                                                + nombre + " es: " + libreria.numeroTotalSelecionado(nombre));
 	                                    } catch (SQLException e) {
 	                                        e.printStackTrace();
 	                                    }
@@ -214,8 +207,8 @@ public class FuncionesTableView {
 	            }
 	        };
 	    });
-	    return prontInfoTable; // Devolver el TextArea
 	}
+
 	
 	public TextArea resultadoBusquedaPront(Comic comic) throws SQLException {
 		libreria = new DBLibreriaManager();
@@ -305,7 +298,7 @@ public class FuncionesTableView {
 	        PropertyValueFactory<Comic, String> valueFactory = new PropertyValueFactory<>(columnName);
 	        column.setCellValueFactory(valueFactory);
 	        
-	        busquedaRaw(column,tablaBBDD,columnList);
+	        actualizarBusquedaRaw(column,tablaBBDD,columnList);
 	    }
 	}
 	
