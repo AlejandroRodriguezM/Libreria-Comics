@@ -35,55 +35,46 @@ public class FuncionesTableView {
 	 * @param columna
 	 */
 	public static void busquedaHyperLink(TableColumn<Comic, String> columna) {
-		columna.setCellFactory(column -> {
-			return new TableCell<Comic, String>() {
-				private VBox vbox = new VBox();
-				private String lastItem = null;
+	    columna.setCellFactory(column -> {
+	        return new TableCell<Comic, String>() {
+	            private VBox vbox = new VBox();
+	            private String lastItem = null;
 
-				@Override
-				protected void updateItem(String item, boolean empty) {
-					super.updateItem(item, empty);
-					if (empty || item == null) {
-						setGraphic(null);
-						System.out.println("Hola");
-					} 
-					else {
-						if (!item.equals(lastItem)) { // Verificar si el contenido ha cambiado
-							lastItem = item;
-							vbox.getChildren().clear();
+	            @Override
+	            protected void updateItem(String item, boolean empty) {
+	                if (empty || item == null) {
+	                    setGraphic(null);
+	                } else {
+	                    if (!item.equals(lastItem)) { // Verificar si el contenido ha cambiado
+	                        lastItem = item;
+	                        vbox.getChildren().clear();
 
-								VBox hyperlinkVBox = new VBox();
-								Hyperlink hyperlink;
-								if (isValidUrl(item)) {
-									ReferenciaHyperlink referenciaHyperlink = new ReferenciaHyperlink("Referencia",
-											item);
-									hyperlink = new Hyperlink(referenciaHyperlink.getDisplayText());
-									hyperlink.setOnAction(event -> {
-										// Implement the behavior when the hyperlink is clicked
-										if (Desktop.isDesktopSupported()) {
-											try {
-												Desktop.getDesktop().browse(new URI(referenciaHyperlink.getUrl()));
-											} catch (IOException | URISyntaxException e) {
-												e.printStackTrace();
-											}
-										}
-									});
-								} else {
-									// Not a valid URL, set the displayed text as "Sin Referencia" (non-clickable)
-									Text text = new Text("Sin \nReferencia");
-									hyperlinkVBox.getChildren().add(text);
-									hyperlink = new Hyperlink();
-								}
+	                        if (isValidUrl(item)) {
+	                            ReferenciaHyperlink referenciaHyperlink = new ReferenciaHyperlink("Referencia", item);
+	                            Hyperlink hyperlink = new Hyperlink(referenciaHyperlink.getDisplayText());
+	                            hyperlink.setOnAction(event -> {
+	                                if (Desktop.isDesktopSupported()) {
+	                                    try {
+	                                        Desktop.getDesktop().browse(new URI(referenciaHyperlink.getUrl()));
+	                                    } catch (IOException | URISyntaxException e) {
+	                                        e.printStackTrace();
+	                                    }
+	                                }
+	                            });
 
-								hyperlink.getStyleClass().add("hyperlink");
-								hyperlinkVBox.getChildren().add(hyperlink);
-								vbox.getChildren().add(hyperlinkVBox);
-						}
-						setGraphic(vbox);
-					}
-				}
-			};
-		});
+	                            hyperlink.getStyleClass().add("hyperlink");
+	                            vbox.getChildren().add(hyperlink);
+	                        } else {
+	                            Text text = new Text("Sin Referencia");
+	                            vbox.getChildren().add(text);
+	                        }
+
+	                        setGraphic(vbox);
+	                    }
+	                }
+	            }
+	        };
+	    });
 	}
 
 	// Check if a given string is a valid URL
