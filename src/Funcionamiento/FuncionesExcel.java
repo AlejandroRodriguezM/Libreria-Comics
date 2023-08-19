@@ -94,14 +94,15 @@ import javafx.stage.DirectoryChooser;
  */
 public class FuncionesExcel {
 
-	private static DBLibreriaManager libreria = new DBLibreriaManager();
-	private static Connection conn = DBManager.conexion();
+	private static Connection conn = null;	
 	private static Ventanas nav = new Ventanas();
-	private static DBLibreriaManager db = null;
-
+	private static DBLibreriaManager libreria = null;
 
 
 	public void savedataExcel(String nombre_carpeta) {
+		
+		libreria = new DBLibreriaManager();
+		
 		FileOutputStream outputStream;
 		Cell celda;
 		Row fila;
@@ -277,7 +278,7 @@ public class FuncionesExcel {
 	 * @return
 	 */
 	public boolean comprobarCSV(File fichero, String sql) {
-
+		conn = DBManager.conexion();
 		try {
 			BufferedReader lineReader = new BufferedReader(new FileReader(fichero));
 			lecturaCSVTask(sql, lineReader);
@@ -337,7 +338,7 @@ public class FuncionesExcel {
 	 * @throws SQLException 
 	 */
 	public boolean crearExcel(File fichero) throws SQLException {
-
+		libreria = new DBLibreriaManager();
 		FileOutputStream outputStream;
 		Cell celda;
 		Row fila;
@@ -416,6 +417,8 @@ public class FuncionesExcel {
 	 * @throws IOException
 	 */
 	public Task<Void> lecturaCSVTask(String sql, BufferedReader lineReader) {
+		libreria = new DBLibreriaManager();
+		conn = DBManager.conexion();
 	    Task<Void> task = new Task<Void>() {
 	        @Override
 	        protected Void call() throws Exception {
@@ -440,7 +443,6 @@ public class FuncionesExcel {
 	                    directorio = new File(defaultImagePath + File.separator);
 	                }
 
-	                db = new DBLibreriaManager();
 	                int batchSize = 20;
 	                Utilidades.convertirNombresCarpetas(defaultImagePath + File.separator);
 	                Utilidades.convertirNombresCarpetas(directorio.getAbsolutePath());
@@ -449,9 +451,13 @@ public class FuncionesExcel {
 
 	                String logFileName = "log_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")) + ".txt";
 
+	                if(conn == null) {
+	                	System.out.println("Error");
+	                }
+	                
 	                PreparedStatement statement = conn.prepareStatement(sql);
 	                int count = 0;
-	                int nuevoID = db.countRows();
+	                int nuevoID = libreria.countRows();
 	                lineReader.readLine();
 	                Utilidades.copyDirectory(directorio.getAbsolutePath(), defaultImagePath);
 	                // Se leerán los datos hasta que no existan más datos

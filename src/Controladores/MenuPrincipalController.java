@@ -445,7 +445,7 @@ public class MenuPrincipalController implements Initializable {
 		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaVariante);
 		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaGuionista);
 		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaDibujante);
-		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaEditorial);
+		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaEditorial); 
 
 	}
 

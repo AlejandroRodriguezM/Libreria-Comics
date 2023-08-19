@@ -94,6 +94,7 @@ public class DBManager {
 	}
 	
 	public static boolean datosConexionCorrectos() {
+		
 	    return !(DB_HOST == null || DB_HOST.isEmpty() || DB_PORT == null || DB_PORT.isEmpty() ||
 	             DB_NAME == null || DB_NAME.isEmpty() || DB_USER == null || DB_USER.isEmpty() ||
 	             DB_PASS == null || DB_PASS.isEmpty());
@@ -128,9 +129,11 @@ public class DBManager {
 	        if (conn == null) {
 	            nav.alertaException("No se pudo establecer la conexión a la base de datos");
 	        }
-	        
 	        return conn;
 	    } catch (SQLException ex) {
+	        nav.alertaException("ERROR. Revisa los datos del fichero de conexion.");
+	    }
+	    catch(NullPointerException ex) {
 	        nav.alertaException("ERROR. Revisa los datos del fichero de conexion.");
 	    }
 
