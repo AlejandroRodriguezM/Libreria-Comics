@@ -726,7 +726,6 @@ public class MenuPrincipalController implements Initializable {
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
-		utilidad = new Utilidades();
 		funcionesTabla.modificarColumnas(tablaBBDD,columnList);
 		prontInfo.setOpacity(0);
 		prontFrases.setOpacity(0);
@@ -804,7 +803,6 @@ public class MenuPrincipalController implements Initializable {
 	void comicsFirmados(ActionEvent event) throws SQLException {
 		prontInfo.setOpacity(0);
 		limpiezaDeDatos();
-		utilidad = new Utilidades();
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
@@ -822,7 +820,6 @@ public class MenuPrincipalController implements Initializable {
 	void comicsComprados(ActionEvent event) throws SQLException {
 		prontInfo.setOpacity(0);
 		limpiezaDeDatos();
-		utilidad = new Utilidades();
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
@@ -840,7 +837,6 @@ public class MenuPrincipalController implements Initializable {
 	void comicsEnPosesion(ActionEvent event) throws SQLException {
 		prontInfo.setOpacity(0);
 		limpiezaDeDatos();
-		utilidad = new Utilidades();
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
@@ -851,7 +847,6 @@ public class MenuPrincipalController implements Initializable {
 	void comicsKeyIssue(ActionEvent event) throws SQLException {
 		prontInfo.setOpacity(0);
 		limpiezaDeDatos();
-		utilidad = new Utilidades();
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion

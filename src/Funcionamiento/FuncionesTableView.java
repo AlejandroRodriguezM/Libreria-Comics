@@ -174,7 +174,8 @@ public class FuncionesTableView {
 	                                        || columna.getText().equalsIgnoreCase("Nombre")
 	                                        || columna.getText().equalsIgnoreCase("Nº")
 	                                        || columna.getText().equalsIgnoreCase("Caja")
-	                                        || columna.getText().equalsIgnoreCase("Origen")) {
+	                                        || columna.getText().equalsIgnoreCase("Origen")
+	                                        || columna.getText().equalsIgnoreCase("firma")) {
 	                                    label = new Label(nombre + "\n");
 	                                } else {
 	                                    label = new Label("◉ " + nombre + "\n");
@@ -285,7 +286,6 @@ public class FuncionesTableView {
 	        	columnName = "Procedencia";
 	        }
 	        
-	        
 	        PropertyValueFactory<Comic, String> valueFactory = new PropertyValueFactory<>(columnName);
 	        column.setCellValueFactory(valueFactory);
 	        
@@ -305,12 +305,12 @@ public class FuncionesTableView {
 	        135.0,  // variante
 	        85.0,   // firma
 	        78.0,   // editorial
-	        92.0,    // formato
+	        92.0,   // formato
 	        75.0,   // procedencia
 	        105.0,  // fecha
 	        145.0,  // guionista
 	        150.0,  // dibujante
-	        90.0,   // referencia
+	        92.0,   // referencia
 	        
 	    };
 

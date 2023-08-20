@@ -651,7 +651,7 @@ public class DBLibreriaManager extends Comic {
 	public String datosConcatenados(Comic comic) {
 
 		int datosRellenados = 0;
-
+		
 		String connector = " WHERE ";
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT * FROM comicsbbdd");
@@ -669,7 +669,7 @@ public class DBLibreriaManager extends Comic {
 			datosRellenados++;
 		}
 		if (comic.getNumCaja().length() != 0) {
-			sql.append(connector).append("caja_deposito like'%" + comic.getNumCaja() + "%'");
+			sql.append(connector).append("caja_deposito = '" + comic.getNumCaja() + "'");
 			connector = " AND ";
 			datosRellenados++;
 		}

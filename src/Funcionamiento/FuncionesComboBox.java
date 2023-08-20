@@ -51,25 +51,26 @@ public class FuncionesComboBox {
 				comic.setFormato(value);
 				break;
 			case 5:
-				comic.setNumCaja(value);
-				break;
-			case 6:
 				comic.setDibujante(value);
 				break;
-			case 7:
+			case 6:
 				comic.setGuionista(value);
 				break;
-			case 8:
+			case 7:
 				comic.setEditorial(value);
 				break;
-			case 9:
+			case 8:
 				comic.setFirma(value);
+				break;
+			case 9:
+				comic.setNumCaja(value);
 				break;
 			// Add more cases for additional comboboxes if needed
 			default:
 				break;
 			}
 		}
+
 		return comic;
 	}
 
@@ -96,7 +97,6 @@ public class FuncionesComboBox {
 				if (!isUserInput || updatingComboBoxes) {
 					return; // Ignorar cambios programáticos o cuando updatingComboBoxes es verdadero
 				}
-
 				if (newValue == null || newValue.isEmpty()) {
 					handleComboBoxEmptyChange(comboBox, comboboxes);
 					return;
@@ -113,6 +113,15 @@ public class FuncionesComboBox {
 					comboBox.setValue(null); // Reset the ComboBox value
 					comboBox.getEditor().clear(); // Clear the ComboBox editor text
 					handleComboBoxEmptyChange(comboBox, comboboxes); // Handle the empty change after clearing
+
+					// Verificar si algún ComboBox no está vacío y actualizar los ComboBoxes en
+					// consecuencia
+					boolean atLeastOneNotEmpty = comboboxes.stream()
+							.anyMatch(cb -> cb.getValue() != null && !cb.getValue().isEmpty());
+					if (atLeastOneNotEmpty) {
+						Comic comic = getComicFromComboBoxes(totalComboboxes, comboboxes);
+						actualizarComboBoxes(totalComboboxes, comboboxes, comic);
+					}
 				}
 			});
 		}
@@ -136,7 +145,8 @@ public class FuncionesComboBox {
 		// Comprobar si todos los campos de texto de los ComboBoxes están vacíos
 		boolean allEmpty = originalComboBoxItems.keySet().stream().allMatch(cb -> cb.getEditor().getText().isEmpty());
 
-		// Si todos los campos de texto de los ComboBoxes están vacíos, llamar a limpiezaDeDatos()
+		// Si todos los campos de texto de los ComboBoxes están vacíos, llamar a
+		// limpiezaDeDatos()
 		if (allEmpty) {
 			limpiezaDeDatos(comboboxes);
 		}
@@ -158,11 +168,8 @@ public class FuncionesComboBox {
 		Comic comicTemp = new Comic("", comic.getNombre(), comic.getNumCaja(), comic.getNumero(), comic.getVariante(),
 				comic.getFirma(), comic.getEditorial(), comic.getFormato(), comic.getProcedencia(), "",
 				comic.getGuionista(), comic.getDibujante(), "", "", "", "", "", "");
-
 		String sql = libreria.datosConcatenados(comicTemp);
-
-		comic.toString();
-
+		
 		if (!sql.isEmpty()) {
 			isUserInput = false; // Disable user input during programmatic updates
 
