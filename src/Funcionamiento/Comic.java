@@ -319,7 +319,7 @@ public class Comic {
 		appendIfNotEmpty(contenidoComic, "ID", ID);
 		appendIfNotEmpty(contenidoComic, "Nombre", nombre);
 		appendIfNotEmpty(contenidoComic, "Numero", numero) ;
-		appendIfNotEmpty(contenidoComic, "Precio", precio_comic + " $");
+		appendIfNotEmpty(contenidoComic, "Precio", !precio_comic.isEmpty() ? precio_comic + " $" : "");
 		appendIfNotEmpty(contenidoComic, "Variante", variante);
 		appendIfNotEmpty(contenidoComic, "Firma", firma);
 		appendIfNotEmpty(contenidoComic, "Editorial", editorial);

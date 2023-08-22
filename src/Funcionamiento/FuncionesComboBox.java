@@ -123,6 +123,7 @@ public class FuncionesComboBox {
 						actualizarComboBoxes(totalComboboxes, comboboxes, comic);
 					}
 				}
+
 			});
 		}
 	}
@@ -169,7 +170,7 @@ public class FuncionesComboBox {
 				comic.getFirma(), comic.getEditorial(), comic.getFormato(), comic.getProcedencia(), "",
 				comic.getGuionista(), comic.getDibujante(), "", "", "", "", "", "");
 		String sql = libreria.datosConcatenados(comicTemp);
-		
+
 		if (!sql.isEmpty()) {
 			isUserInput = false; // Disable user input during programmatic updates
 
