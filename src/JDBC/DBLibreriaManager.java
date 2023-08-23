@@ -94,6 +94,18 @@ public class DBLibreriaManager extends Comic {
 	public static List<String> nombreEditorialList = new ArrayList<>();
 	public static List<String> nombreDibujanteList = new ArrayList<>();
 
+	public static List<List<String>> listaOrdenada = Arrays.asList(DBLibreriaManager.nombreComicList,
+			DBLibreriaManager.numeroComicList, DBLibreriaManager.nombreVarianteList,
+			DBLibreriaManager.nombreProcedenciaList, DBLibreriaManager.nombreFormatoList,
+			DBLibreriaManager.nombreDibujanteList, DBLibreriaManager.nombreGuionistaList,
+			DBLibreriaManager.nombreEditorialList, DBLibreriaManager.nombreFirmaList,
+			DBLibreriaManager.numeroCajaList);
+	
+	public static List<List<String>> itemsList = Arrays.asList(DBLibreriaManager.listaNombre, DBLibreriaManager.listaNumeroComic,
+			DBLibreriaManager.listaVariante, DBLibreriaManager.listaProcedencia, DBLibreriaManager.listaFormato,
+			DBLibreriaManager.listaDibujante, DBLibreriaManager.listaGuionista, DBLibreriaManager.listaEditorial,
+			DBLibreriaManager.listaFirma, DBLibreriaManager.listaCaja);
+	
 	private static Ventanas nav = new Ventanas();
 	private static Connection conn = null;
 	private static Utilidades utilidad = new Utilidades();

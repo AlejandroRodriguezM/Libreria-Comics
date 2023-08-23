@@ -25,12 +25,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
-
-import org.controlsfx.control.textfield.TextFields;
 
 import Funcionamiento.Comic;
 import Funcionamiento.FuncionesComboBox;
@@ -257,17 +254,6 @@ public class EliminarDatosController implements Initializable {
 
 	private Timeline parpadeo;
 
-//	private AutoCompletionBinding<String> nombreComicAutoCompletion;
-//	private AutoCompletionBinding<String> numeroComicAutoCompletion;
-//	private AutoCompletionBinding<String> nombreFirmaAutoCompletion;
-//	private AutoCompletionBinding<String> nombreGuionistaAutoCompletion;
-//	private AutoCompletionBinding<String> nombreVarianteAutoCompletion;
-//	private AutoCompletionBinding<String> numeroCajaAutoCompletion;
-//	private AutoCompletionBinding<String> nombreProcedenciaAutoCompletion;
-//	private AutoCompletionBinding<String> nombreFormatoAutoCompletion;
-//	private AutoCompletionBinding<String> nombreEditorialAutoCompletion;
-//	private AutoCompletionBinding<String> nombreDibujanteAutoCompletion;
-
 	private static Ventanas nav = new Ventanas();
 	private static DBLibreriaManager libreria = null;
 	private static Utilidades utilidad = null;
@@ -309,7 +295,6 @@ public class EliminarDatosController implements Initializable {
 		
 		animacion();
 		autoRelleno();
-		listas_autocompletado();
 		funcionesTabla.modificarColumnas(tablaBBDD,columnList);
 		restringir_entrada_datos();
 		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
@@ -400,57 +385,12 @@ public class EliminarDatosController implements Initializable {
 				}
 				if (existeComic || newValue.isEmpty()) {
 
-					Comic comic_temp = null;
-					try {
-
-						if (idComicTratar == null) {
-							idComicTratar.setText("");
-						}
-
-						comic_temp = libreria.comicDatos(idComicTratar.getText());
-					} catch (SQLException e) {
-						e.printStackTrace();
+					if (idComicTratar == null) {
+						idComicTratar.setText("");
 					}
 
 					idComicTratar.setText(idComicTratar.getText());
 
-//	                restablecerCampos();
-
-					String nombreCampo = comic_temp.getNombre();
-					nombreComic.getSelectionModel().select(nombreCampo);
-
-					String numeroCampo = comic_temp.getNumero();
-					numeroComic.getSelectionModel().select(numeroCampo);
-
-					String varianteCampo = comic_temp.getVariante();
-					nombreVariante.getSelectionModel().select(varianteCampo);
-
-					String firmaCampo = comic_temp.getFirma();
-					nombreFirma.getSelectionModel().select(firmaCampo);
-
-					String editorialCampo = comic_temp.getEditorial();
-					nombreEditorial.getSelectionModel().select(editorialCampo);
-
-					String formato = comic_temp.getFormato();
-					nombreFormato.getSelectionModel().select(formato);
-
-					String procedencia = comic_temp.getProcedencia();
-					nombreProcedencia.getSelectionModel().select(procedencia);
-
-					String fechaString = comic_temp.getFecha();
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-					LocalDate fecha = LocalDate.parse(fechaString, formatter);
-					fechaPublicacion.setValue(fecha);
-
-					String guionistaCampo = comic_temp.getGuionista();
-					nombreGuionista.getSelectionModel().select(guionistaCampo);
-
-					String dibujanteCampo = comic_temp.getDibujante();
-					nombreDibujante.getSelectionModel().select(dibujanteCampo);
-
-					String cajaCampo = comic_temp.getNumCaja();
-					numeroCaja.getSelectionModel().select(cajaCampo);
 
 					prontInfo.clear();
 					prontInfo.setOpacity(1);
@@ -464,10 +404,14 @@ public class EliminarDatosController implements Initializable {
 					}
 					imagencomic.setImage(libreria.selectorImage(idComicTratar.getText()));
 				} else {
-					limpiezaDeDatos();
+					imagencomic.setImage(null);
+					prontInfo.clear();
+					prontInfo.setOpacity(0);
 				}
 			} else {
-				limpiarCombobox();
+				imagencomic.setImage(null);
+				prontInfo.clear();
+				prontInfo.setOpacity(0);
 			}
 		});
 	}
@@ -491,50 +435,6 @@ public class EliminarDatosController implements Initializable {
 		});
 
 		return textFormatter;
-	}
-
-	/**
-	 * Funcion que permite el autocompletado en la parte Text del comboBox
-	 */
-	public void listas_autocompletado() {
-
-//		// Las vinculaciones se asignan a las variables miembro correspondientes
-//		nombreComicAutoCompletion = TextFields.bindAutoCompletion(nombreComic.getEditor(),
-//				DBLibreriaManager.listaNombre);
-//		numeroComicAutoCompletion = TextFields.bindAutoCompletion(numeroComic.getEditor(),
-//				DBLibreriaManager.listaNumeroComic);
-//		nombreFirmaAutoCompletion = TextFields.bindAutoCompletion(nombreFirma.getEditor(),
-//				DBLibreriaManager.listaFirma);
-//		nombreEditorialAutoCompletion = TextFields.bindAutoCompletion(nombreEditorial.getEditor(),
-//				DBLibreriaManager.listaEditorial);
-//		nombreGuionistaAutoCompletion = TextFields.bindAutoCompletion(nombreGuionista.getEditor(),
-//				DBLibreriaManager.listaGuionista);
-//		nombreVarianteAutoCompletion = TextFields.bindAutoCompletion(nombreVariante.getEditor(),
-//				DBLibreriaManager.listaVariante);
-//		nombreDibujanteAutoCompletion = TextFields.bindAutoCompletion(nombreDibujante.getEditor(),
-//				DBLibreriaManager.listaDibujante);
-//		nombreProcedenciaAutoCompletion = TextFields.bindAutoCompletion(nombreProcedencia.getEditor(),
-//				DBLibreriaManager.listaProcedencia);
-//		nombreFormatoAutoCompletion = TextFields.bindAutoCompletion(nombreFormato.getEditor(),
-//				DBLibreriaManager.listaFormato);
-//		numeroCajaAutoCompletion = TextFields.bindAutoCompletion(numeroCaja.getEditor(), DBLibreriaManager.listaCaja);
-
-		TextFields.bindAutoCompletion(nombreComic.getEditor(), DBLibreriaManager.listaNombre);
-		TextFields.bindAutoCompletion(numeroComic.getEditor(), DBLibreriaManager.listaNumeroComic);
-		TextFields.bindAutoCompletion(nombreVariante.getEditor(), DBLibreriaManager.listaVariante);
-		TextFields.bindAutoCompletion(nombreFirma.getEditor(), DBLibreriaManager.listaFirma);
-		TextFields.bindAutoCompletion(nombreEditorial.getEditor(), DBLibreriaManager.listaEditorial);
-		TextFields.bindAutoCompletion(nombreGuionista.getEditor(), DBLibreriaManager.listaGuionista);
-		TextFields.bindAutoCompletion(nombreDibujante.getEditor(), DBLibreriaManager.listaDibujante);
-		TextFields.bindAutoCompletion(nombreProcedencia.getEditor(), DBLibreriaManager.listaProcedencia);
-		TextFields.bindAutoCompletion(nombreFormato.getEditor(), DBLibreriaManager.listaFormato);
-		TextFields.bindAutoCompletion(numeroCaja.getEditor(), DBLibreriaManager.listaCaja);
-
-		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaNombre);
-		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaVariante);
-		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaGuionista);
-		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaDibujante);
-		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaEditorial);
 	}
 
 	/**
@@ -846,7 +746,6 @@ public class EliminarDatosController implements Initializable {
 			libreria.reiniciarBBDD();
 			libreria.listasAutoCompletado();
 			funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-			listas_autocompletado();
 			funcionesTabla.tablaBBDD(libreria.libreriaCompleta(), tablaBBDD, columnList); // Llamada a funcion
 		}
 	}

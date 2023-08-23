@@ -73,6 +73,8 @@ public class Ventanas {
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("/style/acces_style.css").toExternalForm());
+			
+
 			Stage stage = new Stage();
 			stage.setResizable(false);
 			stage.setTitle("Aplicacion bbdd comics"); // Titulo de la aplicacion.
@@ -108,7 +110,7 @@ public class Ventanas {
 
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
-
+			scene.getStylesheets().add(getClass().getResource("/style/custom-combobox.css").toExternalForm());
 			Stage stage = new Stage();
 			stage.setResizable(false);
 			stage.setTitle("Menu principal"); // Titulo de la aplicacion.
@@ -146,6 +148,7 @@ public class Ventanas {
 
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
+			scene.getStylesheets().add(getClass().getResource("/style/custom-combobox.css").toExternalForm());
 
 			Stage stage = new Stage();
 			stage.setResizable(false);
@@ -184,6 +187,7 @@ public class Ventanas {
 
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
+			scene.getStylesheets().add(getClass().getResource("/style/custom-combobox.css").toExternalForm());
 
 			Stage stage = new Stage();
 			stage.setResizable(false);
@@ -260,6 +264,7 @@ public class Ventanas {
 
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
+			scene.getStylesheets().add(getClass().getResource("/style/custom-combobox.css").toExternalForm());
 
 			Stage stage = new Stage();
 			stage.setResizable(false);
@@ -416,7 +421,7 @@ public class Ventanas {
 
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
-//			scene.getStylesheets().add(getClass().getResource("/style/genericos_style.css").toExternalForm());
+			scene.getStylesheets().add(getClass().getResource("/style/custom-combobox.css").toExternalForm());
 
 			Stage stage = new Stage();
 			stage.setResizable(false);

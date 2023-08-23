@@ -34,8 +34,6 @@ import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.controlsfx.control.textfield.TextFields;
-
 import Funcionamiento.Comic;
 import Funcionamiento.FuncionesComboBox;
 import Funcionamiento.FuncionesTableView;
@@ -298,17 +296,6 @@ public class ModificarDatosController implements Initializable {
 	@FXML
 	private VBox vboxContenido;
 
-//	private AutoCompletionBinding<String> nombreComicAutoCompletion;
-//	private AutoCompletionBinding<String> numeroComicAutoCompletion;
-//	private AutoCompletionBinding<String> nombreFirmaAutoCompletion;
-//	private AutoCompletionBinding<String> nombreGuionistaAutoCompletion;
-//	private AutoCompletionBinding<String> nombreVarianteAutoCompletion;
-//	private AutoCompletionBinding<String> numeroCajaAutoCompletion;
-//	private AutoCompletionBinding<String> nombreProcedenciaAutoCompletion;
-//	private AutoCompletionBinding<String> nombreFormatoAutoCompletion;
-//	private AutoCompletionBinding<String> nombreEditorialAutoCompletion;
-//	private AutoCompletionBinding<String> nombreDibujanteAutoCompletion;
-
 	private static Ventanas nav = new Ventanas();
 	private static DBLibreriaManager libreria = null;
 	private static FuncionesComboBox funcionesCombo = new FuncionesComboBox();
@@ -347,7 +334,6 @@ public class ModificarDatosController implements Initializable {
 		}
 		autoRelleno();
 		funcionesTabla.modificarColumnas(tablaBBDD,columnList);
-		listas_autocompletado();
 		restringir_entrada_datos();
 		
 		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
@@ -661,58 +647,6 @@ public class ModificarDatosController implements Initializable {
 		tablaBBDD.getItems().clear();
 		botonNuevaPortada.setStyle(null);
 		imagencomic.setImage(null);
-	}
-
-	public void listas_autocompletado() {
-
-		// Las vinculaciones se asignan a las variables miembro correspondientes
-//		nombreComicAutoCompletion = TextFields.bindAutoCompletion(nombreComic.getEditor(),
-//				DBLibreriaManager.listaNombre);
-//		numeroComicAutoCompletion = TextFields.bindAutoCompletion(numeroComic.getEditor(),
-//				DBLibreriaManager.listaNumeroComic);
-//		nombreFirmaAutoCompletion = TextFields.bindAutoCompletion(nombreFirma.getEditor(),
-//				DBLibreriaManager.listaFirma);
-//		nombreEditorialAutoCompletion = TextFields.bindAutoCompletion(nombreEditorial.getEditor(),
-//				DBLibreriaManager.listaEditorial);
-//		nombreGuionistaAutoCompletion = TextFields.bindAutoCompletion(nombreGuionista.getEditor(),
-//				DBLibreriaManager.listaGuionista);
-//		nombreVarianteAutoCompletion = TextFields.bindAutoCompletion(nombreVariante.getEditor(),
-//				DBLibreriaManager.listaVariante);
-//		nombreDibujanteAutoCompletion = TextFields.bindAutoCompletion(nombreDibujante.getEditor(),
-//				DBLibreriaManager.listaDibujante);
-//		nombreProcedenciaAutoCompletion = TextFields.bindAutoCompletion(nombreProcedencia.getEditor(),
-//				DBLibreriaManager.listaProcedencia);
-//		nombreFormatoAutoCompletion = TextFields.bindAutoCompletion(nombreFormato.getEditor(),
-//				DBLibreriaManager.listaFormato);
-//		numeroCajaAutoCompletion = TextFields.bindAutoCompletion(numeroCaja.getEditor(), DBLibreriaManager.listaCaja);
-
-		TextFields.bindAutoCompletion(nombreComic.getEditor(), DBLibreriaManager.listaNombre);
-		TextFields.bindAutoCompletion(numeroComic.getEditor(), DBLibreriaManager.listaNumeroComic);
-		TextFields.bindAutoCompletion(nombreVariante.getEditor(), DBLibreriaManager.listaVariante);
-		TextFields.bindAutoCompletion(nombreFirma.getEditor(), DBLibreriaManager.listaFirma);
-		TextFields.bindAutoCompletion(nombreEditorial.getEditor(), DBLibreriaManager.listaEditorial);
-		TextFields.bindAutoCompletion(nombreGuionista.getEditor(), DBLibreriaManager.listaGuionista);
-		TextFields.bindAutoCompletion(nombreDibujante.getEditor(), DBLibreriaManager.listaDibujante);
-		TextFields.bindAutoCompletion(nombreProcedencia.getEditor(), DBLibreriaManager.listaProcedencia);
-		TextFields.bindAutoCompletion(nombreFormato.getEditor(), DBLibreriaManager.listaFormato);
-		TextFields.bindAutoCompletion(numeroCaja.getEditor(), DBLibreriaManager.listaCaja);
-
-		TextFields.bindAutoCompletion(nombreComicMod, DBLibreriaManager.listaNombre);
-		TextFields.bindAutoCompletion(numeroComicMod.getEditor(), DBLibreriaManager.listaNumeroComic);
-		TextFields.bindAutoCompletion(nombreVarianteMod, DBLibreriaManager.listaVariante);
-		TextFields.bindAutoCompletion(nombreFirmaMod, DBLibreriaManager.listaFirma);
-		TextFields.bindAutoCompletion(nombreEditorialMod, DBLibreriaManager.listaEditorial);
-		TextFields.bindAutoCompletion(nombreGuionistaMod, DBLibreriaManager.listaGuionista);
-		TextFields.bindAutoCompletion(nombreDibujanteMod, DBLibreriaManager.listaDibujante);
-		TextFields.bindAutoCompletion(nombreProcedenciaMod.getEditor(), DBLibreriaManager.listaProcedencia);
-		TextFields.bindAutoCompletion(nombreFormatoMod.getEditor(), DBLibreriaManager.listaFormato);
-		TextFields.bindAutoCompletion(numeroCajaMod.getEditor(), DBLibreriaManager.listaCaja);
-
-		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaNombre);
-		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaVariante);
-		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaGuionista);
-		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaDibujante);
-		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaEditorial);
 	}
 
 	/**
@@ -1641,7 +1575,6 @@ public class ModificarDatosController implements Initializable {
 					prontInfo.setText("Error. Debes de introducir los datos correctos");
 				} else {
 					libreria.actualizar_comic(comic);
-					listas_autocompletado();
 					Utilidades.eliminarFichero(comic_temp.getImagen());
 
 					imagencomic.setImage(imagen);

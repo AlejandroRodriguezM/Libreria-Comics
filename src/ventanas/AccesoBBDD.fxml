@@ -47,8 +47,8 @@
             <Font name="Comic Sans MS" size="18.0" />
          </font>
       </Label>
-      <ToggleButton fx:id="toogleButton" layoutX="196.0" layoutY="359.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="56.0" stylesheets="@../style/toggle.css" text="Local" />
-      <Label fx:id="labelServidor" layoutX="7.0" layoutY="359.0" style="-fx-background-color: blue;" stylesheets="@../style/toggle.css" text="Tipo de servidor">
+      <ToggleButton fx:id="toogleButton" disable="true" layoutX="196.0" layoutY="359.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="56.0" stylesheets="@../style/toggle.css" text="Local" visible="false" />
+      <Label fx:id="labelServidor" disable="true" layoutX="7.0" layoutY="359.0" style="-fx-background-color: blue;" stylesheets="@../style/toggle.css" text="Tipo de servidor" visible="false">
          <font>
             <Font size="17.0" />
          </font>

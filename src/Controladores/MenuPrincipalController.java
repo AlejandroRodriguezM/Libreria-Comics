@@ -35,8 +35,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 
-import org.controlsfx.control.textfield.TextFields;
-
 import Funcionamiento.Comic;
 import Funcionamiento.FuncionesComboBox;
 import Funcionamiento.FuncionesExcel;
@@ -162,9 +160,6 @@ public class MenuPrincipalController implements Initializable {
 	private Button botonMostrarParametro;
 
 	@FXML
-	private Button botonFrase;
-
-	@FXML
 	private DatePicker fechaPublicacion;
 
 	@FXML
@@ -214,9 +209,6 @@ public class MenuPrincipalController implements Initializable {
 
 	@FXML
 	private TextArea prontInfo;
-
-	@FXML
-	private TextArea prontFrases;
 
 	@FXML
 	private ImageView imagencomic;
@@ -269,29 +261,12 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	private ProgressIndicator progresoCarga;
 
-//	private AutoCompletionBinding<String> nombreComicAutoCompletion;
-//	private AutoCompletionBinding<String> numeroComicAutoCompletion;
-//	private AutoCompletionBinding<String> nombreFirmaAutoCompletion;
-//	private AutoCompletionBinding<String> nombreGuionistaAutoCompletion;
-//	private AutoCompletionBinding<String> nombreVarianteAutoCompletion;
-//	private AutoCompletionBinding<String> numeroCajaAutoCompletion;
-//	private AutoCompletionBinding<String> nombreProcedenciaAutoCompletion;
-//	private AutoCompletionBinding<String> nombreFormatoAutoCompletion;
-//	private AutoCompletionBinding<String> nombreEditorialAutoCompletion;
-//	private AutoCompletionBinding<String> nombreDibujanteAutoCompletion;
-
 	private static Ventanas nav = new Ventanas();
-
 	private static DBLibreriaManager libreria = null;
-
 	private static Utilidades utilidad = null;
-
 	private static FuncionesExcel excelFuntions = null;
-
 	private static FuncionesComboBox funcionesCombo = new FuncionesComboBox();
-	
 	private static FuncionesTableView funcionesTabla = new FuncionesTableView();
-
 	private List<TableColumn<Comic, String>> columnList;
 
 	/**
@@ -313,9 +288,6 @@ public class MenuPrincipalController implements Initializable {
 		// Asegurarnos de que el VBox ajuste su tamaño correctamente al inicio
 		Platform.runLater(() -> ajustarAnchoVBox(prontInfo));
 
-		// Asegurarnos de que el VBox ajuste su tamaño correctamente al inicio
-		Platform.runLater(() -> ajustarAnchoVBox(prontFrases));
-
 		Platform.runLater(() -> funcionesTabla.seleccionarRaw(tablaBBDD));
 		
 		Platform.runLater(() -> asignarTooltips());
@@ -329,8 +301,6 @@ public class MenuPrincipalController implements Initializable {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-//		DBLibreriaManager.limpiarListas();
-		listas_autocompletado();
 		funcionesTabla.modificarColumnas(tablaBBDD,columnList);
 		restringir_entrada_datos();
 
@@ -360,7 +330,6 @@ public class MenuPrincipalController implements Initializable {
 		});
 
 		prontInfo.setEditable(false);
-		prontFrases.setEditable(false);
 	}
 
 	private void ajustarAnchoVBox(TextArea textArea) {
@@ -379,7 +348,6 @@ public class MenuPrincipalController implements Initializable {
 		asignarTooltip(botonbbdd, "Muestra toda la base de datos");
 		asignarTooltip(botonLimpiar, "Limpia la pantalla y reinicia todos los valores");
 		asignarTooltip(botonMostrarParametro, "Muestra los comics o libros o mangas por parametro");
-		asignarTooltip(botonFrase, "Muestra una frase aleatoria de personaje de comics");
 
 		asignarTooltip(nombreComic, "Nombre de los cómics / libros / mangas");
 		asignarTooltip(numeroComic, "Número del cómic / libro / manga");
@@ -422,31 +390,6 @@ public class MenuPrincipalController implements Initializable {
 		});
 
 		return textFormatter;
-	}
-
-	/**
-	 * Funcion que permite el autocompletado en la parte Text del comboBox
-	 */
-	public void listas_autocompletado() {
-
-		// Las vinculaciones se asignan a las variables miembro correspondientes
-		TextFields.bindAutoCompletion(nombreComic.getEditor(), DBLibreriaManager.listaNombre);
-		TextFields.bindAutoCompletion(nombreVariante.getEditor(), DBLibreriaManager.listaVariante);
-		TextFields.bindAutoCompletion(nombreFirma.getEditor(), DBLibreriaManager.listaFirma);
-		TextFields.bindAutoCompletion(nombreEditorial.getEditor(), DBLibreriaManager.listaEditorial);
-		TextFields.bindAutoCompletion(nombreGuionista.getEditor(), DBLibreriaManager.listaGuionista);
-		TextFields.bindAutoCompletion(nombreDibujante.getEditor(), DBLibreriaManager.listaDibujante);
-		TextFields.bindAutoCompletion(nombreProcedencia.getEditor(), DBLibreriaManager.listaProcedencia);
-		TextFields.bindAutoCompletion(nombreFormato.getEditor(), DBLibreriaManager.listaFormato);
-		TextFields.bindAutoCompletion(numeroCaja.getEditor(), DBLibreriaManager.listaCaja);
-
-		// Additional bindings for the 'busquedaGeneral' TextField
-		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaNombre);
-		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaVariante);
-		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaGuionista);
-		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaDibujante);
-		TextFields.bindAutoCompletion(busquedaGeneral, DBLibreriaManager.listaEditorial); 
-
 	}
 
 	/**
@@ -703,20 +646,6 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Muestra en un textArea diferentes frases random de personajes de los comics.
-	 *
-	 * @param event
-	 */
-	@FXML
-	void fraseRandom(ActionEvent event) {
-		limpiezaDeDatos();
-		funcionesTabla.modificarColumnas(tablaBBDD,columnList);
-		prontInfo.setOpacity(0);
-		prontFrases.setOpacity(1);
-		prontFrases.setText(Comic.frasesComics());
-	}
-
-	/**
 	 * Metodo que mostrara los comics o comic buscados por parametro
 	 *
 	 * @param event
@@ -728,7 +657,6 @@ public class MenuPrincipalController implements Initializable {
 		libreria.reiniciarBBDD();
 		funcionesTabla.modificarColumnas(tablaBBDD,columnList);
 		prontInfo.setOpacity(0);
-		prontFrases.setOpacity(0);
 		imagencomic.setImage(null);
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 		listaPorParametro(); // Llamada a funcion
@@ -749,7 +677,6 @@ public class MenuPrincipalController implements Initializable {
 		funcionesTabla.modificarColumnas(tablaBBDD,columnList);
 		tablaBBDD.refresh();
 		prontInfo.setOpacity(0);
-		prontFrases.setOpacity(0);
 		imagencomic.setImage(null);
 
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
@@ -968,8 +895,6 @@ public class MenuPrincipalController implements Initializable {
 			// Ocultar los elementos de información y frases
 			prontInfo.setOpacity(0);
 			prontInfo.setText(null);
-			prontFrases.setOpacity(0);
-			prontFrases.setText(null);
 			// Iniciar la animación
 			iniciarAnimacion();
 		});
@@ -1099,7 +1024,6 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void clickRaton(MouseEvent event) throws IOException, SQLException {
-		prontFrases.setOpacity(0);
 		libreria = new DBLibreriaManager();
 		libreria.libreriaCompleta();
 		utilidad = new Utilidades();
@@ -1129,7 +1053,6 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void teclasDireccion(KeyEvent event) throws IOException, SQLException {
 		if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
-			prontFrases.setOpacity(0);
 			libreria = new DBLibreriaManager();
 			libreria.libreriaCompleta();
 			utilidad = new Utilidades();
@@ -1218,8 +1141,6 @@ public class MenuPrincipalController implements Initializable {
 			// Ocultar los elementos de información y frases
 			prontInfo.setOpacity(0);
 			prontInfo.setText(null);
-			prontFrases.setOpacity(0);
-			prontFrases.setText(null);
 			// Iniciar la animación
 			iniciarAnimacion();
 		});
@@ -1508,10 +1429,8 @@ public class MenuPrincipalController implements Initializable {
 
 		// Clear additional UI elements
 		fechaPublicacion.setValue(null);
-		prontFrases.setText(null);
 		prontInfo.setText(null);
 		prontInfo.setOpacity(0);
-		prontFrases.setOpacity(0);
 		tablaBBDD.getItems().clear();
 		imagencomic.setImage(null);
 	}
