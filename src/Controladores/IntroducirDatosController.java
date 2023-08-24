@@ -341,17 +341,18 @@ public class IntroducirDatosController implements Initializable {
 
 		libreria = new DBLibreriaManager();
 		utilidad = new Utilidades();
-		
+
 		prontInfo.textProperty().addListener((observable, oldValue, newValue) -> {
-			ajustarAnchoVBox(prontInfo, vboxContenido);
+			ajustarAnchoVBox(prontInfo);
 		});
 
 		// Asegurarnos de que el VBox ajuste su tamaño correctamente al inicio
-		Platform.runLater(() -> ajustarAnchoVBox(prontInfo, vboxContenido));
+		Platform.runLater(() -> ajustarAnchoVBox(prontInfo));
 
 		Platform.runLater(() -> funcionesTabla.seleccionarRaw(tablaBBDD));
-		Platform.runLater(() -> asignarTooltips());
 		
+		Platform.runLater(() -> asignarTooltips());
+
 		List<TableColumn<Comic, String>> columnListCarga = Arrays.asList(nombre, caja, numero, variante, firma,
 				editorial, formato, procedencia, fecha, guionista, dibujante, referencia);
 		columnList = columnListCarga;
@@ -361,10 +362,9 @@ public class IntroducirDatosController implements Initializable {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		DBLibreriaManager.limpiarListas();
 		funcionesTabla.modificarColumnas(tablaBBDD,columnList);
 		restringir_entrada_datos();
-		
+
 		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
 				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
 
@@ -372,7 +372,7 @@ public class IntroducirDatosController implements Initializable {
 		
 		funcionesCombo.rellenarComboBox(comboboxes);
 		funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
-		 rellenarComboBoxNuevo();
+//		rellenarComboBoxNuevo();
 		restringirSimbolos(guionistaAni);
 		restringirSimbolos(dibujanteAni);
 		restringirSimbolos(varianteAni);
@@ -393,9 +393,11 @@ public class IntroducirDatosController implements Initializable {
 			tablaBBDD.setFocusTraversable(false);
 			rootVBox.requestFocus();
 		});
+
+		prontInfo.setEditable(false);
 	}
 
-	private void ajustarAnchoVBox(TextArea textArea, VBox vbox) {
+	private void ajustarAnchoVBox(TextArea textArea) {
 		// Crear un objeto Text con el contenido del TextArea
 		Text text = new Text(textArea.getText());
 
@@ -1008,11 +1010,11 @@ public class IntroducirDatosController implements Initializable {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
+		libreria = new DBLibreriaManager();
+		libreria.reiniciarBBDD();
 		funcionesTabla.modificarColumnas(tablaBBDD,columnList);
 		prontInfo.setOpacity(0);
 		imagencomic.setImage(null);
-		libreria = new DBLibreriaManager();
-		libreria.reiniciarBBDD();
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 		listaPorParametro(); // Llamada a funcion
 		busquedaGeneral.setText("");
@@ -1048,20 +1050,14 @@ public class IntroducirDatosController implements Initializable {
 	 */
 	public void listaPorParametro() throws SQLException {
 		libreria = new DBLibreriaManager();
-		Comic comic = new Comic();
+
 		String datos[] = camposComicActuales();
-		String fecha = datos[8];
 
-		if (datos[8].isEmpty()) {
-			fecha = "";
-		} else {
-			fecha = datos[8];
-		}
+		Comic comic = new Comic("", datos[1], datos[11], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
+				datos[8], datos[9], datos[10], "", "", "", null,"","");
 
-		comic = new Comic("", datos[1], datos[12], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7], fecha,
-				datos[9], datos[10], "", "", "", null, "", "");
-
-		funcionesTabla.tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()), tablaBBDD, columnList); // Llamada a funcion
+		funcionesTabla.tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()), tablaBBDD, columnList); 
+		prontInfo.setOpacity(1);
 		prontInfo.setText(funcionesTabla.resultadoBusquedaPront(comic).getText());
 		busquedaGeneral.setText("");
 	}
@@ -1245,7 +1241,7 @@ public class IntroducirDatosController implements Initializable {
 	 * @return
 	 */
 	public String[] camposComicActuales() {
-		String campos[] = new String[13];
+		String campos[] = new String[12];
 
 		if (nombreActual().isEmpty()) {
 			campos[1] = "";
@@ -1287,9 +1283,7 @@ public class IntroducirDatosController implements Initializable {
 			campos[7] = "";
 		} else {
 			campos[7] = procedenciaActual();
-
 		}
-
 		LocalDate fecha = fechaPublicacion.getValue();
 		if (fecha != null) {
 			campos[8] = fecha.toString();
@@ -1310,9 +1304,9 @@ public class IntroducirDatosController implements Initializable {
 		}
 
 		if (cajaActual().isEmpty() || cajaActual().equals("0")) {
-			campos[12] = "0";
+			campos[11] = "";
 		} else {
-			campos[12] = cajaActual();
+			campos[11] = cajaActual();
 		}
 
 		return campos;

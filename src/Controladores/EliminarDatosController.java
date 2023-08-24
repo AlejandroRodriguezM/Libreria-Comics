@@ -320,6 +320,9 @@ public class EliminarDatosController implements Initializable {
 			tablaBBDD.setFocusTraversable(false);
 			rootVBox.requestFocus();
 		});
+		
+		prontInfo.setEditable(false);
+
 	}
 
 	private void ajustarAnchoVBox(TextArea textArea, VBox vbox) {
