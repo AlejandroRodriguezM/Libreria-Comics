@@ -17,15 +17,21 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 
 public class FuncionesTableView {
 
+	private static final Font TOOLTIP_FONT = Font.font("Comic Sans MS", FontWeight.NORMAL, FontPosture.REGULAR, 13);
+	
 	private static DBLibreriaManager libreria = null;
 	
 	/**
@@ -77,12 +83,17 @@ public class FuncionesTableView {
 	    });
 	}
 
-	// Check if a given string is a valid URL
+	/**
+	 * Comprueba si una cadena dada representa una URL válida.
+	 *
+	 * @param url La cadena que se va a comprobar.
+	 * @return true si la cadena es una URL válida, de lo contrario, false.
+	 */
 	public static boolean isValidUrl(String url) {
-		String urlRegex = "^(https?|ftp)://.*$";
-		Pattern pattern = Pattern.compile(urlRegex);
-		Matcher matcher = pattern.matcher(url);
-		return matcher.matches();
+	    String urlRegex = "^(https?|ftp)://.*$"; // Expresión regular para verificar URLs
+	    Pattern pattern = Pattern.compile(urlRegex); // Compilar la expresión regular en un patrón
+	    Matcher matcher = pattern.matcher(url); // Crear un matcher para la cadena dada
+	    return matcher.matches(); // Devolver true si la cadena coincide con la expresión regular
 	}
 	
 	/**
@@ -95,16 +106,18 @@ public class FuncionesTableView {
 			Tooltip tooltip = new Tooltip();
 			tooltip.setShowDelay(Duration.ZERO);
 			tooltip.setHideDelay(Duration.ZERO);
-
+			tooltip.setFont(TOOLTIP_FONT);
 			row.setOnMouseEntered(event -> {
 				if (!row.isEmpty()) {
 					row.setStyle("-fx-background-color: #BFEFFF;");
 
 					Comic comic = row.getItem();
 					if (comic != null && !tooltip.isShowing()) {
-						String mensaje = "Nombre: " + comic.getNombre() + "\nNumero: " + comic.getNumero()
-								+ "\nVariante: " + comic.getVariante() + "\nGuionista: " + comic.getGuionista()
-								+ "\nDibujante: " + comic.getDibujante();
+				        String mensaje = "Nombre: " + comic.getNombre() + "\nNúmero: " + comic.getNumero()
+                        + "\nVariante: " + comic.getVariante() + "\nGuionista: " + comic.getGuionista()
+                        + "\nDibujante: " + comic.getDibujante() + "\nPrecio: "
+                        + (!comic.precio_comic.isEmpty() ? comic.precio_comic + " $" : "");
+
 						if (!comic.getFirma().isEmpty()) {
 							mensaje += "\nFirma: " + comic.getFirma();
 						}
@@ -201,7 +214,13 @@ public class FuncionesTableView {
 	    });
 	}
 
-	
+	/**
+	 * Genera el resultado de búsqueda para un cómic y devuelve un TextArea con la información.
+	 *
+	 * @param comic El cómic para el que se generará el resultado de búsqueda.
+	 * @return Un TextArea con el resultado de búsqueda.
+	 * @throws SQLException Si ocurre un error de base de datos.
+	 */
 	public TextArea resultadoBusquedaPront(Comic comic) throws SQLException {
 		libreria = new DBLibreriaManager();
 		StringBuilder datoSeleccionadoBuilder = new StringBuilder();
@@ -255,7 +274,14 @@ public class FuncionesTableView {
 	    tablaBBDD.getItems().setAll(listaComic);
 	}
 
-
+	/**
+	 * Actualiza la tabla con los datos de un comic seleccionado.
+	 *
+	 * @param tablaBBDD      La TableView en la que se mostrarán los datos.
+	 * @param columnList     La lista de columnas de la TableView.
+	 * @param rawSelecionado El comic seleccionado en su forma cruda.
+	 * @throws SQLException Si ocurre un error de base de datos.
+	 */
 	public void columnaSeleccionada( TableView<Comic> tablaBBDD,List<TableColumn<Comic, String>> columnList,String rawSelecionado) throws SQLException {
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
@@ -301,7 +327,7 @@ public class FuncionesTableView {
 	    Double[] columnWidths = {
 	        140.0,  // nombre
 	        37.0,   // caja
-	        45.0,   // numero
+	        47.0,   // numero
 	        135.0,  // variante
 	        85.0,   // firma
 	        78.0,   // editorial
@@ -327,5 +353,63 @@ public class FuncionesTableView {
 	        column.setPrefWidth(columnWidth);
 	    }
 	}
+	
+	/**
+	 * Ajusta el alto del VBox de acuerdo al contenido del TextArea.
+	 *
+	 * @param textArea El TextArea del cual obtener el contenido.
+	 * @param vbox     El VBox al cual ajustar el alto.
+	 */
+	public void ajustarAnchoVBox(TextArea textArea, VBox vbox) {
+	    // Crear un objeto Text con el contenido del TextArea
+	    Text text = new Text(textArea.getText());
+
+	    // Configurar el mismo estilo que tiene el TextArea
+	    text.setFont(textArea.getFont());
+
+	    double textHeight = text.getLayoutBounds().getHeight();
+
+	    textArea.setPrefHeight(textHeight);
+	}
+
+	/**
+	 * Restringe los símbolos no permitidos en el TextField y muestra un Tooltip informativo.
+	 *
+	 * @param textField El TextField en el cual restringir los símbolos.
+	 */
+	public static void restringirSimbolos(TextField textField) {
+	    Tooltip tooltip = new Tooltip();
+
+	    textField.textProperty().addListener((observable, oldValue, newValue) -> {
+	        String allowedPattern = "[\\p{L}\\p{N}\\s,.-]*"; // Expresión regular para permitir letras, números,
+	                                                            // espacios, ",", "-" y "."
+
+	        if (newValue != null && !newValue.matches(allowedPattern)) {
+	            textField.setText(oldValue);
+	        } else {
+	            String updatedValue = newValue.replaceAll("\\s*(?<![,-])(?=[,-])|(?<=[,-])\\s*", "");
+
+	            if (!updatedValue.equals(newValue)) {
+	                textField.setText(updatedValue);
+	            }
+	        }
+	    });
+	    tooltip.setFont(TOOLTIP_FONT);
+	    textField.setOnMouseEntered(event -> {
+	        tooltip.setShowDelay(Duration.ZERO);
+	        tooltip.setHideDelay(Duration.ZERO);
+
+	        String mensaje = "En caso de tener varios artistas en variante, guionista o dibujante, separalos usando una coma ',' o guion '-'";
+	        tooltip.setText(mensaje);
+	        tooltip.show(textField, event.getSceneX(), event.getSceneY());
+	        tooltip.setX(event.getScreenX() + 10); // Ajusta el desplazamiento X según tus necesidades
+	        tooltip.setY(event.getScreenY() - 20); // Ajusta el desplazamiento Y según tus necesidades
+	    });
+
+	    textField.setOnMouseExited(event -> {
+	        tooltip.hide();
+	    });
+	}
+
 	
 }

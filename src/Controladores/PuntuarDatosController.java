@@ -51,6 +51,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -58,6 +59,7 @@ import java.util.ResourceBundle;
 import Funcionamiento.Comic;
 import Funcionamiento.FuncionesComboBox;
 import Funcionamiento.FuncionesTableView;
+import Funcionamiento.FuncionesTooltips;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
@@ -78,16 +80,12 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
-import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.converter.IntegerStringConverter;
 
 /**
  * Esta clase sirve para poder puntuar comics que tenemos en la base de datos
@@ -288,11 +286,11 @@ public class PuntuarDatosController implements Initializable {
 		utilidad = new Utilidades();
 
 		prontInfo.textProperty().addListener((observable, oldValue, newValue) -> {
-			ajustarAnchoVBox(prontInfo);
+			funcionesTabla.ajustarAnchoVBox(prontInfo, vboxContenido);
 		});
 
 		// Asegurarnos de que el VBox ajuste su tamaño correctamente al inicio
-		Platform.runLater(() -> ajustarAnchoVBox(prontInfo));
+		Platform.runLater(() -> funcionesTabla.ajustarAnchoVBox(prontInfo, vboxContenido));
 
 		Platform.runLater(() -> funcionesTabla.seleccionarRaw(tablaBBDD));
 		
@@ -343,59 +341,25 @@ public class PuntuarDatosController implements Initializable {
 		puntuacionMenu.getSelectionModel().selectFirst();
 	}
 
-	private void ajustarAnchoVBox(TextArea textArea) {
-		// Crear un objeto Text con el contenido del TextArea
-		Text text = new Text(textArea.getText());
-
-		// Configurar el mismo estilo que tiene el TextArea
-		text.setFont(textArea.getFont());
-
-		double textHeight = text.getLayoutBounds().getHeight();
-
-		textArea.setPrefHeight(textHeight);
-	}
-
-	private void asignarTooltips() {
-		asignarTooltip(botonbbdd, "Muestra toda la base de datos");
-		asignarTooltip(botonLimpiarComic, "Limpia la pantalla y reinicia todos los valores");
-		asignarTooltip(botonMostrarParametro, "Muestra los comics o libros o mangas por parametro");
-
-		asignarTooltip(nombreComic, "Nombre de los cómics / libros / mangas");
-		asignarTooltip(numeroComic, "Número del cómic / libro / manga");
-		asignarTooltip(nombreFirma, "Nombre de la firma del cómic / libro / manga");
-		asignarTooltip(nombreGuionista, "Nombre del guionista del cómic / libro / manga");
-		asignarTooltip(nombreVariante, "Nombre de la variante del cómic / libro / manga");
-		asignarTooltip(numeroCaja, "Número de la caja donde se guarda el cómic / libro / manga");
-		asignarTooltip(nombreProcedencia, "Nombre de la procedencia del cómic / libro / manga");
-		asignarTooltip(nombreFormato, "Nombre del formato del cómic / libro / manga");
-		asignarTooltip(nombreEditorial, "Nombre de la editorial del cómic / libro / manga");
-		asignarTooltip(nombreDibujante, "Nombre del dibujante del cómic / libro / manga");
-	}
-
-	private void asignarTooltip(Button boton, String mensaje) {
-		Tooltip tooltip = new Tooltip(mensaje);
-		boton.setTooltip(tooltip);
-	}
-
-	private void asignarTooltip(ComboBox<String> comboBox, String mensaje) {
-		Tooltip tooltip = new Tooltip(mensaje);
-		comboBox.setTooltip(tooltip);
-	}
-
-	public void restablecerCampos() {
-		// Restablecer todos los campos de selección
-		nombreComic.getSelectionModel().clearSelection();
-		numeroComic.getSelectionModel().clearSelection();
-		nombreVariante.getSelectionModel().clearSelection();
-		nombreFirma.getSelectionModel().clearSelection();
-		nombreEditorial.getSelectionModel().clearSelection();
-		nombreFormato.getSelectionModel().clearSelection();
-		nombreProcedencia.getSelectionModel().clearSelection();
-		fechaPublicacion.setValue(null);
-		nombreGuionista.getSelectionModel().clearSelection();
-		nombreDibujante.getSelectionModel().clearSelection();
-		numeroCaja.getSelectionModel().clearSelection();
-	}
+    public void asignarTooltips() {
+        List<Object> elementos = new ArrayList<>();
+        
+        elementos.add(botonbbdd);
+        elementos.add(botonLimpiarComic);
+        elementos.add(botonMostrarParametro);
+        elementos.add(nombreComic);
+        elementos.add(numeroComic);
+        elementos.add(nombreFirma);
+        elementos.add(nombreGuionista);
+        elementos.add(nombreVariante);
+        elementos.add(numeroCaja);
+        elementos.add(nombreProcedencia);
+        elementos.add(nombreFormato);
+        elementos.add(nombreEditorial);
+        elementos.add(nombreDibujante);
+        
+        FuncionesTooltips.asignarTooltips(elementos);
+    }
 
 	public void autoRelleno() {
 		// Agregar el ChangeListener al TextField idComicTratar
@@ -443,21 +407,9 @@ public class PuntuarDatosController implements Initializable {
 	 * numero entero en los comboBox numeroComic y caja_comic
 	 */
 	public void restringir_entrada_datos() {
-		numeroComic.getEditor().setTextFormatter(validador_Nenteros());
-		numeroCaja.getEditor().setTextFormatter(validador_Nenteros());
-		idPuntuar.setTextFormatter(validador_Nenteros());
-	}
-
-	public TextFormatter<Integer> validador_Nenteros() {
-		// Crear un validador para permitir solo números enteros
-		TextFormatter<Integer> textFormatter = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
-			if (change.getControlNewText().matches("\\d*")) {
-				return change;
-			}
-			return null;
-		});
-
-		return textFormatter;
+		numeroComic.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
+		numeroCaja.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
+		idPuntuar.setTextFormatter(FuncionesComboBox.validador_Nenteros());
 	}
 
 

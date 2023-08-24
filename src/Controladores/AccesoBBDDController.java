@@ -127,6 +127,7 @@ public class AccesoBBDDController implements Initializable {
 	private Timeline timeline;
 
 	private Timeline animacionAlarmaTimeline;
+	
 	private Timeline animacionAlarmaOnlineTimeline;
 
 	private Timeline animacionAlarmaTimelineInternet;

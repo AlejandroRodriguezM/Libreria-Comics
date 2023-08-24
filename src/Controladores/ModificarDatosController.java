@@ -28,6 +28,7 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -39,13 +40,12 @@ import org.controlsfx.control.textfield.TextFields;
 import Funcionamiento.Comic;
 import Funcionamiento.FuncionesComboBox;
 import Funcionamiento.FuncionesTableView;
+import Funcionamiento.FuncionesTooltips;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
 import JDBC.DBManager;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -60,20 +60,14 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
-import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.Duration;
-import javafx.util.converter.DoubleStringConverter;
-import javafx.util.converter.IntegerStringConverter;
 
 /**
  * Esta clase sirve para modificar posibles datos de un comic en concreto
@@ -316,11 +310,11 @@ public class ModificarDatosController implements Initializable {
 		new Utilidades();
 		
 		prontInfo.textProperty().addListener((observable, oldValue, newValue) -> {
-			ajustarAnchoVBox(prontInfo, vboxContenido);
+			funcionesTabla.ajustarAnchoVBox(prontInfo, vboxContenido);
 		});
 
 		// Asegurarnos de que el VBox ajuste su tamaño correctamente al inicio
-		Platform.runLater(() -> ajustarAnchoVBox(prontInfo, vboxContenido));
+		Platform.runLater(() -> funcionesTabla.ajustarAnchoVBox(prontInfo, vboxContenido));
 
 		Platform.runLater(() -> funcionesTabla.seleccionarRaw(tablaBBDD));
 		Platform.runLater(() -> asignarTooltips());
@@ -340,15 +334,18 @@ public class ModificarDatosController implements Initializable {
 		
 		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
 				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
+		
 
 		int totalComboboxes = comboboxes.size();
 		
 		funcionesCombo.rellenarComboBox(comboboxes);
 		funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
-		rellenarComboBoxMod();
-		restringirSimbolos(nombreGuionistaMod);
-		restringirSimbolos(nombreDibujanteMod);
-		restringirSimbolos(nombreVarianteMod);
+		rellenarCombosEstaticos();
+		
+		FuncionesTableView.restringirSimbolos(nombreGuionistaMod);
+		FuncionesTableView.restringirSimbolos(nombreDibujanteMod);
+		FuncionesTableView.restringirSimbolos(nombreVarianteMod);
+		
 		listas_autocompletado();
 		// Desactivar el enfoque en el VBox para evitar que reciba eventos de teclado
 		rootVBox.setFocusTraversable(false);
@@ -367,54 +364,31 @@ public class ModificarDatosController implements Initializable {
 			rootVBox.requestFocus();
 		});
 	}
-
-	private void ajustarAnchoVBox(TextArea textArea, VBox vbox) {
-		// Crear un objeto Text con el contenido del TextArea
-		Text text = new Text(textArea.getText());
-
-		// Configurar el mismo estilo que tiene el TextArea
-		text.setFont(textArea.getFont());
-
-		double textHeight = text.getLayoutBounds().getHeight();
-
-		textArea.setPrefHeight(textHeight);
+	
+	public void rellenarCombosEstaticos() {
+		List<ComboBox<String>> comboboxesMod = Arrays.asList(nombreFormatoMod,nombreProcedenciaMod,estadoComic);
+		funcionesCombo.rellenarComboBoxEstaticos(comboboxesMod);
 	}
-
-	private void asignarTooltips() {
-		asignarTooltip(botonbbdd, "Muestra toda la base de datos");
-		asignarTooltip(botonLimpiarComic, "Limpia la pantalla y reinicia todos los valores");
-		asignarTooltip(botonMostrarParametro, "Muestra los comics o libros o mangas por parametro");
-
-		asignarTooltip(nombreComic, "Nombre de los cómics / libros / mangas");
-		asignarTooltip(numeroComic, "Número del cómic / libro / manga");
-		asignarTooltip(nombreFirma, "Nombre de la firma del cómic / libro / manga");
-		asignarTooltip(nombreGuionista, "Nombre del guionista del cómic / libro / manga");
-		asignarTooltip(nombreVariante, "Nombre de la variante del cómic / libro / manga");
-		asignarTooltip(numeroCaja, "Número de la caja donde se guarda el cómic / libro / manga");
-		asignarTooltip(nombreProcedencia, "Nombre de la procedencia del cómic / libro / manga");
-		asignarTooltip(nombreFormato, "Nombre del formato del cómic / libro / manga");
-		asignarTooltip(nombreEditorial, "Nombre de la editorial del cómic / libro / manga");
-		asignarTooltip(nombreDibujante, "Nombre del dibujante del cómic / libro / manga");
-
-		asignarTooltip(nombreKeyIssue,
-				"Aqui puedes modificar si el comic tiene o no alguna clave, esto es para coleccionistas. Puedes dejarlo vacio");
-
-	}
-
-	private void asignarTooltip(Button boton, String mensaje) {
-		Tooltip tooltip = new Tooltip(mensaje);
-		boton.setTooltip(tooltip);
-	}
-
-	private void asignarTooltip(ComboBox<?> comboBox, String mensaje) {
-		Tooltip tooltip = new Tooltip(mensaje);
-		comboBox.setTooltip(tooltip);
-	}
-
-	private void asignarTooltip(TextField textField, String mensaje) {
-		Tooltip tooltip = new Tooltip(mensaje);
-		textField.setTooltip(tooltip);
-	}
+	
+    public void asignarTooltips() {
+        List<Object> elementos = new ArrayList<>();
+        
+        elementos.add(botonbbdd);
+        elementos.add(botonLimpiarComic);
+        elementos.add(botonMostrarParametro);
+        elementos.add(nombreComic);
+        elementos.add(numeroComic);
+        elementos.add(nombreFirma);
+        elementos.add(nombreGuionista);
+        elementos.add(nombreVariante);
+        elementos.add(numeroCaja);
+        elementos.add(nombreProcedencia);
+        elementos.add(nombreFormato);
+        elementos.add(nombreEditorial);
+        elementos.add(nombreDibujante);
+        elementos.add(nombreKeyIssue);
+        FuncionesTooltips.asignarTooltips(elementos);
+    }
 
 	public void autoRelleno() {
 		// Agregar el ChangeListener al TextField idComicTratar
@@ -513,103 +487,18 @@ public class ModificarDatosController implements Initializable {
 	 * numero entero en los comboBox numeroComic y caja_comic
 	 */
 	public void restringir_entrada_datos() {
-		idComicMod.setTextFormatter(validador_Nenteros());
-		numeroComic.getEditor().setTextFormatter(validador_Nenteros());
-		numeroComicMod.getEditor().setTextFormatter(validador_Nenteros());
-		numeroCaja.getEditor().setTextFormatter(validador_Nenteros());
-		numeroCajaMod.getEditor().setTextFormatter(validador_Nenteros());
-		precioComic.setTextFormatter(validador_Ndecimales());
-	}
-
-	public TextFormatter<Integer> validador_Nenteros() {
-		// Crear un validador para permitir solo números enteros
-		TextFormatter<Integer> textFormatter = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
-			if (change.getControlNewText().matches("\\d*")) {
-				return change;
-			}
-			return null;
-		});
-
-		return textFormatter;
-	}
-
-	public TextFormatter<Double> validador_Ndecimales() {
-		// Crear un validador para permitir solo números decimales (double)
-		TextFormatter<Double> textFormatter = new TextFormatter<>(new DoubleStringConverter(), 0.0, change -> {
-			String newText = change.getControlNewText();
-			if (newText.matches("\\d*\\.?\\d*")) {
-				return change;
-			}
-			return null;
-		});
-
-		return textFormatter;
-	}
-
-	private void restringirSimbolos(TextField textField) {
-		Tooltip tooltip = new Tooltip();
-
-		textField.textProperty().addListener((observable, oldValue, newValue) -> {
-			String allowedPattern = "[\\p{L}\\p{N}\\s,.-]*"; // Expresión regular para permitir letras, números,
-																// espacios, ",", "-" y "."
-
-			if (newValue != null && !newValue.matches(allowedPattern)) {
-				textField.setText(oldValue);
-			} else {
-				String updatedValue = newValue.replaceAll("\\s*(?<![,-])(?=[,-])|(?<=[,-])\\s*", "");
-
-				if (!updatedValue.equals(newValue)) {
-					textField.setText(updatedValue);
-				}
-			}
-		});
-
-		textField.setOnMouseEntered(event -> {
-			tooltip.setShowDelay(Duration.ZERO);
-			tooltip.setHideDelay(Duration.ZERO);
-
-			String mensaje = "En caso de tener varios artistas en variante, guionista o dibujante, separalos usando una coma ',' o guion '-'";
-			tooltip.setText(mensaje);
-			tooltip.show(textField, event.getSceneX(), event.getSceneY());
-			tooltip.setX(event.getScreenX() + 10); // Ajusta el desplazamiento X según tus necesidades
-			tooltip.setY(event.getScreenY() - 20); // Ajusta el desplazamiento Y según tus necesidades
-		});
-
-		textField.setOnMouseExited(event -> {
-			tooltip.hide();
-		});
+		idComicMod.setTextFormatter(FuncionesComboBox.validador_Nenteros());
+		numeroComic.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
+		numeroComicMod.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
+		numeroCaja.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
+		numeroCajaMod.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
+		precioComic.setTextFormatter(FuncionesComboBox.validador_Ndecimales());
 	}
 
 	/**
 	 * Permite rellenar los datos de los comboBox con los datos de las listas
 	 */
-	public void rellenarComboBoxMod() {
 
-		ObservableList<String> formatoNuevo = FXCollections.observableArrayList("Grapa (Issue individual)",
-				"Tapa blanda (Paperback)", "Cómic de bolsillo (Pocket)", "Edición de lujo (Deluxe Edition)",
-				"Edición omnibus (Omnibus)", "Edición integral (Integral)", "Tapa dura (Hardcover)",
-				"eBook (libro electrónico)", "Cómic digital (Digital Comic)", "Manga digital (Digital Manga)",
-				"PDF (Portable Document Format)", "Revista (Magazine)",
-				"Edición de coleccionista (Collector's Edition)", "Edición especial (Special Edition)",
-				"Edición con extras (Bonus Edition)");
-		nombreFormatoMod.setItems(formatoNuevo);
-		nombreFormatoMod.getSelectionModel().selectFirst();
-
-		ObservableList<String> procedenciaEstadoNuevo = FXCollections.observableArrayList(
-				"Estados Unidos (United States)", "Japón (Japan)", "Francia (France)", "Italia (Italy)",
-				"España (Spain)", "Reino Unido (United Kingdom)", "Alemania (Germany)", "Brasil (Brazil)",
-				"Corea del Sur (South Korea)", "México (Mexico)", "Canadá (Canada)", "China (China)",
-				"Australia (Australia)", "Argentina (Argentina)", "India (India)", "Bélgica (Belgium)",
-				"Países Bajos (Netherlands)", "Portugal (Portugal)", "Suecia (Sweden)", "Suiza (Switzerland)",
-				"Finlandia (Finland)", "Noruega (Norway)", "Dinamarca (Denmark)");
-		nombreProcedenciaMod.setItems(procedenciaEstadoNuevo);
-		nombreProcedenciaMod.getSelectionModel().selectFirst();
-
-		ObservableList<String> situacionEstado = FXCollections.observableArrayList("En posesion", "Comprado",
-				"En venta");
-		estadoComic.setItems(situacionEstado);
-		estadoComic.getSelectionModel().selectFirst();
-	}
 
 	public void borrar_datos() {
 
@@ -627,7 +516,7 @@ public class ModificarDatosController implements Initializable {
 		tablaBBDD.getItems().clear();
 		imagencomic.setImage(null);
 
-		rellenarComboBoxMod();
+		rellenarCombosEstaticos();
 	}
 
 	public void borrar_datos_mod() {

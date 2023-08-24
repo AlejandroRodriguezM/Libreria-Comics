@@ -17,17 +17,26 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import javafx.stage.Popup;
+import javafx.util.converter.DoubleStringConverter;
+import javafx.util.converter.IntegerStringConverter;
 
 public class FuncionesComboBox {
 
 	private static DBLibreriaManager libreria = null;
 
+	// Mapa que almacena los elementos originales de los ComboBox junto a los ComboBox correspondientes
 	private Map<ComboBox<String>, ObservableList<String>> originalComboBoxItems = new HashMap<>();
+
+	// Variable que controla si la entrada es proporcionada por el usuario
 	private boolean isUserInput = true;
-	private boolean updatingComboBoxes = false; // New variable to keep track of ComboBox updates
+
+	// Variable que indica si se están actualizando los ComboBoxes
+	private boolean updatingComboBoxes = false;
+
 
 	/**
 	 * Crea y devuelve un objeto Comic con valores obtenidos de los ComboBoxes.
@@ -117,29 +126,11 @@ public class FuncionesComboBox {
 				} else {
 					modificarPopup(comboBox);
 					Comic comic = getComicFromComboBoxes(totalComboboxes, comboboxes);
-
 					actualizarComboBoxes(totalComboboxes, comboboxes, comic);
 					updateOtherComboBoxes(comboboxes, currentIndex, newValue); // Call the new method here
 
 				}
 
-			});
-
-			comboBox.setOnKeyReleased(event -> {
-				KeyCode code = event.getCode();
-				if (code == KeyCode.BACK_SPACE || code == KeyCode.DELETE) {
-					comboBox.hide();
-					modificarPopup(comboBox);
-					// Verificar si algún ComboBox no está vacío y actualizar los ComboBoxes en
-					// consecuencia
-					boolean atLeastOneNotEmpty = comboboxes.stream()
-							.anyMatch(cb -> cb.getValue() != null && !cb.getValue().isEmpty());
-					if (atLeastOneNotEmpty) {
-						Comic comic = getComicFromComboBoxes(totalComboboxes, comboboxes);
-						actualizarComboBoxes(totalComboboxes, comboboxes, comic);
-					}
-
-				}
 			});
 		}
 	}
@@ -247,12 +238,9 @@ public class FuncionesComboBox {
 
 			// Configurar el tamaño y apariencia del despliegue del ComboBox
 			modificarPopup(comboBox);
-
 		}
-
 		isUserInput = true; // Habilitar nuevamente la entrada del usuario después de la limpieza
 		rellenarComboBox(comboboxes); // Rellenar los ComboBoxes con nuevos datos
-
 	}
 
 	/**
@@ -323,172 +311,261 @@ public class FuncionesComboBox {
 		}
 	}
 
+	/**
+	 * Configura el Popup filtrado con las opciones proporcionadas.
+	 *
+	 * @param comboboxes       La lista de ComboBoxes en la que operar.
+	 * @param originalComboBox El ComboBox original.
+	 * @param filteredItems    Los elementos filtrados a mostrar.
+	 */
 	private void setupFilteredPopup(List<ComboBox<String>> comboboxes, ComboBox<String> originalComboBox,
-			List<String> filteredItems) {
-		modificarPopup(originalComboBox);
+	        List<String> filteredItems) {
+	    modificarPopup(originalComboBox);
 
-		ListView<String> listView = new ListView<>(FXCollections.observableArrayList(filteredItems));
+	    ListView<String> listView = new ListView<>(FXCollections.observableArrayList(filteredItems));
 
-		TextField filterTextField = new TextField();
-		filterTextField.setPromptText("Filtro...");
+	    TextField filterTextField = new TextField();
+	    filterTextField.setPromptText("Filtro...");
 
-		StringProperty filteredText = new SimpleStringProperty();
-		filterTextField.textProperty().bindBidirectional(filteredText);
+	    StringProperty filteredText = new SimpleStringProperty();
+	    filterTextField.textProperty().bindBidirectional(filteredText);
 
-//		filterTextFields.put(originalComboBox, filterTextField);
+	    // Listener para el cambio de texto en el TextField de filtro
+	    filterTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+	        List<String> newFilteredItems = filteredItems.stream()
+	                .filter(item -> item.toLowerCase().contains(newValue.toLowerCase())).collect(Collectors.toList());
+	        listView.setItems(FXCollections.observableArrayList(newFilteredItems));
+	    });
 
-		filterTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-			List<String> newFilteredItems = filteredItems.stream()
-					.filter(item -> item.toLowerCase().contains(newValue.toLowerCase())).collect(Collectors.toList());
-			listView.setItems(FXCollections.observableArrayList(newFilteredItems));
-		});
+	    VBox popupContent = new VBox(filterTextField, listView);
+	    popupContent.setSpacing(-2);
 
-		VBox popupContent = new VBox(filterTextField, listView);
-		popupContent.setSpacing(-2);
+	    ScrollPane scrollPane = new ScrollPane(popupContent);
+	    scrollPane.setFitToHeight(true);
+	    scrollPane.setFitToWidth(true);
+	    scrollPane.setPrefSize(300, 250);
 
-		ScrollPane scrollPane = new ScrollPane(popupContent);
-		scrollPane.setFitToHeight(true);
-		scrollPane.setFitToWidth(true);
-		scrollPane.setPrefSize(300, 250);
+	    Popup popup = new Popup();
+	    popup.getContent().add(scrollPane);
+	    popup.setAutoHide(true);
+	    Bounds bounds = originalComboBox.localToScreen(originalComboBox.getBoundsInLocal());
 
-		Popup popup = new Popup();
-		popup.getContent().add(scrollPane);
-		popup.setAutoHide(true);
-		Bounds bounds = originalComboBox.localToScreen(originalComboBox.getBoundsInLocal());
+	    int currentIndex = comboboxes.indexOf(originalComboBox);
 
-		int currentIndex = comboboxes.indexOf(originalComboBox);
+	    // Evento para manejar la tecla Enter en la lista
+	    listView.setOnKeyPressed(event -> {
+	        modificarPopup(originalComboBox);
 
-		listView.setOnKeyPressed(event -> {
-			modificarPopup(originalComboBox);
+	        if (event.getCode() == KeyCode.ENTER) {
+	            String selectedItem = listView.getSelectionModel().getSelectedItem();
+	            if (selectedItem != null) {
+	                originalComboBox.setValue(selectedItem);
+	                originalComboBox.hide();
 
-			if (event.getCode() == KeyCode.ENTER) {
-				String selectedItem = listView.getSelectionModel().getSelectedItem();
-				if (selectedItem != null) {
-					originalComboBox.setValue(selectedItem);
-					originalComboBox.hide();
-					
-					updateOtherComboBoxes(comboboxes, currentIndex, selectedItem);
-					filterTextField.setText(selectedItem); // Establecer el valor en el TextField
-					popup.hide();
-				}
-			}
-		});
+	                updateOtherComboBoxes(comboboxes, currentIndex, selectedItem);
+	                filterTextField.setText(selectedItem); // Establecer el valor en el TextField
+	                popup.hide();
+	            }
+	        }
+	    });
 
-		listView.setOnMouseClicked(event -> {
-			modificarPopup(originalComboBox);
+	    // Evento para manejar el clic en un elemento de la lista
+	    listView.setOnMouseClicked(event -> {
+	        modificarPopup(originalComboBox);
 
-			String selectedItem = listView.getSelectionModel().getSelectedItem();
-			if (selectedItem != null) {
-				originalComboBox.setValue(selectedItem);
-				originalComboBox.hide();
+	        String selectedItem = listView.getSelectionModel().getSelectedItem();
+	        if (selectedItem != null) {
+	            originalComboBox.setValue(selectedItem);
+	            originalComboBox.hide();
 
-				updateOtherComboBoxes(comboboxes, currentIndex, selectedItem);
-				filterTextField.setText(selectedItem); // Establecer el valor en el TextField
-				popup.hide();
-			}
-		});
+	            updateOtherComboBoxes(comboboxes, currentIndex, selectedItem);
+	            filterTextField.setText(selectedItem); // Establecer el valor en el TextField
+	            popup.hide();
+	        }
+	    });
 
-		originalComboBox.setOnMouseClicked(event -> {
-			modificarPopup(originalComboBox);
+	    // Evento para manejar el clic en el ComboBox original
+	    originalComboBox.setOnMouseClicked(event -> {
+	        modificarPopup(originalComboBox);
 
-			if (!popup.isShowing()) {
-				showFilteredPopup(popup, originalComboBox, filterTextField, filteredText, bounds);
-			} else {
-				originalComboBox.hide();
-				popup.hide();
-			}
-		});
+	        if (!popup.isShowing()) {
+	            showFilteredPopup(popup, originalComboBox, filterTextField, filteredText, bounds);
+	        } else {
+	            originalComboBox.hide();
+	            popup.hide();
+	        }
+	    });
 
-		filterTextField.setOnKeyPressed(event -> {
-		    modificarPopup(originalComboBox);
-		    KeyCode code = event.getCode();
+	    // Evento para manejar las teclas presionadas en el TextField de filtro
+	    filterTextField.setOnKeyPressed(event -> {
+	        modificarPopup(originalComboBox);
+	        KeyCode code = event.getCode();
+	        if (code == KeyCode.BACK_SPACE || code == KeyCode.DELETE) {
+	            originalComboBox.setValue("");
+	            originalComboBox.hide();
+	        }
+	    });
 
-		    if (code == KeyCode.BACK_SPACE || code == KeyCode.DELETE) {
-		        originalComboBox.setValue("");
-		        originalComboBox.hide();
-		        filterTextField.setText("");
-		        popup.hide();
-		    }
-		});
-		
-		filterTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-			modificarPopup(originalComboBox);
+	    // Evento para manejar las teclas liberadas en el ComboBox original
+	    originalComboBox.setOnKeyReleased(event -> {
+	        KeyCode code = event.getCode();
+	        if (code == KeyCode.BACK_SPACE || code == KeyCode.DELETE) {
+	            modificarPopup(originalComboBox);
+	            originalComboBox.hide();
+	            boolean atLeastOneNotEmpty = comboboxes.stream()
+	                    .anyMatch(cb -> cb.getValue() != null && !cb.getValue().isEmpty());
 
-			String selectedItem = listView.getSelectionModel().getSelectedItem();
-			if (selectedItem != null && !selectedItem.isEmpty()) {
-				originalComboBox.setValue(selectedItem);
-				originalComboBox.hide();
+	            System.out.println(atLeastOneNotEmpty);
 
-				updateOtherComboBoxes(comboboxes, currentIndex, selectedItem);
-				filterTextField.setText(selectedItem); // Establecer el valor en el TextField
-				popup.hide();
-			}
-		});
+	            if (atLeastOneNotEmpty) {
+	                Comic comic = getComicFromComboBoxes(10, comboboxes);
+	                actualizarComboBoxes(10, comboboxes, comic);
+	            }
+	        }
+	    });
 
-		// Mostrar el popup personalizado al hacer clic en el ComboBox
-		showFilteredPopup(popup, originalComboBox, filterTextField, filteredText, bounds);
+	    // Mostrar el popup personalizado al hacer clic en el ComboBox
+	    showFilteredPopup(popup, originalComboBox, filterTextField, filteredText, bounds);
 
-		if (!listView.getItems().isEmpty()) {
-			listView.requestFocus(); // Solicitar el enfoque en la lista
-			listView.getSelectionModel().selectFirst();
-		}
+	    if (!listView.getItems().isEmpty()) {
+	        listView.requestFocus(); // Solicitar el enfoque en la lista
+	        listView.getSelectionModel().selectFirst();
+	    }
 	}
 
+
+	/**
+	 * Muestra el Popup filtrado.
+	 *
+	 * @param popup             El Popup que se va a mostrar.
+	 * @param originalComboBox  El ComboBox original.
+	 * @param filterTextField   El TextField de filtrado.
+	 * @param filteredText      La propiedad del texto filtrado.
+	 * @param bounds            Los límites del área de visualización.
+	 */
 	private void showFilteredPopup(Popup popup, ComboBox<String> originalComboBox, TextField filterTextField,
-			StringProperty filteredText, Bounds bounds) {
+	                               StringProperty filteredText, Bounds bounds) {
 
-		Bounds comboBoxBounds = originalComboBox.getBoundsInLocal();
-		Bounds screenBounds = originalComboBox.localToScreen(comboBoxBounds);
+	    Bounds comboBoxBounds = originalComboBox.getBoundsInLocal();
+	    Bounds screenBounds = originalComboBox.localToScreen(comboBoxBounds);
 
-		double defaultX = screenBounds.getMinX() + comboBoxBounds.getMinX();
-		double defaultY = screenBounds.getMaxY();
+	    double defaultX = screenBounds.getMinX() + comboBoxBounds.getMinX();
+	    double defaultY = screenBounds.getMaxY();
 
-		popup.show(originalComboBox, defaultX, defaultY);
+	    popup.show(originalComboBox, defaultX, defaultY);
 
-		filterTextField.requestFocus(); // Solicitar el enfoque en el campo de texto
-		filterTextField.setText(filteredText.get()); // Configurar el texto filtrado
+	    // filterTextField.requestFocus(); // Solicitar el enfoque en el campo de texto
+	    filterTextField.setText(filteredText.get()); // Configurar el texto filtrado
 	}
 
+	/**
+	 * Modifica el Popup del ComboBox.
+	 *
+	 * @param originalComboBox  El ComboBox original.
+	 */
 	private void modificarPopup(ComboBox<String> originalComboBox) {
-		originalComboBox.hide();
-		// Configurar el tamaño y apariencia del despliegue del ComboBox
-		originalComboBox.setCellFactory(param -> new ListCell<String>() {
-			@Override
-			protected void updateItem(String item, boolean empty) {
-				super.updateItem(item, empty);
-				if (empty || item == null) {
-					setGraphic(null);
-					setPrefHeight(0); // Ajusta la altura
-					setPrefWidth(0); // Ajusta el ancho
-				} else {
-					setText(item);
-					setPrefHeight(-1); // Ajusta la altura
-					setPrefWidth(-1); // Ajusta el ancho
-				}
-			}
-		});
+	    originalComboBox.hide();
+	    // Configurar el tamaño y apariencia del despliegue del ComboBox
+	    originalComboBox.setCellFactory(param -> new ListCell<String>() {
+	        @Override
+	        protected void updateItem(String item, boolean empty) {
+	            super.updateItem(item, empty);
+	            if (empty || item == null) {
+	                setGraphic(null);
+	                setPrefHeight(0); // Ajusta la altura
+	                setPrefWidth(0);  // Ajusta el ancho
+	            } else {
+	                setText(item);
+	                setPrefHeight(-1); // Ajusta la altura
+	                setPrefWidth(-1);  // Ajusta el ancho
+	            }
+	        }
+	    });
 	}
 
+	/**
+	 * Actualiza otros ComboBoxes cuando se selecciona un elemento.
+	 *
+	 * @param comboboxes     La lista de ComboBoxes.
+	 * @param currentIndex   El índice del ComboBox actual.
+	 * @param selectedItem  El elemento seleccionado.
+	 */
 	private void updateOtherComboBoxes(List<ComboBox<String>> comboboxes, int currentIndex, String selectedItem) {
-		isUserInput = false; // Disable user input during programmatic updates
+	    isUserInput = false; // Deshabilitar la entrada del usuario durante actualizaciones programáticas
 
-		// Iterate through all ComboBoxes except the current one
-		for (int i = 0; i < comboboxes.size(); i++) {
-			if (i != currentIndex) {
-				ComboBox<String> comboBox = comboboxes.get(i);
-				@SuppressWarnings("unchecked")
-				List<String> originalItems = (List<String>) comboBox.getUserData();
+	    // Iterar a través de todos los ComboBoxes excepto el actual
+	    for (int i = 0; i < comboboxes.size(); i++) {
+	        if (i != currentIndex) {
+	            ComboBox<String> comboBox = comboboxes.get(i);
+	            @SuppressWarnings("unchecked")
+	            List<String> originalItems = (List<String>) comboBox.getUserData();
 
-				if (originalItems != null && !originalItems.isEmpty()) {
-					ObservableList<String> filteredItems = FXCollections.observableArrayList(originalItems.stream()
-							.filter(item -> item.toLowerCase().contains(selectedItem.toLowerCase()))
-							.collect(Collectors.toList()));
-					comboBox.setItems(filteredItems);
-				}
-			}
-		}
+	            if (originalItems != null && !originalItems.isEmpty()) {
+	                ObservableList<String> filteredItems = FXCollections.observableArrayList(originalItems.stream()
+	                        .filter(item -> item.toLowerCase().contains(selectedItem.toLowerCase()))
+	                        .collect(Collectors.toList()));
+	                comboBox.setItems(filteredItems);
+	            }
+	        }
+	    }
 
-		isUserInput = true; // Re-enable user input after programmatic updates
+	    isUserInput = true; // Re-habilitar la entrada del usuario después de actualizaciones programáticas
 	}
+
+
+	/**
+	 * Crea un TextFormatter para validar y permitir solo números enteros.
+	 *
+	 * @return El TextFormatter para números enteros.
+	 */
+	public static TextFormatter<Integer> validador_Nenteros() {
+	    // Crear un validador para permitir solo números enteros
+	    TextFormatter<Integer> textFormatter = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+	        if (change.getControlNewText().matches("\\d*")) {
+	            return change;
+	        }
+	        return null;
+	    });
+
+	    return textFormatter;
+	}
+
+	/**
+	 * Crea un TextFormatter para validar y permitir solo números decimales (double).
+	 *
+	 * @return El TextFormatter para números decimales.
+	 */
+	public static TextFormatter<Double> validador_Ndecimales() {
+	    // Crear un validador para permitir solo números decimales (double)
+	    TextFormatter<Double> textFormatter = new TextFormatter<>(new DoubleStringConverter(), 0.0, change -> {
+	        String newText = change.getControlNewText();
+	        if (newText.matches("\\d*\\.?\\d*")) {
+	            return change;
+	        }
+	        return null;
+	    });
+
+	    return textFormatter;
+	}
+
+	/**
+	 * Rellena los ComboBoxes con valores estáticos predefinidos.
+	 *
+	 * @param comboboxes La lista de ComboBoxes a rellenar.
+	 */
+	public void rellenarComboBoxEstaticos(List<ComboBox<String>> comboboxes) {
+	    ObservableList<String> formatoNuevo = FXCollections.observableArrayList(/* ... */);
+	    comboboxes.get(0).setItems(formatoNuevo);
+	    comboboxes.get(0).getSelectionModel().selectFirst();
+
+	    ObservableList<String> procedenciaEstadoNuevo = FXCollections.observableArrayList(/* ... */);
+	    comboboxes.get(1).setItems(procedenciaEstadoNuevo);
+	    comboboxes.get(1).getSelectionModel().selectFirst();
+
+	    ObservableList<String> situacionEstado = FXCollections.observableArrayList(/* ... */);
+	    comboboxes.get(2).setItems(situacionEstado);
+	    comboboxes.get(2).getSelectionModel().selectFirst();
+	}
+
 
 }

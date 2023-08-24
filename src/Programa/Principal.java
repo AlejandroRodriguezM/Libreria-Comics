@@ -1,6 +1,15 @@
 package Programa;
 
-import Controladores.VentanaPrincipalController;
+import java.io.IOException;
+import java.sql.SQLException;
+
+import Funcionamiento.Ventanas;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
 
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC
@@ -17,19 +26,35 @@ import Controladores.VentanaPrincipalController;
  * Esta clase permite acceder a la base de datos introduciendo los diferentes
  * datos que nos pide.
  *
- * Version 5.5.0.1
+ * Version 6.1.0.0
  *
  * Por Alejandro Rodriguez
  *
- * Twitter: @silverAlox
  */
+public class Principal extends Application {	
+	
+	private static Ventanas nav = new Ventanas();
 
-public class Principal {
-
+	/**
+	 * Carga la ventana principal y arranca el programa.
+	 */
+	public void start(Stage primaryStage) throws IOException, SQLException {
+		try {
+			Parent root = FXMLLoader.load(getClass().getResource("/ventanas/AccesoBBDD.fxml"));
+			
+			primaryStage.setScene(new Scene(root));
+			primaryStage.setResizable(false);
+			primaryStage.setTitle("Aplicacion comics"); // Titulo de la aplicacion.
+			primaryStage.show();
+			primaryStage.getIcons().add(new Image("/Icono/icon2.png"));
+			
+		} catch (IOException e) {
+			nav.alertaException(e.toString());
+		}
+	}
+	
 	public static void main(String[] args) {
-
-		VentanaPrincipalController.main(args);
-
+		launch(args);
 	}
 
 }

@@ -32,11 +32,11 @@ import Controladores.EliminarDatosController;
 import Controladores.IntroducirDatosController;
 import Controladores.MenuPrincipalController;
 import Controladores.ModificarDatosController;
+import Controladores.OpcionesDatosController;
 import Controladores.PuntuarDatosController;
 import Controladores.RecomendacionesController;
 import Controladores.SobreMiController;
 import JDBC.DBManager;
-import Controladores.OpcionesDatosController;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -59,35 +59,27 @@ public class Ventanas {
 	 * Llamada a ventana para el acceso a la base de datos
 	 */
 	public void verAccesoBBDD() {
-
 		try {
-			// Cargo la vista
+			// Carga la vista y obtiene el controlador
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/AccesoBBDD.fxml"));
-
-			// Cargo el padre
 			Parent root = loader.load();
-
-			// Obtengo el controlador
 			AccesoBBDDController controlador = loader.getController();
 
-			// Creo la scene y el stage
+			// Crea la escena y el escenario
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("/style/acces_style.css").toExternalForm());
-			
 
 			Stage stage = new Stage();
 			stage.setResizable(false);
-			stage.setTitle("Aplicacion bbdd comics"); // Titulo de la aplicacion.
-
+			stage.setTitle("Aplicacion comics");
 			stage.getIcons().add(new Image("/Icono/icon2.png"));
-
-			// Asocio el stage con el scene
 			stage.setScene(scene);
 			stage.show();
 
 			// Indico que debe hacer al cerrar
-			stage.setOnCloseRequest(e -> controlador.closeWindows());
-
+			stage.setOnCloseRequest(e -> {
+				controlador.closeWindows();
+			});
 		} catch (IOException ex) {
 			alertaException(ex.toString());
 		}
@@ -97,38 +89,37 @@ public class Ventanas {
 	 * Llamada a ventana para el menu principal
 	 */
 	public void verMenuPrincipal() {
+	    try {
+	        // Cargo la vista
+	        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuPrincipal.fxml"));
 
-		try {
-			// Cargo la vista
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuPrincipal.fxml"));
+	        // Cargo el padre
+	        Parent root = loader.load();
 
-			// Cargo el padre
-			Parent root = loader.load();
+	        // Obtengo el controlador
+	        MenuPrincipalController controlador = loader.getController();
 
-			// Obtengo el controlador
-			MenuPrincipalController controlador = loader.getController();
+	        // Crea la escena y el escenario
+	        Scene scene = new Scene(root);
+	        scene.getStylesheets().add(getClass().getResource("/style/custom-combobox.css").toExternalForm());
+	        Stage stage = new Stage();
+	        stage.setResizable(false);
+	        stage.setTitle("Menu principal"); // Titulo de la aplicacion.
+	        stage.getIcons().add(new Image("/Icono/icon2.png"));
 
-			// Creo la scene y el stage
-			Scene scene = new Scene(root);
-			scene.getStylesheets().add(getClass().getResource("/style/custom-combobox.css").toExternalForm());
-			Stage stage = new Stage();
-			stage.setResizable(false);
-			stage.setTitle("Menu principal"); // Titulo de la aplicacion.
-			stage.getIcons().add(new Image("/Icono/icon2.png"));
+	        // Asocio el stage con el scene
+	        stage.setScene(scene);
+	        stage.show();
 
-			// Asocio el stage con el scene
-			stage.setScene(scene);
-			stage.show();
+	        // Indico que debe hacer al cerrar
+	        stage.setOnCloseRequest(e -> {
+	            controlador.closeWindows();
+	        });
 
-			// Indico que debe hacer al cerrar
-			stage.setOnCloseRequest(e -> {
-				controlador.closeWindows();
-			});
-
-		} catch (IOException ex) {
-			alertaException(ex.toString());
-			ex.printStackTrace();
-		}
+	    } catch (IOException ex) {
+	        alertaException(ex.toString());
+	        ex.printStackTrace();
+	    }
 	}
 
 	/**
@@ -147,6 +138,8 @@ public class Ventanas {
 			IntroducirDatosController controlador = loader.getController();
 
 			// Creo la scene y el stage
+
+			// Crea la escena y el escenario
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("/style/custom-combobox.css").toExternalForm());
 
@@ -158,7 +151,6 @@ public class Ventanas {
 			// Asocio el stage con el scene
 			stage.setScene(scene);
 			stage.show();
-
 			// Indico que debe hacer al cerrar
 			stage.setOnCloseRequest(e -> {
 				controlador.closeWindows();
@@ -186,6 +178,8 @@ public class Ventanas {
 			ModificarDatosController controlador = loader.getController();
 
 			// Creo la scene y el stage
+
+			// Crea la escena y el escenario
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("/style/custom-combobox.css").toExternalForm());
 
@@ -197,7 +191,6 @@ public class Ventanas {
 			// Asocio el stage con el scene
 			stage.setScene(scene);
 			stage.show();
-
 			// Indico que debe hacer al cerrar
 			stage.setOnCloseRequest(e -> {
 				controlador.closeWindows();
@@ -223,7 +216,7 @@ public class Ventanas {
 			// Obtengo el controlador
 			RecomendacionesController controlador = loader.getController();
 
-			// Creo la scene y el stage
+			// Crea la escena y el escenario
 			Scene scene = new Scene(root);
 
 			Stage stage = new Stage();
@@ -234,7 +227,6 @@ public class Ventanas {
 			// Asocio el stage con el scene
 			stage.setScene(scene);
 			stage.show();
-
 			// Indico que debe hacer al cerrar
 			stage.setOnCloseRequest(e -> {
 				controlador.closeWindows();
@@ -262,7 +254,7 @@ public class Ventanas {
 			// Obtengo el controlador
 			EliminarDatosController controlador = loader.getController();
 
-			// Creo la scene y el stage
+			// Crea la escena y el escenario
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("/style/custom-combobox.css").toExternalForm());
 
@@ -274,7 +266,6 @@ public class Ventanas {
 			// Asocio el stage con el scene
 			stage.setScene(scene);
 			stage.show();
-
 			// Indico que debe hacer al cerrar
 			stage.setOnCloseRequest(e -> {
 
@@ -303,7 +294,7 @@ public class Ventanas {
 			// Obtengo el controlador
 			CrearBBDDController controlador = loader.getController();
 
-			// Creo la scene y el stage
+			// Crea la escena y el escenario
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("/style/opciones_style.css").toExternalForm());
 
@@ -315,7 +306,6 @@ public class Ventanas {
 			// Asocio el stage con el scene
 			stage.setScene(scene);
 			stage.show();
-
 			// Indico que debe hacer al cerrar
 			stage.setOnCloseRequest(e -> {
 				controlador.closeWindows();
@@ -342,7 +332,7 @@ public class Ventanas {
 			// Obtengo el controlador
 			OpcionesDatosController controlador = loader.getController();
 
-			// Creo la scene y el stage
+			// Crea la escena y el escenario
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("/style/acces_style.css").toExternalForm());
 			scene.getStylesheets().add(getClass().getResource("/style/opciones_style.css").toExternalForm());
@@ -355,7 +345,6 @@ public class Ventanas {
 			// Asocio el stage con el scene
 			stage.setScene(scene);
 			stage.show();
-
 			// Indico que debe hacer al cerrar
 			stage.setOnCloseRequest(e -> {
 				controlador.closeWindows();
@@ -380,7 +369,7 @@ public class Ventanas {
 			// Obtengo el controlador
 			SobreMiController controlador = loader.getController();
 
-			// Creo la scene y el stage
+			// Crea la escena y el escenario
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("/style/sobremi_style.css").toExternalForm());
 			Stage stage = new Stage();
@@ -391,7 +380,6 @@ public class Ventanas {
 			// Asocio el stage con el scene
 			stage.setScene(scene);
 			stage.show();
-
 			// Indico que debe hacer al cerrar
 			stage.setOnCloseRequest(e -> {
 				controlador.closeWindows();
@@ -419,7 +407,7 @@ public class Ventanas {
 			// Obtengo el controlador
 			PuntuarDatosController controlador = loader.getController();
 
-			// Creo la scene y el stage
+			// Crea la escena y el escenario
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("/style/custom-combobox.css").toExternalForm());
 
@@ -431,7 +419,6 @@ public class Ventanas {
 			// Asocio el stage con el scene
 			stage.setScene(scene);
 			stage.show();
-
 			// Indico que debe hacer al cerrar
 			stage.setOnCloseRequest(e -> {
 				controlador.closeWindows();
@@ -606,42 +593,41 @@ public class Ventanas {
 	 * @return
 	 */
 	public CompletableFuture<Boolean> borrarContenidoTabla() {
-	    CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
+		CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
 
-	    Platform.runLater(() -> {
-	        Alert alert1 = new Alert(AlertType.CONFIRMATION);
-	        Stage stage1 = (Stage) alert1.getDialogPane().getScene().getWindow();
-	        stage1.setResizable(false);
-	        stage1.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
-	        alert1.setTitle("Borrando . . .");
-	        alert1.setHeaderText("Estás a punto de borrar el contenido.");
-	        alert1.setContentText("¿Estás seguro que quieres borrarlo todo?");
+		Platform.runLater(() -> {
+			Alert alert1 = new Alert(AlertType.CONFIRMATION);
+			Stage stage1 = (Stage) alert1.getDialogPane().getScene().getWindow();
+			stage1.setResizable(false);
+			stage1.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
+			alert1.setTitle("Borrando . . .");
+			alert1.setHeaderText("Estás a punto de borrar el contenido.");
+			alert1.setContentText("¿Estás seguro que quieres borrarlo todo?");
 
-	        Optional<ButtonType> result1 = alert1.showAndWait();
-	        if (result1.isPresent() && result1.get() == ButtonType.OK) {
-	            Alert alert2 = new Alert(AlertType.CONFIRMATION);
-	            Stage stage2 = (Stage) alert2.getDialogPane().getScene().getWindow();
-		        stage2.setResizable(false);
-	            stage2.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
-	            alert2.setTitle("Borrando . . .");
-	            alert2.setHeaderText("¿Estás seguro?");
-	            alert2.setContentText("¿De verdad de verdad quieres borrarlo todo?");
+			Optional<ButtonType> result1 = alert1.showAndWait();
+			if (result1.isPresent() && result1.get() == ButtonType.OK) {
+				Alert alert2 = new Alert(AlertType.CONFIRMATION);
+				Stage stage2 = (Stage) alert2.getDialogPane().getScene().getWindow();
+				stage2.setResizable(false);
+				stage2.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
+				alert2.setTitle("Borrando . . .");
+				alert2.setHeaderText("¿Estás seguro?");
+				alert2.setContentText("¿De verdad de verdad quieres borrarlo todo?");
 
-	            alert2.showAndWait().ifPresent(result2 -> {
-	                if (result2 == ButtonType.OK) {
-	                    futureResult.complete(true);
-	                } else {
-	                    futureResult.complete(false);
-	                }
-	            });
-	        } else {
-	            futureResult.complete(false);
-	        }
-	    });
+				alert2.showAndWait().ifPresent(result2 -> {
+					if (result2 == ButtonType.OK) {
+						futureResult.complete(true);
+					} else {
+						futureResult.complete(false);
+					}
+				});
+			} else {
+				futureResult.complete(false);
+			}
+		});
 
-	    return futureResult;
+		return futureResult;
 	}
-
 
 	/**
 	 * Funcion que permite borrar el contenido de la tabla de la base de datos.
@@ -670,27 +656,26 @@ public class Ventanas {
 	 */
 
 	public CompletableFuture<Boolean> cancelar_subida_portadas() {
-	    CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
+		CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
 
-	    Platform.runLater(() -> {
-	        Alert alert = new Alert(AlertType.CONFIRMATION);
-	        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-	        stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
-	        alert.setTitle("Subiendo datos . . .");
-	        alert.setHeaderText("Estas apunto de seleccionar la carpeta con las portadas");
-	        alert.setContentText("¿Quieres continuar? En caso de cancelar, se subirán portadas predeterminadas.");
+		Platform.runLater(() -> {
+			Alert alert = new Alert(AlertType.CONFIRMATION);
+			Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+			stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
+			alert.setTitle("Subiendo datos . . .");
+			alert.setHeaderText("Estas apunto de seleccionar la carpeta con las portadas");
+			alert.setContentText("¿Quieres continuar? En caso de cancelar, se subirán portadas predeterminadas.");
 
-	        Optional<ButtonType> result = alert.showAndWait();
-	        if (result.isPresent() && result.get() == ButtonType.OK) {
-	            futureResult.complete(true);
-	        } else {
-	            futureResult.complete(false);
-	        }
-	    });
+			Optional<ButtonType> result = alert.showAndWait();
+			if (result.isPresent() && result.get() == ButtonType.OK) {
+				futureResult.complete(true);
+			} else {
+				futureResult.complete(false);
+			}
+		});
 
-	    return futureResult;
+		return futureResult;
 	}
-
 
 	/**
 	 * Llama a una ventana de alarma que avisa si hay una excepcion.

@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import Funcionamiento.FuncionesComboBox;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBManager;
@@ -57,14 +58,12 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import javafx.util.converter.IntegerStringConverter;
 
 /**
  * Esta clase sirve para configurar los datos de la base de datos para que el
@@ -339,7 +338,6 @@ public class OpcionesDatosController implements Initializable {
 	private void actualizarComboBoxNombreBBDD() {
 		String usuario = this.usuario.getText();
 		String password = this.pass.getText();
-		;
 
 		String puerto = this.puertobbdd.getText();
 		String hosting = this.nombreHost.getText();
@@ -446,19 +444,7 @@ public class OpcionesDatosController implements Initializable {
 	 * numero entero en los comboBox numeroComic y caja_comic
 	 */
 	public void restringir_entrada_datos() {
-		puertobbdd.setTextFormatter(validador_Nenteros());
-	}
-
-	public TextFormatter<Integer> validador_Nenteros() {
-		// Crear un validador para permitir solo números enteros
-		TextFormatter<Integer> textFormatter = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
-			if (change.getControlNewText().matches("\\d*")) {
-				return change;
-			}
-			return null;
-		});
-
-		return textFormatter;
+		puertobbdd.setTextFormatter(FuncionesComboBox.validador_Nenteros());
 	}
 
 	/**
@@ -506,9 +492,7 @@ public class OpcionesDatosController implements Initializable {
 	 */
 	@FXML
 	void guardarDatos(ActionEvent event) throws SQLException {
-
 		guardar_datos_base_local();
-
 	}
 
 	public void guardar_datos_base_local() throws SQLException {
@@ -607,10 +591,7 @@ public class OpcionesDatosController implements Initializable {
 			prontEstadoFichero.setStyle("-fx-background-color: #DD370F");
 			iniciarAnimacionBBDDError();
 			return false;
-		}
-		
-		
-		
+		}	
 	}
 
 	/**
@@ -623,7 +604,7 @@ public class OpcionesDatosController implements Initializable {
 		if (nav.borrarContenidoConfiguracion()) {
 			String userHome = System.getProperty("user.home");
 			String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
-			String carpetaLibreria = ubicacion + "\\libreria";
+			String carpetaLibreria = ubicacion + File.separator + "libreria";
 
 			// Verificar y eliminar los archivos dentro de la carpeta "libreria"
 			File carpetaLibreriaFile = new File(carpetaLibreria);
@@ -672,11 +653,11 @@ public class OpcionesDatosController implements Initializable {
 	 */
 	public String obtenerDatoDespuesDeDosPuntos(String linea) {
 		String userHome = System.getProperty("user.home");
-		String ubicacion = userHome + "\\AppData\\Roaming";
-		String carpetaLibreria = ubicacion + "\\libreria";
+		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
+		String carpetaLibreria = ubicacion + File.separator + "libreria";
 		String archivoConfiguracion;
 
-		archivoConfiguracion = carpetaLibreria + "\\configuracion_local.conf";
+		archivoConfiguracion = carpetaLibreria + File.separator + "configuracion_local.conf";
 
 		try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
 			String line;

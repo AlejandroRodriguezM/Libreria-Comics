@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -39,6 +40,7 @@ import Funcionamiento.Comic;
 import Funcionamiento.FuncionesComboBox;
 import Funcionamiento.FuncionesExcel;
 import Funcionamiento.FuncionesTableView;
+import Funcionamiento.FuncionesTooltips;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
@@ -60,18 +62,14 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
-import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
-import javafx.util.converter.IntegerStringConverter;
 
 /**
  * Esta clase sirve viajar a las diferentes ventanas del programa, asi como
@@ -282,11 +280,11 @@ public class MenuPrincipalController implements Initializable {
 		utilidad = new Utilidades();
 
 		prontInfo.textProperty().addListener((observable, oldValue, newValue) -> {
-			ajustarAnchoVBox(prontInfo);
+			funcionesTabla.ajustarAnchoVBox(prontInfo, vboxContenido);
 		});
 
 		// Asegurarnos de que el VBox ajuste su tamaño correctamente al inicio
-		Platform.runLater(() -> ajustarAnchoVBox(prontInfo));
+		Platform.runLater(() -> funcionesTabla.ajustarAnchoVBox(prontInfo, vboxContenido));
 
 		Platform.runLater(() -> funcionesTabla.seleccionarRaw(tablaBBDD));
 		
@@ -332,64 +330,33 @@ public class MenuPrincipalController implements Initializable {
 		prontInfo.setEditable(false);
 	}
 
-	private void ajustarAnchoVBox(TextArea textArea) {
-		// Crear un objeto Text con el contenido del TextArea
-		Text text = new Text(textArea.getText());
-
-		// Configurar el mismo estilo que tiene el TextArea
-		text.setFont(textArea.getFont());
-
-		double textHeight = text.getLayoutBounds().getHeight();
-
-		textArea.setPrefHeight(textHeight);
-	}
-
-	private void asignarTooltips() {
-		asignarTooltip(botonbbdd, "Muestra toda la base de datos");
-		asignarTooltip(botonLimpiar, "Limpia la pantalla y reinicia todos los valores");
-		asignarTooltip(botonMostrarParametro, "Muestra los comics o libros o mangas por parametro");
-
-		asignarTooltip(nombreComic, "Nombre de los cómics / libros / mangas");
-		asignarTooltip(numeroComic, "Número del cómic / libro / manga");
-		asignarTooltip(nombreFirma, "Nombre de la firma del cómic / libro / manga");
-		asignarTooltip(nombreGuionista, "Nombre del guionista del cómic / libro / manga");
-		asignarTooltip(nombreVariante, "Nombre de la variante del cómic / libro / manga");
-		asignarTooltip(numeroCaja, "Número de la caja donde se guarda el cómic / libro / manga");
-		asignarTooltip(nombreProcedencia, "Nombre de la procedencia del cómic / libro / manga");
-		asignarTooltip(nombreFormato, "Nombre del formato del cómic / libro / manga");
-		asignarTooltip(nombreEditorial, "Nombre de la editorial del cómic / libro / manga");
-		asignarTooltip(nombreDibujante, "Nombre del dibujante del cómic / libro / manga");
-	}
-
-	private void asignarTooltip(Button boton, String mensaje) {
-		Tooltip tooltip = new Tooltip(mensaje);
-		boton.setTooltip(tooltip);
-	}
-
-	private void asignarTooltip(ComboBox<?> comboBox, String mensaje) {
-		Tooltip tooltip = new Tooltip(mensaje);
-		comboBox.setTooltip(tooltip);
-	}
+    public void asignarTooltips() {
+        List<Object> elementos = new ArrayList<>();
+        
+        elementos.add(botonbbdd);
+        elementos.add(botonLimpiar);
+        elementos.add(botonMostrarParametro);
+        elementos.add(nombreComic);
+        elementos.add(numeroComic);
+        elementos.add(nombreFirma);
+        elementos.add(nombreGuionista);
+        elementos.add(nombreVariante);
+        elementos.add(numeroCaja);
+        elementos.add(nombreProcedencia);
+        elementos.add(nombreFormato);
+        elementos.add(nombreEditorial);
+        elementos.add(nombreDibujante);
+        
+        FuncionesTooltips.asignarTooltips(elementos);
+    }
 
 	/**
 	 * Funcion que permite restringir entrada de datos de todo aquello que no sea un
 	 * numero entero en los comboBox numeroComic y caja_comic
 	 */
 	public void restringir_entrada_datos() {
-		numeroComic.getEditor().setTextFormatter(validador_Nenteros());
-		numeroCaja.getEditor().setTextFormatter(validador_Nenteros());
-	}
-
-	public TextFormatter<Integer> validador_Nenteros() {
-		// Crear un validador para permitir solo números enteros
-		TextFormatter<Integer> textFormatter = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
-			if (change.getControlNewText().matches("\\d*")) {
-				return change;
-			}
-			return null;
-		});
-
-		return textFormatter;
+		numeroComic.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
+		numeroCaja.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
 	}
 
 	/**
@@ -1304,7 +1271,7 @@ public class MenuPrincipalController implements Initializable {
 			fecha = datos[8];
 		}
 
-		comic = new Comic("", datos[1], datos[12], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7], fecha,
+		comic = new Comic("", datos[1], datos[11], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7], fecha,
 				datos[9], datos[10], "", "", "", null, "", "");
 
 		funcionesTabla.tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()), tablaBBDD, columnList); 
@@ -1312,15 +1279,6 @@ public class MenuPrincipalController implements Initializable {
 		prontInfo.setText(funcionesTabla.resultadoBusquedaPront(comic).getText());
 		busquedaGeneral.setText("");
 	}
-
-	/**
-	 * Según el dato que busquemos a la hora de realizar la búsqueda, aparecerá un
-	 * mensaje diferente en el pront.
-	 * 
-	 * @param comic El objeto Comic utilizado para la búsqueda.
-	 * @throws SQLException Si ocurre un error al acceder a la base de datos.
-	 */
-	
 
 	/**
 	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
@@ -1345,7 +1303,7 @@ public class MenuPrincipalController implements Initializable {
 	 * @return
 	 */
 	public String[] camposComic() {
-		String campos[] = new String[13];
+		String campos[] = new String[12];
 
 		if (nombreActual().isEmpty()) {
 			campos[1] = "";
@@ -1410,9 +1368,9 @@ public class MenuPrincipalController implements Initializable {
 		}
 
 		if (cajaActual().isEmpty() || cajaActual().equals("0")) {
-			campos[12] = "";
+			campos[11] = "";
 		} else {
-			campos[12] = cajaActual();
+			campos[11] = cajaActual();
 		}
 
 		return campos;
