@@ -415,7 +415,7 @@ public class FuncionesComboBox {
 			modificarPopup(originalComboBox);
 
 			String selectedItem = listView.getSelectionModel().getSelectedItem();
-			if (selectedItem != null && selectedItem.isEmpty()) {
+			if (selectedItem != null && !selectedItem.isEmpty()) {
 				originalComboBox.setValue(selectedItem);
 				originalComboBox.hide();
 
