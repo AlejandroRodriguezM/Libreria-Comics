@@ -34,6 +34,8 @@ import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.controlsfx.control.textfield.TextFields;
+
 import Funcionamiento.Comic;
 import Funcionamiento.FuncionesComboBox;
 import Funcionamiento.FuncionesTableView;
@@ -347,7 +349,7 @@ public class ModificarDatosController implements Initializable {
 		restringirSimbolos(nombreGuionistaMod);
 		restringirSimbolos(nombreDibujanteMod);
 		restringirSimbolos(nombreVarianteMod);
-
+		listas_autocompletado();
 		// Desactivar el enfoque en el VBox para evitar que reciba eventos de teclado
 		rootVBox.setFocusTraversable(false);
 
@@ -491,6 +493,19 @@ public class ModificarDatosController implements Initializable {
 				borrar_datos_mod();
 			}
 		});
+	}
+	
+	public void listas_autocompletado() {
+		TextFields.bindAutoCompletion(nombreComicMod, DBLibreriaManager.listaNombre);
+		TextFields.bindAutoCompletion(nombreVarianteMod, DBLibreriaManager.listaVariante);
+		TextFields.bindAutoCompletion(nombreFirmaMod, DBLibreriaManager.listaFirma);
+		TextFields.bindAutoCompletion(nombreEditorialMod, DBLibreriaManager.listaEditorial);
+		TextFields.bindAutoCompletion(nombreGuionistaMod, DBLibreriaManager.listaGuionista);
+		TextFields.bindAutoCompletion(nombreDibujanteMod, DBLibreriaManager.listaDibujante);
+		TextFields.bindAutoCompletion(numeroComicMod.getEditor(), DBLibreriaManager.listaNumeroComic);
+		TextFields.bindAutoCompletion(nombreProcedenciaMod.getEditor(), DBLibreriaManager.listaProcedencia);
+		TextFields.bindAutoCompletion(nombreFormatoMod.getEditor(), DBLibreriaManager.listaFormato);
+		TextFields.bindAutoCompletion(numeroCajaMod.getEditor(), DBLibreriaManager.listaCaja);
 	}
 
 	/**

@@ -57,6 +57,8 @@ import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.controlsfx.control.textfield.TextFields;
+
 import Funcionamiento.Comic;
 import Funcionamiento.FuncionesComboBox;
 import Funcionamiento.FuncionesTableView;
@@ -376,7 +378,7 @@ public class IntroducirDatosController implements Initializable {
 		restringirSimbolos(guionistaAni);
 		restringirSimbolos(dibujanteAni);
 		restringirSimbolos(varianteAni);
-
+		listas_autocompletado();
 		// Desactivar el enfoque en el VBox para evitar que reciba eventos de teclado
 		rootVBox.setFocusTraversable(false);
 
@@ -543,6 +545,20 @@ public class IntroducirDatosController implements Initializable {
 				"En venta");
 		estadoComic.setItems(situacionEstado);
 		estadoComic.getSelectionModel().selectFirst();
+	}
+	
+	public void listas_autocompletado() {
+
+		TextFields.bindAutoCompletion(nombreAni, DBLibreriaManager.listaNombre);
+		TextFields.bindAutoCompletion(varianteAni, DBLibreriaManager.listaVariante);
+		TextFields.bindAutoCompletion(firmaAni, DBLibreriaManager.listaFirma);
+		TextFields.bindAutoCompletion(editorialAni, DBLibreriaManager.listaEditorial);
+		TextFields.bindAutoCompletion(guionistaAni, DBLibreriaManager.listaGuionista);
+		TextFields.bindAutoCompletion(dibujanteAni, DBLibreriaManager.listaDibujante);
+		TextFields.bindAutoCompletion(numeroAni.getEditor(), DBLibreriaManager.listaNumeroComic);
+		TextFields.bindAutoCompletion(procedenciaAni.getEditor(), DBLibreriaManager.listaProcedencia);
+		TextFields.bindAutoCompletion(formatoAni.getEditor(), DBLibreriaManager.listaFormato);
+		TextFields.bindAutoCompletion(numeroCajaAni.getEditor(), DBLibreriaManager.listaCaja);
 	}
 
 	/**
