@@ -108,6 +108,7 @@ public class Ventanas {
 	        // Crea la escena y el escenario
 	        Scene scene = new Scene(root);
 	        scene.getStylesheets().add(getClass().getResource("/style/custom-combobox.css").toExternalForm());
+	        
 	        Stage stage = new Stage();
 	        stage.setResizable(false);
 	        stage.setTitle("Menu principal"); // Titulo de la aplicacion.
@@ -143,8 +144,6 @@ public class Ventanas {
 			// Obtengo el controlador
 			IntroducirDatosController controlador = loader.getController();
 
-			// Creo la scene y el stage
-
 			// Crea la escena y el escenario
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("/style/custom-combobox.css").toExternalForm());
@@ -157,6 +156,7 @@ public class Ventanas {
 			// Asocio el stage con el scene
 			stage.setScene(scene);
 			stage.show();
+			
 			// Indico que debe hacer al cerrar
 			stage.setOnCloseRequest(e -> {
 				controlador.closeWindows();
