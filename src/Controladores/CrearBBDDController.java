@@ -628,6 +628,10 @@ public class CrearBBDDController implements Initializable {
 		timeline.play();
 	}
 
+	/**
+	 * Guarda los datos de configuración en un archivo de configuración.
+	 * @throws SQLException si ocurre un error en la conexión a la base de datos.
+	 */
 	private void guardarDatos() throws SQLException {
 
 		String userHome = System.getProperty("user.home");
@@ -672,8 +676,7 @@ public class CrearBBDDController implements Initializable {
 	}
 
 	/**
-	 * Metodo que permite detener una animacion
-	 * 
+	 * Detiene la animación actual si está en ejecución.
 	 */
 	private void detenerAnimacion() {
 		if (timeline != null) {

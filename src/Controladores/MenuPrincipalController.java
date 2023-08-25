@@ -330,25 +330,31 @@ public class MenuPrincipalController implements Initializable {
 		prontInfo.setEditable(false);
 	}
 
-    public void asignarTooltips() {
-        List<Object> elementos = new ArrayList<>();
-        
-        elementos.add(botonbbdd);
-        elementos.add(botonLimpiar);
-        elementos.add(botonMostrarParametro);
-        elementos.add(nombreComic);
-        elementos.add(numeroComic);
-        elementos.add(nombreFirma);
-        elementos.add(nombreGuionista);
-        elementos.add(nombreVariante);
-        elementos.add(numeroCaja);
-        elementos.add(nombreProcedencia);
-        elementos.add(nombreFormato);
-        elementos.add(nombreEditorial);
-        elementos.add(nombreDibujante);
-        
-        FuncionesTooltips.asignarTooltips(elementos);
-    }
+	/**
+	 * Asigna tooltips a varios elementos en la interfaz gráfica.
+	 * Estos tooltips proporcionan información adicional cuando el usuario pasa el ratón sobre los elementos.
+	 */
+	public void asignarTooltips() {
+	    List<Object> elementos = new ArrayList<>();
+	    
+	    // Agregar elementos a la lista para los cuales se asignarán tooltips
+	    elementos.add(botonbbdd);
+	    elementos.add(botonLimpiar);
+	    elementos.add(botonMostrarParametro);
+	    elementos.add(nombreComic);
+	    elementos.add(numeroComic);
+	    elementos.add(nombreFirma);
+	    elementos.add(nombreGuionista);
+	    elementos.add(nombreVariante);
+	    elementos.add(numeroCaja);
+	    elementos.add(nombreProcedencia);
+	    elementos.add(nombreFormato);
+	    elementos.add(nombreEditorial);
+	    elementos.add(nombreDibujante);
+	    
+	    // Llamar a la función para asignar tooltips a los elementos de la lista
+	    FuncionesTooltips.asignarTooltips(elementos);
+	}
 
 	/**
 	 * Funcion que permite restringir entrada de datos de todo aquello que no sea un
@@ -737,14 +743,19 @@ public class MenuPrincipalController implements Initializable {
 		funcionesTabla.tablaBBDD(libreria.libreriaPosesion(), tablaBBDD, columnList); // Llamada a funcion
 	}
 
+	/**
+	 * Maneja la acción de mostrar los cómics considerados "Key Issue".
+	 *
+	 * @param event El evento que desencadenó esta acción.
+	 * @throws SQLException Si ocurre un error al acceder a la base de datos.
+	 */
 	@FXML
 	void comicsKeyIssue(ActionEvent event) throws SQLException {
-		prontInfo.setOpacity(0);
-		limpiezaDeDatos();
-		libreria = new DBLibreriaManager();
-		libreria.reiniciarBBDD();
-		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-		funcionesTabla.tablaBBDD(libreria.libreriaKeyIssue(), tablaBBDD, columnList); // Llamada a funcion
+	    prontInfo.setOpacity(0); // Ocultar la información en pantalla
+	    libreria = new DBLibreriaManager(); // Crear una instancia del gestor de la base de datos
+	    libreria.reiniciarBBDD(); // Reiniciar la base de datos si es necesario
+	    funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a la función para establecer nombres de columnas
+	    funcionesTabla.tablaBBDD(libreria.libreriaKeyIssue(), tablaBBDD, columnList); // Llamada a la función para llenar la tabla con cómics "Key Issue"
 	}
 
 	////////////////////////////
@@ -1210,15 +1221,20 @@ public class MenuPrincipalController implements Initializable {
 		thread.start();
 	}
 
-	// Función para iniciar la animación
+	/**
+	 * Inicia la animación del progreso de carga.
+	 */
 	public void iniciarAnimacion() {
-		progresoCarga.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
+	    progresoCarga.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
 	}
 
-	// Función para detener la animación
+	/**
+	 * Detiene la animación del progreso de carga.
+	 */
 	public void detenerAnimacion() {
-		progresoCarga.setProgress(0); // Establece el progreso en 0 para detener la animación
+	    progresoCarga.setProgress(0); // Establece el progreso en 0 para detener la animación
 	}
+
 
 	/**
 	 * Funcion crea el fichero SQL segun el sistema operativo en el que te
@@ -1376,21 +1392,23 @@ public class MenuPrincipalController implements Initializable {
 		return campos;
 	}
 
+	/**
+	 * Realiza la limpieza de datos en la interfaz gráfica.
+	 */
 	private void limpiezaDeDatos() {
+	    // Limpiar todos los campos de ComboBox y sus valores
+	    for (ComboBox<String> comboBox : Arrays.asList(nombreComic, numeroComic, nombreFirma, nombreGuionista,
+	            nombreVariante, numeroCaja, nombreProcedencia, nombreFormato, nombreEditorial, nombreDibujante)) {
+	        comboBox.setValue("");
+	        comboBox.getEditor().setText("");
+	    }
 
-		// Clear all ComboBox text fields and values
-		for (ComboBox<String> comboBox : Arrays.asList(nombreComic, numeroComic, nombreFirma, nombreGuionista,
-				nombreVariante, numeroCaja, nombreProcedencia, nombreFormato, nombreEditorial, nombreDibujante)) {
-			comboBox.setValue("");
-			comboBox.getEditor().setText("");
-		}
-
-		// Clear additional UI elements
-		fechaPublicacion.setValue(null);
-		prontInfo.setText(null);
-		prontInfo.setOpacity(0);
-		tablaBBDD.getItems().clear();
-		imagencomic.setImage(null);
+	    // Limpiar elementos adicionales de la interfaz
+	    fechaPublicacion.setValue(null);
+	    prontInfo.setText(null);
+	    prontInfo.setOpacity(0);
+	    tablaBBDD.getItems().clear();
+	    imagencomic.setImage(null);
 	}
 
 	/////////////////////////////

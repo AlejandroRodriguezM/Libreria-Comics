@@ -97,8 +97,9 @@ public class FuncionesTableView {
 	}
 	
 	/**
-	 * Cuando pasa el raton por encima, se colorea de color azul el raw donde el
-	 * raton se encuentra y muestra un mensaje emergente con datos del comic
+	 * Configura el efecto de resaltado y mensaje emergente al pasar el ratón por encima de una fila (raw) en la tabla.
+	 *
+	 * @param tablaBBDD La TableView en la que operar.
 	 */
 	public void seleccionarRaw(TableView<Comic> tablaBBDD) {
 		tablaBBDD.setRowFactory(tv -> {

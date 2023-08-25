@@ -270,7 +270,7 @@ public class EliminarDatosController implements Initializable {
 
 		libreria = new DBLibreriaManager();
 		utilidad = new Utilidades();
-		
+
 		prontInfo.textProperty().addListener((observable, oldValue, newValue) -> {
 			funcionesTabla.ajustarAnchoVBox(prontInfo, vboxContenido);
 		});
@@ -280,29 +280,28 @@ public class EliminarDatosController implements Initializable {
 
 		Platform.runLater(() -> funcionesTabla.seleccionarRaw(tablaBBDD));
 		Platform.runLater(() -> asignarTooltips());
-		
+
 		List<TableColumn<Comic, String>> columnListCarga = Arrays.asList(nombre, caja, numero, variante, firma,
 				editorial, formato, procedencia, fecha, guionista, dibujante, referencia);
 		columnList = columnListCarga;
-		
+
 		try {
 			libreria.listasAutoCompletado();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
 		animacion();
 		autoRelleno();
-		funcionesTabla.modificarColumnas(tablaBBDD,columnList);
+		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
 		restringir_entrada_datos();
 		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
 				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
 
-		
 		int totalComboboxes = comboboxes.size();
-		
+
 		funcionesCombo.rellenarComboBox(comboboxes);
-		funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);		
+		funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
 		// Desactivar el enfoque en el VBox para evitar que reciba eventos de teclado
 		rootVBox.setFocusTraversable(false);
 
@@ -319,34 +318,40 @@ public class EliminarDatosController implements Initializable {
 			tablaBBDD.setFocusTraversable(false);
 			rootVBox.requestFocus();
 		});
-		
+
 		prontInfo.setEditable(false);
 
 	}
 
+	/**
+	 * Asigna tooltips a varios elementos.
+	 */
+	public void asignarTooltips() {
+		// Crear una lista de elementos que necesitan tooltips
+		List<Object> elementos = new ArrayList<>();
+		elementos.add(botonbbdd);
+		elementos.add(botonLimpiarComic);
+		elementos.add(botonMostrarParametro);
+		elementos.add(nombreComic);
+		elementos.add(numeroComic);
+		elementos.add(nombreFirma);
+		elementos.add(nombreGuionista);
+		elementos.add(nombreVariante);
+		elementos.add(numeroCaja);
+		elementos.add(nombreProcedencia);
+		elementos.add(nombreFormato);
+		elementos.add(nombreEditorial);
+		elementos.add(nombreDibujante);
 
+		// Asignar tooltips a los elementos utilizando la clase FuncionesTooltips
+		FuncionesTooltips.asignarTooltips(elementos);
+	}
 
-    public void asignarTooltips() {
-        List<Object> elementos = new ArrayList<>();
-        
-        elementos.add(botonbbdd);
-        elementos.add(botonLimpiarComic);
-        elementos.add(botonMostrarParametro);
-        elementos.add(nombreComic);
-        elementos.add(numeroComic);
-        elementos.add(nombreFirma);
-        elementos.add(nombreGuionista);
-        elementos.add(nombreVariante);
-        elementos.add(numeroCaja);
-        elementos.add(nombreProcedencia);
-        elementos.add(nombreFormato);
-        elementos.add(nombreEditorial);
-        elementos.add(nombreDibujante);
-        
-        FuncionesTooltips.asignarTooltips(elementos);
-    }
-
+	/**
+	 * Configura una animación de parpadeo para un Label.
+	 */
 	public void animacion() {
+		// Crear una Timeline para la animación de parpadeo
 		parpadeo = new Timeline(
 				new KeyFrame(Duration.seconds(0.5), new KeyValue(label_id_eliminar.borderProperty(), Border.EMPTY)),
 				new KeyFrame(Duration.seconds(1), new KeyValue(label_id_eliminar.borderProperty(),
@@ -358,8 +363,12 @@ public class EliminarDatosController implements Initializable {
 		label_id_eliminar.setBorder(Border.EMPTY);
 	}
 
+	/**
+	 * Realiza el auto-rellenado de información en base al valor del TextField
+	 * idComicTratar.
+	 */
 	public void autoRelleno() {
-		// Agregar el ChangeListener al TextField idComicTratar
+		// Agregar un ChangeListener al TextField idComicTratar
 		idComicTratar.textProperty().addListener((observable, oldValue, newValue) -> {
 			if (!newValue.isEmpty()) {
 				boolean existeComic = false;
@@ -375,7 +384,6 @@ public class EliminarDatosController implements Initializable {
 					}
 
 					idComicTratar.setText(idComicTratar.getText());
-
 
 					prontInfo.clear();
 					prontInfo.setOpacity(1);
@@ -582,49 +590,23 @@ public class EliminarDatosController implements Initializable {
 		prontInfo.setOpacity(0);
 	}
 
+	/**
+	 * Realiza una limpieza de datos en la interfaz.
+	 */
 	public void limpiezaDeDatos() {
-
-		// Clear all ComboBox text fields and values
+		// Limpiar todos los ComboBox
 		for (ComboBox<String> comboBox : Arrays.asList(nombreComic, numeroComic, nombreFirma, nombreGuionista,
 				nombreVariante, numeroCaja, nombreProcedencia, nombreFormato, nombreEditorial, nombreDibujante)) {
-			comboBox.setValue("");
-			comboBox.getEditor().setText("");
+			comboBox.setValue(""); // Borrar el valor seleccionado
+			comboBox.getEditor().setText(""); // Borrar el texto del editor
 		}
 
-		ID.setText("");
-		// Clear additional UI elements
-		fechaPublicacion.setValue(null);
-		tablaBBDD.getItems().clear();
-		imagencomic.setImage(null);
-	}
-	
-	public void limpiarCombobox() {
+		ID.setText(""); // Borrar el texto del campo ID
 
-		// Clear all ComboBox text fields and values
-		for (ComboBox<String> comboBox : Arrays.asList(nombreComic, numeroComic, nombreFirma, nombreGuionista,
-				nombreVariante, numeroCaja, nombreProcedencia, nombreFormato, nombreEditorial, nombreDibujante)) {
-			comboBox.setValue("");
-			comboBox.getEditor().setText("");
-		}
-		
-		ID.setText("");
-		// Clear additional UI elements
-		fechaPublicacion.setValue(null);
-	}
-
-	public void restablecerCampos() {
-		// Restablecer todos los campos de selección
-		nombreComic.getSelectionModel().clearSelection();
-		numeroComic.getSelectionModel().clearSelection();
-		nombreVariante.getSelectionModel().clearSelection();
-		nombreFirma.getSelectionModel().clearSelection();
-		nombreEditorial.getSelectionModel().clearSelection();
-		nombreFormato.getSelectionModel().clearSelection();
-		nombreProcedencia.getSelectionModel().clearSelection();
-		fechaPublicacion.setValue(null);
-		nombreGuionista.getSelectionModel().clearSelection();
-		nombreDibujante.getSelectionModel().clearSelection();
-		numeroCaja.getSelectionModel().clearSelection();
+		// Limpiar elementos adicionales de la interfaz
+		fechaPublicacion.setValue(null); // Borrar el valor de la fecha
+		tablaBBDD.getItems().clear(); // Limpiar los elementos de la tabla
+		imagencomic.setImage(null); // Borrar la imagen
 	}
 
 	/**
@@ -764,7 +746,7 @@ public class EliminarDatosController implements Initializable {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
-		funcionesTabla.modificarColumnas(tablaBBDD,columnList);
+		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
 		prontInfo.setOpacity(0);
 		imagencomic.setImage(null);
 		libreria = new DBLibreriaManager();
@@ -783,7 +765,7 @@ public class EliminarDatosController implements Initializable {
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
-		funcionesTabla.modificarColumnas(tablaBBDD,columnList);
+		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
 //		limpiezaDeDatos();
 		tablaBBDD.refresh();
 		prontInfo.setOpacity(0);
@@ -807,14 +789,21 @@ public class EliminarDatosController implements Initializable {
 		String datos[] = camposComic();
 
 		Comic comic = new Comic("", datos[1], datos[11], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
-				datos[8], datos[9], datos[10], "", "", "", null,"","");
+				datos[8], datos[9], datos[10], "", "", "", null, "", "");
 
-		funcionesTabla.tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()), tablaBBDD, columnList); // Llamada a funcion
+		funcionesTabla.tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()), tablaBBDD, columnList); // Llamada
+																														// a
+																														// funcion
 		busquedaGeneral.setText("");
 
 		prontInfo.setText(funcionesTabla.resultadoBusquedaPront(comic).getText());
 	}
 
+	/**
+	 * Maneja el evento de búsqueda de cómics por Key Issue.
+	 * @param event El evento generado al hacer clic en el botón.
+	 * @throws SQLException Si ocurre un error al acceder a la base de datos.
+	 */
 	@FXML
 	void comicsKeyIssue(ActionEvent event) throws SQLException {
 		prontInfo.setOpacity(0);

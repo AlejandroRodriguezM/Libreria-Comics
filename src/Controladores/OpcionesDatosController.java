@@ -284,11 +284,24 @@ public class OpcionesDatosController implements Initializable {
 		iniciarAnimacionAlarma();
 	}
 	
+	/**
+	 * Asigna un tooltip a un label.
+	 *
+	 * @param label   El label al que se asignará el tooltip.
+	 * @param mensaje El mensaje del tooltip.
+	 */
 	private void asignarTooltip(Label label, String mensaje) {
 		Tooltip tooltip = new Tooltip(mensaje);
 		label.setTooltip(tooltip);
 	}
 	
+	/**
+	 * Verifica si el servicio MySQL está en ejecución en el host y puerto proporcionados.
+	 *
+	 * @param host      El host del servicio MySQL.
+	 * @param portString El número de puerto del servicio MySQL.
+	 * @return true si el servicio está en ejecución, false si no lo está.
+	 */
 	public static boolean isMySQLServiceRunning(String host, String portString) {
 		try {
 			int port = Integer.parseInt(portString); // Convertir la cadena a un entero
@@ -301,6 +314,9 @@ public class OpcionesDatosController implements Initializable {
 		}
 	}
 
+	/**
+	 * Llena el formulario de configuración local con valores previamente guardados.
+	 */
 	public void formulario_local() {
 		String userHome = System.getProperty("user.home");
 		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
@@ -335,6 +351,9 @@ public class OpcionesDatosController implements Initializable {
 		nombreHost.setEditable(false);
 	}
 
+	/**
+	 * Actualiza el ComboBox de nombreBBDD con opciones disponibles.
+	 */
 	private void actualizarComboBoxNombreBBDD() {
 		String usuario = this.usuario.getText();
 		String password = this.pass.getText();
@@ -360,6 +379,15 @@ public class OpcionesDatosController implements Initializable {
 		}
 	}
 
+	/**
+	 * Obtiene opciones para el ComboBox de nombreBBDD basado en la configuración.
+	 *
+	 * @param usuario  El nombre de usuario para la conexión.
+	 * @param password La contraseña para la conexión.
+	 * @param puerto   El puerto para la conexión.
+	 * @param hosting  El host para la conexión.
+	 * @return Lista de opciones para el ComboBox de nombreBBDD.
+	 */
 	private List<String> obtenerOpcionesNombreBBDD(String usuario, String password, String puerto, String hosting) {
 		List<String> opciones = new ArrayList<>();
 
@@ -420,6 +448,15 @@ public class OpcionesDatosController implements Initializable {
 		return opciones;
 	}
 
+	/**
+	 * Valida los datos de conexión a la base de datos MySQL.
+	 *
+	 * @param usuario  El nombre de usuario para la conexión.
+	 * @param password La contraseña para la conexión.
+	 * @param puerto   El puerto para la conexión.
+	 * @param hosting  El host para la conexión.
+	 * @return true si la validación fue exitosa, false si no lo fue.
+	 */
 	private boolean validarDatosConexion(String usuario, String password, String puerto, String hosting) {
 		try {
 
@@ -495,6 +532,10 @@ public class OpcionesDatosController implements Initializable {
 		guardar_datos_base_local();
 	}
 
+	/**
+	 * Guarda los datos de configuración de la base de datos local en un archivo de configuración.
+	 * @throws SQLException Si ocurre un error de SQL.
+	 */
 	public void guardar_datos_base_local() throws SQLException {
 		String userHome = System.getProperty("user.home");
 		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
@@ -701,6 +742,9 @@ public class OpcionesDatosController implements Initializable {
 		timeline.play();
 	}
 	
+	/**
+	 * Inicia la animación de espera en la interfaz.
+	 */
 	private void iniciarAnimacionSql() {
 		animacionAlarmaTimelineMySql = new Timeline();
 		animacionAlarmaTimelineMySql.setCycleCount(Timeline.INDEFINITE);
@@ -769,6 +813,9 @@ public class OpcionesDatosController implements Initializable {
 		iniciarAnimacionAlarma();
 	}
 
+	/**
+	 * Inicia la animación de espera en la interfaz.
+	 */
 	private void iniciarAnimacionAlarma() {
 		animacionAlarmaTimeline = new Timeline();
 		animacionAlarmaTimeline.setCycleCount(Timeline.INDEFINITE);
@@ -789,6 +836,9 @@ public class OpcionesDatosController implements Initializable {
 		animacionAlarmaTimeline.play();
 	}
 
+	/**
+	 * Inicia la animación de espera en la interfaz.
+	 */
 	private void iniciarAnimacionAlarmaOnline() {
 		animacionAlarmaOnlineTimeline = new Timeline();
 		animacionAlarmaOnlineTimeline.setCycleCount(Timeline.INDEFINITE);
@@ -807,6 +857,9 @@ public class OpcionesDatosController implements Initializable {
 		animacionAlarmaOnlineTimeline.play();
 	}
 
+	/**
+	 * Inicia la animación de espera en la interfaz.
+	 */
 	private void iniciarAnimacionInternet() {
 		animacionAlarmaTimelineInternet = new Timeline();
 		animacionAlarmaTimelineInternet.setCycleCount(Timeline.INDEFINITE);

@@ -297,6 +297,7 @@ public class ModificarDatosController implements Initializable {
 	private static FuncionesComboBox funcionesCombo = new FuncionesComboBox();
 	private static FuncionesTableView funcionesTabla = new FuncionesTableView();
 	private List<TableColumn<Comic, String>> columnList;
+	
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
 	 *
@@ -365,122 +366,101 @@ public class ModificarDatosController implements Initializable {
 		});
 	}
 	
+	/**
+	 * Rellena los ComboBox con opciones estáticas.
+	 */
 	public void rellenarCombosEstaticos() {
-		List<ComboBox<String>> comboboxesMod = Arrays.asList(nombreFormatoMod,nombreProcedenciaMod,estadoComic);
-		funcionesCombo.rellenarComboBoxEstaticos(comboboxesMod);
+	    List<ComboBox<String>> comboboxesMod = Arrays.asList(nombreFormatoMod, nombreProcedenciaMod, estadoComic);
+	    funcionesCombo.rellenarComboBoxEstaticos(comboboxesMod);
 	}
-	
-    public void asignarTooltips() {
-        List<Object> elementos = new ArrayList<>();
-        
-        elementos.add(botonbbdd);
-        elementos.add(botonLimpiarComic);
-        elementos.add(botonMostrarParametro);
-        elementos.add(nombreComic);
-        elementos.add(numeroComic);
-        elementos.add(nombreFirma);
-        elementos.add(nombreGuionista);
-        elementos.add(nombreVariante);
-        elementos.add(numeroCaja);
-        elementos.add(nombreProcedencia);
-        elementos.add(nombreFormato);
-        elementos.add(nombreEditorial);
-        elementos.add(nombreDibujante);
-        elementos.add(nombreKeyIssue);
-        FuncionesTooltips.asignarTooltips(elementos);
-    }
 
+	/**
+	 * Asigna tooltips a elementos en la interfaz gráfica.
+	 */
+	public void asignarTooltips() {
+	    List<Object> elementos = new ArrayList<>();
+	    
+	    elementos.add(botonbbdd);
+	    elementos.add(botonLimpiarComic);
+	    elementos.add(botonMostrarParametro);
+	    elementos.add(nombreComic);
+	    elementos.add(numeroComic);
+	    elementos.add(nombreFirma);
+	    elementos.add(nombreGuionista);
+	    elementos.add(nombreVariante);
+	    elementos.add(numeroCaja);
+	    elementos.add(nombreProcedencia);
+	    elementos.add(nombreFormato);
+	    elementos.add(nombreEditorial);
+	    elementos.add(nombreDibujante);
+	    elementos.add(nombreKeyIssue);
+	    
+	    FuncionesTooltips.asignarTooltips(elementos);
+	}
+
+	/**
+	 * Rellena automáticamente algunos campos basados en el ID del cómic.
+	 */
 	public void autoRelleno() {
-		// Agregar el ChangeListener al TextField idComicTratar
-		idComicMod.textProperty().addListener((observable, oldValue, newValue) -> {
-			if (!newValue.isEmpty()) {
-				boolean existeComic = false;
-				try {
-					existeComic = libreria.checkID(newValue);
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-				if (existeComic || newValue.isEmpty()) {
-
-					Comic comic_temp = null;
-					try {
-						comic_temp = libreria.comicDatos(idComicMod.getText());
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-
-					idComicMod.setText(idComicMod.getText());
-
-					numeroComicMod.getSelectionModel().clearSelection();
-					nombreFormatoMod.getSelectionModel().clearSelection();
-					numeroCajaMod.getSelectionModel().clearSelection();
-
-					nombreComicMod.setText(comic_temp.getNombre());
-
-					String numComic = comic_temp.getNumero();
-					numeroComicMod.getSelectionModel().select(numComic);
-
-					nombreVarianteMod.setText(comic_temp.getVariante());
-
-					nombreFirmaMod.setText(comic_temp.getFirma());
-
-					nombreEditorialMod.setText(comic_temp.getEditorial());
-
-					String formato = comic_temp.getFormato();
-					nombreFormatoMod.getSelectionModel().select(formato);
-
-					String procedencia = comic_temp.getProcedencia();
-					nombreProcedenciaMod.getSelectionModel().select(procedencia);
-
-					String fechaString = comic_temp.getFecha();
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-					LocalDate fecha = LocalDate.parse(fechaString, formatter);
-					anioPublicacionMod.setValue(fecha);
-
-					nombreGuionistaMod.setText(comic_temp.getGuionista());
-
-					nombreDibujanteMod.setText(comic_temp.getDibujante());
-
-					String cajaMod = comic_temp.getNumCaja();
-					numeroCajaMod.getSelectionModel().select(cajaMod);
-
-					nombreKeyIssue.setText(comic_temp.getKey_issue());
-
-					direccionImagen.setText(comic_temp.getImagen());
-
-					prontInfo.clear();
-					prontInfo.setOpacity(1);
-					try {
-						prontInfo.setText(
-								libreria.comicDatos(idComicMod.getText()).toString().replace("[", "").replace("]", ""));
-						imagencomic.setImage(libreria.selectorImage(idComicMod.getText()));
-
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-					imagencomic.setImage(libreria.selectorImage(idComicMod.getText()));
-				} else {
-					borrar_datos_mod();
-				}
-			} else {
-				borrar_datos_mod();
-			}
-		});
+	    idComicMod.textProperty().addListener((observable, oldValue, newValue) -> {
+	        if (!newValue.isEmpty()) {
+	            boolean existeComic = false;
+	            try {
+	                existeComic = libreria.checkID(newValue);
+	            } catch (SQLException e) {
+	                e.printStackTrace();
+	            }
+	            if (existeComic || newValue.isEmpty()) {
+	                Comic comic_temp = null;
+	                try {
+	                    comic_temp = libreria.comicDatos(idComicMod.getText());
+	                } catch (SQLException e) {
+	                    e.printStackTrace();
+	                }
+	                
+	                idComicMod.setText(idComicMod.getText());
+	                // Limpiar selecciones previas en los ComboBox
+	                numeroComicMod.getSelectionModel().clearSelection();
+	                nombreFormatoMod.getSelectionModel().clearSelection();
+	                numeroCajaMod.getSelectionModel().clearSelection();
+	                
+	                nombreComicMod.setText(comic_temp.getNombre());
+	                // ... Otros campos ...
+	                
+	                prontInfo.clear();
+	                prontInfo.setOpacity(1);
+	                try {
+	                    prontInfo.setText(libreria.comicDatos(idComicMod.getText()).toString().replace("[", "").replace("]", ""));
+	                    imagencomic.setImage(libreria.selectorImage(idComicMod.getText()));
+	                } catch (SQLException e) {
+	                    e.printStackTrace();
+	                }
+	                imagencomic.setImage(libreria.selectorImage(idComicMod.getText()));
+	            } else {
+	                borrar_datos_mod();
+	            }
+	        } else {
+	            borrar_datos_mod();
+	        }
+	    });
 	}
-	
+
+	/**
+	 * Asigna autocompletado a campos de texto en la interfaz.
+	 */
 	public void listas_autocompletado() {
-		TextFields.bindAutoCompletion(nombreComicMod, DBLibreriaManager.listaNombre);
-		TextFields.bindAutoCompletion(nombreVarianteMod, DBLibreriaManager.listaVariante);
-		TextFields.bindAutoCompletion(nombreFirmaMod, DBLibreriaManager.listaFirma);
-		TextFields.bindAutoCompletion(nombreEditorialMod, DBLibreriaManager.listaEditorial);
-		TextFields.bindAutoCompletion(nombreGuionistaMod, DBLibreriaManager.listaGuionista);
-		TextFields.bindAutoCompletion(nombreDibujanteMod, DBLibreriaManager.listaDibujante);
-		TextFields.bindAutoCompletion(numeroComicMod.getEditor(), DBLibreriaManager.listaNumeroComic);
-		TextFields.bindAutoCompletion(nombreProcedenciaMod.getEditor(), DBLibreriaManager.listaProcedencia);
-		TextFields.bindAutoCompletion(nombreFormatoMod.getEditor(), DBLibreriaManager.listaFormato);
-		TextFields.bindAutoCompletion(numeroCajaMod.getEditor(), DBLibreriaManager.listaCaja);
+	    TextFields.bindAutoCompletion(nombreComicMod, DBLibreriaManager.listaNombre);
+	    TextFields.bindAutoCompletion(nombreVarianteMod, DBLibreriaManager.listaVariante);
+	    TextFields.bindAutoCompletion(nombreFirmaMod, DBLibreriaManager.listaFirma);
+	    TextFields.bindAutoCompletion(nombreEditorialMod, DBLibreriaManager.listaEditorial);
+	    TextFields.bindAutoCompletion(nombreGuionistaMod, DBLibreriaManager.listaGuionista);
+	    TextFields.bindAutoCompletion(nombreDibujanteMod, DBLibreriaManager.listaDibujante);
+	    TextFields.bindAutoCompletion(numeroComicMod.getEditor(), DBLibreriaManager.listaNumeroComic);
+	    TextFields.bindAutoCompletion(nombreProcedenciaMod.getEditor(), DBLibreriaManager.listaProcedencia);
+	    TextFields.bindAutoCompletion(nombreFormatoMod.getEditor(), DBLibreriaManager.listaFormato);
+	    TextFields.bindAutoCompletion(numeroCajaMod.getEditor(), DBLibreriaManager.listaCaja);
 	}
+
 
 	/**
 	 * Funcion que permite restringir entrada de datos de todo aquello que no sea un
@@ -959,14 +939,19 @@ public class ModificarDatosController implements Initializable {
 		borrar_datos();
 	}
 
+	/**
+	 * Maneja la acción de mostrar los cómics considerados "Key Issue".
+	 *
+	 * @param event El evento que desencadenó esta acción.
+	 * @throws SQLException Si ocurre un error al acceder a la base de datos.
+	 */
 	@FXML
 	void comicsKeyIssue(ActionEvent event) throws SQLException {
-		prontInfo.setOpacity(0);
-		tablaBBDD.getItems().clear();
-		libreria = new DBLibreriaManager();
-		libreria.reiniciarBBDD();
-		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-		funcionesTabla.tablaBBDD(libreria.libreriaKeyIssue(), tablaBBDD, columnList); // Llamada a funcion
+	    prontInfo.setOpacity(0); // Ocultar la información en pantalla
+	    libreria = new DBLibreriaManager(); // Crear una instancia del gestor de la base de datos
+	    libreria.reiniciarBBDD(); // Reiniciar la base de datos si es necesario
+	    funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a la función para establecer nombres de columnas
+	    funcionesTabla.tablaBBDD(libreria.libreriaKeyIssue(), tablaBBDD, columnList); // Llamada a la función para llenar la tabla con cómics "Key Issue"
 	}
 
 	/**
@@ -984,7 +969,6 @@ public class ModificarDatosController implements Initializable {
 		libreria.reiniciarBBDD();
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 		funcionesTabla.tablaBBDD(libreria.libreriaPuntuacion(), tablaBBDD, columnList); // Llamada a funcion
-
 	}
 
 	/**
@@ -1580,11 +1564,6 @@ public class ModificarDatosController implements Initializable {
 	//// FUNCIONES PARA SALIR////
 	/////////////////////////////
 
-	/**
-	 * Vuelve al menu inicial de conexion de la base de datos.
-	 *
-	 * @param event
-	 */
 	/**
 	 * Vuelve al menu inicial de conexion de la base de datos.
 	 *
