@@ -17,9 +17,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="804.0" prefWidth="1197.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.IntroducirDatosController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1212.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.IntroducirDatosController">
    <children>
-      <ImageView fitHeight="465.0" fitWidth="1199.0" layoutX="-2.0" pickOnBounds="true">
+      <ImageView fitHeight="490.0" fitWidth="1218.0" layoutX="-6.0" pickOnBounds="true">
          <image>
             <Image url="@../imagenes/Fondo%20Introducir.jpg" />
          </image>
@@ -73,7 +73,7 @@
       <ComboBox fx:id="procedenciaAni" layoutX="435.0" layoutY="178.0" prefHeight="25.0" prefWidth="162.0" />
       <ComboBox fx:id="formatoAni" layoutX="435.0" layoutY="150.0" prefHeight="25.0" prefWidth="162.0" />
       <DatePicker fx:id="fechaAni" editable="false" layoutX="434.0" layoutY="205.0" prefHeight="25.0" prefWidth="165.0" promptText="2000-01-01" />
-      <MenuBar fx:id="menu_navegacion" layoutY="-3.0" prefHeight="25.0" prefWidth="1197.0">
+      <MenuBar fx:id="menu_navegacion" layoutY="-3.0" prefHeight="25.0" prefWidth="1212.0">
          <menus>
             <Menu fx:id="navegacion_cerrar" mnemonicParsing="false" text="Archivo">
                <items>
@@ -196,30 +196,6 @@
          </font></TextField>
       <Label layoutX="315.0" layoutY="337.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Key issue" />
       <Button fx:id="botonLimpiarComic" layoutX="179.0" layoutY="380.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="42.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Limpiar/Reiniciar" />
-      <VBox fx:id="rootVBox" layoutX="-1.0" layoutY="435.0" prefHeight="370.0" prefWidth="1198.0">
-         <children>
-            <TableView fx:id="tablaBBDD" onKeyPressed="#teclasDireccion" onMouseClicked="#clickRaton" prefHeight="369.0" prefWidth="1198.0" stylesheets="@../style/tablas_style.css">
-               <columns>
-                  <TableColumn fx:id="ID" prefWidth="47.0" text="ID" visible="false" />
-                  <TableColumn fx:id="nombre" editable="false" prefWidth="135.0" text="Nombre" />
-                  <TableColumn fx:id="caja" prefWidth="39.0" text="Caja" />
-                  <TableColumn fx:id="numero" editable="false" prefWidth="95.0" text="Nº" />
-                  <TableColumn fx:id="variante" editable="false" prefWidth="123.0" text="Variante" />
-                  <TableColumn fx:id="firma" editable="false" prefWidth="59.0" text="Firma" />
-                  <TableColumn fx:id="editorial" editable="false" prefWidth="61.0" text="Editorial" />
-                  <TableColumn fx:id="formato" editable="false" prefWidth="59.0" text="Formato" />
-                  <TableColumn fx:id="procedencia" editable="false" text="Origen" />
-                  <TableColumn fx:id="fecha" editable="false" prefWidth="65.0" text="Fecha" />
-                  <TableColumn fx:id="guionista" editable="false" prefWidth="182.0" text="Guionista" />
-                  <TableColumn fx:id="dibujante" editable="false" prefWidth="85.0" text="Dibujante" />
-                  <TableColumn fx:id="referencia" editable="false" prefWidth="193.0" text="Referencia" />
-               </columns>
-               <columnResizePolicy>
-                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-               </columnResizePolicy>
-            </TableView>
-         </children>
-      </VBox>
       <VBox fx:id="vboxContenido" layoutX="853.0" layoutY="26.0" prefHeight="398.0" prefWidth="330.0">
          <children>
             <TextArea fx:id="prontInfo" editable="false" opacity="0.0" prefHeight="371.0" prefWidth="268.0" stylesheets="@../style/panel_info_style.css" wrapText="true" />
@@ -237,5 +213,29 @@
          </font>
       </TextField>
       <Label layoutX="315.0" layoutY="360.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="URL referencia" />
+      <VBox fx:id="rootVBox" layoutY="431.0" prefHeight="321.0" prefWidth="1212.0">
+         <children>
+            <TableView fx:id="tablaBBDD" onKeyPressed="#teclasDireccion" onMouseClicked="#clickRaton" prefHeight="382.0" prefWidth="1218.0" stylesheets="@../style/tablas_style.css">
+               <columns>
+                  <TableColumn fx:id="ID" prefWidth="47.0" text="ID" visible="false" />
+                  <TableColumn fx:id="nombre" editable="false" prefWidth="135.0" text="Nombre" />
+                  <TableColumn fx:id="caja" editable="false" prefWidth="39.0" text="Caja" />
+                  <TableColumn fx:id="numero" editable="false" prefWidth="95.0" text="Nº" />
+                  <TableColumn fx:id="variante" editable="false" prefWidth="123.0" text="Variante" />
+                  <TableColumn fx:id="firma" editable="false" prefWidth="59.0" text="Firma" />
+                  <TableColumn fx:id="editorial" editable="false" prefWidth="61.0" text="Editorial" />
+                  <TableColumn fx:id="formato" editable="false" prefWidth="59.0" text="Formato" />
+                  <TableColumn fx:id="procedencia" editable="false" text="Origen" />
+                  <TableColumn fx:id="fecha" editable="false" prefWidth="65.0" text="Fecha" />
+                  <TableColumn fx:id="guionista" editable="false" prefWidth="182.0" text="Guionista" />
+                  <TableColumn fx:id="dibujante" editable="false" prefWidth="85.0" text="Dibujante" />
+                  <TableColumn fx:id="referencia" editable="false" prefWidth="193.0" text="Referencia" />
+               </columns>
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+            </TableView>
+         </children>
+      </VBox>
    </children>
 </Pane>

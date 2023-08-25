@@ -17,9 +17,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1197.0" style="-fx-background-color: DFA394;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.EliminarDatosController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1212.0" style="-fx-background-color: DFA394;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.EliminarDatosController">
    <children>
-      <ImageView fitHeight="707.0" fitWidth="1197.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="687.0" fitWidth="1212.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagenes/baner_eliminar2.jpg" />
          </image>
@@ -35,7 +35,7 @@
          </font>
       </Label>
       <ImageView fx:id="imagencomic" fitHeight="339.0" fitWidth="236.0" layoutX="507.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true" />
-      <MenuBar fx:id="menu_navegacion" prefHeight="25.0" prefWidth="1197.0">
+      <MenuBar fx:id="menu_navegacion" prefHeight="25.0" prefWidth="1212.0">
          <menus>
             <Menu fx:id="navegacion_cerrar" mnemonicParsing="false" text="Archivo">
                <items>
@@ -144,9 +144,9 @@
          </font>
       </Label>
       <Button fx:id="botonLimpiarComic" layoutX="316.0" layoutY="36.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="49.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Limpiar/Reiniciar" />
-      <VBox fx:id="rootVBox" layoutY="380.0" prefHeight="370.0" prefWidth="1197.0">
+      <VBox fx:id="rootVBox" layoutY="382.0" prefHeight="368.0" prefWidth="1212.0">
          <children>
-            <TableView fx:id="tablaBBDD" onKeyPressed="#teclasDireccion" onMouseClicked="#clickRaton" prefHeight="370.0" prefWidth="1198.0" stylesheets="@../style/tablas_style.css">
+            <TableView fx:id="tablaBBDD" onKeyPressed="#teclasDireccion" onMouseClicked="#clickRaton" prefHeight="370.0" prefWidth="1212.0" stylesheets="@../style/tablas_style.css">
                <columns>
                   <TableColumn fx:id="ID" prefWidth="47.0" text="ID" visible="false" />
                   <TableColumn fx:id="nombre" editable="false" prefWidth="135.0" text="Nombre" />

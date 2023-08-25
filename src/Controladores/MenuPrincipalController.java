@@ -80,184 +80,136 @@ import javafx.stage.Stage;
 public class MenuPrincipalController implements Initializable {
 
 	@FXML
-	private MenuItem menu_archivo_desconectar;
+	private TableColumn<Comic, String> ID;
+	@FXML
+	private TableColumn<Comic, String> caja;
+	@FXML
+	private TableColumn<Comic, String> dibujante;
+	@FXML
+	private TableColumn<Comic, String> editorial;
+	@FXML
+	private TableColumn<Comic, String> fecha;
+	@FXML
+	private TableColumn<Comic, String> firma;
+	@FXML
+	private TableColumn<Comic, String> formato;
+	@FXML
+	private TableColumn<Comic, String> guionista;
+	@FXML
+	private TableColumn<Comic, String> nombre;
+	@FXML
+	private TableColumn<Comic, String> numero;
+	@FXML
+	private TableColumn<Comic, String> procedencia;
+	@FXML
+	private TableColumn<Comic, String> variante;
+	@FXML
+	private TableColumn<Comic, String> referencia;
 
 	@FXML
-	private MenuItem menu_archivo_sobreMi;
+	private TableView<Comic> tablaBBDD;
 
 	@FXML
-	private MenuItem menu_archivo_backupbbdd;
+	private ImageView imagencomic;
+	@FXML
+	private TextArea prontInfo;
 
 	@FXML
-	private MenuItem menu_archivo_cerrar;
+	private ComboBox<String> nombreComic;
+	@FXML
+	private ComboBox<String> numeroComic;
+	@FXML
+	private ComboBox<String> nombreFirma;
+	@FXML
+	private ComboBox<String> nombreGuionista;
+	@FXML
+	private ComboBox<String> nombreVariante;
+	@FXML
+	private ComboBox<String> numeroCaja;
+	@FXML
+	private ComboBox<String> nombreProcedencia;
+	@FXML
+	private ComboBox<String> nombreFormato;
+	@FXML
+	private ComboBox<String> nombreEditorial;
+	@FXML
+	private ComboBox<String> nombreDibujante;
 
 	@FXML
-	private MenuItem menu_archivo_delete;
+	private DatePicker fechaPublicacion;
+	@FXML
+	private TextField busquedaGeneral;
 
 	@FXML
-	private MenuItem menu_archivo_excel;
+	private Button botonbbdd;
+	@FXML
+	private Button botonLimpiar;
+	@FXML
+	private Button botonMostrarParametro;
 
 	@FXML
-	private MenuItem menu_archivo_importar;
+	private ProgressIndicator progresoCarga;
 
 	@FXML
-	private MenuItem menu_comic_aniadir;
-
+	private VBox rootVBox;
 	@FXML
-	private MenuItem menu_comic_eliminar;
-
-	@FXML
-	private MenuItem menu_comic_aleatoria;
-
-	@FXML
-	private MenuItem menu_comic_modificar;
-
-	@FXML
-	private MenuItem menu_comic_puntuar;
-
-	@FXML
-	private MenuItem menu_estadistica_estadistica;
-
-	@FXML
-	private MenuItem menu_estadistica_firmados;
-
-	@FXML
-	private MenuItem menu_estadistica_puntuados;
-
-	@FXML
-	private MenuItem menu_estadistica_comprados;
-
-	@FXML
-	private MenuItem menu_estadistica_posesion;
-
-	@FXML
-	private MenuItem menu_estadistica_vendidos;
-
-	@FXML
-	private MenuItem menu_estadistica_key_issue;
+	private VBox vboxContenido;
 
 	@FXML
 	private MenuBar menu_navegacion;
 
 	@FXML
 	private Menu navegacion_cerrar;
-
 	@FXML
 	private Menu navegacion_comic;
-
 	@FXML
 	private Menu navegacion_estadistica;
 
 	@FXML
-	private Button botonbbdd;
+	private MenuItem menu_archivo_backupbbdd;
+	@FXML
+	private MenuItem menu_archivo_cerrar;
+	@FXML
+	private MenuItem menu_archivo_delete;
+	@FXML
+	private MenuItem menu_archivo_desconectar;
+	@FXML
+	private MenuItem menu_archivo_excel;
+	@FXML
+	private MenuItem menu_archivo_importar;
+	@FXML
+	private MenuItem menu_archivo_sobreMi;
 
 	@FXML
-	private Button botonLimpiar;
+	private MenuItem menu_comic_aniadir;
+	@FXML
+	private MenuItem menu_comic_eliminar;
+	@FXML
+	private MenuItem menu_comic_aleatoria;
+	@FXML
+	private MenuItem menu_comic_modificar;
+	@FXML
+	private MenuItem menu_comic_puntuar;
 
 	@FXML
-	private Button botonMostrarParametro;
-
+	private MenuItem menu_estadistica_estadistica;
 	@FXML
-	private DatePicker fechaPublicacion;
-
+	private MenuItem menu_estadistica_firmados;
 	@FXML
-	private TextField busquedaGeneral;
-
+	private MenuItem menu_estadistica_puntuados;
 	@FXML
-	private TableColumn<Comic, String> ID;
-
+	private MenuItem menu_estadistica_comprados;
 	@FXML
-	private TableColumn<Comic, String> caja;
-
+	private MenuItem menu_estadistica_posesion;
 	@FXML
-	private TableColumn<Comic, String> dibujante;
-
+	private MenuItem menu_estadistica_vendidos;
 	@FXML
-	private TableColumn<Comic, String> editorial;
-
-	@FXML
-	private TableColumn<Comic, String> fecha;
-
-	@FXML
-	private TableColumn<Comic, String> firma;
-
-	@FXML
-	private TableColumn<Comic, String> formato;
-
-	@FXML
-	private TableColumn<Comic, String> guionista;
-
-	@FXML
-	private TableColumn<Comic, String> nombre;
-
-	@FXML
-	private TableColumn<Comic, String> numero;
-
-	@FXML
-	private TableColumn<Comic, String> procedencia;
-
-	@FXML
-	private TableColumn<Comic, String> variante;
-
-	@FXML
-	private TableColumn<Comic, String> referencia;
-
-	@FXML
-	public TableView<Comic> tablaBBDD;
-
-	@FXML
-	private TextArea prontInfo;
-
-	@FXML
-	private ImageView imagencomic;
-
-	@FXML
-	private ComboBox<String> nombreComic;
-
-	@FXML
-	private ComboBox<String> numeroComic;
-
-	@FXML
-	private ComboBox<String> nombreFirma;
-
-	@FXML
-	private ComboBox<String> nombreGuionista;
-
-	@FXML
-	private ComboBox<String> nombreVariante;
-
-	@FXML
-	private ComboBox<String> numeroCaja;
-
-	@FXML
-	private ComboBox<String> nombreProcedencia;
-
-	@FXML
-	private ComboBox<String> nombreFormato;
-
-	@FXML
-	private ComboBox<String> nombreEditorial;
-
-	@FXML
-	private ComboBox<String> nombreDibujante;
+	private MenuItem menu_estadistica_key_issue;
 
 	@FXML
 	private ResourceBundle resources;
-
 	@FXML
 	private URL location;
-
-	@FXML
-	private VBox rootVBox;
-
-	@FXML
-	private VBox vboxContenido;
-
-	@FXML
-	private VBox vboxFrases;
-
-	@FXML
-	private ProgressIndicator progresoCarga;
 
 	private static Ventanas nav = new Ventanas();
 	private static DBLibreriaManager libreria = null;

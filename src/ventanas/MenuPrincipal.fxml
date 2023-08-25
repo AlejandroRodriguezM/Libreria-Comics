@@ -151,7 +151,7 @@
 			</children>
 		</VBox>
 		<TextField fx:id="busquedaGeneral" layoutX="121.0" layoutY="33.0" prefHeight="25.0" prefWidth="162.0" promptText="Busqueda general" />
-		<ComboBox fx:id="nombreComic" layoutX="121.0" layoutY="61.0" prefHeight="25.0" prefWidth="162.0" promptText="Seleccionar nombre." stylesheets="@../style/combobox_style.css" />
+		<ComboBox fx:id="nombreComic" layoutX="121.0" layoutY="61.0" prefHeight="25.0" prefWidth="162.0" promptText="Seleccionar nombre" stylesheets="@../style/combobox_style.css" />
 		<ComboBox fx:id="numeroComic" layoutX="121.0" layoutY="89.0" prefHeight="25.0" prefWidth="162.0" promptText="Seleccionar numero" stylesheets="@../style/combobox_style.css" />
 		<ComboBox fx:id="nombreVariante" layoutX="121.0" layoutY="117.0" prefHeight="25.0" prefWidth="162.0" promptText="Seleccionar variante" stylesheets="@../style/combobox_style.css" />
 		<ComboBox fx:id="nombreProcedencia" layoutX="121.0" layoutY="145.0" prefHeight="25.0" prefWidth="162.0" promptText="Selecciona procedencia" stylesheets="@../style/combobox_style.css" />
