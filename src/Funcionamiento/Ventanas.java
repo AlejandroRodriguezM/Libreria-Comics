@@ -59,27 +59,33 @@ public class Ventanas {
 	 * Llamada a ventana para el acceso a la base de datos
 	 */
 	public void verAccesoBBDD() {
+
 		try {
-			// Carga la vista y obtiene el controlador
+			// Cargo la vista
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/AccesoBBDD.fxml"));
+
+			// Cargo el padre
 			Parent root = loader.load();
+
+			// Obtengo el controlador
 			AccesoBBDDController controlador = loader.getController();
 
-			// Crea la escena y el escenario
+			// Creo la scene y el stage
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("/style/acces_style.css").toExternalForm());
-
 			Stage stage = new Stage();
 			stage.setResizable(false);
-			stage.setTitle("Aplicacion comics");
+			stage.setTitle("Aplicacion bbdd comics"); // Titulo de la aplicacion.
+
 			stage.getIcons().add(new Image("/Icono/icon2.png"));
+
+			// Asocio el stage con el scene
 			stage.setScene(scene);
 			stage.show();
 
 			// Indico que debe hacer al cerrar
-			stage.setOnCloseRequest(e -> {
-				controlador.closeWindows();
-			});
+			stage.setOnCloseRequest(e -> controlador.closeWindows());
+
 		} catch (IOException ex) {
 			alertaException(ex.toString());
 		}
