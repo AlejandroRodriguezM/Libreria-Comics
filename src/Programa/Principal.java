@@ -38,6 +38,7 @@ public class Principal extends Application {
 	/**
 	 * Carga la ventana principal y arranca el programa.
 	 */
+	@Override
 	public void start(Stage primaryStage) throws IOException, SQLException {
 		try {
 			Parent root = FXMLLoader.load(getClass().getResource("/ventanas/AccesoBBDD.fxml"));
