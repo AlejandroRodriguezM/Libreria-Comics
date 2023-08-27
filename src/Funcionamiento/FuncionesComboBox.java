@@ -433,7 +433,6 @@ public class FuncionesComboBox {
 	    }
 	}
 
-
 	/**
 	 * Muestra el Popup filtrado.
 	 *
@@ -554,15 +553,28 @@ public class FuncionesComboBox {
 	 * @param comboboxes La lista de ComboBoxes a rellenar.
 	 */
 	public void rellenarComboBoxEstaticos(List<ComboBox<String>> comboboxes) {
-	    ObservableList<String> formatoNuevo = FXCollections.observableArrayList(/* ... */);
+	    ObservableList<String> formatoNuevo = FXCollections.observableArrayList("Grapa (Issue individual)",
+				"Tapa blanda (Paperback)", "Cómic de bolsillo (Pocket)", "Edición de lujo (Deluxe Edition)",
+				"Edición omnibus (Omnibus)", "Edición integral (Integral)", "Tapa dura (Hardcover)",
+				"eBook (libro electrónico)", "Cómic digital (Digital Comic)", "Manga digital (Digital Manga)", "Manga (Manga tome)",
+				"PDF (Portable Document Format)", "Revista (Magazine)",
+				"Edición de coleccionista (Collector's Edition)", "Edición especial (Special Edition)",
+				"Edición con extras (Bonus Edition)" , "Libro (Book)");
 	    comboboxes.get(0).setItems(formatoNuevo);
 	    comboboxes.get(0).getSelectionModel().selectFirst();
 
-	    ObservableList<String> procedenciaEstadoNuevo = FXCollections.observableArrayList(/* ... */);
+	    ObservableList<String> procedenciaEstadoNuevo = FXCollections.observableArrayList(
+				"Estados Unidos (United States)", "Japón (Japan)", "Francia (France)", "Italia (Italy)",
+				"España (Spain)", "Reino Unido (United Kingdom)", "Alemania (Germany)", "Brasil (Brazil)",
+				"Corea del Sur (South Korea)", "México (Mexico)", "Canadá (Canada)", "China (China)",
+				"Australia (Australia)", "Argentina (Argentina)", "India (India)", "Bélgica (Belgium)",
+				"Países Bajos (Netherlands)", "Portugal (Portugal)", "Suecia (Sweden)", "Suiza (Switzerland)",
+				"Finlandia (Finland)", "Noruega (Norway)", "Dinamarca (Denmark)");
 	    comboboxes.get(1).setItems(procedenciaEstadoNuevo);
 	    comboboxes.get(1).getSelectionModel().selectFirst();
 
-	    ObservableList<String> situacionEstado = FXCollections.observableArrayList(/* ... */);
+	    ObservableList<String> situacionEstado = FXCollections.observableArrayList("En posesion", "Comprado",
+				"En venta");
 	    comboboxes.get(2).setItems(situacionEstado);
 	    comboboxes.get(2).getSelectionModel().selectFirst();
 	}
