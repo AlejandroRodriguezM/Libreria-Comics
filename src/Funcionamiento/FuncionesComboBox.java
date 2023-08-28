@@ -299,6 +299,17 @@ public class FuncionesComboBox {
 						} else {
 							Comic comic = getComicFromComboBoxes(10, comboboxes);
 							setupFilteredPopup(comboboxes, comboBox, items);
+							
+//						    Task<Void> task = new Task<Void>() {
+//						        protected Void call() throws Exception {
+//						        	actualizarComboBoxes(10, comboboxes, comic);
+//						            return null;
+//						        }
+//						    };
+//							
+//							actualizarComboBoxes(10, comboboxes, comic);
+//						    Thread thread = new Thread(task);
+//						    thread.start();
 							actualizarComboBoxes(10, comboboxes, comic);
 						}
 					}

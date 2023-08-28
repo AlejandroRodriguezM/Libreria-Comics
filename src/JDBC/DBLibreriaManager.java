@@ -2156,7 +2156,7 @@ public class DBLibreriaManager extends Comic {
 			stmt.close();
 
 		} catch (SQLException e) {
-			System.out.println("Error al conectar a la base de datos: " + e.getMessage());
+			nav.alertaException("Error al conectar a la base de datos: " + e.getMessage());
 		}
 
 		// Generar la cadena de estadística
@@ -2300,7 +2300,6 @@ public class DBLibreriaManager extends Comic {
 			abrirArchivoConProgramaAsociado(rutaCompleta);
 
 		} catch (IOException e) {
-
 			ventanas.alertaException("Error al guardar la estadística en el archivo: " + e.getMessage());
 		}
 	}

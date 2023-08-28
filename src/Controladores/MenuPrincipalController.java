@@ -45,6 +45,9 @@ import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
 import JDBC.DBManager;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
@@ -70,6 +73,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  * Esta clase sirve viajar a las diferentes ventanas del programa, asi como
@@ -80,175 +84,177 @@ import javafx.stage.Stage;
 public class MenuPrincipalController implements Initializable {
 
 	@FXML
-    private TableColumn<Comic, String> ID;
+	private TableColumn<Comic, String> ID;
 
-    @FXML
-    private Button botonLimpiar;
+	@FXML
+	private Button botonLimpiar;
 
-    @FXML
-    private Button botonMostrarParametro;
+	@FXML
+	private Button botonMostrarParametro;
 
-    @FXML
-    private Button botonbbdd;
+	@FXML
+	private Button botonbbdd;
 
-    @FXML
-    private TextField busquedaGeneral;
+	@FXML
+	private TextField busquedaGeneral;
 
-    @FXML
-    private TableColumn<Comic, String> caja;
+	@FXML
+	private TableColumn<Comic, String> caja;
 
-    @FXML
-    private TableColumn<Comic, String> dibujante;
+	@FXML
+	private TableColumn<Comic, String> dibujante;
 
-    @FXML
-    private TableColumn<Comic, String> editorial;
+	@FXML
+	private TableColumn<Comic, String> editorial;
 
-    @FXML
-    private TableColumn<Comic, String> fecha;
+	@FXML
+	private TableColumn<Comic, String> fecha;
 
-    @FXML
-    private DatePicker fechaPublicacion;
+	@FXML
+	private DatePicker fechaPublicacion;
 
-    @FXML
-    private TableColumn<Comic, String> firma;
+	@FXML
+	private TableColumn<Comic, String> firma;
 
-    @FXML
-    private TableColumn<Comic, String> formato;
+	@FXML
+	private TableColumn<Comic, String> formato;
 
-    @FXML
-    private TableColumn<Comic, String> guionista;
+	@FXML
+	private TableColumn<Comic, String> guionista;
 
-    @FXML
-    private ImageView imagencomic;
+	@FXML
+	private ImageView imagencomic;
 
-    @FXML
-    private MenuItem menu_archivo_backupbbdd;
+	@FXML
+	private MenuItem menu_archivo_backupbbdd;
 
-    @FXML
-    private MenuItem menu_archivo_cerrar;
+	@FXML
+	private MenuItem menu_archivo_cerrar;
 
-    @FXML
-    private MenuItem menu_archivo_delete;
+	@FXML
+	private MenuItem menu_archivo_delete;
 
-    @FXML
-    private MenuItem menu_archivo_desconectar;
+	@FXML
+	private MenuItem menu_archivo_desconectar;
 
-    @FXML
-    private MenuItem menu_archivo_excel;
+	@FXML
+	private MenuItem menu_archivo_excel;
 
-    @FXML
-    private MenuItem menu_archivo_importar;
+	@FXML
+	private MenuItem menu_archivo_importar;
 
-    @FXML
-    private MenuItem menu_archivo_sobreMi;
+	@FXML
+	private MenuItem menu_archivo_sobreMi;
 
-    @FXML
-    private MenuItem menu_comic_aleatoria;
+	@FXML
+	private MenuItem menu_comic_aleatoria;
 
-    @FXML
-    private MenuItem menu_comic_aniadir;
+	@FXML
+	private MenuItem menu_comic_aniadir;
 
-    @FXML
-    private MenuItem menu_comic_eliminar;
+	@FXML
+	private MenuItem menu_comic_eliminar;
 
-    @FXML
-    private MenuItem menu_comic_modificar;
+	@FXML
+	private MenuItem menu_comic_modificar;
 
-    @FXML
-    private MenuItem menu_comic_puntuar;
+	@FXML
+	private MenuItem menu_comic_puntuar;
 
-    @FXML
-    private MenuItem menu_estadistica_comprados;
+	@FXML
+	private MenuItem menu_estadistica_comprados;
 
-    @FXML
-    private MenuItem menu_estadistica_estadistica;
+	@FXML
+	private MenuItem menu_estadistica_estadistica;
 
-    @FXML
-    private MenuItem menu_estadistica_firmados;
+	@FXML
+	private MenuItem menu_estadistica_firmados;
 
-    @FXML
-    private MenuItem menu_estadistica_key_issue;
+	@FXML
+	private MenuItem menu_estadistica_key_issue;
 
-    @FXML
-    private MenuItem menu_estadistica_posesion;
+	@FXML
+	private MenuItem menu_estadistica_posesion;
 
-    @FXML
-    private MenuItem menu_estadistica_puntuados;
+	@FXML
+	private MenuItem menu_estadistica_puntuados;
 
-    @FXML
-    private MenuItem menu_estadistica_vendidos;
+	@FXML
+	private MenuItem menu_estadistica_vendidos;
 
-    @FXML
-    private MenuBar menu_navegacion;
+	@FXML
+	private MenuBar menu_navegacion;
 
-    @FXML
-    private Menu navegacion_cerrar;
+	@FXML
+	private Menu navegacion_cerrar;
 
-    @FXML
-    private Menu navegacion_comic;
+	@FXML
+	private Menu navegacion_comic;
 
-    @FXML
-    private Menu navegacion_estadistica;
+	@FXML
+	private Menu navegacion_estadistica;
 
-    @FXML
-    private TableColumn<Comic, String> nombre;
+	@FXML
+	private TableColumn<Comic, String> nombre;
 
-    @FXML
-    private ComboBox<String> nombreComic;
+	@FXML
+	private ComboBox<String> nombreComic;
 
-    @FXML
-    private ComboBox<String> nombreDibujante;
+	@FXML
+	private ComboBox<String> nombreDibujante;
 
-    @FXML
-    private ComboBox<String> nombreEditorial;
+	@FXML
+	private ComboBox<String> nombreEditorial;
 
-    @FXML
-    private ComboBox<String> nombreFirma;
+	@FXML
+	private ComboBox<String> nombreFirma;
 
-    @FXML
-    private ComboBox<String> nombreFormato;
+	@FXML
+	private ComboBox<String> nombreFormato;
 
-    @FXML
-    private ComboBox<String> nombreGuionista;
+	@FXML
+	private ComboBox<String> nombreGuionista;
 
-    @FXML
-    private ComboBox<String> nombreProcedencia;
+	@FXML
+	private ComboBox<String> nombreProcedencia;
 
-    @FXML
-    private ComboBox<String> nombreVariante;
+	@FXML
+	private ComboBox<String> nombreVariante;
 
-    @FXML
-    private TableColumn<Comic, String> numero;
+	@FXML
+	private TableColumn<Comic, String> numero;
 
-    @FXML
-    private ComboBox<String> numeroCaja;
+	@FXML
+	private ComboBox<String> numeroCaja;
 
-    @FXML
-    private ComboBox<String> numeroComic;
+	@FXML
+	private ComboBox<String> numeroComic;
 
-    @FXML
-    private TableColumn<Comic, String> procedencia;
+	@FXML
+	private TableColumn<Comic, String> procedencia;
 
-    @FXML
-    private ProgressIndicator progresoCarga;
+	@FXML
+	private ProgressIndicator progresoCarga;
 
-    @FXML
-    private TextArea prontInfo;
+	@FXML
+	private TextArea prontInfo;
 
-    @FXML
-    private TableColumn<Comic, String> referencia;
+	@FXML
+	private TableColumn<Comic, String> referencia;
 
-    @FXML
-    private VBox rootVBox;
+	@FXML
+	private VBox rootVBox;
 
-    @FXML
-    public TableView<Comic> tablaBBDD;
+	@FXML
+	public TableView<Comic> tablaBBDD;
 
-    @FXML
-    private TableColumn<Comic, String> variante;
+	@FXML
+	private TableColumn<Comic, String> variante;
 
-    @FXML
-    private VBox vboxContenido;
+	@FXML
+	private VBox vboxContenido;
+
+	private Timeline timeline;
 
 	private static Ventanas nav = new Ventanas();
 	private static DBLibreriaManager libreria = null;
@@ -256,6 +262,7 @@ public class MenuPrincipalController implements Initializable {
 	private static FuncionesExcel excelFuntions = null;
 	private static FuncionesComboBox funcionesCombo = new FuncionesComboBox();
 	private static FuncionesTableView funcionesTabla = new FuncionesTableView();
+
 	private List<TableColumn<Comic, String>> columnList;
 
 	/**
@@ -278,29 +285,38 @@ public class MenuPrincipalController implements Initializable {
 		Platform.runLater(() -> funcionesTabla.ajustarAnchoVBox(prontInfo, vboxContenido));
 
 		Platform.runLater(() -> funcionesTabla.seleccionarRaw(tablaBBDD));
-		
+
 		Platform.runLater(() -> asignarTooltips());
 
 		List<TableColumn<Comic, String>> columnListCarga = Arrays.asList(nombre, caja, numero, variante, firma,
 				editorial, formato, procedencia, fecha, guionista, dibujante, referencia);
 		columnList = columnListCarga;
-		
+
 		try {
 			libreria.listasAutoCompletado();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		funcionesTabla.modificarColumnas(tablaBBDD,columnList);
+		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
 		restringir_entrada_datos();
 
 		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
 				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
 
 		int totalComboboxes = comboboxes.size();
+		
+	    Task<Void> task = new Task<Void>() {
+	        @Override
+	        protected Void call() throws Exception {
+	        	funcionesCombo.rellenarComboBox(comboboxes);
+				funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
+	            return null;
+	        }
+	    };
 
-		funcionesCombo.rellenarComboBox(comboboxes);
-		funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
-
+		// Iniciar el Task en un nuevo hilo
+		Thread thread = new Thread(task);
+		thread.start();
 		// Desactivar el enfoque en el VBox para evitar que reciba eventos de teclado
 		rootVBox.setFocusTraversable(false);
 
@@ -319,32 +335,34 @@ public class MenuPrincipalController implements Initializable {
 		});
 
 		prontInfo.setEditable(false);
+
 	}
 
 	/**
-	 * Asigna tooltips a varios elementos en la interfaz gráfica.
-	 * Estos tooltips proporcionan información adicional cuando el usuario pasa el ratón sobre los elementos.
+	 * Asigna tooltips a varios elementos en la interfaz gráfica. Estos tooltips
+	 * proporcionan información adicional cuando el usuario pasa el ratón sobre los
+	 * elementos.
 	 */
 	public void asignarTooltips() {
-	    List<Object> elementos = new ArrayList<>();
-	    
-	    // Agregar elementos a la lista para los cuales se asignarán tooltips
-	    elementos.add(botonbbdd);
-	    elementos.add(botonLimpiar);
-	    elementos.add(botonMostrarParametro);
-	    elementos.add(nombreComic);
-	    elementos.add(numeroComic);
-	    elementos.add(nombreFirma);
-	    elementos.add(nombreGuionista);
-	    elementos.add(nombreVariante);
-	    elementos.add(numeroCaja);
-	    elementos.add(nombreProcedencia);
-	    elementos.add(nombreFormato);
-	    elementos.add(nombreEditorial);
-	    elementos.add(nombreDibujante);
-	    
-	    // Llamar a la función para asignar tooltips a los elementos de la lista
-	    FuncionesTooltips.asignarTooltips(elementos);
+		List<Object> elementos = new ArrayList<>();
+
+		// Agregar elementos a la lista para los cuales se asignarán tooltips
+		elementos.add(botonbbdd);
+		elementos.add(botonLimpiar);
+		elementos.add(botonMostrarParametro);
+		elementos.add(nombreComic);
+		elementos.add(numeroComic);
+		elementos.add(nombreFirma);
+		elementos.add(nombreGuionista);
+		elementos.add(nombreVariante);
+		elementos.add(numeroCaja);
+		elementos.add(nombreProcedencia);
+		elementos.add(nombreFormato);
+		elementos.add(nombreEditorial);
+		elementos.add(nombreDibujante);
+
+		// Llamar a la función para asignar tooltips a los elementos de la lista
+		FuncionesTooltips.asignarTooltips(elementos);
 	}
 
 	/**
@@ -619,7 +637,7 @@ public class MenuPrincipalController implements Initializable {
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
-		funcionesTabla.modificarColumnas(tablaBBDD,columnList);
+		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
 		prontInfo.setOpacity(0);
 		imagencomic.setImage(null);
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
@@ -638,7 +656,7 @@ public class MenuPrincipalController implements Initializable {
 	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
-		funcionesTabla.modificarColumnas(tablaBBDD,columnList);
+		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
 		tablaBBDD.refresh();
 		prontInfo.setOpacity(0);
 		imagencomic.setImage(null);
@@ -742,11 +760,14 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsKeyIssue(ActionEvent event) throws SQLException {
-	    prontInfo.setOpacity(0); // Ocultar la información en pantalla
-	    libreria = new DBLibreriaManager(); // Crear una instancia del gestor de la base de datos
-	    libreria.reiniciarBBDD(); // Reiniciar la base de datos si es necesario
-	    funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a la función para establecer nombres de columnas
-	    funcionesTabla.tablaBBDD(libreria.libreriaKeyIssue(), tablaBBDD, columnList); // Llamada a la función para llenar la tabla con cómics "Key Issue"
+		prontInfo.setOpacity(0); // Ocultar la información en pantalla
+		libreria = new DBLibreriaManager(); // Crear una instancia del gestor de la base de datos
+		libreria.reiniciarBBDD(); // Reiniciar la base de datos si es necesario
+		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a la función para establecer nombres de
+																// columnas
+		funcionesTabla.tablaBBDD(libreria.libreriaKeyIssue(), tablaBBDD, columnList); // Llamada a la función para
+																						// llenar la tabla con cómics
+																						// "Key Issue"
 	}
 
 	////////////////////////////
@@ -762,7 +783,6 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void importCSV(ActionEvent event) throws SQLException {
-
 		String frase = "Fichero CSV";
 
 		String formato = "*.csv";
@@ -770,6 +790,7 @@ public class MenuPrincipalController implements Initializable {
 		File fichero = tratarFichero(frase, formato).showOpenDialog(null); // Llamada a funcion
 
 		importCSV(fichero);
+
 		libreria.listasAutoCompletado();
 	}
 
@@ -861,9 +882,6 @@ public class MenuPrincipalController implements Initializable {
 
 		// Configurar el comportamiento cuando la tarea está en ejecución
 		task.setOnRunning(e -> {
-			// Ocultar los elementos de información y frases
-			prontInfo.setOpacity(0);
-			prontInfo.setText(null);
 			// Iniciar la animación
 			iniciarAnimacion();
 		});
@@ -875,6 +893,11 @@ public class MenuPrincipalController implements Initializable {
 			/* Tu condición aquí basada en el resultado */
 
 			if (resultado) {
+				prontInfo.clear();
+				prontInfo.setStyle(null);
+				Thread animationThread = new Thread(this::iniciarAnimacionBajada);
+				animationThread.start();
+
 				// Ejecutar el método deleteTable en su propio hilo
 				Task<Boolean> deleteTask = new Task<Boolean>() {
 					@Override
@@ -888,11 +911,14 @@ public class MenuPrincipalController implements Initializable {
 															// resultado
 						} else {
 							// Si no hay contenido, mostrar un mensaje de error
+							prontInfo.clear();
+							detenerAnimacionPront();
 							prontInfo.setOpacity(1);
 							prontInfo.setStyle("-fx-background-color: #F53636");
 							prontInfo.setText("No hay contenido en la base de datos");
 							Platform.runLater(() -> nav.alertaException("Error. No hay contenido en la base de datos"));
 							detenerAnimacion();
+
 						}
 						return result; // Devolver el resultado actual
 					}
@@ -905,6 +931,8 @@ public class MenuPrincipalController implements Initializable {
 					if (result) {
 						// Mostrar el mensaje de éxito y limpiar la tabla y la imagen
 						Platform.runLater(() -> {
+							prontInfo.clear();
+							detenerAnimacionPront();
 							prontInfo.setOpacity(1);
 							prontInfo.setStyle("-fx-background-color: #A0F52D");
 							prontInfo.setText("Has borrado correctamente el contenido de la base de datos.");
@@ -921,10 +949,14 @@ public class MenuPrincipalController implements Initializable {
 					detenerAnimacion();
 					Throwable exception = deleteTask.getException();
 					if (exception != null) {
+						prontInfo.clear();
+						detenerAnimacionPront();
 						exception.printStackTrace();
 						Platform.runLater(() -> nav.alertaException(
 								"Error al borrar el contenido de la base de datos: " + exception.getMessage()));
 					} else {
+						prontInfo.clear();
+						detenerAnimacionPront();
 						Platform.runLater(() -> nav
 								.alertaException("Error desconocido al borrar el contenido de la base de datos"));
 					}
@@ -936,6 +968,8 @@ public class MenuPrincipalController implements Initializable {
 			} else {
 				// Si el resultado es falso, mostrar el mensaje de cancelación
 				Platform.runLater(() -> {
+					prontInfo.clear();
+					detenerAnimacionPront();
 					prontInfo.setOpacity(1);
 					prontInfo.setStyle("-fx-background-color: #F53636");
 					prontInfo.setText("Has cancelado el borrado de la base de datos.");
@@ -950,10 +984,15 @@ public class MenuPrincipalController implements Initializable {
 			detenerAnimacion();
 			Throwable exception = task.getException();
 			if (exception != null) {
+				prontInfo.clear();
+				detenerAnimacionPront();
 				exception.printStackTrace();
 				Platform.runLater(
+
 						() -> nav.alertaException("Error al importar el fichero CSV: " + exception.getMessage()));
 			} else {
+				prontInfo.clear();
+				detenerAnimacionPront();
 				Platform.runLater(() -> nav.alertaException("Error desconocido al importar el fichero CSV."));
 			}
 		});
@@ -974,8 +1013,92 @@ public class MenuPrincipalController implements Initializable {
 		prontInfo.setOpacity(0);
 		libreria = new DBLibreriaManager();
 		prontInfo.setOpacity(1);
-		prontInfo.setText("Generando fichero de estadisticas . . . ");
+		iniciarAnimacionEstadistica();
 		libreria.generar_fichero_estadisticas();
+		detenerAnimacionPront();
+		prontInfo.setText("Fichero creado correctamente");
+	}
+
+	/**
+	 * Metodo que permite crear una animacion
+	 */
+	private void iniciarAnimacionEstadistica() {
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarDescarga1 = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontInfo.textProperty(), "Generando fichero de estadisticas ."));
+		KeyFrame mostrarDescarga2 = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(prontInfo.textProperty(), "Generando fichero de estadisticas .."));
+		KeyFrame mostrarDescarga3 = new KeyFrame(Duration.seconds(1),
+				new KeyValue(prontInfo.textProperty(), "Generando fichero de estadisticas ..."));
+		KeyFrame mostrarDescarga4 = new KeyFrame(Duration.seconds(1.5),
+				new KeyValue(prontInfo.textProperty(), "Generando fichero de estadisticas ...."));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarDescarga1, mostrarDescarga2, mostrarDescarga3, mostrarDescarga4);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+
+	/**
+	 * Metodo que permite detener una animacion
+	 */
+	private void detenerAnimacionPront() {
+		if (timeline != null) {
+			timeline.stop();
+			timeline = null; // Destruir el objeto timeline
+			prontInfo.setText("Fichero creado correctamente");
+		}
+	}
+
+	/**
+	 * Metodo que permite crear una animacion
+	 */
+	private void iniciarAnimacionSubida() {
+		prontInfo.setOpacity(1);
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarSubida1 = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontInfo.textProperty(), "Subido datos a la " + DBManager.DB_NAME + " ."));
+		KeyFrame mostrarSubida2 = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(prontInfo.textProperty(), "Subido datos a la " + DBManager.DB_NAME + " .."));
+		KeyFrame mostrarSubida3 = new KeyFrame(Duration.seconds(1),
+				new KeyValue(prontInfo.textProperty(), "Subido datos a la " + DBManager.DB_NAME + " ..."));
+		KeyFrame mostrarSubida4 = new KeyFrame(Duration.seconds(1.5),
+				new KeyValue(prontInfo.textProperty(), "Subido datos a la " + DBManager.DB_NAME + " ...."));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarSubida1, mostrarSubida2, mostrarSubida3, mostrarSubida4);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+
+	private void iniciarAnimacionBajada() {
+		prontInfo.setOpacity(1);
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarBajada1 = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontInfo.textProperty(), "Eliminando base de datos ."));
+		KeyFrame mostrarBajada2 = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(prontInfo.textProperty(), "Eliminando base de datos .."));
+		KeyFrame mostrarBajada3 = new KeyFrame(Duration.seconds(1),
+				new KeyValue(prontInfo.textProperty(), "Eliminando base de datos ..."));
+		KeyFrame mostrarBajada4 = new KeyFrame(Duration.seconds(1.5),
+				new KeyValue(prontInfo.textProperty(), "Eliminando base de datos ...."));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarBajada1, mostrarBajada2, mostrarBajada3, mostrarBajada4);
+
+		// Iniciar la animación
+		timeline.play();
 	}
 
 	/////////////////////////////////
@@ -1090,6 +1213,7 @@ public class MenuPrincipalController implements Initializable {
 			protected Boolean call() throws Exception {
 				try {
 					if (fichero != null) {
+
 						return true;
 					}
 				} catch (Exception e) {
@@ -1107,15 +1231,14 @@ public class MenuPrincipalController implements Initializable {
 
 		// Configurar el comportamiento cuando la tarea está en ejecución
 		task.setOnRunning(e -> {
-			// Ocultar los elementos de información y frases
-			prontInfo.setOpacity(0);
-			prontInfo.setText(null);
 			// Iniciar la animación
 			iniciarAnimacion();
+
 		});
 
 		// Configurar el comportamiento cuando la tarea se completa con éxito
 		task.setOnSucceeded(e -> {
+
 			// Obtener el resultado de la tarea
 			Boolean resultado = task.getValue();
 			/* Tu condición aquí basada en el resultado */
@@ -1124,8 +1247,12 @@ public class MenuPrincipalController implements Initializable {
 				// Si la importación del CSV fue exitosa, continuar con la inserción en la base
 				// de datos
 				Platform.runLater(() -> {
-					prontInfo.setOpacity(0); // Ocultar el mensaje inicial antes de iniciar la lectura y guardado
+					prontInfo.setStyle(null);
+					prontInfo.clear();
 
+					prontInfo.setOpacity(1); // Ocultar el mensaje inicial antes de iniciar la lectura y guardado
+					Thread animationThread = new Thread(this::iniciarAnimacionSubida);
+					animationThread.start();
 					String sql = "INSERT INTO comicsbbdd(ID,nomComic,caja_deposito,precio_comic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,fecha_publicacion,nomGuionista,nomDibujante,puntuacion,portada,key_issue,url_referencia,estado)"
 							+ " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
@@ -1141,10 +1268,13 @@ public class MenuPrincipalController implements Initializable {
 						lecturaTask.setOnSucceeded(event -> {
 							// La operación de inserción en la base de datos ha finalizado con éxito
 							// Mostrar el mensaje de éxito después de la lectura y guardado
+							prontInfo.clear();
+							detenerAnimacionPront();
 							prontInfo.setOpacity(1);
 							prontInfo.setStyle("-fx-background-color: #A0F52D");
 							prontInfo.setText("Fichero CSV importado de forma correcta");
 							detenerAnimacion();
+
 						});
 
 						// Configurar el comportamiento cuando la tarea de lectura y guardado falla
@@ -1155,12 +1285,14 @@ public class MenuPrincipalController implements Initializable {
 								exception.printStackTrace();
 								Platform.runLater(() -> nav.alertaException(
 										"Error al guardar datos en la base de datos: " + exception.getMessage()));
-								detenerAnimacion();
 							}
+							prontInfo.clear();
+							detenerAnimacionPront();
 							prontInfo.setOpacity(1);
 							prontInfo.setStyle("-fx-background-color: #F53636");
 							prontInfo.setText("ERROR. No se ha podido guardar correctamente en la base de datos.");
 							detenerAnimacion();
+
 						});
 
 						// Iniciar la tarea de lectura y guardado en un hilo separado
@@ -1173,6 +1305,8 @@ public class MenuPrincipalController implements Initializable {
 						ex.printStackTrace();
 						Platform.runLater(
 								() -> nav.alertaException("Error al importar el fichero CSV: " + ex.getMessage()));
+						prontInfo.clear();
+						detenerAnimacionPront();
 						prontInfo.setOpacity(1);
 						prontInfo.setStyle("-fx-background-color: #F53636");
 						prontInfo.setText("ERROR. No se ha podido importar correctamente.");
@@ -1182,6 +1316,8 @@ public class MenuPrincipalController implements Initializable {
 			} else {
 				// Si la importación del CSV falló, mostrar un mensaje de error
 				Platform.runLater(() -> {
+					prontInfo.clear();
+					detenerAnimacionPront();
 					prontInfo.setOpacity(1);
 					prontInfo.setStyle("-fx-background-color: #F53636");
 					prontInfo.setText("ERROR. No se ha podido importar correctamente.");
@@ -1198,10 +1334,14 @@ public class MenuPrincipalController implements Initializable {
 			Throwable exception = task.getException();
 			if (exception != null) {
 				exception.printStackTrace();
+				prontInfo.clear();
+				detenerAnimacionPront();
 				Platform.runLater(
 						() -> nav.alertaException("Error al importar el fichero CSV: " + exception.getMessage()));
 				detenerAnimacion();
 			} else {
+				prontInfo.clear();
+				detenerAnimacionPront();
 				Platform.runLater(() -> nav.alertaException("Error desconocido al importar el fichero CSV."));
 				detenerAnimacion();
 			}
@@ -1216,16 +1356,15 @@ public class MenuPrincipalController implements Initializable {
 	 * Inicia la animación del progreso de carga.
 	 */
 	public void iniciarAnimacion() {
-	    progresoCarga.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
+		progresoCarga.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
 	}
 
 	/**
 	 * Detiene la animación del progreso de carga.
 	 */
 	public void detenerAnimacion() {
-	    progresoCarga.setProgress(0); // Establece el progreso en 0 para detener la animación
+		progresoCarga.setProgress(0); // Establece el progreso en 0 para detener la animación
 	}
-
 
 	/**
 	 * Funcion crea el fichero SQL segun el sistema operativo en el que te
@@ -1281,7 +1420,7 @@ public class MenuPrincipalController implements Initializable {
 		comic = new Comic("", datos[1], datos[11], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7], fecha,
 				datos[9], datos[10], "", "", "", null, "", "");
 
-		funcionesTabla.tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()), tablaBBDD, columnList); 
+		funcionesTabla.tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()), tablaBBDD, columnList);
 		prontInfo.setOpacity(1);
 		prontInfo.setText(funcionesTabla.resultadoBusquedaPront(comic).getText());
 		busquedaGeneral.setText("");
@@ -1387,19 +1526,19 @@ public class MenuPrincipalController implements Initializable {
 	 * Realiza la limpieza de datos en la interfaz gráfica.
 	 */
 	private void limpiezaDeDatos() {
-	    // Limpiar todos los campos de ComboBox y sus valores
-	    for (ComboBox<String> comboBox : Arrays.asList(nombreComic, numeroComic, nombreFirma, nombreGuionista,
-	            nombreVariante, numeroCaja, nombreProcedencia, nombreFormato, nombreEditorial, nombreDibujante)) {
-	        comboBox.setValue("");
-	        comboBox.getEditor().setText("");
-	    }
+		// Limpiar todos los campos de ComboBox y sus valores
+		for (ComboBox<String> comboBox : Arrays.asList(nombreComic, numeroComic, nombreFirma, nombreGuionista,
+				nombreVariante, numeroCaja, nombreProcedencia, nombreFormato, nombreEditorial, nombreDibujante)) {
+			comboBox.setValue("");
+			comboBox.getEditor().setText("");
+		}
 
-	    // Limpiar elementos adicionales de la interfaz
-	    fechaPublicacion.setValue(null);
-	    prontInfo.setText(null);
-	    prontInfo.setOpacity(0);
-	    tablaBBDD.getItems().clear();
-	    imagencomic.setImage(null);
+		// Limpiar elementos adicionales de la interfaz
+		fechaPublicacion.setValue(null);
+		prontInfo.setText(null);
+		prontInfo.setOpacity(0);
+		tablaBBDD.getItems().clear();
+		imagencomic.setImage(null);
 	}
 
 	/////////////////////////////

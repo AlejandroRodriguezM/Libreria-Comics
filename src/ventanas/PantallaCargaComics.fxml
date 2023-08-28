@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="293.0" prefWidth="520.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.CargaComicsController">
+   <children>
+      <ImageView fitHeight="293.0" fitWidth="532.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imagenes/carga.jpg" />
+         </image>
+      </ImageView>
+      <TextArea fx:id="comicsCarga" cacheShape="false" centerShape="false" editable="false" focusTraversable="false" layoutX="15.0" layoutY="6.0" prefHeight="239.0" prefWidth="491.0" scaleShape="false" wrapText="true">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+         <font>
+            <Font name="Comic Sans MS" size="14.0" />
+         </font></TextArea>
+      <ProgressBar fx:id="cargaComics" layoutX="15.0" layoutY="249.0" prefHeight="18.0" prefWidth="491.0" progress="0.0" />
+      <Label fx:id="porcentajeCarga" layoutX="252.0" layoutY="271.0" text="0%" />
+   </children>
+</Pane>
