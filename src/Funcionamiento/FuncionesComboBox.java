@@ -24,6 +24,9 @@ import javafx.stage.Popup;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 
+/**
+ * Clase que define funciones para el manejo y configuración de ComboBoxes en una interfaz gráfica.
+ */
 public class FuncionesComboBox {
 
 	private static DBLibreriaManager libreria = null;

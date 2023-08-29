@@ -29,6 +29,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import Funcionamiento.Comic;
 import Funcionamiento.FuncionesComboBox;
@@ -43,6 +46,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -285,12 +289,6 @@ public class EliminarDatosController implements Initializable {
 				editorial, formato, procedencia, fecha, guionista, dibujante, referencia);
 		columnList = columnListCarga;
 
-		try {
-			libreria.listasAutoCompletado();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
 		animacion();
 		autoRelleno();
 		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
@@ -300,8 +298,32 @@ public class EliminarDatosController implements Initializable {
 
 		int totalComboboxes = comboboxes.size();
 
-		funcionesCombo.rellenarComboBox(comboboxes);
-		funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
+		// Crear un ScheduledExecutorService para ejecutar la tarea después de un 1 segundo
+		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+		scheduler.schedule(() -> {
+
+			Platform.runLater(() -> {
+				
+				try {
+					libreria.listasAutoCompletado();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				
+				Task<Void> task = new Task<Void>() {
+					@Override
+					protected Void call() throws Exception {
+						funcionesCombo.rellenarComboBox(comboboxes);
+						funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
+						return null;
+					}
+				};
+
+				// Iniciar el Task en un nuevo hilo
+				Thread thread = new Thread(task);
+				thread.start();
+			});
+		}, 0, TimeUnit.SECONDS);
 		// Desactivar el enfoque en el VBox para evitar que reciba eventos de teclado
 		rootVBox.setFocusTraversable(false);
 

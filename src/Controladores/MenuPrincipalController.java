@@ -294,7 +294,7 @@ public class MenuPrincipalController implements Initializable {
 		List<TableColumn<Comic, String>> columnListCarga = Arrays.asList(nombre, caja, numero, variante, firma,
 				editorial, formato, procedencia, fecha, guionista, dibujante, referencia);
 		columnList = columnListCarga;
-		
+
 		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
 
 		restringir_entrada_datos();

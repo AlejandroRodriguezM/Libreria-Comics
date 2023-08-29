@@ -32,6 +32,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,6 +49,7 @@ import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
 import JDBC.DBManager;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -324,11 +328,6 @@ public class ModificarDatosController implements Initializable {
 				editorial, formato, procedencia, fecha, guionista, dibujante, referencia);
 		columnList = columnListCarga;
 		
-		try {
-			libreria.listasAutoCompletado();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 		autoRelleno();
 		funcionesTabla.modificarColumnas(tablaBBDD,columnList);
 		restringir_entrada_datos();
@@ -339,8 +338,32 @@ public class ModificarDatosController implements Initializable {
 
 		int totalComboboxes = comboboxes.size();
 		
-		funcionesCombo.rellenarComboBox(comboboxes);
-		funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
+		// Crear un ScheduledExecutorService para ejecutar la tarea después de un 1 segundo
+		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+		scheduler.schedule(() -> {
+
+			Platform.runLater(() -> {
+				
+				try {
+					libreria.listasAutoCompletado();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				
+				Task<Void> task = new Task<Void>() {
+					@Override
+					protected Void call() throws Exception {
+						funcionesCombo.rellenarComboBox(comboboxes);
+						funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
+						return null;
+					}
+				};
+
+				// Iniciar el Task en un nuevo hilo
+				Thread thread = new Thread(task);
+				thread.start();
+			});
+		}, 0, TimeUnit.SECONDS);
 		rellenarCombosEstaticos();
 		
 		FuncionesTableView.restringirSimbolos(nombreGuionistaMod);
@@ -1462,7 +1485,7 @@ public class ModificarDatosController implements Initializable {
 					prontInfo.setStyle("-fx-background-color: #F53636");
 					prontInfo.setText("Error. Debes de introducir los datos correctos");
 				} else {
-					libreria.actualizar_comic(comic);
+					libreria.actualizarComic(comic);
 					Utilidades.eliminarFichero(comic_temp.getImagen());
 
 					imagencomic.setImage(imagen);

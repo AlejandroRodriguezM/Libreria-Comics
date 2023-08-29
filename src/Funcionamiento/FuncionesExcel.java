@@ -64,8 +64,9 @@ public class FuncionesExcel {
 	 * Guarda los datos en un archivo de Excel y crea un archivo ZIP que contiene el archivo Excel.
 	 *
 	 * @param nombre_carpeta El nombre de la carpeta para la copia de seguridad.
+	 * @throws SQLException 
 	 */
-	public void savedataExcel(String nombre_carpeta) {
+	public void savedataExcel(String nombre_carpeta) throws SQLException {
 
 		libreria = new DBLibreriaManager();
 		Cell celda;
@@ -199,9 +200,9 @@ public class FuncionesExcel {
 	}
 
 	/**
-	 * Funcion que permite crear un fichero CSV
+	 * Convierte un archivo Excel (XLSX) en formato CSV y guarda los datos en un nuevo archivo CSV.
 	 *
-	 * @param fichero
+	 * @param fichero El archivo Excel (XLSX) del cual se extraerán los datos para el archivo CSV.
 	 */
 	public void createCSV(File fichero) {
 
@@ -260,12 +261,11 @@ public class FuncionesExcel {
 	}
 
 	/**
-	 * Funcion que permite comprobar el estado del fichero CSV, si es apto, permita
-	 * importarlo.
+	 * Comprueba la validez de un archivo CSV y lo procesa para actualizar la base de datos si es válido.
 	 *
-	 * @param fichero
-	 * @param sql
-	 * @return
+	 * @param fichero El archivo CSV que se va a comprobar y procesar.
+	 * @param sql Consulta SQL para actualizar la base de datos con los datos del archivo CSV.
+	 * @return True si el archivo CSV es válido y los datos se procesan correctamente, false en caso contrario.
 	 */
 	public boolean comprobarCSV(File fichero, String sql) {
 		conn = DBManager.conexion();
@@ -323,11 +323,11 @@ public class FuncionesExcel {
 	}
 
 	/**
-	 * Funcion que permite crear tanto un fichero XLSX como un fichero CSV
+	 * Crea un archivo Excel a partir de los datos de la base de datos y guarda el archivo en el sistema de archivos.
 	 *
-	 * @param fichero
-	 * @return
-	 * @throws SQLException
+	 * @param fichero El archivo Excel que se va a crear y guardar.
+	 * @return True si el archivo Excel se crea y guarda correctamente, false en caso contrario.
+	 * @throws SQLException Si ocurre un error en la consulta a la base de datos.
 	 */
 	public boolean crearExcel(File fichero) throws SQLException {
 		libreria = new DBLibreriaManager();
@@ -402,11 +402,11 @@ public class FuncionesExcel {
 	}
 
 	/**
-	 * Función que permite leer un fichero CSV
+	 * Crea una tarea asincrónica para leer los datos desde un archivo CSV y almacenarlos en la base de datos.
 	 *
-	 * @param sql
-	 * @param lineReader
-	 * @throws IOException
+	 * @param sql        La consulta SQL que se utilizará para insertar los datos en la base de datos.
+	 * @param lineReader El lector de líneas para leer el archivo CSV.
+	 * @return La tarea asincrónica que realiza la lectura y almacenamiento de datos.
 	 */
 	public Task<Void> lecturaCSVTask(String sql, BufferedReader lineReader) {
 		libreria = new DBLibreriaManager();
