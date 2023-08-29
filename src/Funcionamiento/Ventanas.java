@@ -27,7 +27,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import Controladores.AccesoBBDDController;
-import Controladores.CargaComicsController;
 import Controladores.CrearBBDDController;
 import Controladores.EliminarDatosController;
 import Controladores.IntroducirDatosController;
@@ -90,41 +89,6 @@ public class Ventanas {
 		} catch (IOException ex) {
 			alertaException(ex.toString());
 		}
-	}
-	
-	public void verCargaComics() {
-	    try {
-	        // Cargo la vista
-	        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/PantallaCargaComics.fxml"));
-
-	        // Cargo el padre
-	        Parent root = loader.load();
-
-	        // Obtengo el controlador
-	        CargaComicsController controlador = loader.getController();
-
-	        // Crea la escena y el escenario
-	        Scene scene = new Scene(root);
-
-	        
-	        Stage stage = new Stage();
-	        stage.setResizable(false);
-	        stage.setTitle("Carga de comics"); // Titulo de la aplicacion.
-	        stage.getIcons().add(new Image("/Icono/icon2.png"));
-
-	        // Asocio el stage con el scene
-	        stage.setScene(scene);
-	        stage.show();
-
-	        // Indico que debe hacer al cerrar
-	        stage.setOnCloseRequest(e -> {
-	            controlador.closeWindow();
-	        });
-
-	    } catch (IOException ex) {
-	        alertaException(ex.toString());
-	        ex.printStackTrace();
-	    }
 	}
 
 	/**

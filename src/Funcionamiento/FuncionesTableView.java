@@ -291,7 +291,10 @@ public class FuncionesTableView {
 	}
 	
 	/**
-	 * Permite dar valor a las celdas de la TableView
+	 * Configura el nombre y la fábrica de valores para las columnas de una tabla de datos basado en una lista de columnas.
+	 *
+	 * @param columnList La lista de TableColumn a configurar.
+	 * @param tablaBBDD La TableView en la que se aplicarán las configuraciones.
 	 */
 	public void nombreColumnas(List<TableColumn<Comic, String>> columnList, TableView<Comic> tablaBBDD) {
 	    for (TableColumn<Comic, String> column : columnList) {
@@ -321,7 +324,10 @@ public class FuncionesTableView {
 	}
 	
 	/**
-	 * Funcion que modifica el tamaño de los TableColumn
+	 * Modifica los tamaños de las columnas de una TableView de acuerdo a los tamaños específicos definidos.
+	 *
+	 * @param tablaBBDD La TableView cuyas columnas se van a modificar.
+	 * @param columnList La lista de TableColumn correspondiente a las columnas de la tabla.
 	 */
 	public void modificarColumnas(TableView<Comic> tablaBBDD, List<TableColumn<Comic, String>> columnList) {
 	    // Definir los tamaños específicos para cada columna en la misma posición que en columnList
@@ -410,7 +416,5 @@ public class FuncionesTableView {
 	    textField.setOnMouseExited(event -> {
 	        tooltip.hide();
 	    });
-	}
-
-	
+	}	
 }

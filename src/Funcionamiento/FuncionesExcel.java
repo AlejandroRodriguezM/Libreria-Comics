@@ -1,51 +1,6 @@
 package Funcionamiento;
 
-/**
- * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
- * Las ventanas graficas se realizan con JavaFX.
- * El programa permite:
- *  - Conectarse a la base de datos.
- *  - Ver la base de datos completa o parcial segun parametros introducidos.
- *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
- *  - Copia de seguridad de la base de datos en formato .sql
- *  - Introducir comics a la base de datos.
- *  - Modificar comics de la base de datos.
- *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
- *  - Ver frases de personajes de comics
- *  - Opcion de escoger algo para leer de forma aleatoria.
- *  - Puntuar comics que se encuentren dentro de la base de datos.
- *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
- *
- *  Version 5.5.0.1
- *
- *  @author Alejandro Rodriguez
- *
- */
-
 import java.awt.Desktop;
-
-/**
- * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
- * Las ventanas graficas se realizan con JavaFX.
- * El programa permite:
- *  - Conectarse a la base de datos.
- *  - Ver la base de datos completa o parcial segun parametros introducidos.
- *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
- *  - Copia de seguridad de la base de datos en formato .sql
- *  - Introducir comics a la base de datos.
- *  - Modificar comics de la base de datos.
- *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
- *  - Ver frases de personajes de comics
- *  - Opcion de escoger algo para leer de forma aleatoria.
- *
- *  Esta clase permite hacer las funciones respectivas del Excel y el CSV
- *
- *  Version Final
- *
- *  Por Alejandro Rodriguez
- *
- *  Twitter: @silverAlox
- */
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -105,6 +60,11 @@ public class FuncionesExcel {
 	private static DBLibreriaManager libreria = null;
 	private CargaComicsController cargaComicsController; // Declare the instance
 
+	/**
+	 * Guarda los datos en un archivo de Excel y crea un archivo ZIP que contiene el archivo Excel.
+	 *
+	 * @param nombre_carpeta El nombre de la carpeta para la copia de seguridad.
+	 */
 	public void savedataExcel(String nombre_carpeta) {
 
 		libreria = new DBLibreriaManager();
@@ -216,6 +176,14 @@ public class FuncionesExcel {
 		}
 	}
 
+	/**
+	 * Añade un archivo al archivo ZIP especificado con el nombre de entrada dado.
+	 *
+	 * @param file El archivo que se va a agregar al ZIP.
+	 * @param entryName El nombre de entrada del archivo en el ZIP.
+	 * @param zipFile El archivo ZIP al que se va a agregar el nuevo archivo.
+	 * @throws IOException Si ocurre un error de lectura o escritura durante la operación.
+	 */
 	private void addFileToZip(File file, String entryName, File zipFile) throws IOException {
 		try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile, true))) {
 			ZipEntry zipEntry = new ZipEntry(entryName);
@@ -320,8 +288,9 @@ public class FuncionesExcel {
 	}
 
 	/**
-	 * 
-	 * @return
+	 * Abre un cuadro de diálogo para seleccionar una carpeta de portadas.
+	 *
+	 * @return La carpeta seleccionada como objeto File.
 	 */
 	public File carpetaPortadas() {
 		DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -330,8 +299,9 @@ public class FuncionesExcel {
 	}
 
 	/**
-	 * 
-	 * @return
+	 * Abre un cuadro de diálogo para seleccionar una carpeta de portadas en un hilo de tarea (Task).
+	 *
+	 * @return La carpeta seleccionada como objeto File.
 	 */
 	public File carpetaPortadasTask() {
 		final File[] directorio = new File[1];
@@ -352,13 +322,6 @@ public class FuncionesExcel {
 		return directorio[0];
 	}
 
-	/**
-	 * Funcion que permite crear tanto un fichero XLSX como un fichero CSV
-	 *
-	 * @param fichero
-	 * @return
-	 * @throws SQLException
-	 */
 	/**
 	 * Funcion que permite crear tanto un fichero XLSX como un fichero CSV
 	 *
@@ -602,7 +565,9 @@ public class FuncionesExcel {
 		return task;
 	}
 
-	// Function to open the CargaComicsController window
+	/**
+	 * Muestra una ventana de carga para la carga de cómics.
+	 */
 	private void verCargaComics() {
 		Platform.runLater(() -> {
 			try {
@@ -633,13 +598,24 @@ public class FuncionesExcel {
 		});
 	}
 
-	// Function to pass data to methods of CargaComicsController
+	/**
+	 * Pasa datos a los métodos del controlador de la ventana de carga de cómics.
+	 *
+	 * @param nombreComic El nombre del cómic a mostrar.
+	 * @param porcentaje El porcentaje de carga a mostrar.
+	 * @param progreso El progreso de carga a mostrar.
+	 */
 	private void cargarDatosEnCargaComics(String nombreComic, String porcentaje, Double progreso) {
 			cargaComicsController.appendTextToTextArea(nombreComic);
 			cargaComicsController.updateLabel(porcentaje);
 			cargaComicsController.updateProgress(progreso);
 	}
 
+	/**
+	 * Abre un archivo en el registro a través del programa predeterminado del sistema.
+	 *
+	 * @param filePath La ruta del archivo que se va a abrir.
+	 */
 	private void abrirArchivoRegistro(String filePath) {
 		File file = new File(filePath);
 

@@ -52,17 +52,33 @@ public class Utilidades {
 
 	public static String os = System.getProperty("os.name", "unknown").toLowerCase(Locale.ROOT);
 
+	/**
+	 * Verifica si el sistema operativo es Windows.
+	 *
+	 * @return true si el sistema operativo es Windows, false en caso contrario.
+	 */
 	public static boolean isWindows() {
-		return os.contains("win");
+	    return os.contains("win");
 	}
 
+	/**
+	 * Verifica si el sistema operativo es macOS (Mac).
+	 *
+	 * @return true si el sistema operativo es macOS, false en caso contrario.
+	 */
 	public static boolean isMac() {
-		return os.contains("mac");
+	    return os.contains("mac");
 	}
 
+	/**
+	 * Verifica si el sistema operativo es Unix o Linux.
+	 *
+	 * @return true si el sistema operativo es Unix o Linux, false en caso contrario.
+	 */
 	public static boolean isUnix() {
-		return os.contains("nux");
+	    return os.contains("nux");
 	}
+
 
 	/**
 	 * Funcion que permite comprobar que navegadores tienes instalados en el sistema
@@ -306,26 +322,12 @@ public class Utilidades {
 		}
 	}
 
-//	public String obtenerDatoDespuesDeDosPuntos(String linea) {
-//		String userHome = System.getProperty("user.home");
-//		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
-//		String carpetaLibreria = ubicacion + File.separator + "libreria";
-//		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion.conf";
-//
-//		try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
-//			String line;
-//			while ((line = reader.readLine()) != null) {
-//				if (line.startsWith(linea + ": ")) {
-//					return line.substring(linea.length() + 2).trim();
-//				}
-//			}
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//
-//		return "";
-//	}
-
+	/**
+	 * Obtiene el nombre completo de un cómic con información específica.
+	 *
+	 * @param datos Los datos del cómic.
+	 * @return El nombre completo del cómic con formato para archivo.
+	 */
 	public String obtenerNombreCompleto(Comic datos) {
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
@@ -342,6 +344,12 @@ public class Utilidades {
 		return nuevoNombreArchivo;
 	}
 
+	/**
+	 * Crea un nuevo nombre de archivo para un cómic con información específica.
+	 *
+	 * @param datos Los datos del cómic.
+	 * @return El nuevo nombre de archivo del cómic con formato para archivo.
+	 */
 	public String crearNuevoNombre(Comic datos) {
 		String nombre_comic = datos.getNombre().replace(" ", "_").replace(":", "_").replace("-", "_");
 		String numero_comic = datos.getNumero();
@@ -354,6 +362,12 @@ public class Utilidades {
 		return nuevoNombreArchivo;
 	}
 
+	/**
+	 * Obtiene el nombre de archivo de una ruta completa.
+	 *
+	 * @param rutaCompleta La ruta completa del archivo.
+	 * @return El nombre del archivo sin la ruta.
+	 */
 	public String obtenerNombreArchivo(String rutaCompleta) {
 		// Obtener el separador de ruta del archivo según el sistema operativo
 		String separadorRuta = File.separator;
@@ -368,6 +382,9 @@ public class Utilidades {
 		return nombreArchivo;
 	}
 
+	/**
+	 * Realiza una copia de seguridad de los archivos.
+	 */
 	public void copia_seguridad() {
 		// Realizar copia de seguridad
 		try {
@@ -410,6 +427,14 @@ public class Utilidades {
 		}
 	}
 
+	/**
+	 * Comprime un archivo o carpeta en un archivo zip.
+	 *
+	 * @param fileToZip El archivo o carpeta que se va a comprimir.
+	 * @param fileName El nombre del archivo.
+	 * @param zipOut El flujo de salida del archivo zip.
+	 * @throws IOException Si ocurre un error de E/S durante la compresión.
+	 */
 	private void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut) throws IOException {
 		if (fileToZip.isHidden()) {
 			return;
@@ -440,6 +465,9 @@ public class Utilidades {
 		fis.close();
 	}
 
+	/**
+	 * Elimina todos los archivos en una carpeta específica.
+	 */
 	public void eliminarArchivosEnCarpeta() {
 
 		String userDir = System.getProperty("user.home");
@@ -460,12 +488,11 @@ public class Utilidades {
 		}
 	}
 
+	/**
+	 * Crea una copia de seguridad de la base de datos.
+	 */
 	public void crearCopiaBaseDatos() {
 		try {
-
-//			String ddbb = obtenerDatoDespuesDeDosPuntos("Database");
-//			String usuario = obtenerDatoDespuesDeDosPuntos("Usuario");
-//			String password = obtenerDatoDespuesDeDosPuntos("Password");
 
 			String userHome = System.getProperty("user.home");
 			String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
@@ -619,12 +646,24 @@ public class Utilidades {
 		}
 	}
 
+	/**
+	 * Elimina un fichero en la ubicación especificada.
+	 *
+	 * @param direccion La dirección del fichero a eliminar.
+	 */
 	public static void eliminarFichero(String direccion) {
 		File archivo = new File(direccion);
 
 		archivo.delete();
 	}
 
+	/**
+	 * Renombra un archivo en una carpeta específica.
+	 *
+	 * @param carpeta             La carpeta donde se encuentra el archivo.
+	 * @param nombreArchivoBuscado El nombre del archivo que se desea renombrar.
+	 * @param nuevoNombreArchivo  El nuevo nombre para el archivo.
+	 */
 	public static void renombrarArchivo(String carpeta, String nombreArchivoBuscado, String nuevoNombreArchivo) {
 		File directorio = new File(carpeta);
 		File[] archivos = directorio.listFiles();
@@ -677,6 +716,9 @@ public class Utilidades {
 		return codigo.toString();
 	}
 
+	/**
+	 * Mapa que almacena las tasas de cambio para cada país.
+	 */
 	private static final Map<String, Double> tasasDeCambio = new HashMap<>();
 	static {
 		// Añadir las tasas de cambio para cada país
@@ -705,6 +747,13 @@ public class Utilidades {
 		tasasDeCambio.put("Dinamarca (Denmark)", 6.77);
 	}
 
+	/**
+	 * Convierte una cantidad de moneda local a dólares.
+	 *
+	 * @param pais             El país del que se quiere convertir la moneda.
+	 * @param cantidadMonedaLocal La cantidad de moneda local a convertir.
+	 * @return La cantidad equivalente en dólares.
+	 */
 	public static double convertirMonedaADolar(String pais, double cantidadMonedaLocal) {
 
 		if (tasasDeCambio.containsKey(pais)) {
@@ -716,6 +765,11 @@ public class Utilidades {
 		return 0; // Devolver 0 si el país no está en la lista o si la cantidad es negativa
 	}
 	
+	/**
+	 * Verifica si hay conexión a Internet disponible.
+	 *
+	 * @return true si hay conexión a Internet, false en caso contrario.
+	 */
     public static boolean isInternetAvailable() {
         try {
             InetAddress address = InetAddress.getByName("google.com");
@@ -725,6 +779,13 @@ public class Utilidades {
         }
     }
     
+    /**
+     * Guarda el nombre de usuario y contraseña en un archivo de configuración.
+     *
+     * @param usuario El campo de texto que contiene el nombre de usuario.
+     * @param pass    La contraseña del usuario.
+     * @throws IOException Si ocurre un error al escribir en el archivo.
+     */
     public static void guardarUsuario(TextField usuario,String pass) throws IOException {
     	
 		String userHome = System.getProperty("user.home");
@@ -748,6 +809,4 @@ public class Utilidades {
 
 		bufferedWriter.close();
     }
-
-
 }

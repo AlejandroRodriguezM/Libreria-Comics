@@ -221,12 +221,24 @@ public class Comic {
 		this.numCaja = numCaja;
 	}
 
+	/**
+	 * Agrega una etiqueta y un valor al constructor StringBuilder si el valor no está vacío o nulo.
+	 *
+	 * @param builder El constructor StringBuilder al que se va a agregar la etiqueta y el valor.
+	 * @param label La etiqueta que se va a agregar.
+	 * @param value El valor que se va a agregar.
+	 */
 	private void appendIfNotEmpty(StringBuilder builder, String label, String value) {
 		if (value != null && !value.isEmpty()) {
 			builder.append(label).append(": ").append(value).append("\n");
 		}
 	}
 
+	/**
+	 * Convierte el objeto Comic a una representación en forma de cadena.
+	 *
+	 * @return La representación en forma de cadena del objeto Comic.
+	 */
 	@Override
 	public String toString() {
 		StringBuilder contenidoComic = new StringBuilder();
