@@ -35,6 +35,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import Funcionamiento.Comic;
 import Funcionamiento.FuncionesComboBox;
@@ -291,32 +294,43 @@ public class MenuPrincipalController implements Initializable {
 		List<TableColumn<Comic, String>> columnListCarga = Arrays.asList(nombre, caja, numero, variante, firma,
 				editorial, formato, procedencia, fecha, guionista, dibujante, referencia);
 		columnList = columnListCarga;
-
-		try {
-			libreria.listasAutoCompletado();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		
 		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
+
 		restringir_entrada_datos();
 
 		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
 				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
 
 		int totalComboboxes = comboboxes.size();
-		
-	    Task<Void> task = new Task<Void>() {
-	        @Override
-	        protected Void call() throws Exception {
-	        	funcionesCombo.rellenarComboBox(comboboxes);
-				funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
-	            return null;
-	        }
-	    };
 
-		// Iniciar el Task en un nuevo hilo
-		Thread thread = new Thread(task);
-		thread.start();
+		// Crear un ScheduledExecutorService para ejecutar la tarea después de un 1 segundo
+		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+		scheduler.schedule(() -> {
+
+			Platform.runLater(() -> {
+				
+				try {
+					libreria.listasAutoCompletado();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				
+				Task<Void> task = new Task<Void>() {
+					@Override
+					protected Void call() throws Exception {
+						funcionesCombo.rellenarComboBox(comboboxes);
+						funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
+						return null;
+					}
+				};
+
+				// Iniciar el Task en un nuevo hilo
+				Thread thread = new Thread(task);
+				thread.start();
+			});
+		}, 0, TimeUnit.SECONDS);
+
 		// Desactivar el enfoque en el VBox para evitar que reciba eventos de teclado
 		rootVBox.setFocusTraversable(false);
 
