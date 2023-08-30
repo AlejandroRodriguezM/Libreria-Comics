@@ -1093,6 +1093,9 @@ public class MenuPrincipalController implements Initializable {
 		timeline.play();
 	}
 
+	/**
+	 * Metodo que permite crear una animacion
+	 */
 	private void iniciarAnimacionBajada() {
 		prontInfo.setOpacity(1);
 		timeline = new Timeline();
@@ -1231,8 +1234,7 @@ public class MenuPrincipalController implements Initializable {
 						return true;
 					}
 				} catch (Exception e) {
-					// Si ocurre un error desconocido al importar, mostrar un mensaje de error y
-					// detener la animación
+					// Si ocurre un error desconocido al importar, mostrar un mensaje de error y detener la animación
 					e.printStackTrace();
 					Platform.runLater(() -> nav
 							.alertaException("Error desconocido al importar el fichero CSV: " + e.getMessage()));

@@ -417,8 +417,6 @@ public class FuncionesComboBox {
 	            boolean atLeastOneNotEmpty = comboboxes.stream()
 	                    .anyMatch(cb -> cb.getValue() != null && !cb.getValue().isEmpty());
 
-	            System.out.println(atLeastOneNotEmpty);
-
 	            if (atLeastOneNotEmpty) {
 	                Comic comic = getComicFromComboBoxes(10, comboboxes);
 	                actualizarComboBoxes(10, comboboxes, comic);
