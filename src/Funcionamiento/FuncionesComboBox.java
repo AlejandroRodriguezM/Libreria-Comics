@@ -229,7 +229,9 @@ public class FuncionesComboBox {
 
 		// Limpiar todos los campos de texto y valores de los ComboBoxes
 		for (ComboBox<String> comboBox : comboboxes) {
+			// Configurar el tamaño y apariencia del despliegue del ComboBox
 			modificarPopup(comboBox);
+			
 			comboBox.setValue("");
 			comboBox.getEditor().setText("");
 		}
@@ -273,21 +275,7 @@ public class FuncionesComboBox {
 				}
 
 				// Configurar el tamaño y apariencia del despliegue del ComboBox
-				comboBox.setCellFactory(param -> new ListCell<String>() {
-					@Override
-					protected void updateItem(String item, boolean empty) {
-						super.updateItem(item, empty);
-						if (empty || item == null) {
-							setGraphic(null);
-							setPrefHeight(0); // Ajusta la altura
-							setPrefWidth(0); // Ajusta el ancho
-						} else {
-							setText(item);
-							setPrefHeight(-1); // Ajusta la altura
-							setPrefWidth(-1); // Ajusta el ancho
-						}
-					}
-				});
+				modificarPopup(comboBox);
 
 				comboBox.setOnMouseClicked(event -> {
 					comboBox.hide();
