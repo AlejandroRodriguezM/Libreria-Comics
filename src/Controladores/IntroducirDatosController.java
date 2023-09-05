@@ -365,6 +365,11 @@ public class IntroducirDatosController implements Initializable {
 				// Iniciar el Task en un nuevo hilo
 				Thread thread = new Thread(task);
 				thread.start();
+				
+			    // Cuando la tarea haya terminado, apaga el scheduler
+			    task.setOnSucceeded(event -> {
+			        scheduler.shutdown();
+			    });
 			});
 		}, 0, TimeUnit.SECONDS);
 		rellenarCombosEstaticos();
