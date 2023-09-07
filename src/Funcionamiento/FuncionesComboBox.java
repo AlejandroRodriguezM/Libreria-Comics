@@ -415,20 +415,10 @@ public class FuncionesComboBox {
 
 		// Evento para manejar las teclas presionadas en el TextField de filtro
 		filterTextField.setOnKeyPressed(event -> {
-			modificarPopup(originalComboBox);
-			KeyCode code = event.getCode();
-			if (code == KeyCode.BACK_SPACE || code == KeyCode.DELETE) {
-				originalComboBox.setValue("");
-				originalComboBox.hide();
-				popup.hide();
-			}
-		});
-
-		// Evento para manejar las teclas liberadas en el ComboBox original
-		originalComboBox.setOnKeyReleased(event -> {
 			KeyCode code = event.getCode();
 			if (code == KeyCode.BACK_SPACE || code == KeyCode.DELETE) {
 				modificarPopup(originalComboBox);
+				originalComboBox.setValue("");
 				originalComboBox.hide();
 				boolean atLeastOneNotEmpty = comboboxes.stream()
 						.anyMatch(cb -> cb.getValue() != null && !cb.getValue().isEmpty());
@@ -441,7 +431,6 @@ public class FuncionesComboBox {
 				popup.hide();
 			}
 		});
-
 
 
 		popup.setOnHidden(event -> {
@@ -458,8 +447,22 @@ public class FuncionesComboBox {
 				popup.hide();
 			}
 		});
+		
+		originalComboBox.valueProperty().addListener((obs, oldValue, newValue) -> {
+			if (newValue != null && !newValue.isEmpty()) {
+				filterTextField.setText(newValue);
+			}
+		});
 	}
 	
+	/**
+	 * Crea un Popup personalizado con el contenido proporcionado.
+	 *
+	 * @param originalComboBox El ComboBox original.
+	 * @param filterTextField  El TextField de filtro.
+	 * @param listView         El ListView con elementos filtrados.
+	 * @return El Popup personalizado.
+	 */
 	private Popup createCustomPopup(ComboBox<String> originalComboBox, TextField filterTextField, ListView<String> listView) {
 		
 	    VBox popupContent = new VBox(filterTextField, listView);
@@ -501,7 +504,7 @@ public class FuncionesComboBox {
 	}
 
 	/**
-	 * Modifica el Popup del ComboBox.
+	 * Modifica la apariencia del despliegue del ComboBox y lo oculta.
 	 *
 	 * @param originalComboBox El ComboBox original.
 	 */
