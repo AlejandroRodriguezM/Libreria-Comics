@@ -42,6 +42,9 @@ public class FuncionesComboBox {
 
 	// Variable que indica si se están actualizando los ComboBoxes
 	private boolean updatingComboBoxes = false;
+	
+    private Popup popup = new Popup();
+
 
 	/**
 	 * Crea y devuelve un objeto Comic con valores obtenidos de los ComboBoxes.
@@ -299,7 +302,7 @@ public class FuncionesComboBox {
 				// Configurar el tamaño y apariencia del despliegue del ComboBox
 				modificarPopup(comboBox);
 
-				comboBox.setOnMouseClicked(event -> {
+				comboBox.setOnMousePressed(event -> {
 					comboBox.hide();
 					if (!comboBox.isShowing()) {
 						boolean atLeastOneNotEmpty = comboboxes.stream()
@@ -333,84 +336,77 @@ public class FuncionesComboBox {
 	 * @param filteredItems    Los elementos filtrados a mostrar.
 	 */
 	private void setupFilteredPopup(List<ComboBox<String>> comboboxes, ComboBox<String> originalComboBox,
-			List<String> filteredItems) {
-		modificarPopup(originalComboBox);
+	        List<String> filteredItems) {
+	    modificarPopup(originalComboBox);
 
-		ListView<String> listView = new ListView<>(FXCollections.observableArrayList(filteredItems));
+	    ListView<String> listView = new ListView<>(FXCollections.observableArrayList(filteredItems));
 
-		TextField filterTextField = new TextField();
-		filterTextField.setPromptText("Filtro...");
+	    TextField filterTextField = new TextField();
+	    filterTextField.setPromptText("Filtro...");
 
-		StringProperty filteredText = new SimpleStringProperty();
-		filterTextField.textProperty().bindBidirectional(filteredText);
+	    StringProperty filteredText = new SimpleStringProperty();
+	    filterTextField.textProperty().bindBidirectional(filteredText);
 
-		// Listener para el cambio de texto en el TextField de filtro
-		filterTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-			List<String> newFilteredItems = filteredItems.stream()
-					.filter(item -> item.toLowerCase().contains(newValue.toLowerCase())).collect(Collectors.toList());
-			listView.setItems(FXCollections.observableArrayList(newFilteredItems));
-		});
+	    // Listener para el cambio de texto en el TextField de filtro
+	    filterTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+	        List<String> newFilteredItems = filteredItems.stream()
+	                .filter(item -> item.toLowerCase().contains(newValue.toLowerCase())).collect(Collectors.toList());
+	        listView.setItems(FXCollections.observableArrayList(newFilteredItems));
+	    });
+	    Bounds bounds = originalComboBox.localToScreen(originalComboBox.getBoundsInLocal());
+	    popup = createCustomPopup(originalComboBox,filterTextField, listView);
 
-		VBox popupContent = new VBox(filterTextField, listView);
-		popupContent.setSpacing(-2);
+	    int currentIndex = comboboxes.indexOf(originalComboBox);
 
-		ScrollPane scrollPane = new ScrollPane(popupContent);
-		scrollPane.setFitToHeight(true);
-		scrollPane.setFitToWidth(true);
-		scrollPane.setPrefSize(300, 250);
+	    // Evento para manejar la tecla Enter en la lista
+	    listView.setOnKeyPressed(event -> {
+	        modificarPopup(originalComboBox);
 
-		Popup popup = new Popup();
-		popup.getContent().add(scrollPane);
-		popup.setAutoHide(true);
-		Bounds bounds = originalComboBox.localToScreen(originalComboBox.getBoundsInLocal());
+	        if (event.getCode() == KeyCode.ENTER) {
+	            String selectedItem = listView.getSelectionModel().getSelectedItem();
+	            if (selectedItem != null) {
+	                originalComboBox.setValue(selectedItem);
+	                originalComboBox.hide();
 
-		int currentIndex = comboboxes.indexOf(originalComboBox);
+	                updateOtherComboBoxes(comboboxes, currentIndex, selectedItem);
+	                filterTextField.setText(selectedItem); // Establecer el valor en el TextField
+	                popup.hide();
+	            }
+	        }
+	    });
 
-		// Evento para manejar la tecla Enter en la lista
-		listView.setOnKeyPressed(event -> {
-			modificarPopup(originalComboBox);
+	    // Evento para manejar el clic en un elemento de la lista
+	    listView.setOnMouseClicked(event -> {
+	        modificarPopup(originalComboBox);
 
-			if (event.getCode() == KeyCode.ENTER) {
-				String selectedItem = listView.getSelectionModel().getSelectedItem();
-				if (selectedItem != null) {
-					originalComboBox.setValue(selectedItem);
-					originalComboBox.hide();
+	        String selectedItem = listView.getSelectionModel().getSelectedItem();
+	        if (selectedItem != null) {
+	            originalComboBox.setValue(selectedItem);
+	            originalComboBox.hide();
 
-					updateOtherComboBoxes(comboboxes, currentIndex, selectedItem);
-					filterTextField.setText(selectedItem); // Establecer el valor en el TextField
-					popup.hide();
-				}
-			}
-		});
+	            System.out.println(selectedItem.length());
 
-		// Evento para manejar el clic en un elemento de la lista
-		listView.setOnMouseClicked(event -> {
-			modificarPopup(originalComboBox);
+	            updateOtherComboBoxes(comboboxes, currentIndex, selectedItem);
+	            filterTextField.setText(selectedItem); // Establecer el valor en el TextField
+	            popup.hide();
+	        }
+	    });
 
-			String selectedItem = listView.getSelectionModel().getSelectedItem();
-			if (selectedItem != null) {
-				originalComboBox.setValue(selectedItem);
-				originalComboBox.hide();
-
-				System.out.println(selectedItem.length());
-
-				updateOtherComboBoxes(comboboxes, currentIndex, selectedItem);
-				filterTextField.setText(selectedItem); // Establecer el valor en el TextField
-				popup.hide();
-			}
-		});
-
-		// Evento para manejar el clic en el ComboBox original
-		originalComboBox.setOnMouseClicked(event -> {
-			modificarPopup(originalComboBox);
-
-			if (!popup.isShowing()) {
-				showFilteredPopup(popup, originalComboBox, filterTextField, filteredText, bounds);
-			} else {
-				originalComboBox.hide();
-				popup.hide();
-			}
-		});
+	    // Evento para manejar el clic en el ComboBox original
+	    originalComboBox.setOnMouseClicked(event -> {
+	        modificarPopup(originalComboBox);
+	        Popup customPopup = new Popup();
+	        
+	        if (!popup.isShowing()) {
+	        	customPopup = createCustomPopup(originalComboBox, filterTextField, listView);
+	            showFilteredPopup(customPopup, originalComboBox, filterTextField, filteredText, bounds);
+	            System.out.println(1);
+	        } else {
+	            originalComboBox.hide();
+	            popup.hide();
+	            System.out.println(2);
+	        }
+	    });
 
 		// Evento para manejar las teclas presionadas en el TextField de filtro
 		filterTextField.setOnKeyPressed(event -> {
@@ -442,7 +438,7 @@ public class FuncionesComboBox {
 		});
 
 		// Mostrar el popup personalizado al hacer clic en el ComboBox
-		showFilteredPopup(popup, originalComboBox, filterTextField, filteredText, bounds);
+//		showFilteredPopup(popup, originalComboBox, filterTextField, filteredText, bounds);
 
 		if (!listView.getItems().isEmpty()) {
 			listView.requestFocus(); // Solicitar el enfoque en la lista
@@ -463,6 +459,24 @@ public class FuncionesComboBox {
 				popup.hide();
 			}
 		});
+		
+
+	}
+	
+	private Popup createCustomPopup(ComboBox<String> originalComboBox, TextField filterTextField, ListView<String> listView) {
+		
+	    VBox popupContent = new VBox(filterTextField, listView);
+	    popupContent.setSpacing(-2);
+
+	    ScrollPane scrollPane = new ScrollPane(popupContent);
+	    scrollPane.setFitToHeight(true);
+	    scrollPane.setFitToWidth(true);
+	    scrollPane.setPrefSize(300, 250);
+
+	    popup.getContent().add(scrollPane);
+	    popup.setAutoHide(true);
+
+	    return popup;
 	}
 
 	/**
