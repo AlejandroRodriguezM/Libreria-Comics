@@ -406,6 +406,11 @@ public class FuncionesComboBox {
 	            popup.hide();
 	            System.out.println(2);
 	        }
+	        
+			if (!listView.getItems().isEmpty()) {
+				listView.requestFocus(); // Solicitar el enfoque en la lista
+				listView.getSelectionModel().selectFirst();
+			}
 	    });
 
 		// Evento para manejar las teclas presionadas en el TextField de filtro
@@ -437,13 +442,7 @@ public class FuncionesComboBox {
 			}
 		});
 
-		// Mostrar el popup personalizado al hacer clic en el ComboBox
-//		showFilteredPopup(popup, originalComboBox, filterTextField, filteredText, bounds);
 
-		if (!listView.getItems().isEmpty()) {
-			listView.requestFocus(); // Solicitar el enfoque en la lista
-			listView.getSelectionModel().selectFirst();
-		}
 
 		popup.setOnHidden(event -> {
 			listView.getSelectionModel().clearSelection();
@@ -459,8 +458,6 @@ public class FuncionesComboBox {
 				popup.hide();
 			}
 		});
-		
-
 	}
 	
 	private Popup createCustomPopup(ComboBox<String> originalComboBox, TextField filterTextField, ListView<String> listView) {
