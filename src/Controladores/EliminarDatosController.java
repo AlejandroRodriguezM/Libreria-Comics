@@ -709,9 +709,7 @@ public class EliminarDatosController implements Initializable {
 		String id_comic = idComicTratar.getText();
 		idComicTratar.setStyle("");
 
-		if (id_comic.length() == 0 || !libreria.comprobarID(id_comic)) {
-			String excepcion = "No puedes eliminar un comic si antes no pones un ID valido";
-			nav.alertaException(excepcion);
+		if (id_comic.length() == 0 || !libreria.checkID(id_comic)) {
 
 			idComicTratar.setStyle("-fx-background-color: #FF0000;");
 
@@ -742,10 +740,7 @@ public class EliminarDatosController implements Initializable {
 		String id_comic = idComicTratar.getText();
 		idComicTratar.setStyle("");
 
-		if (id_comic.length() == 0 || !libreria.comprobarID(id_comic)) {
-			String excepcion = "No puedes eliminar un comic si antes no pones un ID valido";
-
-			nav.alertaException(excepcion);
+		if (id_comic.length() == 0 || !libreria.checkID(id_comic)) {
 			idComicTratar.setStyle("-fx-background-color: #FF0000;");
 			prontInfo.setStyle("-fx-background-color: #F53636");
 			prontInfo.setText("Error. Debes de introducir los datos correctos");

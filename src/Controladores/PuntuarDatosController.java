@@ -690,10 +690,8 @@ public class PuntuarDatosController implements Initializable {
 		libreria = new DBLibreriaManager();
 		String id_comic = idPuntuar.getText();
 		idPuntuar.setStyle("");
-		if (id_comic.length() == 0 || !libreria.comprobarID(id_comic)) {
-			String excepcion = "No puedes puntuar un comic si antes no pones un ID valido";
+		if (id_comic.length() == 0 || !libreria.checkID(id_comic)) {
 
-			nav.alertaException(excepcion);
 			idPuntuar.setStyle("-fx-background-color: #FF0000;");
 			prontInfo.setStyle("-fx-background-color: #F53636");
 			prontInfo.setText("Error. Debes de introducir los datos correctos");
@@ -719,10 +717,7 @@ public class PuntuarDatosController implements Initializable {
 		String id_comic = idPuntuar.getText();
 		idPuntuar.setStyle("");
 
-		if (id_comic.length() == 0 || !libreria.comprobarID(id_comic)) {
-			String excepcion = "No puedes puntuar un comic si antes no pones un ID valido";
-
-			nav.alertaException(excepcion);
+		if (id_comic.length() == 0 || !libreria.checkID(id_comic)) {
 			idPuntuar.setStyle("-fx-background-color: #FF0000;");
 			prontInfo.setStyle("-fx-background-color: #F53636");
 			prontInfo.setText("Error. Debes de introducir los datos correctos");

@@ -72,5 +72,7 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/opencsv-5.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/java-json.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

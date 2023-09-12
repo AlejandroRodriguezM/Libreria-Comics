@@ -1326,7 +1326,7 @@ public class ModificarDatosController implements Initializable {
 
 			String id_comic = datos[0];
 
-			if (libreria.comprobarID(id_comic)) {
+			if (libreria.checkID(id_comic)) {
 				comic_temp = libreria.comicDatos(id_comic);
 
 				String nombre = "";
@@ -1480,7 +1480,7 @@ public class ModificarDatosController implements Initializable {
 						procedencia, fecha, guionista, dibujante, estado, nombreKeyIssue, puntuacion, portada,
 						url_referencia, precio_comic);
 
-				if (id_comic.length() == 0 || !libreria.comprobarID(id_comic) || nombre.length() == 0
+				if (id_comic.length() == 0 || !libreria.checkID(id_comic) || nombre.length() == 0
 						|| numero.length() == 0 || editorial.length() == 0 || guionista.length() == 0
 						|| dibujante.length() == 0 || procedencia.length() == 0) {
 

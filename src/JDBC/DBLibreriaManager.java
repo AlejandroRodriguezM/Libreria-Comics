@@ -117,18 +117,16 @@ public class DBLibreriaManager extends Comic {
 	 * @throws SQLException si ocurre un error al acceder a la base de datos.
 	 */
 	public void listasAutoCompletado() throws SQLException {
-
-		listaNombre();
-		listaVariante();
-		listaFirma();
-		listaFormato();
-		listaEditorial();
-		listaGuionista();
-		listaDibujante();
-		listaProcedencia();
-		listaCajas();
-		listaNumeroComic();
-
+		obtenerValoresColumna("nomComic");
+		obtenerValoresColumna("nomVariante");
+		obtenerValoresColumna("firma");
+		obtenerValoresColumna("formato");
+		obtenerValoresColumna("nomEditorial");
+		obtenerValoresColumna("nomGuionista");
+		obtenerValoresColumna("nomDibujante");
+		obtenerValoresColumna("procedencia");
+		obtenerValoresColumna("caja_deposito");
+		obtenerValoresColumna("numComic");
 	}
 
 	/**
@@ -392,12 +390,12 @@ public class DBLibreriaManager extends Comic {
 	 * @return Una lista de cadenas con los datos para autocompletado.
 	 * @throws SQLException Si ocurre algún error al ejecutar la consulta SQL.
 	 */
-	private List<String> guardarDatosAutoCompletado(String sentenciaSQL, String columna) throws SQLException {
+	public List<String> guardarDatosAutoCompletado(String sentenciaSQL, String columna) throws SQLException {
 		List<String> listaAutoCompletado = new ArrayList<>();
 		listaAutoCompletado.clear();
 		ResultSet rs = obtenLibreria(sentenciaSQL);
 		try {
-			if (verLibreria("SELECT * FROM comicsbbdd").size() != 0) {
+			if (contenidoTabla()) {
 				do {
 					String datosAutocompletado = rs.getString(columna);
 					if (columna.equals("nomComic")) {
@@ -459,143 +457,16 @@ public class DBLibreriaManager extends Comic {
 	}
 
 	/**
-	 * Devuelve una lista con los nombres de los cómics de la base de datos.
+	 * Devuelve una lista de valores de una columna específica de la base de datos.
 	 *
-	 * @return Lista de nombres de cómics.
+	 * @param columna Nombre de la columna de la base de datos.
+	 * @return Lista de valores de la columna.
 	 * @throws SQLException Si ocurre un error en la consulta SQL.
 	 */
-	public List<String> listaNombre() throws SQLException {
-		String sentenciaSQL = "SELECT nomComic from comicsbbdd ORDER BY nomComic ASC";
-		String columna = "nomComic";
-		reiniciarBBDD();
-		listaNombre = guardarDatosAutoCompletado(sentenciaSQL, columna);
-		return listaNombre;
-	}
-
-	/**
-	 * Devuelve una lista con los números de cómics de la base de datos.
-	 *
-	 * @return Lista de números de cómics.
-	 * @throws SQLException Si ocurre un error en la consulta SQL.
-	 */
-	public List<String> listaNumeroComic() throws SQLException {
-		String sentenciaSQL = "SELECT numComic from comicsbbdd ORDER BY numComic ASC";
-		String columna = "numComic";
-		reiniciarBBDD();
-		listaNumeroComic = guardarDatosAutoCompletado(sentenciaSQL, columna);
-		return listaNumeroComic;
-	}
-
-	/**
-	 * Devuelve una lista con las cajas de depósito de la base de datos.
-	 *
-	 * @return Lista de cajas de depósito.
-	 * @throws SQLException Si ocurre un error en la consulta SQL.
-	 */
-	public List<String> listaCajas() throws SQLException {
-		String sentenciaSQL = "SELECT caja_deposito FROM comicsbbdd ORDER BY caja_deposito ASC";
-		String columna = "caja_deposito";
-		reiniciarBBDD();
-		listaCaja = guardarDatosAutoCompletado(sentenciaSQL, columna);
-		return listaCaja;
-	}
-
-	/**
-	 * Devuelve una lista con las procedencias de la base de datos.
-	 *
-	 * @return Lista de procedencias.
-	 * @throws SQLException Si ocurre un error en la consulta SQL.
-	 */
-	public List<String> listaProcedencia() throws SQLException {
-		String sentenciaSQL = "SELECT procedencia from comicsbbdd ORDER BY procedencia ASC";
-		String columna = "procedencia";
-		reiniciarBBDD();
-		listaProcedencia = guardarDatosAutoCompletado(sentenciaSQL, columna);
-		return listaProcedencia;
-	}
-
-	/**
-	 * Devuelve una lista con las variantes de cómics de la base de datos.
-	 *
-	 * @return Lista de variantes de cómics.
-	 * @throws SQLException Si ocurre un error en la consulta SQL.
-	 */
-	public List<String> listaVariante() throws SQLException {
-		String sentenciaSQL = "SELECT nomVariante from comicsbbdd ORDER BY nomVariante ASC";
-		String columna = "nomVariante";
-		reiniciarBBDD();
-		listaVariante = guardarDatosAutoCompletado(sentenciaSQL, columna);
-		return listaVariante;
-	}
-
-	/**
-	 * Devuelve una lista con las firmas de cómics de la base de datos.
-	 *
-	 * @return Lista de firmas de cómics.
-	 * @throws SQLException Si ocurre un error en la consulta SQL.
-	 */
-	public List<String> listaFirma() throws SQLException {
-		String sentenciaSQL = "SELECT firma from comicsbbdd ORDER BY firma ASC";
-		String columna = "firma";
-		reiniciarBBDD();
-		listaFirma = guardarDatosAutoCompletado(sentenciaSQL, columna);
-		return listaFirma;
-	}
-
-	/**
-	 * Devuelve una lista con los formatos de cómics de la base de datos.
-	 *
-	 * @return Lista de formatos de cómics.
-	 * @throws SQLException Si ocurre un error en la consulta SQL.
-	 */
-	public List<String> listaFormato() throws SQLException {
-		String sentenciaSQL = "SELECT formato from comicsbbdd ORDER BY formato ASC";
-		String columna = "formato";
-		reiniciarBBDD();
-		listaFormato = guardarDatosAutoCompletado(sentenciaSQL, columna);
-		return listaFormato;
-	}
-
-	/**
-	 * Devuelve una lista con las editoriales de cómics de la base de datos.
-	 *
-	 * @return Lista de editoriales de cómics.
-	 * @throws SQLException Si ocurre un error en la consulta SQL.
-	 */
-	public List<String> listaEditorial() throws SQLException {
-		String sentenciaSQL = "SELECT nomEditorial from comicsbbdd ORDER BY nomEditorial ASC";
-		String columna = "nomEditorial";
-		reiniciarBBDD();
-		listaEditorial = guardarDatosAutoCompletado(sentenciaSQL, columna);
-		return listaEditorial;
-	}
-
-	/**
-	 * Devuelve una lista con los guionistas de cómics de la base de datos.
-	 *
-	 * @return Lista de guionistas de cómics.
-	 * @throws SQLException Si ocurre un error en la consulta SQL.
-	 */
-	public List<String> listaGuionista() throws SQLException {
-		String sentenciaSQL = "SELECT nomGuionista from comicsbbdd ORDER BY nomGuionista ASC";
-		String columna = "nomGuionista";
-		reiniciarBBDD();
-		listaGuionista = guardarDatosAutoCompletado(sentenciaSQL, columna);
-		return listaGuionista;
-	}
-
-	/**
-	 * Devuelve una lista con los dibujantes de cómics de la base de datos.
-	 *
-	 * @return Lista de dibujantes de cómics.
-	 * @throws SQLException Si ocurre un error en la consulta SQL.
-	 */
-	public List<String> listaDibujante() throws SQLException {
-		String sentenciaSQL = "SELECT nomDibujante from comicsbbdd ORDER BY nomDibujante ASC";
-		String columna = "nomDibujante";
-		reiniciarBBDD();
-		listaDibujante = guardarDatosAutoCompletado(sentenciaSQL, columna);
-		return listaDibujante;
+	public List<String> obtenerValoresColumna(String columna) throws SQLException {
+	    String sentenciaSQL = "SELECT " + columna + " FROM comicsbbdd ORDER BY " + columna + " ASC";
+	    reiniciarBBDD();
+	    return guardarDatosAutoCompletado(sentenciaSQL, columna);
 	}
 
 	/**
@@ -843,43 +714,43 @@ public class DBLibreriaManager extends Comic {
 	 * @param sql   Consulta SQL para obtener los datos.
 	 * @param campo Campo específico de la consulta.
 	 * @return Lista de resultados obtenidos.
+	 * @throws SQLException
 	 */
-	public ArrayList<String> obtenerResultadosDeLaBaseDeDatos(String sql, String campo) {
-		HashMap<String, Integer> mapa = new HashMap<>();
-		ArrayList<String> resultados = new ArrayList<>();
-
-		try (Connection conn = DBManager.conexion()) {
-			PreparedStatement statement = conn.prepareStatement(sql);
-			ResultSet resultSet = statement.executeQuery();
-
-			// Iterar a través de los resultados del conjunto de resultados
-			while (resultSet.next()) {
-				String valor = resultSet.getString(campo);
-				// Verificar si el valor es diferente de nulo y no está vacío
-				if (valor != null && !valor.isEmpty()) {
-					mapa.put(valor, mapa.getOrDefault(valor, 0) + 1);
-				}
-			}
-
-			resultSet.close();
-			statement.close();
-		} catch (SQLException e) {
-			// En caso de excepción, imprimir un mensaje de error simplificado
-			System.err.println("Error al obtener resultados de la base de datos: " + e.getMessage());
-		}
-
-		// Si el mapa está vacío, retornar una lista vacía
-		if (mapa.isEmpty()) {
-			return resultados;
-		}
-
-		// Agregar las claves del mapa (resultados) a la lista de resultados
-		for (String clave : mapa.keySet()) {
-			resultados.add(clave);
-		}
-
-		return resultados;
-	}
+//	public List<String> obtenerResultadosDeLaBaseDeDatos(String sql, String campo) throws SQLException {
+//		HashMap<String, Integer> mapa = new HashMap<>();
+//		List<String> resultados = new ArrayList<>();
+//
+//		try (Connection conn = DBManager.conexion()) {
+//			PreparedStatement statement = conn.prepareStatement(sql);
+//			ResultSet resultSet = statement.executeQuery();
+//
+//			// Iterar a través de los resultados del conjunto de resultados
+//			while (resultSet.next()) {
+//				String valor = resultSet.getString(campo);
+//				// Verificar si el valor es diferente de nulo y no está vacío
+//				if (valor != null && !valor.isEmpty()) {
+//					mapa.put(valor, mapa.getOrDefault(valor, 0) + 1);
+//				}
+//			}
+//
+//			resultSet.close();
+//			statement.close();
+//		} catch (SQLException e) {
+//			// En caso de excepción, imprimir un mensaje de error simplificado
+//			nav.alertaException("Error al obtener resultados de la base de datos: " + e.getMessage());
+//		}
+//
+//		// Si el mapa está vacío, retornar una lista vacía
+//		if (mapa.isEmpty()) {
+//			return resultados;
+//		}
+//
+//		// Agregar las claves del mapa (resultados) a la lista de resultados
+//		for (String clave : mapa.keySet()) {
+//			resultados.add(clave);
+//		}
+//		return  resultados;
+//	}
 
 	/**
 	 * Funcion que permite hacer una busqueda general mediante 1 sola palabra, hace
@@ -1183,6 +1054,8 @@ public class DBLibreriaManager extends Comic {
 	public boolean checkID(String identificador) throws SQLException {
 
 		if (identificador.length() == 0) {
+			String excepcion = "No puedes eliminar un comic si antes no pones un ID valido";
+			nav.alertaException(excepcion);
 			return false; // Si el identificador está vacío, se considera que no existe
 		}
 
@@ -1432,30 +1305,6 @@ public class DBLibreriaManager extends Comic {
 	}
 
 	/**
-	 * Comprueba si el ID introducido existe en la base de datos.
-	 *
-	 * @param ID El ID a comprobar.
-	 * @return true si el ID existe, false en caso contrario.
-	 */
-	public boolean comprobarID(String ID) {
-		if (ID.isEmpty()) {
-			return false;
-		}
-
-		try {
-			if (checkID(ID)) {
-				return true; // El ID existe en la base de datos
-			} else {
-				nav.alertaException("La ID no existe"); // Mostrar mensaje de alerta si el ID no existe
-			}
-		} catch (SQLException ex) {
-			nav.alertaException(ex.toString()); // Manejar excepción en caso de error de base de datos
-		}
-
-		return false; // El ID no existe en la base de datos
-	}
-
-	/**
 	 * Función que actualiza los datos de un cómic en la base de datos.
 	 *
 	 * @param datos Los datos del cómic a actualizar.
@@ -1468,7 +1317,7 @@ public class DBLibreriaManager extends Comic {
 				+ "WHERE ID = ?";
 
 		try {
-			if (comprobarID(datos.getID())) { // Comprueba si la ID introducida existe en la base de datos
+			if (checkID(datos.getID())) { // Comprueba si la ID introducida existe en la base de datos
 				comicModificar(sentenciaSQL, datos); // Llama a la función que permite cambiar los datos del cómic
 			}
 		} catch (SQLException | IOException ex) {
@@ -1626,7 +1475,7 @@ public class DBLibreriaManager extends Comic {
 		try {
 			conn = DBManager.conexion();
 			ps = conn.prepareStatement(sentenciaSQL);
-			if (comprobarID(ID)) { // Comprueba si la ID introducida existe en la base de datos
+			if (checkID(ID)) { // Comprueba si la ID introducida existe en la base de datos
 				Comic comic = comicDatos(ID);
 				ps.setString(1, puntuacion);
 				ps.setString(2, ID);
@@ -1654,7 +1503,7 @@ public class DBLibreriaManager extends Comic {
 		try {
 			conn = DBManager.conexion();
 			ps = conn.prepareStatement(sentenciaSQL);
-			if (comprobarID(ID)) { // Comprueba si la ID introducida existe en la base de datos
+			if (checkID(ID)) { // Comprueba si la ID introducida existe en la base de datos
 				Comic comic = comicDatos(ID);
 				ps.setString(1, ID);
 				if (ps.executeUpdate() == 1) { // Si se ha modificado correctamente, se añade el cómic a la lista
@@ -1726,10 +1575,10 @@ public class DBLibreriaManager extends Comic {
 	 * @return una lista de cómics obtenidos de la base de datos
 	 * @throws SQLException
 	 */
-	public List<Comic> comprobarLibreria(String sentenciaSQL, String excepcion) throws SQLException {
+	public List<Comic> comprobarLibreria(String sentenciaSQL) throws SQLException {
 
 		List<Comic> listComic = FXCollections.observableArrayList(verLibreria(sentenciaSQL));
-
+		String excepcion = "No hay ningun comic guardado en la base de datos";
 		if (listComic.isEmpty()) {
 
 			nav.alertaException(excepcion);
@@ -1749,8 +1598,7 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public List<Comic> busquedaParametro(Comic comic, String busquedaGeneral) throws SQLException {
 		String sentenciaSQL = "SELECT * from comicsbbdd";
-		String excepcion = "No hay ningun comic guardado en la base de datos";
-		List<Comic> listComic = comprobarLibreria(sentenciaSQL, excepcion);
+		List<Comic> listComic = comprobarLibreria(sentenciaSQL);
 
 		if (listComic.size() != 0) {
 			if (busquedaGeneral.length() != 0) {
@@ -1774,9 +1622,7 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public List<Comic> libreriaPosesion() throws SQLException {
 		String sentenciaSQL = "SELECT * from comicsbbdd where estado = 'En posesion' ORDER BY nomComic, fecha_publicacion, numComic";
-		String excepcion = "No hay ningún cómic guardado en la base de datos en posesión";
-
-		return comprobarLibreria(sentenciaSQL, excepcion);
+		return comprobarLibreria(sentenciaSQL);
 	}
 
 	/**
@@ -1787,9 +1633,8 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public List<Comic> libreriaKeyIssue() throws SQLException {
 		String sentenciaSQL = "SELECT * FROM comicsbbdd WHERE key_issue <> 'Vacio' ORDER BY nomComic, fecha_publicacion, numComic";
-		String excepcion = "No hay ningún cómic guardado en la base de datos con key issue";
 
-		return comprobarLibreria(sentenciaSQL, excepcion);
+		return comprobarLibreria(sentenciaSQL);
 	}
 
 	/**
@@ -1800,10 +1645,9 @@ public class DBLibreriaManager extends Comic {
 	 * @throws SQLException Si ocurre un error en la base de datos
 	 */
 	public List<Comic> libreriaCompleta() throws IOException, SQLException {
-		String query = "SELECT * FROM comicsbbdd ORDER BY nomComic, fecha_publicacion, numComic";
-		String excepcion = "No hay ningún cómic guardado en la base de datos";
+		String sentenciaSQL = "SELECT * FROM comicsbbdd ORDER BY nomComic, fecha_publicacion, numComic";
 
-		return comprobarLibreria(query, excepcion);
+		return comprobarLibreria(sentenciaSQL);
 	}
 
 	/**
@@ -1815,9 +1659,8 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public List<Comic> libreriaVendidos() throws SQLException {
 		String sentenciaSQL = "SELECT * from comicsbbdd where estado = 'Vendido' ORDER BY nomComic,fecha_publicacion,numComic";
-		String excepcion = "No hay comics en vendidos";
 
-		return comprobarLibreria(sentenciaSQL, excepcion);
+		return comprobarLibreria(sentenciaSQL);
 	}
 
 	/**
@@ -1829,9 +1672,8 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public List<Comic> libreriaComprados() throws SQLException {
 		String sentenciaSQL = "SELECT * from comicsbbdd where estado = 'Comprado' ORDER BY nomComic,fecha_publicacion,numComic";
-		String excepcion = "No hay comics comprados";
 
-		return comprobarLibreria(sentenciaSQL, excepcion);
+		return comprobarLibreria(sentenciaSQL);
 	}
 
 	/**
@@ -1843,9 +1685,8 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public List<Comic> libreriaPuntuacion() throws SQLException {
 		String sentenciaSQL = "SELECT * from comicsbbdd where puntuacion <> 'Sin puntuar' ORDER BY nomComic,fecha_publicacion,numComic";
-		String excepcion = "No hay comics puntuados";
 
-		return comprobarLibreria(sentenciaSQL, excepcion);
+		return comprobarLibreria(sentenciaSQL);
 	}
 
 	/**
@@ -1864,9 +1705,7 @@ public class DBLibreriaManager extends Comic {
 				+ "%' OR fecha_publicacion LIKE '%" + datoSeleccionado + "%' OR procedencia LIKE '%" + datoSeleccionado
 				+ "%' ORDER BY nomComic, fecha_publicacion, numComic ASC";
 
-		String excepcion = "No hay comics relacionados con esa seleccion";
-
-		return comprobarLibreria(sentenciaSQL, excepcion);
+		return comprobarLibreria(sentenciaSQL);
 	}
 
 	/**
@@ -2014,9 +1853,8 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public List<Comic> libreriaFirmados() throws SQLException {
 		String sentenciaSQL = "SELECT * from comicsbbdd where Firma <> '' ORDER BY nomComic,fecha_publicacion,numComic";
-		String excepcion = "No hay comics firmados";
 
-		return comprobarLibreria(sentenciaSQL, excepcion);
+		return comprobarLibreria(sentenciaSQL);
 	}
 
 	/**

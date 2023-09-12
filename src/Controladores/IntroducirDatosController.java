@@ -328,6 +328,8 @@ public class IntroducirDatosController implements Initializable {
 		Platform.runLater(() -> funcionesTabla.seleccionarRaw(tablaBBDD));
 		
 		Platform.runLater(() -> asignarTooltips());
+		
+		Platform.runLater(() -> Utilidades.cargarTasasDeCambioDesdeArchivo() );
 
 		List<TableColumn<Comic, String>> columnListCarga = Arrays.asList(nombre, caja, numero, variante, firma,
 				editorial, formato, procedencia, fecha, guionista, dibujante, referencia);

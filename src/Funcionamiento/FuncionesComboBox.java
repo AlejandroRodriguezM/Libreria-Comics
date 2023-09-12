@@ -1,5 +1,6 @@
 package Funcionamiento;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -134,11 +135,14 @@ public class FuncionesComboBox {
 				} else {
 					modificarPopup(comboBox);
 					Comic comic = getComicFromComboBoxes(totalComboboxes, comboboxes);
-					actualizarComboBoxes(totalComboboxes, comboboxes, comic);
+					try {
+						actualizarComboBoxes(totalComboboxes, comboboxes, comic);
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					updateOtherComboBoxes(comboboxes, currentIndex, newValue); // Call the new method here
-
 				}
-
 			});
 		}
 	}
@@ -178,8 +182,9 @@ public class FuncionesComboBox {
 	 * @param comboboxes      La lista de ComboBoxes.
 	 * @param comic           El Comic que se utilizará como base para obtener los
 	 *                        resultados de la base de datos.
+	 * @throws SQLException 
 	 */
-	public void actualizarComboBoxes(int totalComboboxes, List<ComboBox<String>> comboboxes, Comic comic) {
+	public void actualizarComboBoxes(int totalComboboxes, List<ComboBox<String>> comboboxes, Comic comic) throws SQLException {
 
 		libreria = new DBLibreriaManager();
 
@@ -191,18 +196,18 @@ public class FuncionesComboBox {
 		if (!sql.isEmpty()) {
 			isUserInput = false; // Disable user input during programmatic updates
 
-			DBLibreriaManager.nombreComicList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomComic");
-			DBLibreriaManager.nombreGuionistaList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomGuionista");
+			DBLibreriaManager.nombreComicList = libreria.guardarDatosAutoCompletado(sql, "nomComic");
+			DBLibreriaManager.nombreGuionistaList = libreria.guardarDatosAutoCompletado(sql, "nomGuionista");
 			DBLibreriaManager.numeroComicList = convertirYOrdenarListaNumeros(
-					libreria.obtenerResultadosDeLaBaseDeDatos(sql, "numComic"));
-			DBLibreriaManager.nombreVarianteList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomVariante");
+					libreria.guardarDatosAutoCompletado(sql, "numComic"));
+			DBLibreriaManager.nombreVarianteList = libreria.guardarDatosAutoCompletado(sql, "nomVariante");
 			DBLibreriaManager.numeroCajaList = convertirYOrdenarListaNumeros(
-					libreria.obtenerResultadosDeLaBaseDeDatos(sql, "caja_deposito"));
-			DBLibreriaManager.nombreProcedenciaList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "procedencia");
-			DBLibreriaManager.nombreFormatoList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "formato");
-			DBLibreriaManager.nombreEditorialList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomEditorial");
-			DBLibreriaManager.nombreDibujanteList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "nomDibujante");
-			DBLibreriaManager.nombreFirmaList = libreria.obtenerResultadosDeLaBaseDeDatos(sql, "firma");
+					libreria.guardarDatosAutoCompletado(sql, "caja_deposito"));
+			DBLibreriaManager.nombreProcedenciaList = libreria.guardarDatosAutoCompletado(sql, "procedencia");
+			DBLibreriaManager.nombreFormatoList = libreria.guardarDatosAutoCompletado(sql, "formato");
+			DBLibreriaManager.nombreEditorialList = libreria.guardarDatosAutoCompletado(sql, "nomEditorial");
+			DBLibreriaManager.nombreDibujanteList = libreria.guardarDatosAutoCompletado(sql, "nomDibujante");
+			DBLibreriaManager.nombreFirmaList = libreria.guardarDatosAutoCompletado(sql, "firma");
 
 			DBLibreriaManager.listaOrdenada = Arrays.asList(DBLibreriaManager.nombreComicList,
 					DBLibreriaManager.numeroComicList, DBLibreriaManager.nombreVarianteList,
@@ -311,13 +316,22 @@ public class FuncionesComboBox {
 						if (atLeastOneNotEmpty) {
 							Comic comic = getComicFromComboBoxes(10, comboboxes);
 							setupFilteredPopup(comboboxes, comboBox, DBLibreriaManager.listaOrdenada.get(currentIndex));
-							actualizarComboBoxes(10, comboboxes, comic);
+							try {
+								actualizarComboBoxes(10, comboboxes, comic);
+							} catch (SQLException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						} else {
 							Comic comic = getComicFromComboBoxes(10, comboboxes);
 							setupFilteredPopup(comboboxes, comboBox, items);
-							actualizarComboBoxes(10, comboboxes, comic);
+							try {
+								actualizarComboBoxes(10, comboboxes, comic);
+							} catch (SQLException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						}
-						System.out.println("Valor: " + comboBox.getValue());
 					}
 				});
 			} catch (Exception e) {
@@ -384,8 +398,6 @@ public class FuncionesComboBox {
 	            originalComboBox.setValue(selectedItem);
 	            originalComboBox.hide();
 
-	            System.out.println(selectedItem.length());
-
 	            updateOtherComboBoxes(comboboxes, currentIndex, selectedItem);
 	            filterTextField.setText(selectedItem); // Establecer el valor en el TextField
 	            popup.hide();
@@ -400,11 +412,9 @@ public class FuncionesComboBox {
 	        if (!popup.isShowing()) {
 	        	customPopup = createCustomPopup(originalComboBox, filterTextField, listView);
 	            showFilteredPopup(customPopup, originalComboBox, filterTextField, filteredText, bounds);
-	            System.out.println(1);
 	        } else {
 	            originalComboBox.hide();
 	            popup.hide();
-	            System.out.println(2);
 	        }
 	        
 			if (!listView.getItems().isEmpty()) {
@@ -425,7 +435,12 @@ public class FuncionesComboBox {
 
 				if (atLeastOneNotEmpty) {
 					Comic comic = getComicFromComboBoxes(10, comboboxes);
-					actualizarComboBoxes(10, comboboxes, comic);
+					try {
+						actualizarComboBoxes(10, comboboxes, comic);
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 				originalComboBox.hide();
 				popup.hide();

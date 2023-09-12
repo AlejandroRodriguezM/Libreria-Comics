@@ -1,17 +1,19 @@
 package Funcionamiento;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.lang.ProcessBuilder.Redirect;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -47,11 +49,12 @@ public class Utilidades {
 	public static List<Comic> listaLimpia = new ArrayList<>();
 	public static List<String> listaLimpiaAutoCompletado = new ArrayList<>();
 	private static FuncionesExcel excel = new FuncionesExcel();
-	
 
 	private static Ventanas nav = new Ventanas();
 
 	public static String os = System.getProperty("os.name", "unknown").toLowerCase(Locale.ROOT);
+
+	private static final Map<String, Double> tasasDeCambio = new HashMap<>();
 
 	/**
 	 * Verifica si el sistema operativo es Windows.
@@ -59,7 +62,7 @@ public class Utilidades {
 	 * @return true si el sistema operativo es Windows, false en caso contrario.
 	 */
 	public static boolean isWindows() {
-	    return os.contains("win");
+		return os.contains("win");
 	}
 
 	/**
@@ -68,18 +71,18 @@ public class Utilidades {
 	 * @return true si el sistema operativo es macOS, false en caso contrario.
 	 */
 	public static boolean isMac() {
-	    return os.contains("mac");
+		return os.contains("mac");
 	}
 
 	/**
 	 * Verifica si el sistema operativo es Unix o Linux.
 	 *
-	 * @return true si el sistema operativo es Unix o Linux, false en caso contrario.
+	 * @return true si el sistema operativo es Unix o Linux, false en caso
+	 *         contrario.
 	 */
 	public static boolean isUnix() {
-	    return os.contains("nux");
+		return os.contains("nux");
 	}
-
 
 	/**
 	 * Funcion que permite comprobar que navegadores tienes instalados en el sistema
@@ -385,7 +388,8 @@ public class Utilidades {
 
 	/**
 	 * Realiza una copia de seguridad de los archivos.
-	 * @throws SQLException 
+	 * 
+	 * @throws SQLException
 	 */
 	public void copia_seguridad() throws SQLException {
 		// Realizar copia de seguridad
@@ -433,8 +437,8 @@ public class Utilidades {
 	 * Comprime un archivo o carpeta en un archivo zip.
 	 *
 	 * @param fileToZip El archivo o carpeta que se va a comprimir.
-	 * @param fileName El nombre del archivo.
-	 * @param zipOut El flujo de salida del archivo zip.
+	 * @param fileName  El nombre del archivo.
+	 * @param zipOut    El flujo de salida del archivo zip.
 	 * @throws IOException Si ocurre un error de E/S durante la compresión.
 	 */
 	private void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut) throws IOException {
@@ -662,9 +666,9 @@ public class Utilidades {
 	/**
 	 * Renombra un archivo en una carpeta específica.
 	 *
-	 * @param carpeta             La carpeta donde se encuentra el archivo.
+	 * @param carpeta              La carpeta donde se encuentra el archivo.
 	 * @param nombreArchivoBuscado El nombre del archivo que se desea renombrar.
-	 * @param nuevoNombreArchivo  El nuevo nombre para el archivo.
+	 * @param nuevoNombreArchivo   El nuevo nombre para el archivo.
 	 */
 	public static void renombrarArchivo(String carpeta, String nombreArchivoBuscado, String nuevoNombreArchivo) {
 		File directorio = new File(carpeta);
@@ -718,41 +722,73 @@ public class Utilidades {
 		return codigo.toString();
 	}
 
-	/**
-	 * Mapa que almacena las tasas de cambio para cada país.
-	 */
-	private static final Map<String, Double> tasasDeCambio = new HashMap<>();
-	static {
-		// Añadir las tasas de cambio para cada país
-		tasasDeCambio.put("Japón (Japan)", 141.75);
-		tasasDeCambio.put("Estados Unidos (United States)", 1.0);
-		tasasDeCambio.put("Francia (France)", 0.9085);
-		tasasDeCambio.put("Italia (Italy)", 0.9085);
-		tasasDeCambio.put("España (Spain)", 0.9085);
-		tasasDeCambio.put("Reino Unido (United Kingdom)", 0.78);
-		tasasDeCambio.put("Alemania (Germany)", 0.9085);
-		tasasDeCambio.put("Brasil (Brazil)", 4.87);
-		tasasDeCambio.put("Corea del Sur (South Korea)", 1304.04);
-		tasasDeCambio.put("México (Mexico)", 17.08);
-		tasasDeCambio.put("Canadá (Canada)", 1.34);
-		tasasDeCambio.put("China (China)", 7.17);
-		tasasDeCambio.put("Australia (Australia)", 1.67);
-		tasasDeCambio.put("Argentina (Argentina)", 276.01);
-		tasasDeCambio.put("India (India)", 82.68);
-		tasasDeCambio.put("Bélgica (Belgium)", 0.9085);
-		tasasDeCambio.put("Países Bajos (Netherlands)", 0.9085);
-		tasasDeCambio.put("Portugal (Portugal)", 0.9085);
-		tasasDeCambio.put("Suecia (Sweden)", 10.59);
-		tasasDeCambio.put("Suiza (Switzerland)", 0.87);
-		tasasDeCambio.put("Finlandia (Finland)", 0.9085);
-		tasasDeCambio.put("Noruega (Norway)", 10.14);
-		tasasDeCambio.put("Dinamarca (Denmark)", 6.77);
+	private static String carpetaConfiguracion() {
+		String userDir = System.getProperty("user.home");
+		String ubicacion = userDir + File.separator + "AppData" + File.separator + "Roaming";
+		String direccion = ubicacion + File.separator + "libreria";
+
+		File directorio = new File(direccion);
+		if (!directorio.exists()) {
+			directorio.mkdirs(); // Crear directorios si no existen
+		}
+
+		return direccion;
+	}
+
+	public static void cargarTasasDeCambioDesdeArchivo() {
+		String nombreArchivo = carpetaConfiguracion() + File.separator + "tasas_de_cambio.txt";
+
+		// Verificar si el archivo existe y, si no, crearlo con los valores
+		// predeterminados
+		File archivo = new File(nombreArchivo);
+		if (!archivo.exists()) {
+			crearArchivoConValoresPredeterminados(nombreArchivo);
+		}
+
+		try (BufferedReader reader = new BufferedReader(new FileReader(nombreArchivo))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				String[] parts = line.split(": ");
+				if (parts.length == 2) {
+					String pais = parts[0];
+					double tasa = Double.parseDouble(parts[1]);
+					tasasDeCambio.put(pais, tasa);
+				}
+			}
+			System.out.println("Tasas de cambio cargadas desde " + nombreArchivo);
+		} catch (IOException e) {
+			System.err.println("Error al cargar las tasas de cambio desde el archivo " + nombreArchivo);
+			e.printStackTrace();
+		}
+	}
+
+	private static void crearArchivoConValoresPredeterminados(String nombreArchivo) {
+		try (PrintWriter writer = new PrintWriter(nombreArchivo)) {
+			// Agregar los valores predeterminados al archivo
+			String[] valoresPredeterminados = { "Japón (Japan): 141.75", "Estados Unidos (United States): 1.0",
+					"Francia (France): 0.9085", "Italia (Italy): 0.9085", "España (Spain): 0.9085",
+					"Reino Unido (United Kingdom): 0.78", "Alemania (Germany): 0.9085", "Brasil (Brazil): 4.87",
+					"Corea del Sur (South Korea): 1304.04", "México (Mexico): 17.08", "Canadá (Canada): 1.34",
+					"China (China): 7.17", "Australia (Australia): 1.67", "Argentina (Argentina): 276.01",
+					"India (India): 82.68", "Bélgica (Belgium): 0.9085", "Países Bajos (Netherlands): 0.9085",
+					"Portugal (Portugal): 0.9085", "Suecia (Sweden): 10.59", "Suiza (Switzerland): 0.87",
+					"Finlandia (Finland): 0.9085", "Noruega (Norway): 10.14", "Dinamarca (Denmark): 6.77" };
+
+			for (String valor : valoresPredeterminados) {
+				writer.println(valor);
+			}
+
+			System.out.println("Archivo " + nombreArchivo + " creado con valores predeterminados.");
+		} catch (IOException e) {
+			System.err.println("Error al crear el archivo " + nombreArchivo);
+			e.printStackTrace();
+		}
 	}
 
 	/**
 	 * Convierte una cantidad de moneda local a dólares.
 	 *
-	 * @param pais             El país del que se quiere convertir la moneda.
+	 * @param pais                El país del que se quiere convertir la moneda.
 	 * @param cantidadMonedaLocal La cantidad de moneda local a convertir.
 	 * @return La cantidad equivalente en dólares.
 	 */
@@ -761,40 +797,42 @@ public class Utilidades {
 		if (tasasDeCambio.containsKey(pais)) {
 			double tasaDeCambio = tasasDeCambio.get(pais);
 			if (cantidadMonedaLocal > 0) {
-				return cantidadMonedaLocal / tasaDeCambio;
+	            double resultado = cantidadMonedaLocal / tasaDeCambio;
+	            return Math.round(resultado * 100.0) / 100.0;
 			}
 		}
 		return 0; // Devolver 0 si el país no está en la lista o si la cantidad es negativa
 	}
-	
+
 	/**
 	 * Verifica si hay conexión a Internet disponible.
 	 *
 	 * @return true si hay conexión a Internet, false en caso contrario.
 	 */
-    public static boolean isInternetAvailable() {
-        try {
-            InetAddress address = InetAddress.getByName("google.com");
-            return !address.equals("");
-        } catch (UnknownHostException e) {
-            return false;
-        }
-    }
-    
-    /**
-     * Guarda el nombre de usuario y contraseña en un archivo de configuración.
-     *
-     * @param usuario El campo de texto que contiene el nombre de usuario.
-     * @param pass    La contraseña del usuario.
-     * @throws IOException Si ocurre un error al escribir en el archivo.
-     */
-    public static void guardarUsuario(TextField usuario,String pass) throws IOException {
-    	
+	public static boolean isInternetAvailable() {
+		try {
+			// Puedes cambiar la dirección a una página web confiable que esté disponible
+			InetAddress.getByName("www.google.com").isReachable(1000); // 1000 ms = 1 segundo de tiempo de espera
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Guarda el nombre de usuario y contraseña en un archivo de configuración.
+	 *
+	 * @param usuario El campo de texto que contiene el nombre de usuario.
+	 * @param pass    La contraseña del usuario.
+	 * @throws IOException Si ocurre un error al escribir en el archivo.
+	 */
+	public static void guardarUsuario(TextField usuario, String pass) throws IOException {
+
 		String userHome = System.getProperty("user.home");
 		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
 		String carpetaLibreria = ubicacion + File.separator + "libreria";
 		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion_usuario.conf";
-    	
+
 		FileWriter fileWriter = new FileWriter(archivoConfiguracion);
 		BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
@@ -810,5 +848,5 @@ public class Utilidades {
 		bufferedWriter.newLine();
 
 		bufferedWriter.close();
-    }
+	}
 }
