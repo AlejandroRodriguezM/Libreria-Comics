@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.ProcessBuilder.Redirect;
 import java.net.InetAddress;
+import java.net.URL;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -48,7 +50,7 @@ public class Utilidades {
 
 	public static List<Comic> listaLimpia = new ArrayList<>();
 	public static List<String> listaLimpiaAutoCompletado = new ArrayList<>();
-	private static FuncionesExcel excel = new FuncionesExcel();
+	private static FuncionesExcel excel = null;
 
 	private static Ventanas nav = new Ventanas();
 
@@ -393,6 +395,9 @@ public class Utilidades {
 	 */
 	public void copia_seguridad() throws SQLException {
 		// Realizar copia de seguridad
+
+		excel = new FuncionesExcel();
+
 		try {
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
 			String nombre_carpeta = dateFormat.format(new Date());
@@ -735,8 +740,62 @@ public class Utilidades {
 		return direccion;
 	}
 
+	public static void guardarDatosClavesMarvel() {
+		String nombreArchivo = carpetaConfiguracion() + File.separator + "claves_marvel_api.conf";
+
+		File archivo = new File(nombreArchivo);
+
+		if (!archivo.exists()) {
+			try (BufferedWriter writer = new BufferedWriter(new FileWriter(archivo))) {
+				writer.write("Public Key: ");
+				writer.newLine();
+				writer.write("Private Key: ");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public static String obtenerClaveApiArchivo() {
+		String nombreArchivo = carpetaConfiguracion() + File.separator + "claves_marvel_api.conf";
+
+		File archivo = new File(nombreArchivo);
+		if (!archivo.exists()) {
+			System.out.println(
+					"El archivo " + nombreArchivo + " no existe. Creando archivo con claves predeterminadas...");
+			guardarDatosClavesMarvel();
+		}
+
+		try (BufferedReader reader = new BufferedReader(new FileReader(nombreArchivo))) {
+			String linea;
+			String clavePublica = null;
+			String clavePrivada = null;
+
+			while ((linea = reader.readLine()) != null) {
+				if (linea.startsWith("Public Key: ")) {
+					clavePublica = linea.substring("Public Key: ".length()).trim();
+
+				} else if (linea.startsWith("Private Key: ")) {
+					clavePrivada = linea.substring("Private Key: ".length()).trim();
+				}
+			}
+
+			// Verificar que ambas claves se hayan encontrado en el archivo
+			if (clavePublica != null && clavePrivada != null) {
+				return clavePrivada + ":" + clavePublica; // Retornar ambas claves en un formato deseado
+			} else {
+				System.err.println("No se encontraron ambas claves en el archivo " + nombreArchivo);
+				return ""; // Manejo de error: devuelve una cadena vacía en caso de que falte alguna clave
+			}
+		} catch (IOException e) {
+			System.err.println("Error al obtener las claves desde el archivo " + nombreArchivo);
+			e.printStackTrace();
+			return ""; // Manejo de error: devuelve una cadena vacía en caso de error
+		}
+	}
+
 	public static void cargarTasasDeCambioDesdeArchivo() {
-		String nombreArchivo = carpetaConfiguracion() + File.separator + "tasas_de_cambio.txt";
+		String nombreArchivo = carpetaConfiguracion() + File.separator + "tasas_de_cambio.conf";
 
 		// Verificar si el archivo existe y, si no, crearlo con los valores
 		// predeterminados
@@ -755,9 +814,7 @@ public class Utilidades {
 					tasasDeCambio.put(pais, tasa);
 				}
 			}
-			System.out.println("Tasas de cambio cargadas desde " + nombreArchivo);
 		} catch (IOException e) {
-			System.err.println("Error al cargar las tasas de cambio desde el archivo " + nombreArchivo);
 			e.printStackTrace();
 		}
 	}
@@ -797,8 +854,8 @@ public class Utilidades {
 		if (tasasDeCambio.containsKey(pais)) {
 			double tasaDeCambio = tasasDeCambio.get(pais);
 			if (cantidadMonedaLocal > 0) {
-	            double resultado = cantidadMonedaLocal / tasaDeCambio;
-	            return Math.round(resultado * 100.0) / 100.0;
+				double resultado = cantidadMonedaLocal / tasaDeCambio;
+				return Math.round(resultado * 100.0) / 100.0;
 			}
 		}
 		return 0; // Devolver 0 si el país no está en la lista o si la cantidad es negativa
@@ -848,5 +905,55 @@ public class Utilidades {
 		bufferedWriter.newLine();
 
 		bufferedWriter.close();
+	}
+	
+	public static boolean isURL(String cadena) {
+	    // Patrón para verificar si la cadena es una URL válida
+	    String urlPattern = "^(https?|ftp)://[A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]";
+	    return Pattern.matches(urlPattern, cadena);
+	}
+	
+	public static String descargarImagen(String urlImagen, String carpetaDestino) throws IOException {
+	    URL url = new URL(urlImagen);
+
+	    // Obtener el nombre de la imagen a partir de la URL
+	    String[] partesURL = urlImagen.split("/");
+	    String nombreImagen = partesURL[partesURL.length - 1];
+
+	    // Crear la carpeta de destino si no existe
+	    File carpeta = new File(carpetaDestino);
+	    if (!carpeta.exists()) {
+	        carpeta.mkdirs();
+	    }
+
+	    // Crear la ruta completa de destino
+	    String rutaDestino = carpetaDestino + File.separator + nombreImagen;
+
+	    try (InputStream in = url.openStream()) {
+	        // Descargar la imagen y guardarla en la carpeta de destino
+	        Path destino = new File(rutaDestino).toPath();
+	        Files.copy(in, destino, StandardCopyOption.REPLACE_EXISTING);
+	    }
+
+	    return rutaDestino;
+	}
+	
+	public static boolean borrarImagen(String rutaImagen) {
+		
+	    File archivo = new File(rutaImagen);
+
+	    // Verificar si el archivo existe antes de intentar borrarlo
+	    if (archivo.exists()) {
+	        if (archivo.delete()) {
+	            System.out.println("Imagen borrada: " + rutaImagen);
+	            return true;
+	        } else {
+	            System.err.println("No se pudo borrar la imagen: " + rutaImagen);
+	            return false;
+	        }
+	    } else {
+	        System.err.println("El archivo no existe: " + rutaImagen + rutaImagen);
+	        return false;
+	    }
 	}
 }

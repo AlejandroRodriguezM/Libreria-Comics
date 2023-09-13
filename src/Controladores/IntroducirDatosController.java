@@ -23,6 +23,7 @@ package Controladores;
  */
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -38,7 +39,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.controlsfx.control.textfield.TextFields;
+import org.json.JSONException;
 
+import Apis.ApiMarvel;
 import Funcionamiento.Comic;
 import Funcionamiento.FuncionesComboBox;
 import Funcionamiento.FuncionesTableView;
@@ -48,6 +51,8 @@ import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
 import JDBC.DBManager;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -59,6 +64,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -159,10 +165,16 @@ public class IntroducirDatosController implements Initializable {
 	private Button botonNuevaPortada;
 
 	@FXML
+	private Button botonBusquedaCodigo;
+
+	@FXML
 	private TextArea prontInfo;
 
 	@FXML
 	private DatePicker fechaPublicacion;
+
+	@FXML
+	private TextField busquedaCodigo;
 
 	@FXML
 	private TextField busquedaGeneral;
@@ -252,6 +264,9 @@ public class IntroducirDatosController implements Initializable {
 	private TableColumn<Comic, String> referencia;
 
 	@FXML
+	private ComboBox<String> busquedaEditorial;
+
+	@FXML
 	private ComboBox<String> formatoAni;
 
 	@FXML
@@ -299,6 +314,9 @@ public class IntroducirDatosController implements Initializable {
 	@FXML
 	private VBox vboxContenido;
 
+	@FXML
+	private ProgressIndicator progresoCarga;
+
 	private static Ventanas nav = new Ventanas();
 	private static DBLibreriaManager libreria = null;
 	private static Utilidades utilidad = null;
@@ -326,35 +344,33 @@ public class IntroducirDatosController implements Initializable {
 		Platform.runLater(() -> funcionesTabla.ajustarAnchoVBox(prontInfo, vboxContenido));
 
 		Platform.runLater(() -> funcionesTabla.seleccionarRaw(tablaBBDD));
-		
+
 		Platform.runLater(() -> asignarTooltips());
-		
-		Platform.runLater(() -> Utilidades.cargarTasasDeCambioDesdeArchivo() );
 
 		List<TableColumn<Comic, String>> columnListCarga = Arrays.asList(nombre, caja, numero, variante, firma,
 				editorial, formato, procedencia, fecha, guionista, dibujante, referencia);
 		columnList = columnListCarga;
-		
 
-		funcionesTabla.modificarColumnas(tablaBBDD,columnList);
+		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
 		restringir_entrada_datos();
 
 		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
 				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
 
 		int totalComboboxes = comboboxes.size();
-		
-		// Crear un ScheduledExecutorService para ejecutar la tarea después de un 1 segundo
+
+		// Crear un ScheduledExecutorService para ejecutar la tarea después de un 1
+		// segundo
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 		scheduler.schedule(() -> {
 			Platform.runLater(() -> {
-				
+
 				try {
 					libreria.listasAutoCompletado();
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-				
+
 				Task<Void> task = new Task<Void>() {
 					@Override
 					protected Void call() throws Exception {
@@ -367,15 +383,15 @@ public class IntroducirDatosController implements Initializable {
 				// Iniciar el Task en un nuevo hilo
 				Thread thread = new Thread(task);
 				thread.start();
-				
-			    // Cuando la tarea haya terminado, apaga el scheduler
-			    task.setOnSucceeded(event -> {
-			        scheduler.shutdown();
-			    });
+
+				// Cuando la tarea haya terminado, apaga el scheduler
+				task.setOnSucceeded(event -> {
+					scheduler.shutdown();
+				});
 			});
 		}, 0, TimeUnit.SECONDS);
 		rellenarCombosEstaticos();
-		
+
 		FuncionesTableView.restringirSimbolos(guionistaAni);
 		FuncionesTableView.restringirSimbolos(dibujanteAni);
 		FuncionesTableView.restringirSimbolos(varianteAni);
@@ -398,42 +414,61 @@ public class IntroducirDatosController implements Initializable {
 		});
 
 		prontInfo.setEditable(false);
+
+		busquedaEditorial.valueProperty().addListener(new ChangeListener<String>() {
+
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+
+				busquedaCodigo.setText("");
+				if (newValue != null && !newValue.isEmpty() && !newValue.equals("Ninguno")) {
+					// Mostrar el TextField y el botón si el valor del ComboBox es válido
+					busquedaCodigo.setVisible(true);
+					botonBusquedaCodigo.setVisible(true);
+				} else {
+					// Ocultar el TextField y el botón si el valor del ComboBox no es válido
+					busquedaCodigo.setVisible(false);
+					botonBusquedaCodigo.setVisible(false);
+				}
+			}
+
+		});
 	}
 
 	/**
-	 * Asigna tooltips a varios elementos de la interfaz.
-	 * Esta función configura tooltips para varios elementos, proporcionando información adicional al usuario.
+	 * Asigna tooltips a varios elementos de la interfaz. Esta función configura
+	 * tooltips para varios elementos, proporcionando información adicional al
+	 * usuario.
 	 */
 	public void asignarTooltips() {
-	    List<Object> elementos = new ArrayList<>();
-	    
-	    elementos.add(botonbbdd);
-	    elementos.add(botonLimpiarComic);
-	    elementos.add(botonMostrarParametro);
-	    elementos.add(nombreComic);
-	    elementos.add(numeroComic);
-	    elementos.add(nombreFirma);
-	    elementos.add(nombreGuionista);
-	    elementos.add(nombreVariante);
-	    elementos.add(numeroCaja);
-	    elementos.add(nombreProcedencia);
-	    elementos.add(nombreFormato);
-	    elementos.add(nombreEditorial);
-	    elementos.add(nombreDibujante);
-	    elementos.add(nombreKeyIssue);
-	    
-	    FuncionesTooltips.asignarTooltips(elementos); // Llamada a la función para asignar tooltips
+		List<Object> elementos = new ArrayList<>();
+
+		elementos.add(botonbbdd);
+		elementos.add(botonLimpiarComic);
+		elementos.add(botonMostrarParametro);
+		elementos.add(nombreComic);
+		elementos.add(numeroComic);
+		elementos.add(nombreFirma);
+		elementos.add(nombreGuionista);
+		elementos.add(nombreVariante);
+		elementos.add(numeroCaja);
+		elementos.add(nombreProcedencia);
+		elementos.add(nombreFormato);
+		elementos.add(nombreEditorial);
+		elementos.add(nombreDibujante);
+		elementos.add(nombreKeyIssue);
+
+		FuncionesTooltips.asignarTooltips(elementos); // Llamada a la función para asignar tooltips
 	}
 
 	/**
-	 * Rellena los combos estáticos en la interfaz.
-	 * Esta función llena los ComboBoxes con opciones estáticas predefinidas.
+	 * Rellena los combos estáticos en la interfaz. Esta función llena los
+	 * ComboBoxes con opciones estáticas predefinidas.
 	 */
 	public void rellenarCombosEstaticos() {
-	    List<ComboBox<String>> comboboxesMod = Arrays.asList(formatoAni, procedenciaAni, estadoComic);
-	    funcionesCombo.rellenarComboBoxEstaticos(comboboxesMod); // Llamada a la función para rellenar ComboBoxes
+		List<ComboBox<String>> comboboxesMod = Arrays.asList(formatoAni, procedenciaAni, estadoComic,
+				busquedaEditorial);
+		funcionesCombo.rellenarComboBoxEstaticos(comboboxesMod); // Llamada a la función para rellenar ComboBoxes
 	}
-
 
 	/**
 	 * Funcion que permite restringir entrada de datos de todo aquello que no sea un
@@ -446,10 +481,11 @@ public class IntroducirDatosController implements Initializable {
 		numeroCajaAni.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
 		precioComic.setTextFormatter(FuncionesComboBox.validador_Ndecimales());
 	}
-	
+
 	/**
 	 * Configura la función de autocompletado para varias listas en la interfaz.
-	 * Esta función enlaza el autocompletado a los campos de texto especificados con listas predefinidas.
+	 * Esta función enlaza el autocompletado a los campos de texto especificados con
+	 * listas predefinidas.
 	 */
 	public void listas_autocompletado() {
 
@@ -529,55 +565,56 @@ public class IntroducirDatosController implements Initializable {
 	}
 
 	/**
-	 * Maneja el evento de teclas de dirección (arriba/abajo) para navegar por los elementos de la tabla.
-	 * Cuando se presionan las teclas de dirección hacia arriba o abajo, se actualizan los campos con los datos del comic seleccionado.
+	 * Maneja el evento de teclas de dirección (arriba/abajo) para navegar por los
+	 * elementos de la tabla. Cuando se presionan las teclas de dirección hacia
+	 * arriba o abajo, se actualizan los campos con los datos del comic
+	 * seleccionado.
 	 */
 	@FXML
 	void teclasDireccion(KeyEvent event) throws IOException, SQLException {
-	    if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
-	        libreria = new DBLibreriaManager();
-	        libreria.libreriaCompleta();
-	        String id_comic;
+		if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
+			libreria = new DBLibreriaManager();
+			libreria.libreriaCompleta();
+			String id_comic;
 
-	        Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
-	        prontInfo.setStyle("");
-	        if (idRow != null) {
-	            id_comic = idRow.getID();
+			Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
+			prontInfo.setStyle("");
+			if (idRow != null) {
+				id_comic = idRow.getID();
 
-	            // Obtener los datos del comic seleccionado
-	            Comic comic_temp = libreria.comicDatos(id_comic);
+				// Obtener los datos del comic seleccionado
+				Comic comic_temp = libreria.comicDatos(id_comic);
 
-	            // Actualizar los campos con los datos del comic seleccionado
-	            nombreAni.setText(comic_temp.getNombre());
-	            numeroAni.getSelectionModel().select(comic_temp.getNumero());
-	            varianteAni.setText(comic_temp.getVariante());
-	            firmaAni.setText(comic_temp.getFirma());
-	            editorialAni.setText(comic_temp.getEditorial());
-	            formatoAni.getSelectionModel().select(comic_temp.getFormato());
-	            procedenciaAni.getSelectionModel().select(comic_temp.getProcedencia());
-	            
-	            // Parsear y establecer la fecha
-	            String fechaString = comic_temp.getFecha();
-	            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	            LocalDate fecha = LocalDate.parse(fechaString, formatter);
-	            fechaAni.setValue(fecha);
-	            
-	            guionistaAni.setText(comic_temp.getGuionista());
-	            dibujanteAni.setText(comic_temp.getDibujante());
-	            numeroCajaAni.getSelectionModel().select(comic_temp.getNumCaja());
-	            nombreKeyIssue.setText(comic_temp.getKey_issue());
-	            estadoComic.getSelectionModel().select(comic_temp.getEstado());
-	            precioComic.setText(comic_temp.getPrecio_comic());
-	            urlReferencia.setText(comic_temp.getUrl_referencia());
+				// Actualizar los campos con los datos del comic seleccionado
+				nombreAni.setText(comic_temp.getNombre());
+				numeroAni.getSelectionModel().select(comic_temp.getNumero());
+				varianteAni.setText(comic_temp.getVariante());
+				firmaAni.setText(comic_temp.getFirma());
+				editorialAni.setText(comic_temp.getEditorial());
+				formatoAni.getSelectionModel().select(comic_temp.getFormato());
+				procedenciaAni.getSelectionModel().select(comic_temp.getProcedencia());
 
-	            prontInfo.setOpacity(1);
-	            prontInfo.setText(libreria.comicDatos(id_comic).toString().replace("[", "").replace("]", ""));
-	            imagencomic.setImage(libreria.selectorImage(id_comic));
-	        }
-	        DBManager.resetConnection();
-	    }
+				// Parsear y establecer la fecha
+				String fechaString = comic_temp.getFecha();
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+				LocalDate fecha = LocalDate.parse(fechaString, formatter);
+				fechaAni.setValue(fecha);
+
+				guionistaAni.setText(comic_temp.getGuionista());
+				dibujanteAni.setText(comic_temp.getDibujante());
+				numeroCajaAni.getSelectionModel().select(comic_temp.getNumCaja());
+				nombreKeyIssue.setText(comic_temp.getKey_issue());
+				estadoComic.getSelectionModel().select(comic_temp.getEstado());
+				precioComic.setText(comic_temp.getPrecio_comic());
+				urlReferencia.setText(comic_temp.getUrl_referencia());
+
+				prontInfo.setOpacity(1);
+				prontInfo.setText(libreria.comicDatos(id_comic).toString().replace("[", "").replace("]", ""));
+				imagencomic.setImage(libreria.selectorImage(id_comic));
+			}
+			DBManager.resetConnection();
+		}
 	}
-
 
 	/**
 	 * Limpia todos los campos de entrada en pantalla.
@@ -586,52 +623,51 @@ public class IntroducirDatosController implements Initializable {
 	 */
 	@FXML
 	void limpiarDatos(ActionEvent event) {
-	    limpiezaDatosAni();
-	    limpiezaDatos();
+		limpiezaDatosAni();
+		limpiezaDatos();
 	}
 
 	/**
 	 * Limpia los campos de entrada relacionados con animaciones.
 	 */
 	public void limpiezaDatosAni() {
-	    // Campos de datos a modificar en la sección de animaciones
-	    nombreAni.setText("");
-	    varianteAni.setText("");
-	    firmaAni.setText("");
-	    editorialAni.setText("");
-	    fechaAni.setValue(null);
-	    guionistaAni.setText("");
-	    dibujanteAni.setText("");
-	    prontInfo.setText(null);
-	    prontInfo.setOpacity(0);
-	    nombreKeyIssue.setText("");
-	    tablaBBDD.getItems().clear();
-	    botonNuevaPortada.setStyle(null);
-	    imagencomic.setImage(null);
-	    borrarErrores();
+		// Campos de datos a modificar en la sección de animaciones
+		nombreAni.setText("");
+		varianteAni.setText("");
+		firmaAni.setText("");
+		editorialAni.setText("");
+		fechaAni.setValue(null);
+		guionistaAni.setText("");
+		dibujanteAni.setText("");
+		prontInfo.setText(null);
+		prontInfo.setOpacity(0);
+		nombreKeyIssue.setText("");
+		tablaBBDD.getItems().clear();
+		botonNuevaPortada.setStyle(null);
+		imagencomic.setImage(null);
+		borrarErrores();
 	}
 
 	/**
 	 * Limpia los campos de entrada generales.
 	 */
 	public void limpiezaDatos() {
-	    // Limpiar todos los campos ComboBox y sus valores
-	    for (ComboBox<String> comboBox : Arrays.asList(nombreComic, numeroComic, nombreFirma, nombreGuionista,
-	            nombreVariante, numeroCaja, nombreProcedencia, nombreFormato, nombreEditorial, nombreDibujante,
-	            numeroAni, formatoAni, procedenciaAni, numeroCajaAni)) {
-	        comboBox.setValue("");
-	        comboBox.getEditor().setText("");
-	    }
+		// Limpiar todos los campos ComboBox y sus valores
+		for (ComboBox<String> comboBox : Arrays.asList(nombreComic, numeroComic, nombreFirma, nombreGuionista,
+				nombreVariante, numeroCaja, nombreProcedencia, nombreFormato, nombreEditorial, nombreDibujante,
+				numeroAni, formatoAni, procedenciaAni, numeroCajaAni)) {
+			comboBox.setValue("");
+			comboBox.getEditor().setText("");
+		}
 
-	    // Limpiar elementos adicionales de la interfaz de usuario
-	    fechaPublicacion.setValue(null);
-	    prontInfo.setText(null);
-	    prontInfo.setOpacity(0);
-	    tablaBBDD.getItems().clear();
-	    imagencomic.setImage(null);
-	    rellenarCombosEstaticos();
+		// Limpiar elementos adicionales de la interfaz de usuario
+		fechaPublicacion.setValue(null);
+		prontInfo.setText(null);
+		prontInfo.setOpacity(0);
+		tablaBBDD.getItems().clear();
+		imagencomic.setImage(null);
+		rellenarCombosEstaticos();
 	}
-
 
 	/**
 	 * Metodo que añade datos a la base de datos segun los parametros introducidos
@@ -931,7 +967,7 @@ public class IntroducirDatosController implements Initializable {
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
-		funcionesTabla.modificarColumnas(tablaBBDD,columnList);
+		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
 		prontInfo.setOpacity(0);
 		imagencomic.setImage(null);
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
@@ -948,7 +984,7 @@ public class IntroducirDatosController implements Initializable {
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
-		funcionesTabla.modificarColumnas(tablaBBDD,columnList);
+		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
 		limpiezaDatosAni();
 		limpiezaDatos();
 		tablaBBDD.refresh();
@@ -973,9 +1009,9 @@ public class IntroducirDatosController implements Initializable {
 		String datos[] = camposComicActuales();
 
 		Comic comic = new Comic("", datos[1], datos[11], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7],
-				datos[8], datos[9], datos[10], "", "", "", null,"","");
+				datos[8], datos[9], datos[10], "", "", "", null, "", "");
 
-		funcionesTabla.tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()), tablaBBDD, columnList); 
+		funcionesTabla.tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()), tablaBBDD, columnList);
 		prontInfo.setOpacity(1);
 		prontInfo.setText(funcionesTabla.resultadoBusquedaPront(comic).getText());
 		busquedaGeneral.setText("");
@@ -1032,16 +1068,24 @@ public class IntroducirDatosController implements Initializable {
 
 			if (datos[10] != "") {
 
-				file = new File(datos[10]);
-
-				if (!file.exists()) {
-					portada = "Funcionamiento/sinPortada.jpg";
+				if (Utilidades.isURL(datos[10])) {
+					// Es una URL en internet
+					portada = Utilidades.descargarImagen(datos[10], documentsPath);
 					Image imagen = new Image(portada);
 					imagencomic.setImage(imagen);
 				} else {
-					portada = datos[10];
-					Image imagen = new Image(portada);
-					imagencomic.setImage(imagen);
+
+					file = new File(datos[10]);
+
+					if (!file.exists()) {
+						portada = "Funcionamiento/sinPortada.jpg";
+						Image imagen = new Image(portada);
+						imagencomic.setImage(imagen);
+					} else {
+						portada = datos[10];
+						Image imagen = new Image(portada);
+						imagencomic.setImage(imagen);
+					}
 				}
 			}
 
@@ -1108,6 +1152,10 @@ public class IntroducirDatosController implements Initializable {
 				libreria.listasAutoCompletado();
 				funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 				funcionesTabla.tablaBBDD(libreria.libreriaCompleta(), tablaBBDD, columnList); // Llamada a funcion
+
+				if (Utilidades.isURL(datos[10])) {
+					Utilidades.borrarImagen(portada);
+				}
 			}
 		} else {
 			borrarErrores();
@@ -1123,39 +1171,38 @@ public class IntroducirDatosController implements Initializable {
 	 * @param comic El cómic a validar.
 	 */
 	public void validateComicFields(Comic comic) {
-	    if (comic.getNombre().length() == 0) {
-	        nombreAni.setStyle("-fx-background-color: #FF0000;"); // Resaltar en rojo el campo nombre
-	    }
+		if (comic.getNombre().length() == 0) {
+			nombreAni.setStyle("-fx-background-color: #FF0000;"); // Resaltar en rojo el campo nombre
+		}
 
-	    if (comic.getNumero().length() == 0) {
-	        numeroAni.setStyle("-fx-background-color: #FF0000;"); // Resaltar en rojo el campo número
-	    }
+		if (comic.getNumero().length() == 0) {
+			numeroAni.setStyle("-fx-background-color: #FF0000;"); // Resaltar en rojo el campo número
+		}
 
-	    if (comic.getEditorial().length() == 0) {
-	        editorialAni.setStyle("-fx-background-color: #FF0000;"); // Resaltar en rojo el campo editorial
-	    }
+		if (comic.getEditorial().length() == 0) {
+			editorialAni.setStyle("-fx-background-color: #FF0000;"); // Resaltar en rojo el campo editorial
+		}
 
-	    if (comic.getGuionista().length() == 0) {
-	        guionistaAni.setStyle("-fx-background-color: #FF0000;"); // Resaltar en rojo el campo guionista
-	    }
+		if (comic.getGuionista().length() == 0) {
+			guionistaAni.setStyle("-fx-background-color: #FF0000;"); // Resaltar en rojo el campo guionista
+		}
 
-	    if (comic.getDibujante().length() == 0) {
-	        dibujanteAni.setStyle("-fx-background-color: #FF0000;"); // Resaltar en rojo el campo dibujante
-	    }
+		if (comic.getDibujante().length() == 0) {
+			dibujanteAni.setStyle("-fx-background-color: #FF0000;"); // Resaltar en rojo el campo dibujante
+		}
 	}
 
 	/**
 	 * Elimina cualquier resaltado de campos en rojo que indique errores.
 	 */
 	public void borrarErrores() {
-	    // Restaurar el estilo de fondo de los campos a su estado original
-	    nombreAni.setStyle("");
-	    numeroAni.setStyle("");
-	    editorialAni.setStyle("");
-	    guionistaAni.setStyle("");
-	    dibujanteAni.setStyle("");
+		// Restaurar el estilo de fondo de los campos a su estado original
+		nombreAni.setStyle("");
+		numeroAni.setStyle("");
+		editorialAni.setStyle("");
+		guionistaAni.setStyle("");
+		dibujanteAni.setStyle("");
 	}
-
 
 	/**
 	 * Devuelve un array con los datos de los TextField correspondientes a la los
@@ -1295,13 +1342,15 @@ public class IntroducirDatosController implements Initializable {
 	 */
 	@FXML
 	void comicsKeyIssue(ActionEvent event) throws SQLException {
-	    prontInfo.setOpacity(0); // Ocultar la información en pantalla
-	    libreria = new DBLibreriaManager(); // Crear una instancia del gestor de la base de datos
-	    libreria.reiniciarBBDD(); // Reiniciar la base de datos si es necesario
-	    funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a la función para establecer nombres de columnas
-	    funcionesTabla.tablaBBDD(libreria.libreriaKeyIssue(), tablaBBDD, columnList); // Llamada a la función para llenar la tabla con cómics "Key Issue"
+		prontInfo.setOpacity(0); // Ocultar la información en pantalla
+		libreria = new DBLibreriaManager(); // Crear una instancia del gestor de la base de datos
+		libreria.reiniciarBBDD(); // Reiniciar la base de datos si es necesario
+		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a la función para establecer nombres de
+																// columnas
+		funcionesTabla.tablaBBDD(libreria.libreriaKeyIssue(), tablaBBDD, columnList); // Llamada a la función para
+																						// llenar la tabla con cómics
+																						// "Key Issue"
 	}
-
 
 	/**
 	 * Funcion que al pulsar el boton de 'botonPuntuacion' se muestran aquellos
@@ -1397,6 +1446,120 @@ public class IntroducirDatosController implements Initializable {
 		libreria = new DBLibreriaManager();
 		prontInfo.setText("Generando fichero de estadisticas . . . ");
 		libreria.generar_fichero_estadisticas();
+	}
+
+	@FXML
+	void busquedaPorCodigo(ActionEvent event) throws IOException, JSONException, URISyntaxException {
+		// Crear una tarea que se ejecutará en segundo plano
+		Task<Boolean> tarea = new Task<Boolean>() {
+			@Override
+			protected Boolean call() throws Exception {
+				String valorCodigo = busquedaCodigo.getText();
+				String tipoEditorial = busquedaEditorial.getValue();
+				String[] comicInfo = null;
+
+				if (!valorCodigo.isEmpty() && !tipoEditorial.isEmpty()) {
+					if (tipoEditorial.equalsIgnoreCase("marvel isbn")) {
+						comicInfo = ApiMarvel.infoComicIsbn(valorCodigo.trim(), prontInfo);
+					} else if (tipoEditorial.equalsIgnoreCase("marvel upc")) {
+						comicInfo = ApiMarvel.infoComicUpc(valorCodigo.trim(), prontInfo);
+
+					} else {
+						// Hacer algo si el tipo de editorial no es válido
+					}
+
+					if (comprobarCodigo(comicInfo)) {
+						// Rellenar campos con la información del cómic
+						rellenarCamposAni(comicInfo);
+						return true;
+					}
+				}
+
+				return false;
+			}
+		};
+
+		progresoCarga.setVisible(true);
+
+		// Configurar un manejador de eventos para actualizar la interfaz de usuario
+		// cuando la tarea esté completa
+		tarea.setOnSucceeded(ev -> {
+
+			Platform.runLater(() -> {
+				prontInfo.setOpacity(0);
+				prontInfo.setText("");
+				progresoCarga.setVisible(false);
+
+			});
+
+		});
+
+		// Configurar el comportamiento cuando la tarea de borrado falla
+		tarea.setOnFailed(ev -> {
+			Platform.runLater(() -> {
+				progresoCarga.setVisible(false);
+			});
+		});
+		
+		progresoCarga.setVisible(true);
+		progresoCarga.progressProperty().bind(tarea.progressProperty());
+		// Iniciar la tarea en un nuevo hilo
+		Thread thread = new Thread(tarea);
+		thread.setDaemon(true); // Hacer que el hilo sea demonio para que se cierre al
+								// salir de la aplicación
+
+		// Iniciar la tarea
+		thread.start();
+
+	}
+
+	// Método para mostrar un mensaje de error en prontInfo
+	private boolean comprobarCodigo(String[] comicInfo) {
+		boolean existe = true;
+		if (comicInfo == null || comicInfo.length <= 0) {
+			if (comicInfo == null || comicInfo.length <= 0) {
+				existe = false;
+			}
+		}
+		return existe;
+	}
+
+	private void rellenarCamposAni(String[] comicInfo) {
+		Platform.runLater(() -> {
+			String titulo = comicInfo[0];
+			String numero = comicInfo[1];
+			String formato = comicInfo[2];
+			String precio = comicInfo[3];
+			String variante = comicInfo[4];
+			String dibujantes = comicInfo[5];
+			String escritores = comicInfo[6];
+			String fechaVenta = comicInfo[7];
+			String referencia = comicInfo[8];
+			String urlImagen = comicInfo[9];
+			String editorial = comicInfo[10];
+
+			nombreAni.setText(titulo);
+			numeroAni.setValue(numero);
+			varianteAni.setText(variante);
+			editorialAni.setText(editorial);
+			formatoAni.setValue(formato);
+
+			// Parsear y establecer la fecha
+			String fechaString = fechaVenta;
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			LocalDate fecha = LocalDate.parse(fechaString, formatter);
+			fechaAni.setValue(fecha);
+
+			guionistaAni.setText(escritores);
+			dibujanteAni.setText(dibujantes);
+			direccionImagen.setText(urlImagen);
+			precioComic.setText(precio);
+			urlReferencia.setText(referencia);
+
+			// Cargar la imagen desde la URL
+			Image imagen = new Image(urlImagen, true);
+			imagencomic.setImage(imagen);
+		});
 	}
 
 	/////////////////////////////////

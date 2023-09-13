@@ -148,6 +148,9 @@ public class AccesoBBDDController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
+		Utilidades.guardarDatosClavesMarvel();
+		Utilidades.cargarTasasDeCambioDesdeArchivo();
+		
 		Thread checkerThread = new Thread(() -> {
 			try {
 				while (true) {
@@ -462,7 +465,7 @@ public class AccesoBBDDController implements Initializable {
 				iniciarAnimacionConectado();
 
 				alarmaConexion.setStyle(null);
-				alarmaConexion.setStyle("-fx-background-color: green;");
+				alarmaConexion.setStyle("-fx-background-color: blue;");
 				if (animacionAlarmaOnlineTimeline != null) {
 					animacionAlarmaOnlineTimeline.stop(); // Detener la animación anterior
 				}
@@ -762,9 +765,9 @@ public class AccesoBBDDController implements Initializable {
 		// Agregar los keyframes para cambiar el texto
 		KeyFrame mostrarConectado = new KeyFrame(Duration.ZERO,
 				new KeyValue(prontEstadoConexion.textProperty(), "Conectado"));
-		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.6),
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
 				new KeyValue(prontEstadoConexion.textProperty(), ""));
-		KeyFrame mostrarConectado2 = new KeyFrame(Duration.seconds(1.1),
+		KeyFrame mostrarConectado2 = new KeyFrame(Duration.seconds(1),
 				new KeyValue(prontEstadoConexion.textProperty(), "Conectado"));
 
 		// Agregar los keyframes al timeline

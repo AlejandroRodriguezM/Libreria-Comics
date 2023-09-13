@@ -1,15 +1,17 @@
 package Apis;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URL;
-public class OpenLibraryAPI {
-    public static void main(String[] args) throws JSONException {
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+public class ApiISBNGeneral {
+    public static void main(String[] args) throws JSONException, URISyntaxException {
         String isbn = "978-1506711980"; // ISBN del libro que deseas buscar
         String apiUrl = "https://openlibrary.org/api/books?bibkeys=ISBN:" + isbn + "&jscmd=details&format=json";
 
@@ -76,10 +78,9 @@ public class OpenLibraryAPI {
         }
     }
 
-    private static String sendHttpGetRequest(String apiUrl) throws IOException {
-        @SuppressWarnings("deprecation")
-		URL url = new URL(apiUrl);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    private static String sendHttpGetRequest(String apiUrl) throws IOException, URISyntaxException {
+        URI url = new URI(apiUrl); // Use .toURI() instead of .toURL()
+        HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
         connection.setRequestMethod("GET");
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -92,4 +93,5 @@ public class OpenLibraryAPI {
 
         return response.toString();
     }
+
 }

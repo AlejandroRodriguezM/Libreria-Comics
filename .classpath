@@ -73,6 +73,11 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/opencsv-5.5.1.jar"/>
-	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/java-json.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/java-json.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/oer-java-1.0.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -102,6 +102,9 @@ public class MenuPrincipalController implements Initializable {
 	private TextField busquedaGeneral;
 
 	@FXML
+	private TextField busquedaCodigo;
+
+	@FXML
 	private TableColumn<Comic, String> caja;
 
 	@FXML
@@ -304,18 +307,19 @@ public class MenuPrincipalController implements Initializable {
 
 		int totalComboboxes = comboboxes.size();
 
-		// Crear un ScheduledExecutorService para ejecutar la tarea después de un 1 segundo
+		// Crear un ScheduledExecutorService para ejecutar la tarea después de un 1
+		// segundo
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 		scheduler.schedule(() -> {
 
 			Platform.runLater(() -> {
-				
+
 				try {
 					libreria.listasAutoCompletado();
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-				
+
 				Task<Void> task = new Task<Void>() {
 					@Override
 					protected Void call() throws Exception {
@@ -328,11 +332,11 @@ public class MenuPrincipalController implements Initializable {
 				// Iniciar el Task en un nuevo hilo
 				Thread thread = new Thread(task);
 				thread.start();
-				
-			    // Cuando la tarea haya terminado, apaga el scheduler
-			    task.setOnSucceeded(event -> {
-			        scheduler.shutdown();
-			    });
+
+				// Cuando la tarea haya terminado, apaga el scheduler
+				task.setOnSucceeded(event -> {
+					scheduler.shutdown();
+				});
 			});
 		}, 0, TimeUnit.SECONDS);
 
@@ -1239,7 +1243,8 @@ public class MenuPrincipalController implements Initializable {
 						return true;
 					}
 				} catch (Exception e) {
-					// Si ocurre un error desconocido al importar, mostrar un mensaje de error y detener la animación
+					// Si ocurre un error desconocido al importar, mostrar un mensaje de error y
+					// detener la animación
 					e.printStackTrace();
 					Platform.runLater(() -> nav
 							.alertaException("Error desconocido al importar el fichero CSV: " + e.getMessage()));
