@@ -906,54 +906,73 @@ public class Utilidades {
 
 		bufferedWriter.close();
 	}
-	
+
 	public static boolean isURL(String cadena) {
-	    // Patrón para verificar si la cadena es una URL válida
-	    String urlPattern = "^(https?|ftp)://[A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]";
-	    return Pattern.matches(urlPattern, cadena);
+		// Patrón para verificar si la cadena es una URL válida
+		String urlPattern = "^(https?|ftp)://[A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]";
+		return Pattern.matches(urlPattern, cadena);
 	}
-	
+
 	public static String descargarImagen(String urlImagen, String carpetaDestino) throws IOException {
-	    URL url = new URL(urlImagen);
+		URL url = new URL(urlImagen);
 
-	    // Obtener el nombre de la imagen a partir de la URL
-	    String[] partesURL = urlImagen.split("/");
-	    String nombreImagen = partesURL[partesURL.length - 1];
+		// Obtener el nombre de la imagen a partir de la URL
+		String[] partesURL = urlImagen.split("/");
+		String nombreImagen = partesURL[partesURL.length - 1];
 
-	    // Crear la carpeta de destino si no existe
-	    File carpeta = new File(carpetaDestino);
-	    if (!carpeta.exists()) {
-	        carpeta.mkdirs();
-	    }
+		// Crear la carpeta de destino si no existe
+		File carpeta = new File(carpetaDestino);
+		if (!carpeta.exists()) {
+			carpeta.mkdirs();
+		}
 
-	    // Crear la ruta completa de destino
-	    String rutaDestino = carpetaDestino + File.separator + nombreImagen;
+		// Crear la ruta completa de destino
+		String rutaDestino = carpetaDestino + File.separator + nombreImagen;
 
-	    try (InputStream in = url.openStream()) {
-	        // Descargar la imagen y guardarla en la carpeta de destino
-	        Path destino = new File(rutaDestino).toPath();
-	        Files.copy(in, destino, StandardCopyOption.REPLACE_EXISTING);
-	    }
+		try (InputStream in = url.openStream()) {
+			// Descargar la imagen y guardarla en la carpeta de destino
+			Path destino = new File(rutaDestino).toPath();
+			Files.copy(in, destino, StandardCopyOption.REPLACE_EXISTING);
+		}
 
-	    return rutaDestino;
+		return rutaDestino;
 	}
-	
-	public static boolean borrarImagen(String rutaImagen) {
-		
-	    File archivo = new File(rutaImagen);
 
-	    // Verificar si el archivo existe antes de intentar borrarlo
-	    if (archivo.exists()) {
-	        if (archivo.delete()) {
-	            System.out.println("Imagen borrada: " + rutaImagen);
-	            return true;
-	        } else {
-	            System.err.println("No se pudo borrar la imagen: " + rutaImagen);
-	            return false;
-	        }
-	    } else {
-	        System.err.println("El archivo no existe: " + rutaImagen + rutaImagen);
-	        return false;
-	    }
+	public static boolean borrarImagen(String rutaImagen) {
+
+		File archivo = new File(rutaImagen);
+
+		// Verificar si el archivo existe antes de intentar borrarlo
+		if (archivo.exists()) {
+			if (archivo.delete()) {
+				System.out.println("Imagen borrada: " + rutaImagen);
+				return true;
+			} else {
+				System.err.println("No se pudo borrar la imagen: " + rutaImagen);
+				return false;
+			}
+		} else {
+			System.err.println("El archivo no existe: " + rutaImagen + rutaImagen);
+			return false;
+		}
+	}
+
+	public static String replaceHtmlEntities(String input) {
+	    return input
+	        .replaceAll("&amp;", "&")
+	        .replaceAll("&lt;", "<")
+	        .replaceAll("&gt;", ">")
+	        .replaceAll("&quot;", "\"")
+	        .replaceAll("&#39;", "'")
+	        .replaceAll("&rsquo;", "'")
+	        .replaceAll("&ldquo;", "\"")
+	        .replaceAll("&rdquo;", "\"")
+	        .replaceAll("&nbsp;", " ")
+	        .replaceAll("&mdash;", "—")
+	        .replaceAll("&ndash;", "–")
+	        .replaceAll("<ul>", "'")
+	        .replaceAll("<li>", "'")
+	        .replaceAll("</ul>", "'")
+	        .replaceAll("</li>", "'");
 	}
 }

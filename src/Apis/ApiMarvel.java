@@ -142,6 +142,8 @@ public class ApiMarvel {
 	    List<String> comicInfoList = new ArrayList<>();
 
 	    try {
+	    	
+//	    	System.out.println(comic.toString(4));
 	        // Título
 	        String title = comic.getString("title");
 	        title = title.replaceAll("\\([^\\)]*\\)", "");
@@ -249,6 +251,13 @@ public class ApiMarvel {
 	        // Editorial (En este caso, siempre es "Marvel")
 	        comicInfoList.add("Marvel");
 
+	        String descripcion = comic.optString("description");
+	        
+	        if (!descripcion.isEmpty()) {
+	            comicInfoList.add(descripcion);
+	        }
+
+	        
 	        // Convierte la lista en un array de cadenas
 	        String[] comicInfoArray = new String[comicInfoList.size()];
 	        comicInfoList.toArray(comicInfoArray);

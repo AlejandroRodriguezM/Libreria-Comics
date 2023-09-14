@@ -1500,7 +1500,7 @@ public class IntroducirDatosController implements Initializable {
 				progresoCarga.setVisible(false);
 			});
 		});
-		
+
 		progresoCarga.setVisible(true);
 		progresoCarga.progressProperty().bind(tarea.progressProperty());
 		// Iniciar la tarea en un nuevo hilo
@@ -1525,6 +1525,13 @@ public class IntroducirDatosController implements Initializable {
 	}
 
 	private void rellenarCamposAni(String[] comicInfo) {
+
+		int i = 0;
+		for (String info : comicInfo) {
+			System.out.println(i + ": " + info);
+			i++;
+		}
+
 		Platform.runLater(() -> {
 			String titulo = comicInfo[0];
 			String numero = comicInfo[1];
@@ -1537,6 +1544,13 @@ public class IntroducirDatosController implements Initializable {
 			String referencia = comicInfo[8];
 			String urlImagen = comicInfo[9];
 			String editorial = comicInfo[10];
+
+			if (comicInfo.length >= 12) {
+				String descripcion = comicInfo[11];
+		        descripcion = Utilidades.replaceHtmlEntities(descripcion);
+
+				nombreKeyIssue.setText(descripcion);
+			}
 
 			nombreAni.setText(titulo);
 			numeroAni.setValue(numero);

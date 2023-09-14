@@ -117,16 +117,16 @@ public class DBLibreriaManager extends Comic {
 	 * @throws SQLException si ocurre un error al acceder a la base de datos.
 	 */
 	public void listasAutoCompletado() throws SQLException {
-		obtenerValoresColumna("nomComic");
-		obtenerValoresColumna("nomVariante");
-		obtenerValoresColumna("firma");
-		obtenerValoresColumna("formato");
-		obtenerValoresColumna("nomEditorial");
-		obtenerValoresColumna("nomGuionista");
-		obtenerValoresColumna("nomDibujante");
-		obtenerValoresColumna("procedencia");
-		obtenerValoresColumna("caja_deposito");
-		obtenerValoresColumna("numComic");
+		listaNombre = obtenerValoresColumna("nomComic");
+		listaNumeroComic = obtenerValoresColumna("numComic");
+		listaVariante = obtenerValoresColumna("nomVariante");
+		listaFirma = obtenerValoresColumna("firma");
+		listaFormato = obtenerValoresColumna("formato");
+		listaEditorial = obtenerValoresColumna("nomEditorial");
+		listaGuionista = obtenerValoresColumna("nomGuionista");
+		listaDibujante = obtenerValoresColumna("nomDibujante");
+		listaProcedencia = obtenerValoresColumna("procedencia");
+		listaCaja = obtenerValoresColumna("caja_deposito");
 	}
 
 	/**
