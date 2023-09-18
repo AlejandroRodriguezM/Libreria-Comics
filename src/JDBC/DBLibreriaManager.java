@@ -647,6 +647,12 @@ public class DBLibreriaManager extends Comic {
 		return "";
 	}
 
+	/**
+	 * Verifica si existen resultados que coincidan con los criterios de búsqueda proporcionados en un objeto Comic.
+	 *
+	 * @param comic El objeto Comic que contiene los criterios de búsqueda.
+	 * @return true si se encontraron resultados que coinciden con los criterios, false de lo contrario.
+	 */
 	public boolean numeroResultados(Comic comic) {
 		int datosRellenados = 0;
 

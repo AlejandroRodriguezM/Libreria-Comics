@@ -102,6 +102,11 @@ public class DBManager {
 	        DB_HOST = datos[4];
 	}
 	
+	/**
+	 * Comprueba si los datos de conexión a la base de datos son correctos.
+	 *
+	 * @return true si todos los datos de conexión son válidos y no están vacíos, de lo contrario, false.
+	 */
 	public static boolean datosConexionCorrectos() {
 		
 	    return !(DB_HOST == null || DB_HOST.isEmpty() || DB_PORT == null || DB_PORT.isEmpty() ||

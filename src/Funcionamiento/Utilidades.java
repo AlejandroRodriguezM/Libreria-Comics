@@ -603,7 +603,7 @@ public class Utilidades {
 		}
 	}
 
-	/*
+	/**
 	 * Convierte el nombre de un archivo, reemplazando los guiones por guiones
 	 * bajos.
 	 * 
@@ -628,13 +628,13 @@ public class Utilidades {
 		return nombreConvertido.toString();
 	}
 
-	/*
+	/**
 	 * Verifica si la posición de un guion en el nombre de archivo es válida para
 	 * convertirlo.
 	 * 
 	 * @param nombreArchivo El nombre del archivo.
 	 * 
-	 * @param indice El índice del guion en el nombre del archivo.
+	 * @param indice        El índice del guion en el nombre del archivo.
 	 * 
 	 * @return true si la posición del guion es válida, false en caso contrario.
 	 */
@@ -835,7 +835,8 @@ public class Utilidades {
 	}
 
 	/**
-	 * Carga tasas de cambio desde un archivo de configuración y las almacena en un mapa.
+	 * Carga tasas de cambio desde un archivo de configuración y las almacena en un
+	 * mapa.
 	 */
 	public static void cargarTasasDeCambioDesdeArchivo() {
 		String nombreArchivo = carpetaConfiguracion() + File.separator + "tasas_de_cambio.conf";
@@ -991,51 +992,53 @@ public class Utilidades {
 //
 //		return rutaDestino;
 //	}
-	
+
 	/**
 	 * Descarga una imagen desde una URL y la guarda en la carpeta de destino.
 	 *
 	 * @param urlImagen      URL de la imagen que se va a descargar.
 	 * @param carpetaDestino Carpeta donde se guardará la imagen descargada.
 	 * @return La ruta completa de la imagen descargada.
-	 * @throws IOException Si ocurre un error durante la descarga o la escritura del archivo.
+	 * @throws IOException Si ocurre un error durante la descarga o la escritura del
+	 *                     archivo.
 	 */
 	public static String descargarImagen(String urlImagen, String carpetaDestino) throws IOException {
-	    // Crear una instancia de URI a partir de la URL
-	    URI uri;
-	    try {
-	        uri = new URI(urlImagen);
-	    } catch (URISyntaxException e) {
-	        throw new IllegalArgumentException("URL de imagen no válida: " + urlImagen, e);
-	    }
+		// Crear una instancia de URI a partir de la URL
+		URI uri;
+		try {
+			uri = new URI(urlImagen);
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException("URL de imagen no válida: " + urlImagen, e);
+		}
 
-	    // Obtener el nombre de la imagen a partir de la URL
-	    String[] partesURL = urlImagen.split("/");
-	    String nombreImagen = partesURL[partesURL.length - 1];
+		// Obtener el nombre de la imagen a partir de la URL
+		String[] partesURL = urlImagen.split("/");
+		String nombreImagen = partesURL[partesURL.length - 1];
 
-	    // Crear la carpeta de destino si no existe
-	    File carpeta = new File(carpetaDestino);
-	    if (!carpeta.exists()) {
-	        carpeta.mkdirs();
-	    }
+		// Crear la carpeta de destino si no existe
+		File carpeta = new File(carpetaDestino);
+		if (!carpeta.exists()) {
+			carpeta.mkdirs();
+		}
 
-	    // Crear la ruta completa de destino
-	    String rutaDestino = carpetaDestino + File.separator + nombreImagen;
+		// Crear la ruta completa de destino
+		String rutaDestino = carpetaDestino + File.separator + nombreImagen;
 
-	    try (InputStream in = uri.toURL().openStream()) {
-	        // Descargar la imagen y guardarla en la carpeta de destino
-	        Path destino = new File(rutaDestino).toPath();
-	        Files.copy(in, destino, StandardCopyOption.REPLACE_EXISTING);
-	    }
+		try (InputStream in = uri.toURL().openStream()) {
+			// Descargar la imagen y guardarla en la carpeta de destino
+			Path destino = new File(rutaDestino).toPath();
+			Files.copy(in, destino, StandardCopyOption.REPLACE_EXISTING);
+		}
 
-	    return rutaDestino;
+		return rutaDestino;
 	}
 
 	/**
 	 * Borra un archivo de imagen dada su ruta.
 	 *
 	 * @param rutaImagen Ruta del archivo de imagen que se va a borrar.
-	 * @return true si se borra con éxito, false si no se puede borrar o el archivo no existe.
+	 * @return true si se borra con éxito, false si no se puede borrar o el archivo
+	 *         no existe.
 	 */
 	public static boolean borrarImagen(String rutaImagen) {
 
@@ -1059,25 +1062,16 @@ public class Utilidades {
 	/**
 	 * Reemplaza entidades HTML en una cadena con sus caracteres correspondientes.
 	 *
-	 * @param input Cadena que puede contener entidades HTML como &amp;, &lt;, &gt;, etc.
-	 * @return La cadena con las entidades HTML reemplazadas por los caracteres correspondientes.
+	 * @param input Cadena que puede contener entidades HTML como &amp;, &lt;, &gt;,
+	 *              etc.
+	 * @return La cadena con las entidades HTML reemplazadas por los caracteres
+	 *         correspondientes.
 	 */
 	public static String replaceHtmlEntities(String input) {
-	    return input
-	        .replaceAll("&amp;", "&")
-	        .replaceAll("&lt;", "<")
-	        .replaceAll("&gt;", ">")
-	        .replaceAll("&quot;", "\"")
-	        .replaceAll("&#39;", "'")
-	        .replaceAll("&rsquo;", "'")
-	        .replaceAll("&ldquo;", "\"")
-	        .replaceAll("&rdquo;", "\"")
-	        .replaceAll("&nbsp;", " ")
-	        .replaceAll("&mdash;", "—")
-	        .replaceAll("&ndash;", "–")
-	        .replaceAll("<ul>", "'")
-	        .replaceAll("<li>", "'")
-	        .replaceAll("</ul>", "'")
-	        .replaceAll("</li>", "'");
+		return input.replaceAll("&amp;", "&").replaceAll("&lt;", "<").replaceAll("&gt;", ">").replaceAll("&quot;", "\"")
+				.replaceAll("&#39;", "'").replaceAll("&rsquo;", "'").replaceAll("&ldquo;", "\"")
+				.replaceAll("&rdquo;", "\"").replaceAll("&nbsp;", " ").replaceAll("&mdash;", "—")
+				.replaceAll("&ndash;", "–").replaceAll("<ul>", "'").replaceAll("<li>", "'").replaceAll("</ul>", "'")
+				.replaceAll("</li>", "'");
 	}
 }
