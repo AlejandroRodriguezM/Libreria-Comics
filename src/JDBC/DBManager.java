@@ -32,6 +32,11 @@ import java.sql.SQLException;
 
 import Funcionamiento.Ventanas;
 
+/**
+ * Clase que gestiona la conexión a la base de datos y proporciona métodos para
+ * cargar el controlador JDBC, verificar la conexión y obtener una conexión
+ * activa.
+ */
 public class DBManager {
 
 	// Conexion a la base de datos

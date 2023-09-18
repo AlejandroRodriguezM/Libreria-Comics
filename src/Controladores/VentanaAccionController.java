@@ -83,6 +83,10 @@ import javafx.util.Duration;
 
 import java.io.InputStream;
 
+/**
+ * Clase controladora para la ventana de acciones, que gestiona la interfaz de usuario
+ * y las operaciones relacionadas con los cómics.
+ */
 public class VentanaAccionController implements Initializable {
 
 	@FXML

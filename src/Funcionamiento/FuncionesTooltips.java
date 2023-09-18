@@ -36,6 +36,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 
+/**
+ * Clase que proporciona funciones para asignar tooltips a botones, ComboBox y TextField en la interfaz de usuario.
+ */
 public class FuncionesTooltips {
 
     private static final Font TOOLTIP_FONT = Font.font("Comic Sans MS", FontWeight.NORMAL, FontPosture.REGULAR, 13);
