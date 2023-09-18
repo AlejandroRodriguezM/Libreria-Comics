@@ -1,3 +1,7 @@
+/**
+ * Contiene las clases que hacen funcionar el acceso de la base de datos y las diferentes funciones para el uso de la misma
+ *  
+*/
 package JDBC;
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
@@ -15,7 +19,7 @@ package JDBC;
  *
  *  Esta clase permite conectarse a la base de datos
  *
- *  Version 5.5.0.1
+ *  Version 7.0.0.0
  *
  *  Por Alejandro Rodriguez
  *

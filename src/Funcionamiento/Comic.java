@@ -1,3 +1,7 @@
+/**
+ * Contiene las clases que hacen funcionar las diferentes funciones de uso de back end y front de todo el proyecto
+ *  
+*/
 package Funcionamiento;
 
 /**
@@ -27,7 +31,28 @@ public class Comic {
 	protected String url_referencia;
 	protected String precio_comic;
 
-	// Constructor
+	/**
+     * Constructor para crear un objeto Comic con todos los atributos.
+     *
+     * @param ID             El ID único del cómic.
+     * @param nombre         El nombre del cómic.
+     * @param numCaja        El número de caja del cómic.
+     * @param numero         El número de edición del cómic.
+     * @param variante       La variante del cómic.
+     * @param firma          La firma asociada al cómic.
+     * @param editorial      La editorial del cómic.
+     * @param formato        El formato del cómic.
+     * @param procedencia    La procedencia del cómic.
+     * @param fecha          La fecha de venta del cómic.
+     * @param guionista      El guionista del cómic.
+     * @param dibujante      El dibujante del cómic.
+     * @param estado         El estado del cómic.
+     * @param key_issue      La clave (key issue) del cómic.
+     * @param puntuacion     La puntuación del cómic.
+     * @param imagen         La URL de la imagen del cómic.
+     * @param url_referencia La URL de referencia del cómic.
+     * @param precio_comic   El precio del cómic.
+     */
 	public Comic(String ID, String nombre, String numCaja, String numero, String variante, String firma,
 			String editorial, String formato, String procedencia, String fecha, String guionista, String dibujante,
 			String estado, String key_issue, String puntuacion, String imagen, String url_referencia,
@@ -53,7 +78,9 @@ public class Comic {
 
 	}
 
-	// Constructor
+    /**
+     * Constructor vacío para crear un objeto Comic sin atributos inicializados.
+     */
 	public Comic() {
 		this.ID = "";
 		this.nombre = "";
@@ -75,148 +102,326 @@ public class Comic {
 		this.precio_comic = "";
 	}
 
-	// Getters y setters
-
+	/**
+	 * Getter para obtener el ID del cómic.
+	 *
+	 * @return El ID del cómic.
+	 */
 	public String getID() {
-		return ID;
+	    return ID;
 	}
 
+	/**
+	 * Getter para obtener el nombre del cómic.
+	 *
+	 * @return El nombre del cómic.
+	 */
 	public String getNombre() {
-		return nombre;
+	    return nombre;
 	}
 
+	/**
+	 * Getter para obtener el número de edición del cómic.
+	 *
+	 * @return El número de edición del cómic.
+	 */
 	public String getNumero() {
-		return numero;
+	    return numero;
 	}
 
+	/**
+	 * Getter para obtener la variante del cómic.
+	 *
+	 * @return La variante del cómic.
+	 */
 	public String getVariante() {
-		return variante;
+	    return variante;
 	}
 
+	/**
+	 * Getter para obtener la firma asociada al cómic.
+	 *
+	 * @return La firma asociada al cómic.
+	 */
 	public String getFirma() {
-		return firma;
+	    return firma;
 	}
 
+	/**
+	 * Getter para obtener la editorial del cómic.
+	 *
+	 * @return La editorial del cómic.
+	 */
 	public String getEditorial() {
-		return editorial;
+	    return editorial;
 	}
 
+	/**
+	 * Getter para obtener el formato del cómic.
+	 *
+	 * @return El formato del cómic.
+	 */
 	public String getFormato() {
-		return formato;
+	    return formato;
 	}
 
+	/**
+	 * Getter para obtener la procedencia del cómic.
+	 *
+	 * @return La procedencia del cómic.
+	 */
 	public String getProcedencia() {
-		return procedencia;
+	    return procedencia;
 	}
 
+	/**
+	 * Getter para obtener la fecha de venta del cómic.
+	 *
+	 * @return La fecha de venta del cómic.
+	 */
 	public String getFecha() {
-		return fecha;
+	    return fecha;
 	}
 
+	/**
+	 * Getter para obtener el guionista del cómic.
+	 *
+	 * @return El guionista del cómic.
+	 */
 	public String getGuionista() {
-		return guionista;
+	    return guionista;
 	}
 
+	/**
+	 * Getter para obtener el dibujante del cómic.
+	 *
+	 * @return El dibujante del cómic.
+	 */
 	public String getDibujante() {
-		return dibujante;
+	    return dibujante;
 	}
 
+	/**
+	 * Getter para obtener el estado del cómic.
+	 *
+	 * @return El estado del cómic.
+	 */
 	public String getEstado() {
-		return estado;
+	    return estado;
 	}
 
+	/**
+	 * Getter para obtener la puntuación del cómic.
+	 *
+	 * @return La puntuación del cómic.
+	 */
 	public String getPuntuacion() {
-		return puntuacion;
+	    return puntuacion;
 	}
 
+	/**
+	 * Getter para obtener el número de caja del cómic.
+	 *
+	 * @return El número de caja del cómic.
+	 */
 	public String getNumCaja() {
-		return numCaja;
+	    return numCaja;
 	}
 
+	/**
+	 * Getter para obtener la clave (key issue) del cómic.
+	 *
+	 * @return La clave (key issue) del cómic.
+	 */
 	public String getKey_issue() {
-		return key_issue;
+	    return key_issue;
 	}
 
+	/**
+	 * Setter para establecer la clave (key issue) del cómic.
+	 *
+	 * @param key_issue La clave (key issue) a establecer.
+	 */
 	public void setKey_issue(String key_issue) {
-		this.key_issue = key_issue;
+	    this.key_issue = key_issue;
 	}
 
+	/**
+	 * Setter para establecer la puntuación del cómic.
+	 *
+	 * @param puntuacion La puntuación a establecer.
+	 */
 	public void setPuntuacion(String puntuacion) {
-		this.puntuacion = puntuacion;
+	    this.puntuacion = puntuacion;
 	}
 
+	/**
+	 * Getter para obtener la URL de la imagen del cómic.
+	 *
+	 * @return La URL de la imagen del cómic.
+	 */
 	public String getImagen() {
-		return imagen;
+	    return imagen;
 	}
 
+	/**
+	 * Getter para obtener la URL de referencia del cómic.
+	 *
+	 * @return La URL de referencia del cómic.
+	 */
 	public String getUrl_referencia() {
-		return url_referencia;
+	    return url_referencia;
 	}
 
+	/**
+	 * Getter para obtener el precio del cómic.
+	 *
+	 * @return El precio del cómic.
+	 */
 	public String getPrecio_comic() {
-		return precio_comic;
+	    return precio_comic;
 	}
 
+	/**
+	 * Setter para establecer la URL de referencia del cómic.
+	 *
+	 * @param url_referencia La URL de referencia a establecer.
+	 */
 	public void setUrl_referencia(String url_referencia) {
-		this.url_referencia = url_referencia;
+	    this.url_referencia = url_referencia;
 	}
 
+	/**
+	 * Setter para establecer el precio del cómic.
+	 *
+	 * @param precio_comic El precio a establecer.
+	 */
 	public void setPrecio_comic(String precio_comic) {
-		this.precio_comic = precio_comic;
+	    this.precio_comic = precio_comic;
 	}
 
+	/**
+	 * Setter para establecer la URL de la imagen del cómic.
+	 *
+	 * @param imagen La URL de la imagen a establecer.
+	 */
 	public void setImagen(String imagen) {
-		this.imagen = imagen;
+	    this.imagen = imagen;
 	}
 
+	/**
+	 * Setter para establecer el ID del cómic.
+	 *
+	 * @param ID El ID a establecer.
+	 */
 	public void setID(String ID) {
-		this.ID = ID;
+	    this.ID = ID;
 	}
 
+	/**
+	 * Setter para establecer el nombre del cómic.
+	 *
+	 * @param nombre El nombre a establecer.
+	 */
 	public void setNombre(String nombre) {
-		this.nombre = nombre;
+	    this.nombre = nombre;
 	}
 
+	/**
+	 * Setter para establecer el número de edición del cómic.
+	 *
+	 * @param numero El número de edición a establecer.
+	 */
 	public void setNumero(String numero) {
-		this.numero = numero;
+	    this.numero = numero;
 	}
 
+	/**
+	 * Setter para establecer la variante del cómic.
+	 *
+	 * @param variante La variante a establecer.
+	 */
 	public void setVariante(String variante) {
-		this.variante = variante;
+	    this.variante = variante;
 	}
 
+	/**
+	 * Setter para establecer la firma asociada al cómic.
+	 *
+	 * @param firma La firma a establecer.
+	 */
 	public void setFirma(String firma) {
-		this.firma = firma;
+	    this.firma = firma;
 	}
 
+	/**
+	 * Setter para establecer la editorial del cómic.
+	 *
+	 * @param editorial La editorial a establecer.
+	 */
 	public void setEditorial(String editorial) {
-		this.editorial = editorial;
+	    this.editorial = editorial;
 	}
 
+	/**
+	 * Setter para establecer el formato del cómic.
+	 *
+	 * @param formato El formato a establecer.
+	 */
 	public void setFormato(String formato) {
-		this.formato = formato;
+	    this.formato = formato;
 	}
 
+	/**
+	 * Setter para establecer la procedencia del cómic.
+	 *
+	 * @param procedencia La procedencia a establecer.
+	 */
 	public void setProcedencia(String procedencia) {
-		this.procedencia = procedencia;
+	    this.procedencia = procedencia;
 	}
 
+	/**
+	 * Setter para establecer la fecha de venta del cómic.
+	 *
+	 * @param fecha La fecha de venta a establecer.
+	 */
 	public void setFecha(String fecha) {
-		this.fecha = fecha;
+	    this.fecha = fecha;
 	}
 
+	/**
+	 * Setter para establecer el guionista del cómic.
+	 *
+	 * @param guionista El guionista a establecer.
+	 */
 	public void setGuionista(String guionista) {
-		this.guionista = guionista;
+	    this.guionista = guionista;
 	}
 
+	/**
+	 * Setter para establecer el dibujante del cómic.
+	 *
+	 * @param dibujante El dibujante a establecer.
+	 */
 	public void setDibujante(String dibujante) {
-		this.dibujante = dibujante;
+	    this.dibujante = dibujante;
 	}
 
+	/**
+	 * Setter para establecer el estado del cómic.
+	 *
+	 * @param estado El estado a establecer.
+	 */
 	public void setEstado(String estado) {
-		this.estado = estado;
+	    this.estado = estado;
 	}
 
+	/**
+	 * Setter para establecer el número de caja del cómic.
+	 *
+	 * @param numCaja El número de caja a establecer.
+	 */
 	public void setNumCaja(String numCaja) {
 		this.numCaja = numCaja;
 	}
@@ -235,9 +440,9 @@ public class Comic {
 	}
 
 	/**
-	 * Convierte el objeto Comic a una representación en forma de cadena.
+	 * Genera una representación en forma de cadena de texto del cómic, incluyendo sus atributos no nulos.
 	 *
-	 * @return La representación en forma de cadena del objeto Comic.
+	 * @return Una cadena de texto que representa el cómic.
 	 */
 	@Override
 	public String toString() {

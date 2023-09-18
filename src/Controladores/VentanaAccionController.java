@@ -1,4 +1,30 @@
+/**
+ * Contiene las clases que hacen funcionar las ventanas
+ *  
+*/
 package Controladores;
+
+/**
+ * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
+ * Las ventanas graficas se realizan con JavaFX.
+ * El programa permite:
+ *  - Conectarse a la base de datos.
+ *  - Ver la base de datos completa o parcial segun parametros introducidos.
+ *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
+ *  - Copia de seguridad de la base de datos en formato .sql
+ *  - Introducir comics a la base de datos.
+ *  - Modificar comics de la base de datos.
+ *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
+ *  - Ver frases de personajes de comics
+ *  - Opcion de escoger algo para leer de forma aleatoria.
+ *  - Puntuar comics que se encuentren dentro de la base de datos.
+ *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
+ *
+ *  Version 7.0.0.0
+ *
+ *  @author Alejandro Rodriguez
+ *
+ */
 
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +62,7 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -108,9 +135,9 @@ public class VentanaAccionController implements Initializable {
 
 	@FXML
 	private Button botonVender;
-	
-    @FXML
-    private Button botonbbdd;
+
+	@FXML
+	private Button botonbbdd;
 
 	// Campos de texto (TextField)
 	@FXML
@@ -245,6 +272,13 @@ public class VentanaAccionController implements Initializable {
 	private static FuncionesTableView funcionesTabla = new FuncionesTableView();
 	private static String TIPO_ACCION;
 
+	/**
+	 * Inicializa la interfaz de usuario y configura el comportamiento de los
+	 * elementos al cargar la vista.
+	 *
+	 * @param location  La ubicación relativa del archivo FXML.
+	 * @param resources Los recursos que pueden ser utilizados por el controlador.
+	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
@@ -307,13 +341,17 @@ public class VentanaAccionController implements Initializable {
 		String[] editorialBusquedas = { "Marvel ISBN", "Marvel UPC", "Otras editoriales", "Ninguno" };
 
 		busquedaEditorial.setItems(FXCollections.observableArrayList(editorialBusquedas));
-		
+
 		ObservableList<String> puntuaciones = FXCollections.observableArrayList("0/0", "0.5/5", "1/5", "1.5/5", "2/5",
 				"2.5/5", "3/5", "3.5/5", "4/5", "4.5/5", "5/5");
 		puntuacionMenu.setItems(puntuaciones);
 		puntuacionMenu.getSelectionModel().selectFirst();
 	}
 
+	/**
+	 * Muestra todos los registros de la base de datos en la tabla de visualización
+	 * y restaura la vista.
+	 */
 	@FXML
 	void verTodabbdd() {
 
@@ -513,397 +551,121 @@ public class VentanaAccionController implements Initializable {
 		funcionesCombo.rellenarComboBoxEstaticos(comboboxesMod); // Llamada a la función para rellenar ComboBoxes
 	}
 
+	/**
+	 * Oculta y deshabilita varios campos y elementos en la interfaz gráfica.
+	 */
 	public void ocultarCampos() {
+		// Lista de elementos que deseas ocultar y deshabilitar
+		List<Node> elementos = Arrays.asList(tablaBBDD, dibujanteComic, editorialComic, estadoComic, fechaComic,
+				firmaComic, formatoComic, guionistaComic, nombreKeyIssue, numeroCajaComic, procedenciaComic,
+				urlReferencia, botonBorrarOpinion, puntuacionMenu, labelPuntuacion, botonAgregarPuntuacion, label_id,
+				botonVender, botonEliminar, idComicTratar, botonModificar, botonBusquedaCodigo, botonIntroducir,
+				botonbbdd, precioComic, direccionImagen, label_portada, label_precio, label_caja, label_dibujante,
+				label_editorial, label_estado, label_fecha, label_firma, label_formato, label_guionista, label_key,
+				label_procedencia, label_referencia);
 
-		if (tablaBBDD.isVisible()) {
-			tablaBBDD.setVisible(false);
-			tablaBBDD.setDisable(true);
-		}
-		// Verifica si los campos y elementos son visibles antes de ocultarlos y
-		// deshabilitarlos
-		if (dibujanteComic.isVisible()) {
-			dibujanteComic.setVisible(false);
-			dibujanteComic.setDisable(true);
-		}
-
-		if (editorialComic.isVisible()) {
-			editorialComic.setVisible(false);
-			editorialComic.setDisable(true);
-		}
-
-		if (estadoComic.isVisible()) {
-			estadoComic.setVisible(false);
-			estadoComic.setDisable(true);
-		}
-
-		if (fechaComic.isVisible()) {
-			fechaComic.setVisible(false);
-			fechaComic.setDisable(true);
-		}
-
-		if (firmaComic.isVisible()) {
-			firmaComic.setVisible(false);
-			firmaComic.setDisable(true);
-		}
-
-		if (formatoComic.isVisible()) {
-			formatoComic.setVisible(false);
-			formatoComic.setDisable(true);
-		}
-
-		if (guionistaComic.isVisible()) {
-			guionistaComic.setVisible(false);
-			guionistaComic.setDisable(true);
-		}
-
-		if (nombreKeyIssue.isVisible()) {
-			nombreKeyIssue.setVisible(false);
-			nombreKeyIssue.setDisable(true);
-		}
-
-		if (numeroCajaComic.isVisible()) {
-			numeroCajaComic.setVisible(false);
-			numeroCajaComic.setDisable(true);
-		}
-
-		if (procedenciaComic.isVisible()) {
-			procedenciaComic.setVisible(false);
-			procedenciaComic.setDisable(true);
-		}
-
-		if (urlReferencia.isVisible()) {
-			urlReferencia.setVisible(false);
-			urlReferencia.setDisable(true);
-		}
-
-		// Agrega aquí la lógica de ocultar los elementos que mencionaste en
-		// ocultarCampos()
-		if (botonBorrarOpinion.isVisible()) {
-			botonBorrarOpinion.setVisible(false);
-			botonBorrarOpinion.setDisable(true);
-		}
-
-		if (puntuacionMenu.isVisible()) {
-			puntuacionMenu.setVisible(false);
-			puntuacionMenu.setDisable(true);
-		}
-
-		if (labelPuntuacion.isVisible()) {
-			labelPuntuacion.setVisible(false);
-			labelPuntuacion.setDisable(true);
-		}
-
-		if (botonAgregarPuntuacion.isVisible()) {
-			botonAgregarPuntuacion.setVisible(false);
-			botonAgregarPuntuacion.setDisable(true);
-		}
-
-		if (label_id.isVisible()) {
-			label_id.setVisible(false);
-			label_id.setDisable(true);
-		}
-
-		if (botonVender.isVisible()) {
-			botonVender.setVisible(false);
-			botonVender.setDisable(true);
-		}
-
-		if (botonEliminar.isVisible()) {
-			botonEliminar.setVisible(false);
-			botonEliminar.setDisable(true);
-		}
-
-		if (idComicTratar.isVisible()) {
-			idComicTratar.setVisible(false);
-			idComicTratar.setDisable(true);
-		}
-
-		if (botonModificar.isVisible()) {
-			botonModificar.setVisible(false);
-			botonModificar.setDisable(true);
-		}
-
-		if (botonBusquedaCodigo.isVisible()) {
-			botonBusquedaCodigo.setVisible(false);
-			botonBusquedaCodigo.setDisable(true);
-		}
-
-		if (botonIntroducir.isVisible()) {
-			botonIntroducir.setVisible(false);
-			botonIntroducir.setDisable(true);
-		}
-		
-		if(botonbbdd.isVisible()){
-			botonbbdd.setVisible(false);
-			botonbbdd.setDisable(true);
-		}
-
-		if (precioComic.isVisible()) {
-			precioComic.setVisible(false);
-			precioComic.setDisable(true);
-		}
-
-		if (direccionImagen.isVisible()) {
-			direccionImagen.setVisible(false);
-			direccionImagen.setDisable(true);
-		}
-
-		if (label_portada.isVisible()) {
-			label_portada.setVisible(false);
-		}
-
-		if (label_precio.isVisible()) {
-			label_precio.setVisible(false);
-		}
-
-		if (label_caja.isVisible()) {
-			label_caja.setVisible(false);
-		}
-
-		if (label_dibujante.isVisible()) {
-			label_dibujante.setVisible(false);
-		}
-
-		if (label_editorial.isVisible()) {
-			label_editorial.setVisible(false);
-		}
-
-		if (label_estado.isVisible()) {
-			label_estado.setVisible(false);
-		}
-
-		if (label_fecha.isVisible()) {
-			label_fecha.setVisible(false);
-		}
-
-		if (label_firma.isVisible()) {
-			label_firma.setVisible(false);
-		}
-
-		if (label_formato.isVisible()) {
-			label_formato.setVisible(false);
-		}
-
-		if (label_guionista.isVisible()) {
-			label_guionista.setVisible(false);
-		}
-
-		if (label_key.isVisible()) {
-			label_key.setVisible(false);
-		}
-
-		if (label_procedencia.isVisible()) {
-			label_procedencia.setVisible(false);
-		}
-
-		if (label_referencia.isVisible()) {
-			label_referencia.setVisible(false);
+		// Itera a través de los elementos y oculta/deshabilita cada uno
+		for (Node elemento : elementos) {
+			elemento.setVisible(false);
+			elemento.setDisable(true);
 		}
 	}
 
+	/**
+	 * Muestra la opción de eliminar en la interfaz gráfica y habilita los elementos
+	 * relacionados.
+	 */
 	public void mostrarOpcionEliminar() {
 		ocultarCampos();
 
-		label_id.setVisible(true);
-		botonVender.setVisible(true);
-		botonEliminar.setVisible(true);
-		idComicTratar.setVisible(true);
+		List<Node> elementosAMostrarYHabilitar = Arrays.asList(label_id, botonVender, botonEliminar, idComicTratar,
+				tablaBBDD, botonbbdd, rootVBox);
 
-		tablaBBDD.setVisible(true);
-		tablaBBDD.setDisable(false);
-
-		label_id.setDisable(false);
-		botonVender.setDisable(false);
-		botonEliminar.setDisable(false);
-		idComicTratar.setDisable(false);
-		
-		botonbbdd.setVisible(true);
-		botonbbdd.setDisable(false);
-		
-		rootVBox.setDisable(false);
-		tablaBBDD.setDisable(false);
+		for (Node elemento : elementosAMostrarYHabilitar) {
+			elemento.setVisible(true);
+			elemento.setDisable(false);
+		}
 	}
 
+	/**
+	 * Muestra la opción de añadir en la interfaz gráfica y habilita los elementos
+	 * relacionados.
+	 */
 	public void mostrarOpcionAniadir() {
 		ocultarCampos();
 
-		// Mostrar los elementos que fueron ocultados en ocultarCampos()
-		dibujanteComic.setVisible(true);
-		dibujanteComic.setDisable(false);
+		List<Node> elementosAMostrarYHabilitar = Arrays.asList(dibujanteComic, editorialComic, estadoComic, fechaComic,
+				firmaComic, formatoComic, guionistaComic, nombreKeyIssue, numeroCajaComic, procedenciaComic,
+				urlReferencia, botonIntroducir, botonBusquedaAvanzada, precioComic, direccionImagen, label_portada,
+				label_precio, label_caja, label_dibujante, label_editorial, label_estado, label_fecha, label_firma,
+				label_formato, label_guionista, label_key, label_procedencia, label_referencia, botonSubidaPortada);
 
-		editorialComic.setVisible(true);
-		editorialComic.setDisable(false);
-
-		estadoComic.setVisible(true);
-		estadoComic.setDisable(false);
-
-		fechaComic.setVisible(true);
-		fechaComic.setDisable(false);
-
-		firmaComic.setVisible(true);
-		firmaComic.setDisable(false);
-
-		formatoComic.setVisible(true);
-		formatoComic.setDisable(false);
-
-		guionistaComic.setVisible(true);
-		guionistaComic.setDisable(false);
-
-		nombreKeyIssue.setVisible(true);
-		nombreKeyIssue.setDisable(false);
-
-		numeroCajaComic.setVisible(true);
-		numeroCajaComic.setDisable(false);
-
-		procedenciaComic.setVisible(true);
-		procedenciaComic.setDisable(false);
-
-		urlReferencia.setVisible(true);
-		urlReferencia.setDisable(false);
-
-		// Mostrar los elementos que mencionaste en mostrarOpcionAniadir()
-		botonIntroducir.setVisible(true);
-		botonBusquedaAvanzada.setVisible(true);
-
-		botonIntroducir.setDisable(false);
-		botonBusquedaAvanzada.setDisable(false);
-
-		precioComic.setVisible(true);
-		direccionImagen.setVisible(true);
-
-		precioComic.setDisable(false);
-		direccionImagen.setDisable(false);
-
-		label_portada.setVisible(true);
-
-		label_precio.setVisible(true);
-		label_caja.setVisible(true);
-		label_dibujante.setVisible(true);
-		label_editorial.setVisible(true);
-		label_estado.setVisible(true);
-		label_fecha.setVisible(true);
-		label_firma.setVisible(true);
-		label_formato.setVisible(true);
-		label_guionista.setVisible(true);
-		label_key.setVisible(true);
-		label_procedencia.setVisible(true);
-		label_referencia.setVisible(true);
-
-		botonSubidaPortada.setVisible(true);
-		botonSubidaPortada.setDisable(false);
-
+		for (Node elemento : elementosAMostrarYHabilitar) {
+			elemento.setVisible(true);
+			elemento.setDisable(false);
+		}
 	}
 
+	/**
+	 * Muestra la opción de modificar en la interfaz gráfica y habilita los
+	 * elementos relacionados.
+	 */
 	public void mostrarOpcionModificar() {
 		ocultarCampos();
 
-		dibujanteComic.setVisible(true);
-		dibujanteComic.setDisable(false);
+		List<Node> elementosAMostrarYHabilitar = Arrays.asList(dibujanteComic, editorialComic, estadoComic, fechaComic,
+				firmaComic, formatoComic, guionistaComic, nombreKeyIssue, numeroCajaComic, procedenciaComic,
+				urlReferencia, botonModificar, precioComic, direccionImagen, tablaBBDD, label_portada, label_precio,
+				label_caja, label_dibujante, label_editorial, label_estado, label_fecha, label_firma, label_formato,
+				label_guionista, label_key, label_procedencia, label_referencia, botonSubidaPortada, botonbbdd,
+				rootVBox);
 
-		editorialComic.setVisible(true);
-		editorialComic.setDisable(false);
-
-		estadoComic.setVisible(true);
-		estadoComic.setDisable(false);
-
-		fechaComic.setVisible(true);
-		fechaComic.setDisable(false);
-
-		firmaComic.setVisible(true);
-		firmaComic.setDisable(false);
-
-		formatoComic.setVisible(true);
-		formatoComic.setDisable(false);
-
-		guionistaComic.setVisible(true);
-		guionistaComic.setDisable(false);
-
-		nombreKeyIssue.setVisible(true);
-		nombreKeyIssue.setDisable(false);
-
-		numeroCajaComic.setVisible(true);
-		numeroCajaComic.setDisable(false);
-
-		procedenciaComic.setVisible(true);
-		procedenciaComic.setDisable(false);
-
-		urlReferencia.setVisible(true);
-		urlReferencia.setDisable(false);
-
-		botonModificar.setVisible(true);
-
-		botonModificar.setDisable(false);
-
-		precioComic.setVisible(true);
-		direccionImagen.setVisible(true);
-
-		precioComic.setDisable(false);
-		direccionImagen.setDisable(false);
-
-		tablaBBDD.setVisible(true);
-		tablaBBDD.setDisable(false);
-
-		label_portada.setVisible(true);
-		label_precio.setVisible(true);
-		label_caja.setVisible(true);
-		label_dibujante.setVisible(true);
-		label_editorial.setVisible(true);
-		label_estado.setVisible(true);
-		label_fecha.setVisible(true);
-		label_firma.setVisible(true);
-		label_formato.setVisible(true);
-		label_guionista.setVisible(true);
-		label_key.setVisible(true);
-		label_procedencia.setVisible(true);
-		label_referencia.setVisible(true);
-
-		botonSubidaPortada.setVisible(true);
-		botonSubidaPortada.setDisable(false);
-		
-		botonbbdd.setVisible(true);
-		botonbbdd.setDisable(false);
-		
-		rootVBox.setDisable(false);
-		tablaBBDD.setDisable(false);
-
+		for (Node elemento : elementosAMostrarYHabilitar) {
+			elemento.setVisible(true);
+			elemento.setDisable(false);
+		}
 	}
 
+	/**
+	 * Muestra la opción de puntuar en la interfaz gráfica y habilita los elementos
+	 * relacionados.
+	 */
 	public void mostrarOpcionPuntuar() {
 		ocultarCampos();
 
-		botonBorrarOpinion.setVisible(true);
-		puntuacionMenu.setVisible(true);
-		labelPuntuacion.setVisible(true);
-		botonAgregarPuntuacion.setVisible(true);
-		idComicTratar.setVisible(true);
-		label_id.setVisible(true);
+		List<Node> elementosAMostrarYHabilitar = Arrays.asList(botonBorrarOpinion, puntuacionMenu, labelPuntuacion,
+				botonAgregarPuntuacion, idComicTratar, label_id, tablaBBDD, botonbbdd, rootVBox);
 
-		botonBorrarOpinion.setDisable(false);
-		puntuacionMenu.setDisable(false);
-		botonAgregarPuntuacion.setDisable(false);
-		idComicTratar.setDisable(false);
-
-		tablaBBDD.setVisible(true);
-		tablaBBDD.setDisable(false);
-		
-		botonbbdd.setVisible(true);
-		botonbbdd.setDisable(false);
-		
-		rootVBox.setDisable(false);
-		tablaBBDD.setDisable(false);
+		for (Node elemento : elementosAMostrarYHabilitar) {
+			elemento.setVisible(true);
+			elemento.setDisable(false);
+		}
 	}
 
+	/**
+	 * Establece el tipo de acción que se realizará en la ventana.
+	 *
+	 * @param tipoAccion El tipo de acción a realizar (por ejemplo, "aniadir",
+	 *                   "modificar", "eliminar", "puntuar").
+	 */
 	public static void tipoAccion(String tipoAccion) {
 		TIPO_ACCION = tipoAccion;
 	}
 
+	/**
+	 * Agrega datos a la base de datos y realiza acciones relacionadas al hacer clic
+	 * en un botón o realizar una acción.
+	 *
+	 * @param event El evento que desencadena la acción.
+	 * @throws IOException  Si ocurre un error de entrada/salida.
+	 * @throws SQLException Si ocurre un error de SQL.
+	 */
 	@FXML
 	public void agregarDatos(ActionEvent event) throws IOException, SQLException {
-
 		libreria = new DBLibreriaManager();
-		subidaComic();
-		libreria.reiniciarBBDD();
-		direccionImagen.setText("");
+		subidaComic(); // Llama a la función para procesar la subida de un cómic
+		libreria.reiniciarBBDD(); // Reinicia la base de datos
+		direccionImagen.setText(""); // Limpia el campo de texto de la dirección de la imagen
 	}
 
 	/**
@@ -956,6 +718,11 @@ public class VentanaAccionController implements Initializable {
 		}
 	}
 
+	/**
+	 * Activa o desactiva la búsqueda avanzada y sus elementos relacionados.
+	 *
+	 * @param event El evento que desencadena la acción.
+	 */
 	@FXML
 	void busquedaAvanzada(ActionEvent event) {
 
@@ -989,6 +756,15 @@ public class VentanaAccionController implements Initializable {
 		}
 	}
 
+	/**
+	 * Realiza una búsqueda por código y muestra información del cómic
+	 * correspondiente en la interfaz gráfica.
+	 *
+	 * @param event El evento que desencadena la acción.
+	 * @throws IOException        Si ocurre un error de entrada/salida.
+	 * @throws JSONException      Si ocurre un error al procesar datos JSON.
+	 * @throws URISyntaxException Si ocurre un error de sintaxis de URI.
+	 */
 	@FXML
 	void busquedaPorCodigo(ActionEvent event) throws IOException, JSONException, URISyntaxException {
 		// Crear una tarea que se ejecutará en segundo plano
@@ -1051,7 +827,12 @@ public class VentanaAccionController implements Initializable {
 
 	}
 
-	// Método para mostrar un mensaje de error en prontInfo
+	/**
+	 * Verifica si se ha encontrado información válida para el cómic.
+	 *
+	 * @param comicInfo Un arreglo de strings con información del cómic.
+	 * @return True si la información es válida y existe; de lo contrario, False.
+	 */
 	private boolean comprobarCodigo(String[] comicInfo) {
 		boolean existe = true;
 		if (comicInfo == null || comicInfo.length <= 0) {
@@ -1062,6 +843,12 @@ public class VentanaAccionController implements Initializable {
 		return existe;
 	}
 
+	/**
+	 * Rellena los campos de la interfaz gráfica con la información del cómic
+	 * proporcionada.
+	 *
+	 * @param comicInfo Un arreglo de strings con información del cómic.
+	 */
 	private void rellenarCamposAni(String[] comicInfo) {
 
 		int i = 0;
@@ -1114,6 +901,11 @@ public class VentanaAccionController implements Initializable {
 		});
 	}
 
+	/**
+	 * Inicia una animación que alterna entre dos imágenes en un ImageView para
+	 * lograr un efecto visual llamativo. La animación se ejecuta de forma
+	 * indefinida y cambia las imágenes cada 0.1 segundos.
+	 */
 	private void iniciarAnimacionCambioImagen() {
 
 		// Agrega las imágenes que deseas mostrar en cada KeyFrame
@@ -1193,13 +985,11 @@ public class VentanaAccionController implements Initializable {
 			libreria.listasAutoCompletado();
 			funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 			funcionesTabla.tablaBBDD(libreria.libreriaCompleta(), tablaBBDD, columnList); // Llamada a funcion
-			
-			
+
 			Image nuevaImagen = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
 			imagenFondo.setImage(nuevaImagen);
 		}
 	}
-
 
 	/**
 	 * Funcion que permite cambiar de estado o eliminar un comic de la base de
@@ -1218,13 +1008,13 @@ public class VentanaAccionController implements Initializable {
 
 				prontInfo.setOpacity(1);
 				prontInfo.setStyle("-fx-background-color: #A0F52D");
-				prontInfo
-						.setText("Has borrado/vendido correctamente: " + comic.toString().replace("[", "").replace("]", ""));
+				prontInfo.setText(
+						"Has borrado/vendido correctamente: " + comic.toString().replace("[", "").replace("]", ""));
 				idComicTratar.setStyle(null);
-				
+
 				funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 				funcionesTabla.tablaBBDD(libreria.libreriaCompleta(), tablaBBDD, columnList); // Llamada a funcion
-				
+
 				return true;
 			} else {
 				prontInfo.setOpacity(1);
@@ -1240,13 +1030,18 @@ public class VentanaAccionController implements Initializable {
 		}
 	}
 
+	/**
+	 * Limpia y restablece todos los campos de datos en la sección de animaciones a
+	 * sus valores predeterminados. Además, restablece la imagen de fondo y oculta
+	 * cualquier mensaje de error o información.
+	 */
 	@FXML
 	void limpiarDatos(ActionEvent event) {
-		// Campos de datos a modificar en la sección de animaciones
-
+		// Restablecer la imagen de fondo a su valor predeterminado
 		Image nuevaImagen = new Image(getClass().getResourceAsStream("/imagenes/accionComic.jpg"));
 		imagenFondo.setImage(nuevaImagen);
 
+		// Restablecer los campos de datos
 		nombreComic.setText("");
 		varianteComic.setText("");
 		firmaComic.setText("");
@@ -1257,7 +1052,18 @@ public class VentanaAccionController implements Initializable {
 		prontInfo.setText(null);
 		prontInfo.setOpacity(0);
 		nombreKeyIssue.setText("");
+
+		// Borrar cualquier mensaje de error presente
 		borrarErrores();
+
+		label_busquedaCodigo.setVisible(false);
+		busquedaEditorial.setVisible(false);
+		busquedaCodigo.setVisible(false);
+		botonBusquedaCodigo.setVisible(false);
+
+		busquedaEditorial.setDisable(true);
+		busquedaCodigo.setDisable(true);
+		botonBusquedaCodigo.setDisable(true);
 	}
 
 	/**
@@ -1378,7 +1184,7 @@ public class VentanaAccionController implements Initializable {
 			String datos[] = camposComic();
 
 			String id_comic = idComicTratar.getText();
-			
+
 			System.out.println(id_comic);
 
 			if (libreria.checkID(id_comic)) {
@@ -1555,7 +1361,7 @@ public class VentanaAccionController implements Initializable {
 					libreria.listasAutoCompletado();
 					funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 					funcionesTabla.tablaBBDD(libreria.libreriaCompleta(), tablaBBDD, columnList); // Llamada a funcion
-					
+
 					imagencomic.setImage(imagen);
 
 					Image nuevaImagen = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
@@ -1889,14 +1695,24 @@ public class VentanaAccionController implements Initializable {
 		}
 	}
 
+	/**
+	 * Establece la instancia de la ventana (Stage) asociada a este controlador.
+	 *
+	 * @param stage La instancia de la ventana (Stage) que se asocia con este
+	 *              controlador.
+	 */
 	public void setStage(Stage stage) {
 		this.stage = stage;
 	}
 
+	/**
+	 * Cierra la ventana asociada a este controlador, si está disponible. Si no se
+	 * ha establecido una instancia de ventana (Stage), este método no realiza
+	 * ninguna acción.
+	 */
 	public void closeWindow() {
 		if (stage != null) {
 			stage.close();
 		}
 	}
-
 }

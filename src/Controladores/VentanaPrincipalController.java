@@ -1,3 +1,7 @@
+/**
+ * Contiene las clases que hacen funcionar las ventanas
+ *  
+*/
 package Controladores;
 
 /**
@@ -16,7 +20,7 @@ package Controladores;
  *  - Puntuar comics que se encuentren dentro de la base de datos.
  *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
  *
- *  Version 5.5.0.1
+ *  Version 7.0.0.0
  *
  *  @author Alejandro Rodriguez
  *
@@ -44,23 +48,33 @@ public class VentanaPrincipalController extends Application {
 
 	/**
 	 * Carga la ventana principal y arranca el programa.
+	 *
+	 * @param primaryStage La ventana principal (Stage) que se utiliza para mostrar la interfaz de usuario.
+	 * @throws IOException      Si ocurre un error al cargar la interfaz de usuario desde el archivo FXML.
+	 * @throws SQLException     Si ocurre un error relacionado con la base de datos.
 	 */
 	@Override
 	public void start(Stage primaryStage) throws IOException, SQLException {
-		try {
-			Parent root = FXMLLoader.load(getClass().getResource("/ventanas/AccesoBBDD.fxml"));
-			primaryStage.setScene(new Scene(root));
-			primaryStage.setResizable(false);
-			primaryStage.setTitle("Aplicacion bbdd comics"); // Titulo de la aplicacion.
-			primaryStage.show();
-			primaryStage.getIcons().add(new Image("/Icono/icon2.png"));
+	    try {
+	        Parent root = FXMLLoader.load(getClass().getResource("/ventanas/AccesoBBDD.fxml"));
+	        primaryStage.setScene(new Scene(root));
+	        primaryStage.setResizable(false);
+	        primaryStage.setTitle("Aplicacion bbdd comics"); // Título de la aplicación.
+	        primaryStage.show();
+	        primaryStage.getIcons().add(new Image("/Icono/icon2.png"));
 
-		} catch (IOException e) {
-			nav.alertaException(e.toString());
-		}
+	    } catch (IOException e) {
+	        nav.alertaException(e.toString());
+	    }
 	}
 
+	/**
+	 * Método principal para iniciar la aplicación.
+	 *
+	 * @param args Los argumentos de línea de comandos (no se utilizan en esta aplicación).
+	 */
 	public static void main(String[] args) {
-		launch(args);
+	    launch(args);
 	}
+
 }

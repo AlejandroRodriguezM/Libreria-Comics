@@ -1,3 +1,7 @@
+/**
+ * Contiene las clases que hacen funcionar las ventanas
+ *  
+*/
 package Controladores;
 
 /**
@@ -16,7 +20,7 @@ package Controladores;
  *  - Puntuar comics que se encuentren dentro de la base de datos.
  *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
  *
- *  Version 5.5.0.1
+ *  Version 7.0.0.0
  *
  *  @author Alejandro Rodriguez
  *
@@ -298,9 +302,15 @@ public class AccesoBBDDController implements Initializable {
 		});
 	}
 
+	/**
+	 * Asigna un mensaje de tooltip a una etiqueta (Label).
+	 *
+	 * @param label   La etiqueta a la que se le asignará el tooltip.
+	 * @param mensaje El mensaje que se mostrará en el tooltip.
+	 */
 	private void asignarTooltip(Label label, String mensaje) {
-		Tooltip tooltip = new Tooltip(mensaje);
-		label.setTooltip(tooltip);
+	    Tooltip tooltip = new Tooltip(mensaje);
+	    label.setTooltip(tooltip);
 	}
 
 	/**

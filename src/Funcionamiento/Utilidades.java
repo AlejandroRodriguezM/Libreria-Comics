@@ -1,4 +1,30 @@
+/**
+ * Contiene las clases que hacen funcionar las diferentes funciones de uso de back end y front de todo el proyecto
+ *  
+*/
 package Funcionamiento;
+
+/**
+ * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
+ * Las ventanas graficas se realizan con JavaFX.
+ * El programa permite:
+ *  - Conectarse a la base de datos.
+ *  - Ver la base de datos completa o parcial segun parametros introducidos.
+ *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
+ *  - Copia de seguridad de la base de datos en formato .sql
+ *  - Introducir comics a la base de datos.
+ *  - Modificar comics de la base de datos.
+ *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
+ *  - Ver frases de personajes de comics
+ *  - Opcion de escoger algo para leer de forma aleatoria.
+ *  - Puntuar comics que se encuentren dentro de la base de datos.
+ *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
+ *
+ *  Version 7.0.0.0
+ *
+ *  @author Alejandro Rodriguez
+ *
+ */
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -14,7 +40,8 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.ProcessBuilder.Redirect;
 import java.net.InetAddress;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -727,6 +754,11 @@ public class Utilidades {
 		return codigo.toString();
 	}
 
+	/**
+	 * Obtiene la carpeta de configuración en el sistema de usuario.
+	 *
+	 * @return La ruta de la carpeta de configuración.
+	 */
 	private static String carpetaConfiguracion() {
 		String userDir = System.getProperty("user.home");
 		String ubicacion = userDir + File.separator + "AppData" + File.separator + "Roaming";
@@ -740,6 +772,9 @@ public class Utilidades {
 		return direccion;
 	}
 
+	/**
+	 * Guarda datos de claves de API de Marvel en un archivo de configuración.
+	 */
 	public static void guardarDatosClavesMarvel() {
 		String nombreArchivo = carpetaConfiguracion() + File.separator + "claves_marvel_api.conf";
 
@@ -756,6 +791,11 @@ public class Utilidades {
 		}
 	}
 
+	/**
+	 * Obtiene las claves de la API de Marvel desde un archivo de configuración.
+	 *
+	 * @return Las claves de la API en el formato "Private Key: Public Key".
+	 */
 	public static String obtenerClaveApiArchivo() {
 		String nombreArchivo = carpetaConfiguracion() + File.separator + "claves_marvel_api.conf";
 
@@ -794,6 +834,9 @@ public class Utilidades {
 		}
 	}
 
+	/**
+	 * Carga tasas de cambio desde un archivo de configuración y las almacena en un mapa.
+	 */
 	public static void cargarTasasDeCambioDesdeArchivo() {
 		String nombreArchivo = carpetaConfiguracion() + File.separator + "tasas_de_cambio.conf";
 
@@ -819,6 +862,11 @@ public class Utilidades {
 		}
 	}
 
+	/**
+	 * Crea un archivo de configuración con valores predeterminados.
+	 *
+	 * @param nombreArchivo El nombre del archivo a crear.
+	 */
 	private static void crearArchivoConValoresPredeterminados(String nombreArchivo) {
 		try (PrintWriter writer = new PrintWriter(nombreArchivo)) {
 			// Agregar los valores predeterminados al archivo
@@ -907,37 +955,88 @@ public class Utilidades {
 		bufferedWriter.close();
 	}
 
+	/**
+	 * Verifica si una cadena es una URL válida.
+	 *
+	 * @param cadena Cadena que se va a verificar como URL.
+	 * @return true si la cadena es una URL válida, false en caso contrario.
+	 */
 	public static boolean isURL(String cadena) {
 		// Patrón para verificar si la cadena es una URL válida
 		String urlPattern = "^(https?|ftp)://[A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]";
 		return Pattern.matches(urlPattern, cadena);
 	}
 
+//	public static String descargarImagen(String urlImagen, String carpetaDestino) throws IOException {
+//		URL url = new URL(urlImagen);
+//
+//		// Obtener el nombre de la imagen a partir de la URL
+//		String[] partesURL = urlImagen.split("/");
+//		String nombreImagen = partesURL[partesURL.length - 1];
+//
+//		// Crear la carpeta de destino si no existe
+//		File carpeta = new File(carpetaDestino);
+//		if (!carpeta.exists()) {
+//			carpeta.mkdirs();
+//		}
+//
+//		// Crear la ruta completa de destino
+//		String rutaDestino = carpetaDestino + File.separator + nombreImagen;
+//
+//		try (InputStream in = url.openStream()) {
+//			// Descargar la imagen y guardarla en la carpeta de destino
+//			Path destino = new File(rutaDestino).toPath();
+//			Files.copy(in, destino, StandardCopyOption.REPLACE_EXISTING);
+//		}
+//
+//		return rutaDestino;
+//	}
+	
+	/**
+	 * Descarga una imagen desde una URL y la guarda en la carpeta de destino.
+	 *
+	 * @param urlImagen      URL de la imagen que se va a descargar.
+	 * @param carpetaDestino Carpeta donde se guardará la imagen descargada.
+	 * @return La ruta completa de la imagen descargada.
+	 * @throws IOException Si ocurre un error durante la descarga o la escritura del archivo.
+	 */
 	public static String descargarImagen(String urlImagen, String carpetaDestino) throws IOException {
-		URL url = new URL(urlImagen);
+	    // Crear una instancia de URI a partir de la URL
+	    URI uri;
+	    try {
+	        uri = new URI(urlImagen);
+	    } catch (URISyntaxException e) {
+	        throw new IllegalArgumentException("URL de imagen no válida: " + urlImagen, e);
+	    }
 
-		// Obtener el nombre de la imagen a partir de la URL
-		String[] partesURL = urlImagen.split("/");
-		String nombreImagen = partesURL[partesURL.length - 1];
+	    // Obtener el nombre de la imagen a partir de la URL
+	    String[] partesURL = urlImagen.split("/");
+	    String nombreImagen = partesURL[partesURL.length - 1];
 
-		// Crear la carpeta de destino si no existe
-		File carpeta = new File(carpetaDestino);
-		if (!carpeta.exists()) {
-			carpeta.mkdirs();
-		}
+	    // Crear la carpeta de destino si no existe
+	    File carpeta = new File(carpetaDestino);
+	    if (!carpeta.exists()) {
+	        carpeta.mkdirs();
+	    }
 
-		// Crear la ruta completa de destino
-		String rutaDestino = carpetaDestino + File.separator + nombreImagen;
+	    // Crear la ruta completa de destino
+	    String rutaDestino = carpetaDestino + File.separator + nombreImagen;
 
-		try (InputStream in = url.openStream()) {
-			// Descargar la imagen y guardarla en la carpeta de destino
-			Path destino = new File(rutaDestino).toPath();
-			Files.copy(in, destino, StandardCopyOption.REPLACE_EXISTING);
-		}
+	    try (InputStream in = uri.toURL().openStream()) {
+	        // Descargar la imagen y guardarla en la carpeta de destino
+	        Path destino = new File(rutaDestino).toPath();
+	        Files.copy(in, destino, StandardCopyOption.REPLACE_EXISTING);
+	    }
 
-		return rutaDestino;
+	    return rutaDestino;
 	}
 
+	/**
+	 * Borra un archivo de imagen dada su ruta.
+	 *
+	 * @param rutaImagen Ruta del archivo de imagen que se va a borrar.
+	 * @return true si se borra con éxito, false si no se puede borrar o el archivo no existe.
+	 */
 	public static boolean borrarImagen(String rutaImagen) {
 
 		File archivo = new File(rutaImagen);
@@ -957,6 +1056,12 @@ public class Utilidades {
 		}
 	}
 
+	/**
+	 * Reemplaza entidades HTML en una cadena con sus caracteres correspondientes.
+	 *
+	 * @param input Cadena que puede contener entidades HTML como &amp;, &lt;, &gt;, etc.
+	 * @return La cadena con las entidades HTML reemplazadas por los caracteres correspondientes.
+	 */
 	public static String replaceHtmlEntities(String input) {
 	    return input
 	        .replaceAll("&amp;", "&")

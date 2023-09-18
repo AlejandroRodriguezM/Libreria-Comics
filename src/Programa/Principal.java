@@ -1,3 +1,7 @@
+/**
+ * Contiene la clase principal donde se carga el programa
+ *  
+*/
 package Programa;
 
 import Controladores.VentanaPrincipalController;
@@ -17,7 +21,7 @@ import Controladores.VentanaPrincipalController;
  * Esta clase permite acceder a la base de datos introduciendo los diferentes
  * datos que nos pide.
  *
- * Version 5.5.0.1
+ * Version 7.0.0.0
  *
  * Por Alejandro Rodriguez
  *
