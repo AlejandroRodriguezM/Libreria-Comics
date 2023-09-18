@@ -26,6 +26,7 @@ Este programa se encuentra en su fase final y está diseñado para administrar u
 - Se han corregido métodos en diferentes clases que ralentizaban el programa.
 - Nueva función que permite autocompletar datos durante las búsquedas para facilitar la interacción.
 - Los ComboBox se actualizan dinámicamente según el contenido de los demás ComboBox en tiempo real, mejorando la usabilidad.
+- Usa la API Developer de Marvel.
 
 ## Enlaces
 
