@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="536.0" prefWidth="838.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.VentanaAccionController">
+   <children>
+      <ImageView fitHeight="331.0" fitWidth="489.0" layoutY="210.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imagenes/accionComic2.jpg" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="331.0" fitWidth="489.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imagenes/accionComic2.jpg" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="imagenFondo" fitHeight="536.0" fitWidth="350.0" layoutX="489.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imagenes/accionComic.jpg" />
+         </image>
+      </ImageView>
+      <TextField fx:id="nombreComic" layoutX="87.0" layoutY="3.0" prefHeight="21.0" prefWidth="125.0" promptText="Introduce nombre comic">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </TextField>
+      <ComboBox fx:id="numeroComic" editable="true" layoutX="87.0" layoutY="27.0" prefHeight="25.0" prefWidth="125.0" promptText="Introduce numero" stylesheets="@../style/combobox_style.css" />
+      <TextField fx:id="varianteComic" layoutX="87.0" layoutY="55.0" prefHeight="21.0" prefWidth="125.0" promptText="Introduce artista variante">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="firmaComic" layoutX="87.0" layoutY="79.0" prefHeight="21.0" prefWidth="125.0" promptText="Introduce artista firma">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="editorialComic" layoutX="87.0" layoutY="102.0" prefHeight="21.0" prefWidth="125.0" promptText="Introduce editorial comic">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </TextField>
+      <ComboBox fx:id="formatoComic" layoutX="87.0" layoutY="125.0" prefHeight="25.0" prefWidth="125.0" />
+      <ComboBox fx:id="procedenciaComic" layoutX="87.0" layoutY="153.0" prefHeight="25.0" prefWidth="125.0" />
+      <DatePicker fx:id="fechaComic" editable="false" layoutX="87.0" layoutY="181.0" prefHeight="25.0" prefWidth="125.0" promptText="2000-01-01" />
+      <TextField fx:id="guionistaComic" layoutX="87.0" layoutY="209.0" prefHeight="21.0" prefWidth="125.0" promptText="Introduce guionista/s">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="dibujanteComic" layoutX="87.0" layoutY="233.0" prefHeight="21.0" prefWidth="125.0" promptText="Introduce artista/s">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </TextField>
+      <ComboBox fx:id="estadoComic" layoutX="87.0" layoutY="256.0" prefHeight="25.0" prefWidth="125.0" />
+      <ComboBox fx:id="numeroCajaComic" editable="true" layoutX="87.0" layoutY="284.0" prefHeight="25.0" prefWidth="125.0" promptText="Selecciona caja" stylesheets="@../style/combobox_style.css" />
+      <TextField fx:id="nombreKeyIssue" layoutX="87.0" layoutY="312.0" prefHeight="21.0" prefWidth="125.0" promptText="Introduce key issue">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="urlReferencia" layoutX="87.0" layoutY="335.0" prefHeight="21.0" prefWidth="125.0" promptText="Referencia del comic/libro/manga">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="precioComic" layoutX="87.0" layoutY="359.0" prefHeight="21.0" prefWidth="125.0" promptText="Precio del comic/libro/manga">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="direccionImagen" editable="false" layoutX="87.0" layoutY="384.0" prefHeight="21.0" prefWidth="99.0" promptText="URL local de la portada">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </TextField>
+      <Label layoutX="3.0" layoutY="4.0" prefHeight="21.0" prefWidth="49.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Nombre" />
+      <Label layoutX="3.0" layoutY="29.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Numero" />
+      <Label layoutX="3.0" layoutY="55.0" prefHeight="13.0" prefWidth="46.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Variante" />
+      <Label layoutX="3.0" layoutY="78.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Firma" />
+      <Label layoutX="3.0" layoutY="102.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Editorial*" />
+      <Label layoutX="3.0" layoutY="128.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Formato*" />
+      <Label layoutX="3.0" layoutY="155.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Procedencia*" />
+      <Label layoutX="3.0" layoutY="181.0" prefHeight="23.0" prefWidth="37.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Fecha" />
+      <Label layoutX="4.0" layoutY="209.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Guionista" />
+      <Label layoutX="4.0" layoutY="234.0" prefHeight="21.0" prefWidth="57.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Dibujante" />
+      <Label layoutX="4.0" layoutY="259.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Estado" />
+      <Label layoutX="5.0" layoutY="286.0" prefHeight="21.0" prefWidth="35.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Caja" wrapText="true">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Label layoutX="5.0" layoutY="312.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Key issue" />
+      <Label layoutX="5.0" layoutY="336.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="URL referencia" />
+      <Label layoutX="5.0" layoutY="359.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Precio" />
+      <Label layoutX="5.0" layoutY="384.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Portada" />
+      <Button fx:id="botonIntroducir" disable="true" layoutX="7.0" layoutY="448.0" mnemonicParsing="false" onAction="#agregarDatos" prefHeight="73.0" prefWidth="125.0" stylesheets="@../style/genericos_style.css" text="Añadir Comic" visible="false" />
+      <Button fx:id="botonLimpiar" layoutX="219.0" layoutY="3.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="35.0" prefWidth="57.0" stylesheets="@../style/genericos_style.css" text="Limpiar" />
+      <Button fx:id="botonBusquedaCodigo" disable="true" layoutX="6.0" layoutY="409.0" mnemonicParsing="false" onAction="#busquedaPorCodigo" prefHeight="25.0" prefWidth="125.0" style="-fx-background-color: green;" stylesheets="@../style/genericos_style.css" text="Busqueda avanzada" visible="false" wrapText="true" />
+      <Button fx:id="botonModificar" disable="true" layoutX="7.0" layoutY="449.0" mnemonicParsing="false" onAction="#modificarDatos" prefHeight="66.0" prefWidth="113.0" stylesheets="@../style/genericos_style.css" text="Modificar comic" visible="false" wrapText="true" />
+      <TextField fx:id="idComicTratar" disable="true" layoutX="87.0" layoutY="407.0" prefHeight="25.0" prefWidth="125.0" promptText="ID Comic " visible="false" />
+      <Button fx:id="botonEliminar" disable="true" layoutX="7.0" layoutY="446.0" mnemonicParsing="false" onAction="#eliminarDatos" prefHeight="73.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Eliminar comic" visible="false" />
+      <Button fx:id="botonVender" disable="true" ellipsisString="" layoutX="120.0" layoutY="446.0" mnemonicParsing="false" onAction="#ventaComic" prefHeight="73.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Vender comic" visible="false" />
+      <Label fx:id="label_id" disable="true" layoutX="5.0" layoutY="409.0" stylesheets="@../style/genericos_style.css" text="ID Comic*" textFill="WHITE" visible="false">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Button fx:id="botonAgregarPuntuacion" disable="true" layoutX="5.0" layoutY="438.0" mnemonicParsing="false" onAction="#agregarPuntuacion" prefHeight="42.0" prefWidth="117.0" stylesheets="@../style/genericos_style.css" text="Añadir puntuación" visible="false" />
+      <Label fx:id="labelPuntuacion" disable="true" layoutX="5.0" layoutY="407.0" prefHeight="23.0" prefWidth="68.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Puntuación" visible="false" />
+      <ComboBox fx:id="puntuacionMenu" disable="true" layoutX="87.0" layoutY="406.0" prefHeight="25.0" prefWidth="125.0" visible="false" />
+      <Button fx:id="botonBorrarOpinion" disable="true" layoutX="5.0" layoutY="490.0" mnemonicParsing="false" onAction="#borrarPuntuacion" prefHeight="35.0" prefWidth="117.0" stylesheets="@../style/genericos_style.css" text="Borrar puntuación" visible="false" />
+      <Button fx:id="botonSubida" layoutX="190.0" layoutY="381.0" mnemonicParsing="false" onAction="#nuevaPortada" prefHeight="21.0" prefWidth="23.0" style="-fx-background-color: green;" />
+      <ImageView fx:id="imagencomic" fitHeight="301.0" fitWidth="199.0" layoutX="284.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true" />
+      <TextArea fx:id="prontInfo" editable="false" layoutX="239.0" layoutY="327.0" opacity="0.0" prefHeight="206.0" prefWidth="244.0" stylesheets="@../style/panel_info_style.css" wrapText="true" />
+   </children>
+</Pane>
