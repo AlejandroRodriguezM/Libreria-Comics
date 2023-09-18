@@ -1,0 +1,86 @@
+#prontEstadoConexion {
+    -fx-font-size: 25.0px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+    -fx-background-color: #ffffff;
+    -fx-padding: 8.0px;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1.0px;
+    -fx-border-radius: 4.0px;
+}
+
+#prontEstadoConexion:hover {
+    -fx-background-color: #f0f0f0;
+    -fx-cursor: hand;
+}
+
+#prontEstadoConexion:pressed {
+    -fx-background-color: #dddddd;
+}
+
+.button {
+    -fx-font-size: 14.0px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+    -fx-padding: 8.0px 16.0px;
+    -fx-border-width: 1.0px;
+    -fx-border-radius: 4.0px;
+}
+
+.button#botonSobreMi {
+    -fx-background-color: #ffd700; /* Amarillo */
+    -fx-border-color: #e5b800; /* Borde */
+    }
+
+.button#botonEnviar {
+    -fx-background-color: #5cb85c;
+    -fx-border-color: #4cae4c;
+}
+
+.button#botonEnviar:hover {
+    -fx-background-color: #4cae4c;
+}
+
+.button#botonOpciones {
+    -fx-background-color: #337ab7;
+    -fx-border-color: #2e6da4;
+}
+
+.button#botonOpciones:hover {
+    -fx-background-color: #2e6da4;
+}
+
+.button#botonDescargaBBDD {
+    -fx-background-color: #337ab7;
+    -fx-border-color: #2e6da4;
+}
+
+.button#botonDescargaBBDD:hover {
+    -fx-background-color: #2e6da4;
+}
+
+.button#botonAccesobbdd {
+    -fx-background-color: #5cb85c;
+    -fx-border-color: #4cae4c;
+}
+
+.button#botonAccesobbdd:hover {
+    -fx-background-color: #4cae4c;
+}
+
+.button#botonSalir {
+    -fx-background-color: #d9534f;
+    -fx-border-color: #d43f3a;
+}
+
+.button#botonSalir:hover {
+    -fx-background-color: #c9302c;
+}
+
+.button:hover {
+    -fx-cursor: hand;
+}
+
+.button:pressed {
+    -fx-opacity: 0.8;
+}

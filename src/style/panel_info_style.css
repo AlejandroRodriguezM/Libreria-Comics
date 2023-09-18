@@ -1,0 +1,32 @@
+.text-area {
+    -fx-background-color: #F7F7F7;
+    -fx-border-color: transparent;
+    -fx-padding: 4;
+    -fx-font-family: "Comic Sans MS", cursive;
+    -fx-font-size: 14px;
+    -fx-text-fill: #283747;
+    -fx-effect: dropshadow( gaussian , rgba(255,20,147,0.3) , 2, 0, 0, 1 );
+    -fx-background-radius: 5;
+    -fx-cursor: default;
+}
+
+.text-area .content {
+    -fx-text-alignment: left;
+}
+
+.text-area:focused {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+.text-area:hover {
+    -fx-background-color: #FDFDFD;
+}
+
+.text-area:disabled {
+    -fx-opacity: 1;
+}
+
+.text-area:selected {
+    -fx-background-color: #FFC0CB;
+}
