@@ -1,7 +1,0 @@
-#alarmaConexion,#alarmaConexionSql,#alarmaConexionInternet {
-    -fx-font-size: 14px;
-    -fx-text-fill: #ff0000; /* Color rojo */
-    -fx-padding: 5px;
-    -fx-background-radius: 50px;
-    -fx-border-width: 0; /* Elimina el borde */
-}

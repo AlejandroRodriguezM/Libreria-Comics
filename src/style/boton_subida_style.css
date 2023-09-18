@@ -1,8 +1,0 @@
-/* Clase CSS para el botón */
-.button#botonSubida {
-    -fx-background-image: url('/imagenes/visible.png');
-    -fx-background-size: cover; /* Ajusta la imagen al tamaño del botón */
-    -fx-background-repeat: no-repeat; /* Evita que la imagen se repita */
-    -fx-background-position: center center; /* Centra la imagen en el botón */
-    -fx-background-color: transparent; /* Fondo transparente para que solo se vea la imagen */
-}
