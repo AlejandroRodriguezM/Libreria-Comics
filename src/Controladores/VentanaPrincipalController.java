@@ -44,6 +44,9 @@ import javafx.stage.Stage;
  */
 public class VentanaPrincipalController extends Application {
 
+	/**
+	 * Instancia de la clase Ventanas para la navegación.
+	 */
 	private static Ventanas nav = new Ventanas();
 
 	/**

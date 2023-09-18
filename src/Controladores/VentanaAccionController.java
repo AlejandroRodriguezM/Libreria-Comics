@@ -89,192 +89,402 @@ import java.io.InputStream;
  */
 public class VentanaAccionController implements Initializable {
 
+	/**
+	 * Campo de texto para la dirección de la imagen.
+	 */
 	@FXML
 	private TextField direccionImagen;
 
+	/**
+	 * Columna de la tabla para mostrar el nombre del cómic.
+	 */
 	@FXML
 	private TableColumn<Comic, String> nombre;
 
+	/**
+	 * Columna de la tabla para mostrar el número del cómic.
+	 */
 	@FXML
 	private TableColumn<Comic, String> numero;
 
+	/**
+	 * Columna de la tabla para mostrar la variante del cómic.
+	 */
 	@FXML
 	private TableColumn<Comic, String> variante;
 
+	/**
+	 * Columna de la tabla para mostrar la editorial del cómic.
+	 */
 	@FXML
 	private TableColumn<Comic, String> editorial;
 
+	/**
+	 * Columna de la tabla para mostrar el guionista del cómic.
+	 */
 	@FXML
 	private TableColumn<Comic, String> guionista;
 
+	/**
+	 * Columna de la tabla para mostrar el dibujante del cómic.
+	 */
 	@FXML
 	private TableColumn<Comic, String> dibujante;
 
+	/**
+	 * Botón para agregar puntuación a un cómic.
+	 */
 	@FXML
 	private Button botonAgregarPuntuacion;
 
+	/**
+	 * Botón para borrar una opinión.
+	 */
 	@FXML
 	private Button botonBorrarOpinion;
 
+	/**
+	 * Botón para realizar una búsqueda por código.
+	 */
 	@FXML
 	private Button botonBusquedaCodigo;
 
+	/**
+	 * Botón para realizar una búsqueda avanzada.
+	 */
 	@FXML
 	private Button botonBusquedaAvanzada;
 
+	/**
+	 * Botón para eliminar un cómic.
+	 */
 	@FXML
 	private Button botonEliminar;
 
+	/**
+	 * Botón para introducir un cómic.
+	 */
 	@FXML
 	private Button botonIntroducir;
 
+	/**
+	 * Botón para limpiar campos.
+	 */
 	@FXML
 	private Button botonLimpiar;
 
+	/**
+	 * Botón para modificar un cómic.
+	 */
 	@FXML
 	private Button botonModificar;
 
+	/**
+	 * Botón para subir una portada.
+	 */
 	@FXML
 	private Button botonSubidaPortada;
 
+	/**
+	 * Botón para vender un cómic.
+	 */
 	@FXML
 	private Button botonVender;
 
+	/**
+	 * Botón para acceder a la base de datos.
+	 */
 	@FXML
 	private Button botonbbdd;
 
 	// Campos de texto (TextField)
+	/**
+	 * Campo de texto para la búsqueda por código.
+	 */
 	@FXML
 	private TextField busquedaCodigo;
 
+	/**
+	 * Campo de texto para el dibujante del cómic.
+	 */
 	@FXML
 	private TextField dibujanteComic;
 
+	/**
+	 * Campo de texto para la editorial del cómic.
+	 */
 	@FXML
 	private TextField editorialComic;
 
+	/**
+	 * Campo de texto para la firma del cómic.
+	 */
 	@FXML
 	private TextField firmaComic;
 
+	/**
+	 * Campo de texto para el guionista del cómic.
+	 */
 	@FXML
 	private TextField guionistaComic;
 
+	/**
+	 * Campo de texto para el ID del cómic a tratar.
+	 */
 	@FXML
 	private TextField idComicTratar;
 
+	/**
+	 * Campo de texto para el nombre del cómic.
+	 */
 	@FXML
 	private TextField nombreComic;
 
+	/**
+	 * Campo de texto para el nombre del Key Issue del cómic.
+	 */
 	@FXML
 	private TextField nombreKeyIssue;
 
+	/**
+	 * Campo de texto para el precio del cómic.
+	 */
 	@FXML
 	private TextField precioComic;
 
+	/**
+	 * Campo de texto para la URL de referencia del cómic.
+	 */
 	@FXML
 	private TextField urlReferencia;
 
+	/**
+	 * Campo de texto para la variante del cómic.
+	 */
 	@FXML
 	private TextField varianteComic;
 
 	// Etiquetas (Label)
+	/**
+	 * Etiqueta para mostrar la puntuación.
+	 */
 	@FXML
 	private Label labelPuntuacion;
 
+	/**
+	 * Etiqueta para mostrar el código de búsqueda.
+	 */
 	@FXML
 	private Label label_busquedaCodigo;
 
+	/**
+	 * Etiqueta para mostrar la caja.
+	 */
 	@FXML
 	private Label label_caja;
 
+	/**
+	 * Etiqueta para mostrar el dibujante.
+	 */
 	@FXML
 	private Label label_dibujante;
 
+	/**
+	 * Etiqueta para mostrar la editorial.
+	 */
 	@FXML
 	private Label label_editorial;
 
+	/**
+	 * Etiqueta para mostrar el estado.
+	 */
 	@FXML
 	private Label label_estado;
 
+	/**
+	 * Etiqueta para mostrar la fecha.
+	 */
 	@FXML
 	private Label label_fecha;
 
+	/**
+	 * Etiqueta para mostrar la firma.
+	 */
 	@FXML
 	private Label label_firma;
 
+	/**
+	 * Etiqueta para mostrar el formato.
+	 */
 	@FXML
 	private Label label_formato;
 
+	/**
+	 * Etiqueta para mostrar el guionista.
+	 */
 	@FXML
 	private Label label_guionista;
 
+	/**
+	 * Etiqueta para mostrar el ID.
+	 */
 	@FXML
 	private Label label_id;
 
+	/**
+	 * Etiqueta para mostrar el Key Issue.
+	 */
 	@FXML
 	private Label label_key;
 
+	/**
+	 * Etiqueta para mostrar la portada.
+	 */
 	@FXML
 	private Label label_portada;
 
+	/**
+	 * Etiqueta para mostrar el precio.
+	 */
 	@FXML
 	private Label label_precio;
 
+	/**
+	 * Etiqueta para mostrar la procedencia.
+	 */
 	@FXML
 	private Label label_procedencia;
 
+	/**
+	 * Etiqueta para mostrar la referencia.
+	 */
 	@FXML
 	private Label label_referencia;
 
 	// Otros controles (ComboBox, DatePicker, TableView, etc.)
+	/**
+	 * ComboBox para seleccionar el estado del cómic.
+	 */
 	@FXML
 	private ComboBox<String> estadoComic;
 
+	/**
+	 * DatePicker para seleccionar la fecha de publicación del cómic.
+	 */
 	@FXML
 	private DatePicker fechaComic;
 
+	/**
+	 * ComboBox para seleccionar el formato del cómic.
+	 */
 	@FXML
 	private ComboBox<String> formatoComic;
 
+	/**
+	 * ComboBox para realizar búsquedas por editorial.
+	 */
 	@FXML
 	private ComboBox<String> busquedaEditorial;
 
+	/**
+	 * ComboBox para seleccionar el número de caja del cómic.
+	 */
 	@FXML
 	private ComboBox<String> numeroCajaComic;
 
+	/**
+	 * ComboBox para seleccionar el número del cómic.
+	 */
 	@FXML
 	private ComboBox<String> numeroComic;
 
+	/**
+	 * ComboBox para seleccionar la procedencia del cómic.
+	 */
 	@FXML
 	private ComboBox<String> procedenciaComic;
 
+	/**
+	 * ComboBox para seleccionar la puntuación en el menú.
+	 */
 	@FXML
 	private ComboBox<String> puntuacionMenu;
 
+	/**
+	 * TableView para mostrar la lista de cómics.
+	 */
 	@FXML
 	private TableView<Comic> tablaBBDD;
 
+	/**
+	 * ImageView para mostrar la imagen de fondo.
+	 */
 	@FXML
 	private ImageView imagenFondo;
 
+	/**
+	 * ImageView para mostrar la imagen del cómic.
+	 */
 	@FXML
 	private ImageView imagencomic;
 
+	/**
+	 * TextArea para mostrar información de texto.
+	 */
 	@FXML
 	private TextArea prontInfo;
 
+	/**
+	 * VBox para el diseño de la interfaz.
+	 */
 	@FXML
 	private VBox rootVBox;
 
+	/**
+	 * Lista de columnas de la tabla de cómics.
+	 */
 	private List<TableColumn<Comic, String>> columnList;
+
+	/**
+	 * Línea de tiempo para animaciones.
+	 */
 	private Timeline timeline;
-	private Stage stage; // Add this field to store the reference to the stage
+
+	/**
+	 * Referencia a la ventana (stage).
+	 */
+	private Stage stage;
+
+	/**
+	 * Instancia de la clase Ventanas para la navegación.
+	 */
 	private static Ventanas nav = new Ventanas();
+
+	/**
+	 * Instancia de la clase DBLibreriaManager para gestionar la base de datos.
+	 */
 	private static DBLibreriaManager libreria = null;
+
+	/**
+	 * Instancia de la clase Utilidades para funciones generales.
+	 */
 	private static Utilidades utilidad = null;
+
+	/**
+	 * Instancia de la clase FuncionesComboBox para el manejo de ComboBox.
+	 */
 	private static FuncionesComboBox funcionesCombo = new FuncionesComboBox();
+
+	/**
+	 * Instancia de la clase FuncionesTableView para el manejo de TableView.
+	 */
 	private static FuncionesTableView funcionesTabla = new FuncionesTableView();
+
+	/**
+	 * Tipo de acción a realizar en la interfaz.
+	 */
 	private static String TIPO_ACCION;
+
 
 	/**
 	 * Inicializa la interfaz de usuario y configura el comportamiento de los

@@ -93,59 +93,119 @@ import javafx.util.converter.IntegerStringConverter;
  */
 public class CrearBBDDController implements Initializable {
 
-    @FXML
-    private Button botonCrearBBDD;
+	/**
+	 * Botón utilizado para crear la base de datos.
+	 */
+	@FXML
+	private Button botonCrearBBDD;
 
-    @FXML
-    private Button botonLimpiarDatos;
+	/**
+	 * Botón utilizado para limpiar los datos de la interfaz.
+	 */
+	@FXML
+	private Button botonLimpiarDatos;
 
-    @FXML
-    private Button botonSalir;
+	/**
+	 * Botón utilizado para salir de la interfaz.
+	 */
+	@FXML
+	private Button botonSalir;
 
-    @FXML
-    private Button botonVolver;
+	/**
+	 * Botón utilizado para volver atrás en la interfaz.
+	 */
+	@FXML
+	private Button botonVolver;
 
-    @FXML
-    private Label etiquetaHost;
+	/**
+	 * Etiqueta para mostrar el nombre del host.
+	 */
+	@FXML
+	private Label etiquetaHost;
 
-    @FXML
-    private TextField nombreBBDD;
+	/**
+	 * Campo de texto para ingresar el nombre de la base de datos.
+	 */
+	@FXML
+	private TextField nombreBBDD;
 
-    @FXML
-    private TextField nombreHost;
+	/**
+	 * Campo de texto para ingresar el nombre del host.
+	 */
+	@FXML
+	private TextField nombreHost;
 
-    @FXML
-    private PasswordField passBBDD;
+	/**
+	 * Campo de contraseña para ingresar la contraseña de la base de datos.
+	 */
+	@FXML
+	private PasswordField passBBDD;
 
-    @FXML
-    private TextField passUsuarioText;
+	/**
+	 * Campo de texto para ingresar la contraseña del usuario.
+	 */
+	@FXML
+	private TextField passUsuarioText;
 
-    @FXML
-    private Label prontInformativo;
+	/**
+	 * Etiqueta para mostrar mensajes informativos.
+	 */
+	@FXML
+	private Label prontInformativo;
 
-    @FXML
-    private TextField puertoBBDD;
+	/**
+	 * Campo de texto para ingresar el puerto de la base de datos.
+	 */
+	@FXML
+	private TextField puertoBBDD;
 
-    @FXML
-    private ToggleButton toggleEye;
+	/**
+	 * Botón de alternancia para mostrar/ocultar la contraseña.
+	 */
+	@FXML
+	private ToggleButton toggleEye;
 
-    @FXML
-    private ImageView toggleEyeImageView;
+	/**
+	 * Imagen para mostrar/ocultar la contraseña.
+	 */
+	@FXML
+	private ImageView toggleEyeImageView;
+	
+	/**
+	 * Campo de texto para ingresar el nombre de usuario de la base de datos.
+	 */
+	@FXML
+	private TextField userBBDD;
 
-    @FXML
-    private TextField userBBDD;
-
+	/**
+	 * Controlador para la navegación entre ventanas.
+	 */
 	private static Ventanas nav = new Ventanas();
 
+	/**
+	 * Controlador para el acceso a la base de datos.
+	 */
 	private static AccesoBBDDController acceso = new AccesoBBDDController();
+
+	/**
+	 * Controlador para la creación de la base de datos.
+	 */
 	private static CrearBBDDController cbd = null;
+
+	/**
+	 * Variables para almacenar información de la base de datos.
+	 */
 	public static String DB_USER;
 	public static String DB_PASS;
 	public static String DB_PORT;
 	public static String DB_NAME;
 	public static String DB_HOST;
 
+	/**
+	 * Línea de tiempo para animaciones.
+	 */
 	private Timeline timeline;
+
 
 	/**
 	 * Inicializa el controlador cuando se carga la vista.

@@ -59,10 +59,25 @@ import javafx.stage.Stage;
  */
 public class FuncionesExcel {
 
+	/**
+	 * Conexión a la base de datos.
+	 */
 	private static Connection conn = null;
+
+	/**
+	 * Objeto para manejar la navegación en la interfaz gráfica.
+	 */
 	private static Ventanas nav = new Ventanas();
+
+	/**
+	 * Gestor de la base de datos de la librería.
+	 */
 	private static DBLibreriaManager libreria = null;
-	private CargaComicsController cargaComicsController; // Declare the instance
+
+	/**
+	 * Controlador para la carga de cómics en la interfaz gráfica.
+	 */
+	private CargaComicsController cargaComicsController;
 
 	/**
 	 * Guarda los datos en un archivo de Excel y crea un archivo ZIP que contiene el archivo Excel.

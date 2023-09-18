@@ -8,8 +8,16 @@ package Funcionamiento;
  * Clase que representa un hipervínculo con su texto de visualización y URL.
  */
 public class ReferenciaHyperlink {
-    private String displayText; // Texto de visualización del hipervínculo
-    private String url; // URL del hipervínculo
+	/**
+	 * Texto de visualización del hipervínculo.
+	 */
+	private String displayText;
+
+	/**
+	 * URL del hipervínculo.
+	 */
+	private String url;
+
 
     /**
      * Constructor de la clase.

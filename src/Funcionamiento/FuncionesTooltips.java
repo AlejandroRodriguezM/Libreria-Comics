@@ -41,10 +41,14 @@ import javafx.scene.text.FontWeight;
  */
 public class FuncionesTooltips {
 
+	/**
+	 * Fuente utilizada para los tooltips en la interfaz gráfica.
+	 */
     private static final Font TOOLTIP_FONT = Font.font("Comic Sans MS", FontWeight.NORMAL, FontPosture.REGULAR, 13);
 
     /**
-     * Array de mensajes para los tooltips.
+     * Arreglo de mensajes descriptivos utilizados en la interfaz gráfica.
+     * Contiene mensajes para diferentes funciones y etiquetas en la aplicación.
      */
 	private static String[] mensajes = {
 

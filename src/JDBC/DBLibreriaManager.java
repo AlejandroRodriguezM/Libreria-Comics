@@ -94,48 +94,178 @@ import javafx.stage.FileChooser;
  */
 public class DBLibreriaManager extends Comic {
 
+	/**
+	 * Lista de cómics.
+	 */
 	public static List<Comic> listaComics = new ArrayList<>();
+
+	/**
+	 * Lista de cómics con verificación.
+	 */
 	public static List<Comic> listaComicsCheck = new ArrayList<>();
 
+	/**
+	 * Lista de nombres.
+	 */
 	public static List<String> listaNombre = new ArrayList<>();
+
+	/**
+	 * Lista de números de cómic.
+	 */
 	public static List<String> listaNumeroComic = new ArrayList<>();
+
+	/**
+	 * Lista de variantes.
+	 */
 	public static List<String> listaVariante = new ArrayList<>();
+
+	/**
+	 * Lista de firmas.
+	 */
 	public static List<String> listaFirma = new ArrayList<>();
+
+	/**
+	 * Lista de formatos.
+	 */
 	public static List<String> listaFormato = new ArrayList<>();
+
+	/**
+	 * Lista de editoriales.
+	 */
 	public static List<String> listaEditorial = new ArrayList<>();
+
+	/**
+	 * Lista de guionistas.
+	 */
 	public static List<String> listaGuionista = new ArrayList<>();
+
+	/**
+	 * Lista de dibujantes.
+	 */
 	public static List<String> listaDibujante = new ArrayList<>();
+
+	/**
+	 * Lista de fechas.
+	 */
 	public static List<String> listaFecha = new ArrayList<>();
+
+	/**
+	 * Lista de procedencias.
+	 */
 	public static List<String> listaProcedencia = new ArrayList<>();
+
+	/**
+	 * Lista de cajas.
+	 */
 	public static List<String> listaCaja = new ArrayList<>();
 
+	/**
+	 * Lista de nombres de cómics.
+	 */
 	public static List<String> nombreComicList = new ArrayList<>();
+
+	/**
+	 * Lista de números de cómic.
+	 */
 	public static List<String> numeroComicList = new ArrayList<>();
+
+	/**
+	 * Lista de nombres de firma.
+	 */
 	public static List<String> nombreFirmaList = new ArrayList<>();
+
+	/**
+	 * Lista de nombres de guionistas.
+	 */
 	public static List<String> nombreGuionistaList = new ArrayList<>();
+
+	/**
+	 * Lista de nombres de variantes.
+	 */
 	public static List<String> nombreVarianteList = new ArrayList<>();
+
+	/**
+	 * Lista de números de caja.
+	 */
 	public static List<String> numeroCajaList = new ArrayList<>();
+
+	/**
+	 * Lista de nombres de procedencia.
+	 */
 	public static List<String> nombreProcedenciaList = new ArrayList<>();
+
+	/**
+	 * Lista de nombres de formato.
+	 */
 	public static List<String> nombreFormatoList = new ArrayList<>();
+
+	/**
+	 * Lista de nombres de editorial.
+	 */
 	public static List<String> nombreEditorialList = new ArrayList<>();
+
+	/**
+	 * Lista de nombres de dibujantes.
+	 */
 	public static List<String> nombreDibujanteList = new ArrayList<>();
 
-	public static List<List<String>> listaOrdenada = Arrays.asList(DBLibreriaManager.nombreComicList,
-			DBLibreriaManager.numeroComicList, DBLibreriaManager.nombreVarianteList,
-			DBLibreriaManager.nombreProcedenciaList, DBLibreriaManager.nombreFormatoList,
-			DBLibreriaManager.nombreDibujanteList, DBLibreriaManager.nombreGuionistaList,
-			DBLibreriaManager.nombreEditorialList, DBLibreriaManager.nombreFirmaList, DBLibreriaManager.numeroCajaList);
+	/**
+	 * Lista ordenada que contiene todas las listas anteriores.
+	 */
+	public static List<List<String>> listaOrdenada = Arrays.asList(
+	        DBLibreriaManager.nombreComicList,
+	        DBLibreriaManager.numeroComicList,
+	        DBLibreriaManager.nombreVarianteList,
+	        DBLibreriaManager.nombreProcedenciaList,
+	        DBLibreriaManager.nombreFormatoList,
+	        DBLibreriaManager.nombreDibujanteList,
+	        DBLibreriaManager.nombreGuionistaList,
+	        DBLibreriaManager.nombreEditorialList,
+	        DBLibreriaManager.nombreFirmaList,
+	        DBLibreriaManager.numeroCajaList
+	);
 
-	public static List<List<String>> itemsList = Arrays.asList(DBLibreriaManager.listaNombre,
-			DBLibreriaManager.listaNumeroComic, DBLibreriaManager.listaVariante, DBLibreriaManager.listaProcedencia,
-			DBLibreriaManager.listaFormato, DBLibreriaManager.listaDibujante, DBLibreriaManager.listaGuionista,
-			DBLibreriaManager.listaEditorial, DBLibreriaManager.listaFirma, DBLibreriaManager.listaCaja);
+	/**
+	 * Lista de listas de elementos.
+	 */
+	public static List<List<String>> itemsList = Arrays.asList(
+	        DBLibreriaManager.listaNombre,
+	        DBLibreriaManager.listaNumeroComic,
+	        DBLibreriaManager.listaVariante,
+	        DBLibreriaManager.listaProcedencia,
+	        DBLibreriaManager.listaFormato,
+	        DBLibreriaManager.listaDibujante,
+	        DBLibreriaManager.listaGuionista,
+	        DBLibreriaManager.listaEditorial,
+	        DBLibreriaManager.listaFirma,
+	        DBLibreriaManager.listaCaja
+	);
 
+	/**
+	 * Ventanas de la aplicación.
+	 */
 	private static Ventanas nav = new Ventanas();
+
+	/**
+	 * Conexión a la base de datos.
+	 */
 	private static Connection conn = null;
+
+	/**
+	 * Utilidades generales.
+	 */
 	private static Utilidades utilidad = new Utilidades();
+
+	/**
+	 * Funciones relacionadas con Excel.
+	 */
 	private static FuncionesExcel carpeta = new FuncionesExcel();
+
+	/**
+	 * Ventanas de la aplicación.
+	 */
 	private static Ventanas ventanas = new Ventanas();
+
 
 	/**
 	 * Realiza llamadas para inicializar listas de autocompletado.

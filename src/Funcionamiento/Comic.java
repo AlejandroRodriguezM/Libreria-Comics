@@ -12,24 +12,96 @@ package Funcionamiento;
  */
 public class Comic {
 
+	/**
+	 * Identificador único del cómic.
+	 */
 	protected String ID;
+
+	/**
+	 * Nombre del cómic.
+	 */
 	protected String nombre;
+
+	/**
+	 * Número de caja del cómic.
+	 */
 	protected String numCaja;
+
+	/**
+	 * Número del cómic.
+	 */
 	protected String numero;
+
+	/**
+	 * Variante del cómic.
+	 */
 	protected String variante;
+
+	/**
+	 * Firma asociada al cómic.
+	 */
 	protected String firma;
+
+	/**
+	 * Editorial del cómic.
+	 */
 	protected String editorial;
+
+	/**
+	 * Formato del cómic.
+	 */
 	protected String formato;
+
+	/**
+	 * Procedencia del cómic.
+	 */
 	protected String procedencia;
+
+	/**
+	 * Fecha de publicación del cómic.
+	 */
 	protected String fecha;
+
+	/**
+	 * Guionista del cómic.
+	 */
 	protected String guionista;
+
+	/**
+	 * Dibujante del cómic.
+	 */
 	protected String dibujante;
+
+	/**
+	 * Key Issue asociado al cómic.
+	 */
 	protected String key_issue;
+
+	/**
+	 * Estado del cómic.
+	 */
 	protected String estado;
+
+	/**
+	 * Puntuación del cómic.
+	 */
 	protected String puntuacion;
+
+	/**
+	 * Ruta de la imagen del cómic.
+	 */
 	protected String imagen;
+
+	/**
+	 * URL de referencia relacionada con el cómic.
+	 */
 	protected String url_referencia;
+
+	/**
+	 * Precio del cómic.
+	 */
 	protected String precio_comic;
+
 
 	/**
      * Constructor para crear un objeto Comic con todos los atributos.

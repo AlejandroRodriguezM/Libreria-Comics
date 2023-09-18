@@ -37,16 +37,29 @@ import javafx.stage.Stage;
  */
 public class CargaComicsController {
 
-    @FXML
-    private ProgressBar cargaComics;
+	/**
+	 * Barra de progreso para mostrar el progreso de carga de cómics.
+	 */
+	@FXML
+	private ProgressBar cargaComics;
 
-    @FXML
-    private TextArea comicsCarga;
+	/**
+	 * Área de texto para mostrar información sobre la carga de cómics.
+	 */
+	@FXML
+	private TextArea comicsCarga;
 
-    @FXML
-    private Label porcentajeCarga;
+	/**
+	 * Etiqueta para mostrar el porcentaje de carga de cómics.
+	 */
+	@FXML
+	private Label porcentajeCarga;
 
-    private Stage stage; // Campo para almacenar la referencia a la ventana
+	/**
+	 * Campo para almacenar la referencia a la ventana (Stage).
+	 */
+	private Stage stage; // Campo para almacenar la referencia a la ventana
+
 
     /**
      * Actualiza el progreso de la barra de progreso.

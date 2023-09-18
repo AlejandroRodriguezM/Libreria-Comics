@@ -40,15 +40,46 @@ import Funcionamiento.Ventanas;
 public class DBManager {
 
 	// Conexion a la base de datos
+	/**
+	 * Conexión a la base de datos.
+	 */
 	private static Connection conn = null;
+
+	/**
+	 * Ventanas de la aplicación.
+	 */
 	private static Ventanas nav = new Ventanas();
 
+	/**
+	 * Usuario de la base de datos.
+	 */
 	public static String DB_USER;
+
+	/**
+	 * Contraseña de la base de datos.
+	 */
 	public static String DB_PASS;
+
+	/**
+	 * Puerto de la base de datos.
+	 */
 	public static String DB_PORT;
+
+	/**
+	 * Nombre de la base de datos.
+	 */
 	public static String DB_NAME;
+
+	/**
+	 * Host de la base de datos.
+	 */
 	public static String DB_HOST;
+
+	/**
+	 * URL de la base de datos.
+	 */
 	public static String DB_URL;
+
 
 
 	/**

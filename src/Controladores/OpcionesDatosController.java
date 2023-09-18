@@ -77,84 +77,179 @@ import javafx.util.Duration;
  */
 public class OpcionesDatosController implements Initializable {
 
+	/**
+	 * Etiqueta de alarma para la conexión.
+	 */
 	@FXML
 	private Label alarmaConexion;
 
+	/**
+	 * Etiqueta de alarma para la conexión a Internet.
+	 */
 	@FXML
 	private Label alarmaConexionInternet;
-	
+
+	/**
+	 * Etiqueta de alarma para la conexión a la base de datos SQL.
+	 */
 	@FXML
 	private Label alarmaConexionSql;
 
+	/**
+	 * Botón para crear una nueva base de datos.
+	 */
 	@FXML
 	private Button botonCrearBBDD;
 
+	/**
+	 * Botón para salir de la aplicación.
+	 */
 	@FXML
 	private Button botonSalir;
 
+	/**
+	 * Botón para volver atrás.
+	 */
 	@FXML
 	private Button botonVolver;
 
+	/**
+	 * Botón para abrir un archivo.
+	 */
 	@FXML
 	private Button boton_abrir;
 
+	/**
+	 * Botón para guardar un archivo.
+	 */
 	@FXML
 	private Button boton_guardar;
 
+	/**
+	 * Botón para restaurar un archivo.
+	 */
 	@FXML
 	private Button boton_restaurar;
 
+	/**
+	 * Etiqueta para mostrar el nombre del host.
+	 */
 	@FXML
 	private Label etiquetaHost;
 
+	/**
+	 * Selector para el nombre de la base de datos.
+	 */
 	@FXML
 	private ComboBox<String> nombreBBDD;
 
+	/**
+	 * Campo de texto para ingresar el nombre del host.
+	 */
 	@FXML
 	private TextField nombreHost;
 
+	/**
+	 * Etiqueta para mostrar el nombre.
+	 */
 	@FXML
 	private Label nombre_label;
 
+	/**
+	 * Campo de contraseña.
+	 */
 	@FXML
 	private PasswordField pass;
 
+	/**
+	 * Campo de texto para ingresar la contraseña del usuario.
+	 */
 	@FXML
 	private TextField passUsuarioTextField;
 
+	/**
+	 * Etiqueta para mostrar la contraseña.
+	 */
 	@FXML
 	private Label password_label;
 
+	/**
+	 * Etiqueta para mostrar el estado del fichero.
+	 */
 	@FXML
 	private Label prontEstadoFichero;
 
+	/**
+	 * Etiqueta para mostrar el puerto.
+	 */
 	@FXML
 	private Label puerto_label;
 
+	/**
+	 * Campo de texto para ingresar el puerto de la base de datos.
+	 */
 	@FXML
 	private TextField puertobbdd;
 
+	/**
+	 * Botón para mostrar u ocultar la contraseña.
+	 */
 	@FXML
 	private ToggleButton toggleEye;
 
+	/**
+	 * Imagen del ojo para mostrar u ocultar la contraseña.
+	 */
 	@FXML
 	private ImageView toggleEyeImageView;
 
+	/**
+	 * Campo de texto para ingresar el nombre de usuario.
+	 */
 	@FXML
 	private TextField usuario;
 
+	/**
+	 * Etiqueta para mostrar el nombre de usuario.
+	 */
 	@FXML
 	private Label usuario_label;
 
+	/**
+	 * Línea de tiempo para la animación.
+	 */
 	private Timeline timeline;
 
+	/**
+	 * Línea de tiempo para la animación de la alarma.
+	 */
 	private Timeline animacionAlarmaTimeline;
+
+	/**
+	 * Línea de tiempo para la animación de la alarma en línea.
+	 */
 	private Timeline animacionAlarmaOnlineTimeline;
+
+	/**
+	 * Línea de tiempo para la animación de la alarma de conexión a Internet.
+	 */
 	private Timeline animacionAlarmaTimelineInternet;
+
+	/**
+	 * Línea de tiempo para la animación de la alarma de conexión a MySQL.
+	 */
 	private Timeline animacionAlarmaTimelineMySql;
-	
+
+	/**
+	 * Instancia de la clase Ventanas para la navegación.
+	 */
 	private static Ventanas nav = new Ventanas();
+
+	/**
+	 * Instancia de AccesoBBDDController para el acceso a la base de datos.
+	 */
 	private static AccesoBBDDController acceso = new AccesoBBDDController();
+
 
 	/**
 	 * Inicializa el controlador cuando se carga la vista.

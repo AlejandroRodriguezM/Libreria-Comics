@@ -68,80 +68,166 @@ import javafx.util.Duration;
  */
 public class AccesoBBDDController implements Initializable {
 
+	/**
+	 * Etiqueta para mostrar una alarma relacionada con la conexión.
+	 */
 	@FXML
 	private Label alarmaConexion;
 
+	/**
+	 * Etiqueta para mostrar una alarma relacionada con la conexión a Internet.
+	 */
 	@FXML
 	private Label alarmaConexionInternet;
 
+	/**
+	 * Etiqueta para mostrar una alarma relacionada con la conexión a la base de datos SQL.
+	 */
 	@FXML
 	private Label alarmaConexionSql;
 
+	/**
+	 * Botón para acceder a la base de datos.
+	 */
 	@FXML
 	private Button botonAccesobbdd;
 
+	/**
+	 * Botón para acceder a la base de datos en línea.
+	 */
 	@FXML
 	private Button botonAccesobbddOnline;
 
+	/**
+	 * Botón para descargar la base de datos.
+	 */
 	@FXML
 	private Button botonDescargaBBDD;
 
+	/**
+	 * Botón para enviar datos.
+	 */
 	@FXML
 	private Button botonEnviar;
 
+	/**
+	 * Botón para acceder a las opciones.
+	 */
 	@FXML
 	private Button botonOpciones;
 
+	/**
+	 * Botón para salir de la aplicación.
+	 */
 	@FXML
 	private Button botonSalir;
 
+	/**
+	 * Casilla de verificación para recordar la configuración.
+	 */
 	@FXML
 	private CheckBox checkRecordar;
 
+	/**
+	 * Etiqueta para mostrar el servidor.
+	 */
 	@FXML
 	private Label labelServidor;
 
+	/**
+	 * Etiqueta para mostrar el nombre de usuario.
+	 */
 	@FXML
 	private Label nomUsuarioLabel;
 
+	/**
+	 * Campo de texto para ingresar el nombre de usuario.
+	 */
 	@FXML
 	private TextField nomUsuarioText;
 
+	/**
+	 * Etiqueta para mostrar la contraseña del usuario.
+	 */
 	@FXML
 	private Label passUsuarioLabel;
 
+	/**
+	 * Campo de contraseña para ingresar la contraseña del usuario.
+	 */
 	@FXML
 	private PasswordField passUsuarioText;
 
+	/**
+	 * Etiqueta para mostrar el estado de la conexión.
+	 */
 	@FXML
 	private Label prontEstadoConexion;
 
+	/**
+	 * Botón de alternancia para cambiar entre dos estados.
+	 */
 	@FXML
 	private ToggleButton toogleButton;
 
+	/**
+	 * Botón de alternancia para mostrar u ocultar la contraseña.
+	 */
 	@FXML
 	private ToggleButton toggleEye;
 
+	/**
+	 * Vista de imagen para el botón de alternancia para mostrar u ocultar la contraseña.
+	 */
 	@FXML
 	private ImageView toggleEyeImageView;
 
+	/**
+	 * Campo de texto para ingresar la contraseña del usuario.
+	 */
 	@FXML
 	private TextField passUsuarioTextField;
 
+	/**
+	 * Objeto para gestionar animaciones con una línea de tiempo.
+	 */
 	private Timeline timeline;
 
+	/**
+	 * Objeto para gestionar animaciones de la alarma.
+	 */
 	private Timeline animacionAlarmaTimeline;
-	
+
+	/**
+	 * Objeto para gestionar animaciones de la alarma en línea.
+	 */
 	private Timeline animacionAlarmaOnlineTimeline;
 
+	/**
+	 * Objeto para gestionar animaciones de la alarma de conexión a Internet.
+	 */
 	private Timeline animacionAlarmaTimelineInternet;
 
+	/**
+	 * Objeto para gestionar animaciones de la alarma de conexión a MySQL.
+	 */
 	private Timeline animacionAlarmaTimelineMySql;
 
+	/**
+	 * Estado del botón de alternancia del ojo.
+	 */
 	private boolean estadoOjo = false;
 
+	/**
+	 * Objeto para gestionar las ventanas de navegación.
+	 */
 	private static Ventanas nav = new Ventanas();
+
+	/**
+	 * Controlador para crear la base de datos.
+	 */
 	private static CrearBBDDController cbd = null;
+
 
 	/**
 	 * Inicializa el controlador cuando se carga la vista.

@@ -75,15 +75,36 @@ import javafx.scene.control.TextField;
  */
 public class Utilidades {
 
+	/**
+	 * Lista de cómics limpios.
+	 */
 	public static List<Comic> listaLimpia = new ArrayList<>();
+
+	/**
+	 * Lista de sugerencias de autocompletado de entrada limpia.
+	 */
 	public static List<String> listaLimpiaAutoCompletado = new ArrayList<>();
+
+	/**
+	 * Funciones para la manipulación de archivos Excel.
+	 */
 	private static FuncionesExcel excel = null;
 
+	/**
+	 * Ventanas de la aplicación.
+	 */
 	private static Ventanas nav = new Ventanas();
 
+	/**
+	 * Sistema operativo actual.
+	 */
 	public static String os = System.getProperty("os.name", "unknown").toLowerCase(Locale.ROOT);
 
+	/**
+	 * Mapa que almacena tasas de cambio.
+	 */
 	private static final Map<String, Double> tasasDeCambio = new HashMap<>();
+
 
 	/**
 	 * Verifica si el sistema operativo es Windows.
