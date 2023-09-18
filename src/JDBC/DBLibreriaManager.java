@@ -464,9 +464,9 @@ public class DBLibreriaManager extends Comic {
 	 * @throws SQLException Si ocurre un error en la consulta SQL.
 	 */
 	public List<String> obtenerValoresColumna(String columna) throws SQLException {
-	    String sentenciaSQL = "SELECT " + columna + " FROM comicsbbdd ORDER BY " + columna + " ASC";
-	    reiniciarBBDD();
-	    return guardarDatosAutoCompletado(sentenciaSQL, columna);
+		String sentenciaSQL = "SELECT " + columna + " FROM comicsbbdd ORDER BY " + columna + " ASC";
+		reiniciarBBDD();
+		return guardarDatosAutoCompletado(sentenciaSQL, columna);
 	}
 
 	/**
@@ -477,7 +477,7 @@ public class DBLibreriaManager extends Comic {
 	 * @return Una lista de objetos Comic que representan los cómics de la librería.
 	 * @throws SQLException Si ocurre algún error al ejecutar la consulta SQL.
 	 */
-	public List<Comic> verLibreria(String sentenciaSQL) throws SQLException {
+	public List<Comic> verLibreria(String sentenciaSQL) {
 		listaComics.clear(); // Limpiar la lista existente de cómics
 
 		ResultSet rs = obtenLibreria(sentenciaSQL); // Obtener el ResultSet
@@ -1170,13 +1170,20 @@ public class DBLibreriaManager extends Comic {
 						ResultSet.CONCUR_UPDATABLE);
 
 				stmt.setString(1, id);
+				
+				int filasAfectadas = stmt.executeUpdate();
 			}
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
 		} finally {
 			// Cerrar el PreparedStatement y Connection en un bloque finally
 			if (stmt != null) {
-				stmt.close();
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					// Manejar cualquier excepción que ocurra al cerrar el PreparedStatement
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -1225,7 +1232,7 @@ public class DBLibreriaManager extends Comic {
 	 *         consulta.
 	 * @throws SQLException Si ocurre un error en la consulta SQL.
 	 */
-	public ResultSet obtenLibreria(String sentenciaSQL) throws SQLException {
+	public ResultSet obtenLibreria(String sentenciaSQL) {
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 
@@ -1575,7 +1582,7 @@ public class DBLibreriaManager extends Comic {
 	 * @return una lista de cómics obtenidos de la base de datos
 	 * @throws SQLException
 	 */
-	public List<Comic> comprobarLibreria(String sentenciaSQL) throws SQLException {
+	public List<Comic> comprobarLibreria(String sentenciaSQL) {
 
 		List<Comic> listComic = FXCollections.observableArrayList(verLibreria(sentenciaSQL));
 		String excepcion = "No hay ningun comic guardado en la base de datos";
@@ -1644,7 +1651,7 @@ public class DBLibreriaManager extends Comic {
 	 * @throws IOException  Si ocurre un error de entrada/salida
 	 * @throws SQLException Si ocurre un error en la base de datos
 	 */
-	public List<Comic> libreriaCompleta() throws IOException, SQLException {
+	public List<Comic> libreriaCompleta() {
 		String sentenciaSQL = "SELECT * FROM comicsbbdd ORDER BY nomComic, fecha_publicacion, numComic";
 
 		return comprobarLibreria(sentenciaSQL);

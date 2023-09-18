@@ -39,10 +39,10 @@
             </Menu>
             <Menu fx:id="navegacion_comic" mnemonicParsing="false" text="Ventanas">
                <items>
-                  <MenuItem fx:id="menu_comic_aniadir" mnemonicParsing="false" onAction="#ventanaAniadir" text="Añadir comic" />
-                  <MenuItem fx:id="menu_comic_eliminar" mnemonicParsing="false" onAction="#ventanaEliminar" text="Eliminar Comic" />
-                  <MenuItem fx:id="menu_comic_modificar" mnemonicParsing="false" onAction="#ventanaModificar" text="Modificar Comic" />
-                  <MenuItem fx:id="menu_comic_puntuar" mnemonicParsing="false" onAction="#ventanaPuntuar" text="Puntuar Comic" />
+                  <MenuItem fx:id="menu_comic_aniadir" mnemonicParsing="false" onAction="#accionComic" text="Añadir comic" />
+                  <MenuItem fx:id="menu_comic_eliminar" mnemonicParsing="false" onAction="#accionComic" text="Eliminar Comic" />
+                  <MenuItem fx:id="menu_comic_modificar" mnemonicParsing="false" onAction="#accionComic" text="Modificar Comic" />
+                  <MenuItem fx:id="menu_comic_puntuar" mnemonicParsing="false" onAction="#accionComic" text="Puntuar Comic" />
                   <MenuItem disable="true" mnemonicParsing="false" text="Lectura Aleatoria" />
                </items>
             </Menu>
