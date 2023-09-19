@@ -470,42 +470,7 @@ public class MenuPrincipalController implements Initializable {
 
 		restringir_entrada_datos();
 
-		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
-				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
-
-		int totalComboboxes = comboboxes.size();
-
-		// Crear un ScheduledExecutorService para ejecutar la tarea después de un 1
-		// segundo
-		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-		scheduler.schedule(() -> {
-
-			Platform.runLater(() -> {
-				try {
-					libreria.listasAutoCompletado();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-
-				Task<Void> task = new Task<Void>() {
-					@Override
-					protected Void call() throws Exception {
-						funcionesCombo.rellenarComboBox(comboboxes);
-						funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
-						return null;
-					}
-				};
-
-				// Iniciar el Task en un nuevo hilo
-				Thread thread = new Thread(task);
-				thread.start();
-
-				// Cuando la tarea haya terminado, apaga el scheduler
-				task.setOnSucceeded(event -> {
-					scheduler.shutdown();
-				});
-			});
-		}, 0, TimeUnit.SECONDS);
+		cargarDatosDataBase();
 
 		// Desactivar el enfoque en el VBox para evitar que reciba eventos de teclado
 		rootVBox.setFocusTraversable(false);
@@ -538,6 +503,55 @@ public class MenuPrincipalController implements Initializable {
 		funcionesCombo.rellenarComboBoxEstaticos(comboboxesMod); // Llamada a la función para rellenar ComboBoxes
 	}
 
+	/**
+	 * Carga los datos de la base de datos en los ComboBox proporcionados después de un
+	 * segundo de retraso. Esta función utiliza un ScheduledExecutorService para
+	 * programar la tarea.
+	 *
+	 * @param comboboxes Una lista de ComboBox que se actualizarán con los datos de la base de datos.
+	 */
+	public void cargarDatosDataBase() {
+		
+		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
+				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
+		
+		int totalComboboxes = comboboxes.size();
+
+		tablaBBDD.refresh();
+		prontInfo.setOpacity(0);
+		imagencomic.setImage(null);
+		
+		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+		scheduler.schedule(() -> {
+
+			Platform.runLater(() -> {
+				try {
+					libreria.listasAutoCompletado();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+
+				Task<Void> task = new Task<Void>() {
+					@Override
+					protected Void call() throws Exception {
+						funcionesCombo.rellenarComboBox(comboboxes);
+						funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
+						return null;
+					}
+				};
+
+				// Iniciar el Task en un nuevo hilo
+				Thread thread = new Thread(task);
+				thread.start();
+
+				// Cuando la tarea haya terminado, apaga el scheduler
+				task.setOnSucceeded(event -> {
+					scheduler.shutdown();
+				});
+			});
+		}, 0, TimeUnit.SECONDS);
+	}
+	
 	/**
 	 * Establece el dinamismo en la interfaz gráfica ajustando propiedades de elementos como tamaños, anchos y máximos.
 	 */
@@ -868,7 +882,15 @@ public class MenuPrincipalController implements Initializable {
 	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
-//		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
+		
+		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
+				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
+		
+		int totalComboboxes = comboboxes.size();
+		
+		funcionesCombo.rellenarComboBox(comboboxes);
+		funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
+		
 		tablaBBDD.refresh();
 		prontInfo.setOpacity(0);
 		imagencomic.setImage(null);
@@ -1762,7 +1784,7 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void accionComic(ActionEvent event) {
 	    Object fuente = event.getSource();
-
+	    tablaBBDD.getItems().clear();
 	    if (fuente instanceof Button) {
 	        Button botonPresionado = (Button) fuente;
 

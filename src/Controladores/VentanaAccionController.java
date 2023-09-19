@@ -479,6 +479,8 @@ public class VentanaAccionController implements Initializable {
 	 * Instancia de la clase FuncionesTableView para el manejo de TableView.
 	 */
 	private static FuncionesTableView funcionesTabla = new FuncionesTableView();
+	
+	MenuPrincipalController menuPrincipal = null;
 
 	/**
 	 * Tipo de acción a realizar en la interfaz.
@@ -917,6 +919,8 @@ public class VentanaAccionController implements Initializable {
 	void borrarPuntuacion(ActionEvent event) throws IOException, SQLException {
 		libreria = new DBLibreriaManager();
 		String id_comic = idComicTratar.getText();
+		MenuPrincipalController menuPrincipal = new MenuPrincipalController();
+
 		idComicTratar.setStyle("");
 
 		if (id_comic.length() == 0 || !libreria.checkID(id_comic)) {
@@ -927,6 +931,7 @@ public class VentanaAccionController implements Initializable {
 			libreria.borrarPuntuacion(id_comic);
 			prontInfo.setText("Deseo concedido. Has borrado la puntuacion del comic.");
 
+			menuPrincipal.cargarDatosDataBase();
 			Image nuevaImagen = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
 			imagenFondo.setImage(nuevaImagen);
 		}
@@ -1333,6 +1338,7 @@ public class VentanaAccionController implements Initializable {
 		libreria = new DBLibreriaManager();
 		String id_comic = idComicTratar.getText();
 		idComicTratar.setStyle("");
+		MenuPrincipalController menuPrincipal = new MenuPrincipalController();
 
 		if (id_comic.length() == 0 || !libreria.checkID(id_comic)) {
 			idComicTratar.setStyle("-fx-background-color: #FF0000;");
@@ -1344,7 +1350,7 @@ public class VentanaAccionController implements Initializable {
 			libreria.reiniciarBBDD();
 
 			prontInfo.setText("Deseo concedido. Has puesto a la venta el comic");
-
+			menuPrincipal.cargarDatosDataBase();
 			Image nuevaImagen = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
 			imagenFondo.setImage(nuevaImagen);
 		}
@@ -1387,6 +1393,8 @@ public class VentanaAccionController implements Initializable {
 		libreria = new DBLibreriaManager();
 		Comic comic_temp = new Comic();
 		Image imagen = null;
+		MenuPrincipalController menuPrincipal = new MenuPrincipalController();
+		
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
 		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + DBManager.DB_NAME
@@ -1580,6 +1588,9 @@ public class VentanaAccionController implements Initializable {
 
 					Image nuevaImagen = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
 					imagenFondo.setImage(nuevaImagen);
+					
+					
+					menuPrincipal.cargarDatosDataBase();
 				}
 			} else {
 				String excepcion = "No puedes modificar un comic si antes no pones un ID valido";
@@ -1769,10 +1780,12 @@ public class VentanaAccionController implements Initializable {
 	public void subidaComic() throws IOException, SQLException {
 		libreria = new DBLibreriaManager();
 		utilidad = new Utilidades();
-		new MenuPrincipalController();
+		MenuPrincipalController menuPrincipal = new MenuPrincipalController();
+		
 		File file;
 		LocalDate fecha_comic;
-
+		Image imagen = null;
+		
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
 		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + DBManager.DB_NAME
@@ -1811,8 +1824,6 @@ public class VentanaAccionController implements Initializable {
 			String dibujante = datos[9];
 
 			if (datos[10] != "") {
-
-				Image imagen = null;
 
 				if (Utilidades.isURL(datos[10])) {
 					// Es una URL en internet
@@ -1899,8 +1910,12 @@ public class VentanaAccionController implements Initializable {
 					Utilidades.borrarImagen(portada);
 				}
 
-				Image imagen = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
-				imagenFondo.setImage(imagen);
+				imagencomic.setImage(imagen);
+				
+				Image imagenDeseo = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
+				imagenFondo.setImage(imagenDeseo);
+				
+				menuPrincipal.cargarDatosDataBase();
 			}
 		} else {
 			prontInfo.setOpacity(1);
