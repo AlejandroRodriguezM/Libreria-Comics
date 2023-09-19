@@ -440,6 +440,8 @@ public class FuncionesComboBox {
 				listView.requestFocus(); // Solicitar el enfoque en la lista
 				listView.getSelectionModel().selectFirst();
 			}
+			
+			rellenarComboBox(comboboxes);
 		});
 
 		// Evento para manejar las teclas presionadas en el TextField de filtro

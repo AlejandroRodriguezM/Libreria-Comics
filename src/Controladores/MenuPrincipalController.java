@@ -138,25 +138,23 @@ public class MenuPrincipalController implements Initializable {
 	 * Menú de archivo con opciones relacionadas con la base de datos.
 	 */
 	@FXML
-	private MenuItem menu_archivo_backupbbdd, menu_archivo_cerrar, menu_archivo_delete, 
-	                menu_archivo_desconectar, menu_archivo_excel, menu_archivo_importar,
-	                menu_archivo_sobreMi;
+	private MenuItem menu_archivo_backupbbdd, menu_archivo_cerrar, menu_archivo_delete, menu_archivo_desconectar,
+			menu_archivo_excel, menu_archivo_importar, menu_archivo_sobreMi;
 
 	/**
 	 * Menú relacionado con operaciones de cómic.
 	 */
 	@FXML
-	private MenuItem menu_comic_aleatoria, menu_comic_aniadir, menu_comic_eliminar,
-	                menu_comic_modificar, menu_comic_puntuar;
+	private MenuItem menu_comic_aleatoria, menu_comic_aniadir, menu_comic_eliminar, menu_comic_modificar,
+			menu_comic_puntuar;
 
 	/**
 	 * Menú relacionado con estadísticas de cómics.
 	 */
 	@FXML
-	private MenuItem menu_estadistica_comprados, menu_estadistica_estadistica, 
-	                menu_estadistica_firmados, menu_estadistica_key_issue,
-	                menu_estadistica_posesion, menu_estadistica_puntuados,
-	                menu_estadistica_vendidos;
+	private MenuItem menu_estadistica_comprados, menu_estadistica_estadistica, menu_estadistica_firmados,
+			menu_estadistica_key_issue, menu_estadistica_posesion, menu_estadistica_puntuados,
+			menu_estadistica_vendidos;
 
 	/**
 	 * Barra de menús de navegación.
@@ -438,7 +436,6 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	private List<TableColumn<Comic, String>> columnList;
 
-
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
 	 *
@@ -495,8 +492,8 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Rellena los ComboBoxes estáticos con datos predefinidos.
-	 * Los ComboBoxes se pasan como una lista en el orden: formato, procedencia, editorial.
+	 * Rellena los ComboBoxes estáticos con datos predefinidos. Los ComboBoxes se
+	 * pasan como una lista en el orden: formato, procedencia, editorial.
 	 */
 	public void rellenarCombosEstaticos() {
 		List<ComboBox<String>> comboboxesMod = Arrays.asList(nombreFormato, nombreProcedencia, nombreEditorial);
@@ -504,23 +501,24 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Carga los datos de la base de datos en los ComboBox proporcionados después de un
-	 * segundo de retraso. Esta función utiliza un ScheduledExecutorService para
+	 * Carga los datos de la base de datos en los ComboBox proporcionados después de
+	 * un segundo de retraso. Esta función utiliza un ScheduledExecutorService para
 	 * programar la tarea.
 	 *
-	 * @param comboboxes Una lista de ComboBox que se actualizarán con los datos de la base de datos.
+	 * @param comboboxes Una lista de ComboBox que se actualizarán con los datos de
+	 *                   la base de datos.
 	 */
 	public void cargarDatosDataBase() {
-		
+
 		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
 				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
-		
+
 		int totalComboboxes = comboboxes.size();
 
 		tablaBBDD.refresh();
 		prontInfo.setOpacity(0);
 		imagencomic.setImage(null);
-		
+
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 		scheduler.schedule(() -> {
 
@@ -551,9 +549,10 @@ public class MenuPrincipalController implements Initializable {
 			});
 		}, 0, TimeUnit.SECONDS);
 	}
-	
+
 	/**
-	 * Establece el dinamismo en la interfaz gráfica ajustando propiedades de elementos como tamaños, anchos y máximos.
+	 * Establece el dinamismo en la interfaz gráfica ajustando propiedades de
+	 * elementos como tamaños, anchos y máximos.
 	 */
 	public void establecerDinamismoAnchor() {
 		backgroundImage.fitWidthProperty().bind(rootAnchorPane.widthProperty());
@@ -863,12 +862,30 @@ public class MenuPrincipalController implements Initializable {
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
-//		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
+
+		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
+				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
+
+		int totalComboboxes = comboboxes.size();
+
+		funcionesCombo.rellenarComboBox(comboboxes);
+		funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
+
 		prontInfo.setOpacity(0);
 		imagencomic.setImage(null);
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 		listaPorParametro(); // Llamada a funcion
 		busquedaGeneral.setText("");
+	}
+	
+	public void recargarComboBox() {
+		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
+				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
+
+		int totalComboboxes = comboboxes.size();
+
+		funcionesCombo.rellenarComboBox(comboboxes);
+		funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
 	}
 
 	/**
@@ -882,15 +899,15 @@ public class MenuPrincipalController implements Initializable {
 	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
-		
+
 		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
 				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
-		
+
 		int totalComboboxes = comboboxes.size();
-		
+
 		funcionesCombo.rellenarComboBox(comboboxes);
 		funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
-		
+
 		tablaBBDD.refresh();
 		prontInfo.setOpacity(0);
 		imagencomic.setImage(null);
@@ -1777,43 +1794,43 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Maneja la acción del usuario en relación a los cómics, como agregar, modificar, eliminar o puntuar un cómic.
+	 * Maneja la acción del usuario en relación a los cómics, como agregar,
+	 * modificar, eliminar o puntuar un cómic.
 	 *
 	 * @param event El evento de acción que desencadenó la llamada a esta función.
 	 */
 	@FXML
 	void accionComic(ActionEvent event) {
-	    Object fuente = event.getSource();
-	    tablaBBDD.getItems().clear();
-	    if (fuente instanceof Button) {
-	        Button botonPresionado = (Button) fuente;
+		Object fuente = event.getSource();
+		tablaBBDD.getItems().clear();
+		if (fuente instanceof Button) {
+			Button botonPresionado = (Button) fuente;
 
-	        if (botonPresionado == botonIntroducir) {
-	            VentanaAccionController.tipoAccion("aniadir");
-	        } else if (botonPresionado == botonModificar) {
-	            VentanaAccionController.tipoAccion("modificar");
-	        } else if (botonPresionado == botonEliminar) {
-	            VentanaAccionController.tipoAccion("eliminar");
-	        } else if (botonPresionado == botonAgregarPuntuacion) {
-	            VentanaAccionController.tipoAccion("puntuar");
-	        }
-	    } else if (fuente instanceof MenuItem) {
-	        MenuItem menuItemPresionado = (MenuItem) fuente;
+			if (botonPresionado == botonIntroducir) {
+				VentanaAccionController.tipoAccion("aniadir");
+			} else if (botonPresionado == botonModificar) {
+				VentanaAccionController.tipoAccion("modificar");
+			} else if (botonPresionado == botonEliminar) {
+				VentanaAccionController.tipoAccion("eliminar");
+			} else if (botonPresionado == botonAgregarPuntuacion) {
+				VentanaAccionController.tipoAccion("puntuar");
+			}
+		} else if (fuente instanceof MenuItem) {
+			MenuItem menuItemPresionado = (MenuItem) fuente;
 
-	        if (menuItemPresionado == menu_comic_aniadir) {
-	            VentanaAccionController.tipoAccion("aniadir");
-	        } else if (menuItemPresionado == menu_comic_modificar) {
-	            VentanaAccionController.tipoAccion("modificar");
-	        } else if (menuItemPresionado == menu_comic_eliminar) {
-	            VentanaAccionController.tipoAccion("eliminar");
-	        } else if (menuItemPresionado == menu_comic_puntuar) {
-	            VentanaAccionController.tipoAccion("puntuar");
-	        }
-	    }
+			if (menuItemPresionado == menu_comic_aniadir) {
+				VentanaAccionController.tipoAccion("aniadir");
+			} else if (menuItemPresionado == menu_comic_modificar) {
+				VentanaAccionController.tipoAccion("modificar");
+			} else if (menuItemPresionado == menu_comic_eliminar) {
+				VentanaAccionController.tipoAccion("eliminar");
+			} else if (menuItemPresionado == menu_comic_puntuar) {
+				VentanaAccionController.tipoAccion("puntuar");
+			}
+		}
 
-	    nav.verAccionComic();
+		nav.verAccionComic();
 	}
-
 
 	/////////////////////////////
 	//// FUNCIONES PARA SALIR////
