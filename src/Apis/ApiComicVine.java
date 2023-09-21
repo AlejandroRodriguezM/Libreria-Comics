@@ -16,19 +16,11 @@ import org.json.JSONObject;
 
 import Funcionamiento.Utilidades;
 
+/**
+ * Clase que contiene métodos para interactuar con Comic Vine API y extraer información relevante.
+ */
 public class ApiComicVine {
-	public static void main(String[] args) throws JSONException, URISyntaxException {
-		String apiKey = Utilidades.cargarApiComicVine();
-		String nombrePersona = "J. H. Williams III";
 
-		try {
-			System.out.println(searchPersonAndExtractInfo(apiKey, nombrePersona));
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	/**
 	 * Esta función toma una cadena de entrada y elimina los espacios entre letras y puntos.
 	 * Busca cualquier letra seguida de un punto, seguida de uno o más espacios, y luego otra letra.
@@ -42,75 +34,98 @@ public class ApiComicVine {
 	    return input.replaceAll("(\\w)\\.(\\s+)(\\w)", "$1.$3");
 	}
 
-	// Función para buscar una persona y extraer información
+	/**
+	 * Busca información sobre una persona en Comic Vine y extrae palabras clave relevantes.
+	 * 
+	 * @param apiKey          La clave de la API para acceder al servicio web.
+	 * @param nombrePersona   El nombre de la persona a buscar.
+	 * @return                Una cadena que contiene palabras clave relevantes como "writer" o "artist".
+	 * @throws IOException    Si hay un problema de E/S al realizar la solicitud HTTP.
+	 * @throws JSONException  Si hay un problema al analizar la respuesta JSON.
+	 * @throws URISyntaxException Si hay un problema al crear la URI para la solicitud.
+	 */
 	public static String searchPersonAndExtractInfo(String apiKey, String nombrePersona)
-			throws IOException, JSONException, URISyntaxException {
-		nombrePersona = eliminarEspaciosEntreLetrasYPuntos(nombrePersona);
-		// Escapar espacios en el nombre de la persona para la URL
-		String nombrePersonaEscapado = nombrePersona.replace(" ", "%20");
+	        throws IOException, JSONException, URISyntaxException {
+	    // Eliminar espacios entre letras y puntos en el nombre de la persona
+	    nombrePersona = eliminarEspaciosEntreLetrasYPuntos(nombrePersona);
 
-		// Crear una URL para la solicitud
-		URI uri = new URI("https://comicvine.gamespot.com/api/people/?api_key=" + apiKey + "&format=json&filter=name:" + nombrePersonaEscapado);
+	    // Escapar espacios en el nombre de la persona para usarlo en la URL
+	    String nombrePersonaEscapado = nombrePersona.replace(" ", "%20");
 
-		// Convertir la URI en una URL
-		URL url = uri.toURL();
+	    // Crear una URI para la solicitud
+	    URI uri = new URI("https://comicvine.gamespot.com/api/people/?api_key=" + apiKey
+	            + "&format=json&filter=name:" + nombrePersonaEscapado);
 
-		// Abrir una conexión HTTP
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		connection.setRequestProperty("User-Agent", "Mozilla/5.0");
-		connection.setRequestMethod("GET");
+	    // Convertir la URI en una URL
+	    URL url = uri.toURL();
 
-		// Verificar el código de respuesta
-		int responseCode = connection.getResponseCode();
-		if (responseCode == HttpURLConnection.HTTP_OK) {
-			// Leer la respuesta JSON
-			BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			StringBuilder responseBuilder = new StringBuilder();
-			String line;
-			while ((line = reader.readLine()) != null) {
-				responseBuilder.append(line);
-			}
-			reader.close();
+	    // Abrir una conexión HTTP
+	    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+	    connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+	    connection.setRequestMethod("GET");
 
-			// Obtener el JSON como cadena
-			String jsonResponse = responseBuilder.toString();
-			JSONObject json = new JSONObject(jsonResponse);
+	    // Verificar el código de respuesta
+	    int responseCode = connection.getResponseCode();
+	    if (responseCode == HttpURLConnection.HTTP_OK) {
+	        // Leer la respuesta JSON
+	        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+	        StringBuilder responseBuilder = new StringBuilder();
+	        String line;
+	        while ((line = reader.readLine()) != null) {
+	            responseBuilder.append(line);
+	        }
+	        reader.close();
 
-			// Acceder al objeto JSON "results"
-			JSONArray resultsArray = json.getJSONArray("results");
-			String extractedWords = "";
-			// Iterar a través de los objetos dentro del arreglo "results"
-			for (int i = 0; i < resultsArray.length(); i++) {
-				JSONObject resultObject = resultsArray.getJSONObject(i);
+	        // Obtener el JSON como una cadena
+	        String jsonResponse = responseBuilder.toString();
+	        JSONObject json = new JSONObject(jsonResponse);
 
-				// Obtener el valor de la clave "deck" y mostrarlo
-				String deck = resultObject.optString("deck");
-				
-				// Buscar palabras "writer" o "artist" en el valor de "deck"
-				extractedWords = extractWriterOrArtist(deck);
-			}
-			return extractedWords;
-		}
+	        // Acceder al objeto JSON "results"
+	        JSONArray resultsArray = json.getJSONArray("results");
+	        String extractedWords = "";
 
-		// Cerrar la conexión
-		connection.disconnect();
-		return null;
-		
+	        // Iterar a través de los objetos dentro del arreglo "results"
+	        for (int i = 0; i < resultsArray.length(); i++) {
+	            JSONObject resultObject = resultsArray.getJSONObject(i);
+
+	            // Obtener el valor de la clave "deck" y mostrarlo
+	            String deck = resultObject.optString("deck");
+
+	            // Buscar palabras "writer" o "artist" en el valor de "deck"
+	            extractedWords = extractWriterOrArtist(deck);
+	        }
+	        return extractedWords;
+	    }
+
+	    // Cerrar la conexión
+	    connection.disconnect();
+	    return null;
 	}
 
-	// Método para extraer las palabras "writer" o "artist" si aparecen en el texto
+
+	/**
+	 * Extrae las palabras "writer" o "artist" si aparecen en el texto.
+	 * 
+	 * @param text El texto en el que se buscarán las palabras clave.
+	 * @return La palabra clave extraída ("writer", "artist") o una cadena vacía si no se encuentra ninguna.
+	 */
 	private static String extractWriterOrArtist(String text) {
-		
-		System.out.println(text);
-		
-	    // Utilizar expresiones regulares para extraer la primera coincidencia de "writer" o "artist"
+	    // Imprime el texto de entrada para depuración
+	    System.out.println(text);
+
+	    // Utiliza expresiones regulares para buscar la primera coincidencia de "writer" o "artist"
+	    // \b indica límites de palabra para que solo coincida con "writer" o "artist" como palabras completas
+	    // Pattern.CASE_INSENSITIVE hace que la búsqueda sea insensible a mayúsculas y minúsculas
 	    Pattern pattern = Pattern.compile("\\b(writer|artist)\\b", Pattern.CASE_INSENSITIVE);
 	    Matcher matcher = pattern.matcher(text);
 
 	    if (matcher.find()) {
+	        // Devuelve la palabra clave encontrada (en minúsculas) si se encuentra una coincidencia
 	        return matcher.group().trim().toLowerCase();
 	    }
 
-	    return ""; // Devolver una cadena vacía si no se encontraron coincidencias
+	    // Devuelve una cadena vacía si no se encontraron coincidencias
+	    return "";
 	}
+
 }

@@ -11,6 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,29 +26,29 @@ import org.json.JSONObject;
 
 import Funcionamiento.Utilidades;
 import javafx.scene.control.TextArea;
+//import javafx.scene.control.TextArea;
 
 /**
  * Esta clase demuestra cómo buscar información de un libro utilizando el ISBN a
  * través de la API de OpenLibrary.
  */
 public class ApiISBNGeneral {
-	public static void main(String[] args) throws JSONException, URISyntaxException {
-		String isbn = "978-1-302-94820-7"; // ISBN del libro que deseas buscar
 
-		try {
-			String[] bookInfo = getBookInfo(isbn);
+	
 
-			// Imprimir los datos del libro
-			for (String data : bookInfo) {
-				System.out.println(data);
-			}
-
-		} catch (IOException | JSONException e) {
-			e.printStackTrace();
-		}
-
-	}
-
+	/**
+	 * Obtiene información sobre un libro a través de su ISBN y lo devuelve en forma
+	 * de un array de cadenas.
+	 *
+	 * @param isbn      El ISBN del libro.
+	 * @param prontInfo El componente TextArea utilizado para mostrar información.
+	 * @return Un array de cadenas que contiene información sobre el libro, o null
+	 *         si no se encuentra el libro.
+	 * @throws IOException        Si ocurre un error de entrada/salida al hacer la
+	 *                            solicitud HTTP.
+	 * @throws JSONException      Si ocurre un error al analizar la respuesta JSON.
+	 * @throws URISyntaxException Si ocurre un error al construir la URI.
+	 */
 	public static String[] getBookInfo(String isbn, TextArea prontInfo)
 			throws IOException, JSONException, URISyntaxException {
 		String apiUrl = "https://openlibrary.org/api/books?bibkeys=ISBN:" + isbn + "&jscmd=details&format=json";
@@ -152,6 +153,7 @@ public class ApiISBNGeneral {
 					if (authorsString.length() > 0) {
 						authorsString.append(", ");
 					}
+					authorName = ApiGoogle.translateText(authorName, "en");
 					authorsString.append(authorName);
 
 					// Llamar a la función para buscar información de la persona
@@ -179,10 +181,11 @@ public class ApiISBNGeneral {
 			System.out.println("Escritores filtrados: " + escritores);
 			System.out.println("Dibujantes filtrados: " + artistas + "\n");
 
-			// Escritores
-			bookInfoList.add(escritores);
 			// Dibujantes
 			bookInfoList.add(artistas);
+
+			// Escritores
+			bookInfoList.add(escritores);
 
 			if (details.has("created")) {
 				JSONObject createdObject = details.getJSONObject("created");
@@ -231,185 +234,13 @@ public class ApiISBNGeneral {
 		}
 	}
 
-	public static String[] getBookInfo(String isbn) throws IOException, JSONException, URISyntaxException {
-		String apiUrl = "https://openlibrary.org/api/books?bibkeys=ISBN:" + isbn + "&jscmd=details&format=json";
-		String apiKey = Utilidades.cargarApiComicVine();
-
-		try {
-			String jsonResponse = sendHttpGetRequest(apiUrl);
-			JSONObject jsonObject = new JSONObject(jsonResponse);
-
-			// Verifica si bookInfo es nulo antes de intentar acceder a sus propiedades.
-			JSONObject bookInfo = jsonObject.optJSONObject("ISBN:" + isbn);
-
-			if (bookInfo == null) {
-				System.out.println("No se encontró el cómic con código: " + isbn);
-				return null;
-			}
-
-			// Ahora puedes acceder a las propiedades de bookInfo, ya que se ha verificado
-			// que no es nulo.
-			JSONObject details = bookInfo.getJSONObject("details");
-
-			printJson(jsonObject, "");
-
-			// Declarar una lista para almacenar los datos
-			List<String> bookInfoList = new ArrayList<>();
-
-			// Extraer otros datos (sigue el patrón del ejemplo proporcionado)
-
-			if (details.has("full_title")) {
-				String title = details.getString("full_title");
-				title = title.replaceAll("\\([^\\)]*\\)", "");
-				title = title.replaceAll("#\\d+\\s", "");
-				title = title.replaceAll("#\\d+", "").trim();
-
-				bookInfoList.add(capitalizarPalabrasConGuion(capitalizarPalabrasConEspacio(title).trim()).trim());
-			} else {
-				String title = details.getString("title");
-
-				if (title.isEmpty()) {
-					title = "";
-				}
-
-				title = title.replaceAll("\\([^\\)]*\\)", "");
-				title = title.replaceAll("#\\d+\\s", "");
-				title = title.replaceAll("#\\d+", "").trim();
-
-				bookInfoList.add(capitalizarPalabrasConEspacio(title).trim());
-			}
-
-			if (details.has("description")) {
-				String description = details.getString("description");
-				bookInfoList.add(description);
-			} else {
-				bookInfoList.add("");
-			}
-
-			String numero = "0";
-			bookInfoList.add(numero);
-
-			if (details.has("physical_format")) {
-				String physicalFormat = details.getString("physical_format");
-				String formato;
-				if (physicalFormat.equalsIgnoreCase("Comic")) {
-					formato = "Grapa (Issue individual)";
-				} else if (physicalFormat.equalsIgnoreCase("Hardcover")) {
-					formato = "Tapa dura (Hardcover)";
-				} else if (physicalFormat.equalsIgnoreCase("Trade Paperback")) {
-					formato = "Tapa blanda (Paperback)";
-				} else {
-					formato = physicalFormat;
-				}
-
-				bookInfoList.add(formato);
-			} else {
-				bookInfoList.add("");
-			}
-
-			String precio = "0";
-			bookInfoList.add(precio);
-
-			String variante = "";
-			bookInfoList.add(variante);
-
-			// Extraer autores
-			JSONArray authors = details.getJSONArray("authors");
-			StringBuilder authorsString = new StringBuilder();
-
-			String artistas = "";
-			String escritores = "";
-
-			for (int i = 0; i < authors.length(); i++) {
-				JSONObject author = authors.getJSONObject(i);
-				String authorName = author.getString("name");
-
-				// Filtrar caracteres no deseados y agregar coma si no es el último autor
-				authorName = authorName.replaceAll("[^\\p{L},.? ]", "").trim();
-				if (!authorName.isEmpty()) {
-					if (authorsString.length() > 0) {
-						authorsString.append(", ");
-					}
-					authorsString.append(authorName);
-
-					// Llamar a la función para buscar información de la persona
-					String result = ApiComicVine.searchPersonAndExtractInfo(apiKey, authorName);
-
-					// Verificar si el resultado es "Artist" o "Writer" y hacer append en las
-					// variables
-					if (result != null) {
-						if (result.equals("artist")) {
-							if (!artistas.isEmpty()) {
-								artistas += ", ";
-							}
-							artistas += authorName;
-						} else if (result.equals("writer")) {
-							if (!escritores.isEmpty()) {
-								escritores += ", ";
-							}
-							escritores += authorName;
-						}
-					}
-				}
-			}
-
-			System.out.println("Autores sin filtrar: " + authorsString.toString());
-			System.out.println("Escritores filtrados: " + escritores);
-			System.out.println("Dibujantes filtrados: " + artistas + "\n");
-
-			// Escritores
-			bookInfoList.add(escritores);
-			// Dibujantes
-			bookInfoList.add(artistas);
-
-			if (details.has("created")) {
-				JSONObject createdObject = details.getJSONObject("created");
-				if (createdObject.has("value")) {
-					String publishDate = createdObject.getString("value");
-
-					bookInfoList.add(convertirFecha(publishDate));
-				}
-			} else {
-				bookInfoList.add("2000-01-01");
-			}
-
-			// Referencia
-			if (bookInfo.has("info_url")) {
-				String thumbnailUrl = bookInfo.getString("info_url");
-				bookInfoList.add(thumbnailUrl);
-			} else {
-				bookInfoList.add("Sin referencia");
-			}
-
-			if (bookInfo.has("thumbnail_url")) {
-				String thumbnailUrl = bookInfo.getString("thumbnail_url");
-				thumbnailUrl = thumbnailUrl.replace("-S.jpg", "-L.jpg").replace("-M.jpg", "-L.jpg");
-				bookInfoList.add(thumbnailUrl);
-			} else {
-				bookInfoList.add("");
-			}
-
-			if (details.has("publishers")) {
-				JSONArray publishersArray = details.getJSONArray("publishers");
-				if (publishersArray.length() > 0) {
-					String publisher = publishersArray.getString(0);
-					bookInfoList.add(capitalizarPalabrasConEspacio(publisher));
-				}
-			}
-
-			// Convierte la lista en un array de cadenas
-			String[] bookInfoArray = new String[bookInfoList.size()];
-
-			bookInfoList.toArray(bookInfoArray);
-
-			return bookInfoArray;
-		} catch (IOException | JSONException e) {
-			e.printStackTrace();
-			throw e;
-		}
-	}
-
-	// Recursive function to print a JSON object with its keys
+	/**
+	 * Imprime un objeto JSON de forma recursiva con un prefijo.
+	 *
+	 * @param json   El objeto JSON que se imprimirá.
+	 * @param prefix El prefijo que se agregará a cada línea impresa.
+	 * @throws JSONException Si ocurre un error al manipular el objeto JSON.
+	 */
 	public static void printJson(JSONObject json, String prefix) throws JSONException {
 		Iterator<?> keys = json.keys();
 		while (keys.hasNext()) {
@@ -511,6 +342,12 @@ public class ApiISBNGeneral {
 		return resultado.toString().trim();
 	}
 
+	/**
+	 * Convierte una fecha en formato de texto en otro formato deseado.
+	 *
+	 * @param fechaEnTexto La fecha en formato de texto que se desea convertir.
+	 * @return La fecha formateada en el formato deseado o null si ocurre un error.
+	 */
 	public static String convertirFecha(String fechaEnTexto) {
 		try {
 			// Verificar si la fecha proporcionada contiene solo el año
@@ -565,6 +402,15 @@ public class ApiISBNGeneral {
 		}
 	}
 
+	/**
+	 * Convierte las tres primeras letras del nombre de un mes en su número
+	 * correspondiente.
+	 *
+	 * @param mesEnTexto Las tres primeras letras del nombre del mes (en
+	 *                   minúsculas).
+	 * @return El número del mes correspondiente (1 para enero, 2 para febrero,
+	 *         etc.), o -1 si es inválido.
+	 */
 	public static int obtenerNumeroDeMes(String mesEnTexto) {
 		// Convierte las tres primeras letras del mes en su número correspondiente
 		switch (mesEnTexto.toLowerCase()) {
