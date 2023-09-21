@@ -30,7 +30,7 @@ import javafx.scene.control.TextArea;
 public class ApiMarvel {
 
 	/**
-	 * Obtiene información de un cómic a través de su ISBN y muestra los detalles en
+	 * Obtiene información de un cómic a través de su codigo y muestra los detalles en
 	 * un TextArea.
 	 *
 	 * @param isbn      El ISBN del cómic que se desea buscar.
@@ -38,29 +38,46 @@ public class ApiMarvel {
 	 * @return Un array de cadenas con la información del cómic o null si no se
 	 *         encuentra.
 	 */
-	public static String[] infoComicIsbn(String isbn, TextArea prontInfo) {
+	public static String[] infoComicCode(String comicCode, TextArea prontInfo) {
 
-		JSONObject comic = getComicInfo(isbn, "isbn", prontInfo);
+		JSONObject comic = null;
+		String cleanedCode = comicCode.replaceAll("[^0-9]", "");
+		if (cleanedCode.length() == 13) {
+			String formattedIsbn = formatIsbn(cleanedCode);
+			comic = getComicInfo(formattedIsbn, "isbn", prontInfo);
+		} else {
+			comic = getComicInfo(cleanedCode, "upc", prontInfo);
+		}
 
 		return displayComicInfo(comic);
-
 	}
 
 	/**
-	 * Obtiene información de un cómic a través de su UPC y muestra los detalles en
-	 * un TextArea.
+	 * Formatea un ISBN agregando guiones de acuerdo al formato estándar. Por
+	 * ejemplo, convierte "9781302948207" en "978-1-302-94820-7".
 	 *
-	 * @param upc       El UPC del cómic que se desea buscar.
-	 * @param prontInfo El TextArea en el que se mostrarán los resultados.
-	 * @return Un array de cadenas con la información del cómic o null si no se
-	 *         encuentra.
+	 * @param isbn El ISBN que se va a formatear.
+	 * @return El ISBN formateado con guiones.
 	 */
-	public static String[] infoComicUpc(String upc, TextArea prontInfo) {
+	public static String formatIsbn(String isbn) {
 
-		JSONObject comic = getComicInfo(upc, "upc", prontInfo);
+		System.out.println("Test entrada: " + isbn);
 
-		return displayComicInfo(comic);
+		StringBuilder formattedIsbn = new StringBuilder();
 
+		for (int i = 0; i < isbn.length(); i++) {
+			char digit = isbn.charAt(i);
+			// 3-5-7-12
+			// Agregar guiones según el formato estándar del ISBN
+			if ((i == 3) || (i == 4) || (i == 7) || (i == 12)) {
+				formattedIsbn.append('-');
+			}
+
+			formattedIsbn.append(digit);
+
+		}
+
+		return formattedIsbn.toString();
 	}
 
 	/**
@@ -74,6 +91,8 @@ public class ApiMarvel {
 	 * @return Un objeto JSON con información del cómic o null si no se encuentra.
 	 */
 	private static JSONObject getComicInfo(String claveComic, String tipoUrl, TextArea prontInfo) {
+
+		System.out.println("Info final: " + claveComic);
 
 		long timestamp = System.currentTimeMillis() / 1000;
 

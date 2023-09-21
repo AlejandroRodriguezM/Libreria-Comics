@@ -10,6 +10,13 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,69 +28,178 @@ import org.json.JSONObject;
  */
 public class ApiISBNGeneral {
 	public static void main(String[] args) throws JSONException, URISyntaxException {
-		String isbn = "978-1506711980"; // ISBN del libro que deseas buscar
+		String isbn = "978-1-302-94820-7"; // ISBN del libro que deseas buscar
+
+		try {
+			String[] bookInfo = getBookInfo(isbn);
+
+			// Imprimir los datos del libro
+			for (String data : bookInfo) {
+				System.out.println(data);
+			}
+
+		} catch (IOException | JSONException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public static String[] getBookInfo(String isbn) throws IOException, JSONException, URISyntaxException {
 		String apiUrl = "https://openlibrary.org/api/books?bibkeys=ISBN:" + isbn + "&jscmd=details&format=json";
 
 		try {
 			String jsonResponse = sendHttpGetRequest(apiUrl);
-
-			// Parse JSON response
 			JSONObject jsonObject = new JSONObject(jsonResponse);
 			JSONObject bookInfo = jsonObject.getJSONObject("ISBN:" + isbn);
 			JSONObject details = bookInfo.getJSONObject("details");
 
-			// Extraer autores
-			JSONArray authors = details.getJSONArray("authors");
-			StringBuilder authorsString = new StringBuilder();
-			for (int i = 0; i < authors.length(); i++) {
-				JSONObject author = authors.getJSONObject(i);
-				String authorName = author.getString("name");
-				authorsString.append(authorName);
-				if (i < authors.length() - 1) {
-					authorsString.append(", ");
-				}
-			}
+			printJson(jsonObject, "");
 
-			// Extraer otros datos
-			if (details.has("title")) {
+			// Declarar una lista para almacenar los datos
+			List<String> bookInfoList = new ArrayList<>();
+
+			// Extraer otros datos (sigue el patrón del ejemplo proporcionado)
+
+			if (details.has("full_title")) {
+				String title = details.getString("full_title");
+				title = title.replaceAll("\\([^\\)]*\\)", "");
+				title = title.replaceAll("#\\d+\\s", "");
+				title = title.replaceAll("#\\d+", "").trim();
+
+				bookInfoList.add(capitalizarPalabrasConGuion(capitalizarPalabrasConEspacio(title).trim()).trim());
+			} else {
 				String title = details.getString("title");
-				System.out.println("Titulo: " + title);
+				title = title.replaceAll("\\([^\\)]*\\)", "");
+				title = title.replaceAll("#\\d+\\s", "");
+				title = title.replaceAll("#\\d+", "").trim();
+
+				bookInfoList.add(capitalizarPalabrasConEspacio(title).trim());
 			}
 
 			if (details.has("description")) {
 				String description = details.getString("description");
-				System.out.println("Descripcion: " + description);
+				bookInfoList.add(description);
 			}
 
-			if (details.has("publish_date")) {
-				String publishDate = details.getString("publish_date");
-				System.out.println("Fecha de Publicacion: " + publishDate);
+			String numero = "0";
+			bookInfoList.add(numero);
+
+			if (details.has("physical_format")) {
+				String physicalFormat = details.getString("physical_format");
+				bookInfoList.add(physicalFormat);
+			}
+
+			String precio = "0";
+			bookInfoList.add(precio);
+
+			String variante = "??";
+			bookInfoList.add(variante);
+
+			String apiKey = "d8c00f9d781af5da1232e769b78cb0b68f0960a0";
+
+			// Extraer autores
+			JSONArray authors = details.getJSONArray("authors");
+			StringBuilder authorsString = new StringBuilder();
+			
+			String artistas = "";
+			String escritores = "";
+
+			for (int i = 0; i < authors.length(); i++) {
+			    JSONObject author = authors.getJSONObject(i);
+			    String authorName = author.getString("name");
+
+			    // Filtrar caracteres no deseados y agregar coma si no es el último autor
+			    authorName = authorName.replaceAll("[^\\p{L},.? ]", "").trim();
+			    if (!authorName.isEmpty()) {
+			        if (authorsString.length() > 0) {
+			            authorsString.append(", ");
+			        }
+			        authorsString.append(authorName);
+
+			        // Llamar a la función para buscar información de la persona
+			        String result = ApiComicVine.searchPersonAndExtractInfo(apiKey, authorName);
+
+			        // Verificar si el resultado es "Artist" o "Writer" y hacer append en las variables
+			        if (result != null) {
+			            if (result.equals("artist")) {
+			                if (!artistas.isEmpty()) {
+			                    artistas += ", ";
+			                }
+			                artistas += authorName;
+			            } else if (result.equals("writer")) {
+			                if (!escritores.isEmpty()) {
+			                    escritores += ", ";
+			                }
+			                escritores += authorName;
+			            }
+			        }
+			    }
+			}
+			// Escritores
+			bookInfoList.add(escritores);
+			// Dibujantes
+			bookInfoList.add(artistas);
+
+			if (details.has("created")) {
+				JSONObject createdObject = details.getJSONObject("created");
+				if (createdObject.has("value")) {
+					String publishDate = createdObject.getString("value");
+
+					bookInfoList.add(convertirFecha(publishDate));
+				}
+			}
+
+			// Referencia
+			if (bookInfo.has("info_url")) {
+				String thumbnailUrl = bookInfo.getString("info_url");
+				bookInfoList.add(thumbnailUrl);
+			}
+
+			if (bookInfo.has("thumbnail_url")) {
+				String thumbnailUrl = bookInfo.getString("thumbnail_url");
+				thumbnailUrl = thumbnailUrl.replace("-S.jpg", "-L.jpg").replace("-M.jpg", "-L.jpg");
+				bookInfoList.add(thumbnailUrl);
 			}
 
 			if (details.has("publishers")) {
 				JSONArray publishersArray = details.getJSONArray("publishers");
 				if (publishersArray.length() > 0) {
 					String publisher = publishersArray.getString(0);
-					System.out.println("Editorial: " + publisher);
+					bookInfoList.add(capitalizarPalabrasConEspacio(publisher));
 				}
 			}
 
-			if (details.has("number_of_pages")) {
-				int pageCount = details.getInt("number_of_pages");
-				System.out.println("Numero de Paginas: " + pageCount);
-			}
+			// Convierte la lista en un array de cadenas
+			String[] bookInfoArray = new String[bookInfoList.size()];
+			bookInfoList.toArray(bookInfoArray);
 
-			if (details.has("physical_format")) {
-				String physicalFormat = details.getString("physical_format");
-				System.out.println("Formato: " + physicalFormat);
-			}
-
-			if (details.has("publish_country")) {
-				String publishCountry = details.getString("publish_country");
-				System.out.println("Pais de Procedencia: " + publishCountry);
-			}
-		} catch (IOException e) {
+			return bookInfoArray;
+		} catch (IOException | JSONException e) {
 			e.printStackTrace();
+			throw e;
+		}
+	}
+
+	// Recursive function to print a JSON object with its keys
+	public static void printJson(JSONObject json, String prefix) throws JSONException {
+		Iterator<String> keys = json.keys();
+		while (keys.hasNext()) {
+			String key = keys.next();
+			Object value = json.get(key);
+			if (value instanceof JSONObject) {
+				// If it's a JSON object, call the function recursively
+				printJson((JSONObject) value, prefix + "  ");
+			} else if (value instanceof JSONArray) {
+				// If it's an array, print each item in the array
+				JSONArray jsonArray = (JSONArray) value;
+				for (int i = 0; i < jsonArray.length(); i++) {
+					Object arrayItem = jsonArray.get(i);
+					if (arrayItem instanceof JSONObject) {
+						// Check if the array item is a JSON object
+						printJson((JSONObject) arrayItem, prefix + "  - ");
+					}
+				}
+			}
 		}
 	}
 
@@ -97,19 +213,154 @@ public class ApiISBNGeneral {
 	 * @throws URISyntaxException Si la URL es incorrecta.
 	 */
 	private static String sendHttpGetRequest(String apiUrl) throws IOException, URISyntaxException {
-		URI url = new URI(apiUrl); // Use .toURI() instead of .toURL()
-		HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
+		URI uri = new URI(apiUrl); // Use .toURI() instead of .toURL()
+		URL url = uri.toURL();
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setRequestMethod("GET");
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-		StringBuilder response = new StringBuilder();
-		String line;
-		while ((line = reader.readLine()) != null) {
-			response.append(line);
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+			StringBuilder response = new StringBuilder();
+			String line;
+			while ((line = reader.readLine()) != null) {
+				response.append(line);
+			}
+			return response.toString();
+		} finally {
+			connection.disconnect();
 		}
-		reader.close();
+	}
 
-		return response.toString();
+	/**
+	 * Capitaliza la primera letra de cada palabra en una cadena que contiene
+	 * guiones como separadores.
+	 * 
+	 * @param input La cadena de entrada que se va a capitalizar.
+	 * @return La cadena con la primera letra de cada palabra en mayúscula.
+	 */
+	public static String capitalizarPalabrasConGuion(String input) {
+		// Dividir la cadena en palabras utilizando guiones como separadores
+		String[] palabras = input.split("-");
+		StringBuilder resultado = new StringBuilder();
+
+		for (int i = 0; i < palabras.length; i++) {
+			String palabra = palabras[i];
+			if (!palabra.isEmpty()) {
+				// Capitalizar la primera letra de la palabra y agregar el resto en minúsculas
+				palabra = palabra.substring(0, 1).toUpperCase() + palabra.substring(1).toLowerCase();
+				resultado.append(palabra);
+				// Agregar un guión solo si no es la última palabra
+				if (i < palabras.length - 1) {
+					resultado.append("-");
+				}
+			}
+		}
+
+		return resultado.toString();
+	}
+
+	/**
+	 * Capitaliza la primera letra de cada palabra en una cadena que contiene
+	 * espacios como separadores.
+	 * 
+	 * @param input La cadena de entrada que se va a capitalizar.
+	 * @return La cadena con la primera letra de cada palabra en mayúscula.
+	 */
+	public static String capitalizarPalabrasConEspacio(String input) {
+		// Dividir la cadena en palabras utilizando espacios como separadores
+		String[] palabras = input.split(" ");
+		StringBuilder resultado = new StringBuilder();
+
+		for (String palabra : palabras) {
+			if (!palabra.isEmpty()) {
+				// Capitalizar la primera letra de la palabra y agregar el resto en minúsculas
+				palabra = palabra.substring(0, 1).toUpperCase() + palabra.substring(1).toLowerCase();
+				resultado.append(palabra).append(" ");
+			}
+		}
+
+		// Eliminar el espacio adicional al final y devolver la cadena capitalizada
+		return resultado.toString().trim();
+	}
+
+	public static String convertirFecha(String fechaEnTexto) {
+		try {
+			// Verificar si la fecha proporcionada contiene solo el año
+			if (fechaEnTexto.matches("^\\d{4}$")) {
+				fechaEnTexto = "Jan 1, " + fechaEnTexto; // Si es solo un año, agrega el mes y el día
+			}
+
+			// Verificar si la fecha tiene el formato ISO 8601
+			// ("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
+			if (fechaEnTexto.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d+$")) {
+				SimpleDateFormat formatoEntradaISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
+				SimpleDateFormat formatoSalida = new SimpleDateFormat("yyyy-MM-dd");
+
+				// Convierte la fecha en formato ISO 8601 a un objeto Date
+				Date fecha = formatoEntradaISO8601.parse(fechaEnTexto);
+
+				// Formatea la fecha como una cadena en el formato deseado
+				String fechaFormateada = formatoSalida.format(fecha);
+				return fechaFormateada;
+			}
+
+			// Obtén el número de mes correspondiente a las tres primeras letras del mes
+			String mesEnTexto = fechaEnTexto.substring(0, 3);
+			int numeroDeMes = obtenerNumeroDeMes(mesEnTexto);
+
+			// Define el formato de entrada para la fecha actual (sin las tres primeras
+			// letras del mes)
+			SimpleDateFormat formatoEntrada = new SimpleDateFormat("dd, yyyy");
+
+			// Convierte la fecha en formato de texto (sin las tres primeras letras del mes)
+			// a un objeto Date
+			Date fecha = formatoEntrada.parse(fechaEnTexto.substring(4));
+
+			// Establece el número de mes en el objeto Date
+			fecha.setMonth(numeroDeMes - 1); // Restamos 1 porque los meses se cuentan desde 0 (enero) hasta 11
+
+			// Define el formato de salida deseado para la fecha
+			SimpleDateFormat formatoSalida = new SimpleDateFormat("yyyy-MM-dd");
+
+			// Formatea la fecha como una cadena en el formato deseado
+			String fechaFormateada = formatoSalida.format(fecha);
+
+			return fechaFormateada;
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return null; // Manejo de error en caso de que la conversión falle
+		}
+	}
+
+	public static int obtenerNumeroDeMes(String mesEnTexto) {
+		// Convierte las tres primeras letras del mes en su número correspondiente
+		switch (mesEnTexto.toLowerCase()) {
+		case "jan":
+			return 1;
+		case "feb":
+			return 2;
+		case "mar":
+			return 3;
+		case "apr":
+			return 4;
+		case "may":
+			return 5;
+		case "jun":
+			return 6;
+		case "jul":
+			return 7;
+		case "aug":
+			return 8;
+		case "sep":
+			return 9;
+		case "oct":
+			return 10;
+		case "nov":
+			return 11;
+		case "dec":
+			return 12;
+		default:
+			return -1; // Valor inválido para el mes
+		}
 	}
 
 }

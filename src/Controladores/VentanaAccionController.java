@@ -43,6 +43,7 @@ import java.util.regex.Pattern;
 import org.controlsfx.control.textfield.TextFields;
 import org.json.JSONException;
 
+import Apis.ApiISBNGeneral;
 import Apis.ApiMarvel;
 import Funcionamiento.Comic;
 import Funcionamiento.FuncionesComboBox;
@@ -84,8 +85,8 @@ import javafx.util.Duration;
 import java.io.InputStream;
 
 /**
- * Clase controladora para la ventana de acciones, que gestiona la interfaz de usuario
- * y las operaciones relacionadas con los cómics.
+ * Clase controladora para la ventana de acciones, que gestiona la interfaz de
+ * usuario y las operaciones relacionadas con los cómics.
  */
 public class VentanaAccionController implements Initializable {
 
@@ -479,14 +480,13 @@ public class VentanaAccionController implements Initializable {
 	 * Instancia de la clase FuncionesTableView para el manejo de TableView.
 	 */
 	private static FuncionesTableView funcionesTabla = new FuncionesTableView();
-	
+
 	MenuPrincipalController menuPrincipal = null;
 
 	/**
 	 * Tipo de acción a realizar en la interfaz.
 	 */
 	private static String TIPO_ACCION;
-
 
 	/**
 	 * Inicializa la interfaz de usuario y configura el comportamiento de los
@@ -511,7 +511,6 @@ public class VentanaAccionController implements Initializable {
 				mostrarOpcionEliminar();
 			} else if ("modificar".equals(TIPO_ACCION)) {
 				rootVBox.setLayoutY(422.0); // Cambia 422.0 al valor que desees
-
 				rootVBox.toFront();
 				mostrarOpcionModificar();
 			} else if ("puntuar".equals(TIPO_ACCION)) {
@@ -554,7 +553,20 @@ public class VentanaAccionController implements Initializable {
 			rootVBox.requestFocus();
 		});
 
-		String[] editorialBusquedas = { "Marvel ISBN", "Marvel UPC", "Otras editoriales", "Ninguno" };
+		String[] editorialBusquedas = { "Marvel", "Otras editoriales" };
+        busquedaCodigo.setDisable(true); // Inicialmente deshabilitado
+
+        // Agregar un controlador de eventos al ComboBox para habilitar/deshabilitar el TextField
+        busquedaEditorial.setOnAction(event -> {
+            if (busquedaEditorial.getSelectionModel().getSelectedItem() != null) {
+            	
+            	busquedaCodigo.setText("");
+            	
+                busquedaCodigo.setDisable(false);
+            } else {
+                busquedaCodigo.setDisable(true);
+            }
+        });
 
 		busquedaEditorial.setItems(FXCollections.observableArrayList(editorialBusquedas));
 
@@ -954,8 +966,11 @@ public class VentanaAccionController implements Initializable {
 			botonBusquedaCodigo.setDisable(true);
 			label_busquedaCodigo.setDisable(true);
 			busquedaEditorial.setDisable(true);
-			busquedaCodigo.setDisable(true);
 			botonBusquedaCodigo.setDisable(true);
+			
+			busquedaEditorial.getSelectionModel().clearSelection(); // Desseleccionar cualquier elemento seleccionado
+		    busquedaEditorial.getEditor().clear(); // Limpiar el texto en el ComboBox
+		    busquedaEditorial.setPromptText("Buscar Editorial"); // Restaurar el texto de marcador de posición original
 
 		} else {
 			botonBusquedaCodigo.setVisible(true);
@@ -968,7 +983,6 @@ public class VentanaAccionController implements Initializable {
 
 			label_busquedaCodigo.setDisable(false);
 			busquedaEditorial.setDisable(false);
-			busquedaCodigo.setDisable(false);
 			botonBusquedaCodigo.setDisable(false);
 		}
 	}
@@ -993,13 +1007,10 @@ public class VentanaAccionController implements Initializable {
 				String[] comicInfo = null;
 
 				if (!valorCodigo.isEmpty() && !tipoEditorial.isEmpty()) {
-					if (tipoEditorial.equalsIgnoreCase("marvel isbn")) {
-						comicInfo = ApiMarvel.infoComicIsbn(valorCodigo.trim(), prontInfo);
-					} else if (tipoEditorial.equalsIgnoreCase("marvel upc")) {
-						comicInfo = ApiMarvel.infoComicUpc(valorCodigo.trim(), prontInfo);
-
+					if (tipoEditorial.equalsIgnoreCase("marvel")) {
+						comicInfo = ApiMarvel.infoComicCode(valorCodigo.trim(), prontInfo);
 					} else {
-						// Hacer algo si el tipo de editorial no es válido
+						comicInfo = ApiISBNGeneral.getBookInfo(valorCodigo.trim());
 					}
 
 					if (comprobarCodigo(comicInfo)) {
@@ -1276,6 +1287,9 @@ public class VentanaAccionController implements Initializable {
 		label_busquedaCodigo.setVisible(false);
 		busquedaEditorial.setVisible(false);
 		busquedaCodigo.setVisible(false);
+		busquedaEditorial.getSelectionModel().clearSelection(); // Desseleccionar cualquier elemento seleccionado
+	    busquedaEditorial.getEditor().clear(); // Limpiar el texto en el ComboBox
+	    busquedaEditorial.setPromptText("Buscar Editorial"); // Restaurar el texto de marcador de posición original
 		botonBusquedaCodigo.setVisible(false);
 
 		busquedaEditorial.setDisable(true);
@@ -1389,7 +1403,7 @@ public class VentanaAccionController implements Initializable {
 		libreria = new DBLibreriaManager();
 		Comic comic_temp = new Comic();
 		Image imagen = null;
-		
+
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
 		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + DBManager.DB_NAME
@@ -1772,11 +1786,11 @@ public class VentanaAccionController implements Initializable {
 	public void subidaComic() throws IOException, SQLException {
 		libreria = new DBLibreriaManager();
 		utilidad = new Utilidades();
-		
+
 		File file;
 		LocalDate fecha_comic;
 		Image imagen = null;
-		
+
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
 		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + DBManager.DB_NAME
@@ -1902,7 +1916,7 @@ public class VentanaAccionController implements Initializable {
 				}
 
 				imagencomic.setImage(imagen);
-				
+
 				Image imagenDeseo = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
 				imagenFondo.setImage(imagenDeseo);
 			}

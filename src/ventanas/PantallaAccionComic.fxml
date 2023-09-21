@@ -16,7 +16,7 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="536.0" prefWidth="838.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.VentanaAccionController">
    <children>
-      <VBox fx:id="rootVBox" disable="true" layoutY="305.0" prefHeight="237.0" prefWidth="488.0">
+      <VBox fx:id="rootVBox" disable="true" layoutY="335.0" prefHeight="207.0" prefWidth="488.0">
          <children>
             <TableView fx:id="tablaBBDD" disable="true" onKeyPressed="#teclasDireccion" onMouseClicked="#clickRaton" prefHeight="235.0" prefWidth="490.0" stylesheets="@../style/tablas_style.css" visible="false" VBox.vgrow="ALWAYS">
                <columns>
