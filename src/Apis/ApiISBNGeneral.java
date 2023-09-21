@@ -14,6 +14,7 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import Funcionamiento.Utilidades;
+import javafx.scene.control.TextArea;
 
 /**
  * Esta clase demuestra cómo buscar información de un libro utilizando el ISBN a
@@ -46,14 +48,29 @@ public class ApiISBNGeneral {
 
 	}
 
-	public static String[] getBookInfo(String isbn) throws IOException, JSONException, URISyntaxException {
+	public static String[] getBookInfo(String isbn, TextArea prontInfo)
+			throws IOException, JSONException, URISyntaxException {
 		String apiUrl = "https://openlibrary.org/api/books?bibkeys=ISBN:" + isbn + "&jscmd=details&format=json";
 		String apiKey = Utilidades.cargarApiComicVine();
 
 		try {
 			String jsonResponse = sendHttpGetRequest(apiUrl);
 			JSONObject jsonObject = new JSONObject(jsonResponse);
-			JSONObject bookInfo = jsonObject.getJSONObject("ISBN:" + isbn);
+
+			// Verifica si bookInfo es nulo antes de intentar acceder a sus propiedades.
+			JSONObject bookInfo = jsonObject.optJSONObject("ISBN:" + isbn);
+
+			if (bookInfo == null) {
+				// Configura la visibilidad y el texto de un elemento (prontInfo) para informar
+				// que no se encontró el cómic.
+				prontInfo.setOpacity(1);
+				prontInfo.setText("No se encontró el cómic con código: " + isbn);
+
+				return null;
+			}
+
+			// Ahora puedes acceder a las propiedades de bookInfo, ya que se ha verificado
+			// que no es nulo.
 			JSONObject details = bookInfo.getJSONObject("details");
 
 			printJson(jsonObject, "");
@@ -72,6 +89,11 @@ public class ApiISBNGeneral {
 				bookInfoList.add(capitalizarPalabrasConGuion(capitalizarPalabrasConEspacio(title).trim()).trim());
 			} else {
 				String title = details.getString("title");
+
+				if (title.isEmpty()) {
+					title = "";
+				}
+
 				title = title.replaceAll("\\([^\\)]*\\)", "");
 				title = title.replaceAll("#\\d+\\s", "");
 				title = title.replaceAll("#\\d+", "").trim();
@@ -82,6 +104,8 @@ public class ApiISBNGeneral {
 			if (details.has("description")) {
 				String description = details.getString("description");
 				bookInfoList.add(description);
+			} else {
+				bookInfoList.add("");
 			}
 
 			String numero = "0";
@@ -89,58 +113,72 @@ public class ApiISBNGeneral {
 
 			if (details.has("physical_format")) {
 				String physicalFormat = details.getString("physical_format");
-				bookInfoList.add(physicalFormat);
+				String formato;
+				if (physicalFormat.equalsIgnoreCase("Comic")) {
+					formato = "Grapa (Issue individual)";
+				} else if (physicalFormat.equalsIgnoreCase("Hardcover")) {
+					formato = "Tapa dura (Hardcover)";
+				} else if (physicalFormat.equalsIgnoreCase("Trade Paperback")) {
+					formato = "Tapa blanda (Paperback)";
+				} else {
+					formato = physicalFormat;
+				}
+
+				bookInfoList.add(formato);
+			} else {
+				bookInfoList.add("");
 			}
 
 			String precio = "0";
 			bookInfoList.add(precio);
 
-			String variante = "??";
+			String variante = "";
 			bookInfoList.add(variante);
 
 			// Extraer autores
 			JSONArray authors = details.getJSONArray("authors");
 			StringBuilder authorsString = new StringBuilder();
-			
+
 			String artistas = "";
 			String escritores = "";
 
 			for (int i = 0; i < authors.length(); i++) {
-			    JSONObject author = authors.getJSONObject(i);
-			    String authorName = author.getString("name");
+				JSONObject author = authors.getJSONObject(i);
+				String authorName = author.getString("name");
 
-			    // Filtrar caracteres no deseados y agregar coma si no es el último autor
-			    authorName = authorName.replaceAll("[^\\p{L},.? ]", "").trim();
-			    if (!authorName.isEmpty()) {
-			        if (authorsString.length() > 0) {
-			            authorsString.append(", ");
-			        }
-			        authorsString.append(authorName);
+				// Filtrar caracteres no deseados y agregar coma si no es el último autor
+				authorName = authorName.replaceAll("[^\\p{L},.? ]", "").trim();
+				if (!authorName.isEmpty()) {
+					if (authorsString.length() > 0) {
+						authorsString.append(", ");
+					}
+					authorsString.append(authorName);
 
-			        // Llamar a la función para buscar información de la persona
-			        String result = ApiComicVine.searchPersonAndExtractInfo(apiKey, authorName);
+					// Llamar a la función para buscar información de la persona
+					String result = ApiComicVine.searchPersonAndExtractInfo(apiKey, authorName);
 
-			        // Verificar si el resultado es "Artist" o "Writer" y hacer append en las variables
-			        if (result != null) {
-			            if (result.equals("artist")) {
-			                if (!artistas.isEmpty()) {
-			                    artistas += ", ";
-			                }
-			                artistas += authorName;
-			            } else if (result.equals("writer")) {
-			                if (!escritores.isEmpty()) {
-			                    escritores += ", ";
-			                }
-			                escritores += authorName;
-			            }
-			        }
-			    }
+					// Verificar si el resultado es "Artist" o "Writer" y hacer append en las
+					// variables
+					if (result != null) {
+						if (result.equals("artist")) {
+							if (!artistas.isEmpty()) {
+								artistas += ", ";
+							}
+							artistas += authorName;
+						} else if (result.equals("writer")) {
+							if (!escritores.isEmpty()) {
+								escritores += ", ";
+							}
+							escritores += authorName;
+						}
+					}
+				}
 			}
-			
+
 			System.out.println("Autores sin filtrar: " + authorsString.toString());
 			System.out.println("Escritores filtrados: " + escritores);
 			System.out.println("Dibujantes filtrados: " + artistas + "\n");
-			
+
 			// Escritores
 			bookInfoList.add(escritores);
 			// Dibujantes
@@ -153,18 +191,24 @@ public class ApiISBNGeneral {
 
 					bookInfoList.add(convertirFecha(publishDate));
 				}
+			} else {
+				bookInfoList.add("2000-01-01");
 			}
 
 			// Referencia
 			if (bookInfo.has("info_url")) {
 				String thumbnailUrl = bookInfo.getString("info_url");
 				bookInfoList.add(thumbnailUrl);
+			} else {
+				bookInfoList.add("Sin referencia");
 			}
 
 			if (bookInfo.has("thumbnail_url")) {
 				String thumbnailUrl = bookInfo.getString("thumbnail_url");
 				thumbnailUrl = thumbnailUrl.replace("-S.jpg", "-L.jpg").replace("-M.jpg", "-L.jpg");
 				bookInfoList.add(thumbnailUrl);
+			} else {
+				bookInfoList.add("");
 			}
 
 			if (details.has("publishers")) {
@@ -177,6 +221,185 @@ public class ApiISBNGeneral {
 
 			// Convierte la lista en un array de cadenas
 			String[] bookInfoArray = new String[bookInfoList.size()];
+
+			bookInfoList.toArray(bookInfoArray);
+
+			return bookInfoArray;
+		} catch (IOException | JSONException e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
+
+	public static String[] getBookInfo(String isbn) throws IOException, JSONException, URISyntaxException {
+		String apiUrl = "https://openlibrary.org/api/books?bibkeys=ISBN:" + isbn + "&jscmd=details&format=json";
+		String apiKey = Utilidades.cargarApiComicVine();
+
+		try {
+			String jsonResponse = sendHttpGetRequest(apiUrl);
+			JSONObject jsonObject = new JSONObject(jsonResponse);
+
+			// Verifica si bookInfo es nulo antes de intentar acceder a sus propiedades.
+			JSONObject bookInfo = jsonObject.optJSONObject("ISBN:" + isbn);
+
+			if (bookInfo == null) {
+				System.out.println("No se encontró el cómic con código: " + isbn);
+				return null;
+			}
+
+			// Ahora puedes acceder a las propiedades de bookInfo, ya que se ha verificado
+			// que no es nulo.
+			JSONObject details = bookInfo.getJSONObject("details");
+
+			printJson(jsonObject, "");
+
+			// Declarar una lista para almacenar los datos
+			List<String> bookInfoList = new ArrayList<>();
+
+			// Extraer otros datos (sigue el patrón del ejemplo proporcionado)
+
+			if (details.has("full_title")) {
+				String title = details.getString("full_title");
+				title = title.replaceAll("\\([^\\)]*\\)", "");
+				title = title.replaceAll("#\\d+\\s", "");
+				title = title.replaceAll("#\\d+", "").trim();
+
+				bookInfoList.add(capitalizarPalabrasConGuion(capitalizarPalabrasConEspacio(title).trim()).trim());
+			} else {
+				String title = details.getString("title");
+
+				if (title.isEmpty()) {
+					title = "";
+				}
+
+				title = title.replaceAll("\\([^\\)]*\\)", "");
+				title = title.replaceAll("#\\d+\\s", "");
+				title = title.replaceAll("#\\d+", "").trim();
+
+				bookInfoList.add(capitalizarPalabrasConEspacio(title).trim());
+			}
+
+			if (details.has("description")) {
+				String description = details.getString("description");
+				bookInfoList.add(description);
+			} else {
+				bookInfoList.add("");
+			}
+
+			String numero = "0";
+			bookInfoList.add(numero);
+
+			if (details.has("physical_format")) {
+				String physicalFormat = details.getString("physical_format");
+				String formato;
+				if (physicalFormat.equalsIgnoreCase("Comic")) {
+					formato = "Grapa (Issue individual)";
+				} else if (physicalFormat.equalsIgnoreCase("Hardcover")) {
+					formato = "Tapa dura (Hardcover)";
+				} else if (physicalFormat.equalsIgnoreCase("Trade Paperback")) {
+					formato = "Tapa blanda (Paperback)";
+				} else {
+					formato = physicalFormat;
+				}
+
+				bookInfoList.add(formato);
+			} else {
+				bookInfoList.add("");
+			}
+
+			String precio = "0";
+			bookInfoList.add(precio);
+
+			String variante = "";
+			bookInfoList.add(variante);
+
+			// Extraer autores
+			JSONArray authors = details.getJSONArray("authors");
+			StringBuilder authorsString = new StringBuilder();
+
+			String artistas = "";
+			String escritores = "";
+
+			for (int i = 0; i < authors.length(); i++) {
+				JSONObject author = authors.getJSONObject(i);
+				String authorName = author.getString("name");
+
+				// Filtrar caracteres no deseados y agregar coma si no es el último autor
+				authorName = authorName.replaceAll("[^\\p{L},.? ]", "").trim();
+				if (!authorName.isEmpty()) {
+					if (authorsString.length() > 0) {
+						authorsString.append(", ");
+					}
+					authorsString.append(authorName);
+
+					// Llamar a la función para buscar información de la persona
+					String result = ApiComicVine.searchPersonAndExtractInfo(apiKey, authorName);
+
+					// Verificar si el resultado es "Artist" o "Writer" y hacer append en las
+					// variables
+					if (result != null) {
+						if (result.equals("artist")) {
+							if (!artistas.isEmpty()) {
+								artistas += ", ";
+							}
+							artistas += authorName;
+						} else if (result.equals("writer")) {
+							if (!escritores.isEmpty()) {
+								escritores += ", ";
+							}
+							escritores += authorName;
+						}
+					}
+				}
+			}
+
+			System.out.println("Autores sin filtrar: " + authorsString.toString());
+			System.out.println("Escritores filtrados: " + escritores);
+			System.out.println("Dibujantes filtrados: " + artistas + "\n");
+
+			// Escritores
+			bookInfoList.add(escritores);
+			// Dibujantes
+			bookInfoList.add(artistas);
+
+			if (details.has("created")) {
+				JSONObject createdObject = details.getJSONObject("created");
+				if (createdObject.has("value")) {
+					String publishDate = createdObject.getString("value");
+
+					bookInfoList.add(convertirFecha(publishDate));
+				}
+			} else {
+				bookInfoList.add("2000-01-01");
+			}
+
+			// Referencia
+			if (bookInfo.has("info_url")) {
+				String thumbnailUrl = bookInfo.getString("info_url");
+				bookInfoList.add(thumbnailUrl);
+			} else {
+				bookInfoList.add("Sin referencia");
+			}
+
+			if (bookInfo.has("thumbnail_url")) {
+				String thumbnailUrl = bookInfo.getString("thumbnail_url");
+				thumbnailUrl = thumbnailUrl.replace("-S.jpg", "-L.jpg").replace("-M.jpg", "-L.jpg");
+				bookInfoList.add(thumbnailUrl);
+			} else {
+				bookInfoList.add("");
+			}
+
+			if (details.has("publishers")) {
+				JSONArray publishersArray = details.getJSONArray("publishers");
+				if (publishersArray.length() > 0) {
+					String publisher = publishersArray.getString(0);
+					bookInfoList.add(capitalizarPalabrasConEspacio(publisher));
+				}
+			}
+
+			// Convierte la lista en un array de cadenas
+			String[] bookInfoArray = new String[bookInfoList.size()];
+
 			bookInfoList.toArray(bookInfoArray);
 
 			return bookInfoArray;
@@ -188,9 +411,9 @@ public class ApiISBNGeneral {
 
 	// Recursive function to print a JSON object with its keys
 	public static void printJson(JSONObject json, String prefix) throws JSONException {
-		Iterator<String> keys = json.keys();
+		Iterator<?> keys = json.keys();
 		while (keys.hasNext()) {
-			String key = keys.next();
+			String key = (String) keys.next(); // Casting seguro a String
 			Object value = json.get(key);
 			if (value instanceof JSONObject) {
 				// If it's a JSON object, call the function recursively
@@ -322,7 +545,12 @@ public class ApiISBNGeneral {
 			Date fecha = formatoEntrada.parse(fechaEnTexto.substring(4));
 
 			// Establece el número de mes en el objeto Date
-			fecha.setMonth(numeroDeMes - 1); // Restamos 1 porque los meses se cuentan desde 0 (enero) hasta 11
+			// Crear un objeto Calendar y establecer la fecha
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(fecha);
+
+			// Establecer el mes restando 1
+			cal.set(Calendar.MONTH, numeroDeMes - 1);
 
 			// Define el formato de salida deseado para la fecha
 			SimpleDateFormat formatoSalida = new SimpleDateFormat("yyyy-MM-dd");

@@ -1010,7 +1010,8 @@ public class VentanaAccionController implements Initializable {
 					if (tipoEditorial.equalsIgnoreCase("marvel")) {
 						comicInfo = ApiMarvel.infoComicCode(valorCodigo.trim(), prontInfo);
 					} else {
-						comicInfo = ApiISBNGeneral.getBookInfo(valorCodigo.trim());
+						comicInfo = ApiISBNGeneral.getBookInfo(valorCodigo.trim(),prontInfo);
+						System.out.println("Info: " + comicInfo.toString());
 					}
 
 					if (comprobarCodigo(comicInfo)) {
@@ -1085,25 +1086,36 @@ public class VentanaAccionController implements Initializable {
 			i++;
 		}
 
+		
 		Platform.runLater(() -> {
+			
+			Image imagen = null;
+			
 			String titulo = comicInfo[0];
-			String numero = comicInfo[1];
-			String formato = comicInfo[2];
-			String precio = comicInfo[3];
-			String variante = comicInfo[4];
-			String dibujantes = comicInfo[5];
-			String escritores = comicInfo[6];
-			String fechaVenta = comicInfo[7];
-			String referencia = comicInfo[8];
-			String urlImagen = comicInfo[9];
-			String editorial = comicInfo[10];
+			String issueKey = comicInfo[1];
+			String numero = comicInfo[2];
+			String formato = comicInfo[3];
+			String precio = comicInfo[4];
+			String variante = comicInfo[5];
+			String dibujantes = comicInfo[6];
+			String escritores = comicInfo[7];
+			String fechaVenta = comicInfo[8];
+			String referencia = comicInfo[9];
+			String urlImagen = comicInfo[10];
+			
+			if(urlImagen.isEmpty()) {
+				// Cargar la imagen desde la URL
+				String rutaImagen = "/Funcionamiento/sinPortada.jpg";
 
-			if (comicInfo.length >= 12) {
-				String descripcion = comicInfo[11];
-				descripcion = Utilidades.replaceHtmlEntities(descripcion);
-
-				nombreKeyIssue.setText(descripcion);
+				imagen = new Image(getClass().getResourceAsStream(rutaImagen));
+				imagencomic.setImage(imagen);
+			}else {
+				// Cargar la imagen desde la URL
+				imagen = new Image(urlImagen, true);
 			}
+			imagencomic.setImage(imagen);
+			
+			String editorial = comicInfo[11];
 
 			nombreComic.setText(titulo);
 			numeroComic.setValue(numero);
@@ -1123,9 +1135,9 @@ public class VentanaAccionController implements Initializable {
 			precioComic.setText(precio);
 			urlReferencia.setText(referencia);
 
-			// Cargar la imagen desde la URL
-			Image imagen = new Image(urlImagen, true);
-			imagencomic.setImage(imagen);
+			nombreKeyIssue.setText(issueKey);
+			
+
 		});
 	}
 

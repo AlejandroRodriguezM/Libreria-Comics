@@ -243,6 +243,13 @@ public class ApiMarvel {
 			title = title.replaceAll("#\\d+", "").trim();
 			comicInfoList.add(title);
 
+	        if (comic.has("description") && comic.get("description") instanceof String) {
+	            String description = comic.getString("description");
+	            comicInfoList.add(description);
+			}else {
+				comicInfoList.add("");
+			}
+			
 			// Número de edición
 			int issueNumber = comic.getInt("issueNumber");
 			comicInfoList.add(Integer.toString(issueNumber));
