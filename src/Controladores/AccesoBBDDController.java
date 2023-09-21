@@ -240,6 +240,7 @@ public class AccesoBBDDController implements Initializable {
 
 		Utilidades.guardarDatosClavesMarvel();
 		Utilidades.cargarTasasDeCambioDesdeArchivo();
+		Utilidades.guardarApiComicVine();
 		
 		Thread checkerThread = new Thread(() -> {
 			try {

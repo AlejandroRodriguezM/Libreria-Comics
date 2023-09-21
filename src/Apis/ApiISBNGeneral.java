@@ -22,6 +22,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import Funcionamiento.Utilidades;
+
 /**
  * Esta clase demuestra cómo buscar información de un libro utilizando el ISBN a
  * través de la API de OpenLibrary.
@@ -46,6 +48,7 @@ public class ApiISBNGeneral {
 
 	public static String[] getBookInfo(String isbn) throws IOException, JSONException, URISyntaxException {
 		String apiUrl = "https://openlibrary.org/api/books?bibkeys=ISBN:" + isbn + "&jscmd=details&format=json";
+		String apiKey = Utilidades.cargarApiComicVine();
 
 		try {
 			String jsonResponse = sendHttpGetRequest(apiUrl);
@@ -95,8 +98,6 @@ public class ApiISBNGeneral {
 			String variante = "??";
 			bookInfoList.add(variante);
 
-			String apiKey = "d8c00f9d781af5da1232e769b78cb0b68f0960a0";
-
 			// Extraer autores
 			JSONArray authors = details.getJSONArray("authors");
 			StringBuilder authorsString = new StringBuilder();
@@ -135,6 +136,11 @@ public class ApiISBNGeneral {
 			        }
 			    }
 			}
+			
+			System.out.println("Autores sin filtrar: " + authorsString.toString());
+			System.out.println("Escritores filtrados: " + escritores);
+			System.out.println("Dibujantes filtrados: " + artistas + "\n");
+			
 			// Escritores
 			bookInfoList.add(escritores);
 			// Dibujantes

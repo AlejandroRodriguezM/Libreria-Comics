@@ -806,6 +806,8 @@ public class Utilidades {
 				writer.write("Public Key: ");
 				writer.newLine();
 				writer.write("Private Key: ");
+				
+				writer.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -975,6 +977,57 @@ public class Utilidades {
 		bufferedWriter.newLine();
 
 		bufferedWriter.close();
+	}
+	
+	/**
+	 * Esta función guarda una clave de API para Comic Vine en un archivo de configuración.
+	 * La clave de API se almacena en un archivo en la ubicación de la librería del usuario.
+	 * Si el archivo ya existe, se sobrescribe.
+	 *
+	 */
+	public static void guardarApiComicVine() {
+		String nombreArchivo = carpetaConfiguracion() + File.separator + "clave_comicVine_api.conf";
+
+		File archivo = new File(nombreArchivo);
+
+		if (!archivo.exists()) {
+			try (BufferedWriter writer = new BufferedWriter(new FileWriter(archivo))) {
+				writer.write("###############################");
+				writer.newLine();
+				writer.write("Clave Api Comic Vine: ");
+				writer.newLine();
+				writer.write("###############################");
+				
+				writer.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public static String cargarApiComicVine() {
+		String nombreArchivo = carpetaConfiguracion() + File.separator + "clave_comicVine_api.conf";
+
+		// Verificar si el archivo existe y, si no, crearlo con los valores
+		// predeterminados
+		File archivo = new File(nombreArchivo);
+		if (!archivo.exists()) {
+			guardarApiComicVine();
+		}
+
+		try (BufferedReader reader = new BufferedReader(new FileReader(nombreArchivo))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				String[] parts = line.split(": ");
+				if (parts.length == 2) {
+					String clave_api = parts[1];
+					return clave_api;
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	/**

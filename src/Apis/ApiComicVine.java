@@ -16,7 +16,7 @@ import org.json.JSONObject;
 public class ApiComicVine {
 	public static void main(String[] args) throws JSONException {
 		String apiKey = "d8c00f9d781af5da1232e769b78cb0b68f0960a0";
-		String nombrePersona = "Mark Waid";
+		String nombrePersona = "Barry Windsor-Smith";
 
 		try {
 			System.out.println(searchPersonAndExtractInfo(apiKey, nombrePersona));
@@ -66,7 +66,7 @@ public class ApiComicVine {
 
 				// Obtener el valor de la clave "deck" y mostrarlo
 				String deck = resultObject.optString("deck");
-
+				
 				// Buscar palabras "writer" o "artist" en el valor de "deck"
 				extractedWords = extractWriterOrArtist(deck);
 			}
