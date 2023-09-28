@@ -212,34 +212,19 @@ public class DBLibreriaManager extends Comic {
 	/**
 	 * Lista ordenada que contiene todas las listas anteriores.
 	 */
-	public static List<List<String>> listaOrdenada = Arrays.asList(
-	        DBLibreriaManager.nombreComicList,
-	        DBLibreriaManager.numeroComicList,
-	        DBLibreriaManager.nombreVarianteList,
-	        DBLibreriaManager.nombreProcedenciaList,
-	        DBLibreriaManager.nombreFormatoList,
-	        DBLibreriaManager.nombreDibujanteList,
-	        DBLibreriaManager.nombreGuionistaList,
-	        DBLibreriaManager.nombreEditorialList,
-	        DBLibreriaManager.nombreFirmaList,
-	        DBLibreriaManager.numeroCajaList
-	);
+	public static List<List<String>> listaOrdenada = Arrays.asList(DBLibreriaManager.nombreComicList,
+			DBLibreriaManager.numeroComicList, DBLibreriaManager.nombreVarianteList,
+			DBLibreriaManager.nombreProcedenciaList, DBLibreriaManager.nombreFormatoList,
+			DBLibreriaManager.nombreDibujanteList, DBLibreriaManager.nombreGuionistaList,
+			DBLibreriaManager.nombreEditorialList, DBLibreriaManager.nombreFirmaList, DBLibreriaManager.numeroCajaList);
 
 	/**
 	 * Lista de listas de elementos.
 	 */
-	public static List<List<String>> itemsList = Arrays.asList(
-	        DBLibreriaManager.listaNombre,
-	        DBLibreriaManager.listaNumeroComic,
-	        DBLibreriaManager.listaVariante,
-	        DBLibreriaManager.listaProcedencia,
-	        DBLibreriaManager.listaFormato,
-	        DBLibreriaManager.listaDibujante,
-	        DBLibreriaManager.listaGuionista,
-	        DBLibreriaManager.listaEditorial,
-	        DBLibreriaManager.listaFirma,
-	        DBLibreriaManager.listaCaja
-	);
+	public static List<List<String>> itemsList = Arrays.asList(DBLibreriaManager.listaNombre,
+			DBLibreriaManager.listaNumeroComic, DBLibreriaManager.listaVariante, DBLibreriaManager.listaProcedencia,
+			DBLibreriaManager.listaFormato, DBLibreriaManager.listaDibujante, DBLibreriaManager.listaGuionista,
+			DBLibreriaManager.listaEditorial, DBLibreriaManager.listaFirma, DBLibreriaManager.listaCaja);
 
 	/**
 	 * Ventanas de la aplicación.
@@ -265,7 +250,6 @@ public class DBLibreriaManager extends Comic {
 	 * Ventanas de la aplicación.
 	 */
 	private static Ventanas ventanas = new Ventanas();
-
 
 	/**
 	 * Realiza llamadas para inicializar listas de autocompletado.
@@ -548,30 +532,37 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public List<String> guardarDatosAutoCompletado(String sentenciaSQL, String columna) throws SQLException {
 		List<String> listaAutoCompletado = new ArrayList<>();
-		listaAutoCompletado.clear();
-		ResultSet rs = obtenLibreria(sentenciaSQL);
+		ResultSet rs = null;
 		try {
-			if (contenidoTabla()) {
+			rs = obtenLibreria(sentenciaSQL);
+			if (rs != null && rs.first()) {
 				do {
 					String datosAutocompletado = rs.getString(columna);
 					if (columna.equals("nomComic")) {
 						listaAutoCompletado.add(datosAutocompletado.trim());
 					} else {
-						String[] nombres = datosAutocompletado.split("-"); // Dividir nombres separados por "-"
+						String[] nombres = datosAutocompletado.split("-");
 						for (String nombre : nombres) {
-							nombre = nombre.trim(); // Eliminar espacios al inicio y final
+							nombre = nombre.trim();
 							if (!nombre.isEmpty()) {
-								listaAutoCompletado.add(nombre); // Agregar a la lista solo si no está vacío
+								listaAutoCompletado.add(nombre);
 							}
 						}
 					}
 				} while (rs.next());
 				listaAutoCompletado = Utilidades.listaArregladaAutoComplete(listaAutoCompletado);
-
-				return listaAutoCompletado;
 			}
 		} catch (SQLException e) {
 			nav.alertaException(e.toString());
+		} finally {
+			// Asegúrate de cerrar el ResultSet después de usarlo
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					nav.alertaException("Error al cerrar el ResultSet: " + e.toString());
+				}
+			}
 		}
 		return listaAutoCompletado;
 	}
@@ -778,10 +769,12 @@ public class DBLibreriaManager extends Comic {
 	}
 
 	/**
-	 * Verifica si existen resultados que coincidan con los criterios de búsqueda proporcionados en un objeto Comic.
+	 * Verifica si existen resultados que coincidan con los criterios de búsqueda
+	 * proporcionados en un objeto Comic.
 	 *
 	 * @param comic El objeto Comic que contiene los criterios de búsqueda.
-	 * @return true si se encontraron resultados que coinciden con los criterios, false de lo contrario.
+	 * @return true si se encontraron resultados que coinciden con los criterios,
+	 *         false de lo contrario.
 	 */
 	public boolean numeroResultados(Comic comic) {
 		int datosRellenados = 0;
@@ -1408,7 +1401,8 @@ public class DBLibreriaManager extends Comic {
 			return rs;
 		} catch (SQLException ex) {
 			ex.printStackTrace();
-			nav.alertaException(ex.toString());
+			nav.alertaException("Error al tomar datos de la biblioteca: " + ex.toString());
+			// Puedes lanzar una excepción personalizada aquí si es necesario
 		}
 		return null;
 	}
