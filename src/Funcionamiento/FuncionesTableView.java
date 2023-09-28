@@ -371,6 +371,7 @@ public class FuncionesTableView {
 	 * @param columnList La lista de TableColumn correspondiente a las columnas de
 	 *                   la tabla.
 	 */
+	@SuppressWarnings("deprecation")
 	public void modificarColumnas(TableView<Comic> tablaBBDD, List<TableColumn<Comic, String>> columnList) {
 		
 	    for (TableColumn<Comic, String> column : columnList) {
