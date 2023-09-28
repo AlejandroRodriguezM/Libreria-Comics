@@ -877,16 +877,6 @@ public class MenuPrincipalController implements Initializable {
 		listaPorParametro(); // Llamada a funcion
 		busquedaGeneral.setText("");
 	}
-	
-	public void recargarComboBox() {
-		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
-				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
-
-		int totalComboboxes = comboboxes.size();
-
-		funcionesCombo.rellenarComboBox(comboboxes);
-		funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
-	}
 
 	/**
 	 * Metodo que muestra toda la base de datos.
