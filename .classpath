@@ -78,7 +78,7 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/oer-java-1.0.0.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/commons-lang3-3.13.0.jar"/>
-	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/log4j-core-2.20.0.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/google-cloud-translate-2.20.0.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/poi/lib/log4j-api-2.17.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
