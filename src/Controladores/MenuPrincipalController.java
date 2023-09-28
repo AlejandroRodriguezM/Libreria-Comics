@@ -862,15 +862,7 @@ public class MenuPrincipalController implements Initializable {
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
-
-		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
-				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
-
-		int totalComboboxes = comboboxes.size();
-
-		funcionesCombo.rellenarComboBox(comboboxes);
-		funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
-
+		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
 		prontInfo.setOpacity(0);
 		imagencomic.setImage(null);
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
@@ -889,15 +881,7 @@ public class MenuPrincipalController implements Initializable {
 	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
-
-		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
-				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
-
-		int totalComboboxes = comboboxes.size();
-
-		funcionesCombo.rellenarComboBox(comboboxes);
-		funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
-
+		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
 		tablaBBDD.refresh();
 		prontInfo.setOpacity(0);
 		imagencomic.setImage(null);

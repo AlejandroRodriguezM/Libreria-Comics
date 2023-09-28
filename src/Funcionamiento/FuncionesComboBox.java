@@ -1,7 +1,3 @@
-/**
- * Contiene las clases que hacen funcionar las diferentes funciones de uso de back end y front de todo el proyecto
- *  
-*/
 package Funcionamiento;
 
 import java.sql.SQLException;
@@ -36,34 +32,19 @@ import javafx.util.converter.IntegerStringConverter;
  */
 public class FuncionesComboBox {
 
-	/**
-	 * Instancia de la clase DBLibreriaManager para gestionar la base de datos.
-	 */
-	/**
-	 * Gestor de la base de datos de la librería.
-	 */
 	private static DBLibreriaManager libreria = null;
 
-	/**
-	 * Mapa que almacena los elementos originales de los ComboBox junto a los ComboBox correspondientes.
-	 */
+	// Mapa que almacena los elementos originales de los ComboBox junto a los
+	// ComboBox correspondientes
 	private Map<ComboBox<String>, ObservableList<String>> originalComboBoxItems = new HashMap<>();
 
-	/**
-	 * Variable que controla si la entrada es proporcionada por el usuario.
-	 */
+	// Variable que controla si la entrada es proporcionada por el usuario
 	private boolean isUserInput = true;
 
-	/**
-	 * Variable que indica si se están actualizando los ComboBoxes.
-	 */
+	// Variable que indica si se están actualizando los ComboBoxes
 	private boolean updatingComboBoxes = false;
 
-	/**
-	 * Ventana emergente utilizada en la interfaz gráfica.
-	 */
 	private Popup popup = new Popup();
-
 
 	/**
 	 * Crea y devuelve un objeto Comic con valores obtenidos de los ComboBoxes.
@@ -440,8 +421,6 @@ public class FuncionesComboBox {
 				listView.requestFocus(); // Solicitar el enfoque en la lista
 				listView.getSelectionModel().selectFirst();
 			}
-			
-			rellenarComboBox(comboboxes);
 		});
 
 		// Evento para manejar las teclas presionadas en el TextField de filtro
@@ -708,6 +687,5 @@ public class FuncionesComboBox {
 	        comboboxes.get(i).getSelectionModel().selectFirst();
 	    }
 	}
-
 
 }
