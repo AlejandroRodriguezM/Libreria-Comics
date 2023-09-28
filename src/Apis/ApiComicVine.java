@@ -14,8 +14,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import Funcionamiento.Utilidades;
-
 /**
  * Clase que contiene métodos para interactuar con Comic Vine API y extraer información relevante.
  */

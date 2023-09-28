@@ -1777,6 +1777,16 @@ public class MenuPrincipalController implements Initializable {
 	void accionComic(ActionEvent event) {
 		Object fuente = event.getSource();
 		tablaBBDD.getItems().clear();
+		
+	    VentanaAccionController ventanaAccion = new VentanaAccionController();
+
+	    // Crear la lista de ComboBoxes
+	    List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
+	            nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
+	    
+	    // Pasar la lista de ComboBoxes a VentanaAccionController
+	    ventanaAccion.pasarComboBoxes(comboboxes);
+		
 		if (fuente instanceof Button) {
 			Button botonPresionado = (Button) fuente;
 

@@ -22,7 +22,7 @@
                <columns>
                   <TableColumn fx:id="ID" prefWidth="47.0" text="ID" visible="false" />
                   <TableColumn fx:id="nombre" editable="false" maxWidth="5500.0" prefWidth="102.0" text="Nombre" />
-                  <TableColumn fx:id="numero" editable="false" maxWidth="2500.0" prefWidth="52.0" text="Nº" />
+                  <TableColumn fx:id="numero" editable="false" maxWidth="2500.0" prefWidth="52.0" text="Nº" visible="false" />
                   <TableColumn fx:id="variante" editable="false" prefWidth="98.0" text="Variante" />
                   <TableColumn fx:id="editorial" editable="false" maxWidth="4500.0" minWidth="0.0" prefWidth="164.0" style="-fx-alignment: center;" text="Editorial" />
                   <TableColumn fx:id="guionista" editable="false" maxWidth="5500.0" prefWidth="156.0" text="Guionista" />

@@ -136,12 +136,15 @@ public class Ventanas {
 	            controlador.closeWindow();
 	            ventanaActual = null; // Establece la ventana actual a null cuando se cierra
 	        });
+	        
+
 
 	        // Actualizar el estado de la ventana abierta
 	        ventanaActual = stage;
 
 	    } catch (IOException ex) {
 	        alertaException(ex.toString());
+	        ex.printStackTrace();
 	    }
 	}
 

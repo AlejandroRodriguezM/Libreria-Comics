@@ -488,6 +488,8 @@ public class VentanaAccionController implements Initializable {
 	 */
 	private static String TIPO_ACCION;
 
+	private static List<ComboBox<String>> comboboxes;
+
 	/**
 	 * Inicializa la interfaz de usuario y configura el comportamiento de los
 	 * elementos al cargar la vista.
@@ -554,19 +556,20 @@ public class VentanaAccionController implements Initializable {
 		});
 
 		String[] editorialBusquedas = { "Marvel", "Otras editoriales" };
-        busquedaCodigo.setDisable(true); // Inicialmente deshabilitado
+		busquedaCodigo.setDisable(true); // Inicialmente deshabilitado
 
-        // Agregar un controlador de eventos al ComboBox para habilitar/deshabilitar el TextField
-        busquedaEditorial.setOnAction(event -> {
-            if (busquedaEditorial.getSelectionModel().getSelectedItem() != null) {
-            	
-            	busquedaCodigo.setText("");
-            	
-                busquedaCodigo.setDisable(false);
-            } else {
-                busquedaCodigo.setDisable(true);
-            }
-        });
+		// Agregar un controlador de eventos al ComboBox para habilitar/deshabilitar el
+		// TextField
+		busquedaEditorial.setOnAction(event -> {
+			if (busquedaEditorial.getSelectionModel().getSelectedItem() != null) {
+
+				busquedaCodigo.setText("");
+
+				busquedaCodigo.setDisable(false);
+			} else {
+				busquedaCodigo.setDisable(true);
+			}
+		});
 
 		busquedaEditorial.setItems(FXCollections.observableArrayList(editorialBusquedas));
 
@@ -574,6 +577,14 @@ public class VentanaAccionController implements Initializable {
 				"2.5/5", "3/5", "3.5/5", "4/5", "4.5/5", "5/5");
 		puntuacionMenu.setItems(puntuaciones);
 		puntuacionMenu.getSelectionModel().selectFirst();
+	}
+
+	public void pasarComboBoxes(List<ComboBox<String>> comboBoxes) {
+	    VentanaAccionController.comboboxes = comboBoxes;
+	}
+	
+	public static List<ComboBox<String>> getComboBoxes() {
+	    return comboboxes;
 	}
 
 	/**
@@ -891,6 +902,7 @@ public class VentanaAccionController implements Initializable {
 	@FXML
 	public void agregarDatos(ActionEvent event) throws IOException, SQLException {
 		libreria = new DBLibreriaManager();
+		menuPrincipal = new MenuPrincipalController();
 		subidaComic(); // Llama a la función para procesar la subida de un cómic
 		libreria.reiniciarBBDD(); // Reinicia la base de datos
 		direccionImagen.setText(""); // Limpia el campo de texto de la dirección de la imagen
@@ -917,6 +929,13 @@ public class VentanaAccionController implements Initializable {
 		} else {
 			libreria.actualizarPuntuacion(id_comic, comicPuntuacion()); // Llamada a funcion
 			prontInfo.setText("Deseo concedido. Has añadido el nuevo comic.");
+			
+			List<ComboBox<String>> comboboxes = VentanaAccionController.getComboBoxes();
+
+			int totalComboboxes = comboboxes.size();
+
+			funcionesCombo.rellenarComboBox(comboboxes);
+			funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
 		}
 	}
 
@@ -944,6 +963,13 @@ public class VentanaAccionController implements Initializable {
 
 			Image nuevaImagen = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
 			imagenFondo.setImage(nuevaImagen);
+			
+			List<ComboBox<String>> comboboxes = VentanaAccionController.getComboBoxes();
+
+			int totalComboboxes = comboboxes.size();
+
+			funcionesCombo.rellenarComboBox(comboboxes);
+			funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
 		}
 	}
 
@@ -967,10 +993,10 @@ public class VentanaAccionController implements Initializable {
 			label_busquedaCodigo.setDisable(true);
 			busquedaEditorial.setDisable(true);
 			botonBusquedaCodigo.setDisable(true);
-			
+
 			busquedaEditorial.getSelectionModel().clearSelection(); // Desseleccionar cualquier elemento seleccionado
-		    busquedaEditorial.getEditor().clear(); // Limpiar el texto en el ComboBox
-		    busquedaEditorial.setPromptText("Buscar Editorial"); // Restaurar el texto de marcador de posición original
+			busquedaEditorial.getEditor().clear(); // Limpiar el texto en el ComboBox
+			busquedaEditorial.setPromptText("Buscar Editorial"); // Restaurar el texto de marcador de posición original
 
 		} else {
 			botonBusquedaCodigo.setVisible(true);
@@ -1010,7 +1036,7 @@ public class VentanaAccionController implements Initializable {
 					if (tipoEditorial.equalsIgnoreCase("marvel")) {
 						comicInfo = ApiMarvel.infoComicCode(valorCodigo.trim(), prontInfo);
 					} else {
-						comicInfo = ApiISBNGeneral.getBookInfo(valorCodigo.trim(),prontInfo);
+						comicInfo = ApiISBNGeneral.getBookInfo(valorCodigo.trim(), prontInfo);
 						System.out.println("Info: " + comicInfo.toString());
 					}
 
@@ -1086,11 +1112,10 @@ public class VentanaAccionController implements Initializable {
 			i++;
 		}
 
-		
 		Platform.runLater(() -> {
-			
+
 			Image imagen = null;
-			
+
 			String titulo = comicInfo[0];
 			String issueKey = comicInfo[1];
 			String numero = comicInfo[2];
@@ -1102,19 +1127,19 @@ public class VentanaAccionController implements Initializable {
 			String fechaVenta = comicInfo[8];
 			String referencia = comicInfo[9];
 			String urlImagen = comicInfo[10];
-			
-			if(urlImagen.isEmpty()) {
+
+			if (urlImagen.isEmpty()) {
 				// Cargar la imagen desde la URL
 				String rutaImagen = "/Funcionamiento/sinPortada.jpg";
 
 				imagen = new Image(getClass().getResourceAsStream(rutaImagen));
 				imagencomic.setImage(imagen);
-			}else {
+			} else {
 				// Cargar la imagen desde la URL
 				imagen = new Image(urlImagen, true);
 			}
 			imagencomic.setImage(imagen);
-			
+
 			String editorial = comicInfo[11];
 
 			nombreComic.setText(titulo);
@@ -1136,7 +1161,6 @@ public class VentanaAccionController implements Initializable {
 			urlReferencia.setText(referencia);
 
 			nombreKeyIssue.setText(issueKey);
-			
 
 		});
 	}
@@ -1228,6 +1252,13 @@ public class VentanaAccionController implements Initializable {
 
 			Image nuevaImagen = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
 			imagenFondo.setImage(nuevaImagen);
+
+			List<ComboBox<String>> comboboxes = VentanaAccionController.getComboBoxes();
+
+			int totalComboboxes = comboboxes.size();
+
+			funcionesCombo.rellenarComboBox(comboboxes);
+			funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
 		}
 	}
 
@@ -1300,8 +1331,8 @@ public class VentanaAccionController implements Initializable {
 		busquedaEditorial.setVisible(false);
 		busquedaCodigo.setVisible(false);
 		busquedaEditorial.getSelectionModel().clearSelection(); // Desseleccionar cualquier elemento seleccionado
-	    busquedaEditorial.getEditor().clear(); // Limpiar el texto en el ComboBox
-	    busquedaEditorial.setPromptText("Buscar Editorial"); // Restaurar el texto de marcador de posición original
+		busquedaEditorial.getEditor().clear(); // Limpiar el texto en el ComboBox
+		busquedaEditorial.setPromptText("Buscar Editorial"); // Restaurar el texto de marcador de posición original
 		botonBusquedaCodigo.setVisible(false);
 
 		busquedaEditorial.setDisable(true);
@@ -1337,6 +1368,14 @@ public class VentanaAccionController implements Initializable {
 		libreria.reiniciarBBDD();
 		direccionImagen.setText("");
 		libreria.listasAutoCompletado();
+
+		List<ComboBox<String>> comboboxes = VentanaAccionController.getComboBoxes();
+
+		int totalComboboxes = comboboxes.size();
+
+		funcionesCombo.rellenarComboBox(comboboxes);
+		funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
+
 	}
 
 	/**
@@ -1375,6 +1414,13 @@ public class VentanaAccionController implements Initializable {
 			prontInfo.setText("Deseo concedido. Has puesto a la venta el comic");
 			Image nuevaImagen = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
 			imagenFondo.setImage(nuevaImagen);
+
+			List<ComboBox<String>> comboboxes = VentanaAccionController.getComboBoxes();
+
+			int totalComboboxes = comboboxes.size();
+
+			funcionesCombo.rellenarComboBox(comboboxes);
+			funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
 		}
 	}
 
@@ -1931,6 +1977,12 @@ public class VentanaAccionController implements Initializable {
 
 				Image imagenDeseo = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
 				imagenFondo.setImage(imagenDeseo);
+				List<ComboBox<String>> comboboxes = VentanaAccionController.getComboBoxes();
+
+				int totalComboboxes = comboboxes.size();
+
+				funcionesCombo.rellenarComboBox(comboboxes);
+				funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
 			}
 		} else {
 			prontInfo.setOpacity(1);

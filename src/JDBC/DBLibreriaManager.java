@@ -1325,6 +1325,13 @@ public class DBLibreriaManager extends Comic {
 						ResultSet.CONCUR_UPDATABLE);
 
 				stmt.setString(1, id);
+				
+	            // Ejecutar la sentencia SQL
+	            int filasAfectadas = stmt.executeUpdate();
+	            
+	            if (filasAfectadas > 0) {
+	                System.out.println("Se afectaron " + filasAfectadas + " filas en la base de datos.");
+	            }
 			}
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
