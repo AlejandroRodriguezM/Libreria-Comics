@@ -395,7 +395,7 @@ public class DBLibreriaManager extends Comic {
 		listaAutoCompletado.clear();
 		ResultSet rs = obtenLibreria(sentenciaSQL);
 		try {
-			if (contenidoTabla()) {
+			if (rs != null && rs.first()) {
 				do {
 					String datosAutocompletado = rs.getString(columna);
 					if (columna.equals("nomComic")) {
