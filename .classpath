@@ -29,7 +29,6 @@
 	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/poi/poi-ooxml-full-5.2.2.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/poi/poi-ooxml-lite-5.2.2.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/poi/poi-scratchpad-5.2.2.jar"/>
-	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/poi/lib/log4j-api-2.17.2.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/charm-glisten-6.0.2.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/controlsfx-9.0.0.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/JavaFX/lib/javafx.base.jar">
@@ -80,5 +79,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/oer-java-1.0.0.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/commons-lang3-3.13.0.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/poi/lib/log4j-api-2.17.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
