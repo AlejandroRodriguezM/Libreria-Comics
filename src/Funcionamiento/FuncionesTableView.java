@@ -402,7 +402,7 @@ public class FuncionesTableView {
 		}
 		
 		// Configurar la política de redimensionamiento
-	    tablaBBDD.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+	    tablaBBDD.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
 	}
 
 	/**
