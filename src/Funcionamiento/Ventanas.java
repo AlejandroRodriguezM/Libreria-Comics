@@ -398,6 +398,26 @@ public class Ventanas {
 			return false;
 		}
 	}
+	
+	/**
+	 * Llama a una ventana de alarma para eliminar datos
+	 *
+	 * @return
+	 */
+	public boolean alertaAccionGeneral() {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
+		stage.setResizable(false);
+		alert.setTitle("Accion . . .");
+		alert.setHeaderText("Vas a realizar una accion.");
+		alert.setContentText("¿Estas seguro que quieres realizar la accion para el comic?");
+		if (alert.showAndWait().get() == ButtonType.OK) {
+			return true;
+		}
+		return false;
+	}
 
 	/**
 	 * Llama a una ventana de alarma para eliminar datos
@@ -534,9 +554,10 @@ public class Ventanas {
 	}
 
 	/**
-	 * Funcion que permite borrar el contenido de la tabla de la base de datos.
+	 * Solicita confirmación al usuario antes de borrar el contenido de la tabla.
 	 *
-	 * @return
+	 * @return Un objeto CompletableFuture que se completará con true si el usuario confirma la eliminación,
+	 *         o con false si el usuario cancela la operación.
 	 */
 	public CompletableFuture<Boolean> borrarContenidoTabla() {
 		CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
@@ -576,9 +597,9 @@ public class Ventanas {
 	}
 
 	/**
-	 * Funcion que permite borrar el contenido de la tabla de la base de datos.
+	 * Solicita confirmación al usuario antes de borrar el contenido de la configuración.
 	 *
-	 * @return
+	 * @return true si el usuario confirma la eliminación, o false si el usuario cancela la operación.
 	 */
 	public boolean borrarContenidoConfiguracion() {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -596,11 +617,11 @@ public class Ventanas {
 	}
 
 	/**
-	 * Funcion que permite borrar el contenido de la tabla de la base de datos.
+	 * Solicita confirmación al usuario antes de cancelar la subida de portadas.
 	 *
-	 * @return
+	 * @return Un objeto CompletableFuture que se completará con true si el usuario confirma la cancelación,
+	 *         o con false si el usuario decide continuar la subida.
 	 */
-
 	public CompletableFuture<Boolean> cancelar_subida_portadas() {
 		CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
 
@@ -629,6 +650,22 @@ public class Ventanas {
 	 * @param excepcion
 	 */
 	public void alertaException(String excepcion) {
+		Platform.runLater(() -> {
+			Alert dialog = new Alert(AlertType.ERROR, excepcion, ButtonType.OK);
+			Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+			stage.getIcons().add(new Image("/Icono/icon.png")); // Reemplaza "path/to/your/icon.png" con la ruta de tu
+																// icono
+
+			dialog.show();
+		});
+	}
+	
+	/**
+	 * Llama a una ventana de alarma que avisa si hay una excepcion.
+	 *
+	 * @param excepcion
+	 */
+	public void alertaNoApi(String excepcion) {
 		Platform.runLater(() -> {
 			Alert dialog = new Alert(AlertType.ERROR, excepcion, ButtonType.OK);
 			Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();

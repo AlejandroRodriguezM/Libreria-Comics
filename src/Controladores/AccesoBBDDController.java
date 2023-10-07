@@ -81,7 +81,8 @@ public class AccesoBBDDController implements Initializable {
 	private Label alarmaConexionInternet;
 
 	/**
-	 * Etiqueta para mostrar una alarma relacionada con la conexión a la base de datos SQL.
+	 * Etiqueta para mostrar una alarma relacionada con la conexión a la base de
+	 * datos SQL.
 	 */
 	@FXML
 	private Label alarmaConexionSql;
@@ -177,7 +178,8 @@ public class AccesoBBDDController implements Initializable {
 	private ToggleButton toggleEye;
 
 	/**
-	 * Vista de imagen para el botón de alternancia para mostrar u ocultar la contraseña.
+	 * Vista de imagen para el botón de alternancia para mostrar u ocultar la
+	 * contraseña.
 	 */
 	@FXML
 	private ImageView toggleEyeImageView;
@@ -228,7 +230,6 @@ public class AccesoBBDDController implements Initializable {
 	 */
 	private static CrearBBDDController cbd = null;
 
-
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
 	 *
@@ -241,7 +242,7 @@ public class AccesoBBDDController implements Initializable {
 		Utilidades.guardarDatosClavesMarvel();
 		Utilidades.cargarTasasDeCambioDesdeArchivo();
 		Utilidades.guardarApiComicVine();
-		
+
 		Thread checkerThread = new Thread(() -> {
 			try {
 				while (true) {
@@ -387,6 +388,34 @@ public class AccesoBBDDController implements Initializable {
 				iniciarAnimacionEspera();
 			}
 		});
+
+		String apiKey = Utilidades.cargarApiComicVine();
+		String clavesMarvel[] = Utilidades.clavesApiMarvel();
+
+		if (!Utilidades.existeContenido(apiKey, clavesMarvel)) {
+
+			String excepcion = "";
+
+			if (apiKey == null || apiKey.isEmpty()) {
+				excepcion += "\n - Debes de conseguir una clave API de Comic Vine. La pagina es https://comicvine.gamespot.com/api/ es gratuito";
+			}
+
+			// Comprueba si claves es nulo o está vacío
+			if (clavesMarvel == null || clavesMarvel.length < 2 || clavesMarvel[0] == null || clavesMarvel[0].isEmpty()
+					|| clavesMarvel[1] == null || clavesMarvel[1].isEmpty()) {
+
+				excepcion += "\n - Debes de conseguir una clave API de Marvel. La pagina es https://developer.marvel.com/  es gratuito";
+			}
+
+			if (excepcion.length() > 0) {
+				
+				excepcion += "\n - Para poner las claves, debes de añadirlas dentro de sus respectivos ficheros en la carpeta 'AppData/Roaming/libreria' de su ordenador";
+				
+				nav.alertaNoApi(excepcion);
+			}
+
+		}
+
 	}
 
 	/**
@@ -396,29 +425,30 @@ public class AccesoBBDDController implements Initializable {
 	 * @param mensaje El mensaje que se mostrará en el tooltip.
 	 */
 	private void asignarTooltip(Label label, String mensaje) {
-	    Tooltip tooltip = new Tooltip(mensaje);
-	    label.setTooltip(tooltip);
+		Tooltip tooltip = new Tooltip(mensaje);
+		label.setTooltip(tooltip);
 	}
 
 	/**
-	 * Verifica si el servicio MySQL está en funcionamiento en la dirección y puerto proporcionados.
+	 * Verifica si el servicio MySQL está en funcionamiento en la dirección y puerto
+	 * proporcionados.
 	 *
 	 * @param host       La dirección del host del servicio MySQL.
 	 * @param portString El número de puerto del servicio MySQL como cadena.
-	 * @return true si el servicio MySQL está en funcionamiento, false si no lo está o si ocurre un error.
+	 * @return true si el servicio MySQL está en funcionamiento, false si no lo está
+	 *         o si ocurre un error.
 	 */
 	public static boolean isMySQLServiceRunning(String host, String portString) {
-	    try {
-	        int port = Integer.parseInt(portString); // Convertir la cadena a un entero
-	        InetAddress address = InetAddress.getByName(host);
-	        Socket socket = new Socket(address, port);
-	        socket.close();
-	        return true;
-	    } catch (Exception e) {
-	        return false;
-	    }
+		try {
+			int port = Integer.parseInt(portString); // Convertir la cadena a un entero
+			InetAddress address = InetAddress.getByName(host);
+			Socket socket = new Socket(address, port);
+			socket.close();
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
-
 
 	/**
 	 * Funcion para abrir el navegador y acceder a la URL
@@ -467,7 +497,8 @@ public class AccesoBBDDController implements Initializable {
 	}
 
 	/**
-	 * Maneja el evento de entrar en línea. Guarda el usuario y contraseña si se seleccionó la opción "Recordar".
+	 * Maneja el evento de entrar en línea. Guarda el usuario y contraseña si se
+	 * seleccionó la opción "Recordar".
 	 *
 	 * @param event El evento de acción que desencadenó la función.
 	 * @throws IOException Si ocurre un error de entrada/salida.
@@ -490,7 +521,8 @@ public class AccesoBBDDController implements Initializable {
 	}
 
 	/**
-	 * Configura el formulario en línea con la información almacenada en el archivo de configuración.
+	 * Configura el formulario en línea con la información almacenada en el archivo
+	 * de configuración.
 	 */
 	public void formulario_online() {
 		String userHome = System.getProperty("user.home");
@@ -762,95 +794,98 @@ public class AccesoBBDDController implements Initializable {
 	}
 
 	/**
-	 * Inicia la animación de alarma, que cambia el color de fondo de la alarma entre amarillo y transparente.
+	 * Inicia la animación de alarma, que cambia el color de fondo de la alarma
+	 * entre amarillo y transparente.
 	 */
 	private void iniciarAnimacionAlarma() {
-	    animacionAlarmaTimeline = new Timeline();
-	    animacionAlarmaTimeline.setCycleCount(Timeline.INDEFINITE);
+		animacionAlarmaTimeline = new Timeline();
+		animacionAlarmaTimeline.setCycleCount(Timeline.INDEFINITE);
 
-	    KeyFrame mostrarAmarillo = new KeyFrame(Duration.ZERO,
-	            new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: yellow;"));
-	    KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.0),
-	            new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
-	    KeyFrame mostrarTransparente = new KeyFrame(Duration.seconds(0.5),
-	            new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: yellow;"));
-	    KeyFrame mostrarAmarilloNuevamente = new KeyFrame(Duration.seconds(1.0),
-	            new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
+		KeyFrame mostrarAmarillo = new KeyFrame(Duration.ZERO,
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: yellow;"));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.0),
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
+		KeyFrame mostrarTransparente = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: yellow;"));
+		KeyFrame mostrarAmarilloNuevamente = new KeyFrame(Duration.seconds(1.0),
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
 
-	    animacionAlarmaTimeline.getKeyFrames().addAll(mostrarAmarillo, ocultarTexto, mostrarTransparente,
-	            mostrarAmarilloNuevamente);
+		animacionAlarmaTimeline.getKeyFrames().addAll(mostrarAmarillo, ocultarTexto, mostrarTransparente,
+				mostrarAmarilloNuevamente);
 
-	    animacionAlarmaTimeline.play();
+		animacionAlarmaTimeline.play();
 	}
 
 	/**
-	 * Inicia la animación de alarma online, que cambia el color de fondo de la alarma entre verde y transparente.
+	 * Inicia la animación de alarma online, que cambia el color de fondo de la
+	 * alarma entre verde y transparente.
 	 */
 	private void iniciarAnimacionAlarmaOnline() {
-	    animacionAlarmaOnlineTimeline = new Timeline();
-	    animacionAlarmaOnlineTimeline.setCycleCount(Timeline.INDEFINITE);
+		animacionAlarmaOnlineTimeline = new Timeline();
+		animacionAlarmaOnlineTimeline.setCycleCount(Timeline.INDEFINITE);
 
-	    KeyFrame mostrarVerde = new KeyFrame(Duration.ZERO,
-	            new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: green;"));
-	    KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.0),
-	            new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
-	    KeyFrame mostrarTransparente = new KeyFrame(Duration.seconds(0.5),
-	            new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: green;"));
-	    KeyFrame mostrarVerdeNuevamente = new KeyFrame(Duration.seconds(1.0),
-	            new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
+		KeyFrame mostrarVerde = new KeyFrame(Duration.ZERO,
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: green;"));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.0),
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
+		KeyFrame mostrarTransparente = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: green;"));
+		KeyFrame mostrarVerdeNuevamente = new KeyFrame(Duration.seconds(1.0),
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
 
-	    animacionAlarmaOnlineTimeline.getKeyFrames().addAll(mostrarVerde, ocultarTexto, mostrarTransparente,
-	            mostrarVerdeNuevamente);
-	    animacionAlarmaOnlineTimeline.play();
+		animacionAlarmaOnlineTimeline.getKeyFrames().addAll(mostrarVerde, ocultarTexto, mostrarTransparente,
+				mostrarVerdeNuevamente);
+		animacionAlarmaOnlineTimeline.play();
 	}
 
 	/**
-	 * Inicia la animación de alarma para la conexión a internet, cambia el color de fondo de la alarma entre naranja y rojo.
+	 * Inicia la animación de alarma para la conexión a internet, cambia el color de
+	 * fondo de la alarma entre naranja y rojo.
 	 */
 	private void iniciarAnimacionInternet() {
-	    animacionAlarmaTimelineInternet = new Timeline();
-	    animacionAlarmaTimelineInternet.setCycleCount(Timeline.INDEFINITE);
+		animacionAlarmaTimelineInternet = new Timeline();
+		animacionAlarmaTimelineInternet.setCycleCount(Timeline.INDEFINITE);
 
-	    KeyFrame mostrarAmarillo1 = new KeyFrame(Duration.ZERO,
-	            new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: orange;"));
-	    KeyFrame mostrarRojo1 = new KeyFrame(Duration.seconds(0.0),
-	            new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: red;"));
-	    KeyFrame mostrarAmarillo2 = new KeyFrame(Duration.seconds(0.5),
-	            new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: orange;"));
-	    KeyFrame mostrarRojo2 = new KeyFrame(Duration.seconds(1.0),
-	            new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: red;"));
-	    KeyFrame mostrarAmarillo3 = new KeyFrame(Duration.seconds(1.5),
-	            new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: orange;"));
-	    KeyFrame mostrarRojo3 = new KeyFrame(Duration.seconds(2.0),
-	            new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: red;"));
+		KeyFrame mostrarAmarillo1 = new KeyFrame(Duration.ZERO,
+				new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: orange;"));
+		KeyFrame mostrarRojo1 = new KeyFrame(Duration.seconds(0.0),
+				new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: red;"));
+		KeyFrame mostrarAmarillo2 = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: orange;"));
+		KeyFrame mostrarRojo2 = new KeyFrame(Duration.seconds(1.0),
+				new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: red;"));
+		KeyFrame mostrarAmarillo3 = new KeyFrame(Duration.seconds(1.5),
+				new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: orange;"));
+		KeyFrame mostrarRojo3 = new KeyFrame(Duration.seconds(2.0),
+				new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: red;"));
 
-	    animacionAlarmaTimelineInternet.getKeyFrames().addAll(mostrarAmarillo1, mostrarRojo1, mostrarAmarillo2,
-	            mostrarRojo2, mostrarAmarillo3, mostrarRojo3);
-	    animacionAlarmaTimelineInternet.play();
+		animacionAlarmaTimelineInternet.getKeyFrames().addAll(mostrarAmarillo1, mostrarRojo1, mostrarAmarillo2,
+				mostrarRojo2, mostrarAmarillo3, mostrarRojo3);
+		animacionAlarmaTimelineInternet.play();
 	}
 
 	/**
-	 * Inicia la animación de alarma para la conexión a la base de datos MySQL, cambia el color de fondo de la alarma entre naranja y amarillo.
+	 * Inicia la animación de alarma para la conexión a la base de datos MySQL,
+	 * cambia el color de fondo de la alarma entre naranja y amarillo.
 	 */
 	private void iniciarAnimacionSql() {
-	    animacionAlarmaTimelineMySql = new Timeline();
-	    animacionAlarmaTimelineMySql.setCycleCount(Timeline.INDEFINITE);
+		animacionAlarmaTimelineMySql = new Timeline();
+		animacionAlarmaTimelineMySql.setCycleCount(Timeline.INDEFINITE);
 
-	    KeyFrame mostrarAmarillo1 = new KeyFrame(Duration.ZERO,
-	            new KeyValue(alarmaConexionSql.styleProperty(), "-fx-background-color: orange;"));
-	    KeyFrame mostrarAmarillo2 = new KeyFrame(Duration.seconds(0.5),
-	            new KeyValue(alarmaConexionSql.styleProperty(), "-fx-background-color: orange;"));
-	    KeyFrame mostrarAmarillo3 = new KeyFrame(Duration.seconds(1.5),
-	            new KeyValue(alarmaConexionSql.styleProperty(), "-fx-background-color: orange;"));
+		KeyFrame mostrarAmarillo1 = new KeyFrame(Duration.ZERO,
+				new KeyValue(alarmaConexionSql.styleProperty(), "-fx-background-color: orange;"));
+		KeyFrame mostrarAmarillo2 = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(alarmaConexionSql.styleProperty(), "-fx-background-color: orange;"));
+		KeyFrame mostrarAmarillo3 = new KeyFrame(Duration.seconds(1.5),
+				new KeyValue(alarmaConexionSql.styleProperty(), "-fx-background-color: orange;"));
 
-	    KeyFrame mostrarAmarillo4 = new KeyFrame(Duration.seconds(2.0),
-	            new KeyValue(alarmaConexionSql.styleProperty(), "-fx-background-color: orange;"));
+		KeyFrame mostrarAmarillo4 = new KeyFrame(Duration.seconds(2.0),
+				new KeyValue(alarmaConexionSql.styleProperty(), "-fx-background-color: orange;"));
 
-	    animacionAlarmaTimelineMySql.getKeyFrames().addAll(mostrarAmarillo1, mostrarAmarillo2, mostrarAmarillo3,
-	            mostrarAmarillo4);
-	    animacionAlarmaTimelineMySql.play();
+		animacionAlarmaTimelineMySql.getKeyFrames().addAll(mostrarAmarillo1, mostrarAmarillo2, mostrarAmarillo3,
+				mostrarAmarillo4);
+		animacionAlarmaTimelineMySql.play();
 	}
-
 
 	/**
 	 * Metodo que permite crear una animacion

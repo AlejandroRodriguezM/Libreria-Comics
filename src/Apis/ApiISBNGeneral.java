@@ -24,6 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import Funcionamiento.Utilidades;
+import Funcionamiento.Ventanas;
 import javafx.scene.control.TextArea;
 //import javafx.scene.control.TextArea;
 
@@ -33,7 +34,10 @@ import javafx.scene.control.TextArea;
  */
 public class ApiISBNGeneral {
 
-	
+	/**
+	 * Instancia de la clase Ventanas para la navegación.
+	 */
+	private static Ventanas nav = new Ventanas();
 
 	/**
 	 * Obtiene información sobre un libro a través de su ISBN y lo devuelve en forma
@@ -52,6 +56,12 @@ public class ApiISBNGeneral {
 			throws IOException, JSONException, URISyntaxException {
 		String apiUrl = "https://openlibrary.org/api/books?bibkeys=ISBN:" + isbn + "&jscmd=details&format=json";
 		String apiKey = Utilidades.cargarApiComicVine();
+
+		if (apiKey.isEmpty()) {
+			String excepcion = "Debes de conseguir una clave API de Comic Vine. La pagina es https://comicvine.gamespot.com/api/ es gratuito";
+			nav.alertaNoApi(excepcion);
+			return null;
+		}
 
 		try {
 			String jsonResponse = sendHttpGetRequest(apiUrl);

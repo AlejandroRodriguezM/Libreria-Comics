@@ -488,7 +488,27 @@ public class VentanaAccionController implements Initializable {
 	 */
 	private static String TIPO_ACCION;
 
+	/**
+	 * Declaramos una lista de ComboBox de tipo String
+	 */
 	private static List<ComboBox<String>> comboboxes;
+
+	/**
+	 * Obtenemos el directorio de inicio del usuario
+	 */
+	private final String USER_DIR = System.getProperty("user.home");
+
+	/**
+	 * Construimos la ruta al directorio "Documents"
+	 */
+	private final String DOCUMENTS_PATH = USER_DIR + File.separator + "Documents";
+
+	/**
+	 * Construimos la ruta al directorio "libreria_comics" dentro de "Documents" y
+	 * añadimos el nombre de la base de datos y la carpeta "portadas".
+	 */
+	private final String SOURCE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+			+ DBManager.DB_NAME + File.separator + "portadas";
 
 	/**
 	 * Inicializa la interfaz de usuario y configura el comportamiento de los
@@ -530,9 +550,17 @@ public class VentanaAccionController implements Initializable {
 		idComicTratar.setTextFormatter(FuncionesComboBox.validador_Nenteros());
 		precioComic.setTextFormatter(FuncionesComboBox.validador_Ndecimales());
 
+		FuncionesTableView.eliminarEspacioInicial(nombreComic);
+		FuncionesTableView.restringirSimbolos(editorialComic);
 		FuncionesTableView.restringirSimbolos(guionistaComic);
 		FuncionesTableView.restringirSimbolos(dibujanteComic);
 		FuncionesTableView.restringirSimbolos(varianteComic);
+
+		FuncionesTableView.reemplazarEspaciosMultiples(nombreComic);
+		FuncionesTableView.reemplazarEspaciosMultiples(editorialComic);
+		FuncionesTableView.reemplazarEspaciosMultiples(guionistaComic);
+		FuncionesTableView.reemplazarEspaciosMultiples(dibujanteComic);
+		FuncionesTableView.reemplazarEspaciosMultiples(varianteComic);
 
 		List<TableColumn<Comic, String>> columnListCarga = Arrays.asList(nombre, numero, variante, editorial, guionista,
 				dibujante);
@@ -579,10 +607,23 @@ public class VentanaAccionController implements Initializable {
 		puntuacionMenu.getSelectionModel().selectFirst();
 	}
 
+	/**
+	 * Establece una lista de ComboBoxes para su uso en la clase
+	 * VentanaAccionController.
+	 *
+	 * @param comboBoxes La lista de ComboBoxes que se desea establecer.
+	 */
 	public void pasarComboBoxes(List<ComboBox<String>> comboBoxes) {
 		VentanaAccionController.comboboxes = comboBoxes;
 	}
 
+	/**
+	 * Obtiene la lista de ComboBoxes establecida previamente en la clase
+	 * VentanaAccionController.
+	 *
+	 * @return La lista de ComboBoxes configurada en la clase
+	 *         VentanaAccionController.
+	 */
 	public static List<ComboBox<String>> getComboBoxes() {
 		return comboboxes;
 	}
@@ -692,6 +733,8 @@ public class VentanaAccionController implements Initializable {
 			precioComic.setText(comic_temp.getPrecio_comic());
 			urlReferencia.setText(comic_temp.getUrl_referencia());
 
+			direccionImagen.setText(comic_temp.getImagen());
+
 			prontInfo.setOpacity(1);
 			prontInfo.setText(libreria.comicDatos(id_comic).toString().replace("[", "").replace("]", ""));
 			imagencomic.setImage(libreria.selectorImage(id_comic));
@@ -759,6 +802,8 @@ public class VentanaAccionController implements Initializable {
 
 				precioComic.setText(comic_temp.getPrecio_comic());
 				urlReferencia.setText(comic_temp.getUrl_referencia());
+
+				direccionImagen.setText(comic_temp.getImagen());
 
 				prontInfo.setOpacity(1);
 				prontInfo.setText(libreria.comicDatos(id_comic).toString().replace("[", "").replace("]", ""));
@@ -921,12 +966,8 @@ public class VentanaAccionController implements Initializable {
 		libreria = new DBLibreriaManager();
 		String id_comic = idComicTratar.getText();
 		idComicTratar.setStyle("");
-		if (id_comic.length() == 0 || !libreria.checkID(id_comic)) {
+		if (comprobarID(id_comic)) {
 
-			idComicTratar.setStyle("-fx-background-color: #FF0000;");
-			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("Error. Debes de introducir los datos correctos");
-		} else {
 			libreria.actualizarPuntuacion(id_comic, comicPuntuacion()); // Llamada a funcion
 			prontInfo.setText("Deseo concedido. Has añadido el nuevo comic.");
 
@@ -951,11 +992,7 @@ public class VentanaAccionController implements Initializable {
 
 		idComicTratar.setStyle("");
 
-		if (id_comic.length() == 0 || !libreria.checkID(id_comic)) {
-			idComicTratar.setStyle("-fx-background-color: #FF0000;");
-			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("Error. Debes de introducir los datos correctos");
-		} else {
+		if (comprobarID(id_comic)) {
 			libreria.borrarPuntuacion(id_comic);
 			prontInfo.setText("Deseo concedido. Has borrado la puntuacion del comic.");
 
@@ -1232,14 +1269,7 @@ public class VentanaAccionController implements Initializable {
 		String id_comic = idComicTratar.getText();
 		idComicTratar.setStyle("");
 
-		if (id_comic.length() == 0 || !libreria.checkID(id_comic)) {
-
-			idComicTratar.setStyle("-fx-background-color: #FF0000;");
-
-			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("Error. Debes de introducir los datos correctos");
-		} else {
-			cambioEstado(id_comic);
+		if (comprobarID(id_comic)) {
 			libreria.eliminarComicBBDD(id_comic);
 			libreria.reiniciarBBDD();
 			libreria.listasAutoCompletado();
@@ -1265,17 +1295,10 @@ public class VentanaAccionController implements Initializable {
 	 * @param sentenciaSQL
 	 * @throws SQLException
 	 */
-	public boolean cambioEstado(String ID) throws SQLException {
+	public boolean comprobarID(String ID) throws SQLException {
 		libreria = new DBLibreriaManager();
-		if (nav.alertaEliminar()) {
-			if (ID.length() != 0) {
-
-				Comic comic = libreria.comicDatos(ID); // Llamada de metodo que contiene el comic que se desea eliminar
-
-				prontInfo.setOpacity(1);
-				prontInfo.setStyle("-fx-background-color: #A0F52D");
-				prontInfo.setText(
-						"Has borrado/vendido correctamente: " + comic.toString().replace("[", "").replace("]", ""));
+		if (nav.alertaAccionGeneral()) {
+			if (libreria.checkID(ID)) {
 				idComicTratar.setStyle(null);
 
 				funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
@@ -1290,8 +1313,9 @@ public class VentanaAccionController implements Initializable {
 				return false;
 			}
 		} else { // Si se cancela el borra del comic, saltara el siguiente mensaje.
+			idComicTratar.setStyle(null);
 			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("Modificacion cancelada.");
+			prontInfo.setText("Accion cancelada");
 			return false;
 		}
 	}
@@ -1366,14 +1390,18 @@ public class VentanaAccionController implements Initializable {
 	void modificarDatos(ActionEvent event) throws NumberFormatException, SQLException, IOException {
 
 		libreria = new DBLibreriaManager();
-		modificacionComic(); // Llamada a funcion que modificara el contenido de un comic especifico.
-		libreria.reiniciarBBDD();
-		direccionImagen.setText("");
-		libreria.listasAutoCompletado();
+		String id_comic = idComicTratar.getText();
+		idComicTratar.setStyle("");
+		if (comprobarID(id_comic)) {
+			modificacionComic(); // Llamada a funcion que modificara el contenido de un comic especifico.
+			libreria.reiniciarBBDD();
+			direccionImagen.setText("");
+			libreria.listasAutoCompletado();
 
-		List<ComboBox<String>> comboboxes = VentanaAccionController.getComboBoxes();
+			List<ComboBox<String>> comboboxes = VentanaAccionController.getComboBoxes();
 
-		funcionesCombo.rellenarComboBox(comboboxes);
+			funcionesCombo.rellenarComboBox(comboboxes);
+		}
 
 	}
 
@@ -1400,16 +1428,11 @@ public class VentanaAccionController implements Initializable {
 		libreria = new DBLibreriaManager();
 		String id_comic = idComicTratar.getText();
 		idComicTratar.setStyle("");
-
-		if (id_comic.length() == 0 || !libreria.checkID(id_comic)) {
-			idComicTratar.setStyle("-fx-background-color: #FF0000;");
-			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("Error. Debes de introducir los datos correctos");
-		} else {
-			cambioEstado(id_comic);
+		if (comprobarID(id_comic)) {
 			libreria.venderComicBBDD(id_comic);
 			libreria.reiniciarBBDD();
 
+			prontInfo.setOpacity(1);
 			prontInfo.setText("Deseo concedido. Has puesto a la venta el comic");
 			Image nuevaImagen = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
 			imagenFondo.setImage(nuevaImagen);
@@ -1419,7 +1442,6 @@ public class VentanaAccionController implements Initializable {
 			funcionesCombo.rellenarComboBox(comboboxes);
 
 		}
-
 	}
 
 	/**
@@ -1446,225 +1468,6 @@ public class VentanaAccionController implements Initializable {
 			prontInfo.setOpacity(1);
 			prontInfo.setStyle("-fx-background-color: #F53636");
 			prontInfo.setText("Has cancelado la subida de portada.");
-		}
-	}
-
-	/**
-	 * Funcion que permite modificar un comic, segun los datos introducidos
-	 * 
-	 * @throws SQLException
-	 * @throws NumberFormatException
-	 */
-	public void modificacionComic() throws NumberFormatException, SQLException, IOException {
-		libreria = new DBLibreriaManager();
-		Comic comic_temp = new Comic();
-		Image imagen = null;
-
-		String userDir = System.getProperty("user.home");
-		String documentsPath = userDir + File.separator + "Documents";
-		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + DBManager.DB_NAME
-				+ File.separator + "portadas";
-		Utilidades.convertirNombresCarpetas(sourcePath);
-
-		if (nav.alertaModificar()) {
-
-			String datos[] = camposComic();
-
-			String id_comic = idComicTratar.getText();
-
-			System.out.println(id_comic);
-
-			if (libreria.checkID(id_comic)) {
-				comic_temp = libreria.comicDatos(id_comic);
-
-				String nombre = "";
-
-				String numero = "";
-
-				String variante = "";
-
-				String firma = "";
-
-				String editorial = "";
-
-				String formato = "";
-
-				String procedencia = "";
-
-				String fecha = "";
-
-				String guionista = datos[8];
-
-				String dibujante = datos[9];
-
-				String estado = datos[11];
-
-				String numCaja = "";
-
-				String portada = "";
-
-				String puntuacion = "";
-
-				String nombreKeyIssue = "";
-
-				String url_referencia = "";
-
-				String precio_comic = "";
-
-				if (datos[0].isEmpty()) {
-					nombre = comic_temp.getNombre();
-				} else {
-					nombre = datos[0];
-				}
-
-				if (datos[1].isEmpty()) {
-					numero = comic_temp.getNumero();
-				} else {
-					numero = datos[1];
-				}
-
-				if (datos[2].isEmpty()) {
-					variante = comic_temp.getVariante();
-				} else {
-					variante = datos[2];
-				}
-
-				if (datos[3].isEmpty()) {
-					firma = comic_temp.getFirma();
-				} else {
-					firma = datos[3];
-				}
-
-				if (datos[4].isEmpty()) {
-					editorial = comic_temp.getEditorial();
-				} else {
-					editorial = datos[4];
-				}
-
-				if (datos[5].isEmpty()) {
-					formato = comic_temp.getFormato();
-				} else {
-					formato = datos[5];
-				}
-
-				if (datos[6].isEmpty()) {
-					procedencia = comic_temp.getProcedencia();
-				} else {
-					procedencia = datos[6];
-				}
-
-				if (datos[7].isEmpty()) {
-					fecha = comic_temp.getFecha();
-				} else {
-					fecha = datos[7];
-				}
-
-				if (datos[8].isEmpty()) {
-					guionista = comic_temp.getGuionista();
-				} else {
-					guionista = datos[8];
-				}
-
-				if (datos[9].isEmpty()) {
-					dibujante = comic_temp.getDibujante();
-				} else {
-					dibujante = datos[9];
-				}
-
-				if (datos[10].isEmpty()) {
-					portada = comic_temp.getImagen();
-					imagen = new Image(portada);
-				} else {
-					portada = datos[10];
-					imagen = new Image(portada);
-				}
-
-				if (datos[11].isEmpty()) {
-					estado = comic_temp.getEstado();
-				} else {
-					estado = datos[11];
-				}
-
-				if (datos[12].isEmpty()) {
-					numCaja = comic_temp.getNumCaja();
-
-				} else {
-					numCaja = datos[12];
-				}
-
-				if (!comic_temp.getPuntuacion().equals("Sin puntuar")) {
-					puntuacion = comic_temp.getPuntuacion();
-				} else {
-					puntuacion = "Sin puntuar";
-				}
-
-				nombreKeyIssue = "Vacio";
-				String key_issue_sinEspacios = datos[13].trim();
-
-				Pattern pattern = Pattern.compile(".*\\w+.*");
-				Matcher matcher = pattern.matcher(key_issue_sinEspacios);
-
-				if (!key_issue_sinEspacios.isEmpty() && matcher.matches()) {
-					nombreKeyIssue = key_issue_sinEspacios;
-				}
-
-				if (datos[14].isEmpty()) {
-					url_referencia = comic_temp.getUrl_referencia();
-				} else {
-					url_referencia = datos[14];
-				}
-
-				if (datos[15].isEmpty()) {
-					precio_comic = comic_temp.getPrecio_comic();
-				} else {
-					precio_comic = datos[15];
-				}
-
-				double valor_comic = Double.parseDouble(precio_comic);
-
-				precio_comic = String.valueOf(Utilidades.convertirMonedaADolar(procedencia, valor_comic));
-
-				Comic comic = new Comic(id_comic, nombre, numCaja, numero, variante, firma, editorial, formato,
-						procedencia, fecha, guionista, dibujante, estado, nombreKeyIssue, puntuacion, portada,
-						url_referencia, precio_comic);
-
-				if (id_comic.length() == 0 || !libreria.checkID(id_comic) || nombre.length() == 0
-						|| numero.length() == 0 || editorial.length() == 0 || guionista.length() == 0
-						|| dibujante.length() == 0 || procedencia.length() == 0) {
-
-					String excepcion = "ERROR.Faltan datos por rellenar";
-					nav.alertaException(excepcion);
-					prontInfo.setOpacity(1);
-					prontInfo.setStyle("-fx-background-color: #F53636");
-					prontInfo.setText("Error. Debes de introducir los datos correctos");
-				} else {
-					libreria.actualizarComic(comic);
-					Utilidades.eliminarFichero(comic_temp.getImagen());
-
-					prontInfo.setOpacity(1);
-					prontInfo.setStyle("-fx-background-color: #A0F52D");
-					prontInfo.setText(
-							"Has modificado correctamente: " + comic.toString().replace("[", "").replace("]", ""));
-					libreria.listasAutoCompletado();
-					funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-					funcionesTabla.tablaBBDD(libreria.libreriaCompleta(), tablaBBDD, columnList); // Llamada a funcion
-
-					imagencomic.setImage(imagen);
-
-					Image nuevaImagen = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
-					imagenFondo.setImage(nuevaImagen);
-				}
-			} else {
-				String excepcion = "No puedes modificar un comic si antes no pones un ID valido";
-				nav.alertaException(excepcion);
-				prontInfo.setOpacity(1);
-				prontInfo.setStyle("-fx-background-color: #F53636");
-				prontInfo.setText("Error. Debes de introducir un ID valido");
-			}
-		} else {
-			prontInfo.setOpacity(1);
-			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("Se ha cancelado la modificacion del comic.");
 		}
 	}
 
@@ -1768,13 +1571,13 @@ public class VentanaAccionController implements Initializable {
 
 		campos[0] = utilidad.comaPorGuion(nombreComic.getText());
 
-		campos[1] = numero();
+		campos[1] = utilidad.comaPorGuion(numero());
 
 		campos[2] = utilidad.comaPorGuion(varianteComic.getText());
 
 		campos[3] = utilidad.comaPorGuion(firmaComic.getText());
 
-		campos[4] = editorialComic.getText();
+		campos[4] = utilidad.comaPorGuion(editorialComic.getText());
 
 		campos[5] = formato();
 
@@ -1795,13 +1598,13 @@ public class VentanaAccionController implements Initializable {
 
 		campos[11] = estado();
 
-		campos[12] = caja();
+		campos[12] = utilidad.comaPorGuion(caja());
 
-		campos[13] = nombreKeyIssue.getText();
+		campos[13] = utilidad.eliminarEspacios(nombreKeyIssue.getText());
 
-		campos[14] = urlReferencia.getText();
+		campos[14] = utilidad.eliminarEspacios(urlReferencia.getText());
 
-		campos[15] = precioComic.getText();
+		campos[15] = utilidad.eliminarEspacios(precioComic.getText());
 
 		return campos;
 	}
@@ -1812,23 +1615,23 @@ public class VentanaAccionController implements Initializable {
 	 * @param comic El cómic a validar.
 	 */
 	public void validateComicFields(Comic comic) {
-		if (comic.getNombre().length() == 0) {
+		if (comic.getNombre().isEmpty()) {
 			nombreComic.setStyle("-fx-background-color: #FF0000;"); // Resaltar en rojo el campo nombre
 		}
 
-		if (comic.getNumero().length() == 0) {
+		if (comic.getNumero().isEmpty()) {
 			numeroComic.setStyle("-fx-background-color: #FF0000;"); // Resaltar en rojo el campo número
 		}
 
-		if (comic.getEditorial().length() == 0) {
+		if (comic.getEditorial().isEmpty()) {
 			editorialComic.setStyle("-fx-background-color: #FF0000;"); // Resaltar en rojo el campo editorial
 		}
 
-		if (comic.getGuionista().length() == 0) {
+		if (comic.getGuionista().isEmpty()) {
 			guionistaComic.setStyle("-fx-background-color: #FF0000;"); // Resaltar en rojo el campo guionista
 		}
 
-		if (comic.getDibujante().length() == 0) {
+		if (comic.getDibujante().isEmpty()) {
 			dibujanteComic.setStyle("-fx-background-color: #FF0000;"); // Resaltar en rojo el campo dibujante
 		}
 	}
@@ -1847,15 +1650,13 @@ public class VentanaAccionController implements Initializable {
 		LocalDate fecha_comic;
 		Image imagen = null;
 
-		String userDir = System.getProperty("user.home");
-		String documentsPath = userDir + File.separator + "Documents";
-		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + DBManager.DB_NAME
-				+ File.separator + "portadas";
-		Utilidades.convertirNombresCarpetas(sourcePath);
+		Utilidades.convertirNombresCarpetas(SOURCE_PATH);
 
 		if (nav.alertaInsertar()) {
 
 			String datos[] = camposComic();
+
+			file = new File(datos[10]);
 
 			String portada = "";
 
@@ -1884,26 +1685,30 @@ public class VentanaAccionController implements Initializable {
 
 			String dibujante = datos[9];
 
-			if (datos[10] != "") {
-
+			if (!datos[10].isEmpty()) {
+				file = new File(datos[10]);
 				if (Utilidades.isImageURL(datos[10])) {
 					// Es una URL en internet
-					portada = Utilidades.descargarImagen(datos[10], documentsPath);
+					portada = Utilidades.descargarImagen(datos[10], DOCUMENTS_PATH);
+					imagen = new Image(file.toURI().toString());
+
 				} else {
 
-					file = new File(datos[10]);
 					if (!file.exists()) {
 						portada = "Funcionamiento/sinPortada.jpg";
 						imagen = new Image(portada);
 
 					} else {
 						portada = datos[10];
-						imagen = new Image(portada);
+						imagen = new Image(file.toURI().toString());
 					}
 				}
 
-				imagencomic.setImage(imagen);
+			} else {
+				portada = "Funcionamiento/sinPortada.jpg";
+				imagen = new Image(portada);
 			}
+			imagencomic.setImage(imagen);
 
 			String estado = datos[11];
 
@@ -1955,10 +1760,10 @@ public class VentanaAccionController implements Initializable {
 				nav.alertaException(excepcion);
 			} else {
 
-				String codigo_imagen = Utilidades.generarCodigoUnico(sourcePath + File.separator);
+				String codigo_imagen = Utilidades.generarCodigoUnico(SOURCE_PATH + File.separator);
 
 				utilidad.nueva_imagen(portada, codigo_imagen);
-				comic.setImagen(sourcePath + File.separator + codigo_imagen + ".jpg");
+				comic.setImagen(SOURCE_PATH + File.separator + codigo_imagen + ".jpg");
 				libreria.insertarDatos(comic);
 
 				prontInfo.setOpacity(1);
@@ -1985,6 +1790,214 @@ public class VentanaAccionController implements Initializable {
 			prontInfo.setStyle("-fx-background-color: #F53636");
 			prontInfo.setText("Se ha cancelado la subida del nuevo comic.");
 		}
+	}
+
+	/**
+	 * Funcion que permite modificar un comic, segun los datos introducidos
+	 * 
+	 * @throws SQLException
+	 * @throws NumberFormatException
+	 */
+	public void modificacionComic() throws NumberFormatException, SQLException, IOException {
+		libreria = new DBLibreriaManager();
+		Comic comic_temp = new Comic();
+		Image imagen = null;
+		File file;
+
+		Utilidades.convertirNombresCarpetas(SOURCE_PATH);
+
+		String datos[] = camposComic();
+
+		String id_comic = idComicTratar.getText();
+
+		comic_temp = libreria.comicDatos(id_comic);
+
+		String nombre = "";
+
+		String numero = "";
+
+		String variante = "";
+
+		String firma = "";
+
+		String editorial = "";
+
+		String formato = "";
+
+		String procedencia = "";
+
+		String fecha = "";
+
+		String guionista = datos[8];
+
+		String dibujante = datos[9];
+
+		String estado = datos[11];
+
+		String numCaja = "";
+
+		String portada = "";
+
+		String puntuacion = "";
+
+		String nombreKeyIssue = "";
+
+		String url_referencia = "";
+
+		String precio_comic = "";
+
+		if (datos[0].isEmpty()) {
+			nombre = comic_temp.getNombre();
+		} else {
+			nombre = datos[0];
+		}
+
+		if (datos[1].isEmpty()) {
+			numero = comic_temp.getNumero();
+		} else {
+			numero = datos[1];
+		}
+
+		if (datos[2].isEmpty()) {
+			variante = comic_temp.getVariante();
+		} else {
+			variante = datos[2];
+		}
+
+		if (datos[3].isEmpty()) {
+			firma = comic_temp.getFirma();
+		} else {
+			firma = datos[3];
+		}
+
+		if (datos[4].isEmpty()) {
+			editorial = comic_temp.getEditorial();
+		} else {
+			editorial = datos[4];
+		}
+
+		if (datos[5].isEmpty()) {
+			formato = comic_temp.getFormato();
+		} else {
+			formato = datos[5];
+		}
+
+		if (datos[6].isEmpty()) {
+			procedencia = comic_temp.getProcedencia();
+		} else {
+			procedencia = datos[6];
+		}
+
+		if (datos[7].isEmpty()) {
+			fecha = comic_temp.getFecha();
+		} else {
+			fecha = datos[7];
+		}
+
+		if (datos[8].isEmpty()) {
+			guionista = comic_temp.getGuionista();
+		} else {
+			guionista = datos[8];
+		}
+
+		if (datos[9].isEmpty()) {
+			dibujante = comic_temp.getDibujante();
+		} else {
+			dibujante = datos[9];
+		}
+
+		if (!datos[10].isEmpty()) {
+			file = new File(datos[10]);
+
+			if (Utilidades.isImageURL(datos[10])) {
+				// Es una URL en internet
+				portada = Utilidades.descargarImagen(datos[10], DOCUMENTS_PATH);
+
+			} else if (file.exists()) {
+				portada = file.toString();
+			} else {
+				portada = "Funcionamiento/sinPortada.jpg";
+			}
+		} else {
+			file = new File(comic_temp.getImagen());
+			portada = comic_temp.getImagen();
+		}
+
+		if (datos[11].isEmpty()) {
+			estado = comic_temp.getEstado();
+		} else {
+			estado = datos[11];
+		}
+
+		if (datos[12].isEmpty()) {
+			numCaja = comic_temp.getNumCaja();
+
+		} else {
+			numCaja = datos[12];
+		}
+
+		if (!comic_temp.getPuntuacion().equals("Sin puntuar")) {
+			puntuacion = comic_temp.getPuntuacion();
+		} else {
+			puntuacion = "Sin puntuar";
+		}
+
+		nombreKeyIssue = "Vacio";
+		String key_issue_sinEspacios = datos[13].trim();
+
+		Pattern pattern = Pattern.compile(".*\\w+.*");
+		Matcher matcher = pattern.matcher(key_issue_sinEspacios);
+
+		if (!key_issue_sinEspacios.isEmpty() && matcher.matches()) {
+			nombreKeyIssue = key_issue_sinEspacios;
+		}
+
+		if (datos[14].isEmpty()) {
+			url_referencia = comic_temp.getUrl_referencia();
+		} else {
+			url_referencia = datos[14];
+		}
+
+		if (datos[15].isEmpty()) {
+			precio_comic = comic_temp.getPrecio_comic();
+		} else {
+			precio_comic = datos[15];
+		}
+
+		double valor_comic = Double.parseDouble(precio_comic);
+
+		precio_comic = String.valueOf(Utilidades.convertirMonedaADolar(procedencia, valor_comic));
+
+		Comic comic = new Comic(id_comic, nombre, numCaja, numero, variante, firma, editorial, formato, procedencia,
+				fecha, guionista, dibujante, estado, nombreKeyIssue, puntuacion, portada, url_referencia, precio_comic);
+
+		if (id_comic.length() == 0 || !libreria.checkID(id_comic) || nombre.length() == 0 || numero.length() == 0
+				|| editorial.length() == 0 || guionista.length() == 0 || dibujante.length() == 0
+				|| procedencia.length() == 0) {
+
+			String excepcion = "ERROR.Faltan datos por rellenar";
+			nav.alertaException(excepcion);
+			prontInfo.setOpacity(1);
+			prontInfo.setStyle("-fx-background-color: #F53636");
+			prontInfo.setText("Error. Debes de introducir los datos correctos");
+		} else {
+			libreria.actualizarComic(comic);
+			Utilidades.eliminarFichero(comic_temp.getImagen());
+
+			prontInfo.setOpacity(1);
+			prontInfo.setStyle("-fx-background-color: #A0F52D");
+			prontInfo.setText("Has modificado correctamente: " + comic.toString().replace("[", "").replace("]", ""));
+			libreria.listasAutoCompletado();
+			funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
+			funcionesTabla.tablaBBDD(libreria.libreriaCompleta(), tablaBBDD, columnList); // Llamada a funcion
+
+			imagen = new Image(file.toURI().toString());
+			imagencomic.setImage(imagen);
+
+			Image nuevaImagen = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
+			imagenFondo.setImage(nuevaImagen);
+		}
+
 	}
 
 	/**

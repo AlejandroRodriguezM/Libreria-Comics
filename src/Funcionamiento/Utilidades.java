@@ -105,7 +105,6 @@ public class Utilidades {
 	 */
 	private static final Map<String, Double> tasasDeCambio = new HashMap<>();
 
-
 	/**
 	 * Verifica si el sistema operativo es Windows.
 	 *
@@ -261,8 +260,24 @@ public class Utilidades {
 		if (dato.contains(",")) {
 			dato = dato.replace(",", " - ");
 		}
-
+		dato = eliminarEspacios(dato);
 		return dato;
+	}
+
+	/**
+	 * Funcion que elimina los espacios del principios y finales
+	 *
+	 * @param campos
+	 * @return
+	 */
+	public String eliminarEspacios(String dato) {
+	    // Elimina espacios adicionales al principio y al final.
+	    dato = dato.trim();
+
+	    // Reemplaza espacios múltiples entre palabras por un solo espacio.
+	    dato = dato.replaceAll("\\s+", " ");
+
+	    return dato;
 	}
 
 	/**
@@ -806,7 +821,7 @@ public class Utilidades {
 				writer.write("Public Key: ");
 				writer.newLine();
 				writer.write("Private Key: ");
-				
+
 				writer.close();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -978,11 +993,11 @@ public class Utilidades {
 
 		bufferedWriter.close();
 	}
-	
+
 	/**
-	 * Esta función guarda una clave de API para Comic Vine en un archivo de configuración.
-	 * La clave de API se almacena en un archivo en la ubicación de la librería del usuario.
-	 * Si el archivo ya existe, se sobrescribe.
+	 * Esta función guarda una clave de API para Comic Vine en un archivo de
+	 * configuración. La clave de API se almacena en un archivo en la ubicación de
+	 * la librería del usuario. Si el archivo ya existe, se sobrescribe.
 	 *
 	 */
 	public static void guardarApiComicVine() {
@@ -997,14 +1012,14 @@ public class Utilidades {
 				writer.write("Clave Api Comic Vine: ");
 				writer.newLine();
 				writer.write("###############################");
-				
+
 				writer.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 	}
-	
+
 	public static String cargarApiComicVine() {
 		String nombreArchivo = carpetaConfiguracion() + File.separator + "clave_comicVine_api.conf";
 
@@ -1029,6 +1044,52 @@ public class Utilidades {
 		}
 		return null;
 	}
+	
+	/**
+	 * Obtiene las claves de la API de Marvel de un archivo o fuente de datos.
+	 *
+	 * @return Un array de cadenas con las claves pública y privada de la API.
+	 */
+	public static String[] clavesApiMarvel() {
+		String claves[] = new String[2]; // Crear un arreglo de dos elementos para almacenar las claves
+
+		String clavesDesdeArchivo = Utilidades.obtenerClaveApiArchivo(); // Obtener las claves desde el archivo
+
+		if (!clavesDesdeArchivo.isEmpty()) {
+			String[] partes = clavesDesdeArchivo.split(":");
+			if (partes.length == 2) {
+				String clavePublica = partes[0].trim();
+				String clavePrivada = partes[1].trim();
+
+				claves[0] = clavePublica; // Almacenar la clave pública en el primer elemento del arreglo
+				claves[1] = clavePrivada; // Almacenar la clave privada en el segundo elemento del arreglo
+			}
+		}
+
+		return claves;
+	}
+	
+	/**
+	 * Verifica si hay contenido en las cadenas apiKey y claves.
+	 *
+	 * @param apiKey  La cadena que contiene la clave API de Comic Vine.
+	 * @param claves  Un arreglo de cadenas que contiene las claves API de Marvel.
+	 * @return true si ambas cadenas contienen contenido válido, false en caso contrario.
+	 */
+	public static boolean existeContenido(String apiKey, String[] clavesMarvel) {
+	    // Comprueba si apiKey es nulo o está vacío
+	    if (apiKey == null || apiKey.isEmpty()) {
+	        return false;
+	    }
+	    
+	    // Comprueba si claves es nulo o está vacío
+	    if (clavesMarvel == null || clavesMarvel.length < 2 || clavesMarvel[0] == null || clavesMarvel[0].isEmpty() || clavesMarvel[1] == null || clavesMarvel[1].isEmpty()) {
+	        return false;
+	    }
+	    
+	    // Si no se cumplen las condiciones anteriores, significa que hay contenido válido
+	    return true;
+	}
 
 	/**
 	 * Verifica si una cadena es una URL válida.
@@ -1037,23 +1098,26 @@ public class Utilidades {
 	 * @return true si la cadena es una URL válida, false en caso contrario.
 	 */
 	public static boolean isImageURL(String cadena) {
-	    // Verificar si la cadena es una URL válida
-	    if (isURL(cadena)) {
-	        // Obtener la extensión del archivo desde la URL
-	        String extension = getFileExtensionFromURL(cadena);
-	        
-	        // Lista de extensiones de imagen comunes
-	        String[] imageExtensions = { "jpg", "jpeg", "png", "gif", "bmp" };
-	        
-	        // Verificar si la extensión está en la lista de extensiones de imagen
-	        for (String imageExtension : imageExtensions) {
-	            if (extension.equalsIgnoreCase(imageExtension)) {
-	                return true;
-	            }
-	        }
-	    }
-	    
-	    return false;
+		// Verificar si la cadena es una URL válida
+		System.out.println(cadena);
+		System.out.println("Valor: " + isURL(cadena));
+		
+		if (isURL(cadena)) {
+			// Obtener la extensión del archivo desde la URL
+			String extension = getFileExtensionFromURL(cadena);
+
+			// Lista de extensiones de imagen comunes
+			String[] imageExtensions = { "jpg", "jpeg", "png", "gif", "bmp" };
+
+			// Verificar si la extensión está en la lista de extensiones de imagen
+			for (String imageExtension : imageExtensions) {
+				if (extension.equalsIgnoreCase(imageExtension)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -1063,9 +1127,9 @@ public class Utilidades {
 	 * @return true si la cadena es una URL válida, false en caso contrario.
 	 */
 	public static boolean isURL(String cadena) {
-	    // Patrón para verificar si la cadena es una URL válida
-	    String urlPattern = "^(https?|ftp)://[A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]";
-	    return Pattern.matches(urlPattern, cadena);
+		// Patrón para verificar si la cadena es una URL válida
+		String urlPattern = "^(https?|ftp)://[A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]";
+		return Pattern.matches(urlPattern, cadena);
 	}
 
 	/**
@@ -1075,11 +1139,11 @@ public class Utilidades {
 	 * @return La extensión del archivo o una cadena vacía si no se encuentra.
 	 */
 	public static String getFileExtensionFromURL(String url) {
-	    int lastDotIndex = url.lastIndexOf('.');
-	    if (lastDotIndex > 0) {
-	        return url.substring(lastDotIndex + 1).toLowerCase();
-	    }
-	    return "";
+		int lastDotIndex = url.lastIndexOf('.');
+		if (lastDotIndex > 0) {
+			return url.substring(lastDotIndex + 1).toLowerCase();
+		}
+		return "";
 	}
 
 //	public static String descargarImagen(String urlImagen, String carpetaDestino) throws IOException {
@@ -1146,6 +1210,7 @@ public class Utilidades {
 
 		return rutaDestino;
 	}
+
 
 	/**
 	 * Borra un archivo de imagen dada su ruta.
