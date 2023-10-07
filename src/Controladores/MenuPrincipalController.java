@@ -1089,6 +1089,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void borrarContenidoTabla(ActionEvent event) throws SQLException {
+
 		// Crear una tarea (Task) para realizar la operación de borrado de contenido de
 		// la tabla
 		Task<Boolean> task = new Task<Boolean>() {
@@ -1162,6 +1163,7 @@ public class MenuPrincipalController implements Initializable {
 							tablaBBDD.getItems().clear();
 							imagencomic.setImage(null);
 							detenerAnimacion();
+							cargarDatosDataBase();
 						});
 					}
 				});
@@ -1210,15 +1212,14 @@ public class MenuPrincipalController implements Initializable {
 				prontInfo.clear();
 				detenerAnimacionPront();
 				exception.printStackTrace();
-				Platform.runLater(
-
-						() -> nav.alertaException("Error al importar el fichero CSV: " + exception.getMessage()));
+				Platform.runLater(() -> nav.alertaException("Error al importar el fichero CSV: " + exception.getMessage()));
 			} else {
 				prontInfo.clear();
 				detenerAnimacionPront();
 				Platform.runLater(() -> nav.alertaException("Error desconocido al importar el fichero CSV."));
 			}
 		});
+		nav.ventanaAbierta();
 
 		// Iniciar la tarea principal de borrado en un hilo separado
 		Thread thread = new Thread(task);
@@ -1501,6 +1502,8 @@ public class MenuPrincipalController implements Initializable {
 							prontInfo.setText("Fichero CSV importado de forma correcta");
 							detenerAnimacion();
 
+							cargarDatosDataBase();
+
 						});
 
 						// Configurar el comportamiento cuando la tarea de lectura y guardado falla
@@ -1572,6 +1575,8 @@ public class MenuPrincipalController implements Initializable {
 				detenerAnimacion();
 			}
 		});
+
+		nav.ventanaAbierta();
 
 		// Iniciar la tarea principal de importación en un hilo separado
 		Thread thread = new Thread(task);
@@ -1777,16 +1782,16 @@ public class MenuPrincipalController implements Initializable {
 	void accionComic(ActionEvent event) {
 		Object fuente = event.getSource();
 		tablaBBDD.getItems().clear();
-		
-	    VentanaAccionController ventanaAccion = new VentanaAccionController();
 
-	    // Crear la lista de ComboBoxes
-	    List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
-	            nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
-	    
-	    // Pasar la lista de ComboBoxes a VentanaAccionController
-	    ventanaAccion.pasarComboBoxes(comboboxes);
-		
+		VentanaAccionController ventanaAccion = new VentanaAccionController();
+
+		// Crear la lista de ComboBoxes
+		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
+				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
+
+		// Pasar la lista de ComboBoxes a VentanaAccionController
+		ventanaAccion.pasarComboBoxes(comboboxes);
+
 		if (fuente instanceof Button) {
 			Button botonPresionado = (Button) fuente;
 
