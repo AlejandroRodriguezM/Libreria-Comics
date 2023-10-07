@@ -580,11 +580,11 @@ public class VentanaAccionController implements Initializable {
 	}
 
 	public void pasarComboBoxes(List<ComboBox<String>> comboBoxes) {
-	    VentanaAccionController.comboboxes = comboBoxes;
+		VentanaAccionController.comboboxes = comboBoxes;
 	}
-	
+
 	public static List<ComboBox<String>> getComboBoxes() {
-	    return comboboxes;
+		return comboboxes;
 	}
 
 	/**
@@ -906,11 +906,6 @@ public class VentanaAccionController implements Initializable {
 		subidaComic(); // Llama a la función para procesar la subida de un cómic
 		libreria.reiniciarBBDD(); // Reinicia la base de datos
 		direccionImagen.setText(""); // Limpia el campo de texto de la dirección de la imagen
-		
-		for (ComboBox<String> comboBox : comboboxes) {
-			comboBox.setValue("");
-			comboBox.getEditor().setText("");
-		}
 	}
 
 	/**
@@ -934,18 +929,11 @@ public class VentanaAccionController implements Initializable {
 		} else {
 			libreria.actualizarPuntuacion(id_comic, comicPuntuacion()); // Llamada a funcion
 			prontInfo.setText("Deseo concedido. Has añadido el nuevo comic.");
-			
+
 			List<ComboBox<String>> comboboxes = VentanaAccionController.getComboBoxes();
 
-			int totalComboboxes = comboboxes.size();
-
 			funcionesCombo.rellenarComboBox(comboboxes);
-			funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
-		}
-		
-		for (ComboBox<String> comboBox : comboboxes) {
-			comboBox.setValue("");
-			comboBox.getEditor().setText("");
+
 		}
 	}
 
@@ -973,18 +961,11 @@ public class VentanaAccionController implements Initializable {
 
 			Image nuevaImagen = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
 			imagenFondo.setImage(nuevaImagen);
-			
+
 			List<ComboBox<String>> comboboxes = VentanaAccionController.getComboBoxes();
 
-			int totalComboboxes = comboboxes.size();
-
 			funcionesCombo.rellenarComboBox(comboboxes);
-			funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
-		}
-		
-		for (ComboBox<String> comboBox : comboboxes) {
-			comboBox.setValue("");
-			comboBox.getEditor().setText("");
+
 		}
 	}
 
@@ -1270,16 +1251,10 @@ public class VentanaAccionController implements Initializable {
 
 			List<ComboBox<String>> comboboxes = VentanaAccionController.getComboBoxes();
 
-			int totalComboboxes = comboboxes.size();
-
 			funcionesCombo.rellenarComboBox(comboboxes);
-			funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
+
 		}
-		
-		for (ComboBox<String> comboBox : comboboxes) {
-			comboBox.setValue("");
-			comboBox.getEditor().setText("");
-		}
+
 	}
 
 	/**
@@ -1343,7 +1318,13 @@ public class VentanaAccionController implements Initializable {
 		prontInfo.setText(null);
 		prontInfo.setOpacity(0);
 		nombreKeyIssue.setText("");
-
+		numeroComic.getEditor().clear(); // Limpiar el texto en el ComboBox
+		formatoComic.getEditor().clear(); // Limpiar el texto en el ComboBox
+		procedenciaComic.getEditor().clear(); // Limpiar el texto en el ComboBox
+		estadoComic.getEditor().clear(); // Limpiar el texto en el ComboBox
+		urlReferencia.setText("");
+		precioComic.setText("");
+		direccionImagen.setText("");
 		// Borrar cualquier mensaje de error presente
 		borrarErrores();
 
@@ -1358,11 +1339,7 @@ public class VentanaAccionController implements Initializable {
 		busquedaEditorial.setDisable(true);
 		busquedaCodigo.setDisable(true);
 		botonBusquedaCodigo.setDisable(true);
-		
-		for (ComboBox<String> comboBox : comboboxes) {
-			comboBox.setValue("");
-			comboBox.getEditor().setText("");
-		}
+
 	}
 
 	/**
@@ -1396,15 +1373,7 @@ public class VentanaAccionController implements Initializable {
 
 		List<ComboBox<String>> comboboxes = VentanaAccionController.getComboBoxes();
 
-		int totalComboboxes = comboboxes.size();
-
 		funcionesCombo.rellenarComboBox(comboboxes);
-		funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
-		
-		for (ComboBox<String> comboBox : comboboxes) {
-			comboBox.setValue("");
-			comboBox.getEditor().setText("");
-		}
 
 	}
 
@@ -1447,16 +1416,10 @@ public class VentanaAccionController implements Initializable {
 
 			List<ComboBox<String>> comboboxes = VentanaAccionController.getComboBoxes();
 
-			int totalComboboxes = comboboxes.size();
-
 			funcionesCombo.rellenarComboBox(comboboxes);
-			funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
+
 		}
-		
-		for (ComboBox<String> comboBox : comboboxes) {
-			comboBox.setValue("");
-			comboBox.getEditor().setText("");
-		}
+
 	}
 
 	/**
@@ -1923,7 +1886,7 @@ public class VentanaAccionController implements Initializable {
 
 			if (datos[10] != "") {
 
-				if (Utilidades.isURL(datos[10])) {
+				if (Utilidades.isImageURL(datos[10])) {
 					// Es una URL en internet
 					portada = Utilidades.descargarImagen(datos[10], documentsPath);
 				} else {
@@ -2014,10 +1977,8 @@ public class VentanaAccionController implements Initializable {
 				imagenFondo.setImage(imagenDeseo);
 				List<ComboBox<String>> comboboxes = VentanaAccionController.getComboBoxes();
 
-				int totalComboboxes = comboboxes.size();
-
 				funcionesCombo.rellenarComboBox(comboboxes);
-				funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
+
 			}
 		} else {
 			prontInfo.setOpacity(1);
