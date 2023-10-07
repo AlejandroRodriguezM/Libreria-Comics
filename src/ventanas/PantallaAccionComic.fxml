@@ -100,7 +100,7 @@
             <Font size="10.0" />
          </font>
       </TextField>
-      <TextField fx:id="direccionImagen" disable="true" editable="false" layoutX="87.0" layoutY="384.0" prefHeight="21.0" prefWidth="125.0" promptText="URL local de la portada" visible="false">
+      <TextField fx:id="direccionImagen" disable="true" layoutX="87.0" layoutY="384.0" prefHeight="21.0" prefWidth="125.0" promptText="URL local de la portada" visible="false">
          <font>
             <Font size="10.0" />
          </font>

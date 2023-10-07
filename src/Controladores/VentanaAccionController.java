@@ -906,6 +906,11 @@ public class VentanaAccionController implements Initializable {
 		subidaComic(); // Llama a la función para procesar la subida de un cómic
 		libreria.reiniciarBBDD(); // Reinicia la base de datos
 		direccionImagen.setText(""); // Limpia el campo de texto de la dirección de la imagen
+		
+		for (ComboBox<String> comboBox : comboboxes) {
+			comboBox.setValue("");
+			comboBox.getEditor().setText("");
+		}
 	}
 
 	/**
@@ -936,6 +941,11 @@ public class VentanaAccionController implements Initializable {
 
 			funcionesCombo.rellenarComboBox(comboboxes);
 			funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
+		}
+		
+		for (ComboBox<String> comboBox : comboboxes) {
+			comboBox.setValue("");
+			comboBox.getEditor().setText("");
 		}
 	}
 
@@ -970,6 +980,11 @@ public class VentanaAccionController implements Initializable {
 
 			funcionesCombo.rellenarComboBox(comboboxes);
 			funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
+		}
+		
+		for (ComboBox<String> comboBox : comboboxes) {
+			comboBox.setValue("");
+			comboBox.getEditor().setText("");
 		}
 	}
 
@@ -1037,7 +1052,7 @@ public class VentanaAccionController implements Initializable {
 						comicInfo = ApiMarvel.infoComicCode(valorCodigo.trim(), prontInfo);
 					} else {
 						comicInfo = ApiISBNGeneral.getBookInfo(valorCodigo.trim(), prontInfo);
-						System.out.println("Info: " + comicInfo.toString());
+//						System.out.println("Info: " + comicInfo.toString());
 					}
 
 					if (comprobarCodigo(comicInfo)) {
@@ -1260,6 +1275,11 @@ public class VentanaAccionController implements Initializable {
 			funcionesCombo.rellenarComboBox(comboboxes);
 			funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
 		}
+		
+		for (ComboBox<String> comboBox : comboboxes) {
+			comboBox.setValue("");
+			comboBox.getEditor().setText("");
+		}
 	}
 
 	/**
@@ -1338,6 +1358,11 @@ public class VentanaAccionController implements Initializable {
 		busquedaEditorial.setDisable(true);
 		busquedaCodigo.setDisable(true);
 		botonBusquedaCodigo.setDisable(true);
+		
+		for (ComboBox<String> comboBox : comboboxes) {
+			comboBox.setValue("");
+			comboBox.getEditor().setText("");
+		}
 	}
 
 	/**
@@ -1375,6 +1400,11 @@ public class VentanaAccionController implements Initializable {
 
 		funcionesCombo.rellenarComboBox(comboboxes);
 		funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
+		
+		for (ComboBox<String> comboBox : comboboxes) {
+			comboBox.setValue("");
+			comboBox.getEditor().setText("");
+		}
 
 	}
 
@@ -1421,6 +1451,11 @@ public class VentanaAccionController implements Initializable {
 
 			funcionesCombo.rellenarComboBox(comboboxes);
 			funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
+		}
+		
+		for (ComboBox<String> comboBox : comboboxes) {
+			comboBox.setValue("");
+			comboBox.getEditor().setText("");
 		}
 	}
 
