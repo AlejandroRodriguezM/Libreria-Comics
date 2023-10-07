@@ -1036,10 +1036,50 @@ public class Utilidades {
 	 * @param cadena Cadena que se va a verificar como URL.
 	 * @return true si la cadena es una URL válida, false en caso contrario.
 	 */
+	public static boolean isImageURL(String cadena) {
+	    // Verificar si la cadena es una URL válida
+	    if (isURL(cadena)) {
+	        // Obtener la extensión del archivo desde la URL
+	        String extension = getFileExtensionFromURL(cadena);
+	        
+	        // Lista de extensiones de imagen comunes
+	        String[] imageExtensions = { "jpg", "jpeg", "png", "gif", "bmp" };
+	        
+	        // Verificar si la extensión está en la lista de extensiones de imagen
+	        for (String imageExtension : imageExtensions) {
+	            if (extension.equalsIgnoreCase(imageExtension)) {
+	                return true;
+	            }
+	        }
+	    }
+	    
+	    return false;
+	}
+
+	/**
+	 * Verifica si una cadena es una URL válida.
+	 *
+	 * @param cadena Cadena que se va a verificar como URL.
+	 * @return true si la cadena es una URL válida, false en caso contrario.
+	 */
 	public static boolean isURL(String cadena) {
-		// Patrón para verificar si la cadena es una URL válida
-		String urlPattern = "^(https?|ftp)://[A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]";
-		return Pattern.matches(urlPattern, cadena);
+	    // Patrón para verificar si la cadena es una URL válida
+	    String urlPattern = "^(https?|ftp)://[A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]";
+	    return Pattern.matches(urlPattern, cadena);
+	}
+
+	/**
+	 * Obtiene la extensión del archivo desde una URL.
+	 *
+	 * @param url URL de la que se va a obtener la extensión.
+	 * @return La extensión del archivo o una cadena vacía si no se encuentra.
+	 */
+	public static String getFileExtensionFromURL(String url) {
+	    int lastDotIndex = url.lastIndexOf('.');
+	    if (lastDotIndex > 0) {
+	        return url.substring(lastDotIndex + 1).toLowerCase();
+	    }
+	    return "";
 	}
 
 //	public static String descargarImagen(String urlImagen, String carpetaDestino) throws IOException {
