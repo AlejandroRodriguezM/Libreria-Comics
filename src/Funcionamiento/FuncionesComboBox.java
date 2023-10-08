@@ -147,30 +147,34 @@ public class FuncionesComboBox {
 	}
 
 	/**
-	 * Maneja los cambios en el ComboBox cuando su texto está vacío. Restablece el
-	 * valor del ComboBox a null y verifica si todos los campos de texto de los
-	 * ComboBoxes están vacíos. Si todos están vacíos, llama a la función
-	 * "limpiezaDeDatos()".
+	 * Maneja los cambios en el ComboBox cuando su texto está vacío.
+	 * Restablece el valor del ComboBox a null y verifica si todos los campos de texto
+	 * de los ComboBoxes están vacíos. Si todos están vacíos, llama a la función "limpiezaDeDatos()".
 	 *
-	 * @param comboBox El ComboBox que ha cambiado su valor.
+	 * @param comboBox   El ComboBox que ha cambiado su valor.
+	 * @param comboboxes Lista de ComboBoxes para verificar si todos los campos de texto están vacíos.
 	 */
 	private void handleComboBoxEmptyChange(ComboBox<String> comboBox, List<ComboBox<String>> comboboxes) {
-		if (originalComboBoxItems != null) {
-			isUserInput = false;
-			modificarPopup(comboBox);
-			comboBox.setValue(null); // Establecer a null para restablecer la selección del ComboBox
+	    // Verificar si la lista original de elementos del ComboBox no es nula
+	    if (originalComboBoxItems != null) {
+	        // Deshabilitar la detección de entrada de usuario para evitar bucles no deseados
+	        isUserInput = false;
+	        // Realizar modificaciones necesarias en el popup del ComboBox
+	        modificarPopup(comboBox);
+	        // Establecer el valor del ComboBox a null para restablecer la selección
+	        comboBox.setValue(null);
 
-			isUserInput = true;
+	        // Habilitar nuevamente la detección de entrada de usuario
+	        isUserInput = true;
 
-			// Comprobar si algún campo de texto del ComboBox actual está vacío
-			boolean anyEmpty = comboboxes.stream().anyMatch(cb -> cb.getEditor().getText().isEmpty());
+	        // Comprobar si todos los campos de texto de los ComboBoxes están vacíos
+	        boolean allEmpty = comboboxes.stream().allMatch(cb -> cb.getValue() == null || cb.getValue().isEmpty());
 
-			// Si todos los campos de texto de los ComboBoxes están vacíos, llamar a
-			// limpiezaDeDatos()
-			if (anyEmpty) {
-				limpiezaDeDatos(comboboxes);
-			}
-		}
+	        // Si todos los campos de texto de los ComboBoxes están vacíos, llamar a limpiezaDeDatos()
+	        if (allEmpty) {
+	            limpiezaDeDatos(comboboxes);
+	        }
+	    }
 	}
 
 	/**
@@ -614,78 +618,34 @@ public class FuncionesComboBox {
 	 * @param comboboxes La lista de ComboBoxes a rellenar.
 	 */
 	public void rellenarComboBoxEstaticos(List<ComboBox<String>> comboboxes) {
-	    String[] formatos = {
-	        "Grapa (Issue individual)",
-	        "Tapa blanda (Paperback)",
-	        "Cómic de bolsillo (Pocket)",
-	        "Edición de lujo (Deluxe Edition)",
-	        "Edición omnibus (Omnibus)",
-	        "Edición integral (Integral)",
-	        "Tapa dura (Hardcover)",
-	        "eBook (libro electrónico)",
-	        "Cómic digital (Digital Comic)",
-	        "Manga digital (Digital Manga)",
-	        "Manga (Manga tome)",
-	        "PDF (Portable Document Format)",
-	        "Revista (Magazine)",
-	        "Edición de coleccionista (Collector's Edition)",
-	        "Edición especial (Special Edition)",
-	        "Edición con extras (Bonus Edition)",
-	        "Libro (Book)"
-	    };
+		String[] formatos = { "Grapa (Issue individual)", "Tapa blanda (Paperback)", "Cómic de bolsillo (Pocket)",
+				"Edición de lujo (Deluxe Edition)", "Edición omnibus (Omnibus)", "Edición integral (Integral)",
+				"Tapa dura (Hardcover)", "eBook (libro electrónico)", "Cómic digital (Digital Comic)",
+				"Manga digital (Digital Manga)", "Manga (Manga tome)", "PDF (Portable Document Format)",
+				"Revista (Magazine)", "Edición de coleccionista (Collector's Edition)",
+				"Edición especial (Special Edition)", "Edición con extras (Bonus Edition)", "Libro (Book)" };
 
-	    String[] procedenciaEstados = {
-	        "Estados Unidos (United States)",
-	        "Japón (Japan)",
-	        "Francia (France)",
-	        "Italia (Italy)",
-	        "España (Spain)",
-	        "Reino Unido (United Kingdom)",
-	        "Alemania (Germany)",
-	        "Brasil (Brazil)",
-	        "Corea del Sur (South Korea)",
-	        "México (Mexico)",
-	        "Canadá (Canada)",
-	        "China (China)",
-	        "Australia (Australia)",
-	        "Argentina (Argentina)",
-	        "India (India)",
-	        "Bélgica (Belgium)",
-	        "Países Bajos (Netherlands)",
-	        "Portugal (Portugal)",
-	        "Suecia (Sweden)",
-	        "Suiza (Switzerland)",
-	        "Finlandia (Finland)",
-	        "Noruega (Norway)",
-	        "Dinamarca (Denmark)"
-	    };
+		String[] procedenciaEstados = { "Estados Unidos (United States)", "Japón (Japan)", "Francia (France)",
+				"Italia (Italy)", "España (Spain)", "Reino Unido (United Kingdom)", "Alemania (Germany)",
+				"Brasil (Brazil)", "Corea del Sur (South Korea)", "México (Mexico)", "Canadá (Canada)", "China (China)",
+				"Australia (Australia)", "Argentina (Argentina)", "India (India)", "Bélgica (Belgium)",
+				"Países Bajos (Netherlands)", "Portugal (Portugal)", "Suecia (Sweden)", "Suiza (Switzerland)",
+				"Finlandia (Finland)", "Noruega (Norway)", "Dinamarca (Denmark)" };
 
-	    String[] situacionEstados = {
-	        "En posesion",
-	        "Comprado",
-	        "En venta"
-	    };
+		String[] situacionEstados = { "En posesion", "Comprado", "En venta" };
 
-	    String[] editorialBusquedas = {
-	        "Marvel ISBN",
-	        "Marvel UPC",
-	        "Otras editoriales",
-	        "Ninguno"
-	    };
+		String[] editorialBusquedas = { "Marvel ISBN", "Marvel UPC", "Otras editoriales", "Ninguno" };
 
-	    // Verificar que la lista de ComboBox tenga al menos el mismo tamaño que los arreglos
-	    int tamaño = Math.min(comboboxes.size(), Math.min(formatos.length, procedenciaEstados.length));
+		// Verificar que la lista de ComboBox tenga al menos el mismo tamaño que los
+		// arreglos
+		int tamaño = Math.min(comboboxes.size(), Math.min(formatos.length, procedenciaEstados.length));
 
-	    for (int i = 0; i < tamaño; i++) {
-	        comboboxes.get(i).getItems().clear(); // Limpiar elementos anteriores si los hay
-	        comboboxes.get(i).getItems().addAll(
-	            i == 0 ? formatos :
-	            i == 1 ? procedenciaEstados :
-	            i == 2 ? situacionEstados :
-	            editorialBusquedas
-	        );
-	        comboboxes.get(i).getSelectionModel().selectFirst();
-	    }
+		for (int i = 0; i < tamaño; i++) {
+			comboboxes.get(i).getItems().clear(); // Limpiar elementos anteriores si los hay
+			comboboxes.get(i).getItems().addAll(
+					i == 0 ? formatos : i == 1 ? procedenciaEstados : i == 2 ? situacionEstados : editorialBusquedas);
+			comboboxes.get(i).getSelectionModel().selectFirst();
+		}
 	}
 
 }
