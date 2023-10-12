@@ -1034,7 +1034,6 @@ public class MenuPrincipalController implements Initializable {
 
 		makeExcel(fichero);
 		
-		limpiezaDeDatos();
 	}
 
 	/**
@@ -1404,6 +1403,7 @@ public class MenuPrincipalController implements Initializable {
 	 * @param fichero
 	 */
 	public void makeExcel(File fichero) {
+		limpiezaDeDatos();
 		excelFuntions = new FuncionesExcel();
 		prontInfo.setOpacity(0);
 		try {
