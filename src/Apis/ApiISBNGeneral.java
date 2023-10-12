@@ -24,21 +24,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import Funcionamiento.Utilidades;
-import Funcionamiento.Ventanas;
-import javafx.scene.control.TextArea;
 //import javafx.scene.control.TextArea;
+//import javafx.scene.control.TextArea;
+import javafx.scene.control.TextArea;
 
 /**
  * Esta clase demuestra cómo buscar información de un libro utilizando el ISBN a
  * través de la API de OpenLibrary.
  */
 public class ApiISBNGeneral {
-
-	/**
-	 * Instancia de la clase Ventanas para la navegación.
-	 */
-	private static Ventanas nav = new Ventanas();
-
+	
 	/**
 	 * Obtiene información sobre un libro a través de su ISBN y lo devuelve en forma
 	 * de un array de cadenas.
@@ -57,12 +52,6 @@ public class ApiISBNGeneral {
 		String apiUrl = "https://openlibrary.org/api/books?bibkeys=ISBN:" + isbn + "&jscmd=details&format=json";
 		String apiKey = Utilidades.cargarApiComicVine();
 
-		if (apiKey.isEmpty()) {
-			String excepcion = "Debes de conseguir una clave API de Comic Vine. La pagina es https://comicvine.gamespot.com/api/ es gratuito";
-			nav.alertaNoApi(excepcion);
-			return null;
-		}
-
 		try {
 			String jsonResponse = sendHttpGetRequest(apiUrl);
 			JSONObject jsonObject = new JSONObject(jsonResponse);
@@ -70,7 +59,7 @@ public class ApiISBNGeneral {
 			// Verifica si bookInfo es nulo antes de intentar acceder a sus propiedades.
 			JSONObject bookInfo = jsonObject.optJSONObject("ISBN:" + isbn);
 
-			if (bookInfo == null) {
+			if (bookInfo.length() == 0) {
 				// Configura la visibilidad y el texto de un elemento (prontInfo) para informar
 				// que no se encontró el cómic.
 				prontInfo.setOpacity(1);
@@ -186,10 +175,6 @@ public class ApiISBNGeneral {
 				}
 			}
 
-			System.out.println("Autores sin filtrar: " + authorsString.toString());
-			System.out.println("Escritores filtrados: " + escritores);
-			System.out.println("Dibujantes filtrados: " + artistas + "\n");
-
 			// Dibujantes
 			bookInfoList.add(artistas);
 
@@ -218,6 +203,9 @@ public class ApiISBNGeneral {
 			if (bookInfo.has("thumbnail_url")) {
 				String thumbnailUrl = bookInfo.getString("thumbnail_url");
 				thumbnailUrl = thumbnailUrl.replace("-S.jpg", "-L.jpg").replace("-M.jpg", "-L.jpg");
+				
+				System.out.println("URL de la imagen: " + thumbnailUrl);
+				
 				bookInfoList.add(thumbnailUrl);
 			} else {
 				bookInfoList.add("");

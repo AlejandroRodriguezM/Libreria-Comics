@@ -1007,43 +1007,68 @@ public class VentanaAccionController implements Initializable {
 	}
 
 	/**
-	 * Activa o desactiva la búsqueda avanzada y sus elementos relacionados.
+	 * Maneja la acción de búsqueda avanzada, verifica las claves API de Marvel y
+	 * Comic Vine.
 	 *
-	 * @param event El evento que desencadena la acción.
+	 * @param event El evento de acción.
 	 */
 	@FXML
 	void busquedaAvanzada(ActionEvent event) {
+		String claves[] = Utilidades.clavesApiMarvel();
+		String apiKey = Utilidades.cargarApiComicVine();
+		String exception = "";
 
-		if (busquedaEditorial.isVisible()) {
-
-			botonBusquedaCodigo.setVisible(false);
-			label_busquedaCodigo.setVisible(false);
-			busquedaEditorial.setVisible(false);
-			busquedaCodigo.setVisible(false);
-			botonBusquedaCodigo.setVisible(false);
-
-			botonBusquedaCodigo.setDisable(true);
-			label_busquedaCodigo.setDisable(true);
-			busquedaEditorial.setDisable(true);
-			botonBusquedaCodigo.setDisable(true);
-
-			busquedaEditorial.getSelectionModel().clearSelection(); // Desseleccionar cualquier elemento seleccionado
-			busquedaEditorial.getEditor().clear(); // Limpiar el texto en el ComboBox
-			busquedaEditorial.setPromptText("Buscar Editorial"); // Restaurar el texto de marcador de posición original
-
+		// Verificar si las claves API están ausentes o vacías
+		if (claves.length == 0 || apiKey.isEmpty()) {
+			if (claves.length == 0) {
+				exception += "\nDebes obtener una clave API de Marvel. Visita https://developer.marvel.com/";
+			}
+			if (apiKey.isEmpty()) {
+				exception += "\nDebes obtener una clave API de Comic Vine. Visita https://comicvine.gamespot.com/api/ (gratuito)";
+			}
+			nav.alertaNoApi(exception); // Mostrar alerta de error
 		} else {
-			botonBusquedaCodigo.setVisible(true);
-			botonBusquedaCodigo.setDisable(false);
-
-			label_busquedaCodigo.setVisible(true);
-			busquedaEditorial.setVisible(true);
-			busquedaCodigo.setVisible(true);
-			botonBusquedaCodigo.setVisible(true);
-
-			label_busquedaCodigo.setDisable(false);
-			busquedaEditorial.setDisable(false);
-			botonBusquedaCodigo.setDisable(false);
+			// Continuar con la lógica cuando ambas claves están presentes
+			if (busquedaEditorial.isVisible()) {
+				ocultarElementosBusqueda();
+			} else {
+				mostrarElementosBusqueda();
+			}
 		}
+	}
+
+	/**
+	 * Oculta los elementos de búsqueda en la interfaz de usuario.
+	 */
+	private void ocultarElementosBusqueda() {
+		botonBusquedaCodigo.setVisible(false);
+		label_busquedaCodigo.setVisible(false);
+		busquedaEditorial.setVisible(false);
+		busquedaCodigo.setVisible(false);
+
+		botonBusquedaCodigo.setDisable(true);
+		label_busquedaCodigo.setDisable(true);
+		busquedaEditorial.setDisable(true);
+
+		// Restaurar valores predeterminados en el ComboBox
+		busquedaEditorial.getSelectionModel().clearSelection(); // Desseleccionar cualquier elemento seleccionado
+		busquedaEditorial.getEditor().clear(); // Limpiar el texto en el ComboBox
+		busquedaEditorial.setPromptText("Buscar Editorial"); // Restaurar el texto de marcador de posición original
+	}
+
+	/**
+	 * Muestra los elementos de búsqueda en la interfaz de usuario.
+	 */
+	private void mostrarElementosBusqueda() {
+		botonBusquedaCodigo.setVisible(true);
+		botonBusquedaCodigo.setDisable(false);
+
+		label_busquedaCodigo.setVisible(true);
+		busquedaEditorial.setVisible(true);
+		busquedaCodigo.setVisible(true);
+
+		label_busquedaCodigo.setDisable(false);
+		busquedaEditorial.setDisable(false);
 	}
 
 	/**
@@ -1268,7 +1293,8 @@ public class VentanaAccionController implements Initializable {
 		libreria = new DBLibreriaManager();
 		String id_comic = idComicTratar.getText();
 		idComicTratar.setStyle("");
-
+		detenerAnimacionPront();
+		iniciarAnimacionCambioImagen();
 		if (comprobarID(id_comic)) {
 			libreria.eliminarComicBBDD(id_comic);
 			libreria.reiniciarBBDD();
@@ -1284,7 +1310,7 @@ public class VentanaAccionController implements Initializable {
 			funcionesCombo.rellenarComboBox(comboboxes);
 
 		}
-
+		detenerAnimacionPront();
 	}
 
 	/**
@@ -1349,6 +1375,7 @@ public class VentanaAccionController implements Initializable {
 		urlReferencia.setText("");
 		precioComic.setText("");
 		direccionImagen.setText("");
+		imagencomic.setImage(null);
 		// Borrar cualquier mensaje de error presente
 		borrarErrores();
 
@@ -1428,6 +1455,9 @@ public class VentanaAccionController implements Initializable {
 		libreria = new DBLibreriaManager();
 		String id_comic = idComicTratar.getText();
 		idComicTratar.setStyle("");
+
+		detenerAnimacionPront();
+		iniciarAnimacionCambioImagen();
 		if (comprobarID(id_comic)) {
 			libreria.venderComicBBDD(id_comic);
 			libreria.reiniciarBBDD();
@@ -1442,6 +1472,8 @@ public class VentanaAccionController implements Initializable {
 			funcionesCombo.rellenarComboBox(comboboxes);
 
 		}
+		detenerAnimacionPront();
+
 	}
 
 	/**
@@ -1651,7 +1683,8 @@ public class VentanaAccionController implements Initializable {
 		Image imagen = null;
 
 		Utilidades.convertirNombresCarpetas(SOURCE_PATH);
-
+		detenerAnimacionPront();
+		iniciarAnimacionCambioImagen();
 		if (nav.alertaInsertar()) {
 
 			String datos[] = camposComic();
@@ -1685,15 +1718,16 @@ public class VentanaAccionController implements Initializable {
 
 			String dibujante = datos[9];
 
+
 			if (!datos[10].isEmpty()) {
 				file = new File(datos[10]);
 				if (Utilidades.isImageURL(datos[10])) {
 					// Es una URL en internet
 					portada = Utilidades.descargarImagen(datos[10], DOCUMENTS_PATH);
+					file = new File(portada);
 					imagen = new Image(file.toURI().toString());
 
 				} else {
-
 					if (!file.exists()) {
 						portada = "Funcionamiento/sinPortada.jpg";
 						imagen = new Image(portada);
@@ -1703,11 +1737,11 @@ public class VentanaAccionController implements Initializable {
 						imagen = new Image(file.toURI().toString());
 					}
 				}
-
 			} else {
 				portada = "Funcionamiento/sinPortada.jpg";
 				imagen = new Image(portada);
 			}
+
 			imagencomic.setImage(imagen);
 
 			String estado = datos[11];
@@ -1790,6 +1824,7 @@ public class VentanaAccionController implements Initializable {
 			prontInfo.setStyle("-fx-background-color: #F53636");
 			prontInfo.setText("Se ha cancelado la subida del nuevo comic.");
 		}
+		detenerAnimacionPront();
 	}
 
 	/**
@@ -1912,6 +1947,7 @@ public class VentanaAccionController implements Initializable {
 			if (Utilidades.isImageURL(datos[10])) {
 				// Es una URL en internet
 				portada = Utilidades.descargarImagen(datos[10], DOCUMENTS_PATH);
+				file = new File(portada);
 
 			} else if (file.exists()) {
 				portada = file.toString();
@@ -1971,6 +2007,11 @@ public class VentanaAccionController implements Initializable {
 		Comic comic = new Comic(id_comic, nombre, numCaja, numero, variante, firma, editorial, formato, procedencia,
 				fecha, guionista, dibujante, estado, nombreKeyIssue, puntuacion, portada, url_referencia, precio_comic);
 
+		String codigo_imagen = Utilidades.generarCodigoUnico(SOURCE_PATH + File.separator);
+
+		utilidad.nueva_imagen(portada, codigo_imagen);
+		comic.setImagen(SOURCE_PATH + File.separator + codigo_imagen + ".jpg");
+		
 		if (id_comic.length() == 0 || !libreria.checkID(id_comic) || nombre.length() == 0 || numero.length() == 0
 				|| editorial.length() == 0 || guionista.length() == 0 || dibujante.length() == 0
 				|| procedencia.length() == 0) {

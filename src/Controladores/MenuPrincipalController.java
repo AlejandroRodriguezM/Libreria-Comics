@@ -1033,6 +1033,8 @@ public class MenuPrincipalController implements Initializable {
 		File fichero = tratarFichero(frase, formato).showSaveDialog(null); // Llamada a funcion
 
 		makeExcel(fichero);
+		
+		limpiezaDeDatos();
 	}
 
 	/**
@@ -1050,6 +1052,8 @@ public class MenuPrincipalController implements Initializable {
 		File fichero = tratarFichero(frase, formato).showSaveDialog(null); // Llamada a funcion
 
 		makeSQL(fichero);
+		
+		limpiezaDeDatos();
 
 	}
 
@@ -1155,7 +1159,7 @@ public class MenuPrincipalController implements Initializable {
 					if (result) {
 						// Mostrar el mensaje de éxito y limpiar la tabla y la imagen
 						Platform.runLater(() -> {
-							prontInfo.clear();
+							limpiezaDeDatos();
 							detenerAnimacionPront();
 							prontInfo.setOpacity(1);
 							prontInfo.setStyle("-fx-background-color: #A0F52D");

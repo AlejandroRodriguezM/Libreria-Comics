@@ -247,8 +247,8 @@ public class AccesoBBDDController implements Initializable {
 			try {
 				while (true) {
 
-					String port = obtenerDatoDespuesDeDosPuntos("Puerto");
-					String host = obtenerDatoDespuesDeDosPuntos("Hosting");
+					String port = Utilidades.obtenerDatoDespuesDeDosPuntos("Puerto");
+					String host = Utilidades.obtenerDatoDespuesDeDosPuntos("Hosting");
 
 					boolean estadoInternet = Utilidades.isInternetAvailable();
 					Platform.runLater(() -> {
@@ -577,12 +577,12 @@ public class AccesoBBDDController implements Initializable {
 				String userHome = System.getProperty("user.home");
 				String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
 				String carpetaLibreria = ubicacion + File.separator + "libreria";
-				String carpetaBackup = carpetaLibreria + File.separator + obtenerDatoDespuesDeDosPuntos("Database")
+				String carpetaBackup = carpetaLibreria + File.separator + Utilidades.obtenerDatoDespuesDeDosPuntos("Database")
 						+ File.separator + "backups";
 
 				try {
 					File carpeta_backupsFile = new File(carpetaBackup);
-					cbd.crearCarpeta();
+					Utilidades.crearCarpeta();
 					if (!carpeta_backupsFile.exists()) {
 						carpeta_backupsFile.mkdirs();
 					}
@@ -619,42 +619,16 @@ public class AccesoBBDDController implements Initializable {
 		detenerAnimacion();
 		cbd = new CrearBBDDController();
 		String datos[] = new String[5];
-		datos[0] = obtenerDatoDespuesDeDosPuntos("Puerto");
-		datos[1] = obtenerDatoDespuesDeDosPuntos("Database");
-		datos[2] = obtenerDatoDespuesDeDosPuntos("Usuario");
-		datos[3] = obtenerDatoDespuesDeDosPuntos("Password");
-		datos[4] = obtenerDatoDespuesDeDosPuntos("Hosting");
+		datos[0] = Utilidades.obtenerDatoDespuesDeDosPuntos("Puerto");
+		datos[1] = Utilidades.obtenerDatoDespuesDeDosPuntos("Database");
+		datos[2] = Utilidades.obtenerDatoDespuesDeDosPuntos("Usuario");
+		datos[3] = Utilidades.obtenerDatoDespuesDeDosPuntos("Password");
+		datos[4] = Utilidades.obtenerDatoDespuesDeDosPuntos("Hosting");
 
 		DBManager.datosBBDD(datos);
 	}
 
-	/**
-	 * Obtiene el dato que sigue a dos puntos (:) en una línea específica del
-	 * archivo de configuración.
-	 *
-	 * @param linea la línea específica para buscar el dato
-	 * @return el dato encontrado o una cadena vacía si no se encuentra
-	 */
-	public String obtenerDatoDespuesDeDosPuntos(String linea) {
-		String userHome = System.getProperty("user.home");
-		String ubicacion = userHome + "\\AppData\\Roaming";
-		String carpetaLibreria = ubicacion + "\\libreria";
-		String archivoConfiguracion;
 
-		archivoConfiguracion = carpetaLibreria + "\\configuracion_local.conf";
-
-		try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				if (line.startsWith(linea + ": ")) {
-					return line.substring(linea.length() + 2).trim();
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return "";
-	}
 
 	/**
 	 * Permite salir completamente del programa.
