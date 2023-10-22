@@ -1,8 +1,15 @@
 /* Clase CSS para el botón */
-.button#botonSubida {
-    -fx-background-image: url('/imagenes/visible.png');
-    -fx-background-size: cover; /* Ajusta la imagen al tamaño del botón */
+.button#botonSubidaPortada {
+    -fx-background-image: url('upload.png');
+    -fx-background-size: contain; /* Ajusta la imagen al tamaño del botón sin distorsionarla */
     -fx-background-repeat: no-repeat; /* Evita que la imagen se repita */
     -fx-background-position: center center; /* Centra la imagen en el botón */
-    -fx-background-color: transparent; /* Fondo transparente para que solo se vea la imagen */
+    -fx-background-color: white; /* Fondo blanco */
+    -fx-border-color: green; /* Color del borde del botón */
+    -fx-border-width: 2px; /* Ancho del borde */
+}
+
+.button#botonSubidaPortada:hover {
+    -fx-background-color: green; /* Cambia el fondo a verde en hover */
+    -fx-text-fill: white; /* Cambia el color del texto a blanco en hover */
 }

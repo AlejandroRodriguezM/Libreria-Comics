@@ -139,7 +139,7 @@
          </font>
       </Label>
       <ComboBox fx:id="puntuacionMenu" disable="true" layoutX="88.0" layoutY="105.0" prefHeight="21.0" prefWidth="125.0" visible="false" />
-      <Button fx:id="botonSubidaPortada" disable="true" layoutX="214.0" layoutY="381.0" mnemonicParsing="false" onAction="#nuevaPortada" prefHeight="25.0" prefWidth="21.0" style="-fx-background-color: green;" visible="false" />
+      <Button fx:id="botonSubidaPortada" disable="true" layoutX="214.0" layoutY="381.0" mnemonicParsing="false" onAction="#nuevaPortada" prefHeight="21.0" prefWidth="25.0" stylesheets="@../style/boton_subida_style.css" visible="false" />
       <ImageView fx:id="imagencomic" fitHeight="305.0" fitWidth="201.0" layoutX="285.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true" />
       <TextArea fx:id="prontInfo" editable="false" layoutX="501.0" layoutY="306.0" opacity="0.0" prefHeight="222.0" prefWidth="331.0" stylesheets="@../style/panel_info_style.css" wrapText="true" />
       <Label fx:id="label_busquedaCodigo" disable="true" layoutX="143.0" layoutY="410.0" prefHeight="23.0" prefWidth="146.0" style="-fx-background-color: white;" text="Busqueda por ISBN/UPC" visible="false">

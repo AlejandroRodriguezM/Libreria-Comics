@@ -69,9 +69,18 @@
     -fx-background-color: #e5b800;
 }
 
-.button#botonVender {
+.button#botonSubidaPortada {
+-fx-font-size: 10.0px;
     -fx-background-color: #d9534f;
     -fx-border-color: #d43f3a;
+}
+
+.button#botonSubidaPortada:hover {
+-fx-font-size: 10.0px;
+}
+
+.button#botonVender {
+    -fx-background-color: #d9534f;
 }
 
 .button#botonVender:hover {
