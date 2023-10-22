@@ -34,9 +34,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -62,6 +63,7 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -435,6 +437,9 @@ public class MenuPrincipalController implements Initializable {
 	 * Lista de columnas de la tabla de cómics.
 	 */
 	private List<TableColumn<Comic, String>> columnList;
+	
+    private Map<Node, String> tooltipsMap = new HashMap<>();
+
 
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
@@ -628,26 +633,30 @@ public class MenuPrincipalController implements Initializable {
 	 * elementos.
 	 */
 	public void asignarTooltips() {
-		List<Object> elementos = new ArrayList<>();
+        tooltipsMap.put(botonbbdd, "Muestra toda la base de datos");
+        tooltipsMap.put(botonLimpiar, "Limpia la pantalla y reinicia todos los valores");
+        tooltipsMap.put(nombreComic, "Nombre de los cómics / libros / mangas");
+        tooltipsMap.put(numeroComic, "Número del cómic / libro / manga");
+        tooltipsMap.put(nombreFirma, "Nombre de la firma del cómic / libro / manga");
+        tooltipsMap.put(nombreGuionista, "Nombre del guionista del cómic / libro / manga");
+        tooltipsMap.put(nombreVariante, "Nombre de la variante del cómic / libro / manga");
+        tooltipsMap.put(numeroCaja, "Número de la caja donde se guarda el cómic / libro / manga");
+        tooltipsMap.put(nombreProcedencia, "Nombre de la procedencia del cómic / libro / manga");
+        tooltipsMap.put(nombreFormato, "Nombre del formato del cómic / libro / manga");
+        tooltipsMap.put(nombreEditorial, "Nombre de la editorial del cómic / libro / manga");
+        tooltipsMap.put(nombreDibujante, "Nombre del dibujante del cómic / libro / manga");
+        tooltipsMap.put(fechaPublicacion, "Fecha del cómic / libro / manga");
+        tooltipsMap.put(numeroCaja, "Caja donde guardas el cómic / libro / manga");
+        tooltipsMap.put(busquedaGeneral, "Puedes buscar de forma general los cómic / libro / manga / artistas / guionistas");
+        tooltipsMap.put(botonIntroducir, "Realizar una acción de introducción del cómic / libro / manga");
+        tooltipsMap.put(botonModificar, "Realizar una acción de modificación del cómic / libro / manga");
+        tooltipsMap.put(botonEliminar, "Realizar una acción de eliminación del cómic / libro / manga");
+        tooltipsMap.put(botonAgregarPuntuacion, "Abrir una ventana para agregar puntuación del cómic / libro / manga");
+        tooltipsMap.put(botonMostrarParametro, "Buscar por parámetros según los datos rellenados");
+        
+        FuncionesTooltips.assignTooltips(tooltipsMap);
 
-		// Agregar elementos a la lista para los cuales se asignarán tooltips
-		elementos.add(botonbbdd);
-		elementos.add(botonLimpiar);
-		elementos.add(botonMostrarParametro);
-		elementos.add(nombreComic);
-		elementos.add(numeroComic);
-		elementos.add(nombreFirma);
-		elementos.add(nombreGuionista);
-		elementos.add(nombreVariante);
-		elementos.add(numeroCaja);
-		elementos.add(nombreProcedencia);
-		elementos.add(nombreFormato);
-		elementos.add(nombreEditorial);
-		elementos.add(nombreDibujante);
-
-		// Llamar a la función para asignar tooltips a los elementos de la lista
-		FuncionesTooltips.asignarTooltips(elementos);
-	}
+    }
 
 	/**
 	 * Funcion que permite restringir entrada de datos de todo aquello que no sea un

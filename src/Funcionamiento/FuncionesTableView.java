@@ -464,7 +464,6 @@ public class FuncionesTableView {
 	 * @param textField El TextField en el cual restringir los símbolos.
 	 */
 	public static void restringirSimbolos(TextField textField) {
-		Tooltip tooltip = new Tooltip();
 
 		final TextField finalTextField = eliminarEspacioInicial(textField);
 
@@ -488,22 +487,6 @@ public class FuncionesTableView {
 					}
 				}
 			}
-		});
-
-		tooltip.setFont(TOOLTIP_FONT);
-		finalTextField.setOnMouseEntered(event -> {
-			tooltip.setShowDelay(Duration.ZERO);
-			tooltip.setHideDelay(Duration.ZERO);
-
-			String mensaje = "En caso de tener varios artistas en variante, guionista o dibujante, separalos usando una coma ',' o guion '-'";
-			tooltip.setText(mensaje);
-			tooltip.show(finalTextField, event.getSceneX(), event.getSceneY());
-			tooltip.setX(event.getScreenX() + 10); // Ajusta el desplazamiento X según tus necesidades
-			tooltip.setY(event.getScreenY() - 20); // Ajusta el desplazamiento Y según tus necesidades
-		});
-
-		finalTextField.setOnMouseExited(event -> {
-			tooltip.hide();
 		});
 	}
 }

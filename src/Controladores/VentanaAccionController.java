@@ -28,14 +28,16 @@ package Controladores;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -81,8 +83,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
-import java.io.InputStream;
 
 /**
  * Clase controladora para la ventana de acciones, que gestiona la interfaz de
@@ -493,6 +493,9 @@ public class VentanaAccionController implements Initializable {
 	 */
 	private static FuncionesTableView funcionesTabla = new FuncionesTableView();
 
+	/**
+	 * Controlador de la ventana del menú principal.
+	 */
 	MenuPrincipalController menuPrincipal = null;
 
 	/**
@@ -523,6 +526,11 @@ public class VentanaAccionController implements Initializable {
 			+ DBManager.DB_NAME + File.separator + "portadas";
 
 	/**
+	 * Mapa que contiene elementos de la interfaz y sus tooltips correspondientes.
+	 */
+	private static Map<Node, String> tooltipsMap = new HashMap<>();
+
+	/**
 	 * Inicializa la interfaz de usuario y configura el comportamiento de los
 	 * elementos al cargar la vista.
 	 *
@@ -544,6 +552,7 @@ public class VentanaAccionController implements Initializable {
 				rootVBox.toFront();
 				mostrarOpcionEliminar();
 			} else if ("modificar".equals(TIPO_ACCION)) {
+				autoRelleno(idComicTratar_mod);
 				rootVBox.toFront();
 				mostrarOpcionModificar();
 			} else if ("puntuar".equals(TIPO_ACCION)) {
@@ -554,10 +563,9 @@ public class VentanaAccionController implements Initializable {
 			}
 		});
 
-		if (TIPO_ACCION.equals("modificar")) {
-			autoRelleno(idComicTratar_mod);
-		} else {
+		if (!TIPO_ACCION.equals("modificar")) {
 			autoRelleno(idComicTratar);
+
 		}
 
 		Platform.runLater(() -> asignarTooltips());
@@ -622,10 +630,10 @@ public class VentanaAccionController implements Initializable {
 				"2.5/5", "3/5", "3.5/5", "4/5", "4.5/5", "5/5");
 		puntuacionMenu.setItems(puntuaciones);
 		puntuacionMenu.getSelectionModel().selectFirst();
-		
+
 		establecerDinamismoAnchor();
 	}
-	
+
 	/**
 	 * Establece el dinamismo en la interfaz gráfica ajustando propiedades de
 	 * elementos como tamaños, anchos y máximos.
@@ -696,23 +704,71 @@ public class VentanaAccionController implements Initializable {
 	 * elementos.
 	 */
 	public void asignarTooltips() {
-		List<Object> elementos = new ArrayList<>();
+		tooltipsMap.put(nombreComic, "Nombre de los cómics / libros / mangas");
+		tooltipsMap.put(numeroComic, "Número del cómic / libro / manga");
+		tooltipsMap.put(varianteComic, "Nombre de la variante del cómic / libro / manga");
 
-		// Agregar elementos a la lista para los cuales se asignarán tooltips
-		elementos.add(botonLimpiar);
-		elementos.add(nombreComic);
-		elementos.add(numeroComic);
-		elementos.add(firmaComic);
-		elementos.add(guionistaComic);
-		elementos.add(varianteComic);
-		elementos.add(numeroCajaComic);
-		elementos.add(procedenciaComic);
-		elementos.add(formatoComic);
-		elementos.add(editorialComic);
-		elementos.add(dibujanteComic);
+		tooltipsMap.put(botonbbdd, "Botón para acceder a la base de datos");
+		tooltipsMap.put(botonLimpiar, "Limpia la pantalla y reinicia todos los valores");
 
-		// Llamar a la función para asignar tooltips a los elementos de la lista
-		FuncionesTooltips.asignarTooltips(elementos);
+		if ("aniadir".equals(TIPO_ACCION)) {
+			tooltipsMap.put(botonSubidaPortada, "Botón para subir una portada");
+			tooltipsMap.put(botonIntroducir, "Botón para introducir un cómic");
+			tooltipsMap.put(botonBusquedaAvanzada, "Botón para realizar una búsqueda avanzada");
+			tooltipsMap.put(botonBusquedaCodigo, "Botón para realizar una búsqueda por código");
+			tooltipsMap.put(busquedaCodigo, "Introduci el ISBN o UPC del comic a buscar");
+			tooltipsMap.put(botonSubidaPortada, "Boton para buscar la portada");
+			tooltipsMap.put(numeroCajaComic, "Número de la caja donde se guarda el cómic / libro / manga");
+			tooltipsMap.put(procedenciaComic, "Nombre de la procedencia del cómic / libro / manga");
+			tooltipsMap.put(formatoComic, "Nombre del formato del cómic / libro / manga");
+			tooltipsMap.put(editorialComic, "Nombre de la editorial del cómic / libro / manga");
+			tooltipsMap.put(direccionImagen, "Direccion HTTP de la imagen o local");
+
+			tooltipsMap.put(dibujanteComic,
+					"Nombre del dibujante del cómic / libro / manga \nEn caso de tener varios artistas en variante, guionista o dibujante, separalos usando una coma ',' o guion '-'");
+			tooltipsMap.put(guionistaComic,
+					"Nombre del guionista del cómic / libro / manga \nEn caso de tener varios artistas en variante, guionista o dibujante, separalos usando una coma ',' o guion '-'");
+			tooltipsMap.put(nombreKeyIssue,
+					"Aqui puedes añadir si el comic tiene o no alguna clave, esto es para coleccionistas. Puedes dejarlo vacío");
+			tooltipsMap.put(estadoComic, "Selecciona el estado del cómic");
+			tooltipsMap.put(fechaComic, "Selecciona la fecha de publicación del cómic");
+			tooltipsMap.put(busquedaEditorial, "Selecciona la editorial para buscar");
+			tooltipsMap.put(firmaComic, "Nombre de la firma del cómic / libro / manga");
+
+		} else if ("eliminar".equals(TIPO_ACCION)) {
+			tooltipsMap.put(botonEliminar, "Botón para eliminar un cómic");
+			tooltipsMap.put(botonVender, "Botón para vender un cómic");
+			tooltipsMap.put(idComicTratar, "El ID del comic");
+
+		} else if ("modificar".equals(TIPO_ACCION)) {
+			tooltipsMap.put(botonSubidaPortada, "Botón para subir una portada");
+			tooltipsMap.put(botonModificarComic, "Botón para modificar un cómic");
+			tooltipsMap.put(idComicTratar_mod, "El ID del comic");
+			tooltipsMap.put(botonSubidaPortada, "Boton para buscar la portada");
+			tooltipsMap.put(direccionImagen, "Direccion HTTP de la imagen o local");
+			tooltipsMap.put(firmaComic, "Nombre de la firma del cómic / libro / manga");
+			tooltipsMap.put(numeroCajaComic, "Número de la caja donde se guarda el cómic / libro / manga");
+			tooltipsMap.put(procedenciaComic, "Nombre de la procedencia del cómic / libro / manga");
+			tooltipsMap.put(formatoComic, "Nombre del formato del cómic / libro / manga");
+			tooltipsMap.put(editorialComic, "Nombre de la editorial del cómic / libro / manga");
+			tooltipsMap.put(dibujanteComic,
+					"Nombre del dibujante del cómic / libro / manga \nEn caso de tener varios artistas en variante, guionista o dibujante, separalos usando una coma ',' o guion '-'");
+			tooltipsMap.put(guionistaComic,
+					"Nombre del guionista del cómic / libro / manga \nEn caso de tener varios artistas en variante, guionista o dibujante, separalos usando una coma ',' o guion '-'");
+			tooltipsMap.put(nombreKeyIssue,
+					"Aqui puedes añadir si el comic tiene o no alguna clave, esto es para coleccionistas. Puedes dejarlo vacío");
+			tooltipsMap.put(estadoComic, "Selecciona el estado del cómic");
+			tooltipsMap.put(fechaComic, "Selecciona la fecha de publicación del cómic");
+			tooltipsMap.put(busquedaEditorial, "Selecciona la editorial para buscar");
+
+		} else if ("puntuar".equals(TIPO_ACCION)) {
+			tooltipsMap.put(botonBorrarOpinion, "Botón para borrar una opinión");
+			tooltipsMap.put(botonAgregarPuntuacion, "Botón para agregar una puntuación");
+			tooltipsMap.put(puntuacionMenu, "Selecciona una puntuación en el menú");
+			tooltipsMap.put(idComicTratar, "El ID del comic");
+		}
+
+		FuncionesTooltips.assignTooltips(tooltipsMap);
 	}
 
 	/**
@@ -863,7 +919,6 @@ public class VentanaAccionController implements Initializable {
 					mostrarOpcionModificar();
 					idComicTratar_mod.setText(comic_temp.getID());
 
-					
 				}
 			}
 			DBManager.resetConnection();
@@ -1422,13 +1477,15 @@ public class VentanaAccionController implements Initializable {
 		}
 	}
 
-
+	/**
+	 * Limpia los datos de la pantalla al hacer clic en el botón "Limpiar".
+	 */
 	@FXML
 	void limpiarDatos(ActionEvent event) {
 		limpiarDatosPantalla();
 
 	}
-	
+
 	/**
 	 * Limpia y restablece todos los campos de datos en la sección de animaciones a
 	 * sus valores predeterminados. Además, restablece la imagen de fondo y oculta
@@ -1458,6 +1515,7 @@ public class VentanaAccionController implements Initializable {
 		precioComic.setText("");
 		direccionImagen.setText("");
 		imagencomic.setImage(null);
+		numeroCajaComic.getEditor().clear();
 		// Borrar cualquier mensaje de error presente
 		borrarErrores();
 
