@@ -1556,6 +1556,7 @@ public class DBLibreriaManager extends Comic {
 
 		PreparedStatement ps = null;
 		try {
+			conn = DBManager.conexion();
 			ps = conn.prepareStatement(sentenciaSQL);
 
 			ps.setString(1, nombre);
@@ -2100,7 +2101,7 @@ public class DBLibreriaManager extends Comic {
 		String consultaSql = "SELECT * FROM comicsbbdd";
 		int totalComics = 0;
 		try {
-			Connection conn = DBManager.conexion();
+			conn = DBManager.conexion();
 			// Realizar la consulta a la base de datos
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(consultaSql);
