@@ -178,7 +178,7 @@ public class VentanaAccionController implements Initializable {
 	 * Botón para modificar un cómic.
 	 */
 	@FXML
-	private Button botonModificar;
+	private Button botonModificarComic;
 
 	/**
 	 * Botón para subir una portada.
@@ -234,6 +234,12 @@ public class VentanaAccionController implements Initializable {
 	 */
 	@FXML
 	private TextField idComicTratar;
+
+	/**
+	 * Campo de texto para el ID del cómic a tratar en modificacion.
+	 */
+	@FXML
+	private TextField idComicTratar_mod;
 
 	/**
 	 * Campo de texto para el nombre del cómic.
@@ -331,6 +337,12 @@ public class VentanaAccionController implements Initializable {
 	 */
 	@FXML
 	private Label label_id;
+
+	/**
+	 * Etiqueta para mostrar el ID en modificacion.
+	 */
+	@FXML
+	private Label label_id_mod;
 
 	/**
 	 * Etiqueta para mostrar el Key Issue.
@@ -532,7 +544,6 @@ public class VentanaAccionController implements Initializable {
 				rootVBox.toFront();
 				mostrarOpcionEliminar();
 			} else if ("modificar".equals(TIPO_ACCION)) {
-				rootVBox.setLayoutY(422.0); // Cambia 422.0 al valor que desees
 				rootVBox.toFront();
 				mostrarOpcionModificar();
 			} else if ("puntuar".equals(TIPO_ACCION)) {
@@ -542,6 +553,12 @@ public class VentanaAccionController implements Initializable {
 				closeWindow();
 			}
 		});
+
+		if (TIPO_ACCION.equals("modificar")) {
+			autoRelleno(idComicTratar_mod);
+		} else {
+			autoRelleno(idComicTratar);
+		}
 
 		Platform.runLater(() -> asignarTooltips());
 
@@ -605,6 +622,26 @@ public class VentanaAccionController implements Initializable {
 				"2.5/5", "3/5", "3.5/5", "4/5", "4.5/5", "5/5");
 		puntuacionMenu.setItems(puntuaciones);
 		puntuacionMenu.getSelectionModel().selectFirst();
+		
+		establecerDinamismoAnchor();
+	}
+	
+	/**
+	 * Establece el dinamismo en la interfaz gráfica ajustando propiedades de
+	 * elementos como tamaños, anchos y máximos.
+	 */
+	public void establecerDinamismoAnchor() {
+
+		// Vinculación del ancho de las columnas al ancho de la TableView dividido por
+		// el número de columnas
+		double numColumns = 13; // El número de columnas en tu TableView
+		nombre.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
+		numero.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
+		variante.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
+		editorial.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
+		guionista.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
+		dibujante.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
+
 	}
 
 	/**
@@ -646,6 +683,11 @@ public class VentanaAccionController implements Initializable {
 
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 		funcionesTabla.tablaBBDD(libreria.libreriaCompleta(), tablaBBDD, columnList); // Llamada a funcion
+
+		if (TIPO_ACCION.equals("modificar")) {
+			ocultarCamposMod();
+			limpiarDatosPantalla();
+		}
 	}
 
 	/**
@@ -738,6 +780,13 @@ public class VentanaAccionController implements Initializable {
 			prontInfo.setOpacity(1);
 			prontInfo.setText(libreria.comicDatos(id_comic).toString().replace("[", "").replace("]", ""));
 			imagencomic.setImage(libreria.selectorImage(id_comic));
+
+			if (TIPO_ACCION.equals("modificar")) {
+				rootVBox.setVisible(false);
+				mostrarOpcionModificar();
+				idComicTratar_mod.setText(comic_temp.getID());
+			}
+
 		}
 		DBManager.resetConnection();
 	}
@@ -808,6 +857,14 @@ public class VentanaAccionController implements Initializable {
 				prontInfo.setOpacity(1);
 				prontInfo.setText(libreria.comicDatos(id_comic).toString().replace("[", "").replace("]", ""));
 				imagencomic.setImage(libreria.selectorImage(id_comic));
+
+				if (TIPO_ACCION.equals("modificar")) {
+					rootVBox.setVisible(false);
+					mostrarOpcionModificar();
+					idComicTratar_mod.setText(comic_temp.getID());
+
+					
+				}
 			}
 			DBManager.resetConnection();
 		}
@@ -843,10 +900,28 @@ public class VentanaAccionController implements Initializable {
 		List<Node> elementos = Arrays.asList(tablaBBDD, dibujanteComic, editorialComic, estadoComic, fechaComic,
 				firmaComic, formatoComic, guionistaComic, nombreKeyIssue, numeroCajaComic, procedenciaComic,
 				urlReferencia, botonBorrarOpinion, puntuacionMenu, labelPuntuacion, botonAgregarPuntuacion, label_id,
-				botonVender, botonEliminar, idComicTratar, botonModificar, botonBusquedaCodigo, botonIntroducir,
+				botonVender, botonEliminar, idComicTratar, botonModificarComic, botonBusquedaCodigo, botonIntroducir,
 				botonbbdd, precioComic, direccionImagen, label_portada, label_precio, label_caja, label_dibujante,
 				label_editorial, label_estado, label_fecha, label_firma, label_formato, label_guionista, label_key,
 				label_procedencia, label_referencia);
+
+		// Itera a través de los elementos y oculta/deshabilita cada uno
+		for (Node elemento : elementos) {
+			elemento.setVisible(false);
+			elemento.setDisable(true);
+		}
+	}
+
+	/**
+	 * Oculta y deshabilita varios campos y elementos en la interfaz gráfica.
+	 */
+	public void ocultarCamposMod() {
+		// Lista de elementos que deseas ocultar y deshabilitar
+		List<Node> elementos = Arrays.asList(dibujanteComic, editorialComic, estadoComic, fechaComic, firmaComic,
+				formatoComic, guionistaComic, nombreKeyIssue, numeroCajaComic, procedenciaComic, urlReferencia,
+				label_id_mod, idComicTratar_mod, botonSubidaPortada, precioComic, direccionImagen, label_portada,
+				label_precio, label_caja, label_dibujante, label_editorial, label_estado, label_fecha, label_firma,
+				label_formato, label_guionista, label_key, label_procedencia, label_referencia, botonModificarComic);
 
 		// Itera a través de los elementos y oculta/deshabilita cada uno
 		for (Node elemento : elementos) {
@@ -899,15 +974,16 @@ public class VentanaAccionController implements Initializable {
 
 		List<Node> elementosAMostrarYHabilitar = Arrays.asList(dibujanteComic, editorialComic, estadoComic, fechaComic,
 				firmaComic, formatoComic, guionistaComic, nombreKeyIssue, numeroCajaComic, procedenciaComic,
-				urlReferencia, botonModificar, precioComic, direccionImagen, tablaBBDD, label_portada, label_precio,
-				label_caja, label_dibujante, label_editorial, label_estado, label_fecha, label_firma, label_formato,
-				label_guionista, label_key, label_procedencia, label_referencia, botonSubidaPortada, botonbbdd,
-				rootVBox);
+				urlReferencia, botonModificarComic, precioComic, direccionImagen, tablaBBDD, label_portada,
+				label_precio, label_caja, label_dibujante, label_editorial, label_estado, label_fecha, label_firma,
+				label_formato, label_guionista, label_key, label_procedencia, label_referencia, botonSubidaPortada,
+				botonbbdd, idComicTratar_mod, label_id_mod);
 
 		for (Node elemento : elementosAMostrarYHabilitar) {
 			elemento.setVisible(true);
 			elemento.setDisable(false);
 		}
+		rootVBox.setVisible(false);
 	}
 
 	/**
@@ -1346,13 +1422,19 @@ public class VentanaAccionController implements Initializable {
 		}
 	}
 
+
+	@FXML
+	void limpiarDatos(ActionEvent event) {
+		limpiarDatosPantalla();
+
+	}
+	
 	/**
 	 * Limpia y restablece todos los campos de datos en la sección de animaciones a
 	 * sus valores predeterminados. Además, restablece la imagen de fondo y oculta
 	 * cualquier mensaje de error o información.
 	 */
-	@FXML
-	void limpiarDatos(ActionEvent event) {
+	public void limpiarDatosPantalla() {
 		// Restablecer la imagen de fondo a su valor predeterminado
 		Image nuevaImagen = new Image(getClass().getResourceAsStream("/imagenes/accionComic.jpg"));
 		imagenFondo.setImage(nuevaImagen);
@@ -1390,7 +1472,6 @@ public class VentanaAccionController implements Initializable {
 		busquedaEditorial.setDisable(true);
 		busquedaCodigo.setDisable(true);
 		botonBusquedaCodigo.setDisable(true);
-
 	}
 
 	/**
@@ -1718,7 +1799,6 @@ public class VentanaAccionController implements Initializable {
 
 			String dibujante = datos[9];
 
-
 			if (!datos[10].isEmpty()) {
 				file = new File(datos[10]);
 				if (Utilidades.isImageURL(datos[10])) {
@@ -2011,7 +2091,7 @@ public class VentanaAccionController implements Initializable {
 
 		utilidad.nueva_imagen(portada, codigo_imagen);
 		comic.setImagen(SOURCE_PATH + File.separator + codigo_imagen + ".jpg");
-		
+
 		if (id_comic.length() == 0 || !libreria.checkID(id_comic) || nombre.length() == 0 || numero.length() == 0
 				|| editorial.length() == 0 || guionista.length() == 0 || dibujante.length() == 0
 				|| procedencia.length() == 0) {
@@ -2038,7 +2118,129 @@ public class VentanaAccionController implements Initializable {
 			Image nuevaImagen = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
 			imagenFondo.setImage(nuevaImagen);
 		}
+	}
 
+	/**
+	 * Rellena automáticamente algunos campos basados en el ID del cómic.
+	 */
+	public void autoRelleno(TextField textField) {
+
+		libreria = new DBLibreriaManager();
+
+		textField.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (!newValue.isEmpty()) {
+				boolean existeComic = false;
+				try {
+					existeComic = libreria.checkID(newValue);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+
+				Comic comic_temp = null;
+
+				if (existeComic || newValue.isEmpty()) {
+					try {
+						comic_temp = libreria.comicDatos(textField.getText());
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+
+					textField.setText(textField.getText());
+					// Limpiar selecciones previas en los ComboBox
+					numeroComic.getSelectionModel().clearSelection();
+					formatoComic.getSelectionModel().clearSelection();
+					numeroCajaComic.getSelectionModel().clearSelection();
+
+					nombreComic.setText(comic_temp.getNombre());
+
+					String numeroNuevo = comic_temp.getNumero();
+					numeroComic.getSelectionModel().select(numeroNuevo);
+
+					varianteComic.setText(comic_temp.getVariante());
+
+					firmaComic.setText(comic_temp.getFirma());
+
+					editorialComic.setText(comic_temp.getEditorial());
+
+					String formato = comic_temp.getFormato();
+					formatoComic.getSelectionModel().select(formato);
+
+					String procedencia = comic_temp.getProcedencia();
+					procedenciaComic.getSelectionModel().select(procedencia);
+
+					String fechaString = comic_temp.getFecha();
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+					LocalDate fecha = LocalDate.parse(fechaString, formatter);
+					fechaComic.setValue(fecha);
+
+					guionistaComic.setText(comic_temp.getGuionista());
+
+					dibujanteComic.setText(comic_temp.getDibujante());
+
+					String cajaAni = comic_temp.getNumCaja();
+					numeroCajaComic.getSelectionModel().select(cajaAni);
+
+					nombreKeyIssue.setText(comic_temp.getKey_issue());
+					estadoComic.getSelectionModel().select(comic_temp.getEstado());
+
+					precioComic.setText(comic_temp.getPrecio_comic());
+					urlReferencia.setText(comic_temp.getUrl_referencia());
+
+					direccionImagen.setText(comic_temp.getImagen());
+
+					prontInfo.clear();
+					prontInfo.setOpacity(1);
+					try {
+						prontInfo.setText(
+								libreria.comicDatos(textField.getText()).toString().replace("[", "").replace("]", ""));
+						imagencomic.setImage(libreria.selectorImage(textField.getText()));
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+					imagencomic.setImage(libreria.selectorImage(textField.getText()));
+				} else {
+					borrar_datos_autorellenos();
+				}
+			} else {
+				borrar_datos_autorellenos();
+			}
+		});
+	}
+
+	/**
+	 * Borra los datos del cómic
+	 */
+	public void borrar_datos_autorellenos() {
+		nombreComic.setText("");
+
+		numeroComic.setValue("");
+		numeroComic.getEditor().setText("");
+
+		varianteComic.setText("");
+		firmaComic.setText("");
+		editorialComic.setText("");
+
+		formatoComic.setValue("");
+		formatoComic.getEditor().setText("");
+
+		procedenciaComic.setValue("");
+		procedenciaComic.getEditor().setText("");
+
+		fechaComic.setValue(null);
+		guionistaComic.setText("");
+		dibujanteComic.setText("");
+		nombreKeyIssue.setText("");
+
+		numeroCajaComic.setValue("");
+		numeroCajaComic.getEditor().setText("");
+
+		nombreKeyIssue.setText("");
+		direccionImagen.setText("");
+		prontInfo.setText(null);
+		prontInfo.setOpacity(0);
+		tablaBBDD.getItems().clear();
+		imagencomic.setImage(null);
 	}
 
 	/**

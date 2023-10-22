@@ -120,7 +120,18 @@
     -fx-border-color: #d43f3a;
 }
 
-.button#botonModificarr:hover {
+.button#botonModificar:hover {
+    -fx-background-color: #c9302c;
+}
+
+.button#botonModificarComic {
+    -fx-font-size: 10.0px;
+    -fx-background-color: #d9534f;
+    -fx-border-color: #d43f3a;
+}
+
+.button#botonModificarComic:hover {
+    -fx-font-size: 10.0px;
     -fx-background-color: #c9302c;
 }
 

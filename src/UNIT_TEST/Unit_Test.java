@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -18,15 +19,21 @@ import org.json.JSONException;
 
 import Apis.ApiISBNGeneral;
 import Apis.ApiMarvel;
+import Controladores.VentanaAccionController;
 import Funcionamiento.Comic;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBManager;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
+import javafx.stage.Stage;
 
 /**
  * Clase que contiene pruebas unitarias para diferentes funcionalidades.
  */
-public class Unit_Test {
+public class Unit_Test extends Application {
 
 	/**
 	 * Conexión a la base de datos.
@@ -54,6 +61,66 @@ public class Unit_Test {
 	private static final String DOCUMENTS_PATH = USER_DIR + File.separator + "Documents";
 
 	/**
+	 * Selector para el nombre del cómic.
+	 */
+	@FXML
+	private static ComboBox<String> nombreComic;
+
+	/**
+	 * Selector para el nombre del dibujante.
+	 */
+	@FXML
+	private static ComboBox<String> nombreDibujante;
+
+	/**
+	 * Selector para el nombre de la editorial.
+	 */
+	@FXML
+	private static ComboBox<String> nombreEditorial;
+
+	/**
+	 * Selector para el nombre de la firma.
+	 */
+	@FXML
+	private static ComboBox<String> nombreFirma;
+
+	/**
+	 * Selector para el nombre del formato.
+	 */
+	@FXML
+	private static ComboBox<String> nombreFormato;
+
+	/**
+	 * Selector para el nombre del guionista.
+	 */
+	@FXML
+	private static ComboBox<String> nombreGuionista;
+
+	/**
+	 * Selector para el nombre de la procedencia.
+	 */
+	@FXML
+	private static ComboBox<String> nombreProcedencia;
+
+	/**
+	 * Selector para el nombre de la variante.
+	 */
+	@FXML
+	private static ComboBox<String> nombreVariante;
+
+	/**
+	 * Selector para el número de caja.
+	 */
+	@FXML
+	private static ComboBox<String> numeroCaja;
+
+	/**
+	 * Selector para el número del cómic.
+	 */
+	@FXML
+	private static ComboBox<String> numeroComic;
+
+	/**
 	 * Construimos la ruta al directorio "libreria_comics" dentro de "Documents" y
 	 * añadimos el nombre de la base de datos y la carpeta "portadas".
 	 */
@@ -77,8 +144,46 @@ public class Unit_Test {
 //		mostrarComicGeneral();
 		crearDatabasePrueba();
 		envioDatosBasePrueba();
-		pruebaSubidaComic();
-		pruebaModificacionComic();
+//		pruebaSubidaComic();
+//		pruebaModificacionComic();
+
+		launch(args);
+	}
+
+	public void start(Stage primaryStage) {
+
+		VentanaAccionController ventanaAccion = new VentanaAccionController();
+
+		// Crear la lista de ComboBoxes
+		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
+				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
+
+		// Pasar la lista de ComboBoxes a VentanaAccionController
+		ventanaAccion.pasarComboBoxes(comboboxes);
+
+//		Platform.runLater(() -> {
+//			accionComicPruebaAni();
+//		});
+
+		Platform.runLater(() -> {
+			accionComicPruebaMod();
+		});
+//		
+//		Platform.runLater(() -> {
+//			accionComicPruebaDelete();
+//		});
+//		
+//		Platform.runLater(() -> {
+//			accionComicPruebaPuntuar();
+//		});
+
+//		Platform.runLater(() -> {
+//			entrarMenuPrueba();
+//		});
+		
+//		Platform.runLater(() -> {
+//			entrarInicioPrueba();
+//		});
 	}
 
 	/**
@@ -391,7 +496,7 @@ public class Unit_Test {
 			if (rs != null) {
 				rs.close();
 			}
-			
+
 			if (conn != null) {
 				try {
 					conn.close();
@@ -741,6 +846,44 @@ public class Unit_Test {
 			}
 		}
 		return ids;
+	}
+
+	public static void accionComicPruebaAni() {
+
+		VentanaAccionController.tipoAccion("aniadir");
+
+		nav.verAccionComic();
+	}
+
+	public static void accionComicPruebaMod() {
+
+		VentanaAccionController.tipoAccion("modificar");
+
+		nav.verAccionComic();
+	}
+
+	public static void accionComicPruebaDelete() {
+
+		VentanaAccionController.tipoAccion("eliminar");
+
+		nav.verAccionComic();
+	}
+
+	public static void accionComicPruebaPuntuar() {
+
+		VentanaAccionController.tipoAccion("puntuar");
+
+		nav.verAccionComic();
+	}
+
+	public static void entrarMenuPrueba() {
+
+		nav.verMenuPrincipal(); // Llamada a metodo de la clase NavegacionVentanas. Permite cargar y mostrar el
+
+	}
+
+	public static void entrarInicioPrueba() {
+		nav.verAccesoBBDD();
 	}
 
 }

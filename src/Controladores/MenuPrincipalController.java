@@ -1022,9 +1022,10 @@ public class MenuPrincipalController implements Initializable {
 	 * la base de datos en un fichero CSV
 	 *
 	 * @param event
+	 * @throws SQLException
 	 */
 	@FXML
-	void exportCSV(ActionEvent event) {
+	void exportCSV(ActionEvent event) throws SQLException {
 
 		String frase = "Fichero Excel xlsx";
 
@@ -1033,7 +1034,7 @@ public class MenuPrincipalController implements Initializable {
 		File fichero = tratarFichero(frase, formato).showSaveDialog(null); // Llamada a funcion
 
 		makeExcel(fichero);
-		
+
 	}
 
 	/**
@@ -1051,7 +1052,7 @@ public class MenuPrincipalController implements Initializable {
 		File fichero = tratarFichero(frase, formato).showSaveDialog(null); // Llamada a funcion
 
 		makeSQL(fichero);
-		
+
 		limpiezaDeDatos();
 
 	}
@@ -1215,7 +1216,8 @@ public class MenuPrincipalController implements Initializable {
 				prontInfo.clear();
 				detenerAnimacionPront();
 				exception.printStackTrace();
-				Platform.runLater(() -> nav.alertaException("Error al importar el fichero CSV: " + exception.getMessage()));
+				Platform.runLater(
+						() -> nav.alertaException("Error al importar el fichero CSV: " + exception.getMessage()));
 			} else {
 				prontInfo.clear();
 				detenerAnimacionPront();
@@ -1349,16 +1351,14 @@ public class MenuPrincipalController implements Initializable {
 		libreria = new DBLibreriaManager();
 		libreria.libreriaCompleta();
 		utilidad = new Utilidades();
-		String ID;
 
 		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 
 		if (idRow != null) {
-			ID = idRow.getID();
 			prontInfo.setOpacity(1);
-			prontInfo.setText(libreria.comicDatos(ID).toString().replace("[", "").replace("]", ""));
+			prontInfo.setText(libreria.comicDatos(idRow.getID()).toString().replace("[", "").replace("]", ""));
 			funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-			imagencomic.setImage(libreria.selectorImage(ID));
+			imagencomic.setImage(libreria.selectorImage(idRow.getID()));
 			utilidad.deleteImage();
 		}
 	}
@@ -1378,16 +1378,14 @@ public class MenuPrincipalController implements Initializable {
 			libreria = new DBLibreriaManager();
 			libreria.libreriaCompleta();
 			utilidad = new Utilidades();
-			String ID;
 
 			Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 
 			if (idRow != null) {
-				ID = idRow.getID();
 				prontInfo.setOpacity(1);
-				prontInfo.setText(libreria.comicDatos(ID).toString().replace("[", "").replace("]", ""));
+				prontInfo.setText(libreria.comicDatos(idRow.getID()).toString().replace("[", "").replace("]", ""));
 
-				imagencomic.setImage(libreria.selectorImage(ID));
+				imagencomic.setImage(libreria.selectorImage(idRow.getID()));
 				utilidad.deleteImage();
 			}
 		}
@@ -1401,32 +1399,30 @@ public class MenuPrincipalController implements Initializable {
 	 * Funcion que compruba si se ha creado el fichero Excel y CSV
 	 *
 	 * @param fichero
+	 * @throws SQLException
 	 */
-	public void makeExcel(File fichero) {
+	public void makeExcel(File fichero) throws SQLException {
 		limpiezaDeDatos();
 		excelFuntions = new FuncionesExcel();
 		prontInfo.setOpacity(0);
-		try {
-			if (fichero != null) {
-				if (excelFuntions.crearExcel(fichero)) { // Si el fichero XLSX y CSV se han creado se vera el siguiente
-					// mensaje
-					prontInfo.setOpacity(1);
-					prontInfo.setStyle("-fx-background-color: #A0F52D");
-					prontInfo.setText("Fichero excel exportado de forma correcta");
-				} else { // Si no se ha podido crear correctamente los ficheros se vera el siguiente
-					// mensaje
-					prontInfo.setOpacity(1);
-					prontInfo.setStyle("-fx-background-color: #F53636");
-					prontInfo.setText("ERROR. No se ha podido exportar correctamente.");
-				}
-			} else { // En caso de cancelar la creacion de los ficheros, se mostrara el siguiente
-				// mensaje.
+
+		if (fichero != null) {
+			if (excelFuntions.crearExcel(fichero)) { // Si el fichero XLSX y CSV se han creado se vera el siguiente
+				// mensaje
+				prontInfo.setOpacity(1);
+				prontInfo.setStyle("-fx-background-color: #A0F52D");
+				prontInfo.setText("Fichero excel exportado de forma correcta");
+			} else { // Si no se ha podido crear correctamente los ficheros se vera el siguiente
+				// mensaje
 				prontInfo.setOpacity(1);
 				prontInfo.setStyle("-fx-background-color: #F53636");
-				prontInfo.setText("ERROR. Se ha cancelado la exportacion.");
+				prontInfo.setText("ERROR. No se ha podido exportar correctamente.");
 			}
-		} catch (Exception e) {
-			nav.alertaException(e.toString());
+		} else { // En caso de cancelar la creacion de los ficheros, se mostrara el siguiente
+			// mensaje.
+			prontInfo.setOpacity(1);
+			prontInfo.setStyle("-fx-background-color: #F53636");
+			prontInfo.setText("ERROR. Se ha cancelado la exportacion.");
 		}
 	}
 
