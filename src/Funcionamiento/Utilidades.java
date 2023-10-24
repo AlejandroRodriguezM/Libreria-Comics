@@ -4,28 +4,7 @@
 */
 package Funcionamiento;
 
-/**
- * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
- * Las ventanas graficas se realizan con JavaFX.
- * El programa permite:
- *  - Conectarse a la base de datos.
- *  - Ver la base de datos completa o parcial segun parametros introducidos.
- *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
- *  - Copia de seguridad de la base de datos en formato .sql
- *  - Introducir comics a la base de datos.
- *  - Modificar comics de la base de datos.
- *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
- *  - Ver frases de personajes de comics
- *  - Opcion de escoger algo para leer de forma aleatoria.
- *  - Puntuar comics que se encuentren dentro de la base de datos.
- *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
- *
- *  Version 7.0.0.0
- *
- *  @author Alejandro Rodriguez
- *
- */
-
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -39,9 +18,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.ProcessBuilder.Redirect;
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -50,7 +31,10 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,9 +43,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import javax.imageio.ImageIO;
 
 import JDBC.DBManager;
 import javafx.scene.control.TextField;
@@ -96,6 +81,11 @@ public class Utilidades {
 	private static Ventanas nav = new Ventanas();
 
 	/**
+	 * Conexión a la base de datos.
+	 */
+	private static Connection conn = null;
+	
+	/**
 	 * Sistema operativo actual.
 	 */
 	public static String os = System.getProperty("os.name", "unknown").toLowerCase(Locale.ROOT);
@@ -104,8 +94,7 @@ public class Utilidades {
 	 * Mapa que almacena tasas de cambio.
 	 */
 	private static final Map<String, Double> tasasDeCambio = new HashMap<>();
-
-
+	
 	/**
 	 * Verifica si el sistema operativo es Windows.
 	 *
@@ -261,6 +250,22 @@ public class Utilidades {
 		if (dato.contains(",")) {
 			dato = dato.replace(",", " - ");
 		}
+		dato = eliminarEspacios(dato);
+		return dato;
+	}
+
+	/**
+	 * Funcion que elimina los espacios del principios y finales
+	 *
+	 * @param campos
+	 * @return
+	 */
+	public String eliminarEspacios(String dato) {
+		// Elimina espacios adicionales al principio y al final.
+		dato = dato.trim();
+
+		// Reemplaza espacios múltiples entre palabras por un solo espacio.
+		dato = dato.replaceAll("\\s+", " ");
 
 		return dato;
 	}
@@ -806,7 +811,7 @@ public class Utilidades {
 				writer.write("Public Key: ");
 				writer.newLine();
 				writer.write("Private Key: ");
-				
+
 				writer.close();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -978,11 +983,11 @@ public class Utilidades {
 
 		bufferedWriter.close();
 	}
-	
+
 	/**
-	 * Esta función guarda una clave de API para Comic Vine en un archivo de configuración.
-	 * La clave de API se almacena en un archivo en la ubicación de la librería del usuario.
-	 * Si el archivo ya existe, se sobrescribe.
+	 * Esta función guarda una clave de API para Comic Vine en un archivo de
+	 * configuración. La clave de API se almacena en un archivo en la ubicación de
+	 * la librería del usuario. Si el archivo ya existe, se sobrescribe.
 	 *
 	 */
 	public static void guardarApiComicVine() {
@@ -997,14 +1002,14 @@ public class Utilidades {
 				writer.write("Clave Api Comic Vine: ");
 				writer.newLine();
 				writer.write("###############################");
-				
+
 				writer.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 	}
-	
+
 	public static String cargarApiComicVine() {
 		String nombreArchivo = carpetaConfiguracion() + File.separator + "clave_comicVine_api.conf";
 
@@ -1031,29 +1036,81 @@ public class Utilidades {
 	}
 
 	/**
+	 * Obtiene las claves de la API de Marvel de un archivo o fuente de datos.
+	 *
+	 * @return Un array de cadenas con las claves pública y privada de la API.
+	 */
+	public static String[] clavesApiMarvel() {
+		String claves[] = new String[2]; // Crear un arreglo de dos elementos para almacenar las claves
+
+		String clavesDesdeArchivo = Utilidades.obtenerClaveApiArchivo(); // Obtener las claves desde el archivo
+
+		if (!clavesDesdeArchivo.isEmpty()) {
+			String[] partes = clavesDesdeArchivo.split(":");
+			if (partes.length == 2) {
+				String clavePublica = partes[0].trim();
+				String clavePrivada = partes[1].trim();
+
+				claves[0] = clavePublica; // Almacenar la clave pública en el primer elemento del arreglo
+				claves[1] = clavePrivada; // Almacenar la clave privada en el segundo elemento del arreglo
+			}
+		}
+
+		return claves;
+	}
+
+	/**
+	 * Verifica si hay contenido en las cadenas apiKey y claves.
+	 *
+	 * @param apiKey La cadena que contiene la clave API de Comic Vine.
+	 * @param claves Un arreglo de cadenas que contiene las claves API de Marvel.
+	 * @return true si ambas cadenas contienen contenido válido, false en caso
+	 *         contrario.
+	 */
+	public static boolean existeContenido(String apiKey, String[] clavesMarvel) {
+		// Comprueba si apiKey es nulo o está vacío
+		if (apiKey == null || apiKey.isEmpty()) {
+			return false;
+		}
+
+		// Comprueba si claves es nulo o está vacío
+		if (clavesMarvel == null || clavesMarvel.length < 2 || clavesMarvel[0] == null || clavesMarvel[0].isEmpty()
+				|| clavesMarvel[1] == null || clavesMarvel[1].isEmpty()) {
+			return false;
+		}
+
+		// Si no se cumplen las condiciones anteriores, significa que hay contenido
+		// válido
+		return true;
+	}
+
+	/**
 	 * Verifica si una cadena es una URL válida.
 	 *
 	 * @param cadena Cadena que se va a verificar como URL.
 	 * @return true si la cadena es una URL válida, false en caso contrario.
 	 */
 	public static boolean isImageURL(String cadena) {
-	    // Verificar si la cadena es una URL válida
-	    if (isURL(cadena)) {
-	        // Obtener la extensión del archivo desde la URL
-	        String extension = getFileExtensionFromURL(cadena);
-	        
-	        // Lista de extensiones de imagen comunes
-	        String[] imageExtensions = { "jpg", "jpeg", "png", "gif", "bmp" };
-	        
-	        // Verificar si la extensión está en la lista de extensiones de imagen
-	        for (String imageExtension : imageExtensions) {
-	            if (extension.equalsIgnoreCase(imageExtension)) {
-	                return true;
-	            }
-	        }
-	    }
-	    
-	    return false;
+		// Verificar si la cadena es una URL válida
+		System.out.println(cadena);
+		System.out.println("Valor: " + isURL(cadena));
+
+		if (isURL(cadena)) {
+			// Obtener la extensión del archivo desde la URL
+			String extension = getFileExtensionFromURL(cadena);
+
+			// Lista de extensiones de imagen comunes
+			String[] imageExtensions = { "jpg", "jpeg", "png", "gif", "bmp" };
+
+			// Verificar si la extensión está en la lista de extensiones de imagen
+			for (String imageExtension : imageExtensions) {
+				if (extension.equalsIgnoreCase(imageExtension)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -1063,9 +1120,12 @@ public class Utilidades {
 	 * @return true si la cadena es una URL válida, false en caso contrario.
 	 */
 	public static boolean isURL(String cadena) {
-	    // Patrón para verificar si la cadena es una URL válida
-	    String urlPattern = "^(https?|ftp)://[A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]";
-	    return Pattern.matches(urlPattern, cadena);
+	    try {
+	        new URI(cadena);
+	        return true;
+	    } catch (URISyntaxException e) {
+	        return false;
+	    }
 	}
 
 	/**
@@ -1075,11 +1135,11 @@ public class Utilidades {
 	 * @return La extensión del archivo o una cadena vacía si no se encuentra.
 	 */
 	public static String getFileExtensionFromURL(String url) {
-	    int lastDotIndex = url.lastIndexOf('.');
-	    if (lastDotIndex > 0) {
-	        return url.substring(lastDotIndex + 1).toLowerCase();
-	    }
-	    return "";
+		int lastDotIndex = url.lastIndexOf('.');
+		if (lastDotIndex > 0) {
+			return url.substring(lastDotIndex + 1).toLowerCase();
+		}
+		return "";
 	}
 
 //	public static String descargarImagen(String urlImagen, String carpetaDestino) throws IOException {
@@ -1108,44 +1168,118 @@ public class Utilidades {
 //	}
 
 	/**
-	 * Descarga una imagen desde una URL y la guarda en la carpeta de destino.
-	 *
-	 * @param urlImagen      URL de la imagen que se va a descargar.
-	 * @param carpetaDestino Carpeta donde se guardará la imagen descargada.
-	 * @return La ruta completa de la imagen descargada.
-	 * @throws IOException Si ocurre un error durante la descarga o la escritura del
-	 *                     archivo.
+	 * Descarga una imagen desde una URL y la guarda en una carpeta de destino.
+	 * @param urlImagen URL de la imagen a descargar.
+	 * @param carpetaDestino Ruta de la carpeta de destino.
+	 * @return Ruta de destino de la imagen descargada o null si hay un error.
+	 * @throws IOException Si ocurre un error de entrada/salida.
 	 */
 	public static String descargarImagen(String urlImagen, String carpetaDestino) throws IOException {
-		// Crear una instancia de URI a partir de la URL
-		URI uri;
-		try {
-			uri = new URI(urlImagen);
-		} catch (URISyntaxException e) {
-			throw new IllegalArgumentException("URL de imagen no válida: " + urlImagen, e);
-		}
+	    try {
+	        URI uri = validarURL(urlImagen);
+	        String nombreImagen = obtenerNombreImagen(urlImagen);
+	        crearCarpetaSiNoExiste(carpetaDestino);
+	        String rutaDestino = carpetaDestino + File.separator + nombreImagen;
 
-		// Obtener el nombre de la imagen a partir de la URL
-		String[] partesURL = urlImagen.split("/");
-		String nombreImagen = partesURL[partesURL.length - 1];
+	        if (descargarYConvertirImagen(uri, carpetaDestino)) {
+	            System.out.println("Imagen descargada y guardada como JPG correctamente");
+	            return rutaDestino;
+	        }
+	    } catch (IllegalArgumentException e) {
+	        System.err.println(e.getMessage());
+	    } catch (Exception e) {
+	        System.err.println("No se pudo acceder a la URL: " + urlImagen);
+	        e.printStackTrace();
+	    }
 
-		// Crear la carpeta de destino si no existe
-		File carpeta = new File(carpetaDestino);
-		if (!carpeta.exists()) {
-			carpeta.mkdirs();
-		}
-
-		// Crear la ruta completa de destino
-		String rutaDestino = carpetaDestino + File.separator + nombreImagen;
-
-		try (InputStream in = uri.toURL().openStream()) {
-			// Descargar la imagen y guardarla en la carpeta de destino
-			Path destino = new File(rutaDestino).toPath();
-			Files.copy(in, destino, StandardCopyOption.REPLACE_EXISTING);
-		}
-
-		return rutaDestino;
+	    return null;
 	}
+
+	/**
+	 * Valida una URL y la convierte en una URI.
+	 * @param urlImagen URL de la imagen a validar.
+	 * @return URI válida de la URL.
+	 * @throws IllegalArgumentException Si la URL no es válida.
+	 */
+	private static URI validarURL(String urlImagen) throws IllegalArgumentException {
+	    try {
+	        return new URI(urlImagen);
+	    } catch (URISyntaxException e) {
+	        throw new IllegalArgumentException("URL de imagen no válida: " + urlImagen, e);
+	    }
+	}
+
+	/**
+	 * Obtiene el nombre de la imagen a partir de una URL.
+	 * @param urlImagen URL de la imagen.
+	 * @return Nombre de la imagen.
+	 */
+	private static String obtenerNombreImagen(String urlImagen) {
+	    String[] partesURL = urlImagen.split("/");
+	    return partesURL[partesURL.length - 1];
+	}
+
+	/**
+	 * Crea una carpeta de destino si no existe.
+	 * @param carpetaDestino Ruta de la carpeta de destino.
+	 * @return Objeto File de la carpeta de destino.
+	 */
+	private static File crearCarpetaSiNoExiste(String carpetaDestino) {
+	    File carpeta = new File(carpetaDestino);
+	    if (!carpeta.exists()) {
+	        carpeta.mkdirs();
+	    }
+	    return carpeta;
+	}
+
+	/**
+	 * Descarga una imagen desde una URL y la guarda en una carpeta de destino.
+	 * @param urlImagen URI de la imagen a descargar.
+	 * @param carpetaDestino Ruta de la carpeta de destino.
+	 * @return true si la descarga y conversión son exitosas, false en caso contrario.
+	 */
+	private static boolean descargarYConvertirImagen(URI urlImagen, String carpetaDestino) {
+	    try {
+	        URL url = urlImagen.toURL();
+	        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+	        connection.setRequestMethod("HEAD");
+	        int responseCode = connection.getResponseCode();
+
+	        String nombreImagen = obtenerNombreImagen(urlImagen.toString());
+	        String rutaDestino = carpetaDestino + File.separator + nombreImagen;
+
+	        if (responseCode != HttpURLConnection.HTTP_OK) {
+	            System.err.println("La URL no apunta a una imagen válida o no se pudo acceder: " + url);
+	            return false;
+	        }
+
+	        try (InputStream in = url.openStream()) {
+	            BufferedImage image = ImageIO.read(in);
+
+	            if (image == null) {
+	                System.err.println("No se pudo cargar la imagen desde " + urlImagen);
+	                return false;
+	            }
+
+	            if (!nombreImagen.toLowerCase().endsWith(".jpg")) {
+	                BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(),
+	                        BufferedImage.TYPE_INT_RGB);
+	                newImage.createGraphics().drawImage(image, 0, 0, null);
+	                nombreImagen = nombreImagen.substring(0, nombreImagen.lastIndexOf(".")) + ".jpg";
+	                rutaDestino = carpetaDestino + File.separator + nombreImagen;
+	            }
+
+	            File output = new File(rutaDestino);
+	            ImageIO.write(image, "jpg", output);
+	            return true;
+	        }
+	    } catch (IOException e) {
+	        System.err.println("Error al descargar o convertir la imagen desde " + urlImagen);
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+
 
 	/**
 	 * Borra un archivo de imagen dada su ruta.
@@ -1187,5 +1321,96 @@ public class Utilidades {
 				.replaceAll("&rdquo;", "\"").replaceAll("&nbsp;", " ").replaceAll("&mdash;", "—")
 				.replaceAll("&ndash;", "–").replaceAll("<ul>", "'").replaceAll("<li>", "'").replaceAll("</ul>", "'")
 				.replaceAll("</li>", "'");
+	}
+	
+	/**
+	 * Método que crea la carpeta "portadas" para almacenar las imágenes de portada
+	 * de los cómics.
+	 * 
+	 * @throws IOException Si ocurre un error al crear la carpeta.
+	 */
+	public static void crearCarpeta() throws IOException {
+		String userDir = System.getProperty("user.home");
+		String documentsPath = userDir + File.separator + "Documents";
+		String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
+				+ obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas";
+		File portadasFolder = new File(defaultImagePath);
+
+		if (!portadasFolder.exists()) {
+			if (!portadasFolder.mkdirs()) {
+				throw new IOException("No se pudo crear la carpeta 'portadas'");
+			}
+		}
+	}
+	
+	/**
+	 * Obtiene el dato que sigue a dos puntos (:) en una línea específica del
+	 * archivo de configuración.
+	 *
+	 * @param linea la línea específica para buscar el dato
+	 * @return el dato encontrado o una cadena vacía si no se encuentra
+	 */
+	public static String obtenerDatoDespuesDeDosPuntos(String linea) {
+		String userHome = System.getProperty("user.home");
+		String ubicacion = userHome + "\\AppData\\Roaming";
+		String carpetaLibreria = ubicacion + "\\libreria";
+		String archivoConfiguracion;
+
+		archivoConfiguracion = carpetaLibreria + "\\configuracion_local.conf";
+
+		try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				if (line.startsWith(linea + ": ")) {
+					return line.substring(linea.length() + 2).trim();
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
+	
+	/**
+	 * Crea las tablas de la base de datos si no existen.
+	 */
+	public static void createTable() {
+		Statement statement;
+		PreparedStatement preparedStatement;
+		
+		try {
+			conn = DBManager.conexion();
+			statement = conn.createStatement();
+
+			String dropTableSQL = "DROP TABLE IF EXISTS comicsbbdd";
+			String createTableSQL = "CREATE TABLE comicsbbdd (" +
+			        "ID INT NOT NULL AUTO_INCREMENT, " +
+			        "nomComic VARCHAR(150) NOT NULL, " +
+			        "caja_deposito TEXT, " +
+			        "precio_comic DOUBLE NOT NULL, " + // Cambiado el tipo a DOUBLE
+			        "numComic INT NOT NULL, " +
+			        "nomVariante VARCHAR(150) NOT NULL, " +
+			        "firma VARCHAR(150) NOT NULL, " +
+			        "nomEditorial VARCHAR(150) NOT NULL, " +
+			        "formato VARCHAR(150) NOT NULL, " +
+			        "procedencia VARCHAR(150) NOT NULL, " +
+			        "fecha_publicacion DATE NOT NULL, " +
+			        "nomGuionista TEXT NOT NULL, " +
+			        "nomDibujante TEXT NOT NULL, " +
+			        "puntuacion VARCHAR(300) NOT NULL, " +
+			        "portada TEXT, " +
+			        "key_issue TEXT, " + // Allow NULL values for key_issue
+			        "url_referencia TEXT NOT NULL, " +
+			        "estado TEXT NOT NULL, " +
+			        "PRIMARY KEY (ID)) " +
+			        "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+			statement.executeUpdate(dropTableSQL);
+			statement.executeUpdate(createTableSQL);
+
+			preparedStatement = conn.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");
+			preparedStatement.executeUpdate();
+		} catch (SQLException e) {
+			nav.alertaException(e.toString());
+		}
 	}
 }

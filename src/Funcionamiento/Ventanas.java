@@ -59,10 +59,10 @@ import javafx.stage.Stage;
 public class Ventanas {
 
 	private Stage ventanaActual = null; // Variable para mantener la ventana actualmente abierta
-	
+
 	/**
-	 * Abre una ventana para el acceso a la base de datos.
-	 * Carga la vista y muestra una nueva ventana con el controlador correspondiente.
+	 * Abre una ventana para el acceso a la base de datos. Carga la vista y muestra
+	 * una nueva ventana con el controlador correspondiente.
 	 */
 	public void verAccesoBBDD() {
 
@@ -96,125 +96,128 @@ public class Ventanas {
 			alertaException(ex.toString());
 		}
 	}
-	
+
+	public void ventanaAbierta() {
+		if (ventanaActual != null) {
+			ventanaActual.close();
+		}
+	}
+
 	/**
-	 * Abre una ventana para realizar acciones en un cómic.
-	 * Verifica si hay una ventana abierta y la cierra si es necesario.
-	 * Carga la vista de la ventana de acciones del cómic y muestra la ventana correspondiente con su controlador.
-	 * Define el comportamiento de cierre de la ventana y actualiza la referencia a la ventana actual.
+	 * Abre una ventana para realizar acciones en un cómic. Verifica si hay una
+	 * ventana abierta y la cierra si es necesario. Carga la vista de la ventana de
+	 * acciones del cómic y muestra la ventana correspondiente con su controlador.
+	 * Define el comportamiento de cierre de la ventana y actualiza la referencia a
+	 * la ventana actual.
 	 */
 	public void verAccionComic() {
-	    try {
-	        // Verifica si hay una ventana abierta y ciérrala si es necesario
-	        if (ventanaActual != null) {
-	            ventanaActual.close();
-	        }
+		try {
+			// Verifica si hay una ventana abierta y ciérrala si es necesario
+			ventanaAbierta();
 
-	        // Cargo la vista
-	        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/PantallaAccionComic.fxml"));
+			// Cargo la vista
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/PantallaAccionComic.fxml"));
 
-	        // Cargo el padre
-	        Parent root = loader.load();
+			// Cargo el padre
+			Parent root = loader.load();
 
-	        // Obtengo el controlador
-	        VentanaAccionController controlador = loader.getController();
+			// Obtengo el controlador
+			VentanaAccionController controlador = loader.getController();
 
-	        // Creo la scene y el stage
-	        Scene scene = new Scene(root);
-	        Stage stage = new Stage();
-	        stage.setResizable(false);
-	        stage.setTitle("Acciones comic"); // Titulo de la aplicación.
+			// Creo la scene y el stage
+			Scene scene = new Scene(root);
+			Stage stage = new Stage();
+			stage.setResizable(false);
+			stage.setTitle("Acciones comic"); // Titulo de la aplicación.
 
-	        stage.getIcons().add(new Image("/Icono/icon2.png"));
+			stage.getIcons().add(new Image("/Icono/icon2.png"));
 
-	        // Asocio el stage con el scene
-	        stage.setScene(scene);
-	        stage.show();
+			// Asocio el stage con el scene
+			stage.setScene(scene);
+			stage.show();
 
-	        // Indico que debe hacer al cerrar
-	        stage.setOnCloseRequest(e -> {
-	            controlador.closeWindow();
-	            ventanaActual = null; // Establece la ventana actual a null cuando se cierra
-	        });
-	        
+			// Indico que debe hacer al cerrar
+			stage.setOnCloseRequest(e -> {
+				controlador.closeWindow();
+				ventanaActual = null; // Establece la ventana actual a null cuando se cierra
+			});
 
+			// Actualizar el estado de la ventana abierta
+			ventanaActual = stage;
 
-	        // Actualizar el estado de la ventana abierta
-	        ventanaActual = stage;
-
-	    } catch (IOException ex) {
-	        alertaException(ex.toString());
-	        ex.printStackTrace();
-	    }
+		} catch (IOException ex) {
+			alertaException(ex.toString());
+			ex.printStackTrace();
+		}
 	}
 
-
 	/**
-	 * Abre la ventana del menú principal de la aplicación.
-	 * Carga la vista de la ventana del menú principal y muestra la ventana correspondiente con su controlador.
-	 * Define el tamaño mínimo y máximo de la ventana según la resolución de la pantalla.
-	 * Asocia el comportamiento de cierre de la ventana.
+	 * Abre la ventana del menú principal de la aplicación. Carga la vista de la
+	 * ventana del menú principal y muestra la ventana correspondiente con su
+	 * controlador. Define el tamaño mínimo y máximo de la ventana según la
+	 * resolución de la pantalla. Asocia el comportamiento de cierre de la ventana.
 	 */
 	public void verMenuPrincipal() {
-	    try {
-	        // Cargo la vista
-	        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuPrincipal.fxml"));
+		try {
+			// Cargo la vista
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuPrincipal.fxml"));
 
-	        // Cargo el padre
-	        Parent root = loader.load();
+			// Cargo el padre
+			Parent root = loader.load();
 
-	        // Obtengo el controlador
-	        MenuPrincipalController controlador = loader.getController();
+			// Obtengo el controlador
+			MenuPrincipalController controlador = loader.getController();
 
-	        // Crea la escena
-	        Scene scene = new Scene(root);
-	        scene.getStylesheets().add(getClass().getResource("/style/custom-combobox.css").toExternalForm());
+			// Crea la escena
+			Scene scene = new Scene(root);
+			scene.getStylesheets().add(getClass().getResource("/style/custom-combobox.css").toExternalForm());
 
-	        Stage stage = new Stage();
+			Stage stage = new Stage();
 
-	        // Determine the screen's dimensions
-	        Screen screen = Screen.getPrimary();
-	        Rectangle2D bounds = screen.getVisualBounds();
+			// Determine the screen's dimensions
+			Screen screen = Screen.getPrimary();
+			Rectangle2D bounds = screen.getVisualBounds();
 
-	        double minWidth = 974;
-	        double minHeight = 607;
+			double minWidth = 974;
+			double minHeight = 607;
 
-	        // Set the minimum size
-	        stage.setMinWidth(minWidth);
-	        stage.setMinHeight(minHeight);
+			// Set the minimum size
+			stage.setMinWidth(minWidth);
+			stage.setMinHeight(minHeight);
 
-	        // Verifica si la resolución es menor que las dimensiones mínimas
-	        if (bounds.getWidth() <= minWidth || bounds.getHeight() <= minHeight) {
-	            stage.setWidth(minWidth);
-	            stage.setHeight(minHeight);
-	        }
+			// Verifica si la resolución es menor que las dimensiones mínimas
+			if (bounds.getWidth() <= minWidth || bounds.getHeight() <= minHeight) {
+				stage.setWidth(minWidth);
+				stage.setHeight(minHeight);
+			}
 
-	        // Set the maximum size to the screen's size
-	        stage.setMaxWidth(bounds.getWidth());
-	        stage.setMaxHeight(bounds.getHeight());
+			// Set the maximum size to the screen's size
+			stage.setMaxWidth(bounds.getWidth());
+			stage.setMaxHeight(bounds.getHeight());
 
-	        stage.setTitle("Menu principal");
-	        stage.getIcons().add(new Image("/Icono/icon2.png"));
+			stage.setTitle("Menu principal");
+			stage.getIcons().add(new Image("/Icono/icon2.png"));
 
-	        // Asocio el stage con el scene
-	        stage.setScene(scene);
-	        stage.show();
+			// Asocio el stage con el scene
+			stage.setScene(scene);
+			stage.show();
 
-	        // Indico qué hacer al cerrar
-	        stage.setOnCloseRequest(e -> {
-	            controlador.closeWindows();
-	        });
+			// Indico qué hacer al cerrar
+			stage.setOnCloseRequest(e -> {
+				controlador.closeWindows();
+			});
 
-	    } catch (IOException ex) {
-	        alertaException(ex.toString());
-	        ex.printStackTrace();
-	    }
+		} catch (IOException ex) {
+			alertaException(ex.toString());
+			ex.printStackTrace();
+		}
 	}
 
 	/**
-	 * Abre la ventana de recomendaciones de cómics.
-	 * Carga la vista de la ventana de recomendaciones y muestra la ventana correspondiente con su controlador.
-	 * Define el tamaño de la ventana, la asocia con el comportamiento de cierre y resetea la conexión a la base de datos.
+	 * Abre la ventana de recomendaciones de cómics. Carga la vista de la ventana de
+	 * recomendaciones y muestra la ventana correspondiente con su controlador.
+	 * Define el tamaño de la ventana, la asocia con el comportamiento de cierre y
+	 * resetea la conexión a la base de datos.
 	 */
 	public void verRecomendacion() {
 
@@ -252,9 +255,10 @@ public class Ventanas {
 	}
 
 	/**
-	 * Abre la ventana de creación de la base de datos.
-	 * Carga la vista de la ventana de creación de la base de datos y muestra la ventana correspondiente con su controlador.
-	 * Define el tamaño de la ventana, la asocia con el comportamiento de cierre y aplica estilos de hojas de estilo.
+	 * Abre la ventana de creación de la base de datos. Carga la vista de la ventana
+	 * de creación de la base de datos y muestra la ventana correspondiente con su
+	 * controlador. Define el tamaño de la ventana, la asocia con el comportamiento
+	 * de cierre y aplica estilos de hojas de estilo.
 	 */
 	public void verCrearBBDD() {
 
@@ -292,9 +296,10 @@ public class Ventanas {
 	}
 
 	/**
-	 * Abre la ventana de opciones de acceso.
-	 * Carga la vista de la ventana de opciones de acceso y muestra la ventana correspondiente con su controlador.
-	 * Define el tamaño de la ventana, la asocia con el comportamiento de cierre y aplica estilos de hojas de estilo.
+	 * Abre la ventana de opciones de acceso. Carga la vista de la ventana de
+	 * opciones de acceso y muestra la ventana correspondiente con su controlador.
+	 * Define el tamaño de la ventana, la asocia con el comportamiento de cierre y
+	 * aplica estilos de hojas de estilo.
 	 */
 	public void verOpciones() {
 
@@ -331,10 +336,10 @@ public class Ventanas {
 	}
 
 	/**
-	 * Abre la ventana "Sobre Mi".
-	 * Carga la vista de la ventana "Sobre Mi" y muestra la ventana correspondiente con su controlador.
-	 * Define el tamaño de la ventana, la asocia con el comportamiento de cierre y aplica estilos de hojas de estilo.
-	 * Además, resetea la conexión a la base de datos.
+	 * Abre la ventana "Sobre Mi". Carga la vista de la ventana "Sobre Mi" y muestra
+	 * la ventana correspondiente con su controlador. Define el tamaño de la
+	 * ventana, la asocia con el comportamiento de cierre y aplica estilos de hojas
+	 * de estilo. Además, resetea la conexión a la base de datos.
 	 */
 	public void verSobreMi() {
 
@@ -392,6 +397,26 @@ public class Ventanas {
 		} else {
 			return false;
 		}
+	}
+	
+	/**
+	 * Llama a una ventana de alarma para eliminar datos
+	 *
+	 * @return
+	 */
+	public boolean alertaAccionGeneral() {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
+		stage.setResizable(false);
+		alert.setTitle("Accion . . .");
+		alert.setHeaderText("Vas a realizar una accion.");
+		alert.setContentText("¿Estas seguro que quieres realizar la accion para el comic?");
+		if (alert.showAndWait().get() == ButtonType.OK) {
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -529,9 +554,10 @@ public class Ventanas {
 	}
 
 	/**
-	 * Funcion que permite borrar el contenido de la tabla de la base de datos.
+	 * Solicita confirmación al usuario antes de borrar el contenido de la tabla.
 	 *
-	 * @return
+	 * @return Un objeto CompletableFuture que se completará con true si el usuario confirma la eliminación,
+	 *         o con false si el usuario cancela la operación.
 	 */
 	public CompletableFuture<Boolean> borrarContenidoTabla() {
 		CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
@@ -571,9 +597,9 @@ public class Ventanas {
 	}
 
 	/**
-	 * Funcion que permite borrar el contenido de la tabla de la base de datos.
+	 * Solicita confirmación al usuario antes de borrar el contenido de la configuración.
 	 *
-	 * @return
+	 * @return true si el usuario confirma la eliminación, o false si el usuario cancela la operación.
 	 */
 	public boolean borrarContenidoConfiguracion() {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -591,11 +617,11 @@ public class Ventanas {
 	}
 
 	/**
-	 * Funcion que permite borrar el contenido de la tabla de la base de datos.
+	 * Solicita confirmación al usuario antes de cancelar la subida de portadas.
 	 *
-	 * @return
+	 * @return Un objeto CompletableFuture que se completará con true si el usuario confirma la cancelación,
+	 *         o con false si el usuario decide continuar la subida.
 	 */
-
 	public CompletableFuture<Boolean> cancelar_subida_portadas() {
 		CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
 
@@ -624,6 +650,22 @@ public class Ventanas {
 	 * @param excepcion
 	 */
 	public void alertaException(String excepcion) {
+		Platform.runLater(() -> {
+			Alert dialog = new Alert(AlertType.ERROR, excepcion, ButtonType.OK);
+			Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+			stage.getIcons().add(new Image("/Icono/icon.png")); // Reemplaza "path/to/your/icon.png" con la ruta de tu
+																// icono
+
+			dialog.show();
+		});
+	}
+	
+	/**
+	 * Llama a una ventana de alarma que avisa si hay una excepcion.
+	 *
+	 * @param excepcion
+	 */
+	public void alertaNoApi(String excepcion) {
 		Platform.runLater(() -> {
 			Alert dialog = new Alert(AlertType.ERROR, excepcion, ButtonType.OK);
 			Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();

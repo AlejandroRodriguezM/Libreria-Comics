@@ -77,10 +77,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import Controladores.CargaComicsController;
 import Funcionamiento.Comic;
 import Funcionamiento.FuncionesExcel;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.scene.image.Image;
@@ -1209,7 +1211,7 @@ public class DBLibreriaManager extends Comic {
 	public boolean checkID(String identificador) throws SQLException {
 
 		if (identificador.length() == 0) {
-			String excepcion = "No puedes eliminar un comic si antes no pones un ID valido";
+			String excepcion = "No puedes realizar la accion sin antes no poner un ID valido";
 			nav.alertaException(excepcion);
 			return false; // Si el identificador está vacío, se considera que no existe
 		}
@@ -1249,17 +1251,22 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public void saveImageFromDataBase() throws SQLException {
 		String sentenciaSQL = "SELECT * FROM comicsbbdd";
+		FuncionesExcel funcionesExcel = new FuncionesExcel();
+		new CargaComicsController();
 
 		conn = DBManager.conexion();
 		File directorio = carpeta.carpetaPortadas();
 		InputStream input = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet rs = null;
+		long processedItems = 0; // Processed items count
+
 		try {
 			preparedStatement = conn.prepareStatement(sentenciaSQL);
 			rs = preparedStatement.executeQuery();
 
 			if (directorio != null) {
+				funcionesExcel.verCargaComics();
 				while (rs.next()) {
 					String direccionImagen = rs.getString(15);
 
@@ -1295,7 +1302,26 @@ public class DBLibreriaManager extends Comic {
 						fileOutputStream.close();
 
 					}
+
+					final long finalProcessedItems = processedItems;
+
+					// Update UI elements using Platform.runLater
+					Platform.runLater(() -> {
+
+						String texto = ("Imagen: " + nombreImagen + "\n");
+
+						double progress = (double) finalProcessedItems / (finalProcessedItems + 1);
+						String porcentaje = String.format("%.2f%%", progress * 100);
+
+						funcionesExcel.cargarDatosEnCargaComics(texto, porcentaje, progress);
+					});
+
+					processedItems++;
 				}
+				
+				Platform.runLater(() -> {
+					funcionesExcel.cargarDatosEnCargaComics("", "100%", 100.0);
+				});
 			}
 		} catch (SQLException | IOException e) {
 			nav.alertaException(e.toString());
@@ -1325,13 +1351,13 @@ public class DBLibreriaManager extends Comic {
 						ResultSet.CONCUR_UPDATABLE);
 
 				stmt.setString(1, id);
-				
-	            // Ejecutar la sentencia SQL
-	            int filasAfectadas = stmt.executeUpdate();
-	            
-	            if (filasAfectadas > 0) {
-	                System.out.println("Se afectaron " + filasAfectadas + " filas en la base de datos.");
-	            }
+
+				// Ejecutar la sentencia SQL
+				int filasAfectadas = stmt.executeUpdate();
+
+				if (filasAfectadas > 0) {
+					System.out.println("Se afectaron " + filasAfectadas + " filas en la base de datos.");
+				}
 			}
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
@@ -1556,6 +1582,7 @@ public class DBLibreriaManager extends Comic {
 
 		PreparedStatement ps = null;
 		try {
+			conn = DBManager.conexion();
 			ps = conn.prepareStatement(sentenciaSQL);
 
 			ps.setString(1, nombre);
@@ -1609,9 +1636,7 @@ public class DBLibreriaManager extends Comic {
 	public void actualizarPuntuacion(String ID, String puntuacion) throws SQLException {
 		String sentenciaSQL = "UPDATE comicsbbdd set puntuacion = ? where ID = ?";
 
-		if (nav.alertaAgregarPuntuacion()) { // Llamada a alerta de modificación
-			comprobarOpinionInsertada(sentenciaSQL, ID, puntuacion);
-		}
+		comprobarOpinionInsertada(sentenciaSQL, ID, puntuacion);
 	}
 
 	/**
@@ -1623,10 +1648,8 @@ public class DBLibreriaManager extends Comic {
 	public void borrarPuntuacion(String ID) throws SQLException {
 		String sentenciaSQL = "UPDATE comicsbbdd set puntuacion = 'Sin puntuar' where ID = ?";
 
-		if (nav.alertaBorrarPuntuacion()) { // Llamada a alerta de modificación
-			comprobarOpinionBorrada(sentenciaSQL, ID); // Llamada a función que permite comprobar el cambio realizado en
-														// el cómic
-		}
+		comprobarOpinionBorrada(sentenciaSQL, ID); // Llamada a función que permite comprobar el cambio realizado en
+
 	}
 
 	/**
@@ -2104,7 +2127,7 @@ public class DBLibreriaManager extends Comic {
 		String consultaSql = "SELECT * FROM comicsbbdd";
 		int totalComics = 0;
 		try {
-			Connection conn = DBManager.conexion();
+			conn = DBManager.conexion();
 			// Realizar la consulta a la base de datos
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(consultaSql);

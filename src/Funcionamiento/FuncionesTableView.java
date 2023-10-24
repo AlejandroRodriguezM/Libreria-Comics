@@ -54,8 +54,8 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 /**
- * Clase que contiene diversas funciones relacionadas con TableView y operaciones
- * en la interfaz de usuario.
+ * Clase que contiene diversas funciones relacionadas con TableView y
+ * operaciones en la interfaz de usuario.
  */
 public class FuncionesTableView {
 
@@ -68,7 +68,6 @@ public class FuncionesTableView {
 	 * Gestor de la base de datos de la librería.
 	 */
 	private static DBLibreriaManager libreria = null;
-
 
 	/**
 	 * Funcion que permite que los diferentes raw de los TableColumn se puedan
@@ -373,11 +372,11 @@ public class FuncionesTableView {
 	 */
 	@SuppressWarnings("deprecation")
 	public void modificarColumnas(TableView<Comic> tablaBBDD, List<TableColumn<Comic, String>> columnList) {
-		
-	    for (TableColumn<Comic, String> column : columnList) {
-	        column.prefWidthProperty().unbind(); // Desvincular cualquier propiedad prefWidth existente
-	    }
-	    
+
+		for (TableColumn<Comic, String> column : columnList) {
+			column.prefWidthProperty().unbind(); // Desvincular cualquier propiedad prefWidth existente
+		}
+
 		// Definir los tamaños específicos para cada columna en la misma posición que en
 		// columnList
 		Double[] columnWidths = { 140.0, // nombre
@@ -401,9 +400,9 @@ public class FuncionesTableView {
 			Double columnWidth = columnWidths[i];
 			column.setPrefWidth(columnWidth);
 		}
-		
+
 		// Configurar la política de redimensionamiento
-	    tablaBBDD.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		tablaBBDD.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
 	}
 
 	/**
@@ -425,42 +424,70 @@ public class FuncionesTableView {
 	}
 
 	/**
+	 * Elimina un espacio en blanco al principio del texto en un TextField si
+	 * existe.
+	 *
+	 * @param textField El TextField al que se aplicará la eliminación del espacio
+	 *                  en blanco inicial.
+	 * @return El mismo TextField después de la modificación.
+	 */
+	public static TextField eliminarEspacioInicial(TextField textField) {
+		textField.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue != null && newValue.length() > 0 && Character.isWhitespace(newValue.charAt(0))) {
+				textField.setText(newValue.substring(1)); // Elimina el espacio en blanco inicial
+			}
+
+		});
+		return textField;
+	}
+
+	/**
+	 * Reemplaza múltiples espacios seguidos por un solo espacio en un TextField.
+	 *
+	 * @param textField El TextField al que se aplicará la eliminación de espacios
+	 *                  múltiples.
+	 */
+	public static void reemplazarEspaciosMultiples(TextField textField) {
+		textField.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue != null) {
+				// Reemplaza múltiples espacios seguidos por un solo espacio.
+				newValue = newValue.replaceAll("\\s+", " ");
+
+				textField.setText(newValue); // Actualiza el valor del TextField
+			}
+		});
+	}
+
+	/**
 	 * Restringe los símbolos no permitidos en el TextField y muestra un Tooltip
 	 * informativo.
 	 *
 	 * @param textField El TextField en el cual restringir los símbolos.
 	 */
 	public static void restringirSimbolos(TextField textField) {
-		Tooltip tooltip = new Tooltip();
 
-		textField.textProperty().addListener((observable, oldValue, newValue) -> {
+		final TextField finalTextField = eliminarEspacioInicial(textField);
+
+		finalTextField.textProperty().addListener((observable, oldValue, newValue) -> {
 			String allowedPattern = "[\\p{L}\\p{N}\\s,.-]*"; // Expresión regular para permitir letras, números,
 																// espacios, ",", "-" y "."
 
-			if (newValue != null && !newValue.matches(allowedPattern)) {
-				textField.setText(oldValue);
-			} else {
-				String updatedValue = newValue.replaceAll("\\s*(?<![,-])(?=[,-])|(?<=[,-])\\s*", "");
+			if (newValue != null) {
 
-				if (!updatedValue.equals(newValue)) {
-					textField.setText(updatedValue);
+				// Elimina espacios al principio de la cadena.
+				newValue = newValue.trim();
+
+				if (!newValue.matches(allowedPattern)) {
+					// Si el valor no coincide con el patrón permitido, restaura el valor anterior.
+					finalTextField.setText(oldValue);
+				} else {
+					String updatedValue = newValue.replaceAll("\\s*(?<![,-])(?=[,-])|(?<=[,-])\\s*", "");
+
+					if (!updatedValue.equals(newValue)) {
+						finalTextField.setText(updatedValue);
+					}
 				}
 			}
-		});
-		tooltip.setFont(TOOLTIP_FONT);
-		textField.setOnMouseEntered(event -> {
-			tooltip.setShowDelay(Duration.ZERO);
-			tooltip.setHideDelay(Duration.ZERO);
-
-			String mensaje = "En caso de tener varios artistas en variante, guionista o dibujante, separalos usando una coma ',' o guion '-'";
-			tooltip.setText(mensaje);
-			tooltip.show(textField, event.getSceneX(), event.getSceneY());
-			tooltip.setX(event.getScreenX() + 10); // Ajusta el desplazamiento X según tus necesidades
-			tooltip.setY(event.getScreenY() - 20); // Ajusta el desplazamiento Y según tus necesidades
-		});
-
-		textField.setOnMouseExited(event -> {
-			tooltip.hide();
 		});
 	}
 }

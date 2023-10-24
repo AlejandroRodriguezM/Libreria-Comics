@@ -60,7 +60,6 @@ public class CargaComicsController {
 	 */
 	private Stage stage; // Campo para almacenar la referencia a la ventana
 
-
     /**
      * Actualiza el progreso de la barra de progreso.
      *

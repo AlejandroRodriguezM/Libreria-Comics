@@ -59,12 +59,12 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ResourceBundle;
 
+import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBManager;
 import javafx.animation.KeyFrame;
@@ -371,8 +371,8 @@ public class CrearBBDDController implements Initializable {
 	void crearBBDD(ActionEvent event) throws IOException, SQLException {
 		if (!datosBBDD() && checkDatabaseExists()) {
 			createDataBase();
-			createTable();
-			crearCarpeta();
+			Utilidades.createTable();
+			Utilidades.crearCarpeta();
 			prontInformativo.setStyle("-fx-background-color: #A0F52D");
 			iniciarAnimacionBaseCreada();
 			guardarDatos();
@@ -482,50 +482,6 @@ public class CrearBBDDController implements Initializable {
 	}
 
 	/**
-	 * Crea las tablas de la base de datos si no existen.
-	 */
-	public void createTable() {
-		Statement statement;
-		PreparedStatement preparedStatement;
-
-		String url = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
-		try {
-			Connection connection = DriverManager.getConnection(url, DB_USER, DB_PASS);
-			statement = connection.createStatement();
-
-			String dropTableSQL = "DROP TABLE IF EXISTS comicsbbdd";
-			String createTableSQL = "CREATE TABLE comicsbbdd (" +
-			        "ID INT NOT NULL AUTO_INCREMENT, " +
-			        "nomComic VARCHAR(150) NOT NULL, " +
-			        "caja_deposito TEXT, " +
-			        "precio_comic DOUBLE NOT NULL, " + // Cambiado el tipo a DOUBLE
-			        "numComic INT NOT NULL, " +
-			        "nomVariante VARCHAR(150) NOT NULL, " +
-			        "firma VARCHAR(150) NOT NULL, " +
-			        "nomEditorial VARCHAR(150) NOT NULL, " +
-			        "formato VARCHAR(150) NOT NULL, " +
-			        "procedencia VARCHAR(150) NOT NULL, " +
-			        "fecha_publicacion DATE NOT NULL, " +
-			        "nomGuionista TEXT NOT NULL, " +
-			        "nomDibujante TEXT NOT NULL, " +
-			        "puntuacion VARCHAR(300) NOT NULL, " +
-			        "portada TEXT, " +
-			        "key_issue TEXT, " + // Allow NULL values for key_issue
-			        "url_referencia TEXT NOT NULL, " +
-			        "estado TEXT NOT NULL, " +
-			        "PRIMARY KEY (ID)) " +
-			        "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-			statement.executeUpdate(dropTableSQL);
-			statement.executeUpdate(createTableSQL);
-
-			preparedStatement = connection.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");
-			preparedStatement.executeUpdate();
-		} catch (SQLException e) {
-			nav.alertaException(e.toString());
-		}
-	}
-
-	/**
 	 * Limpia los datos en pantalla
 	 *
 	 * @param event
@@ -537,26 +493,6 @@ public class CrearBBDDController implements Initializable {
 		passBBDD.setText("");
 		puertoBBDD.setText("");
 		nombreBBDD.setText("");
-	}
-
-	/**
-	 * Método que crea la carpeta "portadas" para almacenar las imágenes de portada
-	 * de los cómics.
-	 * 
-	 * @throws IOException Si ocurre un error al crear la carpeta.
-	 */
-	public void crearCarpeta() throws IOException {
-		String userDir = System.getProperty("user.home");
-		String documentsPath = userDir + File.separator + "Documents";
-		String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
-				+ acceso.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas";
-		File portadasFolder = new File(defaultImagePath);
-
-		if (!portadasFolder.exists()) {
-			if (!portadasFolder.mkdirs()) {
-				throw new IOException("No se pudo crear la carpeta 'portadas'");
-			}
-		}
 	}
 
 	/**
@@ -591,7 +527,7 @@ public class CrearBBDDController implements Initializable {
 	 */
 	public void reconstruirBBDD() {
 		if (nav.alertaTablaError()) {
-			createTable();
+			Utilidades.createTable();
 		} else {
 			String excepcion = "Debes de reconstruir la base de datos. Si no, no podras entrar";
 			nav.alertaException(excepcion);

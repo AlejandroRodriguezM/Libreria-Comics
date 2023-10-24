@@ -34,9 +34,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -62,6 +63,7 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -436,6 +438,8 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	private List<TableColumn<Comic, String>> columnList;
 
+	private Map<Node, String> tooltipsMap = new HashMap<>();
+
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
 	 *
@@ -628,25 +632,30 @@ public class MenuPrincipalController implements Initializable {
 	 * elementos.
 	 */
 	public void asignarTooltips() {
-		List<Object> elementos = new ArrayList<>();
+		tooltipsMap.put(botonbbdd, "Muestra toda la base de datos");
+		tooltipsMap.put(botonLimpiar, "Limpia la pantalla y reinicia todos los valores");
+		tooltipsMap.put(nombreComic, "Nombre de los cómics / libros / mangas");
+		tooltipsMap.put(numeroComic, "Número del cómic / libro / manga");
+		tooltipsMap.put(nombreFirma, "Nombre de la firma del cómic / libro / manga");
+		tooltipsMap.put(nombreGuionista, "Nombre del guionista del cómic / libro / manga");
+		tooltipsMap.put(nombreVariante, "Nombre de la variante del cómic / libro / manga");
+		tooltipsMap.put(numeroCaja, "Número de la caja donde se guarda el cómic / libro / manga");
+		tooltipsMap.put(nombreProcedencia, "Nombre de la procedencia del cómic / libro / manga");
+		tooltipsMap.put(nombreFormato, "Nombre del formato del cómic / libro / manga");
+		tooltipsMap.put(nombreEditorial, "Nombre de la editorial del cómic / libro / manga");
+		tooltipsMap.put(nombreDibujante, "Nombre del dibujante del cómic / libro / manga");
+		tooltipsMap.put(fechaPublicacion, "Fecha del cómic / libro / manga");
+		tooltipsMap.put(numeroCaja, "Caja donde guardas el cómic / libro / manga");
+		tooltipsMap.put(busquedaGeneral,
+				"Puedes buscar de forma general los cómic / libro / manga / artistas / guionistas");
+		tooltipsMap.put(botonIntroducir, "Realizar una acción de introducción del cómic / libro / manga");
+		tooltipsMap.put(botonModificar, "Realizar una acción de modificación del cómic / libro / manga");
+		tooltipsMap.put(botonEliminar, "Realizar una acción de eliminación del cómic / libro / manga");
+		tooltipsMap.put(botonAgregarPuntuacion, "Abrir una ventana para agregar puntuación del cómic / libro / manga");
+		tooltipsMap.put(botonMostrarParametro, "Buscar por parámetros según los datos rellenados");
 
-		// Agregar elementos a la lista para los cuales se asignarán tooltips
-		elementos.add(botonbbdd);
-		elementos.add(botonLimpiar);
-		elementos.add(botonMostrarParametro);
-		elementos.add(nombreComic);
-		elementos.add(numeroComic);
-		elementos.add(nombreFirma);
-		elementos.add(nombreGuionista);
-		elementos.add(nombreVariante);
-		elementos.add(numeroCaja);
-		elementos.add(nombreProcedencia);
-		elementos.add(nombreFormato);
-		elementos.add(nombreEditorial);
-		elementos.add(nombreDibujante);
+		FuncionesTooltips.assignTooltips(tooltipsMap);
 
-		// Llamar a la función para asignar tooltips a los elementos de la lista
-		FuncionesTooltips.asignarTooltips(elementos);
 	}
 
 	/**
@@ -1022,9 +1031,10 @@ public class MenuPrincipalController implements Initializable {
 	 * la base de datos en un fichero CSV
 	 *
 	 * @param event
+	 * @throws SQLException
 	 */
 	@FXML
-	void exportCSV(ActionEvent event) {
+	void exportCSV(ActionEvent event) throws SQLException {
 
 		String frase = "Fichero Excel xlsx";
 
@@ -1033,6 +1043,7 @@ public class MenuPrincipalController implements Initializable {
 		File fichero = tratarFichero(frase, formato).showSaveDialog(null); // Llamada a funcion
 
 		makeExcel(fichero);
+
 	}
 
 	/**
@@ -1050,6 +1061,8 @@ public class MenuPrincipalController implements Initializable {
 		File fichero = tratarFichero(frase, formato).showSaveDialog(null); // Llamada a funcion
 
 		makeSQL(fichero);
+
+		limpiezaDeDatos();
 
 	}
 
@@ -1089,6 +1102,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void borrarContenidoTabla(ActionEvent event) throws SQLException {
+
 		// Crear una tarea (Task) para realizar la operación de borrado de contenido de
 		// la tabla
 		Task<Boolean> task = new Task<Boolean>() {
@@ -1154,7 +1168,7 @@ public class MenuPrincipalController implements Initializable {
 					if (result) {
 						// Mostrar el mensaje de éxito y limpiar la tabla y la imagen
 						Platform.runLater(() -> {
-							prontInfo.clear();
+							limpiezaDeDatos();
 							detenerAnimacionPront();
 							prontInfo.setOpacity(1);
 							prontInfo.setStyle("-fx-background-color: #A0F52D");
@@ -1162,6 +1176,7 @@ public class MenuPrincipalController implements Initializable {
 							tablaBBDD.getItems().clear();
 							imagencomic.setImage(null);
 							detenerAnimacion();
+							cargarDatosDataBase();
 						});
 					}
 				});
@@ -1211,7 +1226,6 @@ public class MenuPrincipalController implements Initializable {
 				detenerAnimacionPront();
 				exception.printStackTrace();
 				Platform.runLater(
-
 						() -> nav.alertaException("Error al importar el fichero CSV: " + exception.getMessage()));
 			} else {
 				prontInfo.clear();
@@ -1219,6 +1233,7 @@ public class MenuPrincipalController implements Initializable {
 				Platform.runLater(() -> nav.alertaException("Error desconocido al importar el fichero CSV."));
 			}
 		});
+		nav.ventanaAbierta();
 
 		// Iniciar la tarea principal de borrado en un hilo separado
 		Thread thread = new Thread(task);
@@ -1345,16 +1360,14 @@ public class MenuPrincipalController implements Initializable {
 		libreria = new DBLibreriaManager();
 		libreria.libreriaCompleta();
 		utilidad = new Utilidades();
-		String ID;
 
 		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 
 		if (idRow != null) {
-			ID = idRow.getID();
 			prontInfo.setOpacity(1);
-			prontInfo.setText(libreria.comicDatos(ID).toString().replace("[", "").replace("]", ""));
+			prontInfo.setText(libreria.comicDatos(idRow.getID()).toString().replace("[", "").replace("]", ""));
 			funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-			imagencomic.setImage(libreria.selectorImage(ID));
+			imagencomic.setImage(libreria.selectorImage(idRow.getID()));
 			utilidad.deleteImage();
 		}
 	}
@@ -1374,16 +1387,14 @@ public class MenuPrincipalController implements Initializable {
 			libreria = new DBLibreriaManager();
 			libreria.libreriaCompleta();
 			utilidad = new Utilidades();
-			String ID;
 
 			Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 
 			if (idRow != null) {
-				ID = idRow.getID();
 				prontInfo.setOpacity(1);
-				prontInfo.setText(libreria.comicDatos(ID).toString().replace("[", "").replace("]", ""));
+				prontInfo.setText(libreria.comicDatos(idRow.getID()).toString().replace("[", "").replace("]", ""));
 
-				imagencomic.setImage(libreria.selectorImage(ID));
+				imagencomic.setImage(libreria.selectorImage(idRow.getID()));
 				utilidad.deleteImage();
 			}
 		}
@@ -1394,35 +1405,79 @@ public class MenuPrincipalController implements Initializable {
 	/////////////////////////////////
 
 	/**
-	 * Funcion que compruba si se ha creado el fichero Excel y CSV
+	 * Esta función se encarga de realizar la exportación de datos a un archivo Excel.
+	 * Después de completar la exportación, se muestra un mensaje de éxito o error en la interfaz de usuario.
 	 *
-	 * @param fichero
+	 * @param fichero El archivo en el que se exportarán los datos.
+	 * @throws SQLException Si ocurre un error al interactuar con la base de datos.
 	 */
-	public void makeExcel(File fichero) {
+	public void makeExcel(File fichero) throws SQLException {
+		prontInfo.setText(null);
+		prontInfo.setOpacity(0);
+		tablaBBDD.getItems().clear();
+		imagencomic.setImage(null);
 		excelFuntions = new FuncionesExcel();
 		prontInfo.setOpacity(0);
-		try {
-			if (fichero != null) {
-				if (excelFuntions.crearExcel(fichero)) { // Si el fichero XLSX y CSV se han creado se vera el siguiente
-					// mensaje
-					prontInfo.setOpacity(1);
-					prontInfo.setStyle("-fx-background-color: #A0F52D");
-					prontInfo.setText("Fichero excel exportado de forma correcta");
-				} else { // Si no se ha podido crear correctamente los ficheros se vera el siguiente
-					// mensaje
-					prontInfo.setOpacity(1);
-					prontInfo.setStyle("-fx-background-color: #F53636");
-					prontInfo.setText("ERROR. No se ha podido exportar correctamente.");
-				}
-			} else { // En caso de cancelar la creacion de los ficheros, se mostrara el siguiente
-				// mensaje.
+
+		Task<Boolean> crearExcelTask = excelFuntions.crearExcelTask(fichero);
+	    Thread excelThread = new Thread(crearExcelTask);
+
+		// Configurar el comportamiento cuando la tarea está en ejecución
+		crearExcelTask.setOnRunning(e -> {
+			// Iniciar la animación
+			iniciarAnimacion();
+
+		});
+
+		crearExcelTask.setOnSucceeded(event -> {
+			boolean result = crearExcelTask.getValue();
+			if (result) {
+				// Tarea completada con éxito, muestra el mensaje de éxito.
+				prontInfo.setOpacity(1);
+				prontInfo.setStyle("-fx-background-color: #A0F52D");
+				prontInfo.setText("Fichero excel exportado de forma correcta");
+
+			} else {
+				// La tarea no se completó correctamente, muestra un mensaje de error.
 				prontInfo.setOpacity(1);
 				prontInfo.setStyle("-fx-background-color: #F53636");
-				prontInfo.setText("ERROR. Se ha cancelado la exportacion.");
+				prontInfo.setText("ERROR. No se ha podido exportar correctamente.");
 			}
-		} catch (Exception e) {
-			nav.alertaException(e.toString());
-		}
+			detenerAnimacionPront();
+			detenerAnimacion();
+			
+	        // Detener el hilo de la tarea
+	        excelThread.interrupt();
+		});
+
+		crearExcelTask.setOnFailed(event -> {
+			// Manejar cualquier error que ocurra durante la tarea.
+			prontInfo.setOpacity(1);
+			prontInfo.setStyle("-fx-background-color: #F53636");
+			prontInfo.setText("ERROR. No se ha podido exportar correctamente.");
+			
+			detenerAnimacionPront();
+			detenerAnimacion();
+			
+	        // Detener el hilo de la tarea
+	        excelThread.interrupt();
+		});
+
+		crearExcelTask.setOnCancelled(event -> {
+			// Manejar si el usuario cancela la tarea.
+			prontInfo.setOpacity(1);
+			prontInfo.setStyle("-fx-background-color: #F53636");
+			prontInfo.setText("ERROR. Se ha cancelado la exportación.");
+			
+			detenerAnimacionPront();
+			detenerAnimacion();
+			
+	        // Detener el hilo de la tarea
+	        excelThread.interrupt();
+		});
+
+		// Iniciar la tarea principal de creación de Excel en un hilo separado
+	    excelThread.start();
 	}
 
 	/**
@@ -1501,6 +1556,8 @@ public class MenuPrincipalController implements Initializable {
 							prontInfo.setText("Fichero CSV importado de forma correcta");
 							detenerAnimacion();
 
+							cargarDatosDataBase();
+
 						});
 
 						// Configurar el comportamiento cuando la tarea de lectura y guardado falla
@@ -1572,6 +1629,8 @@ public class MenuPrincipalController implements Initializable {
 				detenerAnimacion();
 			}
 		});
+
+		nav.ventanaAbierta();
 
 		// Iniciar la tarea principal de importación en un hilo separado
 		Thread thread = new Thread(task);
@@ -1777,16 +1836,16 @@ public class MenuPrincipalController implements Initializable {
 	void accionComic(ActionEvent event) {
 		Object fuente = event.getSource();
 		tablaBBDD.getItems().clear();
-		
-	    VentanaAccionController ventanaAccion = new VentanaAccionController();
 
-	    // Crear la lista de ComboBoxes
-	    List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
-	            nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
-	    
-	    // Pasar la lista de ComboBoxes a VentanaAccionController
-	    ventanaAccion.pasarComboBoxes(comboboxes);
-		
+		VentanaAccionController ventanaAccion = new VentanaAccionController();
+
+		// Crear la lista de ComboBoxes
+		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
+				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
+
+		// Pasar la lista de ComboBoxes a VentanaAccionController
+		ventanaAccion.pasarComboBoxes(comboboxes);
+
 		if (fuente instanceof Button) {
 			Button botonPresionado = (Button) fuente;
 
