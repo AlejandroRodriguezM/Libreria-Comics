@@ -79,12 +79,12 @@ public class FuncionesExcel {
 	 */
 	private CargaComicsController cargaComicsController;
 
-	
 	/**
-	 * Guarda los datos en un archivo de Excel y crea un archivo ZIP que contiene el archivo Excel.
+	 * Guarda los datos en un archivo de Excel y crea un archivo ZIP que contiene el
+	 * archivo Excel.
 	 *
 	 * @param nombre_carpeta El nombre de la carpeta para la copia de seguridad.
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	public void savedataExcel(String nombre_carpeta) throws SQLException {
 
@@ -150,7 +150,7 @@ public class FuncionesExcel {
 						filaCopy.createCell(17).setCellValue(comic.getEstado());
 
 						final long finalProcessedItems = indiceFinal;
-						
+
 						Platform.runLater(() -> {
 							String texto = ("Comic: " + comic.getNombre() + " - " + comic.getNumero() + " - "
 									+ comic.getVariante() + "\n");
@@ -163,6 +163,9 @@ public class FuncionesExcel {
 					}
 
 					try {
+						Platform.runLater(() -> {
+							cargarDatosEnCargaComics("", "100%", 100.0);
+						});
 						FileOutputStream outputStream = new FileOutputStream(fichero);
 						libro.write(outputStream);
 						libro.close();
@@ -200,10 +203,11 @@ public class FuncionesExcel {
 	/**
 	 * Añade un archivo al archivo ZIP especificado con el nombre de entrada dado.
 	 *
-	 * @param file El archivo que se va a agregar al ZIP.
+	 * @param file      El archivo que se va a agregar al ZIP.
 	 * @param entryName El nombre de entrada del archivo en el ZIP.
-	 * @param zipFile El archivo ZIP al que se va a agregar el nuevo archivo.
-	 * @throws IOException Si ocurre un error de lectura o escritura durante la operación.
+	 * @param zipFile   El archivo ZIP al que se va a agregar el nuevo archivo.
+	 * @throws IOException Si ocurre un error de lectura o escritura durante la
+	 *                     operación.
 	 */
 	private void addFileToZip(File file, String entryName, File zipFile) throws IOException {
 		try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile, true))) {
@@ -220,9 +224,11 @@ public class FuncionesExcel {
 	}
 
 	/**
-	 * Convierte un archivo Excel (XLSX) en formato CSV y guarda los datos en un nuevo archivo CSV.
+	 * Convierte un archivo Excel (XLSX) en formato CSV y guarda los datos en un
+	 * nuevo archivo CSV.
 	 *
-	 * @param fichero El archivo Excel (XLSX) del cual se extraerán los datos para el archivo CSV.
+	 * @param fichero El archivo Excel (XLSX) del cual se extraerán los datos para
+	 *                el archivo CSV.
 	 */
 	public void createCSV(File fichero) {
 
@@ -281,11 +287,14 @@ public class FuncionesExcel {
 	}
 
 	/**
-	 * Comprueba la validez de un archivo CSV y lo procesa para actualizar la base de datos si es válido.
+	 * Comprueba la validez de un archivo CSV y lo procesa para actualizar la base
+	 * de datos si es válido.
 	 *
 	 * @param fichero El archivo CSV que se va a comprobar y procesar.
-	 * @param sql Consulta SQL para actualizar la base de datos con los datos del archivo CSV.
-	 * @return True si el archivo CSV es válido y los datos se procesan correctamente, false en caso contrario.
+	 * @param sql     Consulta SQL para actualizar la base de datos con los datos
+	 *                del archivo CSV.
+	 * @return True si el archivo CSV es válido y los datos se procesan
+	 *         correctamente, false en caso contrario.
 	 */
 	public boolean comprobarCSV(File fichero, String sql) {
 		conn = DBManager.conexion();
@@ -319,7 +328,8 @@ public class FuncionesExcel {
 	}
 
 	/**
-	 * Abre un cuadro de diálogo para seleccionar una carpeta de portadas en un hilo de tarea (Task).
+	 * Abre un cuadro de diálogo para seleccionar una carpeta de portadas en un hilo
+	 * de tarea (Task).
 	 *
 	 * @return La carpeta seleccionada como objeto File.
 	 */
@@ -343,90 +353,127 @@ public class FuncionesExcel {
 	}
 
 	/**
-	 * Crea un archivo Excel a partir de los datos de la base de datos y guarda el archivo en el sistema de archivos.
+	 * Crea una tarea que se encarga de generar un archivo Excel a partir de los
+	 * datos de la base de datos.
 	 *
-	 * @param fichero El archivo Excel que se va a crear y guardar.
-	 * @return True si el archivo Excel se crea y guarda correctamente, false en caso contrario.
-	 * @throws SQLException Si ocurre un error en la consulta a la base de datos.
+	 * @param fichero El archivo en el que se exportarán los datos.
+	 * @return Una tarea que realiza la exportación y devuelve true si se realiza
+	 *         con éxito, o false si ocurre un error.
 	 */
-	public boolean crearExcel(File fichero) throws SQLException {
+	public Task<Boolean> crearExcelTask(File fichero) {
+
 		libreria = new DBLibreriaManager();
-		FileOutputStream outputStream;
-		Cell celda;
-		Row fila;
-		Sheet hoja;
-		Workbook libro;
-		String encabezado;
-		String[] encabezados = { "ID", "nomComic", "caja_deposito", "precio_comic", "numComic", "nomVariante", "Firma",
-				"nomEditorial", "Formato", "Procedencia", "fecha_publicacion", "nomGuionista", "nomDibujante",
-				"puntuacion", "portada", "key_issue", "url_referencia", "estado" };
-		int indiceFila = 0;
+		new CargaComicsController();
+		conn = DBManager.conexion();
 
-		try {
-			fichero.createNewFile();
-			List<Comic> listaComics = libreria.libreriaCompleta();
+		Task<Boolean> task = new Task<Boolean>() {
+			@Override
+			protected Boolean call() throws Exception {
+				try {
+					libreria = new DBLibreriaManager();
+					FileOutputStream outputStream;
+					Cell celda;
+					Row fila;
+					Sheet hoja;
+					Workbook libro;
+					String encabezado;
+					String[] encabezados = { "ID", "nomComic", "caja_deposito", "precio_comic", "numComic",
+							"nomVariante", "Firma", "nomEditorial", "Formato", "Procedencia", "fecha_publicacion",
+							"nomGuionista", "nomDibujante", "puntuacion", "portada", "key_issue", "url_referencia",
+							"estado" };
+					int indiceFila = 0;
+					long processedItems = 0; // Processed items count
 
-			libro = new XSSFWorkbook();
+					fichero.createNewFile();
+					List<Comic> listaComics = libreria.libreriaCompleta();
 
-			hoja = libro.createSheet("Base de datos comics");
+					libro = new XSSFWorkbook();
 
-			fila = hoja.createRow(indiceFila);
-			for (int i = 0; i < encabezados.length; i++) {
-				encabezado = encabezados[i];
-				celda = fila.createCell(i);
-				celda.setCellValue(encabezado);
-				celda.getStringCellValue().getBytes(Charset.forName("UTF-8"));
+					hoja = libro.createSheet("Base de datos comics");
+
+					fila = hoja.createRow(indiceFila);
+					for (int i = 0; i < encabezados.length; i++) {
+						encabezado = encabezados[i];
+						celda = fila.createCell(i);
+						celda.setCellValue(encabezado);
+					}
+					verCargaComics();
+					indiceFila++;
+					for (Comic comic : listaComics) {
+						fila = hoja.createRow(indiceFila);
+						fila.createCell(0).setCellValue("");
+						fila.createCell(1).setCellValue(comic.getNombre());
+						fila.createCell(2).setCellValue(comic.getNumCaja());
+						fila.createCell(3).setCellValue(comic.getPrecio_comic());
+						fila.createCell(4).setCellValue(comic.getNumero());
+						fila.createCell(5).setCellValue(comic.getVariante());
+						fila.createCell(6).setCellValue(comic.getFirma());
+						fila.createCell(7).setCellValue(comic.getEditorial());
+						fila.createCell(8).setCellValue(comic.getFormato());
+						fila.createCell(9).setCellValue(comic.getProcedencia());
+						fila.createCell(10).setCellValue(comic.getFecha());
+						fila.createCell(11).setCellValue(comic.getGuionista());
+						fila.createCell(12).setCellValue(comic.getDibujante());
+						fila.createCell(13).setCellValue(comic.getPuntuacion());
+						fila.createCell(14).setCellValue(comic.getImagen());
+						fila.createCell(15).setCellValue(comic.getKey_issue());
+						fila.createCell(16).setCellValue(comic.getUrl_referencia());
+						fila.createCell(17).setCellValue(comic.getEstado());
+						indiceFila++;
+
+						final long finalProcessedItems = processedItems;
+
+						// Update UI elements using Platform.runLater
+						Platform.runLater(() -> {
+
+							String texto = ("Comic: " + comic.getNombre() + " - " + comic.getNumero() + " - "
+									+ comic.getVariante() + "\n");
+
+							double progress = (double) finalProcessedItems / (finalProcessedItems + 1);
+							String porcentaje = String.format("%.2f%%", progress * 100);
+
+							cargarDatosEnCargaComics(texto, porcentaje, progress);
+						});
+
+						processedItems++;
+					}
+
+					outputStream = new FileOutputStream(fichero);
+					libro.write(outputStream);
+					libro.close();
+					outputStream.close();
+					createCSV(fichero);
+					Platform.runLater(() -> {
+						try {
+							libreria.saveImageFromDataBase();
+						} catch (SQLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					});
+					return true;
+				} catch (FileNotFoundException ex) {
+					ex.printStackTrace();
+					return false;
+				} catch (IOException ex) {
+					ex.printStackTrace();
+					return false;
+				}
 			}
+		};
 
-			indiceFila++;
-			for (Comic comic : listaComics) {
-				fila = hoja.createRow(indiceFila);
-				fila.createCell(0).setCellValue("");
-				fila.createCell(1).setCellValue(comic.getNombre());
-				fila.createCell(2).setCellValue(comic.getNumCaja());
-				fila.createCell(3).setCellValue(comic.getPrecio_comic());
-				fila.createCell(4).setCellValue(comic.getNumero());
-				fila.createCell(5).setCellValue(comic.getVariante());
-				fila.createCell(6).setCellValue(comic.getFirma());
-				fila.createCell(7).setCellValue(comic.getEditorial());
-				fila.createCell(8).setCellValue(comic.getFormato());
-				fila.createCell(9).setCellValue(comic.getProcedencia());
-				fila.createCell(10).setCellValue(comic.getFecha());
-				fila.createCell(11).setCellValue(comic.getGuionista());
-				fila.createCell(12).setCellValue(comic.getDibujante());
-				fila.createCell(13).setCellValue(comic.getPuntuacion());
-				fila.createCell(14).setCellValue(comic.getImagen());
-				fila.createCell(15).setCellValue(comic.getKey_issue());
-				fila.createCell(16).setCellValue(comic.getUrl_referencia());
-				fila.createCell(17).setCellValue(comic.getEstado());
-				indiceFila++;
-			}
-
-			try {
-				outputStream = new FileOutputStream(fichero);
-				libro.write(outputStream);
-				libro.close();
-				outputStream.close();
-				createCSV(fichero);
-				libreria.saveImageFromDataBase();
-				return true;
-			} catch (FileNotFoundException ex) {
-				nav.alertaException(ex.toString());
-			} catch (IOException ex) {
-				nav.alertaException(ex.toString());
-			}
-		} catch (IOException e) {
-			nav.alertaException(e.toString());
-		}
-		return false;
+		return task;
 	}
 
 	/**
-	 * Crea una tarea asincrónica para leer los datos desde un archivo CSV y almacenarlos en la base de datos.
+	 * Crea una tarea asincrónica para leer los datos desde un archivo CSV y
+	 * almacenarlos en la base de datos.
 	 *
-	 * @param sql        La consulta SQL que se utilizará para insertar los datos en la base de datos.
+	 * @param sql        La consulta SQL que se utilizará para insertar los datos en
+	 *                   la base de datos.
 	 * @param lineReader El lector de líneas para leer el archivo CSV.
-	 * @return La tarea asincrónica que realiza la lectura y almacenamiento de datos.
+	 * @return La tarea asincrónica que realiza la lectura y almacenamiento de
+	 *         datos.
 	 */
 	public Task<Void> lecturaCSVTask(String sql, BufferedReader lineReader) {
 		libreria = new DBLibreriaManager();
@@ -546,10 +593,10 @@ public class FuncionesExcel {
 							String texto = "";
 							if (!existeArchivo(defaultImagePath, nombre_modificado)) {
 								texto = ("Comic: " + nombre + " - " + numero + " - " + variante + "\n");
-							}else {
+							} else {
 								texto = ("Comic: " + nombre + " - " + numero + " - " + variante + "\n");
 							}
-							
+
 							double progress = (double) finalProcessedItems / (finalProcessedItems + 1);
 							String porcentaje = String.format("%.2f%%", progress * 100);
 
@@ -588,7 +635,7 @@ public class FuncionesExcel {
 	/**
 	 * Muestra una ventana de carga para la carga de cómics.
 	 */
-	private void verCargaComics() {
+	public void verCargaComics() {
 		Platform.runLater(() -> {
 			try {
 				FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/PantallaCargaComics.fxml"));
@@ -622,17 +669,23 @@ public class FuncionesExcel {
 	 * Pasa datos a los métodos del controlador de la ventana de carga de cómics.
 	 *
 	 * @param nombreComic El nombre del cómic a mostrar.
-	 * @param porcentaje El porcentaje de carga a mostrar.
-	 * @param progreso El progreso de carga a mostrar.
+	 * @param porcentaje  El porcentaje de carga a mostrar.
+	 * @param progreso    El progreso de carga a mostrar.
 	 */
-	private void cargarDatosEnCargaComics(String nombreComic, String porcentaje, Double progreso) {
+	public void cargarDatosEnCargaComics(String nombreComic, String porcentaje, Double progreso) {
+		if (cargaComicsController != null) {
 			cargaComicsController.appendTextToTextArea(nombreComic);
 			cargaComicsController.updateLabel(porcentaje);
 			cargaComicsController.updateProgress(progreso);
+		} else {
+			// Controlador no inicializado, manejar el error apropiadamente
+			System.err.println("Error: cargaComicsController no está inicializado");
+		}
 	}
 
 	/**
-	 * Abre un archivo en el registro a través del programa predeterminado del sistema.
+	 * Abre un archivo en el registro a través del programa predeterminado del
+	 * sistema.
 	 *
 	 * @param filePath La ruta del archivo que se va a abrir.
 	 */

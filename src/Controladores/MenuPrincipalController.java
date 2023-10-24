@@ -437,9 +437,8 @@ public class MenuPrincipalController implements Initializable {
 	 * Lista de columnas de la tabla de cómics.
 	 */
 	private List<TableColumn<Comic, String>> columnList;
-	
-    private Map<Node, String> tooltipsMap = new HashMap<>();
 
+	private Map<Node, String> tooltipsMap = new HashMap<>();
 
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
@@ -633,30 +632,31 @@ public class MenuPrincipalController implements Initializable {
 	 * elementos.
 	 */
 	public void asignarTooltips() {
-        tooltipsMap.put(botonbbdd, "Muestra toda la base de datos");
-        tooltipsMap.put(botonLimpiar, "Limpia la pantalla y reinicia todos los valores");
-        tooltipsMap.put(nombreComic, "Nombre de los cómics / libros / mangas");
-        tooltipsMap.put(numeroComic, "Número del cómic / libro / manga");
-        tooltipsMap.put(nombreFirma, "Nombre de la firma del cómic / libro / manga");
-        tooltipsMap.put(nombreGuionista, "Nombre del guionista del cómic / libro / manga");
-        tooltipsMap.put(nombreVariante, "Nombre de la variante del cómic / libro / manga");
-        tooltipsMap.put(numeroCaja, "Número de la caja donde se guarda el cómic / libro / manga");
-        tooltipsMap.put(nombreProcedencia, "Nombre de la procedencia del cómic / libro / manga");
-        tooltipsMap.put(nombreFormato, "Nombre del formato del cómic / libro / manga");
-        tooltipsMap.put(nombreEditorial, "Nombre de la editorial del cómic / libro / manga");
-        tooltipsMap.put(nombreDibujante, "Nombre del dibujante del cómic / libro / manga");
-        tooltipsMap.put(fechaPublicacion, "Fecha del cómic / libro / manga");
-        tooltipsMap.put(numeroCaja, "Caja donde guardas el cómic / libro / manga");
-        tooltipsMap.put(busquedaGeneral, "Puedes buscar de forma general los cómic / libro / manga / artistas / guionistas");
-        tooltipsMap.put(botonIntroducir, "Realizar una acción de introducción del cómic / libro / manga");
-        tooltipsMap.put(botonModificar, "Realizar una acción de modificación del cómic / libro / manga");
-        tooltipsMap.put(botonEliminar, "Realizar una acción de eliminación del cómic / libro / manga");
-        tooltipsMap.put(botonAgregarPuntuacion, "Abrir una ventana para agregar puntuación del cómic / libro / manga");
-        tooltipsMap.put(botonMostrarParametro, "Buscar por parámetros según los datos rellenados");
-        
-        FuncionesTooltips.assignTooltips(tooltipsMap);
+		tooltipsMap.put(botonbbdd, "Muestra toda la base de datos");
+		tooltipsMap.put(botonLimpiar, "Limpia la pantalla y reinicia todos los valores");
+		tooltipsMap.put(nombreComic, "Nombre de los cómics / libros / mangas");
+		tooltipsMap.put(numeroComic, "Número del cómic / libro / manga");
+		tooltipsMap.put(nombreFirma, "Nombre de la firma del cómic / libro / manga");
+		tooltipsMap.put(nombreGuionista, "Nombre del guionista del cómic / libro / manga");
+		tooltipsMap.put(nombreVariante, "Nombre de la variante del cómic / libro / manga");
+		tooltipsMap.put(numeroCaja, "Número de la caja donde se guarda el cómic / libro / manga");
+		tooltipsMap.put(nombreProcedencia, "Nombre de la procedencia del cómic / libro / manga");
+		tooltipsMap.put(nombreFormato, "Nombre del formato del cómic / libro / manga");
+		tooltipsMap.put(nombreEditorial, "Nombre de la editorial del cómic / libro / manga");
+		tooltipsMap.put(nombreDibujante, "Nombre del dibujante del cómic / libro / manga");
+		tooltipsMap.put(fechaPublicacion, "Fecha del cómic / libro / manga");
+		tooltipsMap.put(numeroCaja, "Caja donde guardas el cómic / libro / manga");
+		tooltipsMap.put(busquedaGeneral,
+				"Puedes buscar de forma general los cómic / libro / manga / artistas / guionistas");
+		tooltipsMap.put(botonIntroducir, "Realizar una acción de introducción del cómic / libro / manga");
+		tooltipsMap.put(botonModificar, "Realizar una acción de modificación del cómic / libro / manga");
+		tooltipsMap.put(botonEliminar, "Realizar una acción de eliminación del cómic / libro / manga");
+		tooltipsMap.put(botonAgregarPuntuacion, "Abrir una ventana para agregar puntuación del cómic / libro / manga");
+		tooltipsMap.put(botonMostrarParametro, "Buscar por parámetros según los datos rellenados");
 
-    }
+		FuncionesTooltips.assignTooltips(tooltipsMap);
+
+	}
 
 	/**
 	 * Funcion que permite restringir entrada de datos de todo aquello que no sea un
@@ -1405,34 +1405,79 @@ public class MenuPrincipalController implements Initializable {
 	/////////////////////////////////
 
 	/**
-	 * Funcion que compruba si se ha creado el fichero Excel y CSV
+	 * Esta función se encarga de realizar la exportación de datos a un archivo Excel.
+	 * Después de completar la exportación, se muestra un mensaje de éxito o error en la interfaz de usuario.
 	 *
-	 * @param fichero
-	 * @throws SQLException
+	 * @param fichero El archivo en el que se exportarán los datos.
+	 * @throws SQLException Si ocurre un error al interactuar con la base de datos.
 	 */
 	public void makeExcel(File fichero) throws SQLException {
-		limpiezaDeDatos();
+		prontInfo.setText(null);
+		prontInfo.setOpacity(0);
+		tablaBBDD.getItems().clear();
+		imagencomic.setImage(null);
 		excelFuntions = new FuncionesExcel();
 		prontInfo.setOpacity(0);
 
-		if (fichero != null) {
-			if (excelFuntions.crearExcel(fichero)) { // Si el fichero XLSX y CSV se han creado se vera el siguiente
-				// mensaje
+		Task<Boolean> crearExcelTask = excelFuntions.crearExcelTask(fichero);
+	    Thread excelThread = new Thread(crearExcelTask);
+
+		// Configurar el comportamiento cuando la tarea está en ejecución
+		crearExcelTask.setOnRunning(e -> {
+			// Iniciar la animación
+			iniciarAnimacion();
+
+		});
+
+		crearExcelTask.setOnSucceeded(event -> {
+			boolean result = crearExcelTask.getValue();
+			if (result) {
+				// Tarea completada con éxito, muestra el mensaje de éxito.
 				prontInfo.setOpacity(1);
 				prontInfo.setStyle("-fx-background-color: #A0F52D");
 				prontInfo.setText("Fichero excel exportado de forma correcta");
-			} else { // Si no se ha podido crear correctamente los ficheros se vera el siguiente
-				// mensaje
+
+			} else {
+				// La tarea no se completó correctamente, muestra un mensaje de error.
 				prontInfo.setOpacity(1);
 				prontInfo.setStyle("-fx-background-color: #F53636");
 				prontInfo.setText("ERROR. No se ha podido exportar correctamente.");
 			}
-		} else { // En caso de cancelar la creacion de los ficheros, se mostrara el siguiente
-			// mensaje.
+			detenerAnimacionPront();
+			detenerAnimacion();
+			
+	        // Detener el hilo de la tarea
+	        excelThread.interrupt();
+		});
+
+		crearExcelTask.setOnFailed(event -> {
+			// Manejar cualquier error que ocurra durante la tarea.
 			prontInfo.setOpacity(1);
 			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("ERROR. Se ha cancelado la exportacion.");
-		}
+			prontInfo.setText("ERROR. No se ha podido exportar correctamente.");
+			
+			detenerAnimacionPront();
+			detenerAnimacion();
+			
+	        // Detener el hilo de la tarea
+	        excelThread.interrupt();
+		});
+
+		crearExcelTask.setOnCancelled(event -> {
+			// Manejar si el usuario cancela la tarea.
+			prontInfo.setOpacity(1);
+			prontInfo.setStyle("-fx-background-color: #F53636");
+			prontInfo.setText("ERROR. Se ha cancelado la exportación.");
+			
+			detenerAnimacionPront();
+			detenerAnimacion();
+			
+	        // Detener el hilo de la tarea
+	        excelThread.interrupt();
+		});
+
+		// Iniciar la tarea principal de creación de Excel en un hilo separado
+	    excelThread.start();
 	}
 
 	/**
