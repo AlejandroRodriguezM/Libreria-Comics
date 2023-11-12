@@ -1577,7 +1577,9 @@ public class VentanaAccionController implements Initializable {
 	@FXML
 	void limpiarDatos(ActionEvent event) {
 		limpiarDatosPantalla();
-		mostrarOpcionModificar();
+		if ("modificar".equals(TIPO_ACCION)) {
+			mostrarOpcionModificar();
+		}
 
 	}
 
