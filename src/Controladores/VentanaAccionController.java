@@ -182,6 +182,12 @@ public class VentanaAccionController implements Initializable {
 	private Button botonModificarComic;
 
 	/**
+	 * Botón para buscar mediante parametro un cómic.
+	 */
+	@FXML
+	private Button botonParametroComic;
+
+	/**
 	 * Botón para subir una portada.
 	 */
 	@FXML
@@ -676,6 +682,73 @@ public class VentanaAccionController implements Initializable {
 	}
 
 	/**
+	 * Metodo que mostrara los comics o comic buscados por parametro
+	 *
+	 * @param event
+	 * @throws SQLException
+	 */
+	@FXML
+	void mostrarPorParametro(ActionEvent event) throws SQLException {
+		libreria = new DBLibreriaManager();
+		libreria.reiniciarBBDD();
+		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
+		prontInfo.setOpacity(0);
+		imagencomic.setImage(null);
+		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
+		listaPorParametro(); // Llamada a funcion
+	}
+
+	/**
+	 * Realiza una búsqueda de cómics en la base de datos según los parámetros proporcionados.
+	 * Muestra los resultados en una tabla en la interfaz gráfica y actualiza elementos visuales.
+	 *
+	 * @throws SQLException si hay un error al interactuar con la base de datos.
+	 */
+	public void listaPorParametro() throws SQLException {
+
+		rootVBox.setVisible(true);
+		rootVBox.setDisable(false);
+
+		libreria = new DBLibreriaManager();
+		utilidad = new Utilidades();
+		Comic comic = new Comic();
+		String datos[] = camposComicBusqueda();
+
+		comic = new Comic("", // ID
+				datos[0], // nombre
+				datos[12], // numCaja
+				datos[1], // numero
+				datos[2], // variante
+				datos[3], // firma
+				datos[4], // editorial
+				datos[5], // formato
+				datos[6], // procedencia
+				"", // fecha
+				datos[8], // guionista
+				datos[9], // dibujante
+				datos[10], // estado
+				"", // key_issue
+				"", // puntuacion (no proporcionada en el código)
+				null, // imagen
+				"", // url_referencia
+				""); // precio_comic
+
+		for (String string : datos) {
+			System.out.println(string);
+		}
+
+		funcionesTabla.tablaBBDD(libreria.busquedaParametro(comic, ""), tablaBBDD, columnList);
+		prontInfo.setOpacity(1);
+		prontInfo.setText(funcionesTabla.resultadoBusquedaPront(comic).getText());
+
+		if (TIPO_ACCION.equals("modificar")) {
+			ocultarCamposMod();
+			limpiarDatosPantalla();
+			ocultarElementosBusqueda();
+		}
+	}
+
+	/**
 	 * Muestra todos los registros de la base de datos en la tabla de visualización
 	 * y restaura la vista.
 	 */
@@ -743,10 +816,12 @@ public class VentanaAccionController implements Initializable {
 			tooltipsMap.put(botonEliminar, "Botón para eliminar un cómic");
 			tooltipsMap.put(botonVender, "Botón para vender un cómic");
 			tooltipsMap.put(idComicTratar, "El ID del comic");
+			tooltipsMap.put(botonParametroComic, "Botón para buscar un cómic mediante una lista de parametros");
 
 		} else if ("modificar".equals(TIPO_ACCION)) {
 			tooltipsMap.put(botonSubidaPortada, "Botón para subir una portada");
 			tooltipsMap.put(botonModificarComic, "Botón para modificar un cómic");
+			tooltipsMap.put(botonParametroComic, "Botón para buscar un cómic mediante una lista de parametros");
 			tooltipsMap.put(busquedaCodigo, "Introduce el ISBN, UPC o Diamond Code");
 			tooltipsMap.put(idComicTratar_mod, "El ID del comic");
 			tooltipsMap.put(botonSubidaPortada, "Boton para buscar la portada");
@@ -773,6 +848,7 @@ public class VentanaAccionController implements Initializable {
 			tooltipsMap.put(botonAgregarPuntuacion, "Botón para agregar una puntuación");
 			tooltipsMap.put(puntuacionMenu, "Selecciona una puntuación en el menú");
 			tooltipsMap.put(idComicTratar, "El ID del comic");
+			tooltipsMap.put(botonParametroComic, "Botón para buscar un cómic mediante una lista de parametros");
 		}
 
 		FuncionesTooltips.assignTooltips(tooltipsMap);
@@ -979,11 +1055,9 @@ public class VentanaAccionController implements Initializable {
 	 */
 	public void ocultarCamposMod() {
 		// Lista de elementos que deseas ocultar y deshabilitar
-		List<Node> elementos = Arrays.asList(dibujanteComic, editorialComic, estadoComic, fechaComic, firmaComic,
-				formatoComic, guionistaComic, nombreKeyIssue, numeroCajaComic, procedenciaComic, urlReferencia,
-				label_id_mod, idComicTratar_mod, botonSubidaPortada, precioComic, direccionImagen, label_portada,
-				label_precio, label_caja, label_dibujante, label_editorial, label_estado, label_fecha, label_firma,
-				label_formato, label_guionista, label_key, label_procedencia, label_referencia, botonModificarComic);
+		List<Node> elementos = Arrays.asList(nombreKeyIssue, urlReferencia, label_id_mod, idComicTratar_mod,
+				botonSubidaPortada, precioComic, direccionImagen, label_portada, label_precio, label_key,
+				label_referencia, botonModificarComic);
 
 		// Itera a través de los elementos y oculta/deshabilita cada uno
 		for (Node elemento : elementos) {
@@ -1000,7 +1074,7 @@ public class VentanaAccionController implements Initializable {
 		ocultarCampos();
 
 		List<Node> elementosAMostrarYHabilitar = Arrays.asList(label_id, botonVender, botonEliminar, idComicTratar,
-				tablaBBDD, botonbbdd, rootVBox);
+				tablaBBDD, botonbbdd, rootVBox, botonParametroComic);
 
 		for (Node elemento : elementosAMostrarYHabilitar) {
 			elemento.setVisible(true);
@@ -1039,7 +1113,7 @@ public class VentanaAccionController implements Initializable {
 				urlReferencia, botonModificarComic, precioComic, direccionImagen, tablaBBDD, label_portada,
 				label_precio, label_caja, label_dibujante, label_editorial, label_estado, label_fecha, label_firma,
 				label_formato, label_guionista, label_key, label_procedencia, label_referencia, botonSubidaPortada,
-				botonbbdd, idComicTratar_mod, label_id_mod);
+				botonbbdd, idComicTratar_mod, label_id_mod, botonParametroComic);
 
 		for (Node elemento : elementosAMostrarYHabilitar) {
 			elemento.setVisible(true);
@@ -1056,7 +1130,7 @@ public class VentanaAccionController implements Initializable {
 		ocultarCampos();
 
 		List<Node> elementosAMostrarYHabilitar = Arrays.asList(botonBorrarOpinion, puntuacionMenu, labelPuntuacion,
-				botonAgregarPuntuacion, idComicTratar, label_id, tablaBBDD, botonbbdd, rootVBox);
+				botonAgregarPuntuacion, idComicTratar, label_id, tablaBBDD, botonbbdd, rootVBox, botonParametroComic);
 
 		for (Node elemento : elementosAMostrarYHabilitar) {
 			elemento.setVisible(true);
@@ -1503,6 +1577,7 @@ public class VentanaAccionController implements Initializable {
 	@FXML
 	void limpiarDatos(ActionEvent event) {
 		limpiarDatosPantalla();
+		mostrarOpcionModificar();
 
 	}
 
@@ -1683,7 +1758,7 @@ public class VentanaAccionController implements Initializable {
 	 * @return
 	 */
 	public String numero() {
-		String numComic = "0";
+		String numComic = "";
 
 		if (numeroComic.getSelectionModel().getSelectedItem() != null) {
 			numComic = numeroComic.getSelectionModel().getSelectedItem().toString();
@@ -1717,7 +1792,11 @@ public class VentanaAccionController implements Initializable {
 	 */
 	public String estado() {
 
-		String estadoNuevo = estadoComic.getSelectionModel().getSelectedItem().toString();
+		String estadoNuevo = "";
+
+		if (estadoComic.getSelectionModel().getSelectedItem() != null) {
+			estadoNuevo = estadoComic.getSelectionModel().getSelectedItem().toString();
+		}
 
 		return estadoNuevo;
 	}
@@ -1730,8 +1809,10 @@ public class VentanaAccionController implements Initializable {
 	 */
 	public String formato() {
 
-		String formatoEstado = formatoComic.getSelectionModel().getSelectedItem().toString();
-
+		String formatoEstado = "";
+		if (formatoComic.getSelectionModel().getSelectedItem() != null) {
+			formatoEstado = formatoComic.getSelectionModel().getSelectedItem().toString();
+		}
 		return formatoEstado;
 	}
 
@@ -1743,7 +1824,10 @@ public class VentanaAccionController implements Initializable {
 	 */
 	public String procedencia() {
 
-		String procedenciaEstadoNuevo = procedenciaComic.getSelectionModel().getSelectedItem().toString();
+		String procedenciaEstadoNuevo = "";
+		if (procedenciaComic.getSelectionModel().getSelectedItem() != null) {
+			procedenciaEstadoNuevo = procedenciaComic.getSelectionModel().getSelectedItem().toString();
+		}
 
 		return procedenciaEstadoNuevo;
 	}
@@ -1796,6 +1880,93 @@ public class VentanaAccionController implements Initializable {
 		campos[14] = Utilidades.eliminarEspacios(urlReferencia.getText());
 
 		campos[15] = Utilidades.eliminarEspacios(precioComic.getText());
+
+		return campos;
+	}
+
+	public String[] camposComicBusqueda() {
+		utilidad = new Utilidades();
+
+		String campos[] = new String[16];
+
+		if (nombreComic.getText().isEmpty()) {
+			campos[0] = "";
+		} else {
+			campos[0] = utilidad.comaPorGuion(nombreComic.getText());
+		}
+
+		if (numero().isEmpty()) {
+			campos[1] = "";
+		} else {
+			campos[1] = numero();
+		}
+
+		if (varianteComic.getText().isEmpty()) {
+			campos[2] = "";
+		} else {
+			campos[2] = utilidad.comaPorGuion(varianteComic.getText());
+		}
+
+		if (firmaComic.getText().isEmpty()) {
+			campos[3] = "";
+		} else {
+			campos[3] = utilidad.comaPorGuion(firmaComic.getText());
+		}
+
+		if (editorialComic.getText().isEmpty()) {
+			campos[4] = "";
+		} else {
+			campos[4] = utilidad.comaPorGuion(editorialComic.getText());
+		}
+
+		if (formato().isEmpty()) {
+			campos[5] = "";
+		} else {
+			campos[5] = formato();
+		}
+
+		if (procedencia().isEmpty()) {
+			campos[6] = "";
+		} else {
+			campos[6] = procedencia();
+		}
+
+		LocalDate fecha = fechaComic.getValue();
+		if (fecha != null) {
+			campos[7] = fecha.toString();
+		} else {
+			campos[7] = "";
+		}
+
+		if (guionistaComic.getText().isEmpty()) {
+			campos[8] = "";
+		} else {
+			campos[8] = utilidad.comaPorGuion(guionistaComic.getText());
+		}
+
+		if (dibujanteComic.getText().isEmpty()) {
+			campos[9] = "";
+		} else {
+			campos[9] = utilidad.comaPorGuion(dibujanteComic.getText());
+		}
+
+		if (direccionImagen.getText().isEmpty()) {
+			campos[10] = "";
+		} else {
+			campos[10] = direccionImagen.getText();
+		}
+
+		if (estado().isEmpty()) {
+			campos[11] = "";
+		} else {
+			campos[11] = estado();
+		}
+
+		if (caja().isEmpty() || caja().equals("0")) {
+			campos[12] = "";
+		} else {
+			campos[12] = utilidad.comaPorGuion(caja());
+		}
 
 		return campos;
 	}

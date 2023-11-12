@@ -174,13 +174,13 @@ public class Unit_Test extends Application {
 		// Pasar la lista de ComboBoxes a VentanaAccionController
 		ventanaAccion.pasarComboBoxes(comboboxes);
 
-		Platform.runLater(() -> {
-			accionComicPruebaAni();
-		});
-
 //		Platform.runLater(() -> {
-//			accionComicPruebaMod();
+//			accionComicPruebaAni();
 //		});
+
+		Platform.runLater(() -> {
+			accionComicPruebaMod();
+		});
 //		
 //		Platform.runLater(() -> {
 //			accionComicPruebaDelete();

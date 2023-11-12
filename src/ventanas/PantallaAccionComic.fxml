@@ -16,7 +16,7 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="536.0" prefWidth="838.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.VentanaAccionController">
    <children>
-      <VBox fx:id="rootVBox" disable="true" layoutY="335.0" prefHeight="207.0" prefWidth="488.0" visible="false">
+      <VBox fx:id="rootVBox" disable="true" layoutY="335.0" prefHeight="207.0" prefWidth="838.0" visible="false">
          <children>
             <TableView fx:id="tablaBBDD" disable="true" onKeyPressed="#teclasDireccion" onMouseClicked="#clickRaton" prefHeight="235.0" prefWidth="490.0" stylesheets="@../style/tablas_style.css" tableMenuButtonVisible="true" visible="false" VBox.vgrow="ALWAYS">
                <columns>
@@ -70,8 +70,8 @@
             <Font size="10.0" />
          </font>
       </TextField>
-      <ComboBox fx:id="formatoComic" disable="true" layoutX="87.0" layoutY="125.0" prefHeight="25.0" prefWidth="125.0" visible="false" />
-      <ComboBox fx:id="procedenciaComic" disable="true" layoutX="87.0" layoutY="153.0" prefHeight="25.0" prefWidth="125.0" visible="false" />
+      <ComboBox fx:id="formatoComic" disable="true" layoutX="87.0" layoutY="125.0" prefHeight="25.0" prefWidth="125.0" promptText="Formato" visible="false" />
+      <ComboBox fx:id="procedenciaComic" disable="true" layoutX="87.0" layoutY="153.0" prefHeight="25.0" prefWidth="125.0" promptText="Procedencia" visible="false" />
       <DatePicker fx:id="fechaComic" disable="true" editable="false" layoutX="87.0" layoutY="181.0" prefHeight="25.0" prefWidth="125.0" promptText="2000-01-01" visible="false" />
       <TextField fx:id="guionistaComic" disable="true" layoutX="87.0" layoutY="209.0" prefHeight="21.0" prefWidth="125.0" promptText="Introduce guionista/s" visible="false">
          <font>
@@ -83,8 +83,8 @@
             <Font size="10.0" />
          </font>
       </TextField>
-      <ComboBox fx:id="estadoComic" disable="true" layoutX="87.0" layoutY="256.0" prefHeight="25.0" prefWidth="125.0" visible="false" />
-      <ComboBox fx:id="numeroCajaComic" disable="true" editable="true" layoutX="87.0" layoutY="284.0" prefHeight="25.0" prefWidth="125.0" promptText="Selecciona caja" stylesheets="@../style/combobox_style.css" visible="false" />
+      <ComboBox fx:id="estadoComic" disable="true" layoutX="87.0" layoutY="256.0" prefHeight="25.0" prefWidth="125.0" promptText="Estado" visible="false" />
+      <ComboBox fx:id="numeroCajaComic" disable="true" editable="true" layoutX="87.0" layoutY="284.0" prefHeight="25.0" prefWidth="125.0" promptText="Caja" stylesheets="@../style/combobox_style.css" visible="false" />
       <TextField fx:id="nombreKeyIssue" disable="true" layoutX="87.0" layoutY="312.0" prefHeight="21.0" prefWidth="125.0" promptText="Introduce key issue" visible="false">
          <font>
             <Font size="10.0" />
@@ -140,8 +140,8 @@
       </Label>
       <ComboBox fx:id="puntuacionMenu" disable="true" layoutX="88.0" layoutY="105.0" prefHeight="21.0" prefWidth="125.0" visible="false" />
       <Button fx:id="botonSubidaPortada" disable="true" layoutX="214.0" layoutY="381.0" mnemonicParsing="false" onAction="#nuevaPortada" prefHeight="21.0" prefWidth="25.0" stylesheets="@../style/boton_subida_style.css" visible="false" />
-      <ImageView fx:id="imagencomic" fitHeight="305.0" fitWidth="201.0" layoutX="285.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true" />
-      <TextArea fx:id="prontInfo" editable="false" layoutX="501.0" layoutY="306.0" opacity="0.0" prefHeight="222.0" prefWidth="331.0" stylesheets="@../style/panel_info_style.css" wrapText="true" />
+      <ImageView fx:id="imagencomic" fitHeight="326.0" fitWidth="207.0" layoutX="277.0" layoutY="5.0" pickOnBounds="true" />
+      <TextArea fx:id="prontInfo" disable="true" editable="false" layoutX="529.0" layoutY="154.0" prefHeight="176.0" prefWidth="303.0" stylesheets="@../style/panel_info_style.css" visible="false" wrapText="true" />
       <Label fx:id="label_busquedaCodigo" disable="true" layoutX="143.0" layoutY="410.0" prefHeight="23.0" prefWidth="170.0" style="-fx-background-color: white;" text="Busqueda por ISBN/UPC/URL" visible="false">
          <font>
             <Font name="Comic Sans MS" size="12.0" />
@@ -153,7 +153,7 @@
       <Button fx:id="botonAgregarPuntuacion" disable="true" layoutX="4.0" layoutY="141.0" mnemonicParsing="false" onAction="#agregarPuntuacion" prefHeight="42.0" prefWidth="117.0" stylesheets="@../style/genericos_style.css" text="Añadir puntuación" visible="false" />
       <Button fx:id="botonBorrarOpinion" disable="true" layoutX="4.0" layoutY="190.0" mnemonicParsing="false" onAction="#borrarPuntuacion" prefHeight="42.0" prefWidth="117.0" stylesheets="@../style/genericos_style.css" text="Borrar puntuación" visible="false" />
       <Label fx:id="labelPuntuacion" disable="true" layoutX="3.0" layoutY="106.0" prefHeight="23.0" prefWidth="68.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Puntuación" visible="false" />
-      <Button fx:id="botonModificarComic" layoutX="215.0" layoutY="84.0" mnemonicParsing="false" onAction="#modificarDatos" prefHeight="33.0" prefWidth="57.0" stylesheets="@../style/genericos_style.css" text="Modificar" visible="false" wrapText="true">
+      <Button fx:id="botonModificarComic" disable="true" layoutX="215.0" layoutY="123.0" mnemonicParsing="false" onAction="#modificarDatos" prefHeight="33.0" prefWidth="57.0" stylesheets="@../style/genericos_style.css" text="Modificar" visible="false" wrapText="true">
          <font>
             <Font size="10.0" />
          </font></Button>
@@ -165,5 +165,10 @@
             <Font size="10.0" />
          </font>
       </TextField>
+      <Button fx:id="botonParametroComic" disable="true" layoutX="215.0" layoutY="84.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="33.0" prefWidth="57.0" stylesheets="@../style/genericos_style.css" text="Busqueda" visible="false" wrapText="true">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Button>
    </children>
 </Pane>

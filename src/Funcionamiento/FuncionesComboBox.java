@@ -644,7 +644,7 @@ public class FuncionesComboBox {
 			comboboxes.get(i).getItems().clear(); // Limpiar elementos anteriores si los hay
 			comboboxes.get(i).getItems().addAll(
 					i == 0 ? formatos : i == 1 ? procedenciaEstados : i == 2 ? situacionEstados : editorialBusquedas);
-			comboboxes.get(i).getSelectionModel().selectFirst();
+//			comboboxes.get(i).getSelectionModel().selectFirst();
 		}
 	}
 
