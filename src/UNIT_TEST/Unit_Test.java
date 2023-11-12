@@ -1,7 +1,11 @@
 package UNIT_TEST;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,7 +19,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import Apis.ApiISBNGeneral;
 import Apis.ApiMarvel;
@@ -142,12 +149,18 @@ public class Unit_Test extends Application {
 //		testDescargaImagen();
 //		mostrarComicMarvel();
 //		mostrarComicGeneral();
-		crearDatabasePrueba();
+//		crearDatabasePrueba();
 		envioDatosBasePrueba();
 //		pruebaSubidaComic();
 //		pruebaModificacionComic();
-
+		
+//		getComicInfo("75960609999302511");
+		
 		launch(args);
+
+//		verLibroGoogle("9788411505963");
+		
+
 	}
 
 	public void start(Stage primaryStage) {
@@ -161,13 +174,13 @@ public class Unit_Test extends Application {
 		// Pasar la lista de ComboBoxes a VentanaAccionController
 		ventanaAccion.pasarComboBoxes(comboboxes);
 
-//		Platform.runLater(() -> {
-//			accionComicPruebaAni();
-//		});
-
 		Platform.runLater(() -> {
-			accionComicPruebaMod();
+			accionComicPruebaAni();
 		});
+
+//		Platform.runLater(() -> {
+//			accionComicPruebaMod();
+//		});
 //		
 //		Platform.runLater(() -> {
 //			accionComicPruebaDelete();
@@ -180,10 +193,154 @@ public class Unit_Test extends Application {
 //		Platform.runLater(() -> {
 //			entrarMenuPrueba();
 //		});
-		
+
 //		Platform.runLater(() -> {
 //			entrarInicioPrueba();
 //		});
+	}
+	
+	/**
+	 * Realiza una solicitud HTTP para obtener información de un cómic desde la API
+	 * de Marvel Comics.
+	 *
+	 * @param claveComic El código del cómic (ISBN o UPC) que se desea buscar.
+	 * @param tipoUrl    El tipo de URL a construir ("isbn" o "upc").
+	 * @param prontInfo  El TextArea en el que se mostrarán los resultados o
+	 *                   mensajes de error.
+	 * @return Un objeto JSON con información del cómic o null si no se encuentra.
+	 */
+	@SuppressWarnings("unused")
+	private static JSONObject getComicInfo(String claveComic) {
+
+		System.out.println("Info final: " + claveComic);
+
+		long timestamp = System.currentTimeMillis() / 1000;
+
+		String claves[] = clavesApi();
+
+		String clave_publica = claves[1].trim();
+
+		String apiUrl = "";
+
+			apiUrl = "https://gateway.marvel.com:443/v1/public/comics?upc=" + claveComic + "&apikey=" + clave_publica
+					+ "&hash=" + newHash(timestamp) + "&ts=" + timestamp;
+
+
+		// Realiza la solicitud HTTP GET
+		String jsonResponse;
+		try {
+			jsonResponse = sendHttpGetRequest(apiUrl);
+
+			// Parsea la respuesta JSON y obtén el cómic
+			JSONObject jsonObject = new JSONObject(jsonResponse);
+			JSONArray resultsArray = jsonObject.getJSONObject("data").getJSONArray("results");
+
+			if (resultsArray.length() == 0) {
+				return null;
+			} else {
+				System.out.println(apiUrl);
+				JSONObject firstComic = resultsArray.getJSONObject(0);
+	            // Imprime el contenido del JSON de forma legible
+	            System.out.println("Contenido del JSON:");
+	            System.out.println(firstComic.toString(4)); // El argumento 4 establece el factor de sangrado
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * Obtiene las claves de la API de un archivo o fuente de datos.
+	 *
+	 * @return Un array de cadenas con las claves pública y privada de la API.
+	 */
+	private static String[] clavesApi() {
+		String claves[] = new String[2]; // Crear un arreglo de dos elementos para almacenar las claves
+
+		String clavesDesdeArchivo = Utilidades.obtenerClaveApiArchivo(); // Obtener las claves desde el archivo
+
+		if (!clavesDesdeArchivo.isEmpty()) {
+			String[] partes = clavesDesdeArchivo.split(":");
+			if (partes.length == 2) {
+				String clavePublica = partes[0].trim();
+				String clavePrivada = partes[1].trim();
+
+				claves[0] = clavePublica; // Almacenar la clave pública en el primer elemento del arreglo
+				claves[1] = clavePrivada; // Almacenar la clave privada en el segundo elemento del arreglo
+			}
+		}
+
+		return claves;
+	}
+	
+	/**
+	 * Calcula un hash MD5 a partir de una cadena de entrada.
+	 *
+	 * @param input La cadena de entrada para la cual se calculará el hash.
+	 * @return El hash MD5 calculado.
+	 */
+	private static String getHash(long timestamp) {
+		String claves[] = clavesApi();
+
+		String clavePrivada = claves[0].trim();
+
+		String clavePublica = claves[1].trim();
+
+		return md5(timestamp + clavePrivada + clavePublica);
+	}
+	
+	/**
+	 * Calcula un nuevo hash a partir de un timestamp.
+	 *
+	 * @param timestamp El timestamp utilizado en la generación del hash.
+	 * @return El hash MD5 calculado.
+	 */
+	private static String newHash(long timestamp) {
+		String hash = getHash(timestamp);
+		return hash;
+	}
+	
+	/**
+	 * Calcula el hash MD5 de una cadena de entrada utilizando Apache Commons Codec.
+	 *
+	 * @param input La cadena de entrada para la cual se calculará el hash MD5.
+	 * @return El hash MD5 calculado como una cadena de 32 caracteres hexadecimales.
+	 */
+	private static String md5(String input) {
+		// Utiliza Apache Commons Codec para calcular el hash MD5
+		return DigestUtils.md5Hex(input);
+	}
+	
+	/**
+	 * Realiza una solicitud HTTP GET y obtiene la respuesta como una cadena de
+	 * texto.
+	 *
+	 * @param apiUrl La URL de la API a la que se realiza la solicitud.
+	 * @return La respuesta de la solicitud HTTP como una cadena de texto.
+	 * @throws IOException        Si ocurre un error de entrada/salida durante la
+	 *                            solicitud.
+	 * @throws URISyntaxException Si la URL de la API es inválida.
+	 */
+	private static String sendHttpGetRequest(String apiUrl) throws IOException, URISyntaxException {
+		URI url = new URI(apiUrl); // Create a URI from the API URL
+		HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
+		connection.setRequestMethod("GET");
+
+		BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+		StringBuilder response = new StringBuilder();
+		String line;
+
+		while ((line = reader.readLine()) != null) {
+			response.append(line);
+		}
+
+		reader.close();
+		return response.toString();
 	}
 
 	/**
@@ -885,5 +1042,44 @@ public class Unit_Test extends Application {
 	public static void entrarInicioPrueba() {
 		nav.verAccesoBBDD();
 	}
+
+	public static String getBookInfoByISBN(String isbn) throws URISyntaxException {
+		try {
+			String apiUrl = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn ;
+			URI uri = new URI(apiUrl);
+			HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
+
+			if (connection.getResponseCode() == 200) {
+				BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+				StringBuilder response = new StringBuilder();
+				String line;
+
+				while ((line = reader.readLine()) != null) {
+					response.append(line);
+				}
+
+				reader.close();
+				connection.disconnect();
+
+				return response.toString();
+			} else {
+				System.out.println("Error al buscar el libro. Código de estado: " + connection.getResponseCode());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+    public static void verLibroGoogle(String isbn) throws URISyntaxException, JSONException {
+        String bookInfo = getBookInfoByISBN(isbn);
+
+        if (bookInfo != null) {
+            // Formatear el JSON de respuesta de forma nativa
+            JSONObject json = new JSONObject(bookInfo);
+            String formattedJson = json.toString(2); // 2 espacios de sangrado
+            System.out.println(formattedJson);
+        }
+    }
 
 }

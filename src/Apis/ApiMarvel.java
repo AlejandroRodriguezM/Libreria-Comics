@@ -28,10 +28,10 @@ import javafx.scene.control.TextArea;
  * los cómics en un formato estructurado.
  */
 public class ApiMarvel {
-
+	
 	/**
-	 * Obtiene información de un cómic a través de su codigo y muestra los detalles en
-	 * un TextArea.
+	 * Obtiene información de un cómic a través de su codigo y muestra los detalles
+	 * en un TextArea.
 	 *
 	 * @param isbn      El ISBN del cómic que se desea buscar.
 	 * @param prontInfo El TextArea en el que se mostrarán los resultados.
@@ -61,8 +61,6 @@ public class ApiMarvel {
 	 */
 	public static String formatIsbn(String isbn) {
 
-		System.out.println("Test entrada: " + isbn);
-
 		StringBuilder formattedIsbn = new StringBuilder();
 
 		for (int i = 0; i < isbn.length(); i++) {
@@ -91,8 +89,6 @@ public class ApiMarvel {
 	 * @return Un objeto JSON con información del cómic o null si no se encuentra.
 	 */
 	private static JSONObject getComicInfo(String claveComic, String tipoUrl, TextArea prontInfo) {
-
-		System.out.println("Info final: " + claveComic);
 
 		long timestamp = System.currentTimeMillis() / 1000;
 
@@ -135,6 +131,9 @@ public class ApiMarvel {
 		}
 		return null;
 	}
+
+	
+
 
 	/**
 	 * Calcula un nuevo hash a partir de un timestamp.
@@ -243,13 +242,13 @@ public class ApiMarvel {
 			title = title.replaceAll("#\\d+", "").trim();
 			comicInfoList.add(title);
 
-	        if (comic.has("description") && comic.get("description") instanceof String) {
-	            String description = comic.getString("description");
-	            comicInfoList.add(description);
-			}else {
+			if (comic.has("description") && comic.get("description") instanceof String) {
+				String description = comic.getString("description");
+				comicInfoList.add(description);
+			} else {
 				comicInfoList.add("");
 			}
-			
+
 			// Número de edición
 			int issueNumber = comic.getInt("issueNumber");
 			comicInfoList.add(Integer.toString(issueNumber));

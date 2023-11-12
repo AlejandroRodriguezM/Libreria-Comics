@@ -132,7 +132,7 @@
       <Label fx:id="label_id_mod" focusTraversable="false" layoutX="5.0" layoutY="410.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="ID comic" visible="false" />
       <Button fx:id="botonIntroducir" disable="true" focusTraversable="false" layoutX="6.0" layoutY="452.0" mnemonicParsing="false" onAction="#agregarDatos" prefHeight="33.0" prefWidth="125.0" stylesheets="@../style/genericos_style.css" text="Añadir Comic" visible="false" />
       <Button fx:id="botonLimpiar" layoutX="215.0" layoutY="4.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="35.0" prefWidth="57.0" stylesheets="@../style/genericos_style.css" text="Limpiar" />
-      <Button fx:id="botonBusquedaAvanzada" disable="true" focusTraversable="false" layoutX="5.0" layoutY="413.0" mnemonicParsing="false" onAction="#busquedaAvanzada" prefHeight="33.0" prefWidth="125.0" style="-fx-background-color: green;" stylesheets="@../style/genericos_style.css" text="Busqueda avanzada" visible="false" wrapText="true" />
+      <Button fx:id="botonBusquedaAvanzada" disable="true" focusTraversable="false" layoutX="5.0" layoutY="414.0" mnemonicParsing="false" onAction="#busquedaAvanzada" prefHeight="33.0" prefWidth="125.0" style="-fx-background-color: green;" stylesheets="@../style/genericos_style.css" text="Busqueda avanzada" visible="false" wrapText="true" />
       <Label fx:id="label_id" disable="true" layoutX="3.0" layoutY="80.0" prefHeight="21.0" prefWidth="57.0" stylesheets="@../style/genericos_style.css" text="ID Comic*" textFill="WHITE" visible="false">
          <font>
             <Font size="14.0" />
@@ -142,13 +142,13 @@
       <Button fx:id="botonSubidaPortada" disable="true" layoutX="214.0" layoutY="381.0" mnemonicParsing="false" onAction="#nuevaPortada" prefHeight="21.0" prefWidth="25.0" stylesheets="@../style/boton_subida_style.css" visible="false" />
       <ImageView fx:id="imagencomic" fitHeight="305.0" fitWidth="201.0" layoutX="285.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true" />
       <TextArea fx:id="prontInfo" editable="false" layoutX="501.0" layoutY="306.0" opacity="0.0" prefHeight="222.0" prefWidth="331.0" stylesheets="@../style/panel_info_style.css" wrapText="true" />
-      <Label fx:id="label_busquedaCodigo" disable="true" layoutX="143.0" layoutY="410.0" prefHeight="23.0" prefWidth="146.0" style="-fx-background-color: white;" text="Busqueda por ISBN/UPC" visible="false">
+      <Label fx:id="label_busquedaCodigo" disable="true" layoutX="143.0" layoutY="410.0" prefHeight="23.0" prefWidth="170.0" style="-fx-background-color: white;" text="Busqueda por ISBN/UPC/URL" visible="false">
          <font>
             <Font name="Comic Sans MS" size="12.0" />
          </font>
       </Label>
-      <ComboBox fx:id="busquedaEditorial" disable="true" layoutX="143.0" layoutY="436.0" prefHeight="25.0" prefWidth="125.0" promptText="Buscar Editorial" visible="false" />
-      <TextField fx:id="busquedaCodigo" disable="true" layoutX="143.0" layoutY="466.0" prefHeight="25.0" prefWidth="125.0" promptText="Incluye ISBN o UPC" visible="false" />
+      <ComboBox fx:id="busquedaEditorial" disable="true" layoutX="142.0" layoutY="436.0" prefHeight="25.0" prefWidth="201.0" promptText="Buscar Distribuidora" visible="false" />
+      <TextField fx:id="busquedaCodigo" disable="true" layoutX="143.0" layoutY="466.0" prefHeight="25.0" prefWidth="201.0" promptText="Incluye ISBN,UPC o Diamond Code" visible="false" />
       <Button fx:id="botonBusquedaCodigo" disable="true" layoutX="143.0" layoutY="494.0" mnemonicParsing="false" onAction="#busquedaPorCodigo" prefHeight="25.0" prefWidth="117.0" style="-fx-background-color: ecb653;" stylesheets="@../style/genericos_style.css" text="Buscar Comic" visible="false" />
       <Button fx:id="botonAgregarPuntuacion" disable="true" layoutX="4.0" layoutY="141.0" mnemonicParsing="false" onAction="#agregarPuntuacion" prefHeight="42.0" prefWidth="117.0" stylesheets="@../style/genericos_style.css" text="Añadir puntuación" visible="false" />
       <Button fx:id="botonBorrarOpinion" disable="true" layoutX="4.0" layoutY="190.0" mnemonicParsing="false" onAction="#borrarPuntuacion" prefHeight="42.0" prefWidth="117.0" stylesheets="@../style/genericos_style.css" text="Borrar puntuación" visible="false" />

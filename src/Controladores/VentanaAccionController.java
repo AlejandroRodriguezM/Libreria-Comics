@@ -47,6 +47,7 @@ import org.json.JSONException;
 
 import Apis.ApiISBNGeneral;
 import Apis.ApiMarvel;
+import Apis.WebScraperPreviewsWorld;
 import Funcionamiento.Comic;
 import Funcionamiento.FuncionesComboBox;
 import Funcionamiento.FuncionesTableView;
@@ -586,6 +587,7 @@ public class VentanaAccionController implements Initializable {
 		FuncionesTableView.reemplazarEspaciosMultiples(guionistaComic);
 		FuncionesTableView.reemplazarEspaciosMultiples(dibujanteComic);
 		FuncionesTableView.reemplazarEspaciosMultiples(varianteComic);
+		FuncionesTableView.reemplazarEspacio(busquedaCodigo);
 
 		List<TableColumn<Comic, String>> columnListCarga = Arrays.asList(nombre, numero, variante, editorial, guionista,
 				dibujante);
@@ -608,7 +610,7 @@ public class VentanaAccionController implements Initializable {
 			rootVBox.requestFocus();
 		});
 
-		String[] editorialBusquedas = { "Marvel", "Otras editoriales" };
+		String[] editorialBusquedas = { "Marvel", "Otras editoriales", "Diamond Code" };
 		busquedaCodigo.setDisable(true); // Inicialmente deshabilitado
 
 		// Agregar un controlador de eventos al ComboBox para habilitar/deshabilitar el
@@ -695,6 +697,7 @@ public class VentanaAccionController implements Initializable {
 		if (TIPO_ACCION.equals("modificar")) {
 			ocultarCamposMod();
 			limpiarDatosPantalla();
+			ocultarElementosBusqueda();
 		}
 	}
 
@@ -715,8 +718,9 @@ public class VentanaAccionController implements Initializable {
 			tooltipsMap.put(botonSubidaPortada, "Botón para subir una portada");
 			tooltipsMap.put(botonIntroducir, "Botón para introducir un cómic");
 			tooltipsMap.put(botonBusquedaAvanzada, "Botón para realizar una búsqueda avanzada");
-			tooltipsMap.put(botonBusquedaCodigo, "Botón para realizar una búsqueda por código");
-			tooltipsMap.put(busquedaCodigo, "Introduci el ISBN o UPC del comic a buscar");
+			tooltipsMap.put(botonBusquedaCodigo,
+					"Botón para realizar una búsqueda por código. \nEn caso de escoger el la categoria 'Diamond Code'. Añade un codigo valido como 'AUG239105'");
+			tooltipsMap.put(busquedaCodigo, "Introduce el ISBN, UPC o Diamond Code");
 			tooltipsMap.put(botonSubidaPortada, "Boton para buscar la portada");
 			tooltipsMap.put(numeroCajaComic, "Número de la caja donde se guarda el cómic / libro / manga");
 			tooltipsMap.put(procedenciaComic, "Nombre de la procedencia del cómic / libro / manga");
@@ -732,7 +736,7 @@ public class VentanaAccionController implements Initializable {
 					"Aqui puedes añadir si el comic tiene o no alguna clave, esto es para coleccionistas. Puedes dejarlo vacío");
 			tooltipsMap.put(estadoComic, "Selecciona el estado del cómic");
 			tooltipsMap.put(fechaComic, "Selecciona la fecha de publicación del cómic");
-			tooltipsMap.put(busquedaEditorial, "Selecciona la editorial para buscar");
+			tooltipsMap.put(busquedaEditorial, "Selecciona la distribuidora para buscar");
 			tooltipsMap.put(firmaComic, "Nombre de la firma del cómic / libro / manga");
 
 		} else if ("eliminar".equals(TIPO_ACCION)) {
@@ -743,6 +747,7 @@ public class VentanaAccionController implements Initializable {
 		} else if ("modificar".equals(TIPO_ACCION)) {
 			tooltipsMap.put(botonSubidaPortada, "Botón para subir una portada");
 			tooltipsMap.put(botonModificarComic, "Botón para modificar un cómic");
+			tooltipsMap.put(busquedaCodigo, "Introduce el ISBN, UPC o Diamond Code");
 			tooltipsMap.put(idComicTratar_mod, "El ID del comic");
 			tooltipsMap.put(botonSubidaPortada, "Boton para buscar la portada");
 			tooltipsMap.put(direccionImagen, "Direccion HTTP de la imagen o local");
@@ -759,7 +764,9 @@ public class VentanaAccionController implements Initializable {
 					"Aqui puedes añadir si el comic tiene o no alguna clave, esto es para coleccionistas. Puedes dejarlo vacío");
 			tooltipsMap.put(estadoComic, "Selecciona el estado del cómic");
 			tooltipsMap.put(fechaComic, "Selecciona la fecha de publicación del cómic");
-			tooltipsMap.put(busquedaEditorial, "Selecciona la editorial para buscar");
+			tooltipsMap.put(busquedaEditorial, "Selecciona la distribuidora para buscar");
+			tooltipsMap.put(botonBusquedaCodigo,
+					"Botón para realizar una búsqueda por código. \nEn caso de escoger el la categoria 'Diamond Code'. Añade un codigo valido como 'AUG239105'");
 
 		} else if ("puntuar".equals(TIPO_ACCION)) {
 			tooltipsMap.put(botonBorrarOpinion, "Botón para borrar una opinión");
@@ -1213,20 +1220,27 @@ public class VentanaAccionController implements Initializable {
 	 */
 	@FXML
 	void busquedaPorCodigo(ActionEvent event) throws IOException, JSONException, URISyntaxException {
+		limpiarDatosPantalla();
+
 		// Crear una tarea que se ejecutará en segundo plano
 		Task<Boolean> tarea = new Task<Boolean>() {
+
 			@Override
 			protected Boolean call() throws Exception {
-				String valorCodigo = busquedaCodigo.getText();
+
+				String valorCodigo = Utilidades.eliminarEspacios(busquedaCodigo.getText());
 				String tipoEditorial = busquedaEditorial.getValue();
 				String[] comicInfo = null;
 
 				if (!valorCodigo.isEmpty() && !tipoEditorial.isEmpty()) {
 					if (tipoEditorial.equalsIgnoreCase("marvel")) {
 						comicInfo = ApiMarvel.infoComicCode(valorCodigo.trim(), prontInfo);
+					} else if (tipoEditorial.equalsIgnoreCase("Diamond Code")) {
+						comicInfo = WebScraperPreviewsWorld.displayComicInfo(valorCodigo.trim(), prontInfo);
+						System.out.println(comicInfo.length);
+
 					} else {
 						comicInfo = ApiISBNGeneral.getBookInfo(valorCodigo.trim(), prontInfo);
-//						System.out.println("Info: " + comicInfo.toString());
 					}
 
 					if (comprobarCodigo(comicInfo)) {
@@ -1316,20 +1330,18 @@ public class VentanaAccionController implements Initializable {
 			String fechaVenta = comicInfo[8];
 			String referencia = comicInfo[9];
 			String urlImagen = comicInfo[10];
+			String editorial = comicInfo[11];
 
-			if (urlImagen.isEmpty()) {
+			if (urlImagen == null || urlImagen.isEmpty()) {
 				// Cargar la imagen desde la URL
 				String rutaImagen = "/Funcionamiento/sinPortada.jpg";
-
 				imagen = new Image(getClass().getResourceAsStream(rutaImagen));
 				imagencomic.setImage(imagen);
 			} else {
 				// Cargar la imagen desde la URL
-				imagen = new Image(urlImagen, true);
+				imagen = new Image(urlImagen, 250, 0, true, true);
 			}
 			imagencomic.setImage(imagen);
-
-			String editorial = comicInfo[11];
 
 			nombreComic.setText(titulo);
 			numeroComic.setValue(numero);
@@ -1338,9 +1350,17 @@ public class VentanaAccionController implements Initializable {
 			formatoComic.setValue(formato);
 
 			// Parsear y establecer la fecha
-			String fechaString = fechaVenta;
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-			LocalDate fecha = LocalDate.parse(fechaString, formatter);
+			LocalDate fecha;
+
+			if (fechaVenta == null || fechaVenta.isEmpty()) {
+				// La cadena de fecha no existe o es nula, establecer la fecha predeterminada
+				fecha = LocalDate.of(2000, 1, 1);
+			} else {
+				// La cadena de fecha existe, parsearla
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+				fecha = LocalDate.parse(fechaVenta, formatter);
+			}
+
 			fechaComic.setValue(fecha);
 
 			guionistaComic.setText(escritores);
@@ -1519,17 +1539,17 @@ public class VentanaAccionController implements Initializable {
 		// Borrar cualquier mensaje de error presente
 		borrarErrores();
 
-		label_busquedaCodigo.setVisible(false);
-		busquedaEditorial.setVisible(false);
-		busquedaCodigo.setVisible(false);
-		busquedaEditorial.getSelectionModel().clearSelection(); // Desseleccionar cualquier elemento seleccionado
-		busquedaEditorial.getEditor().clear(); // Limpiar el texto en el ComboBox
-		busquedaEditorial.setPromptText("Buscar Editorial"); // Restaurar el texto de marcador de posición original
-		botonBusquedaCodigo.setVisible(false);
-
-		busquedaEditorial.setDisable(true);
-		busquedaCodigo.setDisable(true);
-		botonBusquedaCodigo.setDisable(true);
+//		label_busquedaCodigo.setVisible(false);
+//		busquedaEditorial.setVisible(false);
+//		busquedaCodigo.setVisible(false);
+//		busquedaEditorial.getSelectionModel().clearSelection(); // Desseleccionar cualquier elemento seleccionado
+//		busquedaEditorial.getEditor().clear(); // Limpiar el texto en el ComboBox
+//		busquedaEditorial.setPromptText("Buscar Editorial"); // Restaurar el texto de marcador de posición original
+//		botonBusquedaCodigo.setVisible(false);
+//
+//		busquedaEditorial.setDisable(true);
+//		busquedaCodigo.setDisable(true);
+//		botonBusquedaCodigo.setDisable(true);
 	}
 
 	/**
@@ -1771,11 +1791,11 @@ public class VentanaAccionController implements Initializable {
 
 		campos[12] = utilidad.comaPorGuion(caja());
 
-		campos[13] = utilidad.eliminarEspacios(nombreKeyIssue.getText());
+		campos[13] = Utilidades.eliminarEspacios(nombreKeyIssue.getText());
 
-		campos[14] = utilidad.eliminarEspacios(urlReferencia.getText());
+		campos[14] = Utilidades.eliminarEspacios(urlReferencia.getText());
 
-		campos[15] = utilidad.eliminarEspacios(precioComic.getText());
+		campos[15] = Utilidades.eliminarEspacios(precioComic.getText());
 
 		return campos;
 	}
@@ -1863,21 +1883,21 @@ public class VentanaAccionController implements Initializable {
 					// Es una URL en internet
 					portada = Utilidades.descargarImagen(datos[10], DOCUMENTS_PATH);
 					file = new File(portada);
-					imagen = new Image(file.toURI().toString());
+					imagen = new Image(file.toURI().toString(), 250, 0, true, true);
 
 				} else {
 					if (!file.exists()) {
 						portada = "Funcionamiento/sinPortada.jpg";
-						imagen = new Image(portada);
+						imagen = new Image(portada, 250, 0, true, true);
 
 					} else {
 						portada = datos[10];
-						imagen = new Image(file.toURI().toString());
+						imagen = new Image(file.toURI().toString(), 250, 0, true, true);
 					}
 				}
 			} else {
 				portada = "Funcionamiento/sinPortada.jpg";
-				imagen = new Image(portada);
+				imagen = new Image(portada, 250, 0, true, true);
 			}
 
 			imagencomic.setImage(imagen);
