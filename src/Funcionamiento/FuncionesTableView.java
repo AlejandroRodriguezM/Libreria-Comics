@@ -457,6 +457,23 @@ public class FuncionesTableView {
 			}
 		});
 	}
+	
+	/**
+	 * Elimina espacios de un TextField.
+	 *
+	 * @param textField El TextField al que se aplicará la eliminación de espacios
+	 *                  múltiples.
+	 */
+	public static void reemplazarEspacio(TextField textField) {
+		textField.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue != null) {
+				// Reemplaza múltiples espacios seguidos por un solo espacio.
+				newValue = newValue.replaceAll(" ", "");
+
+				textField.setText(newValue); // Actualiza el valor del TextField
+			}
+		});
+	}
 
 	/**
 	 * Restringe los símbolos no permitidos en el TextField y muestra un Tooltip

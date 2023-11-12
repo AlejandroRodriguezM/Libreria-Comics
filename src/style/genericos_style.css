@@ -144,6 +144,17 @@
     -fx-background-color: #c9302c;
 }
 
+.button#botonParametroComic {
+    -fx-font-size: 10.0px;
+    -fx-background-color: #92C5FC;
+    -fx-border-color: #92C5FC;
+}
+
+.button#botonParametroComic:hover {
+    -fx-font-size: 10.0px;
+    -fx-background-color: #00A9FF;
+}
+
 .button#botonLeidos {
     -fx-background-color: #5cb85c;
     -fx-border-color: #4cae4c;

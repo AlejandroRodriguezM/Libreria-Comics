@@ -33,7 +33,7 @@ import javafx.scene.control.TextArea;
  * través de la API de OpenLibrary.
  */
 public class ApiISBNGeneral {
-	
+
 	/**
 	 * Obtiene información sobre un libro a través de su ISBN y lo devuelve en forma
 	 * de un array de cadenas.
@@ -59,7 +59,11 @@ public class ApiISBNGeneral {
 			// Verifica si bookInfo es nulo antes de intentar acceder a sus propiedades.
 			JSONObject bookInfo = jsonObject.optJSONObject("ISBN:" + isbn);
 
-			if (bookInfo.length() == 0) {
+			if (jsonObject.length() == 0) {
+				prontInfo.setOpacity(1);
+				prontInfo.setText("No se encontró el cómic con código: " + isbn);
+				return null;
+			} else if (bookInfo.length() == 0) {
 				// Configura la visibilidad y el texto de un elemento (prontInfo) para informar
 				// que no se encontró el cómic.
 				prontInfo.setOpacity(1);
@@ -134,47 +138,50 @@ public class ApiISBNGeneral {
 			String variante = "";
 			bookInfoList.add(variante);
 
-			// Extraer autores
-			JSONArray authors = details.getJSONArray("authors");
-			StringBuilder authorsString = new StringBuilder();
-
 			String artistas = "";
 			String escritores = "";
+			
+			// Extraer autores
+			if (details.has("authors") && details.get("authors") instanceof JSONArray) {
 
-			for (int i = 0; i < authors.length(); i++) {
-				JSONObject author = authors.getJSONObject(i);
-				String authorName = author.getString("name");
+				JSONArray authors = details.getJSONArray("authors");
+				StringBuilder authorsString = new StringBuilder();
 
-				// Filtrar caracteres no deseados y agregar coma si no es el último autor
-				authorName = authorName.replaceAll("[^\\p{L},.? ]", "").trim();
-				if (!authorName.isEmpty()) {
-					if (authorsString.length() > 0) {
-						authorsString.append(", ");
-					}
-					authorName = ApiGoogle.translateText(authorName, "en");
-					authorsString.append(authorName);
+				for (int i = 0; i < authors.length(); i++) {
+					JSONObject author = authors.getJSONObject(i);
+					String authorName = author.getString("name");
 
-					// Llamar a la función para buscar información de la persona
-					String result = ApiComicVine.searchPersonAndExtractInfo(apiKey, authorName);
+					// Filtrar caracteres no deseados y agregar coma si no es el último autor
+					authorName = authorName.replaceAll("[^\\p{L},.? ]", "").trim();
+					if (!authorName.isEmpty()) {
+						if (authorsString.length() > 0) {
+							authorsString.append(", ");
+						}
+						authorName = ApiGoogle.translateText(authorName, "en");
+						authorsString.append(authorName);
 
-					// Verificar si el resultado es "Artist" o "Writer" y hacer append en las
-					// variables
-					if (result != null) {
-						if (result.equals("artist")) {
-							if (!artistas.isEmpty()) {
-								artistas += ", ";
+						// Llamar a la función para buscar información de la persona
+						String result = ApiComicVine.searchPersonAndExtractInfo(apiKey, authorName);
+
+						// Verificar si el resultado es "Artist" o "Writer" y hacer append en las
+						// variables
+						if (result != null) {
+							if (result.equals("artist")) {
+								if (!artistas.isEmpty()) {
+									artistas += ", ";
+								}
+								artistas += authorName;
+							} else if (result.equals("writer")) {
+								if (!escritores.isEmpty()) {
+									escritores += ", ";
+								}
+								escritores += authorName;
 							}
-							artistas += authorName;
-						} else if (result.equals("writer")) {
-							if (!escritores.isEmpty()) {
-								escritores += ", ";
-							}
-							escritores += authorName;
 						}
 					}
 				}
 			}
-
+			
 			// Dibujantes
 			bookInfoList.add(artistas);
 
@@ -203,9 +210,9 @@ public class ApiISBNGeneral {
 			if (bookInfo.has("thumbnail_url")) {
 				String thumbnailUrl = bookInfo.getString("thumbnail_url");
 				thumbnailUrl = thumbnailUrl.replace("-S.jpg", "-L.jpg").replace("-M.jpg", "-L.jpg");
-				
+
 				System.out.println("URL de la imagen: " + thumbnailUrl);
-				
+
 				bookInfoList.add(thumbnailUrl);
 			} else {
 				bookInfoList.add("");
@@ -222,6 +229,8 @@ public class ApiISBNGeneral {
 			// Convierte la lista en un array de cadenas
 			String[] bookInfoArray = new String[bookInfoList.size()];
 
+			System.out.println("Size: " + bookInfoList.size());
+			
 			bookInfoList.toArray(bookInfoArray);
 
 			return bookInfoArray;

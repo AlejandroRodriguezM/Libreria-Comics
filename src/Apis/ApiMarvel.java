@@ -29,7 +29,7 @@ import javafx.scene.control.TextArea;
  * los cómics en un formato estructurado.
  */
 public class ApiMarvel {
-
+	
 	/**
 	 * Obtiene información de un cómic a través de su codigo y muestra los detalles
 	 * en un TextArea.
@@ -132,6 +132,9 @@ public class ApiMarvel {
 		}
 		return null;
 	}
+
+	
+
 
 	/**
 	 * Calcula un nuevo hash a partir de un timestamp.

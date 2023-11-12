@@ -260,7 +260,7 @@ public class Utilidades {
 	 * @param campos
 	 * @return
 	 */
-	public String eliminarEspacios(String dato) {
+	public static String eliminarEspacios(String dato) {
 		// Elimina espacios adicionales al principio y al final.
 		dato = dato.trim();
 

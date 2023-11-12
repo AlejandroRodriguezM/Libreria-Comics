@@ -47,6 +47,7 @@ import org.json.JSONException;
 
 import Apis.ApiISBNGeneral;
 import Apis.ApiMarvel;
+import Apis.WebScraperPreviewsWorld;
 import Funcionamiento.Comic;
 import Funcionamiento.FuncionesComboBox;
 import Funcionamiento.FuncionesTableView;
@@ -179,6 +180,12 @@ public class VentanaAccionController implements Initializable {
 	 */
 	@FXML
 	private Button botonModificarComic;
+
+	/**
+	 * Botón para buscar mediante parametro un cómic.
+	 */
+	@FXML
+	private Button botonParametroComic;
 
 	/**
 	 * Botón para subir una portada.
@@ -586,6 +593,7 @@ public class VentanaAccionController implements Initializable {
 		FuncionesTableView.reemplazarEspaciosMultiples(guionistaComic);
 		FuncionesTableView.reemplazarEspaciosMultiples(dibujanteComic);
 		FuncionesTableView.reemplazarEspaciosMultiples(varianteComic);
+		FuncionesTableView.reemplazarEspacio(busquedaCodigo);
 
 		List<TableColumn<Comic, String>> columnListCarga = Arrays.asList(nombre, numero, variante, editorial, guionista,
 				dibujante);
@@ -608,7 +616,7 @@ public class VentanaAccionController implements Initializable {
 			rootVBox.requestFocus();
 		});
 
-		String[] editorialBusquedas = { "Marvel", "Otras editoriales" };
+		String[] editorialBusquedas = { "Marvel", "Otras editoriales", "Diamond Code" };
 		busquedaCodigo.setDisable(true); // Inicialmente deshabilitado
 
 		// Agregar un controlador de eventos al ComboBox para habilitar/deshabilitar el
@@ -674,6 +682,73 @@ public class VentanaAccionController implements Initializable {
 	}
 
 	/**
+	 * Metodo que mostrara los comics o comic buscados por parametro
+	 *
+	 * @param event
+	 * @throws SQLException
+	 */
+	@FXML
+	void mostrarPorParametro(ActionEvent event) throws SQLException {
+		libreria = new DBLibreriaManager();
+		libreria.reiniciarBBDD();
+		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
+		prontInfo.setOpacity(0);
+		imagencomic.setImage(null);
+		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
+		listaPorParametro(); // Llamada a funcion
+	}
+
+	/**
+	 * Realiza una búsqueda de cómics en la base de datos según los parámetros proporcionados.
+	 * Muestra los resultados en una tabla en la interfaz gráfica y actualiza elementos visuales.
+	 *
+	 * @throws SQLException si hay un error al interactuar con la base de datos.
+	 */
+	public void listaPorParametro() throws SQLException {
+
+		rootVBox.setVisible(true);
+		rootVBox.setDisable(false);
+
+		libreria = new DBLibreriaManager();
+		utilidad = new Utilidades();
+		Comic comic = new Comic();
+		String datos[] = camposComicBusqueda();
+
+		comic = new Comic("", // ID
+				datos[0], // nombre
+				datos[12], // numCaja
+				datos[1], // numero
+				datos[2], // variante
+				datos[3], // firma
+				datos[4], // editorial
+				datos[5], // formato
+				datos[6], // procedencia
+				"", // fecha
+				datos[8], // guionista
+				datos[9], // dibujante
+				datos[10], // estado
+				"", // key_issue
+				"", // puntuacion (no proporcionada en el código)
+				null, // imagen
+				"", // url_referencia
+				""); // precio_comic
+
+		for (String string : datos) {
+			System.out.println(string);
+		}
+
+		funcionesTabla.tablaBBDD(libreria.busquedaParametro(comic, ""), tablaBBDD, columnList);
+		prontInfo.setOpacity(1);
+		prontInfo.setText(funcionesTabla.resultadoBusquedaPront(comic).getText());
+
+		if (TIPO_ACCION.equals("modificar")) {
+			ocultarCamposMod();
+			limpiarDatosPantalla();
+			ocultarElementosBusqueda();
+		}
+	}
+
+	/**
 	 * Muestra todos los registros de la base de datos en la tabla de visualización
 	 * y restaura la vista.
 	 */
@@ -695,6 +770,7 @@ public class VentanaAccionController implements Initializable {
 		if (TIPO_ACCION.equals("modificar")) {
 			ocultarCamposMod();
 			limpiarDatosPantalla();
+			ocultarElementosBusqueda();
 		}
 	}
 
@@ -715,8 +791,9 @@ public class VentanaAccionController implements Initializable {
 			tooltipsMap.put(botonSubidaPortada, "Botón para subir una portada");
 			tooltipsMap.put(botonIntroducir, "Botón para introducir un cómic");
 			tooltipsMap.put(botonBusquedaAvanzada, "Botón para realizar una búsqueda avanzada");
-			tooltipsMap.put(botonBusquedaCodigo, "Botón para realizar una búsqueda por código");
-			tooltipsMap.put(busquedaCodigo, "Introduci el ISBN o UPC del comic a buscar");
+			tooltipsMap.put(botonBusquedaCodigo,
+					"Botón para realizar una búsqueda por código. \nEn caso de escoger el la categoria 'Diamond Code'. Añade un codigo valido como 'AUG239105'");
+			tooltipsMap.put(busquedaCodigo, "Introduce el ISBN, UPC o Diamond Code");
 			tooltipsMap.put(botonSubidaPortada, "Boton para buscar la portada");
 			tooltipsMap.put(numeroCajaComic, "Número de la caja donde se guarda el cómic / libro / manga");
 			tooltipsMap.put(procedenciaComic, "Nombre de la procedencia del cómic / libro / manga");
@@ -732,17 +809,20 @@ public class VentanaAccionController implements Initializable {
 					"Aqui puedes añadir si el comic tiene o no alguna clave, esto es para coleccionistas. Puedes dejarlo vacío");
 			tooltipsMap.put(estadoComic, "Selecciona el estado del cómic");
 			tooltipsMap.put(fechaComic, "Selecciona la fecha de publicación del cómic");
-			tooltipsMap.put(busquedaEditorial, "Selecciona la editorial para buscar");
+			tooltipsMap.put(busquedaEditorial, "Selecciona la distribuidora para buscar");
 			tooltipsMap.put(firmaComic, "Nombre de la firma del cómic / libro / manga");
 
 		} else if ("eliminar".equals(TIPO_ACCION)) {
 			tooltipsMap.put(botonEliminar, "Botón para eliminar un cómic");
 			tooltipsMap.put(botonVender, "Botón para vender un cómic");
 			tooltipsMap.put(idComicTratar, "El ID del comic");
+			tooltipsMap.put(botonParametroComic, "Botón para buscar un cómic mediante una lista de parametros");
 
 		} else if ("modificar".equals(TIPO_ACCION)) {
 			tooltipsMap.put(botonSubidaPortada, "Botón para subir una portada");
 			tooltipsMap.put(botonModificarComic, "Botón para modificar un cómic");
+			tooltipsMap.put(botonParametroComic, "Botón para buscar un cómic mediante una lista de parametros");
+			tooltipsMap.put(busquedaCodigo, "Introduce el ISBN, UPC o Diamond Code");
 			tooltipsMap.put(idComicTratar_mod, "El ID del comic");
 			tooltipsMap.put(botonSubidaPortada, "Boton para buscar la portada");
 			tooltipsMap.put(direccionImagen, "Direccion HTTP de la imagen o local");
@@ -759,13 +839,16 @@ public class VentanaAccionController implements Initializable {
 					"Aqui puedes añadir si el comic tiene o no alguna clave, esto es para coleccionistas. Puedes dejarlo vacío");
 			tooltipsMap.put(estadoComic, "Selecciona el estado del cómic");
 			tooltipsMap.put(fechaComic, "Selecciona la fecha de publicación del cómic");
-			tooltipsMap.put(busquedaEditorial, "Selecciona la editorial para buscar");
+			tooltipsMap.put(busquedaEditorial, "Selecciona la distribuidora para buscar");
+			tooltipsMap.put(botonBusquedaCodigo,
+					"Botón para realizar una búsqueda por código. \nEn caso de escoger el la categoria 'Diamond Code'. Añade un codigo valido como 'AUG239105'");
 
 		} else if ("puntuar".equals(TIPO_ACCION)) {
 			tooltipsMap.put(botonBorrarOpinion, "Botón para borrar una opinión");
 			tooltipsMap.put(botonAgregarPuntuacion, "Botón para agregar una puntuación");
 			tooltipsMap.put(puntuacionMenu, "Selecciona una puntuación en el menú");
 			tooltipsMap.put(idComicTratar, "El ID del comic");
+			tooltipsMap.put(botonParametroComic, "Botón para buscar un cómic mediante una lista de parametros");
 		}
 
 		FuncionesTooltips.assignTooltips(tooltipsMap);
@@ -972,11 +1055,9 @@ public class VentanaAccionController implements Initializable {
 	 */
 	public void ocultarCamposMod() {
 		// Lista de elementos que deseas ocultar y deshabilitar
-		List<Node> elementos = Arrays.asList(dibujanteComic, editorialComic, estadoComic, fechaComic, firmaComic,
-				formatoComic, guionistaComic, nombreKeyIssue, numeroCajaComic, procedenciaComic, urlReferencia,
-				label_id_mod, idComicTratar_mod, botonSubidaPortada, precioComic, direccionImagen, label_portada,
-				label_precio, label_caja, label_dibujante, label_editorial, label_estado, label_fecha, label_firma,
-				label_formato, label_guionista, label_key, label_procedencia, label_referencia, botonModificarComic);
+		List<Node> elementos = Arrays.asList(nombreKeyIssue, urlReferencia, label_id_mod, idComicTratar_mod,
+				botonSubidaPortada, precioComic, direccionImagen, label_portada, label_precio, label_key,
+				label_referencia, botonModificarComic);
 
 		// Itera a través de los elementos y oculta/deshabilita cada uno
 		for (Node elemento : elementos) {
@@ -993,7 +1074,7 @@ public class VentanaAccionController implements Initializable {
 		ocultarCampos();
 
 		List<Node> elementosAMostrarYHabilitar = Arrays.asList(label_id, botonVender, botonEliminar, idComicTratar,
-				tablaBBDD, botonbbdd, rootVBox);
+				tablaBBDD, botonbbdd, rootVBox, botonParametroComic);
 
 		for (Node elemento : elementosAMostrarYHabilitar) {
 			elemento.setVisible(true);
@@ -1032,7 +1113,7 @@ public class VentanaAccionController implements Initializable {
 				urlReferencia, botonModificarComic, precioComic, direccionImagen, tablaBBDD, label_portada,
 				label_precio, label_caja, label_dibujante, label_editorial, label_estado, label_fecha, label_firma,
 				label_formato, label_guionista, label_key, label_procedencia, label_referencia, botonSubidaPortada,
-				botonbbdd, idComicTratar_mod, label_id_mod);
+				botonbbdd, idComicTratar_mod, label_id_mod, botonParametroComic);
 
 		for (Node elemento : elementosAMostrarYHabilitar) {
 			elemento.setVisible(true);
@@ -1049,7 +1130,7 @@ public class VentanaAccionController implements Initializable {
 		ocultarCampos();
 
 		List<Node> elementosAMostrarYHabilitar = Arrays.asList(botonBorrarOpinion, puntuacionMenu, labelPuntuacion,
-				botonAgregarPuntuacion, idComicTratar, label_id, tablaBBDD, botonbbdd, rootVBox);
+				botonAgregarPuntuacion, idComicTratar, label_id, tablaBBDD, botonbbdd, rootVBox, botonParametroComic);
 
 		for (Node elemento : elementosAMostrarYHabilitar) {
 			elemento.setVisible(true);
@@ -1213,20 +1294,27 @@ public class VentanaAccionController implements Initializable {
 	 */
 	@FXML
 	void busquedaPorCodigo(ActionEvent event) throws IOException, JSONException, URISyntaxException {
+		limpiarDatosPantalla();
+
 		// Crear una tarea que se ejecutará en segundo plano
 		Task<Boolean> tarea = new Task<Boolean>() {
+
 			@Override
 			protected Boolean call() throws Exception {
-				String valorCodigo = busquedaCodigo.getText();
+
+				String valorCodigo = Utilidades.eliminarEspacios(busquedaCodigo.getText());
 				String tipoEditorial = busquedaEditorial.getValue();
 				String[] comicInfo = null;
 
 				if (!valorCodigo.isEmpty() && !tipoEditorial.isEmpty()) {
 					if (tipoEditorial.equalsIgnoreCase("marvel")) {
 						comicInfo = ApiMarvel.infoComicCode(valorCodigo.trim(), prontInfo);
+					} else if (tipoEditorial.equalsIgnoreCase("Diamond Code")) {
+						comicInfo = WebScraperPreviewsWorld.displayComicInfo(valorCodigo.trim(), prontInfo);
+						System.out.println(comicInfo.length);
+
 					} else {
 						comicInfo = ApiISBNGeneral.getBookInfo(valorCodigo.trim(), prontInfo);
-//						System.out.println("Info: " + comicInfo.toString());
 					}
 
 					if (comprobarCodigo(comicInfo)) {
@@ -1316,20 +1404,18 @@ public class VentanaAccionController implements Initializable {
 			String fechaVenta = comicInfo[8];
 			String referencia = comicInfo[9];
 			String urlImagen = comicInfo[10];
+			String editorial = comicInfo[11];
 
-			if (urlImagen.isEmpty()) {
+			if (urlImagen == null || urlImagen.isEmpty()) {
 				// Cargar la imagen desde la URL
 				String rutaImagen = "/Funcionamiento/sinPortada.jpg";
-
 				imagen = new Image(getClass().getResourceAsStream(rutaImagen));
 				imagencomic.setImage(imagen);
 			} else {
 				// Cargar la imagen desde la URL
-				imagen = new Image(urlImagen, true);
+				imagen = new Image(urlImagen, 250, 0, true, true);
 			}
 			imagencomic.setImage(imagen);
-
-			String editorial = comicInfo[11];
 
 			nombreComic.setText(titulo);
 			numeroComic.setValue(numero);
@@ -1338,9 +1424,17 @@ public class VentanaAccionController implements Initializable {
 			formatoComic.setValue(formato);
 
 			// Parsear y establecer la fecha
-			String fechaString = fechaVenta;
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-			LocalDate fecha = LocalDate.parse(fechaString, formatter);
+			LocalDate fecha;
+
+			if (fechaVenta == null || fechaVenta.isEmpty()) {
+				// La cadena de fecha no existe o es nula, establecer la fecha predeterminada
+				fecha = LocalDate.of(2000, 1, 1);
+			} else {
+				// La cadena de fecha existe, parsearla
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+				fecha = LocalDate.parse(fechaVenta, formatter);
+			}
+
 			fechaComic.setValue(fecha);
 
 			guionistaComic.setText(escritores);
@@ -1483,6 +1577,7 @@ public class VentanaAccionController implements Initializable {
 	@FXML
 	void limpiarDatos(ActionEvent event) {
 		limpiarDatosPantalla();
+		mostrarOpcionModificar();
 
 	}
 
@@ -1519,17 +1614,17 @@ public class VentanaAccionController implements Initializable {
 		// Borrar cualquier mensaje de error presente
 		borrarErrores();
 
-		label_busquedaCodigo.setVisible(false);
-		busquedaEditorial.setVisible(false);
-		busquedaCodigo.setVisible(false);
-		busquedaEditorial.getSelectionModel().clearSelection(); // Desseleccionar cualquier elemento seleccionado
-		busquedaEditorial.getEditor().clear(); // Limpiar el texto en el ComboBox
-		busquedaEditorial.setPromptText("Buscar Editorial"); // Restaurar el texto de marcador de posición original
-		botonBusquedaCodigo.setVisible(false);
-
-		busquedaEditorial.setDisable(true);
-		busquedaCodigo.setDisable(true);
-		botonBusquedaCodigo.setDisable(true);
+//		label_busquedaCodigo.setVisible(false);
+//		busquedaEditorial.setVisible(false);
+//		busquedaCodigo.setVisible(false);
+//		busquedaEditorial.getSelectionModel().clearSelection(); // Desseleccionar cualquier elemento seleccionado
+//		busquedaEditorial.getEditor().clear(); // Limpiar el texto en el ComboBox
+//		busquedaEditorial.setPromptText("Buscar Editorial"); // Restaurar el texto de marcador de posición original
+//		botonBusquedaCodigo.setVisible(false);
+//
+//		busquedaEditorial.setDisable(true);
+//		busquedaCodigo.setDisable(true);
+//		botonBusquedaCodigo.setDisable(true);
 	}
 
 	/**
@@ -1663,7 +1758,7 @@ public class VentanaAccionController implements Initializable {
 	 * @return
 	 */
 	public String numero() {
-		String numComic = "0";
+		String numComic = "";
 
 		if (numeroComic.getSelectionModel().getSelectedItem() != null) {
 			numComic = numeroComic.getSelectionModel().getSelectedItem().toString();
@@ -1697,7 +1792,11 @@ public class VentanaAccionController implements Initializable {
 	 */
 	public String estado() {
 
-		String estadoNuevo = estadoComic.getSelectionModel().getSelectedItem().toString();
+		String estadoNuevo = "";
+
+		if (estadoComic.getSelectionModel().getSelectedItem() != null) {
+			estadoNuevo = estadoComic.getSelectionModel().getSelectedItem().toString();
+		}
 
 		return estadoNuevo;
 	}
@@ -1710,8 +1809,10 @@ public class VentanaAccionController implements Initializable {
 	 */
 	public String formato() {
 
-		String formatoEstado = formatoComic.getSelectionModel().getSelectedItem().toString();
-
+		String formatoEstado = "";
+		if (formatoComic.getSelectionModel().getSelectedItem() != null) {
+			formatoEstado = formatoComic.getSelectionModel().getSelectedItem().toString();
+		}
 		return formatoEstado;
 	}
 
@@ -1723,7 +1824,10 @@ public class VentanaAccionController implements Initializable {
 	 */
 	public String procedencia() {
 
-		String procedenciaEstadoNuevo = procedenciaComic.getSelectionModel().getSelectedItem().toString();
+		String procedenciaEstadoNuevo = "";
+		if (procedenciaComic.getSelectionModel().getSelectedItem() != null) {
+			procedenciaEstadoNuevo = procedenciaComic.getSelectionModel().getSelectedItem().toString();
+		}
 
 		return procedenciaEstadoNuevo;
 	}
@@ -1771,11 +1875,98 @@ public class VentanaAccionController implements Initializable {
 
 		campos[12] = utilidad.comaPorGuion(caja());
 
-		campos[13] = utilidad.eliminarEspacios(nombreKeyIssue.getText());
+		campos[13] = Utilidades.eliminarEspacios(nombreKeyIssue.getText());
 
-		campos[14] = utilidad.eliminarEspacios(urlReferencia.getText());
+		campos[14] = Utilidades.eliminarEspacios(urlReferencia.getText());
 
-		campos[15] = utilidad.eliminarEspacios(precioComic.getText());
+		campos[15] = Utilidades.eliminarEspacios(precioComic.getText());
+
+		return campos;
+	}
+
+	public String[] camposComicBusqueda() {
+		utilidad = new Utilidades();
+
+		String campos[] = new String[16];
+
+		if (nombreComic.getText().isEmpty()) {
+			campos[0] = "";
+		} else {
+			campos[0] = utilidad.comaPorGuion(nombreComic.getText());
+		}
+
+		if (numero().isEmpty()) {
+			campos[1] = "";
+		} else {
+			campos[1] = numero();
+		}
+
+		if (varianteComic.getText().isEmpty()) {
+			campos[2] = "";
+		} else {
+			campos[2] = utilidad.comaPorGuion(varianteComic.getText());
+		}
+
+		if (firmaComic.getText().isEmpty()) {
+			campos[3] = "";
+		} else {
+			campos[3] = utilidad.comaPorGuion(firmaComic.getText());
+		}
+
+		if (editorialComic.getText().isEmpty()) {
+			campos[4] = "";
+		} else {
+			campos[4] = utilidad.comaPorGuion(editorialComic.getText());
+		}
+
+		if (formato().isEmpty()) {
+			campos[5] = "";
+		} else {
+			campos[5] = formato();
+		}
+
+		if (procedencia().isEmpty()) {
+			campos[6] = "";
+		} else {
+			campos[6] = procedencia();
+		}
+
+		LocalDate fecha = fechaComic.getValue();
+		if (fecha != null) {
+			campos[7] = fecha.toString();
+		} else {
+			campos[7] = "";
+		}
+
+		if (guionistaComic.getText().isEmpty()) {
+			campos[8] = "";
+		} else {
+			campos[8] = utilidad.comaPorGuion(guionistaComic.getText());
+		}
+
+		if (dibujanteComic.getText().isEmpty()) {
+			campos[9] = "";
+		} else {
+			campos[9] = utilidad.comaPorGuion(dibujanteComic.getText());
+		}
+
+		if (direccionImagen.getText().isEmpty()) {
+			campos[10] = "";
+		} else {
+			campos[10] = direccionImagen.getText();
+		}
+
+		if (estado().isEmpty()) {
+			campos[11] = "";
+		} else {
+			campos[11] = estado();
+		}
+
+		if (caja().isEmpty() || caja().equals("0")) {
+			campos[12] = "";
+		} else {
+			campos[12] = utilidad.comaPorGuion(caja());
+		}
 
 		return campos;
 	}
@@ -1863,21 +2054,21 @@ public class VentanaAccionController implements Initializable {
 					// Es una URL en internet
 					portada = Utilidades.descargarImagen(datos[10], DOCUMENTS_PATH);
 					file = new File(portada);
-					imagen = new Image(file.toURI().toString());
+					imagen = new Image(file.toURI().toString(), 250, 0, true, true);
 
 				} else {
 					if (!file.exists()) {
 						portada = "Funcionamiento/sinPortada.jpg";
-						imagen = new Image(portada);
+						imagen = new Image(portada, 250, 0, true, true);
 
 					} else {
 						portada = datos[10];
-						imagen = new Image(file.toURI().toString());
+						imagen = new Image(file.toURI().toString(), 250, 0, true, true);
 					}
 				}
 			} else {
 				portada = "Funcionamiento/sinPortada.jpg";
-				imagen = new Image(portada);
+				imagen = new Image(portada, 250, 0, true, true);
 			}
 
 			imagencomic.setImage(imagen);
