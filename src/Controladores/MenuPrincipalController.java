@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -501,7 +502,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	public void rellenarCombosEstaticos() {
 		List<ComboBox<String>> comboboxesMod = Arrays.asList(nombreFormato, nombreProcedencia, nombreEditorial);
-		funcionesCombo.rellenarComboBoxEstaticos(comboboxesMod); // Llamada a la función para rellenar ComboBoxes
+		funcionesCombo.rellenarComboBoxEstaticos(comboboxesMod,""); // Llamada a la función para rellenar ComboBoxes
 	}
 
 	/**
@@ -1012,9 +1013,11 @@ public class MenuPrincipalController implements Initializable {
 	 *
 	 * @param event
 	 * @throws SQLException
+	 * @throws ExecutionException 
+	 * @throws InterruptedException 
 	 */
 	@FXML
-	void importCSV(ActionEvent event) throws SQLException {
+	void importCSV(ActionEvent event) throws SQLException, InterruptedException, ExecutionException {
 		String frase = "Fichero CSV";
 
 		String formato = "*.csv";

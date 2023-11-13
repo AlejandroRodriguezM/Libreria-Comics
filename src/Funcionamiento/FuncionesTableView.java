@@ -485,7 +485,7 @@ public class FuncionesTableView {
 		final TextField finalTextField = eliminarEspacioInicial(textField);
 
 		finalTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-			String allowedPattern = "[\\p{L}\\p{N}\\s,.-]*"; // Expresión regular para permitir letras, números,
+			String allowedPattern = "[\\p{L}\\p{N}\\s,.!-]*"; // Expresión regular para permitir letras, números,
 																// espacios, ",", "-" y "."
 
 			if (newValue != null) {

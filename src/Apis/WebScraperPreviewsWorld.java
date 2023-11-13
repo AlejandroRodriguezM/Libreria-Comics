@@ -112,6 +112,7 @@ public class WebScraperPreviewsWorld {
 							break;
 						case "CA":
 						case "A/CA":
+							artist = value;
 							variant = value;
 							break;
 						default:
@@ -128,24 +129,21 @@ public class WebScraperPreviewsWorld {
 
 				// Scraping de la etiqueta div con class "Publisher"
 				String editorial = scrapeAndPrintPublisher(document);
+				
+				if(editorial.equalsIgnoreCase("Marvel Comics")) {
+					editorial = "Marvel";
+				}
 
-				comicInfoList.add(titulo);
-				comicInfoList.add(issueKey);
-				comicInfoList.add(numero);
-				comicInfoList.add(formato);
-				comicInfoList.add(precio);
-				comicInfoList.add(variant);
-				comicInfoList.add(artist);
-				comicInfoList.add(writer);
-				comicInfoList.add(fecha);
-				comicInfoList.add(previews_World_Url);
-				comicInfoList.add(portadaImagen);
-				comicInfoList.add(editorial);
+				String[] comicInfoArray = {titulo, issueKey, numero, formato, precio, variant, artist, writer, fecha, previews_World_Url, portadaImagen, editorial};
 
-				// Convierte la lista en un array de cadenas
-				String[] comicInfoArray = new String[comicInfoList.size()];
+				for (String info : comicInfoArray) {
+				    comicInfoList.add(info);
+				    
+				    System.out.println("jeje: " + info);
+				    
+				}
+
 				comicInfoList.toArray(comicInfoArray);
-				System.out.println(comicInfoArray.length);
 
 				if (titulo == null) {
 					prontInfo.setOpacity(1);
@@ -198,6 +196,8 @@ public class WebScraperPreviewsWorld {
 			int hashtagIndexNumero = titleContent.indexOf('#');
 			if (hashtagIndexNumero != -1 && hashtagIndexNumero + 1 < titleContent.length()) {
 				return String.valueOf(titleContent.charAt(hashtagIndexNumero + 1)).trim();
+			}else {
+				return "0";
 			}
 		}
 		return null;
@@ -210,21 +210,29 @@ public class WebScraperPreviewsWorld {
 	 * @return El contenido del título sin el "#" y el texto siguiente.
 	 */
 	private static String removeHashtagAndFollowing(String titleContent) {
-		int hashtagIndex = titleContent.indexOf('#');
-		return (hashtagIndex != -1) ? titleContent.substring(0, hashtagIndex).trim().toLowerCase() : titleContent;
+	    if (titleContent.contains("#")) {
+	        int hashtagIndex = titleContent.indexOf('#');
+	        return titleContent.substring(0, hashtagIndex).trim().toLowerCase();
+	    }
+	    return titleContent;
 	}
+
 
 	/**
 	 * Extrae e imprime la URL de la imagen principal del documento.
 	 *
 	 * @param document El documento HTML a analizar.
 	 * @return La URL de la imagen principal, o null si no se encuentra.
+	 * @throws IOException 
 	 */
-	private static String scrapeAndPrintMainImage(Document document) {
-		Element mainImageElement = document.getElementById("MainContentImage");
+	private static String scrapeAndPrintMainImage(Document document) throws IOException {
+		Element mainImageElement = document.selectFirst("#MainContentImage");
 		if (mainImageElement != null) {
-			String mainImageUrl = mainImageElement.attr("src");
-			return "https://www.previewsworld.com/" + mainImageUrl;
+			String mainImageUrl = "https://www.previewsworld.com" + mainImageElement.attr("src");
+			
+//			String imagen = Utilidades.descargarImagen(mainImageUrl, DOCUMENTS_PATH);
+			
+			return mainImageUrl;
 		}
 		return null;
 	}
@@ -270,6 +278,17 @@ public class WebScraperPreviewsWorld {
 		Element publisherElement = document.selectFirst("div.Publisher");
 		if (publisherElement != null) {
 			String publisherName = capitalizeFirstLetter(publisherElement.text().trim().toLowerCase());
+			
+			if(publisherName.equalsIgnoreCase("Boom! Studios")) {
+				publisherName = "Boom Studios";
+			}
+			
+	        if (publisherName.contains("comics")) {
+	            publisherName = publisherName.replace("comics", "").trim();
+	        } else if (publisherName.contains("comic")) {
+	            publisherName = publisherName.replace("comic", "").trim();
+	        }
+			
 			return publisherName;
 		}
 		return null;
@@ -332,20 +351,23 @@ public class WebScraperPreviewsWorld {
 	 *         mayúscula.
 	 */
 	private static String capitalizeFirstLetter(String input) {
-		StringBuilder result = new StringBuilder();
-		boolean capitalizeNext = true;
+	    StringBuilder result = new StringBuilder();
 
-		for (char ch : input.toCharArray()) {
-			if (Character.isWhitespace(ch)) {
-				capitalizeNext = true;
-			} else if (capitalizeNext) {
-				ch = Character.toTitleCase(ch);
-				capitalizeNext = false;
-			}
+	    input = input.toLowerCase();
+	    
+	    boolean capitalizeNext = true;
 
-			result.append(ch);
-		}
+	    for (char ch : input.toCharArray()) {
+	        if (Character.isWhitespace(ch)) {
+	            capitalizeNext = true;
+	        } else if (capitalizeNext) {
+	            ch = Character.toTitleCase(ch);
+	            capitalizeNext = false;
+	        }
 
-		return result.toString();
+	        result.append(ch);
+	    }
+
+	    return result.toString();
 	}
 }

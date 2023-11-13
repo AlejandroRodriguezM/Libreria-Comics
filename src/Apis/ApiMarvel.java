@@ -28,7 +28,7 @@ import javafx.scene.control.TextArea;
  * los cómics en un formato estructurado.
  */
 public class ApiMarvel {
-	
+
 	/**
 	 * Obtiene información de un cómic a través de su codigo y muestra los detalles
 	 * en un TextArea.
@@ -131,9 +131,6 @@ public class ApiMarvel {
 		}
 		return null;
 	}
-
-	
-
 
 	/**
 	 * Calcula un nuevo hash a partir de un timestamp.
@@ -240,18 +237,16 @@ public class ApiMarvel {
 			title = title.replaceAll("\\([^\\)]*\\)", "");
 			title = title.replaceAll("#\\d+\\s", "");
 			title = title.replaceAll("#\\d+", "").trim();
-			comicInfoList.add(title);
+
+			String description = "";
 
 			if (comic.has("description") && comic.get("description") instanceof String) {
-				String description = comic.getString("description");
-				comicInfoList.add(description);
-			} else {
-				comicInfoList.add("");
+				description = comic.getString("description");
+
 			}
 
 			// Número de edición
 			int issueNumber = comic.getInt("issueNumber");
-			comicInfoList.add(Integer.toString(issueNumber));
 
 			// Formato
 			String format = comic.getString("format");
@@ -265,14 +260,14 @@ public class ApiMarvel {
 			} else {
 				formato = format;
 			}
-			comicInfoList.add(formato);
 
+			float price = 0;
 			// Precio
 			JSONArray pricesArray = comic.getJSONArray("prices");
 			if (pricesArray.length() > 0) {
 				JSONObject priceObject = pricesArray.getJSONObject(0);
-				float price = (float) priceObject.getDouble("price");
-				comicInfoList.add(Float.toString(price));
+				price = (float) priceObject.getDouble("price");
+
 			}
 
 			// Creadores
@@ -295,10 +290,6 @@ public class ApiMarvel {
 				}
 			}
 
-			comicInfoList.add(String.join(", ", coverPencillers));
-			comicInfoList.add(String.join(", ", pencillers));
-			comicInfoList.add(String.join(", ", writers));
-
 			// Fecha de venta
 			JSONArray datesArray = comic.getJSONArray("dates");
 			String onsaleDate = "";
@@ -319,8 +310,6 @@ public class ApiMarvel {
 				}
 			}
 
-			comicInfoList.add(onsaleDate);
-
 			// URL de referencia
 			JSONArray urlsArray = comic.getJSONArray("urls");
 			String detailURL = "";
@@ -336,24 +325,25 @@ public class ApiMarvel {
 				}
 			}
 
-			comicInfoList.add(detailURL);
-
 			// URL de la imagen representativa
 			JSONObject thumbnailObject = comic.getJSONObject("thumbnail");
 			String path = thumbnailObject.getString("path");
 			String extension = thumbnailObject.getString("extension");
 			String thumbnailURL = path + "." + extension;
 
+			comicInfoList.add(title);
+			comicInfoList.add(description);
+			comicInfoList.add(Integer.toString(issueNumber));
+			comicInfoList.add(formato);
+			comicInfoList.add(Float.toString(price));
+			comicInfoList.add(String.join(", ", coverPencillers));
+			comicInfoList.add(String.join(", ", pencillers));
+			comicInfoList.add(String.join(", ", writers));
+			comicInfoList.add(onsaleDate);
+			comicInfoList.add(detailURL);
 			comicInfoList.add(thumbnailURL);
-
 			// Editorial (En este caso, siempre es "Marvel")
 			comicInfoList.add("Marvel");
-
-			String descripcion = comic.optString("description");
-
-			if (!descripcion.isEmpty()) {
-				comicInfoList.add(descripcion);
-			}
 
 			// Convierte la lista en un array de cadenas
 			String[] comicInfoArray = new String[comicInfoList.size()];

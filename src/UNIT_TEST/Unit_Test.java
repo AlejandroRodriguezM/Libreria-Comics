@@ -23,6 +23,9 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import Apis.ApiISBNGeneral;
 import Apis.ApiMarvel;
@@ -151,15 +154,14 @@ public class Unit_Test extends Application {
 //		mostrarComicGeneral();
 //		crearDatabasePrueba();
 		envioDatosBasePrueba();
+
 //		pruebaSubidaComic();
 //		pruebaModificacionComic();
-		
 //		getComicInfo("75960609999302511");
-		
+//		pruebaDiamondCode_imagen("JUL220767");
 		launch(args);
-
 //		verLibroGoogle("9788411505963");
-		
+//		System.out.println(capitalizeFirstLetter("ANIMAL POUND CVR A ASHCAN GROSS"));
 
 	}
 
@@ -174,13 +176,13 @@ public class Unit_Test extends Application {
 		// Pasar la lista de ComboBoxes a VentanaAccionController
 		ventanaAccion.pasarComboBoxes(comboboxes);
 
-//		Platform.runLater(() -> {
-//			accionComicPruebaAni();
-//		});
-
 		Platform.runLater(() -> {
-			accionComicPruebaMod();
+			accionComicPruebaAni();
 		});
+
+//		Platform.runLater(() -> {
+//			accionComicPruebaMod();
+//		});
 //		
 //		Platform.runLater(() -> {
 //			accionComicPruebaDelete();
@@ -198,7 +200,17 @@ public class Unit_Test extends Application {
 //			entrarInicioPrueba();
 //		});
 	}
-	
+
+	public static void pruebaDiamondCode_imagen(String diamondCode) throws IOException {
+
+		String previews_World_Url = "https://www.previewsworld.com/Catalog/" + diamondCode;
+
+		Document document = Jsoup.connect(previews_World_Url).get();
+
+		// Scraping de la etiqueta img con id "MainContentImage"
+		scrapeAndPrintMainImage(document);
+	}
+
 	/**
 	 * Realiza una solicitud HTTP para obtener información de un cómic desde la API
 	 * de Marvel Comics.
@@ -222,9 +234,8 @@ public class Unit_Test extends Application {
 
 		String apiUrl = "";
 
-			apiUrl = "https://gateway.marvel.com:443/v1/public/comics?upc=" + claveComic + "&apikey=" + clave_publica
-					+ "&hash=" + newHash(timestamp) + "&ts=" + timestamp;
-
+		apiUrl = "https://gateway.marvel.com:443/v1/public/comics?upc=" + claveComic + "&apikey=" + clave_publica
+				+ "&hash=" + newHash(timestamp) + "&ts=" + timestamp;
 
 		// Realiza la solicitud HTTP GET
 		String jsonResponse;
@@ -240,9 +251,9 @@ public class Unit_Test extends Application {
 			} else {
 				System.out.println(apiUrl);
 				JSONObject firstComic = resultsArray.getJSONObject(0);
-	            // Imprime el contenido del JSON de forma legible
-	            System.out.println("Contenido del JSON:");
-	            System.out.println(firstComic.toString(4)); // El argumento 4 establece el factor de sangrado
+				// Imprime el contenido del JSON de forma legible
+				System.out.println("Contenido del JSON:");
+				System.out.println(firstComic.toString(4)); // El argumento 4 establece el factor de sangrado
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -253,7 +264,7 @@ public class Unit_Test extends Application {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Obtiene las claves de la API de un archivo o fuente de datos.
 	 *
@@ -277,7 +288,7 @@ public class Unit_Test extends Application {
 
 		return claves;
 	}
-	
+
 	/**
 	 * Calcula un hash MD5 a partir de una cadena de entrada.
 	 *
@@ -293,7 +304,7 @@ public class Unit_Test extends Application {
 
 		return md5(timestamp + clavePrivada + clavePublica);
 	}
-	
+
 	/**
 	 * Calcula un nuevo hash a partir de un timestamp.
 	 *
@@ -304,7 +315,7 @@ public class Unit_Test extends Application {
 		String hash = getHash(timestamp);
 		return hash;
 	}
-	
+
 	/**
 	 * Calcula el hash MD5 de una cadena de entrada utilizando Apache Commons Codec.
 	 *
@@ -315,7 +326,7 @@ public class Unit_Test extends Application {
 		// Utiliza Apache Commons Codec para calcular el hash MD5
 		return DigestUtils.md5Hex(input);
 	}
-	
+
 	/**
 	 * Realiza una solicitud HTTP GET y obtiene la respuesta como una cadena de
 	 * texto.
@@ -351,6 +362,24 @@ public class Unit_Test extends Application {
 	public static void testDescargaImagen() throws IOException {
 		String URLimagen = "https://covers.openlibrary.org/b/id/12705636-L.jpg";
 		Utilidades.descargarImagen(URLimagen, DOCUMENTS_PATH);
+	}
+
+	/**
+	 * Test de descarga de imagen mediante scrapeWeb
+	 * 
+	 * @param document
+	 * @return
+	 * @throws IOException
+	 */
+	private static void scrapeAndPrintMainImage(Document document) throws IOException {
+		Element mainImageElement = document.selectFirst("#MainContentImage");
+		if (mainImageElement != null) {
+			String mainImageUrl = "https://www.previewsworld.com" + mainImageElement.attr("src");
+
+			System.out.println(mainImageUrl);
+
+			Utilidades.descargarImagen(mainImageUrl, DOCUMENTS_PATH);
+		}
 	}
 
 	/**
@@ -443,8 +472,7 @@ public class Unit_Test extends Application {
 
 			if (Utilidades.isImageURL(portadaUrl)) {
 				// Es una URL en internet
-				portada = Utilidades.descargarImagen(portadaUrl, DOCUMENTS_PATH);
-				file = new File(portada);
+				file = new File(portadaUrl);
 
 			} else {
 				if (!file.exists()) {
@@ -539,8 +567,7 @@ public class Unit_Test extends Application {
 
 			if (Utilidades.isImageURL(portadaUrl)) {
 				// Es una URL en internet
-				portada = Utilidades.descargarImagen(portadaUrl, DOCUMENTS_PATH);
-				file = new File(portada);
+				file = new File(portadaUrl);
 
 			} else {
 				if (!file.exists()) {
@@ -1045,7 +1072,7 @@ public class Unit_Test extends Application {
 
 	public static String getBookInfoByISBN(String isbn) throws URISyntaxException {
 		try {
-			String apiUrl = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn ;
+			String apiUrl = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn;
 			URI uri = new URI(apiUrl);
 			HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
 
@@ -1071,15 +1098,38 @@ public class Unit_Test extends Application {
 		return null;
 	}
 
-    public static void verLibroGoogle(String isbn) throws URISyntaxException, JSONException {
-        String bookInfo = getBookInfoByISBN(isbn);
+	public static void verLibroGoogle(String isbn) throws URISyntaxException, JSONException {
+		String bookInfo = getBookInfoByISBN(isbn);
 
-        if (bookInfo != null) {
-            // Formatear el JSON de respuesta de forma nativa
-            JSONObject json = new JSONObject(bookInfo);
-            String formattedJson = json.toString(2); // 2 espacios de sangrado
-            System.out.println(formattedJson);
-        }
-    }
+		if (bookInfo != null) {
+			// Formatear el JSON de respuesta de forma nativa
+			JSONObject json = new JSONObject(bookInfo);
+			String formattedJson = json.toString(2); // 2 espacios de sangrado
+			System.out.println(formattedJson);
+		}
+	}
+
+	@SuppressWarnings("unused")
+	private static String capitalizeFirstLetter(String input) {
+		
+		input = input.toLowerCase();
+		
+		StringBuilder result = new StringBuilder();
+
+		boolean capitalizeNext = true;
+
+		for (char ch : input.toCharArray()) {
+			if (Character.isWhitespace(ch)) {
+				capitalizeNext = true;
+			} else if (capitalizeNext) {
+				ch = Character.toTitleCase(ch);
+				capitalizeNext = false;
+			}
+
+			result.append(ch);
+		}
+
+		return result.toString();
+	}
 
 }

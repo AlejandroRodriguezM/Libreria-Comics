@@ -49,6 +49,7 @@ import java.util.zip.ZipOutputStream;
 import javax.imageio.ImageIO;
 
 import JDBC.DBManager;
+import javafx.application.Platform;
 import javafx.scene.control.TextField;
 
 /**
@@ -84,7 +85,7 @@ public class Utilidades {
 	 * Conexión a la base de datos.
 	 */
 	private static Connection conn = null;
-	
+
 	/**
 	 * Sistema operativo actual.
 	 */
@@ -94,7 +95,7 @@ public class Utilidades {
 	 * Mapa que almacena tasas de cambio.
 	 */
 	private static final Map<String, Double> tasasDeCambio = new HashMap<>();
-	
+
 	/**
 	 * Verifica si el sistema operativo es Windows.
 	 *
@@ -716,9 +717,12 @@ public class Utilidades {
 	 * @param direccion La dirección del fichero a eliminar.
 	 */
 	public static void eliminarFichero(String direccion) {
-		File archivo = new File(direccion);
 
-		archivo.delete();
+		Platform.runLater(() -> {
+			File archivo = new File(direccion);
+
+			archivo.delete();
+		});
 	}
 
 	/**
@@ -935,7 +939,7 @@ public class Utilidades {
 				return Math.round(resultado * 100.0) / 100.0;
 			}
 		}
-		return 0; // Devolver 0 si el país no está en la lista o si la cantidad es negativa
+		return cantidadMonedaLocal; // Devolver 0 si el país no está en la lista o si la cantidad es negativa
 	}
 
 	/**
@@ -1120,12 +1124,12 @@ public class Utilidades {
 	 * @return true si la cadena es una URL válida, false en caso contrario.
 	 */
 	public static boolean isURL(String cadena) {
-	    try {
-	        new URI(cadena);
-	        return true;
-	    } catch (URISyntaxException e) {
-	        return false;
-	    }
+		try {
+			new URI(cadena);
+			return true;
+		} catch (URISyntaxException e) {
+			return false;
+		}
 	}
 
 	/**
@@ -1169,117 +1173,148 @@ public class Utilidades {
 
 	/**
 	 * Descarga una imagen desde una URL y la guarda en una carpeta de destino.
-	 * @param urlImagen URL de la imagen a descargar.
+	 * 
+	 * @param urlImagen      URL de la imagen a descargar.
 	 * @param carpetaDestino Ruta de la carpeta de destino.
 	 * @return Ruta de destino de la imagen descargada o null si hay un error.
 	 * @throws IOException Si ocurre un error de entrada/salida.
 	 */
 	public static String descargarImagen(String urlImagen, String carpetaDestino) throws IOException {
-	    try {
-	        URI uri = validarURL(urlImagen);
-	        String nombreImagen = obtenerNombreImagen(urlImagen);
-	        crearCarpetaSiNoExiste(carpetaDestino);
-	        String rutaDestino = carpetaDestino + File.separator + nombreImagen;
+		try {
+			URI uri = validarURL(urlImagen);
+			String nombreImagen = obtenerNombreImagen(urlImagen);
+			crearCarpetaSiNoExiste(carpetaDestino);
+			String rutaDestino = carpetaDestino + File.separator + nombreImagen;
 
-	        if (descargarYConvertirImagen(uri, carpetaDestino)) {
-	            System.out.println("Imagen descargada y guardada como JPG correctamente");
-	            return rutaDestino;
-	        }
-	    } catch (IllegalArgumentException e) {
-	        System.err.println(e.getMessage());
-	    } catch (Exception e) {
-	        System.err.println("No se pudo acceder a la URL: " + urlImagen);
-	        e.printStackTrace();
-	    }
+			if (descargarYConvertirImagen(uri, carpetaDestino)) {
+				System.out.println("Imagen descargada y guardada como JPG correctamente");
+				return rutaDestino;
+			}
+		} catch (IllegalArgumentException e) {
+			System.err.println(e.getMessage());
+		} catch (Exception e) {
+			System.err.println("No se pudo acceder a la URL: " + urlImagen);
+			e.printStackTrace();
+		}
 
-	    return null;
+		return null;
 	}
+
+//    public static Task<String> descargarImagenTask(String urlImagen, String carpetaDestino) {
+//        return new Task<String>() {
+//            @Override
+//            protected String call() throws Exception {
+//                try {
+//                    URI uri = validarURL(urlImagen);
+//                    String nombreImagen = obtenerNombreImagen(urlImagen);
+//                    crearCarpetaSiNoExiste(carpetaDestino);
+//                    String rutaDestino = carpetaDestino + File.separator + nombreImagen;
+//
+//                    if (descargarYConvertirImagen(uri, carpetaDestino)) {
+//                        System.out.println("Imagen descargada y guardada como JPG correctamente");
+//                        return rutaDestino;
+//                    }
+//                } catch (IllegalArgumentException e) {
+//                    System.err.println(e.getMessage());
+//                } catch (Exception e) {
+//                    System.err.println("No se pudo acceder a la URL: " + urlImagen);
+//                    e.printStackTrace();
+//                }
+//
+//                return null;
+//            }
+//        };
+//    }
 
 	/**
 	 * Valida una URL y la convierte en una URI.
+	 * 
 	 * @param urlImagen URL de la imagen a validar.
 	 * @return URI válida de la URL.
 	 * @throws IllegalArgumentException Si la URL no es válida.
 	 */
 	private static URI validarURL(String urlImagen) throws IllegalArgumentException {
-	    try {
-	        return new URI(urlImagen);
-	    } catch (URISyntaxException e) {
-	        throw new IllegalArgumentException("URL de imagen no válida: " + urlImagen, e);
-	    }
+		try {
+			return new URI(urlImagen);
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException("URL de imagen no válida: " + urlImagen, e);
+		}
 	}
 
 	/**
 	 * Obtiene el nombre de la imagen a partir de una URL.
+	 * 
 	 * @param urlImagen URL de la imagen.
 	 * @return Nombre de la imagen.
 	 */
 	private static String obtenerNombreImagen(String urlImagen) {
-	    String[] partesURL = urlImagen.split("/");
-	    return partesURL[partesURL.length - 1];
+		String[] partesURL = urlImagen.split("/");
+		return partesURL[partesURL.length - 1];
 	}
 
 	/**
 	 * Crea una carpeta de destino si no existe.
+	 * 
 	 * @param carpetaDestino Ruta de la carpeta de destino.
 	 * @return Objeto File de la carpeta de destino.
 	 */
 	private static File crearCarpetaSiNoExiste(String carpetaDestino) {
-	    File carpeta = new File(carpetaDestino);
-	    if (!carpeta.exists()) {
-	        carpeta.mkdirs();
-	    }
-	    return carpeta;
+		File carpeta = new File(carpetaDestino);
+		if (!carpeta.exists()) {
+			carpeta.mkdirs();
+		}
+		return carpeta;
 	}
 
 	/**
 	 * Descarga una imagen desde una URL y la guarda en una carpeta de destino.
-	 * @param urlImagen URI de la imagen a descargar.
+	 * 
+	 * @param urlImagen      URI de la imagen a descargar.
 	 * @param carpetaDestino Ruta de la carpeta de destino.
-	 * @return true si la descarga y conversión son exitosas, false en caso contrario.
+	 * @return true si la descarga y conversión son exitosas, false en caso
+	 *         contrario.
 	 */
 	private static boolean descargarYConvertirImagen(URI urlImagen, String carpetaDestino) {
-	    try {
-	        URL url = urlImagen.toURL();
-	        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-	        connection.setRequestMethod("HEAD");
-	        int responseCode = connection.getResponseCode();
+		try {
+			URL url = urlImagen.toURL();
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("HEAD");
+			int responseCode = connection.getResponseCode();
 
-	        String nombreImagen = obtenerNombreImagen(urlImagen.toString());
-	        String rutaDestino = carpetaDestino + File.separator + nombreImagen;
+			String nombreImagen = obtenerNombreImagen(urlImagen.toString());
+			String rutaDestino = carpetaDestino + File.separator + nombreImagen;
 
-	        if (responseCode != HttpURLConnection.HTTP_OK) {
-	            System.err.println("La URL no apunta a una imagen válida o no se pudo acceder: " + url);
-	            return false;
-	        }
+			if (responseCode != HttpURLConnection.HTTP_OK) {
+				System.err.println("La URL no apunta a una imagen válida o no se pudo acceder: " + url);
+				return false;
+			}
 
-	        try (InputStream in = url.openStream()) {
-	            BufferedImage image = ImageIO.read(in);
+			try (InputStream in = url.openStream()) {
+				BufferedImage image = ImageIO.read(in);
 
-	            if (image == null) {
-	                System.err.println("No se pudo cargar la imagen desde " + urlImagen);
-	                return false;
-	            }
+				if (image == null) {
+					System.err.println("No se pudo cargar la imagen desde " + urlImagen);
+					return false;
+				}
 
-	            if (!nombreImagen.toLowerCase().endsWith(".jpg")) {
-	                BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(),
-	                        BufferedImage.TYPE_INT_RGB);
-	                newImage.createGraphics().drawImage(image, 0, 0, null);
-	                nombreImagen = nombreImagen.substring(0, nombreImagen.lastIndexOf(".")) + ".jpg";
-	                rutaDestino = carpetaDestino + File.separator + nombreImagen;
-	            }
+				if (!nombreImagen.toLowerCase().endsWith(".jpg")) {
+					BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(),
+							BufferedImage.TYPE_INT_RGB);
+					newImage.createGraphics().drawImage(image, 0, 0, null);
+					nombreImagen = nombreImagen.substring(0, nombreImagen.lastIndexOf(".")) + ".jpg";
+					rutaDestino = carpetaDestino + File.separator + nombreImagen;
+				}
 
-	            File output = new File(rutaDestino);
-	            ImageIO.write(image, "jpg", output);
-	            return true;
-	        }
-	    } catch (IOException e) {
-	        System.err.println("Error al descargar o convertir la imagen desde " + urlImagen);
-	        e.printStackTrace();
-	        return false;
-	    }
+				File output = new File(rutaDestino);
+				ImageIO.write(image, "jpg", output);
+				return true;
+			}
+		} catch (IOException e) {
+			System.err.println("Error al descargar o convertir la imagen desde " + urlImagen);
+			e.printStackTrace();
+			return false;
+		}
 	}
-
 
 	/**
 	 * Borra un archivo de imagen dada su ruta.
@@ -1322,7 +1357,7 @@ public class Utilidades {
 				.replaceAll("&ndash;", "–").replaceAll("<ul>", "'").replaceAll("<li>", "'").replaceAll("</ul>", "'")
 				.replaceAll("</li>", "'");
 	}
-	
+
 	/**
 	 * Método que crea la carpeta "portadas" para almacenar las imágenes de portada
 	 * de los cómics.
@@ -1342,7 +1377,7 @@ public class Utilidades {
 			}
 		}
 	}
-	
+
 	/**
 	 * Obtiene el dato que sigue a dos puntos (:) en una línea específica del
 	 * archivo de configuración.
@@ -1370,40 +1405,34 @@ public class Utilidades {
 		}
 		return "";
 	}
-	
+
 	/**
 	 * Crea las tablas de la base de datos si no existen.
 	 */
 	public static void createTable() {
 		Statement statement;
 		PreparedStatement preparedStatement;
-		
+
 		try {
 			conn = DBManager.conexion();
 			statement = conn.createStatement();
 
 			String dropTableSQL = "DROP TABLE IF EXISTS comicsbbdd";
-			String createTableSQL = "CREATE TABLE comicsbbdd (" +
-			        "ID INT NOT NULL AUTO_INCREMENT, " +
-			        "nomComic VARCHAR(150) NOT NULL, " +
-			        "caja_deposito TEXT, " +
-			        "precio_comic DOUBLE NOT NULL, " + // Cambiado el tipo a DOUBLE
-			        "numComic INT NOT NULL, " +
-			        "nomVariante VARCHAR(150) NOT NULL, " +
-			        "firma VARCHAR(150) NOT NULL, " +
-			        "nomEditorial VARCHAR(150) NOT NULL, " +
-			        "formato VARCHAR(150) NOT NULL, " +
-			        "procedencia VARCHAR(150) NOT NULL, " +
-			        "fecha_publicacion DATE NOT NULL, " +
-			        "nomGuionista TEXT NOT NULL, " +
-			        "nomDibujante TEXT NOT NULL, " +
-			        "puntuacion VARCHAR(300) NOT NULL, " +
-			        "portada TEXT, " +
-			        "key_issue TEXT, " + // Allow NULL values for key_issue
-			        "url_referencia TEXT NOT NULL, " +
-			        "estado TEXT NOT NULL, " +
-			        "PRIMARY KEY (ID)) " +
-			        "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+			String createTableSQL = "CREATE TABLE comicsbbdd (" + "ID INT NOT NULL AUTO_INCREMENT, "
+					+ "nomComic VARCHAR(150) NOT NULL, " + "caja_deposito TEXT, " + "precio_comic DOUBLE NOT NULL, " + // Cambiado
+																														// el
+																														// tipo
+																														// a
+																														// DOUBLE
+					"numComic INT NOT NULL, " + "nomVariante VARCHAR(150) NOT NULL, " + "firma VARCHAR(150) NOT NULL, "
+					+ "nomEditorial VARCHAR(150) NOT NULL, " + "formato VARCHAR(150) NOT NULL, "
+					+ "procedencia VARCHAR(150) NOT NULL, " + "fecha_publicacion DATE NOT NULL, "
+					+ "nomGuionista TEXT NOT NULL, " + "nomDibujante TEXT NOT NULL, "
+					+ "puntuacion VARCHAR(300) NOT NULL, " + "portada TEXT, " + "key_issue TEXT, " + // Allow NULL
+																										// values for
+																										// key_issue
+					"url_referencia TEXT NOT NULL, " + "estado TEXT NOT NULL, " + "PRIMARY KEY (ID)) "
+					+ "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
 			statement.executeUpdate(dropTableSQL);
 			statement.executeUpdate(createTableSQL);
 
@@ -1413,4 +1442,29 @@ public class Utilidades {
 			nav.alertaException(e.toString());
 		}
 	}
+
+//	public static void cargarImagen(String urlImagen, ImageView imagencomic) {
+//		final Image[] imagen = new Image[1];
+//
+//		Task<Void> task = new Task<Void>() {
+//			@Override
+//			protected Void call() throws Exception {
+//				if (urlImagen == null || urlImagen.isEmpty()) {
+//					// Cargar la imagen desde la URL
+//					String rutaImagen = "/Funcionamiento/sinPortada.jpg";
+//					imagen[0] = new Image(getClass().getResourceAsStream(rutaImagen));
+//				} else {
+//					// Cargar la imagen desde la URL
+//					imagen[0] = new Image(urlImagen, 250, 0, true, true);
+//				}
+//				return null;
+//			}
+//		};
+//
+//		task.setOnSucceeded(e -> {
+//			imagencomic.setImage(imagen[0]);
+//		});
+//
+//		new Thread(task).start();
+//	}
 }

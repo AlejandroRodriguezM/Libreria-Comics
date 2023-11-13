@@ -267,8 +267,8 @@ public class DBLibreriaManager extends Comic {
 		listaEditorial = obtenerValoresColumna("nomEditorial");
 		listaGuionista = obtenerValoresColumna("nomGuionista");
 		listaDibujante = obtenerValoresColumna("nomDibujante");
-		listaProcedencia = obtenerValoresColumna("procedencia");
-		listaCaja = obtenerValoresColumna("caja_deposito");
+//		listaProcedencia = obtenerValoresColumna("procedencia");
+//		listaCaja = obtenerValoresColumna("caja_deposito");
 	}
 
 	/**
