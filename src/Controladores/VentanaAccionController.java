@@ -250,6 +250,13 @@ public class VentanaAccionController implements Initializable {
 	private TextField idComicTratar_mod;
 
 	/**
+	 * Campo de texto para el codigo del cómic a tratar en modificacion o para
+	 * añadir.
+	 */
+	@FXML
+	private TextField codigoComicTratar;
+
+	/**
 	 * Campo de texto para el nombre del cómic.
 	 */
 	@FXML
@@ -285,12 +292,6 @@ public class VentanaAccionController implements Initializable {
 	 */
 	@FXML
 	private Label labelPuntuacion;
-
-	/**
-	 * Etiqueta para mostrar el código de búsqueda.
-	 */
-	@FXML
-	private Label label_busquedaCodigo;
 
 	/**
 	 * Etiqueta para mostrar la caja.
@@ -351,6 +352,12 @@ public class VentanaAccionController implements Initializable {
 	 */
 	@FXML
 	private Label label_id_mod;
+
+	/**
+	 * Etiqueta para mostrar el codigo en modificacion o aniadir.
+	 */
+	@FXML
+	private Label label_codigo_comic;
 
 	/**
 	 * Etiqueta para mostrar el Key Issue.
@@ -744,7 +751,9 @@ public class VentanaAccionController implements Initializable {
 				"", // puntuacion (no proporcionada en el código)
 				null, // imagen
 				"", // url_referencia
-				""); // precio_comic
+				"", // precio_comic
+				"" // codigo_comic
+		);
 
 		for (String string : datos) {
 			System.out.println(string);
@@ -824,6 +833,7 @@ public class VentanaAccionController implements Initializable {
 			tooltipsMap.put(fechaComic, "Selecciona la fecha de publicación del cómic");
 			tooltipsMap.put(busquedaEditorial, "Selecciona la distribuidora para buscar");
 			tooltipsMap.put(firmaComic, "Nombre de la firma del cómic / libro / manga");
+			tooltipsMap.put(codigoComicTratar, "Codigo del comic, sea UPC, ISBN o Diamond Code");
 
 		} else if ("eliminar".equals(TIPO_ACCION)) {
 			tooltipsMap.put(botonEliminar, "Botón para eliminar un cómic");
@@ -855,6 +865,8 @@ public class VentanaAccionController implements Initializable {
 			tooltipsMap.put(busquedaEditorial, "Selecciona la distribuidora para buscar");
 			tooltipsMap.put(botonBusquedaCodigo,
 					"Botón para realizar una búsqueda por código. \nEn caso de escoger el la categoria 'Diamond Code'. Añade un codigo valido como 'AUG239105'");
+
+			tooltipsMap.put(codigoComicTratar, "Codigo del comic, sea UPC, ISBN o Diamond Code");
 
 		} else if ("puntuar".equals(TIPO_ACCION)) {
 			tooltipsMap.put(botonBorrarOpinion, "Botón para borrar una opinión");
@@ -1040,7 +1052,8 @@ public class VentanaAccionController implements Initializable {
 	 */
 	public void rellenarCombosEstaticos() {
 		List<ComboBox<String>> comboboxesMod = Arrays.asList(formatoComic, procedenciaComic, estadoComic);
-		funcionesCombo.rellenarComboBoxEstaticos(comboboxesMod,TIPO_ACCION); // Llamada a la función para rellenar ComboBoxes
+		funcionesCombo.rellenarComboBoxEstaticos(comboboxesMod, TIPO_ACCION); // Llamada a la función para rellenar
+																				// ComboBoxes
 	}
 
 	/**
@@ -1054,7 +1067,7 @@ public class VentanaAccionController implements Initializable {
 				botonVender, botonEliminar, idComicTratar, botonModificarComic, botonBusquedaCodigo, botonIntroducir,
 				botonbbdd, precioComic, direccionImagen, label_portada, label_precio, label_caja, label_dibujante,
 				label_editorial, label_estado, label_fecha, label_firma, label_formato, label_guionista, label_key,
-				label_procedencia, label_referencia);
+				label_procedencia, label_referencia, codigoComicTratar, label_codigo_comic);
 
 		// Itera a través de los elementos y oculta/deshabilita cada uno
 		for (Node elemento : elementos) {
@@ -1070,7 +1083,7 @@ public class VentanaAccionController implements Initializable {
 		// Lista de elementos que deseas ocultar y deshabilitar
 		List<Node> elementos = Arrays.asList(nombreKeyIssue, urlReferencia, label_id_mod, idComicTratar_mod,
 				botonSubidaPortada, precioComic, direccionImagen, label_portada, label_precio, label_key,
-				label_referencia, botonModificarComic);
+				label_referencia, botonModificarComic, codigoComicTratar, label_codigo_comic);
 
 		// Itera a través de los elementos y oculta/deshabilita cada uno
 		for (Node elemento : elementos) {
@@ -1106,9 +1119,8 @@ public class VentanaAccionController implements Initializable {
 				firmaComic, formatoComic, guionistaComic, nombreKeyIssue, numeroCajaComic, procedenciaComic,
 				urlReferencia, botonIntroducir, botonBusquedaAvanzada, precioComic, direccionImagen, label_portada,
 				label_precio, label_caja, label_dibujante, label_editorial, label_estado, label_fecha, label_firma,
-				label_formato, label_guionista, label_key, label_procedencia, label_referencia, botonSubidaPortada);
-		
-		
+				label_formato, label_guionista, label_key, label_procedencia, label_referencia, botonSubidaPortada,
+				codigoComicTratar, label_codigo_comic);
 
 		for (Node elemento : elementosAMostrarYHabilitar) {
 			elemento.setVisible(true);
@@ -1128,7 +1140,7 @@ public class VentanaAccionController implements Initializable {
 				urlReferencia, botonModificarComic, precioComic, direccionImagen, tablaBBDD, label_portada,
 				label_precio, label_caja, label_dibujante, label_editorial, label_estado, label_fecha, label_firma,
 				label_formato, label_guionista, label_key, label_procedencia, label_referencia, botonSubidaPortada,
-				botonbbdd, idComicTratar_mod, label_id_mod, botonParametroComic);
+				botonbbdd, idComicTratar_mod, label_id_mod, botonParametroComic, codigoComicTratar, label_codigo_comic);
 
 		for (Node elemento : elementosAMostrarYHabilitar) {
 			elemento.setVisible(true);
@@ -1282,12 +1294,10 @@ public class VentanaAccionController implements Initializable {
 	 */
 	private void ocultarElementosBusqueda() {
 		botonBusquedaCodigo.setVisible(false);
-		label_busquedaCodigo.setVisible(false);
 		busquedaEditorial.setVisible(false);
 		busquedaCodigo.setVisible(false);
 
 		botonBusquedaCodigo.setDisable(true);
-		label_busquedaCodigo.setDisable(true);
 		busquedaEditorial.setDisable(true);
 
 		// Restaurar valores predeterminados en el ComboBox
@@ -1303,11 +1313,9 @@ public class VentanaAccionController implements Initializable {
 		botonBusquedaCodigo.setVisible(true);
 		botonBusquedaCodigo.setDisable(false);
 
-		label_busquedaCodigo.setVisible(true);
 		busquedaEditorial.setVisible(true);
 		busquedaCodigo.setVisible(true);
 
-		label_busquedaCodigo.setDisable(false);
 		busquedaEditorial.setDisable(false);
 	}
 
@@ -1348,6 +1356,7 @@ public class VentanaAccionController implements Initializable {
 					if (comprobarCodigo(comicInfo)) {
 						// Rellenar campos con la información del cómic
 						rellenarCamposAni(comicInfo);
+						codigoComicTratar.setText(valorCodigo.trim());
 
 						return true;
 					}
@@ -1428,7 +1437,7 @@ public class VentanaAccionController implements Initializable {
 			String referencia = comicInfo[9];
 			String urlImagen = comicInfo[10];
 			String editorial = comicInfo[11];
-
+			
 			nombreComic.setText(titulo);
 
 			numeroComic.setValue(numero);
@@ -1991,6 +2000,8 @@ public class VentanaAccionController implements Initializable {
 
 		campos[15] = Utilidades.eliminarEspacios(precioComic.getText());
 
+		campos[16] = Utilidades.eliminarEspacios(codigoComicTratar.getText());
+
 		return campos;
 	}
 
@@ -2216,9 +2227,11 @@ public class VentanaAccionController implements Initializable {
 			url_referencia = "Sin referencia";
 		}
 
+		String codigo_comic = datos[16];
+
 		Comic comic = new Comic("", nombre, numCaja, numero, variante, firma, editorial, formato, procedencia,
 				fecha_comic.toString(), guionista, dibujante, estado, key_issue, "Sin puntuar", portada, url_referencia,
-				precio_comic);
+				precio_comic, codigo_comic);
 
 		if (nombre.isEmpty() || numero.isEmpty() || editorial.isEmpty() || guionista.isEmpty() || dibujante.isEmpty()) {
 			String excepcion = "No puedes introducir un comic si no has completado todos los datos";
@@ -2315,6 +2328,8 @@ public class VentanaAccionController implements Initializable {
 		String url_referencia = "";
 
 		String precio_comic = "";
+
+		String codigo_comic = "";
 
 		if (datos[0].isEmpty()) {
 			nombre = comic_temp.getNombre();
@@ -2445,8 +2460,15 @@ public class VentanaAccionController implements Initializable {
 
 		precio_comic = String.valueOf(Utilidades.convertirMonedaADolar(procedencia, valor_comic));
 
+		if (datos[16].isEmpty()) {
+			codigo_comic = comic_temp.getCodigo_comic();
+		} else {
+			codigo_comic = datos[16];
+		}
+
 		Comic comic = new Comic(id_comic, nombre, numCaja, numero, variante, firma, editorial, formato, procedencia,
-				fecha, guionista, dibujante, estado, nombreKeyIssue, puntuacion, portada, url_referencia, precio_comic);
+				fecha, guionista, dibujante, estado, nombreKeyIssue, puntuacion, portada, url_referencia, precio_comic,
+				codigo_comic);
 
 		String codigo_imagen = Utilidades.generarCodigoUnico(SOURCE_PATH + File.separator);
 

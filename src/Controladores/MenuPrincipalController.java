@@ -1537,8 +1537,8 @@ public class MenuPrincipalController implements Initializable {
 					prontInfo.setOpacity(1); // Ocultar el mensaje inicial antes de iniciar la lectura y guardado
 					Thread animationThread = new Thread(this::iniciarAnimacionSubida);
 					animationThread.start();
-					String sql = "INSERT INTO comicsbbdd(ID,nomComic,caja_deposito,precio_comic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,fecha_publicacion,nomGuionista,nomDibujante,puntuacion,portada,key_issue,url_referencia,estado)"
-							+ " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+					String sql = "INSERT INTO comicsbbdd(ID,nomComic,caja_deposito,precio_comic,codigo_comic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,fecha_publicacion,nomGuionista,nomDibujante,puntuacion,portada,key_issue,url_referencia,estado)"
+							+ " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 					try {
 						// Continuar con la conexión a la base de datos y el proceso de guardado
@@ -1706,7 +1706,7 @@ public class MenuPrincipalController implements Initializable {
 		}
 
 		comic = new Comic("", datos[1], datos[11], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7], fecha,
-				datos[9], datos[10], "", "", "", null, "", "");
+				datos[9], datos[10], "", "", "", null, "", "", "");
 
 		funcionesTabla.tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()), tablaBBDD, columnList);
 		prontInfo.setOpacity(1);

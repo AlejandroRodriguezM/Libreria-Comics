@@ -131,6 +131,48 @@ public class ApiMarvel {
 		}
 		return null;
 	}
+	
+	@SuppressWarnings("unused")
+	private static JSONObject getComicInfoUrl(String claveComic, String url, TextArea prontInfo) {
+
+		long timestamp = System.currentTimeMillis() / 1000;
+
+		String claves[] = clavesApi();
+
+		String clave_publica = claves[1].trim();
+
+		String apiUrl = "";
+
+		if (!url.isEmpty()) {
+			apiUrl = "https://gateway.marvel.com:443/v1/public/comics?urls=" + claveComic + "&apikey=" + clave_publica
+					+ "&hash=" + newHash(timestamp) + "&ts=" + timestamp;
+		}
+
+		// Realiza la solicitud HTTP GET
+		String jsonResponse;
+		try {
+			jsonResponse = sendHttpGetRequest(apiUrl);
+
+			// Parsea la respuesta JSON y obtén el cómic
+			JSONObject jsonObject = new JSONObject(jsonResponse);
+			JSONArray resultsArray = jsonObject.getJSONObject("data").getJSONArray("results");
+
+			if (resultsArray.length() == 0) {
+				prontInfo.setOpacity(1);
+				prontInfo.setText("No se encontró el cómic con codigo: " + claveComic);
+				return null;
+			} else {
+				return resultsArray.getJSONObject(0); // Devuelve el primer cómic encontrado
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 	/**
 	 * Calcula un nuevo hash a partir de un timestamp.

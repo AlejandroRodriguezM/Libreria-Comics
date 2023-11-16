@@ -191,8 +191,8 @@ public class FuncionesComboBox {
 	 * @param comic           El Comic que se utilizará como base para obtener los
 	 *                        resultados de la base de datos.
 	 * @throws SQLException
-	 * @throws ExecutionException 
-	 * @throws InterruptedException 
+	 * @throws ExecutionException
+	 * @throws InterruptedException
 	 */
 	public void actualizarComboBoxes(int totalComboboxes, List<ComboBox<String>> comboboxes, Comic comic)
 			throws SQLException, InterruptedException, ExecutionException {
@@ -201,7 +201,7 @@ public class FuncionesComboBox {
 
 		Comic comicTemp = new Comic("", comic.getNombre(), comic.getNumCaja(), comic.getNumero(), comic.getVariante(),
 				comic.getFirma(), comic.getEditorial(), comic.getFormato(), comic.getProcedencia(), "",
-				comic.getGuionista(), comic.getDibujante(), "", "", "", "", "", "");
+				comic.getGuionista(), comic.getDibujante(), "", "", "", "", "", "", "");
 		String sql = libreria.datosConcatenados(comicTemp);
 
 		if (!sql.isEmpty()) {
@@ -631,7 +631,7 @@ public class FuncionesComboBox {
 	 *
 	 * @param comboboxes La lista de ComboBoxes a rellenar.
 	 */
-	public void rellenarComboBoxEstaticos(List<ComboBox<String>> comboboxes,String tipo_accion) {
+	public void rellenarComboBoxEstaticos(List<ComboBox<String>> comboboxes, String tipo_accion) {
 		String[] formatos = { "Grapa (Issue individual)", "Tapa blanda (Paperback)", "Cómic de bolsillo (Pocket)",
 				"Edición de lujo (Deluxe Edition)", "Edición omnibus (Omnibus)", "Edición integral (Integral)",
 				"Tapa dura (Hardcover)", "eBook (libro electrónico)", "Cómic digital (Digital Comic)",
@@ -658,12 +658,12 @@ public class FuncionesComboBox {
 			comboboxes.get(i).getItems().clear(); // Limpiar elementos anteriores si los hay
 			comboboxes.get(i).getItems().addAll(
 					i == 0 ? formatos : i == 1 ? procedenciaEstados : i == 2 ? situacionEstados : editorialBusquedas);
-			
-			if(tipo_accion.equalsIgnoreCase("aniadir")) {
+
+			if (tipo_accion.equalsIgnoreCase("aniadir")) {
 				comboboxes.get(i).getSelectionModel().selectFirst();
 
 			}
-			
+
 		}
 	}
 

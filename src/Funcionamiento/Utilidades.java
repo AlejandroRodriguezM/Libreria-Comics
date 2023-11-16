@@ -17,12 +17,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.lang.ProcessBuilder.Redirect;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -31,10 +33,7 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -80,11 +79,6 @@ public class Utilidades {
 	 * Ventanas de la aplicación.
 	 */
 	private static Ventanas nav = new Ventanas();
-
-	/**
-	 * Conexión a la base de datos.
-	 */
-	private static Connection conn = null;
 
 	/**
 	 * Sistema operativo actual.
@@ -1406,65 +1400,27 @@ public class Utilidades {
 		return "";
 	}
 
+
 	/**
-	 * Crea las tablas de la base de datos si no existen.
+	 * Funcion que segun el string que se le de, le hace un encode para que pueda ser usado en una API
+	 * @param input
+	 * @return
 	 */
-	public static void createTable() {
-		Statement statement;
-		PreparedStatement preparedStatement;
-
-		try {
-			conn = DBManager.conexion();
-			statement = conn.createStatement();
-
-			String dropTableSQL = "DROP TABLE IF EXISTS comicsbbdd";
-			String createTableSQL = "CREATE TABLE comicsbbdd (" + "ID INT NOT NULL AUTO_INCREMENT, "
-					+ "nomComic VARCHAR(150) NOT NULL, " + "caja_deposito TEXT, " + "precio_comic DOUBLE NOT NULL, " + // Cambiado
-																														// el
-																														// tipo
-																														// a
-																														// DOUBLE
-					"numComic INT NOT NULL, " + "nomVariante VARCHAR(150) NOT NULL, " + "firma VARCHAR(150) NOT NULL, "
-					+ "nomEditorial VARCHAR(150) NOT NULL, " + "formato VARCHAR(150) NOT NULL, "
-					+ "procedencia VARCHAR(150) NOT NULL, " + "fecha_publicacion DATE NOT NULL, "
-					+ "nomGuionista TEXT NOT NULL, " + "nomDibujante TEXT NOT NULL, "
-					+ "puntuacion VARCHAR(300) NOT NULL, " + "portada TEXT, " + "key_issue TEXT, " + // Allow NULL
-																										// values for
-																										// key_issue
-					"url_referencia TEXT NOT NULL, " + "estado TEXT NOT NULL, " + "PRIMARY KEY (ID)) "
-					+ "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-			statement.executeUpdate(dropTableSQL);
-			statement.executeUpdate(createTableSQL);
-
-			preparedStatement = conn.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");
-			preparedStatement.executeUpdate();
-		} catch (SQLException e) {
-			nav.alertaException(e.toString());
-		}
-	}
-
-//	public static void cargarImagen(String urlImagen, ImageView imagencomic) {
-//		final Image[] imagen = new Image[1];
-//
-//		Task<Void> task = new Task<Void>() {
-//			@Override
-//			protected Void call() throws Exception {
-//				if (urlImagen == null || urlImagen.isEmpty()) {
-//					// Cargar la imagen desde la URL
-//					String rutaImagen = "/Funcionamiento/sinPortada.jpg";
-//					imagen[0] = new Image(getClass().getResourceAsStream(rutaImagen));
-//				} else {
-//					// Cargar la imagen desde la URL
-//					imagen[0] = new Image(urlImagen, 250, 0, true, true);
-//				}
-//				return null;
-//			}
-//		};
-//
-//		task.setOnSucceeded(e -> {
-//			imagencomic.setImage(imagen[0]);
-//		});
-//
-//		new Thread(task).start();
-//	}
+    private static String encodeURL(String input) {
+        try {
+            // Reemplaza espacios con %20 y codifica otros caracteres especiales
+            return URLEncoder.encode(input, "UTF-8")
+                    .replaceAll("\\+", "%20")
+                    .replaceAll("%21", "!")
+                    .replaceAll("%27", "'")
+                    .replaceAll("%28", "(")
+                    .replaceAll("%29", ")")
+                    .replaceAll("%7E", "~")
+                    .replaceAll(":", "%3A")
+                    .replaceAll("\\.", "%2E");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

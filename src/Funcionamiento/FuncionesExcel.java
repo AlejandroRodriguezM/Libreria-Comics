@@ -94,9 +94,9 @@ public class FuncionesExcel {
 		Sheet hoja;
 		Workbook libro;
 		String encabezado;
-		String[] encabezados = { "ID", "nomComic", "caja_deposito", "precio_comic", "numComic", "nomVariante", "Firma",
-				"nomEditorial", "Formato", "Procedencia", "fecha_publicacion", "nomGuionista", "nomDibujante",
-				"puntuacion", "portada", "key_issue", "url_referencia", "estado" };
+		String[] encabezados = { "ID", "nomComic", "caja_deposito", "precio_comic", "codigo_comic", "numComic",
+				"nomVariante", "Firma", "nomEditorial", "Formato", "Procedencia", "fecha_publicacion", "nomGuionista",
+				"nomDibujante", "puntuacion", "portada", "key_issue", "url_referencia", "estado" };
 		int indiceFila = 0;
 
 		String userDir = System.getProperty("user.home");
@@ -134,20 +134,21 @@ public class FuncionesExcel {
 						filaCopy.createCell(1).setCellValue(comic.getNombre());
 						filaCopy.createCell(2).setCellValue(comic.getNumCaja());
 						filaCopy.createCell(3).setCellValue(comic.getPrecio_comic());
-						filaCopy.createCell(4).setCellValue(comic.getNumero());
-						filaCopy.createCell(5).setCellValue(comic.getVariante());
-						filaCopy.createCell(6).setCellValue(comic.getFirma());
-						filaCopy.createCell(7).setCellValue(comic.getEditorial());
-						filaCopy.createCell(8).setCellValue(comic.getFormato());
-						filaCopy.createCell(9).setCellValue(comic.getProcedencia());
-						filaCopy.createCell(10).setCellValue(comic.getFecha());
-						filaCopy.createCell(11).setCellValue(comic.getGuionista());
-						filaCopy.createCell(12).setCellValue(comic.getDibujante());
-						filaCopy.createCell(13).setCellValue(comic.getPuntuacion());
-						filaCopy.createCell(14).setCellValue(comic.getImagen());
-						filaCopy.createCell(15).setCellValue(comic.getKey_issue());
-						filaCopy.createCell(16).setCellValue(comic.getUrl_referencia());
-						filaCopy.createCell(17).setCellValue(comic.getEstado());
+						filaCopy.createCell(4).setCellValue(comic.getCodigo_comic());
+						filaCopy.createCell(5).setCellValue(comic.getNumero());
+						filaCopy.createCell(6).setCellValue(comic.getVariante());
+						filaCopy.createCell(7).setCellValue(comic.getFirma());
+						filaCopy.createCell(8).setCellValue(comic.getEditorial());
+						filaCopy.createCell(9).setCellValue(comic.getFormato());
+						filaCopy.createCell(10).setCellValue(comic.getProcedencia());
+						filaCopy.createCell(11).setCellValue(comic.getFecha());
+						filaCopy.createCell(12).setCellValue(comic.getGuionista());
+						filaCopy.createCell(13).setCellValue(comic.getDibujante());
+						filaCopy.createCell(14).setCellValue(comic.getPuntuacion());
+						filaCopy.createCell(15).setCellValue(comic.getImagen());
+						filaCopy.createCell(16).setCellValue(comic.getKey_issue());
+						filaCopy.createCell(17).setCellValue(comic.getUrl_referencia());
+						filaCopy.createCell(18).setCellValue(comic.getEstado());
 
 						final long finalProcessedItems = indiceFinal;
 
@@ -377,10 +378,10 @@ public class FuncionesExcel {
 					Sheet hoja;
 					Workbook libro;
 					String encabezado;
-					String[] encabezados = { "ID", "nomComic", "caja_deposito", "precio_comic", "numComic",
-							"nomVariante", "Firma", "nomEditorial", "Formato", "Procedencia", "fecha_publicacion",
-							"nomGuionista", "nomDibujante", "puntuacion", "portada", "key_issue", "url_referencia",
-							"estado" };
+					String[] encabezados = { "ID", "nomComic", "caja_deposito", "precio_comic", "codigo_comic",
+							"numComic", "nomVariante", "Firma", "nomEditorial", "Formato", "Procedencia",
+							"fecha_publicacion", "nomGuionista", "nomDibujante", "puntuacion", "portada", "key_issue",
+							"url_referencia", "estado" };
 					int indiceFila = 0;
 					long processedItems = 0; // Processed items count
 
@@ -405,20 +406,21 @@ public class FuncionesExcel {
 						fila.createCell(1).setCellValue(comic.getNombre());
 						fila.createCell(2).setCellValue(comic.getNumCaja());
 						fila.createCell(3).setCellValue(comic.getPrecio_comic());
-						fila.createCell(4).setCellValue(comic.getNumero());
-						fila.createCell(5).setCellValue(comic.getVariante());
-						fila.createCell(6).setCellValue(comic.getFirma());
-						fila.createCell(7).setCellValue(comic.getEditorial());
-						fila.createCell(8).setCellValue(comic.getFormato());
-						fila.createCell(9).setCellValue(comic.getProcedencia());
-						fila.createCell(10).setCellValue(comic.getFecha());
-						fila.createCell(11).setCellValue(comic.getGuionista());
-						fila.createCell(12).setCellValue(comic.getDibujante());
-						fila.createCell(13).setCellValue(comic.getPuntuacion());
-						fila.createCell(14).setCellValue(comic.getImagen());
-						fila.createCell(15).setCellValue(comic.getKey_issue());
-						fila.createCell(16).setCellValue(comic.getUrl_referencia());
-						fila.createCell(17).setCellValue(comic.getEstado());
+						fila.createCell(4).setCellValue(comic.getCodigo_comic());
+						fila.createCell(5).setCellValue(comic.getNumero());
+						fila.createCell(6).setCellValue(comic.getVariante());
+						fila.createCell(7).setCellValue(comic.getFirma());
+						fila.createCell(8).setCellValue(comic.getEditorial());
+						fila.createCell(9).setCellValue(comic.getFormato());
+						fila.createCell(10).setCellValue(comic.getProcedencia());
+						fila.createCell(11).setCellValue(comic.getFecha());
+						fila.createCell(12).setCellValue(comic.getGuionista());
+						fila.createCell(13).setCellValue(comic.getDibujante());
+						fila.createCell(14).setCellValue(comic.getPuntuacion());
+						fila.createCell(15).setCellValue(comic.getImagen());
+						fila.createCell(16).setCellValue(comic.getKey_issue());
+						fila.createCell(17).setCellValue(comic.getUrl_referencia());
+						fila.createCell(18).setCellValue(comic.getEstado());
 						indiceFila++;
 
 						final long finalProcessedItems = processedItems;
@@ -533,24 +535,27 @@ public class FuncionesExcel {
 						String nombre = data[1];
 						String numCaja = data[2];
 						String precio_comic = data[3];
-						String numero = data[4];
-						String variante = data[5];
-						String firma = data[6];
-						String editorial = data[7];
-						String formato = data[8];
-						String procedencia = obtenerProcedencia(data[9]);
-						String fecha = data[10];
-						String guionista = data[11];
-						String dibujante = data[12];
-						String puntuacion = obtenerPuntuacion(data[12], data[13]);
-						String direccion_portada = data[14];
+						String codigo_comic = data[4];
+						String numero = data[5];
+						String variante = data[6];
+						String firma = data[7];
+						String editorial = data[8];
+						String formato = data[9];
+						String procedencia = obtenerProcedencia(data[10]);
+						String fecha = data[11];
+						String guionista = data[12];
+						String dibujante = data[13];
+						String puntuacion = obtenerPuntuacion(data[13], data[14]);
+						String direccion_portada = data[15];
 						String nombre_portada = Utilidades.obtenerDespuesPortadas(direccion_portada);
 						String nombre_modificado = Utilidades.convertirNombreArchivo(nombre_portada);
 						String nombre_completo_portada = defaultImagePath + File.separator + nombre_modificado;
-						String key_issue = data[15];
+						String key_issue = data[16];
 						key_issue = key_issue.replaceAll("\\r|\\n", "");
-						String url_referencia = data[16];
-						String estado = data[17];
+						String url_referencia = data[17];
+						String estado = data[18];
+						
+						System.out.println(data.length);
 
 						if (precio_comic.isEmpty()) {
 							precio_comic = "0";
@@ -558,6 +563,10 @@ public class FuncionesExcel {
 
 						if (url_referencia.isEmpty()) {
 							url_referencia = "Sin referencia";
+						}
+						
+						if (codigo_comic.isEmpty()) {
+							codigo_comic = "0";
 						}
 
 						if (!existeArchivo(defaultImagePath, nombre_modificado) || directorio == null) {
@@ -568,21 +577,22 @@ public class FuncionesExcel {
 						statement.setString(1, id);
 						statement.setString(2, nombre);
 						statement.setString(3, numCaja);
-						statement.setString(4, precio_comic);
-						statement.setString(5, numero);
-						statement.setString(6, variante);
-						statement.setString(7, firma);
-						statement.setString(8, editorial);
-						statement.setString(9, formato);
-						statement.setString(10, procedencia);
-						statement.setString(11, fecha);
-						statement.setString(12, guionista);
-						statement.setString(13, dibujante);
-						statement.setString(14, puntuacion);
-						statement.setString(15, nombre_completo_portada);
-						statement.setString(16, key_issue);
-						statement.setString(17, url_referencia);
-						statement.setString(18, estado);
+						statement.setString(4, codigo_comic);
+						statement.setString(5, precio_comic);
+						statement.setString(6, numero);
+						statement.setString(7, variante);
+						statement.setString(8, firma);
+						statement.setString(9, editorial);
+						statement.setString(10, formato);
+						statement.setString(11, procedencia);
+						statement.setString(12, fecha);
+						statement.setString(13, guionista);
+						statement.setString(14, dibujante);
+						statement.setString(15, puntuacion);
+						statement.setString(16, nombre_completo_portada);
+						statement.setString(17, key_issue);
+						statement.setString(18, url_referencia);
+						statement.setString(19, estado);
 
 						statement.addBatch();
 
