@@ -17,14 +17,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.lang.ProcessBuilder.Redirect;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -50,6 +48,8 @@ import javax.imageio.ImageIO;
 import JDBC.DBManager;
 import javafx.application.Platform;
 import javafx.scene.control.TextField;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 
 /**
  * Esta clase sirve para realizar diferentes funciones realizanas con la
@@ -1399,6 +1399,22 @@ public class Utilidades {
 		}
 		return "";
 	}
+	
+	/**
+	 * Funcion que abre una ventana que aceptara los formatos de archivos que le
+	 * demos como parametro.
+	 *
+	 * @param frase   Descripción del filtro de archivo (p. ej., "Archivos CSV")
+	 * @param formato Extensiones de archivo permitidas (p. ej., "*.csv")
+	 * @return FileChooser si el usuario selecciona un fichero; null si el usuario
+	 *         cancela la selección o cierra la ventana
+	 */
+	public static FileChooser tratarFichero(String frase, String formato) {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.getExtensionFilters().addAll(new ExtensionFilter(frase, formato));
+
+		return fileChooser; // Devuelve el FileChooser para que la interfaz gráfica lo utilice
+	}
 
 
 	/**
@@ -1406,21 +1422,21 @@ public class Utilidades {
 	 * @param input
 	 * @return
 	 */
-    private static String encodeURL(String input) {
-        try {
-            // Reemplaza espacios con %20 y codifica otros caracteres especiales
-            return URLEncoder.encode(input, "UTF-8")
-                    .replaceAll("\\+", "%20")
-                    .replaceAll("%21", "!")
-                    .replaceAll("%27", "'")
-                    .replaceAll("%28", "(")
-                    .replaceAll("%29", ")")
-                    .replaceAll("%7E", "~")
-                    .replaceAll(":", "%3A")
-                    .replaceAll("\\.", "%2E");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+//    private static String encodeURL(String input) {
+//        try {
+//            // Reemplaza espacios con %20 y codifica otros caracteres especiales
+//            return URLEncoder.encode(input, "UTF-8")
+//                    .replaceAll("\\+", "%20")
+//                    .replaceAll("%21", "!")
+//                    .replaceAll("%27", "'")
+//                    .replaceAll("%28", "(")
+//                    .replaceAll("%29", ")")
+//                    .replaceAll("%7E", "~")
+//                    .replaceAll(":", "%3A")
+//                    .replaceAll("\\.", "%2E");
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
 }

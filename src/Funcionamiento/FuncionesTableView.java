@@ -286,15 +286,15 @@ public class FuncionesTableView {
 		if (!libreria.numeroResultados(comic) && !datoSeleccionado.isEmpty()) {
 			// Show error message in red when no search fields are specified
 			prontInfoTable.setStyle("-fx-text-fill: red;");
-			prontInfoTable.setText("Error: No existe comic con los datos: " + datoSeleccionado);
+			prontInfoTable.setText("Error: No existe comic con los datos: " + datoSeleccionado + "\n \n \n");
 		} else if (datoSeleccionado.isEmpty()) {
 			prontInfoTable.setStyle("-fx-text-fill: red;");
-			prontInfoTable.setText("Error: No has seleccionado ningun comic para filtrar, se muestran todos.");
+			prontInfoTable.setText("Error: No has seleccionado ningun comic para filtrar.\n \n \n");
 		} else {
 			int totalComics = libreria.numeroTotalSelecionado(comic);
 			prontInfoTable.setStyle("-fx-text-fill: black;"); // Reset the text color to black
 			prontInfoTable.setText(
-					"El número de cómics donde aparece la búsqueda: " + datoSeleccionado + " es: " + totalComics);
+					"El número de cómics donde aparece la búsqueda: " + datoSeleccionado + " es: " + totalComics + "\n \n \n");
 		}
 
 		return prontInfoTable;

@@ -82,8 +82,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -106,6 +104,18 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	private Button botonMostrarParametro;
+
+	/**
+	 * Botón que permite imprimir el resultado de una busqueda por parametro
+	 */
+	@FXML
+	private Button botonImprimir;
+
+	/**
+	 * Botón que permite guardar el resultado de una busqueda por parametro
+	 */
+	@FXML
+	private Button botonGuardarResultado;
 
 	/**
 	 * Botón para acceder a la base de datos.
@@ -420,11 +430,6 @@ public class MenuPrincipalController implements Initializable {
 	private static Utilidades utilidad = null;
 
 	/**
-	 * Instancia de FuncionesExcel para funciones relacionadas con Excel.
-	 */
-	private static FuncionesExcel excelFuntions = null;
-
-	/**
 	 * Instancia de FuncionesComboBox para funciones relacionadas con ComboBox.
 	 */
 	private static FuncionesComboBox funcionesCombo = new FuncionesComboBox();
@@ -502,7 +507,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	public void rellenarCombosEstaticos() {
 		List<ComboBox<String>> comboboxesMod = Arrays.asList(nombreFormato, nombreProcedencia, nombreEditorial);
-		funcionesCombo.rellenarComboBoxEstaticos(comboboxesMod,""); // Llamada a la función para rellenar ComboBoxes
+		funcionesCombo.rellenarComboBoxEstaticos(comboboxesMod, ""); // Llamada a la función para rellenar ComboBoxes
 	}
 
 	/**
@@ -870,13 +875,25 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
+
+		tablaBBDD.getItems().clear();
+
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
 		prontInfo.setOpacity(0);
 		imagencomic.setImage(null);
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-		listaPorParametro(); // Llamada a funcion
+
+		funcionesTabla.tablaBBDD(listaPorParametro(), tablaBBDD, columnList); // Llamada a funcion
+
+		if (listaPorParametro().size() > 0) {
+			botonImprimir.setVisible(true);
+			botonImprimir.setDisable(false);
+			botonGuardarResultado.setVisible(true);
+			botonGuardarResultado.setDisable(false);
+		}
+
 		busquedaGeneral.setText("");
 	}
 
@@ -889,6 +906,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
+
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
@@ -898,6 +916,11 @@ public class MenuPrincipalController implements Initializable {
 
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 		funcionesTabla.tablaBBDD(libreria.libreriaCompleta(), tablaBBDD, columnList); // Llamada a funcion
+
+		botonImprimir.setVisible(false);
+		botonImprimir.setDisable(true);
+		botonGuardarResultado.setVisible(false);
+		botonGuardarResultado.setDisable(true);
 	}
 
 	/**
@@ -1013,18 +1036,13 @@ public class MenuPrincipalController implements Initializable {
 	 *
 	 * @param event
 	 * @throws SQLException
-	 * @throws ExecutionException 
-	 * @throws InterruptedException 
+	 * @throws ExecutionException
+	 * @throws InterruptedException
 	 */
 	@FXML
 	void importCSV(ActionEvent event) throws SQLException, InterruptedException, ExecutionException {
-		String frase = "Fichero CSV";
 
-		String formato = "*.csv";
-
-		File fichero = tratarFichero(frase, formato).showOpenDialog(null); // Llamada a funcion
-
-		importCSV(fichero);
+		guardarDatosCSV();
 
 		libreria.listasAutoCompletado();
 	}
@@ -1039,13 +1057,17 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void exportCSV(ActionEvent event) throws SQLException {
 
-		String frase = "Fichero Excel xlsx";
+		prontInfo.setText(null);
+		prontInfo.setOpacity(0);
+		tablaBBDD.getItems().clear();
+		imagencomic.setImage(null);
+		prontInfo.setOpacity(0);
 
-		String formato = "*.xlsx";
+		List<Comic> listaComics = libreria.libreriaCompleta();
 
-		File fichero = tratarFichero(frase, formato).showSaveDialog(null); // Llamada a funcion
+		String tipoBusqueda = "completa";
 
-		makeExcel(fichero);
+		cargaExportExcel(listaComics, tipoBusqueda);
 
 	}
 
@@ -1057,32 +1079,10 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void exportarSQL(ActionEvent event) {
 
-		String frase = "Fichero SQL";
-
-		String formato = "*.sql";
-
-		File fichero = tratarFichero(frase, formato).showSaveDialog(null); // Llamada a funcion
-
-		makeSQL(fichero);
+		makeSQL();
 
 		limpiezaDeDatos();
 
-	}
-
-	/**
-	 * Funcion que abre una ventana que aceptara los formatos de archivos que le
-	 * demos como parametro.
-	 *
-	 * @param frase   Descripción del filtro de archivo (p. ej., "Archivos CSV")
-	 * @param formato Extensiones de archivo permitidas (p. ej., "*.csv")
-	 * @return FileChooser si el usuario selecciona un fichero; null si el usuario
-	 *         cancela la selección o cierra la ventana
-	 */
-	public static FileChooser tratarFichero(String frase, String formato) {
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.getExtensionFilters().addAll(new ExtensionFilter(frase, formato));
-
-		return fileChooser; // Devuelve el FileChooser para que la interfaz gráfica lo utilice
 	}
 
 	/**
@@ -1093,6 +1093,11 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void limpiarDatos(ActionEvent event) {
 		limpiezaDeDatos();
+
+		botonImprimir.setVisible(false);
+		botonImprimir.setDisable(true);
+		botonGuardarResultado.setVisible(false);
+		botonGuardarResultado.setDisable(true);
 	}
 
 	/**
@@ -1408,79 +1413,139 @@ public class MenuPrincipalController implements Initializable {
 	/////////////////////////////////
 
 	/**
-	 * Esta función se encarga de realizar la exportación de datos a un archivo Excel.
-	 * Después de completar la exportación, se muestra un mensaje de éxito o error en la interfaz de usuario.
+	 * Maneja la acción de impresión del resultado. Obtiene una lista de cómics
+	 * según los parámetros especificados y realiza la exportación de la información
+	 * a un archivo Excel.
 	 *
-	 * @param fichero El archivo en el que se exportarán los datos.
+	 * @param event El evento de acción que desencadena la impresión del resultado.
 	 * @throws SQLException Si ocurre un error al interactuar con la base de datos.
 	 */
-	public void makeExcel(File fichero) throws SQLException {
-		prontInfo.setText(null);
-		prontInfo.setOpacity(0);
-		tablaBBDD.getItems().clear();
-		imagencomic.setImage(null);
-		excelFuntions = new FuncionesExcel();
-		prontInfo.setOpacity(0);
+	@FXML
+	void imprimirResultado(ActionEvent event) throws SQLException {
 
-		Task<Boolean> crearExcelTask = excelFuntions.crearExcelTask(fichero);
-	    Thread excelThread = new Thread(crearExcelTask);
+		List<Comic> listaComics = listaPorParametro();
 
-		// Configurar el comportamiento cuando la tarea está en ejecución
+		String tipoBusqueda = "Parcial";
+
+		if (DBLibreriaManager.comicsGuardadosList.size() > 0) {
+			cargaExportExcel(DBLibreriaManager.comicsGuardadosList, tipoBusqueda);
+		} else {
+			cargaExportExcel(listaComics, tipoBusqueda);
+
+		}
+	}
+
+	/**
+	 * Guarda los resultados de la lista de cómics en la base de datos de la
+	 * librería, asegurándose de mantener una lista única de cómics en la base de
+	 * datos. Además, realiza la limpieza de datos y actualiza la visibilidad y
+	 * desactiva los botones de guardar resultado e imprimir.
+	 *
+	 * @param event El evento que desencadenó la llamada a esta función.
+	 * @throws SQLException Si ocurre un error al interactuar con la base de datos.
+	 */
+	@FXML
+	void guardarResultado(ActionEvent event) throws SQLException {
+
+		List<Comic> listaComics = listaPorParametro();
+
+		String mensaje = "";
+		String estilo = "";
+
+		if (listaPorParametro().size() > 0) {
+			DBLibreriaManager.agregarElementosUnicos(listaComics);
+
+			mensaje = "Hay un total de: " + DBLibreriaManager.comicsGuardadosList.size()
+					+ ". Comics guardados a la espera de ser impresos \n \n \n";
+			estilo = "#A0F52D";
+		} else {
+			mensaje = "No se esta mostrando ningun comic, prueba a buscar por parametro \n \n \n";
+			estilo = "#FF2400";
+		}
+
+		limpiezaDeDatos();
+		mostrarMensaje(mensaje, estilo);
+
+	}
+
+	/**
+	 * Carga y ejecuta una tarea para exportar datos a un archivo Excel.
+	 *
+	 * @param fichero     El archivo Excel de destino.
+	 * @param listaComics La lista de cómics a exportar.
+	 */
+	private void cargaExportExcel(List<Comic> listaComics, String tipoBusqueda) {
+
+		FuncionesExcel excelFuntions = new FuncionesExcel();
+
+		// Configuración de la tarea para crear el archivo Excel
+		Task<Boolean> crearExcelTask = excelFuntions.crearExcelTask(listaComics, tipoBusqueda);
+		Thread excelThread = new Thread(crearExcelTask);
+
+		// Configuración del comportamiento cuando la tarea está en ejecución
 		crearExcelTask.setOnRunning(e -> {
 			// Iniciar la animación
 			iniciarAnimacion();
-
 		});
 
+		// Configuración del comportamiento cuando la tarea tiene éxito
 		crearExcelTask.setOnSucceeded(event -> {
 			boolean result = crearExcelTask.getValue();
 			if (result) {
 				// Tarea completada con éxito, muestra el mensaje de éxito.
-				prontInfo.setOpacity(1);
-				prontInfo.setStyle("-fx-background-color: #A0F52D");
-				prontInfo.setText("Fichero excel exportado de forma correcta");
-
+				mostrarMensaje("Fichero excel exportado de forma correcta", "#A0F52D");
 			} else {
 				// La tarea no se completó correctamente, muestra un mensaje de error.
-				prontInfo.setOpacity(1);
-				prontInfo.setStyle("-fx-background-color: #F53636");
-				prontInfo.setText("ERROR. No se ha podido exportar correctamente.");
+				mostrarMensaje("ERROR. No se ha podido exportar correctamente.", "#F53636");
 			}
 			detenerAnimacionPront();
 			detenerAnimacion();
-			
-	        // Detener el hilo de la tarea
-	        excelThread.interrupt();
+
+			// Detener el hilo de la tarea
+			excelThread.interrupt();
 		});
 
-		crearExcelTask.setOnFailed(event -> {
-			// Manejar cualquier error que ocurra durante la tarea.
-			prontInfo.setOpacity(1);
-			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("ERROR. No se ha podido exportar correctamente.");
-			
-			detenerAnimacionPront();
-			detenerAnimacion();
-			
-	        // Detener el hilo de la tarea
-	        excelThread.interrupt();
-		});
+		// Configuración del comportamiento cuando la tarea falla
+		crearExcelTask.setOnFailed(event -> manejarFallo());
 
-		crearExcelTask.setOnCancelled(event -> {
-			// Manejar si el usuario cancela la tarea.
-			prontInfo.setOpacity(1);
-			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("ERROR. Se ha cancelado la exportación.");
-			
-			detenerAnimacionPront();
-			detenerAnimacion();
-			
-	        // Detener el hilo de la tarea
-	        excelThread.interrupt();
-		});
+		// Configuración del comportamiento cuando la tarea es cancelada
+		crearExcelTask.setOnCancelled(event -> manejarCancelacion());
 
 		// Iniciar la tarea principal de creación de Excel en un hilo separado
-	    excelThread.start();
+		excelThread.start();
+	}
+
+	/**
+	 * Muestra un mensaje en la interfaz con el texto proporcionado y el estilo de
+	 * fondo especificado.
+	 *
+	 * @param mensaje El mensaje a mostrar.
+	 * @param estilo  El estilo de fondo del mensaje.
+	 */
+	private void mostrarMensaje(String mensaje, String estilo) {
+		prontInfo.setOpacity(1);
+		prontInfo.setStyle("-fx-background-color: " + estilo);
+		prontInfo.setText(mensaje);
+	}
+
+	/**
+	 * Maneja el fallo de la tarea, mostrando un mensaje de error y deteniendo las
+	 * animaciones.
+	 */
+	private void manejarFallo() {
+		mostrarMensaje("ERROR. No se ha podido exportar correctamente.", "#F53636");
+		detenerAnimacionPront();
+		detenerAnimacion();
+	}
+
+	/**
+	 * Maneja la cancelación de la tarea, mostrando un mensaje de error y deteniendo
+	 * las animaciones.
+	 */
+	private void manejarCancelacion() {
+		mostrarMensaje("ERROR. Se ha cancelado la exportación.", "#F53636");
+		detenerAnimacionPront();
+		detenerAnimacion();
 	}
 
 	/**
@@ -1489,7 +1554,14 @@ public class MenuPrincipalController implements Initializable {
 	 *
 	 * @param fichero El archivo CSV a importar.
 	 */
-	public void importCSV(File fichero) {
+	public void guardarDatosCSV() {
+
+		String frase = "Fichero CSV";
+
+		String formato = "*.csv";
+
+		File fichero = Utilidades.tratarFichero(frase, formato).showOpenDialog(null); // Llamada a funcion
+
 		FuncionesExcel excelFuntions = new FuncionesExcel(); // Crear una instancia de FuncionesExcel
 		// Crear una tarea (Task) para realizar la importación del archivo CSV
 		Task<Boolean> task = new Task<Boolean>() {
@@ -1660,7 +1732,14 @@ public class MenuPrincipalController implements Initializable {
 	 *
 	 * @param fichero
 	 */
-	public void makeSQL(File fichero) {
+	public void makeSQL() {
+
+		String frase = "Fichero SQL";
+
+		String formato = "*.sql";
+
+		File fichero = Utilidades.tratarFichero(frase, formato).showSaveDialog(null); // Llamada a funcion
+
 		libreria = new DBLibreriaManager();
 		prontInfo.setOpacity(0);
 		if (fichero != null) {
@@ -1692,7 +1771,7 @@ public class MenuPrincipalController implements Initializable {
 	 * 
 	 * @throws SQLException
 	 */
-	public void listaPorParametro() throws SQLException {
+	public List<Comic> listaPorParametro() throws SQLException {
 		libreria = new DBLibreriaManager();
 		utilidad = new Utilidades();
 		Comic comic = new Comic();
@@ -1706,12 +1785,13 @@ public class MenuPrincipalController implements Initializable {
 		}
 
 		comic = new Comic("", datos[1], datos[11], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7], fecha,
-				datos[9], datos[10], "", "", "", null, "", "", "");
-
-		funcionesTabla.tablaBBDD(libreria.busquedaParametro(comic, busquedaGeneral.getText()), tablaBBDD, columnList);
+				datos[9], datos[10], "", "", "", "", "", "", "");
+//		tablaBBDD.getItems().clear();
 		prontInfo.setOpacity(1);
 		prontInfo.setText(funcionesTabla.resultadoBusquedaPront(comic).getText());
 		busquedaGeneral.setText("");
+
+		return libreria.busquedaParametro(comic, busquedaGeneral.getText());
 	}
 
 	/**
@@ -1827,6 +1907,7 @@ public class MenuPrincipalController implements Initializable {
 		prontInfo.setOpacity(0);
 		tablaBBDD.getItems().clear();
 		imagencomic.setImage(null);
+
 	}
 
 	/**

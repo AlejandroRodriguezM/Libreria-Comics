@@ -21,7 +21,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -163,7 +162,7 @@ public class Unit_Test extends Application {
 //		mostrarComicMarvel();
 //		mostrarComicGeneral();
 //		crearDatabasePrueba();
-		envioDatosBasePrueba();
+//		envioDatosBasePrueba();
 
 //		pruebaSubidaComic();
 //		pruebaModificacionComic();
@@ -171,14 +170,14 @@ public class Unit_Test extends Application {
 //		pruebaDiamondCode_imagen("JUL220767");
 //		launch(args);
 //		verLibroGoogle("9788411505963");
-//		System.out.println(capitalizeFirstLetter("ANIMAL POUND CVR A ASHCAN GROSS"));
+		System.out.println(capitalizeFirstLetter("ANIMAL POUND CVR A ASHCAN GROSS"));
 
 //		System.out.println(getComicInfoUrl("A.X.E.: Judgment Day","Peach Momoko", "1"));
 
 //		System.out.println(displayComicInfo("https://www.marvel.com/comics/issue/55357/all-new_all-different_avengers_2015_4?utm_campaign=apiRef&utm_source=f0c866038aa05cd5bb64552a342d2726"));
 
 //		comicModificarCodigoPrueba();
-		comicModificarCodigoPruebaCompleta();
+//		comicModificarCodigoPruebaCompleta();
 
 	}
 

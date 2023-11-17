@@ -70,12 +70,16 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import Controladores.CargaComicsController;
 import Funcionamiento.Comic;
@@ -229,6 +233,11 @@ public class DBLibreriaManager extends Comic {
 			DBLibreriaManager.listaEditorial, DBLibreriaManager.listaFirma, DBLibreriaManager.listaCaja);
 
 	/**
+	 * Lista de comics guardados para poder ser impresos
+	 */
+	public static List<Comic> comicsGuardadosList = new ArrayList<>();
+
+	/**
 	 * Ventanas de la aplicación.
 	 */
 	private static Ventanas nav = new Ventanas();
@@ -254,6 +263,38 @@ public class DBLibreriaManager extends Comic {
 	private static Ventanas ventanas = new Ventanas();
 
 	/**
+	 * Agrega elementos únicos a la lista principal de cómics guardados, ordenándolos por ID en orden descendente de longitud.
+	 *
+	 * @param listaAAnadir Lista de cómics a añadir a la lista principal.
+	 */
+	public static void agregarElementosUnicos(List<Comic> listaAAnadir) {
+	    // Usamos un Set para mantener los elementos únicos
+	    Set<String> idsUnicos = comicsGuardadosList.stream()
+	            .map(Comic::getID)
+	            .collect(Collectors.toSet());
+
+	    // Filtramos la lista a añadir para obtener solo aquellos cuyas ID no estén repetidas
+	    List<Comic> comicsNoRepetidos = listaAAnadir.stream()
+	            .filter(comic -> !idsUnicos.contains(comic.getID()))
+	            .sorted(Comparator.comparing(Comic::getID, Comparator.comparingInt(String::length).reversed()))  // Ordenamos por ID en orden descendente de longitud
+	            .collect(Collectors.toList());
+
+	    // Añadimos los cómics no repetidos a la lista principal
+	    comicsGuardadosList.addAll(comicsNoRepetidos);
+	    
+	    // Verificamos que la lista esté ordenada
+	    boolean estaOrdenada = IntStream.range(0, comicsGuardadosList.size() - 1)
+	            .allMatch(i -> comicsGuardadosList.get(i).getID().compareTo(comicsGuardadosList.get(i + 1).getID()) <= 0);
+
+	    if (!estaOrdenada) {
+	        // Si no está ordenada, ordenamos la lista
+	        comicsGuardadosList.sort(Comparator.comparing(Comic::getID));
+	    }
+	}
+
+
+
+	/**
 	 * Realiza llamadas para inicializar listas de autocompletado.
 	 *
 	 * @throws SQLException si ocurre un error al acceder a la base de datos.
@@ -267,8 +308,8 @@ public class DBLibreriaManager extends Comic {
 		listaEditorial = obtenerValoresColumna("nomEditorial");
 		listaGuionista = obtenerValoresColumna("nomGuionista");
 		listaDibujante = obtenerValoresColumna("nomDibujante");
-//		listaProcedencia = obtenerValoresColumna("procedencia");
-//		listaCaja = obtenerValoresColumna("caja_deposito");
+		listaProcedencia = obtenerValoresColumna("procedencia");
+		listaCaja = obtenerValoresColumna("caja_deposito");
 	}
 
 	/**
@@ -628,11 +669,15 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public List<Comic> verLibreria(String sentenciaSQL) {
 		listaComics.clear(); // Limpiar la lista existente de cómics
+		String excepcion = "No hay ningun comic guardado en la base de datos";
 
 		ResultSet rs = obtenLibreria(sentenciaSQL); // Obtener el ResultSet
 
 		if (rs != null) {
 			listaDatos(rs); // Llenar la lista de cómics con los datos del ResultSet
+		} else {
+			nav.alertaException(excepcion);
+
 		}
 
 		return listaComics;
@@ -651,8 +696,6 @@ public class DBLibreriaManager extends Comic {
 
 		// Crear la consulta SQL a partir de los datos proporcionados
 		String sql = datosConcatenados(datos);
-
-		// Obtener la conexión a la base de datos
 
 		// Limpiar la lista de cómics antes de llenarla con los resultados
 		listaComics.clear();
@@ -682,7 +725,7 @@ public class DBLibreriaManager extends Comic {
 			}
 		}
 
-		return null; // Devolver null si la consulta SQL está vacía
+		return listaComics; // Devolver null si la consulta SQL está vacía
 	}
 
 	/**
@@ -1444,6 +1487,27 @@ public class DBLibreriaManager extends Comic {
 		return null;
 	}
 
+	public boolean hayDatosEnLibreria(String sentenciaSQL) {
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = DBManager.conexion();
+			stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+			rs = stmt.executeQuery();
+
+			// Si no hay resultados, devolver false
+			return rs.first();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			nav.alertaException("Error al tomar datos de la biblioteca: " + ex.toString());
+			// Puedes lanzar una excepción personalizada aquí si es necesario
+		}
+
+		// Si hay un error, devolver false
+		return false;
+	}
+
 	/**
 	 * Inserta los datos de un cómic en la base de datos.
 	 *
@@ -1609,7 +1673,6 @@ public class DBLibreriaManager extends Comic {
 			ps.setString(16, url_referencia);
 			ps.setString(17, precio_comic);
 			ps.setString(18, ID);
-			
 
 			if (ps.executeUpdate() == 1) {
 				Comic nuevo_comic = new Comic("", nombre, numCaja, numero, variante, firma, editorial, formato,
@@ -1766,27 +1829,6 @@ public class DBLibreriaManager extends Comic {
 	}
 
 	/**
-	 * Función que muestra todos los cómics de la base de datos.
-	 *
-	 * @param sentenciaSQL la sentencia SQL para obtener los cómics
-	 * @param excepcion    el mensaje de excepción a mostrar si no se encuentran
-	 *                     cómics
-	 * @return una lista de cómics obtenidos de la base de datos
-	 * @throws SQLException
-	 */
-	public List<Comic> comprobarLibreria(String sentenciaSQL) {
-
-		List<Comic> listComic = FXCollections.observableArrayList(verLibreria(sentenciaSQL));
-		String excepcion = "No hay ningun comic guardado en la base de datos";
-		if (listComic.isEmpty()) {
-
-			nav.alertaException(excepcion);
-		}
-
-		return listComic;
-	}
-
-	/**
 	 * Función que busca en el ArrayList el o los cómics que tengan coincidencia con
 	 * los datos introducidos en el TextField.
 	 *
@@ -1797,14 +1839,16 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public List<Comic> busquedaParametro(Comic comic, String busquedaGeneral) throws SQLException {
 		String sentenciaSQL = "SELECT * from comicsbbdd";
-		List<Comic> listComic = comprobarLibreria(sentenciaSQL);
+		boolean existeBase = hayDatosEnLibreria(sentenciaSQL);
 
-		if (listComic.size() != 0) {
+		List<Comic> listComic = new ArrayList<Comic>();
+
+		if (existeBase) {
 			if (busquedaGeneral.length() != 0) {
-				listComic = FXCollections.observableArrayList(verBusquedaGeneral(busquedaGeneral));
+				return listComic = FXCollections.observableArrayList(verBusquedaGeneral(busquedaGeneral));
 			} else {
 				try {
-					listComic = FXCollections.observableArrayList(filtadroBBDD(comic));
+					return listComic = FXCollections.observableArrayList(filtadroBBDD(comic));
 				} catch (NullPointerException ex) {
 					ex.getStackTrace();
 				}
@@ -1821,7 +1865,7 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public List<Comic> libreriaPosesion() throws SQLException {
 		String sentenciaSQL = "SELECT * from comicsbbdd where estado = 'En posesion' ORDER BY nomComic, fecha_publicacion, numComic";
-		return comprobarLibreria(sentenciaSQL);
+		return verLibreria(sentenciaSQL);
 	}
 
 	/**
@@ -1833,7 +1877,7 @@ public class DBLibreriaManager extends Comic {
 	public List<Comic> libreriaKeyIssue() throws SQLException {
 		String sentenciaSQL = "SELECT * FROM comicsbbdd WHERE key_issue <> 'Vacio' ORDER BY nomComic, fecha_publicacion, numComic";
 
-		return comprobarLibreria(sentenciaSQL);
+		return verLibreria(sentenciaSQL);
 	}
 
 	/**
@@ -1846,7 +1890,7 @@ public class DBLibreriaManager extends Comic {
 	public List<Comic> libreriaCompleta() {
 		String sentenciaSQL = "SELECT * FROM comicsbbdd ORDER BY nomComic, fecha_publicacion, numComic";
 
-		return comprobarLibreria(sentenciaSQL);
+		return verLibreria(sentenciaSQL);
 	}
 
 	/**
@@ -1859,7 +1903,7 @@ public class DBLibreriaManager extends Comic {
 	public List<Comic> libreriaVendidos() throws SQLException {
 		String sentenciaSQL = "SELECT * from comicsbbdd where estado = 'Vendido' ORDER BY nomComic,fecha_publicacion,numComic";
 
-		return comprobarLibreria(sentenciaSQL);
+		return verLibreria(sentenciaSQL);
 	}
 
 	/**
@@ -1872,7 +1916,7 @@ public class DBLibreriaManager extends Comic {
 	public List<Comic> libreriaComprados() throws SQLException {
 		String sentenciaSQL = "SELECT * from comicsbbdd where estado = 'Comprado' ORDER BY nomComic,fecha_publicacion,numComic";
 
-		return comprobarLibreria(sentenciaSQL);
+		return verLibreria(sentenciaSQL);
 	}
 
 	/**
@@ -1885,7 +1929,7 @@ public class DBLibreriaManager extends Comic {
 	public List<Comic> libreriaPuntuacion() throws SQLException {
 		String sentenciaSQL = "SELECT * from comicsbbdd where puntuacion <> 'Sin puntuar' ORDER BY nomComic,fecha_publicacion,numComic";
 
-		return comprobarLibreria(sentenciaSQL);
+		return verLibreria(sentenciaSQL);
 	}
 
 	/**
@@ -1904,7 +1948,7 @@ public class DBLibreriaManager extends Comic {
 				+ "%' OR fecha_publicacion LIKE '%" + datoSeleccionado + "%' OR procedencia LIKE '%" + datoSeleccionado
 				+ "%' ORDER BY nomComic, fecha_publicacion, numComic ASC";
 
-		return comprobarLibreria(sentenciaSQL);
+		return verLibreria(sentenciaSQL);
 	}
 
 	/**
@@ -2053,7 +2097,7 @@ public class DBLibreriaManager extends Comic {
 	public List<Comic> libreriaFirmados() throws SQLException {
 		String sentenciaSQL = "SELECT * from comicsbbdd where Firma <> '' ORDER BY nomComic,fecha_publicacion,numComic";
 
-		return comprobarLibreria(sentenciaSQL);
+		return verLibreria(sentenciaSQL);
 	}
 
 	/**

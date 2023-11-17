@@ -361,11 +361,17 @@ public class FuncionesExcel {
 	 * @return Una tarea que realiza la exportación y devuelve true si se realiza
 	 *         con éxito, o false si ocurre un error.
 	 */
-	public Task<Boolean> crearExcelTask(File fichero) {
+	public Task<Boolean> crearExcelTask(List<Comic> listaComics, String tipoBusqueda) {
 
 		libreria = new DBLibreriaManager();
 		new CargaComicsController();
 		conn = DBManager.conexion();
+
+		String frase = "Fichero Excel xlsx";
+
+		String formato = "*.xlsx";
+
+		File fichero = Utilidades.tratarFichero(frase, formato).showSaveDialog(null); // Llamada a funcion
 
 		Task<Boolean> task = new Task<Boolean>() {
 			@Override
@@ -386,7 +392,6 @@ public class FuncionesExcel {
 					long processedItems = 0; // Processed items count
 
 					fichero.createNewFile();
-					List<Comic> listaComics = libreria.libreriaCompleta();
 
 					libro = new XSSFWorkbook();
 
@@ -400,6 +405,19 @@ public class FuncionesExcel {
 					}
 					verCargaComics();
 					indiceFila++;
+					
+					Platform.runLater(() -> {
+						try {
+							if(tipoBusqueda.equalsIgnoreCase("Completa")) {
+								libreria.saveImageFromDataBase();
+
+							}
+						} catch (SQLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					});
+					
 					for (Comic comic : listaComics) {
 						fila = hoja.createRow(indiceFila);
 						fila.createCell(0).setCellValue("");
@@ -440,19 +458,15 @@ public class FuncionesExcel {
 						processedItems++;
 					}
 
+
+
+					
 					outputStream = new FileOutputStream(fichero);
 					libro.write(outputStream);
 					libro.close();
 					outputStream.close();
 					createCSV(fichero);
-					Platform.runLater(() -> {
-						try {
-							libreria.saveImageFromDataBase();
-						} catch (SQLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					});
+
 					return true;
 				} catch (FileNotFoundException ex) {
 					ex.printStackTrace();
@@ -554,7 +568,7 @@ public class FuncionesExcel {
 						key_issue = key_issue.replaceAll("\\r|\\n", "");
 						String url_referencia = data[17];
 						String estado = data[18];
-						
+
 						System.out.println(data.length);
 
 						if (precio_comic.isEmpty()) {
@@ -564,7 +578,7 @@ public class FuncionesExcel {
 						if (url_referencia.isEmpty()) {
 							url_referencia = "Sin referencia";
 						}
-						
+
 						if (codigo_comic.isEmpty()) {
 							codigo_comic = "0";
 						}
@@ -577,8 +591,8 @@ public class FuncionesExcel {
 						statement.setString(1, id);
 						statement.setString(2, nombre);
 						statement.setString(3, numCaja);
-						statement.setString(4, codigo_comic);
-						statement.setString(5, precio_comic);
+						statement.setString(4, precio_comic);
+						statement.setString(5, codigo_comic);
 						statement.setString(6, numero);
 						statement.setString(7, variante);
 						statement.setString(8, firma);
