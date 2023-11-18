@@ -1045,6 +1045,8 @@ public class MenuPrincipalController implements Initializable {
 		guardarDatosCSV();
 
 		libreria.listasAutoCompletado();
+		
+		DBLibreriaManager.limpiarListaGuardados();
 	}
 
 	/**
@@ -1068,7 +1070,8 @@ public class MenuPrincipalController implements Initializable {
 		String tipoBusqueda = "completa";
 
 		cargaExportExcel(listaComics, tipoBusqueda);
-
+		
+		DBLibreriaManager.limpiarListaGuardados();
 	}
 
 	/**
@@ -1098,6 +1101,22 @@ public class MenuPrincipalController implements Initializable {
 		botonImprimir.setDisable(true);
 		botonGuardarResultado.setVisible(false);
 		botonGuardarResultado.setDisable(true);
+
+		int tamanioListaGuardada = DBLibreriaManager.comicsGuardadosList.size();
+		
+		if (tamanioListaGuardada > 0) {
+
+			if (nav.borrarListaGuardada()) {
+				DBLibreriaManager.limpiarListaGuardados();
+
+				String mensaje = "Has eliminado el contenido de la lista guardada que contenia un total de: " + tamanioListaGuardada + " comics guardados.\n \n \n";
+				String estilo = "#A0F52D";
+				mostrarMensaje(mensaje, estilo);
+
+			}
+
+		}
+
 	}
 
 	/**
@@ -1185,6 +1204,7 @@ public class MenuPrincipalController implements Initializable {
 							imagencomic.setImage(null);
 							detenerAnimacion();
 							cargarDatosDataBase();
+							DBLibreriaManager.limpiarListaGuardados();
 						});
 					}
 				});
@@ -1458,6 +1478,7 @@ public class MenuPrincipalController implements Initializable {
 			mensaje = "Hay un total de: " + DBLibreriaManager.comicsGuardadosList.size()
 					+ ". Comics guardados a la espera de ser impresos \n \n \n";
 			estilo = "#A0F52D";
+
 		} else {
 			mensaje = "No se esta mostrando ningun comic, prueba a buscar por parametro \n \n \n";
 			estilo = "#FF2400";

@@ -263,36 +263,42 @@ public class DBLibreriaManager extends Comic {
 	private static Ventanas ventanas = new Ventanas();
 
 	/**
-	 * Agrega elementos únicos a la lista principal de cómics guardados, ordenándolos por ID en orden descendente de longitud.
+	 * Agrega elementos únicos a la lista principal de cómics guardados,
+	 * ordenándolos por ID en orden descendente de longitud.
 	 *
 	 * @param listaAAnadir Lista de cómics a añadir a la lista principal.
 	 */
 	public static void agregarElementosUnicos(List<Comic> listaAAnadir) {
-	    // Usamos un Set para mantener los elementos únicos
-	    Set<String> idsUnicos = comicsGuardadosList.stream()
-	            .map(Comic::getID)
-	            .collect(Collectors.toSet());
+		// Usamos un Set para mantener los elementos únicos
+		Set<String> idsUnicos = comicsGuardadosList.stream().map(Comic::getID).collect(Collectors.toSet());
 
-	    // Filtramos la lista a añadir para obtener solo aquellos cuyas ID no estén repetidas
-	    List<Comic> comicsNoRepetidos = listaAAnadir.stream()
-	            .filter(comic -> !idsUnicos.contains(comic.getID()))
-	            .sorted(Comparator.comparing(Comic::getID, Comparator.comparingInt(String::length).reversed()))  // Ordenamos por ID en orden descendente de longitud
-	            .collect(Collectors.toList());
+		// Filtramos la lista a añadir para obtener solo aquellos cuyas ID no estén
+		// repetidas
+		List<Comic> comicsNoRepetidos = listaAAnadir.stream().filter(comic -> !idsUnicos.contains(comic.getID()))
+				.sorted(Comparator.comparing(Comic::getID, Comparator.comparingInt(String::length).reversed()))
+				.collect(Collectors.toList());
 
-	    // Añadimos los cómics no repetidos a la lista principal
-	    comicsGuardadosList.addAll(comicsNoRepetidos);
-	    
-	    // Verificamos que la lista esté ordenada
-	    boolean estaOrdenada = IntStream.range(0, comicsGuardadosList.size() - 1)
-	            .allMatch(i -> comicsGuardadosList.get(i).getID().compareTo(comicsGuardadosList.get(i + 1).getID()) <= 0);
+		// Añadimos los cómics no repetidos a la lista principal
+		comicsGuardadosList.addAll(comicsNoRepetidos);
 
-	    if (!estaOrdenada) {
-	        // Si no está ordenada, ordenamos la lista
-	        comicsGuardadosList.sort(Comparator.comparing(Comic::getID));
-	    }
+		// Verificamos que la lista esté ordenada
+		boolean estaOrdenada = IntStream.range(0, comicsGuardadosList.size() - 1).allMatch(
+				i -> comicsGuardadosList.get(i).getID().compareTo(comicsGuardadosList.get(i + 1).getID()) <= 0);
+
+		if (!estaOrdenada) {
+			// Si no está ordenada, ordenamos la lista
+			comicsGuardadosList.sort(Comparator.comparing(Comic::getID));
+		}
 	}
 
+	/**
+	 * Funcion que permite limpiar de contenido la lista de comics guardados
+	 */
+	public static void limpiarListaGuardados() {
 
+		comicsGuardadosList.clear();
+
+	}
 
 	/**
 	 * Realiza llamadas para inicializar listas de autocompletado.

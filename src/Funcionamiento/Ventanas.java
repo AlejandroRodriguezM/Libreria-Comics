@@ -615,6 +615,26 @@ public class Ventanas {
 			return false;
 		}
 	}
+	
+	/**
+	 * Solicita confirmación al usuario antes de borrar el contenido de la lista de comics guardados.
+	 *
+	 * @return true si el usuario confirma la eliminación, o false si el usuario cancela la operación.
+	 */
+	public boolean borrarListaGuardada() {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.setResizable(false);
+		stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
+		alert.setTitle("Borrando . . .");
+		alert.setHeaderText("Estas a punto de borrar el contenido.");
+		alert.setContentText("¿Estas seguro que quieres borrar la lista guardada?");
+		if (alert.showAndWait().get() == ButtonType.OK) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	/**
 	 * Solicita confirmación al usuario antes de cancelar la subida de portadas.
