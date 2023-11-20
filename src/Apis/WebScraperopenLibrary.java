@@ -6,19 +6,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
-import javafx.scene.control.TextArea;
 
 /**
  * Clase principal para realizar el web scraping de información específica de la
@@ -26,7 +20,7 @@ import javafx.scene.control.TextArea;
  * el título, número, creadores, imagen principal, fecha de salida, valor (SRP),
  * editorial y URL de referencia.
  */
-public class WebScraperPreviewsWorld {
+public class WebScraperopenLibrary{
 
 	public static int verificarCodigoRespuesta(String urlString) throws IOException, URISyntaxException {
 		URI uri = new URI(urlString);
@@ -50,115 +44,31 @@ public class WebScraperPreviewsWorld {
 	 *         vacío si ocurre un error.
 	 * @throws URISyntaxException
 	 */
-	public static String[] displayComicInfo(String diamondCode, TextArea prontInfo) throws URISyntaxException {
+	public static String displayComicInfo(String urlMarvel) throws URISyntaxException {
 
-		List<String> comicInfoList = new ArrayList<>();
+		String codeComic = "";
 
 		try {
 
-			String previews_World_Url = "https://www.previewsworld.com/Catalog/" + diamondCode;
 			// Realizar la conexión y obtener el documento HTML de la página
 
-			int codigoRespuesta = verificarCodigoRespuesta(previews_World_Url);
+			int codigoRespuesta = verificarCodigoRespuesta(urlMarvel);
 
-			// Expresión regular para verificar el patrón deseado
-			String patron = "^(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\\d{6}";
+			if (codigoRespuesta != 404) {
+				Document document = Jsoup.connect(urlMarvel).get();
 
-			// Compilar la expresión regular en un patrón
-			Pattern pattern = Pattern.compile(patron);
-
-			// Crear un objeto Matcher para realizar la coincidencia
-			Matcher matcher = pattern.matcher(diamondCode);
-
-			if (codigoRespuesta == 404 || diamondCode.length() <= 8 && diamondCode.length() >= 10
-					|| !matcher.matches()) {
-				prontInfo.setOpacity(1);
-				prontInfo.setText("No se encontró el cómic con Diamond Code: " + diamondCode);
-				return null;
-			} else {
-				Document document = Jsoup.connect(previews_World_Url).get();
-				String titulo = scrapeTitle(document);
-
-				String issueKey = "";
-
-				String numero = extractNumeroFromTitle(document);
-
-				String formato = "Grapa (Issue individual)";
-
-				// Scraping de la etiqueta div con class "SRP"
-				String precio = scrapeAndPrintSRP(document);
-
-				// Scraping del elemento <div> con la clase "Creators"
-				String creatorsText = scrapeElementText(document, "div.Creators");
-
-				// Variables para almacenar los creadores
-				String writer = null;
-				String artist = null;
-				String variant = null;
-
-				if (creatorsText != null && !creatorsText.isEmpty()) {
-					String[] parts = creatorsText.split("\\(|\\)");
-					for (int i = 1; i < parts.length; i += 2) {
-						String type = parts[i].trim();
-						String value = parts[i + 1].trim();
-
-						// Almacenar en la variable correspondiente según el tipo
-						switch (type) {
-						case "W":
-							writer = value;
-							break;
-						case "A":
-							artist = value;
-							break;
-						case "CA":
-						case "A/CA":
-							artist = value;
-							variant = value;
-							break;
-						default:
-							break;
-						}
-					}
-				}
-
-				// Scraping de la etiqueta div con class "ReleaseDate"
-				String fecha = scrapeAndPrintReleaseDate(document);
-
-				// Scraping de la etiqueta img con id "MainContentImage"
-				String portadaImagen = scrapeAndPrintMainImage(document);
-
-				// Scraping de la etiqueta div con class "Publisher"
-				String editorial = scrapeAndPrintPublisher(document);
+				codeComic = scrapeCodigo(document);
 				
-				if(editorial.equalsIgnoreCase("Marvel Comics")) {
-					editorial = "Marvel";
-				}
+				System.out.println(codeComic);
 
-				String[] comicInfoArray = {titulo, issueKey, numero, formato, precio, variant, artist, writer, fecha, previews_World_Url, portadaImagen, editorial};
-
-				for (String info : comicInfoArray) {
-				    comicInfoList.add(info);
-				    
-				    System.out.println("jeje: " + info);
-				    
-				}
-
-				comicInfoList.toArray(comicInfoArray);
-
-				if (titulo == null) {
-					prontInfo.setOpacity(1);
-					prontInfo.setText("No se encontró el cómic con Diamond Code: " + diamondCode);
-					return null;
-				}
-
-				return comicInfoArray;
+				return codeComic;
 			}
 
 		} catch (IOException e) {
 
 			e.printStackTrace();
 		}
-		return new String[0];
+		return null;
 	}
 
 	/**
@@ -169,18 +79,27 @@ public class WebScraperPreviewsWorld {
 	 * @param document El documento HTML a analizar.
 	 * @return El título extraído y formateado, o null si no se encuentra.
 	 */
-	private static String scrapeTitle(Document document) {
-		Element titleElement = document.selectFirst("h1.Title");
-		if (titleElement != null) {
-			String titleContent = titleElement.text().trim();
-			// Eliminar el símbolo "#" y todo lo que le sigue
-			titleContent = removeHashtagAndFollowing(titleContent);
-			// Capitalizar la primera letra de cada palabra en el título
-			titleContent = capitalizeFirstLetter(titleContent);
-			return titleContent;
-		}
-		return null;
+	private static String scrapeCodigo(Document document) {
+	    // Buscar la etiqueta dt con el valor "ISBN 13"
+	    Element isbnDtElement = document.selectFirst("dt:containsOwn(ISBN 13)");
+
+	    if (isbnDtElement != null) {
+	        // Obtener el siguiente hermano (etiqueta dd) con la clase "object itemprop isbn"
+	        Element isbnDdElement = isbnDtElement.nextElementSibling();
+	        
+	        if (isbnDdElement != null && isbnDdElement.hasClass("object") && isbnDdElement.hasClass("itemprop") && isbnDdElement.hasClass("isbn")) {
+	            // Obtener el contenido de la etiqueta dd
+	            String isbnContent = isbnDdElement.text().trim();
+	            // Puedes realizar cualquier otra manipulación necesaria con el contenido de ISBN
+	            return isbnContent;
+	        }
+	    }
+
+	    // Si no se encontró la información deseada, devolver null o un valor por defecto según tu lógica
+	    return null;
 	}
+
+
 
 	/**
 	 * Extrae el número que sigue al símbolo "#" en el título.

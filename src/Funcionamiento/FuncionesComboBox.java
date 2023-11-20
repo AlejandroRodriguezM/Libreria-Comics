@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import JDBC.DBLibreriaManager;
@@ -136,7 +137,7 @@ public class FuncionesComboBox {
 					Comic comic = getComicFromComboBoxes(totalComboboxes, comboboxes);
 					try {
 						actualizarComboBoxes(totalComboboxes, comboboxes, comic);
-					} catch (SQLException e) {
+					} catch (SQLException | InterruptedException | ExecutionException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -147,34 +148,38 @@ public class FuncionesComboBox {
 	}
 
 	/**
-	 * Maneja los cambios en el ComboBox cuando su texto está vacío.
-	 * Restablece el valor del ComboBox a null y verifica si todos los campos de texto
-	 * de los ComboBoxes están vacíos. Si todos están vacíos, llama a la función "limpiezaDeDatos()".
+	 * Maneja los cambios en el ComboBox cuando su texto está vacío. Restablece el
+	 * valor del ComboBox a null y verifica si todos los campos de texto de los
+	 * ComboBoxes están vacíos. Si todos están vacíos, llama a la función
+	 * "limpiezaDeDatos()".
 	 *
 	 * @param comboBox   El ComboBox que ha cambiado su valor.
-	 * @param comboboxes Lista de ComboBoxes para verificar si todos los campos de texto están vacíos.
+	 * @param comboboxes Lista de ComboBoxes para verificar si todos los campos de
+	 *                   texto están vacíos.
 	 */
 	private void handleComboBoxEmptyChange(ComboBox<String> comboBox, List<ComboBox<String>> comboboxes) {
-	    // Verificar si la lista original de elementos del ComboBox no es nula
-	    if (originalComboBoxItems != null) {
-	        // Deshabilitar la detección de entrada de usuario para evitar bucles no deseados
-	        isUserInput = false;
-	        // Realizar modificaciones necesarias en el popup del ComboBox
-	        modificarPopup(comboBox);
-	        // Establecer el valor del ComboBox a null para restablecer la selección
-	        comboBox.setValue(null);
+		// Verificar si la lista original de elementos del ComboBox no es nula
+		if (originalComboBoxItems != null) {
+			// Deshabilitar la detección de entrada de usuario para evitar bucles no
+			// deseados
+			isUserInput = false;
+			// Realizar modificaciones necesarias en el popup del ComboBox
+			modificarPopup(comboBox);
+			// Establecer el valor del ComboBox a null para restablecer la selección
+			comboBox.setValue(null);
 
-	        // Habilitar nuevamente la detección de entrada de usuario
-	        isUserInput = true;
+			// Habilitar nuevamente la detección de entrada de usuario
+			isUserInput = true;
 
-	        // Comprobar si todos los campos de texto de los ComboBoxes están vacíos
-	        boolean allEmpty = comboboxes.stream().allMatch(cb -> cb.getValue() == null || cb.getValue().isEmpty());
+			// Comprobar si todos los campos de texto de los ComboBoxes están vacíos
+			boolean allEmpty = comboboxes.stream().allMatch(cb -> cb.getValue() == null || cb.getValue().isEmpty());
 
-	        // Si todos los campos de texto de los ComboBoxes están vacíos, llamar a limpiezaDeDatos()
-	        if (allEmpty) {
-	            limpiezaDeDatos(comboboxes);
-	        }
-	    }
+			// Si todos los campos de texto de los ComboBoxes están vacíos, llamar a
+			// limpiezaDeDatos()
+			if (allEmpty) {
+				limpiezaDeDatos(comboboxes);
+			}
+		}
 	}
 
 	/**
@@ -186,15 +191,17 @@ public class FuncionesComboBox {
 	 * @param comic           El Comic que se utilizará como base para obtener los
 	 *                        resultados de la base de datos.
 	 * @throws SQLException
+	 * @throws ExecutionException
+	 * @throws InterruptedException
 	 */
 	public void actualizarComboBoxes(int totalComboboxes, List<ComboBox<String>> comboboxes, Comic comic)
-			throws SQLException {
+			throws SQLException, InterruptedException, ExecutionException {
 
 		libreria = new DBLibreriaManager();
 
 		Comic comicTemp = new Comic("", comic.getNombre(), comic.getNumCaja(), comic.getNumero(), comic.getVariante(),
 				comic.getFirma(), comic.getEditorial(), comic.getFormato(), comic.getProcedencia(), "",
-				comic.getGuionista(), comic.getDibujante(), "", "", "", "", "", "");
+				comic.getGuionista(), comic.getDibujante(), "", "", "", "", "", "", "");
 		String sql = libreria.datosConcatenados(comicTemp);
 
 		if (!sql.isEmpty()) {
@@ -296,53 +303,57 @@ public class FuncionesComboBox {
 				DBLibreriaManager.listaFirma, DBLibreriaManager.listaCaja);
 
 		int i = 0;
+
 		for (ComboBox<String> comboBox : comboboxes) {
-			modificarPopup(comboBox);
-
-			List<String> items = itemsList.get(i);
-			try {
-				final int currentIndex = i; // Copia final de i para usar en expresiones lambda
-
-				if (items != null && !items.isEmpty()) {
-					ObservableList<String> itemsCopy = FXCollections.observableArrayList(items);
-					comboBox.setItems(itemsCopy);
-				}
-
-				// Configurar el tamaño y apariencia del despliegue del ComboBox
+			if (comboBox != null) {
 				modificarPopup(comboBox);
 
-				comboBox.setOnMousePressed(event -> {
-					comboBox.hide();
-					if (!comboBox.isShowing()) {
-						boolean atLeastOneNotEmpty = comboboxes.stream()
-								.anyMatch(cb -> cb.getValue() != null && !cb.getValue().isEmpty());
+				List<String> items = itemsList.get(i);
+				try {
+					final int currentIndex = i; // Copia final de i para usar en expresiones lambda
 
-						if (atLeastOneNotEmpty) {
-							Comic comic = getComicFromComboBoxes(10, comboboxes);
-							setupFilteredPopup(comboboxes, comboBox, DBLibreriaManager.listaOrdenada.get(currentIndex));
-							try {
-								actualizarComboBoxes(10, comboboxes, comic);
-							} catch (SQLException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						} else {
-							Comic comic = getComicFromComboBoxes(10, comboboxes);
-							setupFilteredPopup(comboboxes, comboBox, items);
-							try {
-								actualizarComboBoxes(10, comboboxes, comic);
-							} catch (SQLException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+					if (items != null && !items.isEmpty()) {
+						ObservableList<String> itemsCopy = FXCollections.observableArrayList(items);
+						comboBox.setItems(itemsCopy);
+					}
+
+					// Configurar el tamaño y apariencia del despliegue del ComboBox
+					modificarPopup(comboBox);
+
+					comboBox.setOnMousePressed(event -> {
+						comboBox.hide();
+						if (!comboBox.isShowing()) {
+							boolean atLeastOneNotEmpty = comboboxes.stream()
+									.anyMatch(cb -> cb.getValue() != null && !cb.getValue().isEmpty());
+
+							if (atLeastOneNotEmpty) {
+								Comic comic = getComicFromComboBoxes(10, comboboxes);
+								setupFilteredPopup(comboboxes, comboBox,
+										DBLibreriaManager.listaOrdenada.get(currentIndex));
+								try {
+									actualizarComboBoxes(10, comboboxes, comic);
+								} catch (SQLException | InterruptedException | ExecutionException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							} else {
+								Comic comic = getComicFromComboBoxes(10, comboboxes);
+								setupFilteredPopup(comboboxes, comboBox, items);
+								try {
+									actualizarComboBoxes(10, comboboxes, comic);
+								} catch (SQLException | InterruptedException | ExecutionException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 							}
 						}
-					}
-				});
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+					});
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
-			i++;
+				i++;
+			}
 		}
 	}
 
@@ -441,7 +452,7 @@ public class FuncionesComboBox {
 					Comic comic = getComicFromComboBoxes(10, comboboxes);
 					try {
 						actualizarComboBoxes(10, comboboxes, comic);
-					} catch (SQLException e) {
+					} catch (SQLException | InterruptedException | ExecutionException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -528,23 +539,26 @@ public class FuncionesComboBox {
 	 * @param originalComboBox El ComboBox original.
 	 */
 	private void modificarPopup(ComboBox<String> originalComboBox) {
-		originalComboBox.hide();
-		// Configurar el tamaño y apariencia del despliegue del ComboBox
-		originalComboBox.setCellFactory(param -> new ListCell<String>() {
-			@Override
-			protected void updateItem(String item, boolean empty) {
-				super.updateItem(item, empty);
-				if (empty || item == null) {
-					setGraphic(null);
-					setPrefHeight(0); // Ajusta la altura
-					setPrefWidth(0); // Ajusta el ancho
-				} else {
-					setText(item);
-					setPrefHeight(-1); // Ajusta la altura
-					setPrefWidth(-1); // Ajusta el ancho
+		if (originalComboBox != null) {
+			originalComboBox.hide();
+
+			// Configurar el tamaño y apariencia del despliegue del ComboBox
+			originalComboBox.setCellFactory(param -> new ListCell<String>() {
+				@Override
+				protected void updateItem(String item, boolean empty) {
+					super.updateItem(item, empty);
+					if (empty || item == null) {
+						setGraphic(null);
+						setPrefHeight(0); // Ajusta la altura
+						setPrefWidth(0); // Ajusta el ancho
+					} else {
+						setText(item);
+						setPrefHeight(-1); // Ajusta la altura
+						setPrefWidth(-1); // Ajusta el ancho
+					}
 				}
-			}
-		});
+			});
+		}
 	}
 
 	/**
@@ -617,7 +631,7 @@ public class FuncionesComboBox {
 	 *
 	 * @param comboboxes La lista de ComboBoxes a rellenar.
 	 */
-	public void rellenarComboBoxEstaticos(List<ComboBox<String>> comboboxes) {
+	public void rellenarComboBoxEstaticos(List<ComboBox<String>> comboboxes, String tipo_accion) {
 		String[] formatos = { "Grapa (Issue individual)", "Tapa blanda (Paperback)", "Cómic de bolsillo (Pocket)",
 				"Edición de lujo (Deluxe Edition)", "Edición omnibus (Omnibus)", "Edición integral (Integral)",
 				"Tapa dura (Hardcover)", "eBook (libro electrónico)", "Cómic digital (Digital Comic)",
@@ -644,7 +658,12 @@ public class FuncionesComboBox {
 			comboboxes.get(i).getItems().clear(); // Limpiar elementos anteriores si los hay
 			comboboxes.get(i).getItems().addAll(
 					i == 0 ? formatos : i == 1 ? procedenciaEstados : i == 2 ? situacionEstados : editorialBusquedas);
-//			comboboxes.get(i).getSelectionModel().selectFirst();
+
+			if (tipo_accion.equalsIgnoreCase("aniadir")) {
+				comboboxes.get(i).getSelectionModel().selectFirst();
+
+			}
+
 		}
 	}
 

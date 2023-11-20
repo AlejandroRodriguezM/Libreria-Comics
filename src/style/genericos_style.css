@@ -31,6 +31,22 @@
     -fx-border-radius: 4.0px;
 }
 
+#botonGuardarResultado {
+    -fx-background-color: #00A8FF; /* Color azul */
+}
+
+#botonGuardarResultado:hover {
+    -fx-background-color: #009EE8; /* Color azul más oscuro en hover */
+}
+
+#botonImprimir {
+    -fx-background-color: #00A8FF; /* Color azul */
+}
+
+#botonImprimir:hover {
+    -fx-background-color: #009EE8; /* Color azul más oscuro en hover */
+}
+
 .button#botonbbdd {
     -fx-background-color: #5cb85c;
     -fx-border-color: #4cae4c;
@@ -125,11 +141,13 @@
 }
 
 .button#botonModificar {
+    -fx-font-size: 10.0px;
     -fx-background-color: #d9534f;
     -fx-border-color: #d43f3a;
 }
 
 .button#botonModificar:hover {
+    -fx-font-size: 10.0px;
     -fx-background-color: #c9302c;
 }
 

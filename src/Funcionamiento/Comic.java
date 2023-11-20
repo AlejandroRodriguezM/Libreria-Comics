@@ -102,6 +102,11 @@ public class Comic {
 	 */
 	protected String precio_comic;
 
+	/**
+	 * Precio del cómic.
+	 */
+	protected String codigo_comic;
+
 
 	/**
      * Constructor para crear un objeto Comic con todos los atributos.
@@ -128,7 +133,7 @@ public class Comic {
 	public Comic(String ID, String nombre, String numCaja, String numero, String variante, String firma,
 			String editorial, String formato, String procedencia, String fecha, String guionista, String dibujante,
 			String estado, String key_issue, String puntuacion, String imagen, String url_referencia,
-			String precio_comic) {
+			String precio_comic, String codigo_comic) {
 		this.ID = ID;
 		this.nombre = nombre;
 		this.numCaja = numCaja;
@@ -147,6 +152,7 @@ public class Comic {
 		this.imagen = imagen;
 		this.url_referencia = url_referencia;
 		this.precio_comic = precio_comic;
+		this.codigo_comic = codigo_comic;
 
 	}
 
@@ -172,6 +178,7 @@ public class Comic {
 		this.numCaja = "";
 		this.url_referencia = "";
 		this.precio_comic = "";
+		this.codigo_comic = "";
 	}
 
 	/**
@@ -353,6 +360,15 @@ public class Comic {
 	public String getPrecio_comic() {
 	    return precio_comic;
 	}
+	
+	
+	public String getCodigo_comic() {
+		return codigo_comic;
+	}
+
+	public void setCodigo_comic(String codigo_comic) {
+		this.codigo_comic = codigo_comic;
+	}
 
 	/**
 	 * Setter para establecer la URL de referencia del cómic.
@@ -524,6 +540,7 @@ public class Comic {
 		appendIfNotEmpty(contenidoComic, "Nombre", nombre);
 		appendIfNotEmpty(contenidoComic, "Numero", numero) ;
 		appendIfNotEmpty(contenidoComic, "Precio", !precio_comic.isEmpty() ? precio_comic + " $" : "");
+		appendIfNotEmpty(contenidoComic, "Codigo", codigo_comic);
 		appendIfNotEmpty(contenidoComic, "Variante", variante);
 		appendIfNotEmpty(contenidoComic, "Firma", firma);
 		appendIfNotEmpty(contenidoComic, "Editorial", editorial);
