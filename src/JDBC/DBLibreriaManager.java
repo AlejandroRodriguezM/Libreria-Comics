@@ -1522,7 +1522,26 @@ public class DBLibreriaManager extends Comic {
 	 * @throws SQLException si ocurre un error al ejecutar la consulta SQL
 	 */
 	public void insertarDatos(Comic comic_datos) throws IOException, SQLException {
-		String sentenciaSQL = "INSERT INTO comicsbbdd (nomComic, caja_deposito,precio_comic, numComic, nomVariante, firma, nomEditorial, formato, procedencia, fecha_publicacion, nomGuionista, nomDibujante, puntuacion, portada,key_issue,url_referencia, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		String sentenciaSQL = "INSERT INTO comicsbbdd ("
+				+ "nomComic, "
+				+ "caja_deposito,"
+				+ "precio_comic,"
+				+ "codigo_comic,"
+				+ "numComic,"
+				+ "nomVariante,"
+				+ "firma,"
+				+ "nomEditorial,"
+				+ "formato,"
+				+ "procedencia,"
+				+ "fecha_publicacion,"
+				+ "nomGuionista,"
+				+ "nomDibujante,"
+				+ "puntuacion,"
+				+ "portada,"
+				+ "key_issue,"
+				+ "url_referencia,"
+				+ "estado"
+				+ ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		subirComic(sentenciaSQL, comic_datos);
 	}
 

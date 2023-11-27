@@ -1961,7 +1961,7 @@ public class VentanaAccionController implements Initializable {
 
 		utilidad = new Utilidades();
 
-		String campos[] = new String[16];
+		String campos[] = new String[17];
 
 		campos[0] = utilidad.comaPorGuion(nombreComic.getText());
 
@@ -2008,7 +2008,7 @@ public class VentanaAccionController implements Initializable {
 	public String[] camposComicBusqueda() {
 		utilidad = new Utilidades();
 
-		String campos[] = new String[16];
+		String campos[] = new String[13];
 
 		if (nombreComic.getText().isEmpty()) {
 			campos[0] = "";
