@@ -1737,6 +1737,7 @@ public class MenuPrincipalController implements Initializable {
 	 * Inicia la animación del progreso de carga.
 	 */
 	public void iniciarAnimacion() {
+		progresoCarga.setVisible(true);
 		progresoCarga.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
 	}
 
@@ -1744,6 +1745,7 @@ public class MenuPrincipalController implements Initializable {
 	 * Detiene la animación del progreso de carga.
 	 */
 	public void detenerAnimacion() {
+		progresoCarga.setVisible(false);
 		progresoCarga.setProgress(0); // Establece el progreso en 0 para detener la animación
 	}
 

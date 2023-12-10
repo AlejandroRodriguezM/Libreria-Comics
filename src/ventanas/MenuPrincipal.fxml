@@ -181,7 +181,7 @@
               </VBox>
          </children>
       </AnchorPane>
-        <ProgressIndicator fx:id="progresoCarga" layoutX="1171.0" layoutY="343.0" prefHeight="66.0" prefWidth="70.0" progress="0.0" stylesheets="@../style/progreso_style.css" />
+        <ProgressIndicator fx:id="progresoCarga" layoutX="1171.0" layoutY="343.0" prefHeight="66.0" prefWidth="70.0" progress="0.0" stylesheets="@../style/progreso_style.css" visible="false" />
       <Button fx:id="botonIntroducir" layoutX="407.0" layoutY="31.0" mnemonicParsing="false" onAction="#accionComic" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Añadir Comic" />
       <Button fx:id="botonModificar" layoutX="506.0" layoutY="31.0" mnemonicParsing="false" onAction="#accionComic" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Modificar Comic">
          <font>

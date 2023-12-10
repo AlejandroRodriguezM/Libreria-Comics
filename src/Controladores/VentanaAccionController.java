@@ -1347,14 +1347,13 @@ public class VentanaAccionController implements Initializable {
 						comicInfo = ApiMarvel.infoComicCode(valorCodigo.trim(), prontInfo);
 					} else if (tipoEditorial.equalsIgnoreCase("Diamond Code")) {
 						comicInfo = WebScraperPreviewsWorld.displayComicInfo(valorCodigo.trim(), prontInfo);
-						System.out.println(comicInfo.length);
-
 					} else {
 						comicInfo = ApiISBNGeneral.getBookInfo(valorCodigo.trim(), prontInfo);
 					}
 
 					if (comprobarCodigo(comicInfo)) {
 						// Rellenar campos con la información del cómic
+
 						rellenarCamposAni(comicInfo);
 						codigoComicTratar.setText(valorCodigo.trim());
 
@@ -1373,6 +1372,7 @@ public class VentanaAccionController implements Initializable {
 			Platform.runLater(() -> {
 				prontInfo.setOpacity(0);
 				prontInfo.setText("");
+				detenerAnimacionPront();
 			});
 		});
 
@@ -1437,7 +1437,7 @@ public class VentanaAccionController implements Initializable {
 			String referencia = comicInfo[9];
 			String urlImagen = comicInfo[10];
 			String editorial = comicInfo[11];
-			
+
 			nombreComic.setText(titulo);
 
 			numeroComic.setValue(numero);
@@ -1611,6 +1611,7 @@ public class VentanaAccionController implements Initializable {
 
 			Platform.runLater(() -> {
 				cargaImagen.setImage(null);
+				cargaImagen.setVisible(false);
 			});
 		}
 	}
@@ -1724,6 +1725,7 @@ public class VentanaAccionController implements Initializable {
 		direccionImagen.setText("");
 		imagencomic.setImage(null);
 		numeroCajaComic.getEditor().clear();
+		codigoComicTratar.setText("");
 		// Borrar cualquier mensaje de error presente
 		borrarErrores();
 

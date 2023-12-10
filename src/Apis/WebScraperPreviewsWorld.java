@@ -129,18 +129,16 @@ public class WebScraperPreviewsWorld {
 
 				// Scraping de la etiqueta div con class "Publisher"
 				String editorial = scrapeAndPrintPublisher(document);
-				
-				if(editorial.equalsIgnoreCase("Marvel Comics")) {
+
+				if (editorial.equalsIgnoreCase("Marvel Comics")) {
 					editorial = "Marvel";
 				}
 
-				String[] comicInfoArray = {titulo, issueKey, numero, formato, precio, variant, artist, writer, fecha, previews_World_Url, portadaImagen, editorial};
+				String[] comicInfoArray = { titulo, issueKey, numero, formato, precio, variant, artist, writer, fecha,
+						previews_World_Url, portadaImagen, editorial };
 
 				for (String info : comicInfoArray) {
-				    comicInfoList.add(info);
-				    
-				    System.out.println("jeje: " + info);
-				    
+					comicInfoList.add(info);
 				}
 
 				comicInfoList.toArray(comicInfoArray);
@@ -192,11 +190,22 @@ public class WebScraperPreviewsWorld {
 		Element titleElement = document.selectFirst("h1.Title");
 		if (titleElement != null) {
 			String titleContent = titleElement.text().trim();
-			// Obtener el número después del símbolo "#"
-			int hashtagIndexNumero = titleContent.indexOf('#');
-			if (hashtagIndexNumero != -1 && hashtagIndexNumero + 1 < titleContent.length()) {
-				return String.valueOf(titleContent.charAt(hashtagIndexNumero + 1)).trim();
-			}else {
+			// Buscar el índice del símbolo "#"
+			int hashtagIndex = titleContent.indexOf('#');
+			if (hashtagIndex != -1 && hashtagIndex + 1 < titleContent.length()) {
+				// Obtener la subcadena que sigue al símbolo "#"
+				String subStringAfterHashtag = titleContent.substring(hashtagIndex + 1);
+
+				// Utilizar una expresión regular para extraer todos los números hasta el
+				// próximo espacio o caracteres no numéricos
+				java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("(\\d+).*?")
+						.matcher(subStringAfterHashtag);
+				if (matcher.find()) {
+					return matcher.group(1).trim();
+				} else {
+					return "0";
+				}
+			} else {
 				return "0";
 			}
 		}
@@ -210,28 +219,27 @@ public class WebScraperPreviewsWorld {
 	 * @return El contenido del título sin el "#" y el texto siguiente.
 	 */
 	private static String removeHashtagAndFollowing(String titleContent) {
-	    if (titleContent.contains("#")) {
-	        int hashtagIndex = titleContent.indexOf('#');
-	        return titleContent.substring(0, hashtagIndex).trim().toLowerCase();
-	    }
-	    return titleContent;
+		if (titleContent.contains("#")) {
+			int hashtagIndex = titleContent.indexOf('#');
+			return titleContent.substring(0, hashtagIndex).trim().toLowerCase();
+		}
+		return titleContent;
 	}
-
 
 	/**
 	 * Extrae e imprime la URL de la imagen principal del documento.
 	 *
 	 * @param document El documento HTML a analizar.
 	 * @return La URL de la imagen principal, o null si no se encuentra.
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	private static String scrapeAndPrintMainImage(Document document) throws IOException {
 		Element mainImageElement = document.selectFirst("#MainContentImage");
 		if (mainImageElement != null) {
 			String mainImageUrl = "https://www.previewsworld.com" + mainImageElement.attr("src");
-			
+
 //			String imagen = Utilidades.descargarImagen(mainImageUrl, DOCUMENTS_PATH);
-			
+
 			return mainImageUrl;
 		}
 		return null;
@@ -278,17 +286,17 @@ public class WebScraperPreviewsWorld {
 		Element publisherElement = document.selectFirst("div.Publisher");
 		if (publisherElement != null) {
 			String publisherName = capitalizeFirstLetter(publisherElement.text().trim().toLowerCase());
-			
-			if(publisherName.equalsIgnoreCase("Boom! Studios")) {
+
+			if (publisherName.equalsIgnoreCase("Boom! Studios")) {
 				publisherName = "Boom Studios";
 			}
-			
-	        if (publisherName.contains("comics")) {
-	            publisherName = publisherName.replace("comics", "").trim();
-	        } else if (publisherName.contains("comic")) {
-	            publisherName = publisherName.replace("comic", "").trim();
-	        }
-			
+
+			if (publisherName.contains("comics")) {
+				publisherName = publisherName.replace("comics", "").trim();
+			} else if (publisherName.contains("comic")) {
+				publisherName = publisherName.replace("comic", "").trim();
+			}
+
 			return publisherName;
 		}
 		return null;
@@ -351,23 +359,23 @@ public class WebScraperPreviewsWorld {
 	 *         mayúscula.
 	 */
 	private static String capitalizeFirstLetter(String input) {
-	    StringBuilder result = new StringBuilder();
+		StringBuilder result = new StringBuilder();
 
-	    input = input.toLowerCase();
-	    
-	    boolean capitalizeNext = true;
+		input = input.toLowerCase();
 
-	    for (char ch : input.toCharArray()) {
-	        if (Character.isWhitespace(ch)) {
-	            capitalizeNext = true;
-	        } else if (capitalizeNext) {
-	            ch = Character.toTitleCase(ch);
-	            capitalizeNext = false;
-	        }
+		boolean capitalizeNext = true;
 
-	        result.append(ch);
-	    }
+		for (char ch : input.toCharArray()) {
+			if (Character.isWhitespace(ch)) {
+				capitalizeNext = true;
+			} else if (capitalizeNext) {
+				ch = Character.toTitleCase(ch);
+				capitalizeNext = false;
+			}
 
-	    return result.toString();
+			result.append(ch);
+		}
+
+		return result.toString();
 	}
 }

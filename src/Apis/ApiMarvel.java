@@ -131,7 +131,7 @@ public class ApiMarvel {
 		}
 		return null;
 	}
-	
+
 	@SuppressWarnings("unused")
 	private static JSONObject getComicInfoUrl(String claveComic, String url, TextArea prontInfo) {
 
@@ -327,9 +327,14 @@ public class ApiMarvel {
 					pencillers.add(creatorName);
 				} else if (creatorRole.equals("writer")) {
 					writers.add(creatorName);
-				} else if (creatorRole.equals("penciller (cover)") || creatorRole.equals("penciler (cover)")) {
-					coverPencillers.add(creatorName);
 				}
+				if (creatorRole.equals("penciller (cover)") || creatorRole.equals("penciler (cover)") || creatorRole.equals("painter (cover)")) {
+					coverPencillers.add(creatorName);
+				}else {
+					
+				}
+				
+				System.out.println(creatorRole);
 			}
 
 			// Fecha de venta
