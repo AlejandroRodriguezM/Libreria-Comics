@@ -1304,7 +1304,6 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public void saveImageFromDataBase() throws SQLException {
 		String sentenciaSQL = "SELECT * FROM comicsbbdd";
-		FuncionesExcel funcionesExcel = new FuncionesExcel();
 		new CargaComicsController();
 
 		conn = DBManager.conexion();
@@ -1312,14 +1311,12 @@ public class DBLibreriaManager extends Comic {
 		InputStream input = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet rs = null;
-		long processedItems = 0; // Processed items count
 
 		try {
 			preparedStatement = conn.prepareStatement(sentenciaSQL);
 			rs = preparedStatement.executeQuery();
 
 			if (directorio != null) {
-				funcionesExcel.verCargaComics();
 				while (rs.next()) {
 					String direccionImagen = rs.getString(16);
 
@@ -1356,25 +1353,7 @@ public class DBLibreriaManager extends Comic {
 
 					}
 
-					final long finalProcessedItems = processedItems;
-
-					// Update UI elements using Platform.runLater
-					Platform.runLater(() -> {
-
-						String texto = ("Imagen: " + nombreImagen + "\n");
-
-						double progress = (double) finalProcessedItems / (finalProcessedItems + 1);
-						String porcentaje = String.format("%.2f%%", progress * 100);
-
-						funcionesExcel.cargarDatosEnCargaComics(texto, porcentaje, progress);
-					});
-
-					processedItems++;
 				}
-
-				Platform.runLater(() -> {
-					funcionesExcel.cargarDatosEnCargaComics("", "100%", 100.0);
-				});
 			}
 		} catch (SQLException | IOException e) {
 			nav.alertaException(e.toString());

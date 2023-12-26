@@ -373,6 +373,18 @@ public class FuncionesExcel {
 
 		File fichero = Utilidades.tratarFichero(frase, formato).showSaveDialog(null); // Llamada a funcion
 
+//		Platform.runLater(() -> {
+		try {
+			if (tipoBusqueda.equalsIgnoreCase("Completa")) {
+				libreria.saveImageFromDataBase();
+
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//		});
+
 		Task<Boolean> task = new Task<Boolean>() {
 			@Override
 			protected Boolean call() throws Exception {
@@ -403,21 +415,10 @@ public class FuncionesExcel {
 						celda = fila.createCell(i);
 						celda.setCellValue(encabezado);
 					}
+
 					verCargaComics();
 					indiceFila++;
-					
-					Platform.runLater(() -> {
-						try {
-							if(tipoBusqueda.equalsIgnoreCase("Completa")) {
-								libreria.saveImageFromDataBase();
 
-							}
-						} catch (SQLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					});
-					
 					for (Comic comic : listaComics) {
 						fila = hoja.createRow(indiceFila);
 						fila.createCell(0).setCellValue("");
@@ -445,22 +446,23 @@ public class FuncionesExcel {
 
 						// Update UI elements using Platform.runLater
 						Platform.runLater(() -> {
+							String texto = "Comic: " + comic.getNombre() + " - " + comic.getNumero() + " - "
+									+ comic.getVariante() + "\n";
 
-							String texto = ("Comic: " + comic.getNombre() + " - " + comic.getNumero() + " - "
-									+ comic.getVariante() + "\n");
-
-							double progress = (double) finalProcessedItems / (finalProcessedItems + 1);
+							double progress = (double) finalProcessedItems / listaComics.size();
+							// Redondear al 100% si está muy cerca
+							if (progress >= 0.999) {
+								progress = 1.0;
+							}
 							String porcentaje = String.format("%.2f%%", progress * 100);
 
 							cargarDatosEnCargaComics(texto, porcentaje, progress);
 						});
 
 						processedItems++;
+						indiceFila++;
 					}
 
-
-
-					
 					outputStream = new FileOutputStream(fichero);
 					libro.write(outputStream);
 					libro.close();
