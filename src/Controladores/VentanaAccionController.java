@@ -72,6 +72,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -205,6 +208,13 @@ public class VentanaAccionController implements Initializable {
 	 */
 	@FXML
 	private Button botonbbdd;
+
+	/**
+	 * Botón para guardar un comic correctamente para el importado de comics
+	 * mediante fichero.
+	 */
+	@FXML
+	private Button botonGuardarComic;
 
 	// Campos de texto (TextField)
 	/**
@@ -474,6 +484,48 @@ public class VentanaAccionController implements Initializable {
 	@FXML
 	private VBox rootVBox;
 
+//    @FXML
+//    private Button botonImportarFicheroCodigoBarras;
+//    
+//    @FXML
+//    private Button botonMenuCodigoBarras;
+
+	@FXML
+	private MenuItem menu_Importar_Fichero_CodigoBarras;
+
+	@FXML
+	private MenuItem menu_leer_CodigoBarras;
+
+	@FXML
+	private MenuItem menu_comic_aleatoria;
+
+	@FXML
+	private MenuItem menu_comic_aniadir;
+
+	@FXML
+	private MenuItem menu_comic_eliminar;
+
+	@FXML
+	private MenuItem menu_comic_modificar;
+
+	@FXML
+	private MenuItem menu_comic_puntuar;
+
+	@FXML
+	private MenuItem menu_estadistica_estadistica;
+
+	@FXML
+	private MenuBar menu_navegacion;
+
+	@FXML
+	private Menu navegacion_cerrar;
+
+	@FXML
+	private Menu navegacion_comic;
+
+	@FXML
+	private Menu navegacion_estadistica;
+
 	/**
 	 * Lista de columnas de la tabla de cómics.
 	 */
@@ -593,7 +645,11 @@ public class VentanaAccionController implements Initializable {
 
 		if (!TIPO_ACCION.equals("modificar")) {
 			autoRelleno(idComicTratar);
-
+		}
+		
+		if (!TIPO_ACCION.equals("aniadir")) {
+			navegacion_cerrar.setDisable(true);
+			navegacion_cerrar.setVisible(false);
 		}
 
 		Platform.runLater(() -> asignarTooltips());
@@ -834,6 +890,8 @@ public class VentanaAccionController implements Initializable {
 			tooltipsMap.put(busquedaEditorial, "Selecciona la distribuidora para buscar");
 			tooltipsMap.put(firmaComic, "Nombre de la firma del cómic / libro / manga");
 			tooltipsMap.put(codigoComicTratar, "Codigo del comic, sea UPC, ISBN o Diamond Code");
+//			tooltipsMap.put(botonMenuCodigoBarras, "Abre un menu donde usando una pistola de escaner puedes leer codigos de barras para poder guardarlos en un archivo");
+//			tooltipsMap.put(menu_Importar_Fichero_CodigoBarras, "Permite importar un fichero donde aparecen codigos de barras para poder hacer una busqueda avanzada de varios comics a la vez");
 
 		} else if ("eliminar".equals(TIPO_ACCION)) {
 			tooltipsMap.put(botonEliminar, "Botón para eliminar un cómic");
@@ -941,8 +999,6 @@ public class VentanaAccionController implements Initializable {
 
 			direccionImagen.setText(comic_temp.getImagen());
 
-			prontInfo.setOpacity(1);
-			prontInfo.setText(libreria.comicDatos(id_comic).toString().replace("[", "").replace("]", ""));
 			imagencomic.setImage(libreria.selectorImage(id_comic));
 
 			if (TIPO_ACCION.equals("modificar")) {
@@ -950,6 +1006,7 @@ public class VentanaAccionController implements Initializable {
 				mostrarOpcionModificar();
 				idComicTratar_mod.setText(comic_temp.getID());
 			}
+			prontInfo.setOpacity(0);
 
 		}
 		DBManager.resetConnection();
@@ -1018,8 +1075,6 @@ public class VentanaAccionController implements Initializable {
 
 				direccionImagen.setText(comic_temp.getImagen());
 
-				prontInfo.setOpacity(1);
-				prontInfo.setText(libreria.comicDatos(id_comic).toString().replace("[", "").replace("]", ""));
 				imagencomic.setImage(libreria.selectorImage(id_comic));
 
 				if (TIPO_ACCION.equals("modificar")) {
@@ -1028,6 +1083,7 @@ public class VentanaAccionController implements Initializable {
 					idComicTratar_mod.setText(comic_temp.getID());
 
 				}
+				prontInfo.setOpacity(0);
 			}
 			DBManager.resetConnection();
 		}
@@ -1114,14 +1170,17 @@ public class VentanaAccionController implements Initializable {
 	 */
 	public void mostrarOpcionAniadir() {
 		ocultarCampos();
-
 		List<Node> elementosAMostrarYHabilitar = Arrays.asList(dibujanteComic, editorialComic, estadoComic, fechaComic,
 				firmaComic, formatoComic, guionistaComic, nombreKeyIssue, numeroCajaComic, procedenciaComic,
 				urlReferencia, botonIntroducir, botonBusquedaAvanzada, precioComic, direccionImagen, label_portada,
 				label_precio, label_caja, label_dibujante, label_editorial, label_estado, label_fecha, label_firma,
 				label_formato, label_guionista, label_key, label_procedencia, label_referencia, botonSubidaPortada,
-				codigoComicTratar, label_codigo_comic);
+				codigoComicTratar, label_codigo_comic,tablaBBDD,rootVBox);
 
+		rootVBox.setPrefHeight(130);
+		rootVBox.setLayoutY(460);
+
+		
 		for (Node elemento : elementosAMostrarYHabilitar) {
 			elemento.setVisible(true);
 			elemento.setDisable(false);
@@ -1219,7 +1278,7 @@ public class VentanaAccionController implements Initializable {
 		String id_comic = idComicTratar.getText();
 		idComicTratar.setStyle("");
 		if (comprobarID(id_comic)) {
-
+			prontInfo.setOpacity(1);
 			libreria.actualizarPuntuacion(id_comic, comicPuntuacion()); // Llamada a funcion
 			prontInfo.setText("Deseo concedido. Has añadido el nuevo comic.");
 
@@ -1246,6 +1305,7 @@ public class VentanaAccionController implements Initializable {
 
 		if (comprobarID(id_comic)) {
 			libreria.borrarPuntuacion(id_comic);
+			prontInfo.setOpacity(1);
 			prontInfo.setText("Deseo concedido. Has borrado la puntuacion del comic.");
 
 			Image nuevaImagen = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
@@ -1290,6 +1350,32 @@ public class VentanaAccionController implements Initializable {
 	}
 
 	/**
+	 * Método asociado al evento de acción que se dispara al seleccionar la opción
+	 * "Ver Menú Código de Barras". Invoca el método correspondiente en el objeto
+	 * 'nav' para mostrar el menú de códigos de barras.
+	 *
+	 * @param event Objeto que representa el evento de acción.
+	 */
+	@FXML
+	void verMenuCodigoBarras(ActionEvent event) {
+
+		if ("aniadir".equals(TIPO_ACCION)) {
+			nav.verMenuCodigosBarra();
+		}
+	}
+
+	/**
+	 * Método asociado al evento de acción que se dispara al seleccionar la opción
+	 * "Importar Fichero Código de Barras". Este método aún no tiene implementación.
+	 *
+	 * @param evento Objeto que representa el evento de acción.
+	 */
+	@FXML
+	void importarFicheroCodigoBarras(ActionEvent evento) {
+		// Implementación pendiente
+	}
+
+	/**
 	 * Oculta los elementos de búsqueda en la interfaz de usuario.
 	 */
 	private void ocultarElementosBusqueda() {
@@ -1299,6 +1385,12 @@ public class VentanaAccionController implements Initializable {
 
 		botonBusquedaCodigo.setDisable(true);
 		busquedaEditorial.setDisable(true);
+
+//		botonMenuCodigoBarras.setDisable(true);
+//		botonImportarFicheroCodigoBarras.setDisable(true);
+//		
+//		botonMenuCodigoBarras.setVisible(false);
+//		botonImportarFicheroCodigoBarras.setVisible(false);
 
 		// Restaurar valores predeterminados en el ComboBox
 		busquedaEditorial.getSelectionModel().clearSelection(); // Desseleccionar cualquier elemento seleccionado
@@ -1317,6 +1409,13 @@ public class VentanaAccionController implements Initializable {
 		busquedaCodigo.setVisible(true);
 
 		busquedaEditorial.setDisable(false);
+//		
+//		botonMenuCodigoBarras.setDisable(false);
+//		botonImportarFicheroCodigoBarras.setDisable(false);
+//		
+//		botonMenuCodigoBarras.setVisible(true);
+//		botonImportarFicheroCodigoBarras.setVisible(true);
+
 	}
 
 	/**
@@ -1480,6 +1579,13 @@ public class VentanaAccionController implements Initializable {
 
 	}
 
+	/**
+	 * Carga una imagen de forma asíncrona desde una URL y la muestra en un
+	 * ImageView.
+	 *
+	 * @param urlImagen La URL de la imagen a cargar.
+	 * @param imageView El ImageView en el que se mostrará la imagen cargada.
+	 */
 	public void cargarImagenAsync(String urlImagen, ImageView imageView) {
 		Task<Image> cargarImagenTask = new Task<Image>() {
 			@Override
@@ -2255,7 +2361,7 @@ public class VentanaAccionController implements Initializable {
 
 			prontInfo.setOpacity(1);
 			prontInfo.setStyle("-fx-background-color: #A0F52D");
-			prontInfo.setText("Has introducido correctamente: \n" + comic.toString().replace("[", "").replace("]", ""));
+			prontInfo.setText("Comic introducido correctamente");
 			libreria.listasAutoCompletado();
 
 			if (Utilidades.isURL(datos[10])) {
@@ -2490,8 +2596,7 @@ public class VentanaAccionController implements Initializable {
 
 			prontInfo.setOpacity(1);
 			prontInfo.setStyle("-fx-background-color: #A0F52D");
-			prontInfo.setText("Deseo Concedido..." + "\nHas modificado correctamente: "
-					+ comic.toString().replace("[", "").replace("]", ""));
+			prontInfo.setText("Deseo Concedido..." + "\nHas modificado correctamente el comic");
 			libreria.listasAutoCompletado();
 			funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 
@@ -2582,8 +2687,8 @@ public class VentanaAccionController implements Initializable {
 
 				if (existeComic || newValue.isEmpty()) {
 
-					botonBusquedaAvanzada.setVisible(true);
-					botonBusquedaAvanzada.setDisable(false);
+					botonBusquedaAvanzada.setVisible(false);
+					botonBusquedaAvanzada.setDisable(true);
 
 					try {
 						comic_temp = libreria.comicDatos(textField.getText());
@@ -2637,13 +2742,6 @@ public class VentanaAccionController implements Initializable {
 
 					prontInfo.clear();
 					prontInfo.setOpacity(1);
-					try {
-						prontInfo.setText(
-								libreria.comicDatos(textField.getText()).toString().replace("[", "").replace("]", ""));
-						imagencomic.setImage(libreria.selectorImage(textField.getText()));
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
 					imagencomic.setImage(libreria.selectorImage(textField.getText()));
 				} else {
 					borrar_datos_autorellenos();

@@ -32,6 +32,7 @@ import java.util.concurrent.CompletableFuture;
 
 import Controladores.AccesoBBDDController;
 import Controladores.CrearBBDDController;
+import Controladores.MenuLectorCodigoBarras;
 import Controladores.MenuPrincipalController;
 import Controladores.OpcionesDatosController;
 import Controladores.RecomendacionesController;
@@ -149,6 +150,63 @@ public class Ventanas {
 			alertaException(ex.toString());
 			ex.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Abre la ventana de recomendaciones de cómics. Carga la vista de la ventana de
+	 * recomendaciones y muestra la ventana correspondiente con su controlador.
+	 * Define el tamaño de la ventana, la asocia con el comportamiento de cierre y
+	 * resetea la conexión a la base de datos.
+	 */
+	public void verMenuCodigosBarra() {
+	    try {
+	    	
+
+	    	
+	        Platform.runLater(() -> {
+	            try {
+	            	
+	    			// Verifica si hay una ventana abierta y ciérrala si es necesario
+	    			ventanaAbierta();
+	            	
+	                // Load the view
+	                FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/ScannerComic.fxml"));
+
+	                // Load the parent
+	                Parent root = loader.load();
+
+	                // Get the controller
+	                MenuLectorCodigoBarras controlador = loader.getController();
+
+	                // Create the scene and the stage
+	                Scene scene = new Scene(root);
+
+	                Stage stage = new Stage();
+	                stage.setResizable(false);
+	                stage.setTitle("Lector de barras"); // Application title.
+	                stage.getIcons().add(new Image("/Icono/icon2.png"));
+
+	                // Associate the stage with the scene
+	                stage.setScene(scene);
+	                stage.show();
+
+	    			// Indico que debe hacer al cerrar
+	    			stage.setOnCloseRequest(e -> {
+	    				controlador.closeWindow();
+	    				ventanaActual = null; // Establece la ventana actual a null cuando se cierra
+	    			});
+
+	    			// Actualizar el estado de la ventana abierta
+	    			ventanaActual = stage;
+
+	                
+	            } catch (IOException ex) {
+	                alertaException(ex.toString());
+	            }
+	        });
+	    } catch (Exception e) {
+	        alertaException(e.toString());
+	    }
 	}
 
 	/**
@@ -375,6 +433,8 @@ public class Ventanas {
 			ex.printStackTrace();
 		}
 	}
+
+
 
 	/**
 	 * Permite salir del programa completamente

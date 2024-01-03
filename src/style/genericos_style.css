@@ -218,3 +218,53 @@
     -fx-opacity: 0.8;
 }
 
+.button#botonBorrarTodo {
+    -fx-background-color: #702963;
+    -fx-border-color: #702963;
+}
+
+.button#botonBorrarTodo:hover {
+    -fx-background-color: #702963;
+}
+
+.button#botonDeshacer {
+    -fx-background-color: #E49B0F;
+    -fx-border-color: #E49B0F;
+}
+
+.button#botonDeshacer:hover {
+    -fx-background-color: #E49B0F;
+}
+
+.button#botonDescargar {
+    -fx-font-size: 23.0px;
+    -fx-background-color: #5cb85c;
+    -fx-border-color: #5cb85c;
+}
+
+.button#botonDescargar:hover {
+    -fx-font-size: 23.0px;
+    -fx-background-color: #5cb85c;
+}
+
+.button#botonMenuCodigoBarras {
+    -fx-font-size: 9.0px;
+}
+
+.button#botonGuardarComic {
+    -fx-background-color: #E49B0F;
+    -fx-border-color: #E49B0F;
+}
+
+.button#botonGuardarComic:hover {
+    -fx-background-color: #E49B0F;
+}
+
+.button#botonIntroducirCodigo { 
+    -fx-border-width: 5px;
+    -fx-background-color: #ec5353;
+}
+
+.button#botonIntroducirCodigo:hover {
+    -fx-background-color: #ec5353;
+}

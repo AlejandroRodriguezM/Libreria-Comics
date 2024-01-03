@@ -68,4 +68,9 @@
 .combo-box .list-cell:selected {
     -fx-background-color: #CCCCCC;
 }
+/* Ajuste del tamaño de las columnas */
+.table-view .column-header {
+    -fx-pref-height: 20; /* Puedes ajustar este valor según tus necesidades */
+}
+
 

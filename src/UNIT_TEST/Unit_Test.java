@@ -170,7 +170,7 @@ public class Unit_Test extends Application {
 //		pruebaDiamondCode_imagen("JUL220767");
 //		launch(args);
 //		verLibroGoogle("9788411505963");
-		System.out.println(capitalizeFirstLetter("ANIMAL POUND CVR A ASHCAN GROSS"));
+//		System.out.println(capitalizeFirstLetter("ANIMAL POUND CVR A ASHCAN GROSS"));
 
 //		System.out.println(getComicInfoUrl("A.X.E.: Judgment Day","Peach Momoko", "1"));
 
@@ -178,19 +178,21 @@ public class Unit_Test extends Application {
 
 //		comicModificarCodigoPrueba();
 //		comicModificarCodigoPruebaCompleta();
+		
+		nav.verMenuCodigosBarra();
 
 	}
 
 	public void start(Stage primaryStage) {
-
-		VentanaAccionController ventanaAccion = new VentanaAccionController();
-
-		// Crear la lista de ComboBoxes
-		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
-				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
-
-		// Pasar la lista de ComboBoxes a VentanaAccionController
-		ventanaAccion.pasarComboBoxes(comboboxes);
+//
+//		VentanaAccionController ventanaAccion = new VentanaAccionController();
+//
+//		// Crear la lista de ComboBoxes
+//		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
+//				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
+//
+//		// Pasar la lista de ComboBoxes a VentanaAccionController
+//		ventanaAccion.pasarComboBoxes(comboboxes);
 
 //		Platform.runLater(() -> {
 //			accionComicPruebaAni();
@@ -208,9 +210,9 @@ public class Unit_Test extends Application {
 //			accionComicPruebaPuntuar();
 //		});
 
-		Platform.runLater(() -> {
-			entrarMenuPrueba();
-		});
+//		Platform.runLater(() -> {
+//			entrarMenuPrueba();
+//		});
 
 //		Platform.runLater(() -> {
 //			entrarInicioPrueba();
