@@ -160,9 +160,6 @@ public class Ventanas {
 	 */
 	public void verMenuCodigosBarra() {
 	    try {
-	    	
-
-	    	
 	        Platform.runLater(() -> {
 	            try {
 	            	
@@ -568,7 +565,7 @@ public class Ventanas {
 		stage.setResizable(false);
 		alert.setTitle("Insertando . . .");
 		alert.setHeaderText("Estas apunto de introducir datos.");
-		alert.setContentText(" Estas seguro que quieres introducir el comic?");
+		alert.setContentText(" Estas seguro que quieres introducir el comic/comics?");
 		if (alert.showAndWait().get() == ButtonType.OK) {
 			return true;
 		}

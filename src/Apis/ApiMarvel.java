@@ -49,7 +49,11 @@ public class ApiMarvel {
 			comic = getComicInfo(cleanedCode, "upc", prontInfo);
 		}
 
-		return displayComicInfo(comic);
+		if (comic != null) {
+			return displayComicInfo(comic);
+		}
+
+		return null;
 	}
 
 	/**
@@ -328,13 +332,14 @@ public class ApiMarvel {
 				} else if (creatorRole.equals("writer")) {
 					writers.add(creatorName);
 				}
-				if (creatorRole.equals("penciller (cover)") || creatorRole.equals("penciler (cover)") || creatorRole.equals("painter (cover)")) {
+				if (creatorRole.equals("penciller (cover)") || creatorRole.equals("penciler (cover)")
+						|| creatorRole.equals("painter (cover)")) {
 					coverPencillers.add(creatorName);
-				}else {
-					
+				} else {
+
 				}
-				
-				System.out.println(creatorRole);
+
+				//System.out.println(creatorRole);
 			}
 
 			// Fecha de venta

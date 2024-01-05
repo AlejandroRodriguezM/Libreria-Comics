@@ -19,10 +19,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,7 +42,6 @@ import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBManager;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.stage.Stage;
@@ -178,7 +177,7 @@ public class Unit_Test extends Application {
 
 //		comicModificarCodigoPrueba();
 //		comicModificarCodigoPruebaCompleta();
-		
+
 		nav.verMenuCodigosBarra();
 
 	}
@@ -226,7 +225,7 @@ public class Unit_Test extends Application {
 		Document document = Jsoup.connect(previews_World_Url).get();
 
 		// Scraping de la etiqueta img con id "MainContentImage"
-		scrapeAndPrintMainImage(document);
+		scrapeAndPrintMainImageAsync(document);
 	}
 
 	/**
@@ -387,13 +386,23 @@ public class Unit_Test extends Application {
 	}
 
 	/**
-	 * Realiza una prueba de descarga de imagen desde una URL.
-	 * 
+	 * Realiza una prueba de descarga de imagen desde una URL de forma asíncrona.
+	 *
 	 * @throws IOException Si ocurre un error de entrada/salida.
 	 */
-	public static void testDescargaImagen() throws IOException {
+	public static void testDescargaImagenAsync() throws IOException {
 		String URLimagen = "https://covers.openlibrary.org/b/id/12705636-L.jpg";
-		Utilidades.descargarImagen(URLimagen, DOCUMENTS_PATH);
+
+		CompletableFuture<String> descargaImagenFuture = Utilidades.descargarImagenAsync(URLimagen, DOCUMENTS_PATH);
+
+		descargaImagenFuture.thenAccept(rutaImagen -> {
+			if (rutaImagen != null) {
+				System.out.println("Imagen descargada y guardada como JPG correctamente en: " + rutaImagen);
+			} else {
+				System.err.println("Error al descargar la imagen.");
+			}
+		}).join(); // Esperar a que la tarea asíncrona se complete (bloquea el hilo principal hasta
+					// que se complete)
 	}
 
 	/**
@@ -403,14 +412,24 @@ public class Unit_Test extends Application {
 	 * @return
 	 * @throws IOException
 	 */
-	private static void scrapeAndPrintMainImage(Document document) throws IOException {
+	private static void scrapeAndPrintMainImageAsync(Document document) throws IOException {
 		Element mainImageElement = document.selectFirst("#MainContentImage");
 		if (mainImageElement != null) {
 			String mainImageUrl = "https://www.previewsworld.com" + mainImageElement.attr("src");
 
 			System.out.println(mainImageUrl);
 
-			Utilidades.descargarImagen(mainImageUrl, DOCUMENTS_PATH);
+			CompletableFuture<String> descargaImagenFuture = Utilidades.descargarImagenAsync(mainImageUrl,
+					DOCUMENTS_PATH);
+
+			descargaImagenFuture.thenAccept(rutaImagen -> {
+				if (rutaImagen != null) {
+					System.out.println("Imagen descargada y guardada como JPG correctamente en: " + rutaImagen);
+				} else {
+					System.err.println("Error al descargar la imagen.");
+				}
+			}).join(); // Esperar a que la tarea asíncrona se complete (bloquea el hilo principal hasta
+						// que se complete)
 		}
 	}
 
@@ -440,11 +459,14 @@ public class Unit_Test extends Application {
 	 * @throws URISyntaxException Si ocurre un error en la URI.
 	 */
 	public static void mostrarComicGeneral() throws IOException, JSONException, URISyntaxException {
+		
+		ApiISBNGeneral isbnGeneral = new ApiISBNGeneral();
+		
 		System.err.println("Datos de comics de búsqueda genérica: ");
 
 		String comicCode = "978-1684157648";
 
-		String datosGeneral[] = ApiISBNGeneral.getBookInfo(comicCode, null);
+		String datosGeneral[] = isbnGeneral.getBookInfo(comicCode, null);
 
 		if (datosGeneral.length == 0) {
 

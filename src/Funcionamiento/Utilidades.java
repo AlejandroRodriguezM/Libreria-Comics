@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.CompletableFuture;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -242,11 +243,15 @@ public class Utilidades {
 	 */
 	public String comaPorGuion(String dato) {
 
-		if (dato.contains(",")) {
-			dato = dato.replace(",", " - ");
+		String resultado = "";
+		if (dato != null) {
+			if (dato.contains(",")) {
+				dato = dato.replace(",", " - ");
+			}
+			resultado = eliminarEspacios(dato);
 		}
-		dato = eliminarEspacios(dato);
-		return dato;
+
+		return resultado;
 	}
 
 	/**
@@ -256,13 +261,16 @@ public class Utilidades {
 	 * @return
 	 */
 	public static String eliminarEspacios(String dato) {
-		// Elimina espacios adicionales al principio y al final.
-		dato = dato.trim();
 
-		// Reemplaza espacios múltiples entre palabras por un solo espacio.
-		dato = dato.replaceAll("\\s+", " ");
+		String resultado = "";
+		if (dato != null) {
+			// Elimina espacios adicionales al principio y al final.
+			dato = dato.trim();
 
-		return dato;
+			// Reemplaza espacios múltiples entre palabras por un solo espacio.
+			resultado = dato.replaceAll("\\s+", " ");
+		}
+		return resultado;
 	}
 
 	/**
@@ -1125,6 +1133,20 @@ public class Utilidades {
 			return false;
 		}
 	}
+	
+	/**
+	 * Verifica si la cadena proporcionada representa una ruta de archivo local.
+	 * @param cadena La cadena que se va a verificar.
+	 * @return true si la cadena es una ruta de archivo local absoluta, false de lo contrario.
+	 */
+    public static boolean isRutaDeArchivo(String cadena) {
+        try {
+            Path path = Paths.get(cadena);
+            return path.isAbsolute();  // Verifica si es una ruta de archivo absoluta
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
 	/**
 	 * Obtiene la extensión del archivo desde una URL.
@@ -1173,26 +1195,28 @@ public class Utilidades {
 	 * @return Ruta de destino de la imagen descargada o null si hay un error.
 	 * @throws IOException Si ocurre un error de entrada/salida.
 	 */
-	public static String descargarImagen(String urlImagen, String carpetaDestino) throws IOException {
-		try {
-			URI uri = validarURL(urlImagen);
-			String nombreImagen = obtenerNombreImagen(urlImagen);
-			crearCarpetaSiNoExiste(carpetaDestino);
-			String rutaDestino = carpetaDestino + File.separator + nombreImagen;
+    public static CompletableFuture<String> descargarImagenAsync(String urlImagen, String carpetaDestino) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                URI uri = validarURL(urlImagen);
+                String nombreImagen = obtenerNombreImagen(urlImagen);
+                crearCarpetaSiNoExiste(carpetaDestino);
+                String rutaDestino = carpetaDestino + File.separator + nombreImagen;
 
-			if (descargarYConvertirImagen(uri, carpetaDestino)) {
-				System.out.println("Imagen descargada y guardada como JPG correctamente");
-				return rutaDestino;
-			}
-		} catch (IllegalArgumentException e) {
-			System.err.println(e.getMessage());
-		} catch (Exception e) {
-			System.err.println("No se pudo acceder a la URL: " + urlImagen);
-			e.printStackTrace();
-		}
+                if (descargarYConvertirImagen(uri, carpetaDestino)) {
+                    System.out.println("Imagen descargada y guardada como JPG correctamente");
+                    return rutaDestino;
+                }
+            } catch (IllegalArgumentException e) {
+                System.err.println(e.getMessage());
+            } catch (Exception e) {
+                System.err.println("No se pudo acceder a la URL: " + urlImagen);
+                e.printStackTrace();
+            }
 
-		return null;
-	}
+            return null;
+        });
+    }
 
 //    public static Task<String> descargarImagenTask(String urlImagen, String carpetaDestino) {
 //        return new Task<String>() {
@@ -1399,7 +1423,7 @@ public class Utilidades {
 		}
 		return "";
 	}
-	
+
 	/**
 	 * Funcion que abre una ventana que aceptara los formatos de archivos que le
 	 * demos como parametro.
@@ -1416,9 +1440,15 @@ public class Utilidades {
 		return fileChooser; // Devuelve el FileChooser para que la interfaz gráfica lo utilice
 	}
 
+	public static Comic devolverComic(String id) {
+		return null;
+
+	}
 
 	/**
-	 * Funcion que segun el string que se le de, le hace un encode para que pueda ser usado en una API
+	 * Funcion que segun el string que se le de, le hace un encode para que pueda
+	 * ser usado en una API
+	 * 
 	 * @param input
 	 * @return
 	 */

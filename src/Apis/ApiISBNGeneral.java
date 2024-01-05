@@ -5,6 +5,7 @@
 package Apis;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -18,6 +19,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,6 +37,16 @@ import javafx.scene.control.TextArea;
 public class ApiISBNGeneral {
 
 	/**
+	 * Obtenemos el directorio de inicio del usuario
+	 */
+	private final static String USER_DIR = System.getProperty("user.home");
+
+	/**
+	 * Construimos la ruta al directorio "Documents"
+	 */
+	private final static String DOCUMENTS_PATH = USER_DIR + File.separator + "Documents";
+
+	/**
 	 * Obtiene información sobre un libro a través de su ISBN y lo devuelve en forma
 	 * de un array de cadenas.
 	 *
@@ -47,8 +59,7 @@ public class ApiISBNGeneral {
 	 * @throws JSONException      Si ocurre un error al analizar la respuesta JSON.
 	 * @throws URISyntaxException Si ocurre un error al construir la URI.
 	 */
-	public static String[] getBookInfo(String isbn, TextArea prontInfo)
-			throws IOException, JSONException, URISyntaxException {
+	public String[] getBookInfo(String isbn, TextArea prontInfo) throws IOException, JSONException, URISyntaxException {
 		String apiUrl = "https://openlibrary.org/api/books?bibkeys=ISBN:" + isbn + "&jscmd=details&format=json";
 		String apiKey = Utilidades.cargarApiComicVine();
 
@@ -140,7 +151,7 @@ public class ApiISBNGeneral {
 
 			String artistas = "";
 			String escritores = "";
-			
+
 			// Extraer autores
 			if (details.has("authors") && details.get("authors") instanceof JSONArray) {
 
@@ -181,7 +192,7 @@ public class ApiISBNGeneral {
 					}
 				}
 			}
-			
+
 			// Dibujantes
 			bookInfoList.add(artistas);
 
@@ -211,11 +222,40 @@ public class ApiISBNGeneral {
 				String thumbnailUrl = bookInfo.getString("thumbnail_url");
 				thumbnailUrl = thumbnailUrl.replace("-S.jpg", "-L.jpg").replace("-M.jpg", "-L.jpg");
 
-				System.out.println("URL de la imagen: " + thumbnailUrl);
+				String rutaImagen = "/Funcionamiento/sinPortada.jpg";
+				CompletableFuture<String> descargaImagenFuture = Utilidades
+						.descargarImagenAsync(thumbnailUrl, DOCUMENTS_PATH).exceptionally(e -> {
+							e.printStackTrace();
+							return rutaImagen; // Devolver la ruta local si hay un error en la descarga
+						});
 
-				bookInfoList.add(thumbnailUrl);
+				descargaImagenFuture.thenAccept(rutaImagenDescargada -> {
+					if (rutaImagenDescargada != null) {
+						// Se descargó la imagen, usar la ruta descargada
+						bookInfoList.add(rutaImagenDescargada);
+					} else {
+						// La descarga de la imagen falló, usar la ruta local predeterminada desde los
+						// recursos
+						URL url = getClass().getResource(rutaImagen);
+						if (url != null) {
+							bookInfoList.add(url.toExternalForm());
+						} else {
+							System.err.println(
+									"Error al obtener la ruta de la imagen predeterminada desde los recursos.");
+						}
+					}
+				}).join(); // Esperar a que la tarea asíncrona se complete (bloquea el hilo principal hasta
+							// que se complete)
 			} else {
-				bookInfoList.add("");
+				// No hay thumbnail_url, agregar la ruta de la imagen predeterminada desde los
+				// recursos
+				String rutaImagen = "/Funcionamiento/sinPortada.jpg";
+				URL url = getClass().getResource(rutaImagen);
+				if (url != null) {
+					bookInfoList.add(url.toExternalForm());
+				} else {
+					System.err.println("Error al obtener la ruta de la imagen predeterminada.");
+				}
 			}
 
 			if (details.has("publishers")) {
@@ -229,8 +269,8 @@ public class ApiISBNGeneral {
 			// Convierte la lista en un array de cadenas
 			String[] bookInfoArray = new String[bookInfoList.size()];
 
-			System.out.println("Size: " + bookInfoList.size());
-			
+			////// System.out.println("Size: " + bookInfoList.size());
+
 			bookInfoList.toArray(bookInfoArray);
 
 			return bookInfoArray;

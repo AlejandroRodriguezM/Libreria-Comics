@@ -884,7 +884,7 @@ public class MenuPrincipalController implements Initializable {
 		prontInfo.setOpacity(0);
 		imagencomic.setImage(null);
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-
+		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
 		funcionesTabla.tablaBBDD(listaPorParametro(), tablaBBDD, columnList); // Llamada a funcion
 
 		if (listaPorParametro().size() > 0) {
@@ -915,6 +915,7 @@ public class MenuPrincipalController implements Initializable {
 		imagencomic.setImage(null);
 
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
+		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
 		funcionesTabla.tablaBBDD(libreria.libreriaCompleta(), tablaBBDD, columnList); // Llamada a funcion
 
 		botonImprimir.setVisible(false);
@@ -938,6 +939,7 @@ public class MenuPrincipalController implements Initializable {
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
+		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
 		funcionesTabla.tablaBBDD(libreria.libreriaPuntuacion(), tablaBBDD, columnList); // Llamada a funcion
 
 	}
@@ -956,6 +958,7 @@ public class MenuPrincipalController implements Initializable {
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
+		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
 		funcionesTabla.tablaBBDD(libreria.libreriaVendidos(), tablaBBDD, columnList); // Llamada a funcion
 	}
 
@@ -973,6 +976,7 @@ public class MenuPrincipalController implements Initializable {
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
+		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
 		funcionesTabla.tablaBBDD(libreria.libreriaFirmados(), tablaBBDD, columnList); // Llamada a funcion
 	}
 
@@ -990,6 +994,7 @@ public class MenuPrincipalController implements Initializable {
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
+		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
 		funcionesTabla.tablaBBDD(libreria.libreriaComprados(), tablaBBDD, columnList); // Llamada a funcion
 	}
 
@@ -1007,6 +1012,7 @@ public class MenuPrincipalController implements Initializable {
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
+		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
 		funcionesTabla.tablaBBDD(libreria.libreriaPosesion(), tablaBBDD, columnList); // Llamada a funcion
 	}
 
@@ -1022,7 +1028,7 @@ public class MenuPrincipalController implements Initializable {
 		libreria = new DBLibreriaManager(); // Crear una instancia del gestor de la base de datos
 		libreria.reiniciarBBDD(); // Reiniciar la base de datos si es necesario
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a la función para establecer nombres de
-																// columnas
+		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);						// columnas
 		funcionesTabla.tablaBBDD(libreria.libreriaKeyIssue(), tablaBBDD, columnList);
 	}
 
@@ -1395,6 +1401,7 @@ public class MenuPrincipalController implements Initializable {
 			prontInfo.setOpacity(1);
 			prontInfo.setText(libreria.comicDatos(idRow.getID()).toString().replace("[", "").replace("]", ""));
 			funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
+			funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
 			imagencomic.setImage(libreria.selectorImage(idRow.getID()));
 			utilidad.deleteImage();
 		}

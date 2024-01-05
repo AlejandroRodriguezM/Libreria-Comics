@@ -192,62 +192,63 @@ public class FuncionesTableView {
 	 * 
 	 * @param columna
 	 */
-	public void actualizarBusquedaRaw(TableColumn<Comic, String> columna, TableView<Comic> tablaBBDD,
-			List<TableColumn<Comic, String>> columnList) {
-		columna.setCellFactory(column -> {
-			return new TableCell<Comic, String>() {
-				private VBox vbox = new VBox();
-				private String lastItem = null;
+	public void actualizarBusquedaRaw(TableView<Comic> tablaBBDD, List<TableColumn<Comic, String>> columnList) {
+		columnList.forEach(columna -> {
+			columna.setCellFactory(column -> {
+				return new TableCell<Comic, String>() {
+					private VBox vbox = new VBox();
+					private String lastItem = null;
 
-				@Override
-				protected void updateItem(String item, boolean empty) {
-					super.updateItem(item, empty);
+					@Override
+					protected void updateItem(String item, boolean empty) {
+						super.updateItem(item, empty);
 
-					if (empty || item == null) {
-						setGraphic(null);
-					} else {
-						if (!item.equals(lastItem)) { // Verificar si el contenido ha cambiado
-							lastItem = item;
-							String[] nombres = item.split(" - ");
-							vbox.getChildren().clear();
+						if (empty || item == null) {
+							setGraphic(null);
+						} else {
+							if (!item.equals(lastItem)) { // Verificar si el contenido ha cambiado
+								lastItem = item;
+								String[] nombres = item.split(" - ");
+								vbox.getChildren().clear();
 
-							for (String nombre : nombres) {
-								if (!nombre.isEmpty()) {
-									Label label;
-									if (columna.getText().equalsIgnoreCase("referencia")) {
-										label = new Label(nombre + "\n");
-										busquedaHyperLink(column);
-									} else if (columna.getText().equalsIgnoreCase("fecha")
-											|| columna.getText().equalsIgnoreCase("editorial")
-											|| columna.getText().equalsIgnoreCase("formato")
-											|| columna.getText().equalsIgnoreCase("variante")
-											|| columna.getText().equalsIgnoreCase("Nombre")
-											|| columna.getText().equalsIgnoreCase("Nº")
-											|| columna.getText().equalsIgnoreCase("Caja")
-											|| columna.getText().equalsIgnoreCase("Origen")
-											|| columna.getText().equalsIgnoreCase("firma")) {
-										label = new Label(nombre + "\n");
-									} else {
-										label = new Label("◉ " + nombre + "\n");
-									}
-									label.getStyleClass().add("hyperlink");
-									Hyperlink hyperlink = new Hyperlink();
-									hyperlink.setGraphic(label);
-									hyperlink.setOnAction(event -> {
-										try {
-											columnaSeleccionada(tablaBBDD, columnList, nombre);
-										} catch (SQLException e) {
-											e.printStackTrace();
+								for (String nombre : nombres) {
+									if (!nombre.isEmpty()) {
+										Label label;
+										if (columna.getText().equalsIgnoreCase("referencia")) {
+											label = new Label(nombre + "\n");
+											busquedaHyperLink(columna);
+										} else if (columna.getText().equalsIgnoreCase("fecha")
+												|| columna.getText().equalsIgnoreCase("editorial")
+												|| columna.getText().equalsIgnoreCase("formato")
+												|| columna.getText().equalsIgnoreCase("variante")
+												|| columna.getText().equalsIgnoreCase("Nombre")
+												|| columna.getText().equalsIgnoreCase("Nº")
+												|| columna.getText().equalsIgnoreCase("Caja")
+												|| columna.getText().equalsIgnoreCase("Origen")
+												|| columna.getText().equalsIgnoreCase("firma")) {
+											label = new Label(nombre + "\n");
+										} else {
+											label = new Label("◉ " + nombre + "\n");
 										}
-									});
-									vbox.getChildren().add(hyperlink);
+										label.getStyleClass().add("hyperlink");
+										Hyperlink hyperlink = new Hyperlink();
+										hyperlink.setGraphic(label);
+										hyperlink.setOnAction(event -> {
+											try {
+												columnaSeleccionada(tablaBBDD, columnList, nombre);
+											} catch (SQLException e) {
+												e.printStackTrace();
+											}
+										});
+										vbox.getChildren().add(hyperlink);
+									}
 								}
 							}
+							setGraphic(vbox);
 						}
-						setGraphic(vbox);
 					}
-				}
-			};
+				};
+			});
 		});
 	}
 
@@ -293,8 +294,8 @@ public class FuncionesTableView {
 		} else {
 			int totalComics = libreria.numeroTotalSelecionado(comic);
 			prontInfoTable.setStyle("-fx-text-fill: black;"); // Reset the text color to black
-			prontInfoTable.setText(
-					"El número de cómics donde aparece la búsqueda: " + datoSeleccionado + " es: " + totalComics + "\n \n \n");
+			prontInfoTable.setText("El número de cómics donde aparece la búsqueda: " + datoSeleccionado + " es: "
+					+ totalComics + "\n \n \n");
 		}
 
 		return prontInfoTable;
@@ -357,9 +358,8 @@ public class FuncionesTableView {
 
 			PropertyValueFactory<Comic, String> valueFactory = new PropertyValueFactory<>(columnName);
 			column.setCellValueFactory(valueFactory);
-
-			actualizarBusquedaRaw(column, tablaBBDD, columnList);
 		}
+		
 	}
 
 	/**
@@ -456,7 +456,7 @@ public class FuncionesTableView {
 			}
 		});
 	}
-	
+
 	/**
 	 * Elimina espacios de un TextField.
 	 *

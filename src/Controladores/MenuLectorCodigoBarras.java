@@ -15,6 +15,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
@@ -51,11 +52,17 @@ public class MenuLectorCodigoBarras {
 	@FXML
 	private TextArea codigoBarrasTextArea;
 
+	/** Campo de texto donde se introduce el código de barras. */
 	@FXML
 	private TextField campoCodigoTexto;
 
+	/** Botón utilizado para introducir el código de barras. */
 	@FXML
 	private Button botonIntroducirCodigo;
+
+	/** Pane principal que contiene los elementos de la interfaz gráfica. */
+	@FXML
+	private Pane contenedorPrincipal;
 
 	/**
 	 * Lista que guarda los codigos que recibe del scaner de codigo de barras
@@ -63,14 +70,45 @@ public class MenuLectorCodigoBarras {
 	private List<String> listaCodigosBarras = new ArrayList<>();
 
 	/**
-	 * Variable global que recibe el codigo escaneado completo
-	 */
-	private String codigoEscaneado = "";
-
-	/**
 	 * Campo para almacenar la referencia a la ventana (Stage).
 	 */
 	private Stage stage; // Campo para almacenar la referencia a la ventana
+
+	private String codigoEscaneado = "";
+
+	/**
+	 * Inicializa la lógica y los eventos al cargar la interfaz gráfica.
+	 */
+	@FXML
+	void initialize() {
+		// Agrega un evento para quitar el foco cuando se hace clic en el contenedor
+		// principal
+		contenedorPrincipal.setOnMouseClicked(event -> {
+			campoCodigoTexto.getParent().requestFocus();
+		});
+
+		// Agrega un evento para procesar la tecla Enter en el campo de texto
+		campoCodigoTexto.setOnKeyPressed(event -> {
+			// Obtener el carácter asociado con la tecla presionada
+			String caracter = event.getText();
+
+			// Concatenar el carácter al código escaneado
+			codigoEscaneado += caracter;
+
+			// Verificar si se presionó la tecla Enter
+			if (event.getCode() == KeyCode.ENTER) {
+				// Limpiar el campo de texto después de procesar el código escaneado
+				campoCodigoTexto.clear();
+				// Mostrar el código escaneado en el campo de texto
+				campoCodigoTexto.setText(codigoEscaneado);
+				// Reiniciar el código escaneado
+				codigoEscaneado = "";
+
+				// Consumir el evento para evitar que se propague más allá de este punto
+				event.consume();
+			}
+		});
+	}
 
 	/**
 	 * Borra todas las entradas de la lista de códigos de barras y actualiza el
@@ -83,6 +121,7 @@ public class MenuLectorCodigoBarras {
 		listaCodigosBarras.clear(); // Limpiar la lista de códigos de barras
 		actualizarTextArea();
 		((Button) event.getSource()).getScene().getWindow().getScene().getRoot().requestFocus();
+		event.consume();
 	}
 
 	/**
@@ -99,6 +138,7 @@ public class MenuLectorCodigoBarras {
 
 		}
 		((Button) event.getSource()).getScene().getWindow().getScene().getRoot().requestFocus();
+		event.consume();
 	}
 
 	/**
@@ -122,38 +162,34 @@ public class MenuLectorCodigoBarras {
 				if (archivo != null) {
 					try (BufferedWriter escritor = new BufferedWriter(new FileWriter(archivo))) {
 						// Itera sobre la lista de códigos y escribe cada código en una nueva línea
-						System.out.println("Tamaño de la lista de códigos de barras: " + listaCodigosBarras.size());
 						for (String codigo : listaCodigosBarras) {
 							escritor.write(codigo);
 						}
 					}
-				} else {
-
-					System.out.println("No se seleccionó ningún archivo");
 				}
 			} catch (IOException e) {
 				e.printStackTrace(); // Manejo de errores, puedes personalizar según tus necesidades.
 			}
-		} else {
-			System.out.println("La lista de códigos de barras está vacía");
 		}
 		((Button) event.getSource()).getScene().getWindow().getScene().getRoot().requestFocus();
+		event.consume();
 	}
 
 	/**
-	 * Maneja los eventos de teclado, detectando la entrada del código de barras y
-	 * llamando a procesarCodigoBarras.
+	 * Maneja el evento de teclado.
 	 *
-	 * @param event Evento de teclado.
+	 * @param event El evento de teclado.
 	 */
 	@FXML
 	void manejarEventoTeclado(KeyEvent event) {
-
 		// Obtener el código de la tecla presionada
 		KeyCode keyCode = event.getCode();
 
 		// Verificar si la tecla presionada es un dígito o ENTER
-		if (keyCode.isDigitKey() || keyCode == KeyCode.ENTER) {
+		if (keyCode.isDigitKey() && !campoCodigoTexto.isFocused()
+				|| keyCode == KeyCode.ENTER && !campoCodigoTexto.isFocused()) {
+
+			campoCodigoTexto.setText("");
 
 			// Obtener el texto del evento (suponiendo que es el código de barras)
 			String codigoLeido = event.getText();
@@ -164,34 +200,17 @@ public class MenuLectorCodigoBarras {
 			// Verificar si se presionó la tecla ENTER
 			if (keyCode == KeyCode.ENTER) {
 				// Verificar la validez del código de barras antes de procesarlo
-				if (esCodigoBarrasValido(codigoEscaneado)) {
-
+				if (esCodigoValido(codigoEscaneado.trim())) {
 					agregarCodigoBarras(codigoEscaneado);
-
-				} else {
-					// Manejar caso de código de barras no válido
-					System.out.println("Código de barras no válido: " + codigoEscaneado);
 				}
-
-				// Limpiar el campo de texto después de procesar el código de barras
-				barcodeField.clear();
 
 				// Reiniciar el código escaneado para el próximo código de barras
 				codigoEscaneado = "";
 			}
-		}
-	}
 
-	/**
-	 * Verifica la validez de un código de barras.
-	 *
-	 * @param codigoBarras Código de barras a verificar.
-	 * @return true si el código de barras es válido, false de lo contrario.
-	 */
-	private boolean esCodigoBarrasValido(String codigoBarras) {
-		// Agrega la lógica para validar el código de barras según tus requisitos
-		// Por ejemplo, puedes verificar la longitud, el formato, etc.
-		return codigoBarras.length() >= 8; // Ejemplo: Considerar válido si tiene al menos 8 caracteres
+			// Consumir el evento para indicar que ha sido manejado
+			event.consume();
+		}
 	}
 
 	/**
@@ -205,25 +224,6 @@ public class MenuLectorCodigoBarras {
 	}
 
 	/**
-	 * Maneja el evento de tecla cuando se introduce manualmente un código. Si la
-	 * tecla presionada es ENTER y el campo de código no está vacío, agrega el
-	 * código de barras.
-	 *
-	 * @param event El evento de tecla asociado.
-	 */
-	@FXML
-	void introducirCodigoManualmente(KeyEvent event) {
-
-		String codigo = campoCodigoTexto.getText();
-		KeyCode keyCode = event.getCode();
-
-		if (esCodigoValido(codigo) && keyCode == KeyCode.ENTER) {
-			agregarCodigoBarras(codigo);
-		}
-
-	}
-
-	/**
 	 * Maneja el evento de acción cuando se introduce un código desde un botón. Si
 	 * el campo de código no está vacío, agrega el código de barras.
 	 *
@@ -231,11 +231,14 @@ public class MenuLectorCodigoBarras {
 	 */
 	@FXML
 	void introducirCodigoDesdeBoton(ActionEvent event) {
+		barcodeField.setText("");
 		String codigo = campoCodigoTexto.getText();
 
 		if (esCodigoValido(codigo)) {
 			agregarCodigoBarras(codigo);
+			campoCodigoTexto.setText("");
 		}
+		event.consume();
 	}
 
 	/**
@@ -249,15 +252,16 @@ public class MenuLectorCodigoBarras {
 		codigoBarrasTextArea.setText(contenidoTextArea.toString());
 
 	}
-	
+
 	/**
-	 * Verifica si el código es válido, es decir, contiene solo números y letras y tiene una longitud mayor a 0.
+	 * Verifica si el código es válido, es decir, contiene solo números y letras y
+	 * tiene una longitud mayor a 0.
 	 *
 	 * @param codigo El código a validar.
 	 * @return true si el código es válido, false de lo contrario.
 	 */
 	private boolean esCodigoValido(String codigo) {
-	    return codigo.length() > 0 && codigo.matches("[a-zA-Z0-9]+");
+		return codigo.length() >= 8 && codigo.matches("^[0-9]+$");
 	}
 
 	/**
