@@ -50,7 +50,7 @@ public class WebScraperPreviewsWorld {
 	 *         vacío si ocurre un error.
 	 * @throws URISyntaxException
 	 */
-	public static String[] displayComicInfo(String diamondCode, TextArea prontInfo) throws URISyntaxException {
+	public String[] displayComicInfo(String diamondCode, TextArea prontInfo) throws URISyntaxException {
 
 		List<String> comicInfoList = new ArrayList<>();
 

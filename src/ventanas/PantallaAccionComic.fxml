@@ -142,7 +142,6 @@
             <Font size="10.0" />
          </font>
       </Button>
-      <ImageView fx:id="cargaImagen" fitHeight="326.0" fitWidth="207.0" layoutX="397.0" layoutY="34.0" pickOnBounds="true" preserveRatio="true" />
       <Label fx:id="label_codigo_comic" disable="true" focusTraversable="false" layoutX="5.0" layoutY="232.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Codigo" visible="false" />
       <TextField fx:id="codigoComicTratar" disable="true" layoutX="63.0" layoutY="232.0" prefHeight="21.0" prefWidth="125.0" promptText="Codigo Comic" visible="false">
          <font>
@@ -182,9 +181,10 @@
          </menus>
       </MenuBar>
       <TextArea fx:id="prontInfo" editable="false" layoutX="616.0" layoutY="36.0" opacity="0.0" prefHeight="199.0" prefWidth="214.0" stylesheets="@../style/panel_info_style.css" wrapText="true" />
-      <ImageView fx:id="imagencomic" fitHeight="326.0" fitWidth="207.0" layoutX="397.0" layoutY="32.0" pickOnBounds="true" />
       <Button fx:id="botonGuardarComic" layoutX="218.0" layoutY="318.0" mnemonicParsing="false" onAction="#guardarListaImportados" prefHeight="35.0" prefWidth="81.0" stylesheets="@../style/genericos_style.css" text="Guardar lista" visible="false" />
       <Button fx:id="botonGuardarCambioComic" layoutX="218.0" layoutY="282.0" mnemonicParsing="false" onAction="#guardarDatos" prefHeight="21.0" prefWidth="81.0" stylesheets="@../style/genericos_style.css" text="Guardar" visible="false" />
       <Button fx:id="botonEliminarImportadoComic" layoutX="303.0" layoutY="281.0" mnemonicParsing="false" onAction="#eliminarComicSeleccionado" prefHeight="35.0" prefWidth="68.0" stylesheets="@../style/genericos_style.css" text="Eliminar" visible="false" wrapText="true" />
+      <ImageView fx:id="imagencomic" fitHeight="326.0" fitWidth="207.0" layoutX="397.0" layoutY="32.0" pickOnBounds="true" />
+      <ImageView fx:id="cargaImagen" fitHeight="326.0" fitWidth="207.0" layoutX="397.0" layoutY="34.0" pickOnBounds="true" preserveRatio="true" />
    </children>
 </Pane>

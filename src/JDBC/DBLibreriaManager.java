@@ -20,7 +20,7 @@ package JDBC;
  *  - Puntuar comics que se encuentren dentro de la base de datos.
  *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
  *
- *  Version 7.0.0.0
+ *  Version 8.0.0.0
  *
  *  @author Alejandro Rodriguez
  *
@@ -377,27 +377,31 @@ public class DBLibreriaManager extends Comic {
 			@Override
 			protected Void call() throws Exception {
 				try {
-					String sentencia[] = new String[2];
-					sentencia[0] = "delete from comicsbbdd";
-					sentencia[1] = "alter table comicsbbdd AUTO_INCREMENT = 1;";
+					CompletableFuture<Boolean> ejecucionResult = null;
+					boolean ejecucionExitosa = false;
+					if (listaComics.size() > 0) {
+						String sentencia[] = new String[2];
+						sentencia[0] = "delete from comicsbbdd";
+						sentencia[1] = "alter table comicsbbdd AUTO_INCREMENT = 1;";
 
-					utilidad.copia_seguridad();
-					utilidad.eliminarArchivosEnCarpeta();
-					listaNombre.clear();
-					listaNumeroComic.clear();
-					listaVariante.clear();
-					listaFirma.clear();
-					listaEditorial.clear();
-					listaGuionista.clear();
-					listaDibujante.clear();
-					listaFecha.clear();
-					listaFormato.clear();
-					listaProcedencia.clear();
-					listaCaja.clear();
+						utilidad.copia_seguridad();
+						utilidad.eliminarArchivosEnCarpeta();
+						listaNombre.clear();
+						listaNumeroComic.clear();
+						listaVariante.clear();
+						listaFirma.clear();
+						listaEditorial.clear();
+						listaGuionista.clear();
+						listaDibujante.clear();
+						listaFecha.clear();
+						listaFormato.clear();
+						listaProcedencia.clear();
+						listaCaja.clear();
 
-					// Ejecutar el PreparedStatement asíncronamente
-					CompletableFuture<Boolean> ejecucionResult = ejecutarPreparedStatementAsync(sentencia);
-					boolean ejecucionExitosa = ejecucionResult.join();
+						// Ejecutar el PreparedStatement asíncronamente
+						ejecucionResult = ejecutarPreparedStatementAsync(sentencia);
+						ejecucionExitosa = ejecucionResult.join();
+					}
 
 					futureResult.complete(ejecucionExitosa); // Completar la CompletableFuture con el resultado
 				} catch (Exception e) {
@@ -1248,7 +1252,7 @@ public class DBLibreriaManager extends Comic {
 				statement.close();
 			}
 		}
-
+		DBManager.resetConnection();
 		return comic;
 	}
 
@@ -1500,25 +1504,10 @@ public class DBLibreriaManager extends Comic {
 	 * @throws SQLException si ocurre un error al ejecutar la consulta SQL
 	 */
 	public void insertarDatos(Comic comic_datos) throws IOException, SQLException {
-		String sentenciaSQL = "INSERT INTO comicsbbdd ("
-				+ "nomComic, "
-				+ "caja_deposito,"
-				+ "precio_comic,"
-				+ "codigo_comic,"
-				+ "numComic,"
-				+ "nomVariante,"
-				+ "firma,"
-				+ "nomEditorial,"
-				+ "formato,"
-				+ "procedencia,"
-				+ "fecha_publicacion,"
-				+ "nomGuionista,"
-				+ "nomDibujante,"
-				+ "puntuacion,"
-				+ "portada,"
-				+ "key_issue,"
-				+ "url_referencia,"
-				+ "estado"
+		String sentenciaSQL = "INSERT INTO comicsbbdd (" + "nomComic, " + "caja_deposito," + "precio_comic,"
+				+ "codigo_comic," + "numComic," + "nomVariante," + "firma," + "nomEditorial," + "formato,"
+				+ "procedencia," + "fecha_publicacion," + "nomGuionista," + "nomDibujante," + "puntuacion," + "portada,"
+				+ "key_issue," + "url_referencia," + "estado"
 				+ ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		subirComic(sentenciaSQL, comic_datos);
 	}
@@ -1568,6 +1557,7 @@ public class DBLibreriaManager extends Comic {
 				statement.close();
 			}
 		}
+		DBManager.resetConnection();
 	}
 
 	/**

@@ -23,6 +23,7 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -41,6 +42,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -1133,20 +1137,22 @@ public class Utilidades {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Verifica si la cadena proporcionada representa una ruta de archivo local.
+	 * 
 	 * @param cadena La cadena que se va a verificar.
-	 * @return true si la cadena es una ruta de archivo local absoluta, false de lo contrario.
+	 * @return true si la cadena es una ruta de archivo local absoluta, false de lo
+	 *         contrario.
 	 */
-    public static boolean isRutaDeArchivo(String cadena) {
-        try {
-            Path path = Paths.get(cadena);
-            return path.isAbsolute();  // Verifica si es una ruta de archivo absoluta
-        } catch (Exception e) {
-            return false;
-        }
-    }
+	public static boolean isRutaDeArchivo(String cadena) {
+		try {
+			Path path = Paths.get(cadena);
+			return path.isAbsolute(); // Verifica si es una ruta de archivo absoluta
+		} catch (Exception e) {
+			return false;
+		}
+	}
 
 	/**
 	 * Obtiene la extensión del archivo desde una URL.
@@ -1162,30 +1168,30 @@ public class Utilidades {
 		return "";
 	}
 
-//	public static String descargarImagen(String urlImagen, String carpetaDestino) throws IOException {
-//		URL url = new URL(urlImagen);
-//
-//		// Obtener el nombre de la imagen a partir de la URL
-//		String[] partesURL = urlImagen.split("/");
-//		String nombreImagen = partesURL[partesURL.length - 1];
-//
-//		// Crear la carpeta de destino si no existe
-//		File carpeta = new File(carpetaDestino);
-//		if (!carpeta.exists()) {
-//			carpeta.mkdirs();
-//		}
-//
-//		// Crear la ruta completa de destino
-//		String rutaDestino = carpetaDestino + File.separator + nombreImagen;
-//
-//		try (InputStream in = url.openStream()) {
-//			// Descargar la imagen y guardarla en la carpeta de destino
-//			Path destino = new File(rutaDestino).toPath();
-//			Files.copy(in, destino, StandardCopyOption.REPLACE_EXISTING);
-//		}
-//
-//		return rutaDestino;
-//	}
+    public static String descargarImagen(String urlImagen, String carpetaDestino) throws IOException, URISyntaxException {
+        URI uri = new URI(urlImagen);
+
+        // Obtener el nombre de la imagen a partir de la URI
+        String[] partesURL = uri.getPath().split("/");
+        String nombreImagen = partesURL[partesURL.length - 1];
+
+        // Crear la carpeta de destino si no existe
+        File carpeta = new File(carpetaDestino);
+        if (!carpeta.exists()) {
+            carpeta.mkdirs();
+        }
+
+        // Crear la ruta completa de destino
+        String rutaDestino = carpetaDestino + File.separator + nombreImagen;
+
+        try (InputStream in = uri.toURL().openStream()) {
+            // Descargar la imagen y guardarla en la carpeta de destino
+            Path destino = new File(rutaDestino).toPath();
+            Files.copy(in, destino, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        return rutaDestino;
+    }
 
 	/**
 	 * Descarga una imagen desde una URL y la guarda en una carpeta de destino.
@@ -1195,28 +1201,42 @@ public class Utilidades {
 	 * @return Ruta de destino de la imagen descargada o null si hay un error.
 	 * @throws IOException Si ocurre un error de entrada/salida.
 	 */
-    public static CompletableFuture<String> descargarImagenAsync(String urlImagen, String carpetaDestino) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                URI uri = validarURL(urlImagen);
-                String nombreImagen = obtenerNombreImagen(urlImagen);
-                crearCarpetaSiNoExiste(carpetaDestino);
-                String rutaDestino = carpetaDestino + File.separator + nombreImagen;
+	public static CompletableFuture<String> descargarImagenAsync(String urlImagen, String carpetaDestino) {
+		Executor executor = Executors.newCachedThreadPool();
+		CompletableFuture<String> downloadTask = new CompletableFuture<>();
 
-                if (descargarYConvertirImagen(uri, carpetaDestino)) {
-                    System.out.println("Imagen descargada y guardada como JPG correctamente");
-                    return rutaDestino;
-                }
-            } catch (IllegalArgumentException e) {
-                System.err.println(e.getMessage());
-            } catch (Exception e) {
-                System.err.println("No se pudo acceder a la URL: " + urlImagen);
-                e.printStackTrace();
-            }
+		@SuppressWarnings("unused")
+		CompletableFuture<Void> asyncTask = CompletableFuture.runAsync(() -> {
+			try {
+//				URI uri = validarURL(urlImagen);
 
-            return null;
-        });
-    }
+//				descargarYConvertirImagenAsync(uri, carpetaDestino);
+
+				String nombreImagen = "";
+				nombreImagen = obtenerNombreImagen(urlImagen);
+
+				crearCarpetaSiNoExiste(carpetaDestino);
+				String rutaDestino = carpetaDestino + File.separator + nombreImagen;
+
+				System.out.println("Imagen descargada y guardada como JPG correctamente");
+				downloadTask.complete(rutaDestino);
+			} catch (IllegalArgumentException e) {
+				System.err.println(e.getMessage());
+				downloadTask.completeExceptionally(e);
+			} catch (Exception e) {
+				System.err.println("No se pudo acceder a la URL: " + urlImagen);
+				e.printStackTrace();
+				downloadTask.completeExceptionally(e);
+			}
+		}, executor);
+
+		// Handle executor shutdown
+		downloadTask.whenComplete((result, throwable) -> {
+			((ExecutorService) executor).shutdown();
+		});
+
+		return downloadTask;
+	}
 
 //    public static Task<String> descargarImagenTask(String urlImagen, String carpetaDestino) {
 //        return new Task<String>() {
@@ -1251,6 +1271,7 @@ public class Utilidades {
 	 * @return URI válida de la URL.
 	 * @throws IllegalArgumentException Si la URL no es válida.
 	 */
+	@SuppressWarnings("unused")
 	private static URI validarURL(String urlImagen) throws IllegalArgumentException {
 		try {
 			return new URI(urlImagen);
@@ -1265,7 +1286,7 @@ public class Utilidades {
 	 * @param urlImagen URL de la imagen.
 	 * @return Nombre de la imagen.
 	 */
-	private static String obtenerNombreImagen(String urlImagen) {
+	public static String obtenerNombreImagen(String urlImagen) {
 		String[] partesURL = urlImagen.split("/");
 		return partesURL[partesURL.length - 1];
 	}
@@ -1292,47 +1313,60 @@ public class Utilidades {
 	 * @return true si la descarga y conversión son exitosas, false en caso
 	 *         contrario.
 	 */
-	private static boolean descargarYConvertirImagen(URI urlImagen, String carpetaDestino) {
-		try {
-			URL url = urlImagen.toURL();
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("HEAD");
-			int responseCode = connection.getResponseCode();
+	public static CompletableFuture<Boolean> descargarYConvertirImagenAsync(URI urlImagen, String carpetaDestino, String nuevoNombre) {
+	    final String[] finalNuevoNombre = {nuevoNombre}; // Usar un array de longitud 1
 
-			String nombreImagen = obtenerNombreImagen(urlImagen.toString());
-			String rutaDestino = carpetaDestino + File.separator + nombreImagen;
+	    return CompletableFuture.supplyAsync(() -> {
+	        try {
+	            URL url = urlImagen.toURL();
+	            URLConnection connection = url.openConnection();
 
-			if (responseCode != HttpURLConnection.HTTP_OK) {
-				System.err.println("La URL no apunta a una imagen válida o no se pudo acceder: " + url);
-				return false;
-			}
+	            if (connection instanceof HttpURLConnection) {
+	                ((HttpURLConnection) connection).setRequestMethod("HEAD");
+	                int responseCode = ((HttpURLConnection) connection).getResponseCode();
 
-			try (InputStream in = url.openStream()) {
-				BufferedImage image = ImageIO.read(in);
+	                if (responseCode != HttpURLConnection.HTTP_OK) {
+	                    System.err.println("La URL no apunta a una imagen válida o no se pudo acceder: " + url);
+	                    return false;
+	                }
+	            }
 
-				if (image == null) {
-					System.err.println("No se pudo cargar la imagen desde " + urlImagen);
-					return false;
-				}
+	            String rutaDestino;
 
-				if (!nombreImagen.toLowerCase().endsWith(".jpg")) {
-					BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(),
-							BufferedImage.TYPE_INT_RGB);
-					newImage.createGraphics().drawImage(image, 0, 0, null);
-					nombreImagen = nombreImagen.substring(0, nombreImagen.lastIndexOf(".")) + ".jpg";
-					rutaDestino = carpetaDestino + File.separator + nombreImagen;
-				}
+	            try (InputStream in = url.openStream()) {
+	                BufferedImage image = ImageIO.read(in);
 
-				File output = new File(rutaDestino);
-				ImageIO.write(image, "jpg", output);
-				return true;
-			}
-		} catch (IOException e) {
-			System.err.println("Error al descargar o convertir la imagen desde " + urlImagen);
-			e.printStackTrace();
-			return false;
-		}
+	                if (image == null) {
+	                    System.err.println("No se pudo cargar la imagen desde " + urlImagen);
+	                    return false;
+	                }
+
+	                if (!finalNuevoNombre[0].toLowerCase().endsWith(".jpg")) {
+	                    BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(),
+	                            BufferedImage.TYPE_INT_RGB);
+	                    newImage.createGraphics().drawImage(image, 0, 0, null);
+	                    System.out.println("Original nuevoNombre: " + finalNuevoNombre[0]);
+	                    finalNuevoNombre[0] = finalNuevoNombre[0] + ".jpg";
+	                    System.out.println("Nuevo nuevoNombre: " + finalNuevoNombre[0]);
+	                    rutaDestino = carpetaDestino + File.separator + finalNuevoNombre[0];
+	                } else {
+	                    rutaDestino = carpetaDestino + File.separator + finalNuevoNombre[0];
+	                }
+
+	                File output = new File(rutaDestino);
+	                ImageIO.write(image, "jpg", output);
+	                return true;
+	            }
+	        } catch (IOException e) {
+	            System.err.println("Error al descargar o convertir la imagen desde " + urlImagen);
+	            e.printStackTrace();
+	            return false;
+	        }
+	    });
 	}
+
+
+
 
 	/**
 	 * Borra un archivo de imagen dada su ruta.

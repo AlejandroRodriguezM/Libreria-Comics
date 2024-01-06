@@ -22,7 +22,7 @@ import java.io.BufferedReader;
  *  - Puntuar comics que se encuentren dentro de la base de datos.
  *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
  *
- *  Version 7.0.0.0
+ *  Version 8.0.0.0
  *
  *  Por Alejandro Rodriguez
  *
@@ -427,6 +427,7 @@ public class MenuPrincipalController implements Initializable {
 	/**
 	 * Instancia de Utilidades para funciones de utilidad.
 	 */
+	@SuppressWarnings("unused")
 	private static Utilidades utilidad = null;
 
 	/**
@@ -1028,7 +1029,7 @@ public class MenuPrincipalController implements Initializable {
 		libreria = new DBLibreriaManager(); // Crear una instancia del gestor de la base de datos
 		libreria.reiniciarBBDD(); // Reiniciar la base de datos si es necesario
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a la función para establecer nombres de
-		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);						// columnas
+		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList); // columnas
 		funcionesTabla.tablaBBDD(libreria.libreriaKeyIssue(), tablaBBDD, columnList);
 	}
 
@@ -1051,7 +1052,7 @@ public class MenuPrincipalController implements Initializable {
 		guardarDatosCSV();
 
 		libreria.listasAutoCompletado();
-		
+
 		DBLibreriaManager.limpiarListaGuardados();
 	}
 
@@ -1076,7 +1077,7 @@ public class MenuPrincipalController implements Initializable {
 		String tipoBusqueda = "completa";
 
 		cargaExportExcel(listaComics, tipoBusqueda);
-		
+
 		DBLibreriaManager.limpiarListaGuardados();
 	}
 
@@ -1109,13 +1110,14 @@ public class MenuPrincipalController implements Initializable {
 		botonGuardarResultado.setDisable(true);
 
 		int tamanioListaGuardada = DBLibreriaManager.comicsGuardadosList.size();
-		
+
 		if (tamanioListaGuardada > 0) {
 
 			if (nav.borrarListaGuardada()) {
 				DBLibreriaManager.limpiarListaGuardados();
 
-				String mensaje = "Has eliminado el contenido de la lista guardada que contenia un total de: " + tamanioListaGuardada + " comics guardados.\n \n \n";
+				String mensaje = "Has eliminado el contenido de la lista guardada que contenia un total de: "
+						+ tamanioListaGuardada + " comics guardados.\n \n \n";
 				String estilo = "#A0F52D";
 				mostrarMensaje(mensaje, estilo);
 
@@ -1181,13 +1183,14 @@ public class MenuPrincipalController implements Initializable {
 															// resultado
 						} else {
 							// Si no hay contenido, mostrar un mensaje de error
-							prontInfo.clear();
-							detenerAnimacionPront();
-							prontInfo.setOpacity(1);
-							prontInfo.setStyle("-fx-background-color: #F53636");
-							prontInfo.setText("No hay contenido en la base de datos");
-							Platform.runLater(() -> nav.alertaException("Error. No hay contenido en la base de datos"));
-							detenerAnimacion();
+							Platform.runLater(() -> {
+								prontInfo.clear();
+								detenerAnimacionPront();
+								prontInfo.setOpacity(1);
+								prontInfo.setStyle("-fx-background-color: #F53636");
+								prontInfo.setText("La base de datos ya se encuentra vacia.");
+								detenerAnimacion();
+							});
 
 						}
 						return result; // Devolver el resultado actual
@@ -1391,20 +1394,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void clickRaton(MouseEvent event) throws IOException, SQLException {
-		libreria = new DBLibreriaManager();
-		libreria.libreriaCompleta();
-		utilidad = new Utilidades();
-
-		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
-
-		if (idRow != null) {
-			prontInfo.setOpacity(1);
-			prontInfo.setText(libreria.comicDatos(idRow.getID()).toString().replace("[", "").replace("]", ""));
-			funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-			funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
-			imagencomic.setImage(libreria.selectorImage(idRow.getID()));
-			utilidad.deleteImage();
-		}
+		seleccionarComics();
 	}
 
 	/**
@@ -1419,20 +1409,31 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void teclasDireccion(KeyEvent event) throws IOException, SQLException {
 		if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
-			libreria = new DBLibreriaManager();
-			libreria.libreriaCompleta();
-			utilidad = new Utilidades();
-
-			Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
-
-			if (idRow != null) {
-				prontInfo.setOpacity(1);
-				prontInfo.setText(libreria.comicDatos(idRow.getID()).toString().replace("[", "").replace("]", ""));
-
-				imagencomic.setImage(libreria.selectorImage(idRow.getID()));
-				utilidad.deleteImage();
-			}
+			seleccionarComics();
 		}
+	}
+
+	/**
+	 * Método para seleccionar y mostrar detalles de un cómic en la interfaz
+	 * gráfica. Si la lista de cómics importados no está vacía, utiliza la
+	 * información de la lista; de lo contrario, consulta la base de datos para
+	 * obtener la información del cómic.
+	 * 
+	 * @throws SQLException Si se produce un error al acceder a la base de datos.
+	 */
+	private void seleccionarComics() throws SQLException {
+		libreria = new DBLibreriaManager();
+		libreria.libreriaCompleta();
+		utilidad = new Utilidades();
+
+		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
+		String id_comic = idRow.getID();
+
+		prontInfo.setOpacity(1);
+		prontInfo.setText(libreria.comicDatos(id_comic).toString().replace("[", "").replace("]", ""));
+		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
+		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
+		imagencomic.setImage(libreria.selectorImage(id_comic));
 	}
 
 	/////////////////////////////////

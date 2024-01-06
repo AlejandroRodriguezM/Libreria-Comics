@@ -19,7 +19,7 @@ package JDBC;
  *
  *  Esta clase permite conectarse a la base de datos
  *
- *  Version 7.0.0.0
+ *  Version 8.0.0.0
  *
  *  Por Alejandro Rodriguez
  *

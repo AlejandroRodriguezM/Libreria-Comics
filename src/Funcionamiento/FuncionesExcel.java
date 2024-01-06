@@ -26,6 +26,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -128,7 +129,8 @@ public class FuncionesExcel {
 					Row filaCopy = fila; // Create a copy of fila here
 					int indiceFinal = indiceFila;
 					indiceFinal++;
-					for (Comic comic : listaComics) {
+					List<Comic> listaComicsCopy = new ArrayList<>(listaComics);
+					for (Comic comic : listaComicsCopy) {
 						filaCopy = hoja.createRow(indiceFinal);
 						filaCopy.createCell(0).setCellValue("");
 						filaCopy.createCell(1).setCellValue(comic.getNombre());

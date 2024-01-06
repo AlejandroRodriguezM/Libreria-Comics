@@ -20,7 +20,7 @@ package Funcionamiento;
  *  - Puntuar comics que se encuentren dentro de la base de datos.
  *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
  *
- *  Version 7.0.0.0
+ *  Version 8.0.0.0
  *
  *  @author Alejandro Rodriguez
  *
@@ -145,7 +145,7 @@ public class Ventanas {
 
 			// Actualizar el estado de la ventana abierta
 			ventanaActual = stage;
-
+			DBManager.resetConnection();
 		} catch (IOException ex) {
 			alertaException(ex.toString());
 			ex.printStackTrace();
@@ -200,6 +200,7 @@ public class Ventanas {
 	            } catch (IOException ex) {
 	                alertaException(ex.toString());
 	            }
+	            DBManager.resetConnection();
 	        });
 	    } catch (Exception e) {
 	        alertaException(e.toString());
