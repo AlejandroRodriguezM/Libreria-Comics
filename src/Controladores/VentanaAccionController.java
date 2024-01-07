@@ -1753,6 +1753,13 @@ public class VentanaAccionController implements Initializable {
 		botonGuardarCambioComic.setVisible(true);
 		botonGuardarComic.setVisible(true);
 		botonEliminarImportadoComic.setVisible(true);
+		final int contadorFaltas[] = { 0 };
+		final String codigosFaltantes[] = { "" };
+
+		String userDir = System.getProperty("user.home");
+		String documentsPath = userDir + File.separator + "Documents";
+		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + DBManager.DB_NAME;
+
 		// Crear una tarea que se ejecutará en segundo plano
 		Task<Boolean> tarea = new Task<Boolean>() {
 
@@ -1770,12 +1777,22 @@ public class VentanaAccionController implements Initializable {
 
 					} else {
 						comicInfo = ApiMarvel.infoComicCode(finalValorCodigo.trim(), prontInfo);
+						contadorFaltas[0]++;
 
 						if (comicInfo == null) {
 							comicInfo = isbnGeneral.getBookInfo(finalValorCodigo.trim(), prontInfo);
+
+							if (comicInfo == null) {
+								contadorFaltas[0]++;
+							}
+
 						}
 					}
 
+					if (contadorFaltas[0] > 1) {
+						codigosFaltantes[0] += "Falta comic con codigo: " + valorCodigo;
+					}
+					contadorFaltas[0] = 0;
 					if (comprobarCodigo(comicInfo)) {
 						rellenarTablaImport(comicInfo, finalValorCodigo.trim());
 						return true;
@@ -1791,6 +1808,10 @@ public class VentanaAccionController implements Initializable {
 		// cuando la tarea esté completa
 		tarea.setOnSucceeded(ev -> {
 			Platform.runLater(() -> {
+
+				if (codigosFaltantes[0].length() > 0) {
+					Utilidades.imprimirEnArchivo(codigosFaltantes[0], sourcePath);
+				}
 				prontInfo.setOpacity(0);
 				prontInfo.setText("");
 				detenerAnimacionCargaImagen();
@@ -2298,7 +2319,7 @@ public class VentanaAccionController implements Initializable {
 	void guardarDatos(ActionEvent event) {
 
 		LocalDate fecha_comic;
-		
+
 		if (id_comic_selecionado != null) {
 			String id_comic = id_comic_selecionado;
 
@@ -2392,7 +2413,7 @@ public class VentanaAccionController implements Initializable {
 	void guardarListaImportados(ActionEvent event) throws IOException, SQLException, URISyntaxException {
 		if (comicsImportados.size() > 0) {
 			if (nav.alertaInsertar()) {
-				int contador = 0;
+				libreria = new DBLibreriaManager();
 				String mensajePront = "";
 				detenerAnimacionPront();
 				iniciarAnimacionCambioImagen();
@@ -2401,38 +2422,27 @@ public class VentanaAccionController implements Initializable {
 				Collections.sort(comicsImportados, Comparator.comparing(Comic::getNombre));
 
 				for (Comic c : comicsImportados) {
-					contador++;
-//					String correctedUrl = c.getImagen().replace("\\", "/").replace("http:", "https:").replace("https:",
-//							"https:/");
-
-//					String codigo_imagen = Utilidades.generarCodigoUnico(SOURCE_PATH + File.separator);
-//
-//					URI uri = new URI(correctedUrl);
-//
-//					Utilidades.descargarYConvertirImagenAsync(uri, SOURCE_PATH, codigo_imagen);
-
 					c.setID("");
-//					c.setImagen(SOURCE_PATH + File.separator + codigo_imagen + ".jpg");
 					libreria.insertarDatos(c);
 
-					mensajePront += "Comic " + contador + " introducido correctamente\n";
-					libreria.listasAutoCompletado();
+					mensajePront += "Comic " + c.getNombre() + " con codigo " + c.getCodigo_comic()
+							+ " introducido correctamente\n";
 
 					Image imagenDeseo = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
 					imagenFondo.setImage(imagenDeseo);
-					List<ComboBox<String>> comboboxes = VentanaAccionController.getComboBoxes();
 
-					funcionesCombo.rellenarComboBox(comboboxes);
 				}
+				libreria.listasAutoCompletado();
+				List<ComboBox<String>> comboboxes = VentanaAccionController.getComboBoxes();
+				funcionesCombo.rellenarComboBox(comboboxes);
+
 				comicsImportados.clear();
 				tablaBBDD.getItems().clear();
 				funcionesTabla.tablaBBDD(comicsImportados, tablaBBDD, columnList); // Llamada a funcion
 				prontInfo.setOpacity(1);
 				prontInfo.setStyle("-fx-background-color: #A0F52D");
 				prontInfo.setText(mensajePront);
-
 				detenerAnimacionPront();
-
 			}
 		}
 	}
@@ -2744,9 +2754,9 @@ public class VentanaAccionController implements Initializable {
 			prontInfo.setText("Comic introducido correctamente");
 			libreria.listasAutoCompletado();
 
-//			if (Utilidades.isURL(datos[10])) {
-//				Utilidades.borrarImagen(portada);
-//			}
+			if (Utilidades.isURL(datos[10])) {
+				Utilidades.borrarImagen(portada);
+			}
 
 			Image imagenDeseo = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
 			imagenFondo.setImage(imagenDeseo);

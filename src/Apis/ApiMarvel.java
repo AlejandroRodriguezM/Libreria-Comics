@@ -18,6 +18,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import Controladores.VentanaAccionController;
 import Funcionamiento.Utilidades;
 import javafx.scene.control.TextArea;
 
@@ -113,18 +114,32 @@ public class ApiMarvel {
 		// Realiza la solicitud HTTP GET
 		String jsonResponse;
 		try {
+
+			int codigoRespuesta = codigoRespuesta(apiUrl);
+
+			if (codigoRespuesta != 200) {
+				System.out.println(claveComic);
+				return null;
+			}
+
 			jsonResponse = sendHttpGetRequest(apiUrl);
 
 			// Parsea la respuesta JSON y obtén el cómic
 			JSONObject jsonObject = new JSONObject(jsonResponse);
 			JSONArray resultsArray = jsonObject.getJSONObject("data").getJSONArray("results");
 
-			if (resultsArray.length() == 0) {
+			if (resultsArray.length() == 0 && VentanaAccionController.comicsImportados.size() < 1) {
 				prontInfo.setOpacity(1);
 				prontInfo.setText("No se encontró el cómic con codigo: " + claveComic);
 				return null;
 			} else {
-				return resultsArray.getJSONObject(0); // Devuelve el primer cómic encontrado
+				if (resultsArray.length() == 0) {
+					prontInfo.setOpacity(1);
+					prontInfo.setText("No se encontró el cómic con código: " + claveComic);
+					return null;
+				} else {
+					return resultsArray.getJSONObject(0); // Devuelve el primer cómic encontrado
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -161,7 +176,7 @@ public class ApiMarvel {
 			JSONObject jsonObject = new JSONObject(jsonResponse);
 			JSONArray resultsArray = jsonObject.getJSONObject("data").getJSONArray("results");
 
-			if (resultsArray.length() == 0) {
+			if (resultsArray.length() == 0 && VentanaAccionController.comicsImportados.size() < 1) {
 				prontInfo.setOpacity(1);
 				prontInfo.setText("No se encontró el cómic con codigo: " + claveComic);
 				return null;
@@ -200,20 +215,35 @@ public class ApiMarvel {
 	 * @throws URISyntaxException Si la URL de la API es inválida.
 	 */
 	private static String sendHttpGetRequest(String apiUrl) throws IOException, URISyntaxException {
-		URI url = new URI(apiUrl); // Create a URI from the API URL
+		try {
+			URI url = new URI(apiUrl); // Create a URI from the API URL
+			HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
+			connection.setRequestMethod("GET");
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			StringBuilder response = new StringBuilder();
+			String line;
+
+			while ((line = reader.readLine()) != null) {
+				response.append(line);
+			}
+
+			reader.close();
+			return response.toString();
+		} catch (IOException e) {
+			System.err.println("Error de IO al realizar la solicitud HTTP: " + e.getMessage());
+			// Puedes lanzar la excepción nuevamente o manejarla según tus necesidades
+			throw new IOException("Error al realizar la solicitud HTTP", e);
+		}
+	}
+
+	private static int codigoRespuesta(String apiUrl) throws IOException, URISyntaxException {
+		URI url = new URI(apiUrl);
 		HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
 		connection.setRequestMethod("GET");
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-		StringBuilder response = new StringBuilder();
-		String line;
-
-		while ((line = reader.readLine()) != null) {
-			response.append(line);
-		}
-
-		reader.close();
-		return response.toString();
+		int responseCode = connection.getResponseCode();
+		return responseCode;
 	}
 
 	/**
@@ -338,8 +368,6 @@ public class ApiMarvel {
 				} else {
 
 				}
-
-				//System.out.println(creatorRole);
 			}
 
 			// Fecha de venta

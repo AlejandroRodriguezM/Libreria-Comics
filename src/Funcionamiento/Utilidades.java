@@ -4,6 +4,7 @@
 */
 package Funcionamiento;
 
+import java.awt.Desktop;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -34,6 +35,8 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -122,6 +125,16 @@ public class Utilidades {
 	public static boolean isUnix() {
 		return os.contains("nux");
 	}
+
+	/**
+	 * Obtenemos el directorio de inicio del usuario
+	 */
+	private static String USER_DIR = System.getProperty("user.home");
+
+	/**
+	 * Construimos la ruta al directorio "Documents"
+	 */
+	private static String DOCUMENTS_PATH = USER_DIR + File.separator + "Documents";
 
 	/**
 	 * Funcion que permite comprobar que navegadores tienes instalados en el sistema
@@ -1168,30 +1181,31 @@ public class Utilidades {
 		return "";
 	}
 
-    public static String descargarImagen(String urlImagen, String carpetaDestino) throws IOException, URISyntaxException {
-        URI uri = new URI(urlImagen);
+	public static String descargarImagen(String urlImagen, String carpetaDestino)
+			throws IOException, URISyntaxException {
+		URI uri = new URI(urlImagen);
 
-        // Obtener el nombre de la imagen a partir de la URI
-        String[] partesURL = uri.getPath().split("/");
-        String nombreImagen = partesURL[partesURL.length - 1];
+		// Obtener el nombre de la imagen a partir de la URI
+		String[] partesURL = uri.getPath().split("/");
+		String nombreImagen = partesURL[partesURL.length - 1];
 
-        // Crear la carpeta de destino si no existe
-        File carpeta = new File(carpetaDestino);
-        if (!carpeta.exists()) {
-            carpeta.mkdirs();
-        }
+		// Crear la carpeta de destino si no existe
+		File carpeta = new File(carpetaDestino);
+		if (!carpeta.exists()) {
+			carpeta.mkdirs();
+		}
 
-        // Crear la ruta completa de destino
-        String rutaDestino = carpetaDestino + File.separator + nombreImagen;
+		// Crear la ruta completa de destino
+		String rutaDestino = carpetaDestino + File.separator + nombreImagen;
 
-        try (InputStream in = uri.toURL().openStream()) {
-            // Descargar la imagen y guardarla en la carpeta de destino
-            Path destino = new File(rutaDestino).toPath();
-            Files.copy(in, destino, StandardCopyOption.REPLACE_EXISTING);
-        }
+		try (InputStream in = uri.toURL().openStream()) {
+			// Descargar la imagen y guardarla en la carpeta de destino
+			Path destino = new File(rutaDestino).toPath();
+			Files.copy(in, destino, StandardCopyOption.REPLACE_EXISTING);
+		}
 
-        return rutaDestino;
-    }
+		return rutaDestino;
+	}
 
 	/**
 	 * Descarga una imagen desde una URL y la guarda en una carpeta de destino.
@@ -1313,60 +1327,58 @@ public class Utilidades {
 	 * @return true si la descarga y conversión son exitosas, false en caso
 	 *         contrario.
 	 */
-	public static CompletableFuture<Boolean> descargarYConvertirImagenAsync(URI urlImagen, String carpetaDestino, String nuevoNombre) {
-	    final String[] finalNuevoNombre = {nuevoNombre}; // Usar un array de longitud 1
+	public static CompletableFuture<Boolean> descargarYConvertirImagenAsync(URI urlImagen, String carpetaDestino,
+			String nuevoNombre) {
+		final String[] finalNuevoNombre = { nuevoNombre }; // Usar un array de longitud 1
 
-	    return CompletableFuture.supplyAsync(() -> {
-	        try {
-	            URL url = urlImagen.toURL();
-	            URLConnection connection = url.openConnection();
+		return CompletableFuture.supplyAsync(() -> {
+			try {
+				URL url = urlImagen.toURL();
+				URLConnection connection = url.openConnection();
 
-	            if (connection instanceof HttpURLConnection) {
-	                ((HttpURLConnection) connection).setRequestMethod("HEAD");
-	                int responseCode = ((HttpURLConnection) connection).getResponseCode();
+				if (connection instanceof HttpURLConnection) {
+					((HttpURLConnection) connection).setRequestMethod("HEAD");
+					int responseCode = ((HttpURLConnection) connection).getResponseCode();
 
-	                if (responseCode != HttpURLConnection.HTTP_OK) {
-	                    System.err.println("La URL no apunta a una imagen válida o no se pudo acceder: " + url);
-	                    return false;
-	                }
-	            }
+					if (responseCode != HttpURLConnection.HTTP_OK) {
+						System.err.println("La URL no apunta a una imagen válida o no se pudo acceder: " + url);
+						return false;
+					}
+				}
 
-	            String rutaDestino;
+				String rutaDestino;
 
-	            try (InputStream in = url.openStream()) {
-	                BufferedImage image = ImageIO.read(in);
+				try (InputStream in = url.openStream()) {
+					BufferedImage image = ImageIO.read(in);
 
-	                if (image == null) {
-	                    System.err.println("No se pudo cargar la imagen desde " + urlImagen);
-	                    return false;
-	                }
+					if (image == null) {
+						System.err.println("No se pudo cargar la imagen desde " + urlImagen);
+						return false;
+					}
 
-	                if (!finalNuevoNombre[0].toLowerCase().endsWith(".jpg")) {
-	                    BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(),
-	                            BufferedImage.TYPE_INT_RGB);
-	                    newImage.createGraphics().drawImage(image, 0, 0, null);
-	                    System.out.println("Original nuevoNombre: " + finalNuevoNombre[0]);
-	                    finalNuevoNombre[0] = finalNuevoNombre[0] + ".jpg";
-	                    System.out.println("Nuevo nuevoNombre: " + finalNuevoNombre[0]);
-	                    rutaDestino = carpetaDestino + File.separator + finalNuevoNombre[0];
-	                } else {
-	                    rutaDestino = carpetaDestino + File.separator + finalNuevoNombre[0];
-	                }
+					if (!finalNuevoNombre[0].toLowerCase().endsWith(".jpg")) {
+						BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(),
+								BufferedImage.TYPE_INT_RGB);
+						newImage.createGraphics().drawImage(image, 0, 0, null);
+						System.out.println("Original nuevoNombre: " + finalNuevoNombre[0]);
+						finalNuevoNombre[0] = finalNuevoNombre[0] + ".jpg";
+						System.out.println("Nuevo nuevoNombre: " + finalNuevoNombre[0]);
+						rutaDestino = carpetaDestino + File.separator + finalNuevoNombre[0];
+					} else {
+						rutaDestino = carpetaDestino + File.separator + finalNuevoNombre[0];
+					}
 
-	                File output = new File(rutaDestino);
-	                ImageIO.write(image, "jpg", output);
-	                return true;
-	            }
-	        } catch (IOException e) {
-	            System.err.println("Error al descargar o convertir la imagen desde " + urlImagen);
-	            e.printStackTrace();
-	            return false;
-	        }
-	    });
+					File output = new File(rutaDestino);
+					ImageIO.write(image, "jpg", output);
+					return true;
+				}
+			} catch (IOException e) {
+				System.err.println("Error al descargar o convertir la imagen desde " + urlImagen);
+				e.printStackTrace();
+				return false;
+			}
+		});
 	}
-
-
-
 
 	/**
 	 * Borra un archivo de imagen dada su ruta.
@@ -1474,9 +1486,134 @@ public class Utilidades {
 		return fileChooser; // Devuelve el FileChooser para que la interfaz gráfica lo utilice
 	}
 
-	public static Comic devolverComic(String id) {
-		return null;
+//	/**
+//	 * Devuelve un objeto Comic asociado a un identificador.
+//	 * @param id Identificador del cómic.
+//	 * @return Objeto Comic asociado al identificador o null si no se encuentra.
+//	 */
+//	public static Comic devolverComic(String id) {
+//		return null;
+//	}
 
+	/**
+	 * Imprime un mensaje de error en un archivo, junto con la fecha y hora actual.
+	 * Abre el archivo después de escribir en él.
+	 * @param mensajeError Mensaje de error a imprimir.
+	 * @param ubicacionArchivo Ruta del directorio donde se guardará el archivo.
+	 */
+	public static void imprimirEnArchivo(String mensajeError, String ubicacionArchivo) {
+
+		// Obtener la fecha y hora actuales
+		LocalDateTime now = LocalDateTime.now();
+
+		// Formatear la fecha y hora
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH-mm");
+
+		// Mostrar la información
+		String fechaFormateada = now.format(formatter);
+
+		String direccionCompleta = ubicacionArchivo + File.separator + "CodigosFaltantes_" + fechaFormateada + ".txt";
+
+		try {
+			PrintWriter escritor = new PrintWriter(new FileWriter(direccionCompleta, true));
+			escritor.println(mensajeError);
+			escritor.close();
+			System.out.println("Se ha escrito el mensaje de error en el archivo: " + ubicacionArchivo);
+			// Abrir el archivo
+			abrirArchivo(direccionCompleta);
+		} catch (IOException e) {
+			System.out.println("Ocurrió un error al intentar escribir en el archivo: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Abre un archivo en el sistema por su ubicación.
+	 * @param ubicacionArchivo Ruta del archivo que se desea abrir.
+	 */
+	private static void abrirArchivo(String ubicacionArchivo) {
+		try {
+			File archivo = new File(ubicacionArchivo);
+
+			if (!Desktop.isDesktopSupported()) {
+				System.out.println("El entorno de escritorio no es compatible para abrir archivos automáticamente.");
+				return;
+			}
+
+			Desktop desktop = Desktop.getDesktop();
+
+			if (archivo.exists()) {
+				desktop.open(archivo);
+			} else {
+				System.out.println("El archivo no existe: " + ubicacionArchivo);
+			}
+		} catch (IOException e) {
+			System.out.println("No se pudo abrir el archivo: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Elimina archivos en un directorio común que no están presentes en la lista proporcionada de URLs.
+	 * @param listaUrls Lista de URLs que representan los archivos a conservar.
+	 */
+    public static void borrarArchivosNoEnLista(List<String> listaUrls) {
+        // Obtén la ruta del directorio común a todas las URLs
+        String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+                + DBManager.DB_NAME + File.separator + "portadas" + File.separator;
+
+        // Obtén la lista de nombres de archivos en el directorio común
+        List<String> nombresArchivosEnDirectorio = obtenerNombresArchivosEnDirectorio(directorioComun);
+
+        // Itera sobre la lista de nombres en el directorio y elimina los que no están en la lista de URLs
+        for (String nombreArchivo : nombresArchivosEnDirectorio) {
+        	        	
+            if (!listaUrls.contains(nombreArchivo)) {
+                File archivoAEliminar = new File(nombreArchivo);
+                if (archivoAEliminar.exists() && archivoAEliminar.isFile()) {
+                    if (archivoAEliminar.delete()) {
+                        System.out.println("Archivo eliminado: " + archivoAEliminar.getAbsolutePath());
+                    } else {
+                        System.out.println("No se pudo eliminar el archivo: " + archivoAEliminar.getAbsolutePath());
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Obtiene la lista de nombres de archivos en un directorio especificado.
+     * @param directorio La ruta del directorio.
+     * @return Lista de nombres de archivos en el directorio.
+     */
+	private static List<String> obtenerNombresArchivosEnDirectorio(String directorio) {
+		List<String> nombresArchivos = new ArrayList<>();
+
+		File directorioComun = new File(directorio);
+		File[] archivosEnDirectorio = directorioComun.listFiles();
+
+		if (archivosEnDirectorio != null) {
+			for (File archivo : archivosEnDirectorio) {
+				nombresArchivos.add(directorio + archivo.getName());
+			}
+		}
+
+		return nombresArchivos;
+	}
+
+	/**
+	 * Obtiene la lista de nombres de archivos con extensiones de una lista de URLs.
+	 * @param listaUrls Lista de URLs que representan archivos.
+	 * @return Lista de nombres de archivos con extensiones.
+	 */
+	public static List<String> obtenerNombresYExtensiones(List<String> listaUrls) {
+		List<String> nombresYExtensiones = new ArrayList<>();
+
+		for (String url : listaUrls) {
+			File archivo = new File(url);
+			String nombreArchivo = archivo.getName();
+			nombresYExtensiones.add(nombreArchivo);
+		}
+
+		return nombresYExtensiones;
 	}
 
 	/**

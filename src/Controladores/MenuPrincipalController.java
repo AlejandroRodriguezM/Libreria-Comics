@@ -456,6 +456,8 @@ public class MenuPrincipalController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
+		
+		
 		libreria = new DBLibreriaManager();
 		utilidad = new Utilidades();
 
@@ -896,6 +898,7 @@ public class MenuPrincipalController implements Initializable {
 		}
 
 		busquedaGeneral.setText("");
+		Utilidades.borrarArchivosNoEnLista(DBLibreriaManager.listaImagenes);
 	}
 
 	/**
@@ -923,6 +926,8 @@ public class MenuPrincipalController implements Initializable {
 		botonImprimir.setDisable(true);
 		botonGuardarResultado.setVisible(false);
 		botonGuardarResultado.setDisable(true);
+		
+		Utilidades.borrarArchivosNoEnLista(DBLibreriaManager.listaImagenes);
 	}
 
 	/**
@@ -1145,9 +1150,13 @@ public class MenuPrincipalController implements Initializable {
 			protected Boolean call() throws Exception {
 				// Obtener la CompletableFuture<Boolean> del método borrarContenidoTabla de la
 				// clase nav
-				CompletableFuture<Boolean> futureResult = nav.borrarContenidoTabla();
-				// Obtener el resultado real (Boolean) de la CompletableFuture utilizando join()
-				boolean result = futureResult.join();
+				boolean result = false;
+				if (DBLibreriaManager.listaNombre.size() > 0) {
+					CompletableFuture<Boolean> futureResult = nav.borrarContenidoTabla();
+					// Obtener el resultado real (Boolean) de la CompletableFuture utilizando join()
+					result = futureResult.join();
+				}
+
 				return result; // Devolver el resultado actual
 			}
 		};

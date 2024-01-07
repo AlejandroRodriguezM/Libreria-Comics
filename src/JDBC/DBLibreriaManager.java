@@ -213,6 +213,11 @@ public class DBLibreriaManager extends Comic {
 	 * Lista de nombres de dibujantes.
 	 */
 	public static List<String> nombreDibujanteList = new ArrayList<>();
+	
+	/**
+	 * Lista de nombres de dibujantes.
+	 */
+	public static List<String> listaImagenes = new ArrayList<>();
 
 	/**
 	 * Lista ordenada que contiene todas las listas anteriores.
@@ -315,6 +320,7 @@ public class DBLibreriaManager extends Comic {
 		listaDibujante = obtenerValoresColumna("nomDibujante");
 		listaProcedencia = obtenerValoresColumna("procedencia");
 		listaCaja = obtenerValoresColumna("caja_deposito");
+		listaImagenes = obtenerValoresColumna("portada");
 	}
 
 	/**
@@ -379,7 +385,7 @@ public class DBLibreriaManager extends Comic {
 				try {
 					CompletableFuture<Boolean> ejecucionResult = null;
 					boolean ejecucionExitosa = false;
-					if (listaComics.size() > 0) {
+					if (listaNombre.size() > 0) {
 						String sentencia[] = new String[2];
 						sentencia[0] = "delete from comicsbbdd";
 						sentencia[1] = "alter table comicsbbdd AUTO_INCREMENT = 1;";
@@ -665,6 +671,7 @@ public class DBLibreriaManager extends Comic {
 	public List<String> obtenerValoresColumna(String columna) throws SQLException {
 		String sentenciaSQL = "SELECT " + columna + " FROM comicsbbdd ORDER BY " + columna + " ASC";
 		reiniciarBBDD();
+		DBManager.resetConnection();
 		return guardarDatosAutoCompletado(sentenciaSQL, columna);
 	}
 

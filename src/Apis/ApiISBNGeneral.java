@@ -210,30 +210,6 @@ public class ApiISBNGeneral {
 				String thumbnailUrl = bookInfo.getString("thumbnail_url");
 				thumbnailUrl = thumbnailUrl.replace("-S.jpg", "-L.jpg").replace("-M.jpg", "-L.jpg");
 				bookInfoList.add(thumbnailUrl);
-//				String rutaImagen = "/Funcionamiento/sinPortada.jpg";
-//				CompletableFuture<String> descargaImagenFuture = Utilidades
-//						.descargarImagenAsync(thumbnailUrl, DOCUMENTS_PATH).exceptionally(e -> {
-//							e.printStackTrace();
-//							return rutaImagen; // Devolver la ruta local si hay un error en la descarga
-//						});
-//
-//				descargaImagenFuture.thenAccept(rutaImagenDescargada -> {
-//					if (rutaImagenDescargada != null) {
-//						// Se descargó la imagen, usar la ruta descargada
-//						bookInfoList.add(rutaImagenDescargada);
-//					} else {
-//						// La descarga de la imagen falló, usar la ruta local predeterminada desde los
-//						// recursos
-//						URL url = getClass().getResource(rutaImagen);
-//						if (url != null) {
-//							bookInfoList.add(url.toExternalForm());
-//						} else {
-//							System.err.println(
-//									"Error al obtener la ruta de la imagen predeterminada desde los recursos.");
-//						}
-//					}
-//				}).join(); // Esperar a que la tarea asíncrona se complete (bloquea el hilo principal hasta
-//							// que se complete)
 			} else {
 				// No hay thumbnail_url, agregar la ruta de la imagen predeterminada desde los
 				// recursos
