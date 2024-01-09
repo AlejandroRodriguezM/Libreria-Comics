@@ -4,6 +4,8 @@
 */
 package comicManagement;
 
+import Funcionamiento.Utilidades;
+
 /**
  * Esta clase objeto sirve para dar forma al comic que estara dentro de la base
  * de datos.
@@ -515,19 +517,6 @@ public class Comic {
 	}
 
 	/**
-	 * Agrega una etiqueta y un valor al constructor StringBuilder si el valor no está vacío o nulo.
-	 *
-	 * @param builder El constructor StringBuilder al que se va a agregar la etiqueta y el valor.
-	 * @param label La etiqueta que se va a agregar.
-	 * @param value El valor que se va a agregar.
-	 */
-	private void appendIfNotEmpty(StringBuilder builder, String label, String value) {
-		if (value != null && !value.isEmpty()) {
-			builder.append(label).append(": ").append(value).append("\n");
-		}
-	}
-
-	/**
 	 * Genera una representación en forma de cadena de texto del cómic, incluyendo sus atributos no nulos.
 	 *
 	 * @return Una cadena de texto que representa el cómic.
@@ -536,24 +525,24 @@ public class Comic {
 	public String toString() {
 		StringBuilder contenidoComic = new StringBuilder();
 
-		appendIfNotEmpty(contenidoComic, "ID", ID);
-		appendIfNotEmpty(contenidoComic, "Nombre", nombre);
-		appendIfNotEmpty(contenidoComic, "Numero", numero) ;
-		appendIfNotEmpty(contenidoComic, "Precio", !precio_comic.isEmpty() ? precio_comic + " $" : "");
-		appendIfNotEmpty(contenidoComic, "Codigo", codigo_comic);
-		appendIfNotEmpty(contenidoComic, "Variante", variante);
-		appendIfNotEmpty(contenidoComic, "Firma", firma);
-		appendIfNotEmpty(contenidoComic, "Editorial", editorial);
-		appendIfNotEmpty(contenidoComic, "Formato", formato);
-		appendIfNotEmpty(contenidoComic, "Procedencia", procedencia);
-		appendIfNotEmpty(contenidoComic, "Fecha", fecha);
-		appendIfNotEmpty(contenidoComic, "Guionista", guionista);
-		appendIfNotEmpty(contenidoComic, "Dibujante", dibujante);
-		appendIfNotEmpty(contenidoComic, "Key issue", key_issue);
-		appendIfNotEmpty(contenidoComic, "Puntuacion", puntuacion);
-		appendIfNotEmpty(contenidoComic, "Estado", estado);
-		appendIfNotEmpty(contenidoComic, "Url referencia", url_referencia);
-		appendIfNotEmpty(contenidoComic, "Caja", numCaja);
+		Utilidades.appendIfNotEmpty(contenidoComic, "ID", ID);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Nombre", nombre);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Numero", numero) ;
+		Utilidades.appendIfNotEmpty(contenidoComic, "Precio", !precio_comic.isEmpty() ? precio_comic + " $" : "");
+		Utilidades.appendIfNotEmpty(contenidoComic, "Codigo", codigo_comic);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Variante", variante);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Firma", firma);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Editorial", editorial);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Formato", formato);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Procedencia", procedencia);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Fecha", fecha);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Guionista", guionista);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Dibujante", dibujante);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Key issue", key_issue);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Puntuacion", puntuacion);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Estado", estado);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Url referencia", url_referencia);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Caja", numCaja);
 
 		return contenidoComic.toString();
 	}

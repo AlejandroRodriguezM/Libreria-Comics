@@ -1969,7 +1969,7 @@ public class MenuPrincipalController implements Initializable {
 				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
 
 		// Pasar la lista de ComboBoxes a VentanaAccionController
-		ventanaAccion.pasarComboBoxes(comboboxes);
+		ventanaAccion.setComboBoxes(comboboxes);
 
 		if (fuente instanceof Button) {
 			Button botonPresionado = (Button) fuente;

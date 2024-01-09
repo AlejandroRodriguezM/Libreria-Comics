@@ -110,9 +110,6 @@ public class Utilidades {
 	 */
 	private final static String DOCUMENTS_PATH = USER_DIR + File.separator + "Documents";
 
-	private final static String SOURCE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
-			+ DBManager.DB_NAME + File.separator + "portadas" + File.separator;
-
 	/**
 	 * Verifica si el sistema operativo es Windows.
 	 *
@@ -248,28 +245,13 @@ public class Utilidades {
 	}
 
 	/**
-	 * Funcion que elimina la imagen temporal creada a la hora de subir imagenes
-	 * mediante importacion de csv, modificacion o introducir datos manualmente
-	 *
-	 * @param pathFichero
-	 */
-	public void deleteImage(String pathFichero) {
-
-		try {
-			Files.deleteIfExists(Paths.get(pathFichero));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
 	 * Funcion que permite la redimension de una imagen. Guarda la imagen y es
 	 * cargada por otras funciones.
 	 *
 	 * @param file
 	 * @return
 	 */
-	public void nueva_imagen(String imagen, String nuevoNombreArchivo) throws IOException {
+	public void nueva_imagen(String imagen, String nuevoNombreArchivo) {
 		try {
 			File file = new File(imagen);
 			InputStream input = null;
@@ -1192,31 +1174,31 @@ public class Utilidades {
 		return "";
 	}
 
-	public static String descargarImagen(String urlImagen, String carpetaDestino)
-			throws IOException, URISyntaxException {
-		URI uri = new URI(urlImagen);
-
-		// Obtener el nombre de la imagen a partir de la URI
-		String[] partesURL = uri.getPath().split("/");
-		String nombreImagen = partesURL[partesURL.length - 1];
-
-		// Crear la carpeta de destino si no existe
-		File carpeta = new File(carpetaDestino);
-		if (!carpeta.exists()) {
-			carpeta.mkdirs();
-		}
-
-		// Crear la ruta completa de destino
-		String rutaDestino = carpetaDestino + File.separator + nombreImagen;
-
-		try (InputStream in = uri.toURL().openStream()) {
-			// Descargar la imagen y guardarla en la carpeta de destino
-			Path destino = new File(rutaDestino).toPath();
-			Files.copy(in, destino, StandardCopyOption.REPLACE_EXISTING);
-		}
-
-		return rutaDestino;
-	}
+//	public static String descargarImagen(String urlImagen, String carpetaDestino)
+//			throws IOException, URISyntaxException {
+//		URI uri = new URI(urlImagen);
+//
+//		// Obtener el nombre de la imagen a partir de la URI
+//		String[] partesURL = uri.getPath().split("/");
+//		String nombreImagen = partesURL[partesURL.length - 1];
+//
+//		// Crear la carpeta de destino si no existe
+//		File carpeta = new File(carpetaDestino);
+//		if (!carpeta.exists()) {
+//			carpeta.mkdirs();
+//		}
+//
+//		// Crear la ruta completa de destino
+//		String rutaDestino = carpetaDestino + File.separator + nombreImagen;
+//
+//		try (InputStream in = uri.toURL().openStream()) {
+//			// Descargar la imagen y guardarla en la carpeta de destino
+//			Path destino = new File(rutaDestino).toPath();
+//			Files.copy(in, destino, StandardCopyOption.REPLACE_EXISTING);
+//		}
+//
+//		return rutaDestino;
+//	}
 
 	/**
 	 * Descarga una imagen desde una URL y la guarda en una carpeta de destino.
@@ -1542,13 +1524,10 @@ public class Utilidades {
 				System.out.println("El entorno de escritorio no es compatible para abrir archivos automáticamente.");
 				return;
 			}
-
 			Desktop desktop = Desktop.getDesktop();
 
 			if (archivo.exists()) {
 				desktop.open(archivo);
-			} else {
-				System.out.println("El archivo no existe: " + ubicacionArchivo);
 			}
 		} catch (IOException e) {
 			System.out.println("No se pudo abrir el archivo: " + e.getMessage());
@@ -1562,25 +1541,29 @@ public class Utilidades {
 	 * @param listaUrls Lista de URLs que representan los archivos a conservar.
 	 */
 	public static void borrarArchivosNoEnLista(List<String> listaUrls) {
-		// Obtén la ruta del directorio común a todas las URLs
 		String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
 				+ DBManager.DB_NAME + File.separator + "portadas" + File.separator;
 
-		// Obtén la lista de nombres de archivos en el directorio común
+		for (String string : listaUrls) {
+			System.out.println(string);
+		}
+
 		List<String> nombresArchivosEnDirectorio = obtenerNombresArchivosEnDirectorio(directorioComun);
 
-		// Itera sobre la lista de nombres en el directorio y elimina los que no están
-		// en la lista de URLs
 		for (String nombreArchivo : nombresArchivosEnDirectorio) {
+			Path archivoAEliminarPath = Paths.get(nombreArchivo).normalize();
 
-			if (!listaUrls.contains(nombreArchivo)) {
-				File archivoAEliminar = new File(nombreArchivo);
-				if (archivoAEliminar.exists() && archivoAEliminar.isFile()) {
-					if (archivoAEliminar.delete()) {
-						System.out.println("Archivo eliminado: " + archivoAEliminar.getAbsolutePath());
-					} else {
-						System.out.println("No se pudo eliminar el archivo: " + archivoAEliminar.getAbsolutePath());
+			if (!listaUrls.stream().anyMatch(url -> url.equalsIgnoreCase(archivoAEliminarPath.toString()))) {
+				try {
+					if (archivoAEliminarPath.toFile().exists() && archivoAEliminarPath.toFile().isFile()) {
+						if (archivoAEliminarPath.toFile().delete()) {
+							System.out.println("Archivo eliminado: " + archivoAEliminarPath.toString());
+						} else {
+							System.out.println("No se pudo eliminar el archivo: " + archivoAEliminarPath.toString());
+						}
 					}
+				} catch (SecurityException e) {
+					System.err.println("Error de seguridad al intentar eliminar el archivo: " + e.getMessage());
 				}
 			}
 		}
@@ -1626,40 +1609,6 @@ public class Utilidades {
 	}
 
 	/**
-	 * Obtiene la ruta de la imagen del cómic.
-	 * 
-	 * @param rutaImagen La ruta de la imagen del cómic.
-	 * @return La ruta de la imagen del cómic en forma de URI.
-	 * @throws IOException        Si hay un error de lectura o escritura al
-	 *                            manipular archivos.
-	 * @throws URISyntaxException Si la sintaxis de la URI es incorrecta.
-	 */
-	public static String obtenerImagenComic(String rutaImagen) throws IOException, URISyntaxException {
-		String imagenPath = "";
-
-		if (!rutaImagen.isEmpty()) {
-			File file = new File(rutaImagen);
-
-			if (Utilidades.isImageURL(rutaImagen)) {
-				// Es una URL en internet
-				String portada = Utilidades.descargarImagen(rutaImagen, SOURCE_PATH);
-				imagenPath = new File(portada).toURI().toString();
-			} else if (!file.exists()) {
-				// La imagen no existe en la ruta especificada
-				imagenPath = new File("Funcionamiento/sinPortada.jpg").toURI().toString();
-			} else {
-				// La ruta de la imagen es local
-				imagenPath = file.toURI().toString();
-			}
-		} else {
-			// La ruta de la imagen está vacía
-			imagenPath = new File("Funcionamiento/sinPortada.jpg").toURI().toString();
-		}
-
-		return imagenPath;
-	}
-	
-	/**
 	 * Parsea la cadena de fecha y devuelve la fecha correspondiente. Si la cadena
 	 * es nula o vacía, devuelve la fecha actual.
 	 *
@@ -1675,28 +1624,98 @@ public class Utilidades {
 		}
 	}
 
+//	public static void copiarYRenombrarArchivo(String rutaOrigen, String nombreOrigen, String carpetaDestino,
+//			String nuevoNombre) {
+//		// Construir las rutas de origen y destino
+//		Path origenPath = Paths.get(rutaOrigen, nombreOrigen);
+//		Path destinoPath = Paths.get(carpetaDestino, nuevoNombre);
+//
+//		// Verificar si el archivo de origen existe
+//		if (Files.exists(origenPath)) {
+//			try {
+//				// Copiar el archivo al destino y renombrarlo
+//				Files.copy(origenPath, destinoPath);
+//				System.out.println("Archivo copiado y renombrado con éxito.");
+//			} catch (IOException e) {
+//				System.err.println("Error al copiar o renombrar el archivo: " + e.getMessage());
+//			}
+//		} else {
+//			System.err.println("El archivo de origen no existe.");
+//		}
+//	}
+
 	/**
-	 * Funcion que segun el string que se le de, le hace un encode para que pueda
-	 * ser usado en una API
-	 * 
-	 * @param input
-	 * @return
+	 * Obtiene la dirección de la portada de un cómic.
+	 *
+	 * @param direccionPortada La dirección de la portada del cómic.
+	 * @return La dirección de la portada actualizada después de procesar la lógica.
 	 */
-//    private static String encodeURL(String input) {
-//        try {
-//            // Reemplaza espacios con %20 y codifica otros caracteres especiales
-//            return URLEncoder.encode(input, "UTF-8")
-//                    .replaceAll("\\+", "%20")
-//                    .replaceAll("%21", "!")
-//                    .replaceAll("%27", "'")
-//                    .replaceAll("%28", "(")
-//                    .replaceAll("%29", ")")
-//                    .replaceAll("%7E", "~")
-//                    .replaceAll(":", "%3A")
-//                    .replaceAll("\\.", "%2E");
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
+	public static String obtenerPortada(String direccionPortada) {
+	    String portada = "";
+	    File file;
+
+	    if (!direccionPortada.isEmpty() || direccionPortada == null) {
+	        file = new File(direccionPortada);
+	        if (Utilidades.isImageURL(direccionPortada)) {
+	            // Es una URL en internet
+	            CompletableFuture<String> futurePortada = descargarImagenAsync(direccionPortada, DOCUMENTS_PATH);
+	            // Esperar a que el CompletableFuture se complete y obtener el resultado
+	            portada = futurePortada.join();
+	            file = new File(portada);
+	        } else if (!file.exists()) {
+	            portada = new File("Funcionamiento/sinPortada.jpg").toURI().toString();
+	        } else {
+	            portada = file.toURI().toString();
+	        }
+	    } else {
+	        portada = new File("Funcionamiento/sinPortada.jpg").toURI().toString();
+	    }
+
+	    // Realizar cualquier operación adicional si es necesario
+
+	    return portada;
+	}
+
+	/**
+	 * Busca un cómic por su ID en una lista de cómics.
+	 *
+	 * @param comics    La lista de cómics en la que se realizará la búsqueda.
+	 * @param idComic   La ID del cómic que se está buscando.
+	 * @return          El cómic encontrado por la ID, o null si no se encuentra ninguno.
+	 */
+	public static Comic buscarComicPorID(List<Comic> comics, String idComic) {
+	    for (Comic c : comics) {
+	        if (c.getID().equals(idComic)) {
+	            return c;  // Devuelve el cómic si encuentra la coincidencia por ID
+	        }
+	    }
+	    return null;  // Retorna null si no se encuentra ningún cómic con la ID especificada
+	}
+	
+	/**
+	 * Agrega una etiqueta y un valor al constructor StringBuilder si el valor no está vacío o nulo.
+	 *
+	 * @param builder El constructor StringBuilder al que se va a agregar la etiqueta y el valor.
+	 * @param label La etiqueta que se va a agregar.
+	 * @param value El valor que se va a agregar.
+	 */
+	public static void appendIfNotEmpty(StringBuilder builder, String label, String value) {
+		if (value != null && !value.isEmpty()) {
+			builder.append(label).append(": ").append(value).append("\n");
+		}
+	}
+	
+	/**
+	 * Devuelve el valor predeterminado si la cadena dada es nula o vacía, de lo
+	 * contrario, devuelve la cadena original.
+	 *
+	 * @param value        Cadena a ser verificada.
+	 * @param defaultValue Valor predeterminado a ser devuelto si la cadena es nula
+	 *                     o vacía.
+	 * @return Cadena original o valor predeterminado.
+	 */
+	public static String defaultIfNullOrEmpty(String value, String defaultValue) {
+		return (value == null || value.isEmpty()) ? defaultValue : value;
+	}
+
 }

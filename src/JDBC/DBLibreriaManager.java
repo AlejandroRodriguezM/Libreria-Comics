@@ -213,7 +213,7 @@ public class DBLibreriaManager extends Comic {
 	 * Lista de nombres de dibujantes.
 	 */
 	public static List<String> nombreDibujanteList = new ArrayList<>();
-	
+
 	/**
 	 * Lista de nombres de dibujantes.
 	 */
@@ -265,6 +265,23 @@ public class DBLibreriaManager extends Comic {
 	 * Ventanas de la aplicación.
 	 */
 	private static Ventanas ventanas = new Ventanas();
+
+	/**
+	 * Obtenemos el directorio de inicio del usuario
+	 */
+	private final String USER_DIR = System.getProperty("user.home");
+
+	/**
+	 * Construimos la ruta al directorio "Documents"
+	 */
+	private final String DOCUMENTS_PATH = USER_DIR + File.separator + "Documents";
+
+	/**
+	 * Construimos la ruta al directorio "libreria_comics" dentro de "Documents" y
+	 * añadimos el nombre de la base de datos y la carpeta "portadas".
+	 */
+	private final String SOURCE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+			+ DBManager.DB_NAME + File.separator + "portadas" + File.separator;
 
 	/**
 	 * Agrega elementos únicos a la lista principal de cómics guardados,
@@ -588,41 +605,63 @@ public class DBLibreriaManager extends Comic {
 	 * @return Una lista de cadenas con los datos para autocompletado.
 	 * @throws SQLException Si ocurre algún error al ejecutar la consulta SQL.
 	 */
-	public List<String> guardarDatosAutoCompletado(String sentenciaSQL, String columna) throws SQLException {
-		List<String> listaAutoCompletado = new ArrayList<>();
-		ResultSet rs = null;
-		try {
-			rs = obtenLibreria(sentenciaSQL);
-			if (rs != null && rs.first()) {
-				do {
-					String datosAutocompletado = rs.getString(columna);
-					if (columna.equals("nomComic")) {
-						listaAutoCompletado.add(datosAutocompletado.trim());
-					} else {
-						String[] nombres = datosAutocompletado.split("-");
-						for (String nombre : nombres) {
-							nombre = nombre.trim();
-							if (!nombre.isEmpty()) {
-								listaAutoCompletado.add(nombre);
-							}
-						}
-					}
-				} while (rs.next());
-				listaAutoCompletado = Utilidades.listaArregladaAutoComplete(listaAutoCompletado);
-			}
-		} catch (SQLException e) {
-			nav.alertaException(e.toString());
-		} finally {
-			// Asegúrate de cerrar el ResultSet después de usarlo
-			if (rs != null) {
-				try {
-					rs.close();
-				} catch (SQLException e) {
-					nav.alertaException("Error al cerrar el ResultSet: " + e.toString());
-				}
-			}
+	public List<String> guardarDatosAutoCompletado(String sentenciaSQL, String columna) {
+	    List<String> listaAutoCompletado = new ArrayList<>();
+	    ResultSet rs = null;
+
+	    try (Connection conn = DBManager.conexion();
+	         PreparedStatement stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+
+	        rs = stmt.executeQuery();
+
+	        if (rs != null && rs.first()) {
+	            do {
+	                String datosAutocompletado = rs.getString(columna);
+	                if (columna.equals("nomComic")) {
+	                    listaAutoCompletado.add(datosAutocompletado.trim());
+	                } else if (columna.equals("portada")) {
+	                    listaAutoCompletado.add(SOURCE_PATH + obtenerUltimoSegmentoRuta(datosAutocompletado));
+	                } else {
+	                    String[] nombres = datosAutocompletado.split("-");
+	                    for (String nombre : nombres) {
+	                        nombre = nombre.trim();
+	                        if (!nombre.isEmpty()) {
+	                            listaAutoCompletado.add(nombre);
+	                        }
+	                    }
+	                }
+	            } while (rs.next());
+
+	            listaAutoCompletado = Utilidades.listaArregladaAutoComplete(listaAutoCompletado);
+	        }
+	    } catch (SQLException e) {
+	        nav.alertaException(e.toString());
+	    } finally {
+	        if (rs != null) {
+	            try {
+	                rs.close();
+	            } catch (SQLException e) {
+	                nav.alertaException("Error al cerrar el ResultSet: " + e.toString());
+	            }
+	        }
+	    }
+
+	    return listaAutoCompletado;
+	}
+
+
+	public static String obtenerUltimoSegmentoRuta(String ruta) {
+		if (ruta == null || ruta.isEmpty()) {
+			return "";
 		}
-		return listaAutoCompletado;
+
+		int indiceUltimoSeparador = ruta.lastIndexOf(File.separator);
+		if (indiceUltimoSeparador != -1 && indiceUltimoSeparador < ruta.length() - 1) {
+			return ruta.substring(indiceUltimoSeparador + 1);
+		} else {
+			// La ruta no contiene separador o es la última parte de la ruta
+			return ruta;
+		}
 	}
 
 	// **************************************//
@@ -685,15 +724,20 @@ public class DBLibreriaManager extends Comic {
 	 */
 	public List<Comic> verLibreria(String sentenciaSQL) {
 		listaComics.clear(); // Limpiar la lista existente de cómics
-		String excepcion = "No hay ningun comic guardado en la base de datos";
+		List<Comic> listaComics = new ArrayList<>();
 
-		ResultSet rs = obtenLibreria(sentenciaSQL); // Obtener el ResultSet
+		try (Connection conn = DBManager.conexion();
+				PreparedStatement stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE,
+						ResultSet.CONCUR_UPDATABLE);
+				ResultSet rs = stmt.executeQuery()) {
 
-		if (rs != null) {
-			listaDatos(rs); // Llenar la lista de cómics con los datos del ResultSet
-		} else {
-			nav.alertaException(excepcion);
+			while (rs.next()) {
+				Comic comic = listaDatos(rs);
+				listaComics.add(comic);
+			}
 
+		} catch (SQLException e) {
+			nav.alertaException("Error al obtener la lista de cómics: " + e.toString());
 		}
 
 		return listaComics;
@@ -1141,44 +1185,39 @@ public class DBLibreriaManager extends Comic {
 	 * @param rs el ResultSet con los datos de los cómics
 	 * @return una lista de objetos Comic
 	 */
-	public Comic listaDatos(ResultSet rs) {
+	private Comic listaDatos(ResultSet rs) {
 		Comic comic = new Comic();
 
 		try {
-			if (rs != null) {
-				do {
-					this.ID = rs.getString("ID");
-					this.nombre = rs.getString("nomComic");
-					this.numCaja = rs.getString("caja_deposito");
-					this.numero = rs.getString("numComic");
-					this.variante = rs.getString("nomVariante");
-					this.firma = rs.getString("firma");
-					this.editorial = rs.getString("nomEditorial");
-					this.formato = rs.getString("formato");
-					this.procedencia = rs.getString("procedencia");
-					this.fecha = rs.getString("fecha_publicacion");
-					this.guionista = rs.getString("nomGuionista");
-					this.dibujante = rs.getString("nomDibujante");
-					this.key_issue = rs.getString("key_issue");
-					this.estado = rs.getString("estado");
-					this.puntuacion = rs.getString("puntuacion");
-					this.imagen = rs.getString("portada");
-					this.url_referencia = rs.getString("url_referencia");
-					this.precio_comic = rs.getString("precio_comic");
-					this.codigo_comic = rs.getString("codigo_comic");
+			this.ID = rs.getString("ID");
+			this.nombre = rs.getString("nomComic");
+			this.numCaja = rs.getString("caja_deposito");
+			this.numero = rs.getString("numComic");
+			this.variante = rs.getString("nomVariante");
+			this.firma = rs.getString("firma");
+			this.editorial = rs.getString("nomEditorial");
+			this.formato = rs.getString("formato");
+			this.procedencia = rs.getString("procedencia");
+			this.fecha = rs.getString("fecha_publicacion");
+			this.guionista = rs.getString("nomGuionista");
+			this.dibujante = rs.getString("nomDibujante");
+			this.key_issue = rs.getString("key_issue");
+			this.estado = rs.getString("estado");
+			this.puntuacion = rs.getString("puntuacion");
+			this.imagen = rs.getString("portada");
+			this.url_referencia = rs.getString("url_referencia");
+			this.precio_comic = rs.getString("precio_comic");
+			this.codigo_comic = rs.getString("codigo_comic");
 
-					comic = new Comic(this.ID, this.nombre, this.numCaja, this.numero, this.variante, this.firma,
-							this.editorial, this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante,
-							this.estado, this.key_issue, this.puntuacion, this.imagen, this.url_referencia,
-							this.precio_comic, codigo_comic);
-
-					listaComics.add(comic);
-				} while (rs.next());
-			}
+			comic = new Comic(this.ID, this.nombre, this.numCaja, this.numero, this.variante, this.firma,
+					this.editorial, this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante,
+					this.estado, this.key_issue, this.puntuacion, this.imagen, this.url_referencia, this.precio_comic,
+					codigo_comic);
 		} catch (SQLException e) {
 			nav.alertaException("Datos introducidos incorrectos.");
 			e.printStackTrace();
 		}
+
 		return comic;
 	}
 
@@ -1210,56 +1249,49 @@ public class DBLibreriaManager extends Comic {
 	 *         ese ID
 	 * @throws SQLException si ocurre algún error al ejecutar la consulta SQL
 	 */
-	public Comic comicDatos(String identificador) throws SQLException {
+	public Comic comicDatos(String identificador) {
 		Comic comic = null;
 
 		String sentenciaSQL = "SELECT * FROM comicsbbdd WHERE ID = ?";
 
-		PreparedStatement statement = null;
-		ResultSet rs = null;
-
-		try {
-			conn = DBManager.conexion();
-			statement = conn.prepareStatement(sentenciaSQL);
+		try (Connection conn = DBManager.conexion();
+				PreparedStatement statement = conn.prepareStatement(sentenciaSQL)) {
 			statement.setString(1, identificador);
-			rs = statement.executeQuery();
 
-			if (rs.next()) {
-				String ID = rs.getString("ID");
-				String nombre = rs.getString("nomComic");
-				String numCaja = rs.getString("caja_deposito");
-				String numero = rs.getString("numComic");
-				String variante = rs.getString("nomVariante");
-				String firma = rs.getString("firma");
-				String editorial = rs.getString("nomEditorial");
-				String formato = rs.getString("formato");
-				String procedencia = rs.getString("procedencia");
-				String fecha = rs.getString("fecha_publicacion");
-				String guionista = rs.getString("nomGuionista");
-				String dibujante = rs.getString("nomDibujante");
-				String estado = rs.getString("estado");
-				String key_issue = rs.getString("key_issue");
-				String puntuacion = rs.getString("puntuacion");
-				String imagen = rs.getString("portada");
-				String url_referencia = rs.getString("url_referencia");
-				String precio_comic = rs.getString("precio_comic");
-				String codigo_comic = rs.getString("codigo_comic");
+			try (ResultSet rs = statement.executeQuery()) {
+				if (rs.next()) {
+					String ID = rs.getString("ID");
+					String nombre = rs.getString("nomComic");
+					String numCaja = rs.getString("caja_deposito");
+					String numero = rs.getString("numComic");
+					String variante = rs.getString("nomVariante");
+					String firma = rs.getString("firma");
+					String editorial = rs.getString("nomEditorial");
+					String formato = rs.getString("formato");
+					String procedencia = rs.getString("procedencia");
+					String fecha = rs.getString("fecha_publicacion");
+					String guionista = rs.getString("nomGuionista");
+					String dibujante = rs.getString("nomDibujante");
+					String estado = rs.getString("estado");
+					String key_issue = rs.getString("key_issue");
+					String puntuacion = rs.getString("puntuacion");
+					String imagen = rs.getString("portada");
+					String url_referencia = rs.getString("url_referencia");
+					String precio_comic = rs.getString("precio_comic");
+					String codigo_comic = rs.getString("codigo_comic");
 
-				comic = new Comic(ID, nombre, numCaja, numero, variante, firma, editorial, formato, procedencia, fecha,
-						guionista, dibujante, estado, key_issue, puntuacion, imagen, url_referencia, precio_comic,
-						codigo_comic);
+					comic = new Comic(ID, nombre, numCaja, numero, variante, firma, editorial, formato, procedencia,
+							fecha, guionista, dibujante, estado, key_issue, puntuacion, imagen, url_referencia,
+							precio_comic, codigo_comic);
+				}
+			} catch (SQLException e) {
+				nav.alertaException(e.toString());
+				throw new RuntimeException("Error al ejecutar la consulta SQL", e);
 			}
 		} catch (SQLException e) {
 			nav.alertaException(e.toString());
-		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (statement != null) {
-				statement.close();
-			}
 		}
-		DBManager.resetConnection();
+
 		return comic;
 	}
 
@@ -1271,36 +1303,29 @@ public class DBLibreriaManager extends Comic {
 	 *         existe.
 	 * @throws SQLException Si ocurre un error en la consulta SQL.
 	 */
-	public boolean checkID(String identificador) throws SQLException {
-
-		if (identificador.length() == 0) {
-			String excepcion = "No puedes realizar la accion sin antes no poner un ID valido";
+	public boolean checkID(String identificador) {
+		if (identificador.isEmpty()) {
+			String excepcion = "No puedes realizar la acción sin especificar un ID válido.";
 			nav.alertaException(excepcion);
 			return false; // Si el identificador está vacío, se considera que no existe
 		}
 
-		String sentenciaSQL = "SELECT * FROM comicsbbdd WHERE ID = ?";
-		conn = DBManager.conexion();
-		ResultSet rs = null;
-		PreparedStatement preparedStatement = null;
+		String sentenciaSQL = "SELECT COUNT(*) FROM comicsbbdd WHERE ID = ?";
 		boolean existe = false; // Variable para almacenar si el identificador existe en la base de datos
 
-		try {
-			preparedStatement = conn.prepareStatement(sentenciaSQL);
+		try (Connection conn = DBManager.conexion();
+				PreparedStatement preparedStatement = conn.prepareStatement(sentenciaSQL)) {
 			preparedStatement.setString(1, identificador);
-			rs = preparedStatement.executeQuery();
 
-			existe = rs.next(); // Actualizar la variable 'existe' basándose en si hay resultados en la consulta
-
+			try (ResultSet rs = preparedStatement.executeQuery()) {
+				if (rs.next()) {
+					int count = rs.getInt(1); // Obtener el resultado del conteo de filas con el identificador
+					existe = count > 0;
+				}
+			}
 		} catch (SQLException e) {
 			nav.alertaException("No se pudo verificar la existencia de " + identificador + " en la base de datos.");
-		} finally {
-			if (preparedStatement != null) {
-				preparedStatement.close();
-			}
-			if (rs != null) {
-				rs.close();
-			}
+			return false; // Devolver false en caso de error
 		}
 
 		return existe; // Devolver si el identificador existe en la base de datos o no
@@ -1451,36 +1476,36 @@ public class DBLibreriaManager extends Comic {
 		modificarDatos(id, sentenciaSQL);
 	}
 
-	/**
-	 * Función que permite obtener datos de la librería de cómics almacenada en la
-	 * base de datos.
-	 *
-	 * @param sentenciaSQL La consulta SQL para obtener los datos.
-	 * @return El conjunto de resultados (ResultSet) que contiene los datos de la
-	 *         consulta.
-	 * @throws SQLException Si ocurre un error en la consulta SQL.
-	 */
-	public ResultSet obtenLibreria(String sentenciaSQL) {
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-
-		try {
-			conn = DBManager.conexion();
-			stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-			rs = stmt.executeQuery();
-
-			if (!rs.first()) {
-				return null; // No se encontraron resultados
-			}
-
-			return rs;
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			nav.alertaException("Error al tomar datos de la biblioteca: " + ex.toString());
-			// Puedes lanzar una excepción personalizada aquí si es necesario
-		}
-		return null;
-	}
+//	/**
+//	 * Función que permite obtener datos de la librería de cómics almacenada en la
+//	 * base de datos.
+//	 *
+//	 * @param sentenciaSQL La consulta SQL para obtener los datos.
+//	 * @return El conjunto de resultados (ResultSet) que contiene los datos de la
+//	 *         consulta.
+//	 * @throws SQLException Si ocurre un error en la consulta SQL.
+//	 */
+//	public ResultSet obtenLibreria(String sentenciaSQL) {
+//		PreparedStatement stmt = null;
+//		ResultSet rs = null;
+//
+//		try {
+//			conn = DBManager.conexion();
+//			stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+//			rs = stmt.executeQuery();
+//
+//			if (!rs.first()) {
+//				return null; // No se encontraron resultados
+//			}
+//
+//			return rs;
+//		} catch (SQLException ex) {
+//			ex.printStackTrace();
+//			nav.alertaException("Error al tomar datos de la biblioteca: " + ex.toString());
+//			// Puedes lanzar una excepción personalizada aquí si es necesario
+//		}
+//		return null;
+//	}
 
 	public boolean hayDatosEnLibreria(String sentenciaSQL) {
 		PreparedStatement stmt = null;
@@ -1580,6 +1605,9 @@ public class DBLibreriaManager extends Comic {
 				+ "WHERE ID = ?";
 
 		try {
+
+			System.out.println("ID: " + datos.getID());
+
 			if (checkID(datos.getID())) { // Comprueba si la ID introducida existe en la base de datos
 				comicModificar(sentenciaSQL, datos); // Llama a la función que permite cambiar los datos del cómic
 			}
