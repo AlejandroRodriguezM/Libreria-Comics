@@ -20,6 +20,7 @@ import org.json.JSONObject;
 
 import Controladores.VentanaAccionController;
 import Funcionamiento.Utilidades;
+import comicManagement.Comic;
 import javafx.scene.control.TextArea;
 
 /**
@@ -39,19 +40,19 @@ public class ApiMarvel {
 	 * @return Un array de cadenas con la información del cómic o null si no se
 	 *         encuentra.
 	 */
-	public static String[] infoComicCode(String comicCode, TextArea prontInfo) {
+	public static Comic infoComicCode(String comicCode, TextArea prontInfo) {
 
-		JSONObject comic = null;
+		JSONObject jsonComic = null;
 		String cleanedCode = comicCode.replaceAll("[^0-9]", "");
 		if (cleanedCode.length() == 13) {
 			String formattedIsbn = formatIsbn(cleanedCode);
-			comic = getComicInfo(formattedIsbn, "isbn", prontInfo);
+			jsonComic = getComicInfo(formattedIsbn, "isbn", prontInfo);
 		} else {
-			comic = getComicInfo(cleanedCode, "upc", prontInfo);
+			jsonComic = getComicInfo(cleanedCode, "upc", prontInfo);
 		}
 
-		if (comic != null) {
-			return displayComicInfo(comic);
+		if (jsonComic != null) {
+			return displayComicInfo(jsonComic, comicCode);
 		}
 
 		return null;
@@ -304,30 +305,29 @@ public class ApiMarvel {
 	 * @param comic El objeto JSON que contiene la información del cómic.
 	 * @return Un array de cadenas con la información detallada del cómic.
 	 */
-	public static String[] displayComicInfo(JSONObject comic) {
-		List<String> comicInfoList = new ArrayList<>();
+	public static Comic displayComicInfo(JSONObject jsonComic, String comicCode) {
 
 		try {
 			// Título
-			String title = comic.getString("title");
+			String title = jsonComic.getString("title");
 			title = title.replaceAll("\\([^\\)]*\\)", "");
 			title = title.replaceAll("#\\d+\\s", "");
 			title = title.replaceAll("#\\d+", "").trim();
 
 			String description = "";
 
-			if (comic.has("description") && comic.get("description") instanceof String) {
-				description = comic.getString("description");
+			if (jsonComic.has("description") && jsonComic.get("description") instanceof String) {
+				description = jsonComic.getString("description");
 
 			}
 
 			// Número de edición
-			int issueNumber = comic.getInt("issueNumber");
+			int issueNumber = jsonComic.getInt("issueNumber");
 
 			// Formato
-			String format = comic.getString("format");
+			String format = jsonComic.getString("format");
 			String formato;
-			if (format.equalsIgnoreCase("Comic")) {
+			if (format.equalsIgnoreCase("jsonComic")) {
 				formato = "Grapa (Issue individual)";
 			} else if (format.equalsIgnoreCase("Hardcover")) {
 				formato = "Tapa dura (Hardcover)";
@@ -339,7 +339,7 @@ public class ApiMarvel {
 
 			float price = 0;
 			// Precio
-			JSONArray pricesArray = comic.getJSONArray("prices");
+			JSONArray pricesArray = jsonComic.getJSONArray("prices");
 			if (pricesArray.length() > 0) {
 				JSONObject priceObject = pricesArray.getJSONObject(0);
 				price = (float) priceObject.getDouble("price");
@@ -347,7 +347,7 @@ public class ApiMarvel {
 			}
 
 			// Creadores
-			JSONArray creatorsArray = comic.getJSONObject("creators").getJSONArray("items");
+			JSONArray creatorsArray = jsonComic.getJSONObject("creators").getJSONArray("items");
 			List<String> pencillers = new ArrayList<>();
 			List<String> writers = new ArrayList<>();
 			List<String> coverPencillers = new ArrayList<>();
@@ -371,7 +371,7 @@ public class ApiMarvel {
 			}
 
 			// Fecha de venta
-			JSONArray datesArray = comic.getJSONArray("dates");
+			JSONArray datesArray = jsonComic.getJSONArray("dates");
 			String onsaleDate = "";
 
 			for (int i = 0; i < datesArray.length(); i++) {
@@ -391,7 +391,7 @@ public class ApiMarvel {
 			}
 
 			// URL de referencia
-			JSONArray urlsArray = comic.getJSONArray("urls");
+			JSONArray urlsArray = jsonComic.getJSONArray("urls");
 			String detailURL = "";
 
 			for (int i = 0; i < urlsArray.length(); i++) {
@@ -406,35 +406,35 @@ public class ApiMarvel {
 			}
 
 			// URL de la imagen representativa
-			JSONObject thumbnailObject = comic.getJSONObject("thumbnail");
+			JSONObject thumbnailObject = jsonComic.getJSONObject("thumbnail");
 			String path = thumbnailObject.getString("path");
 			String extension = thumbnailObject.getString("extension");
 			String thumbnailURL = path + "." + extension;
 
-			comicInfoList.add(title);
-			comicInfoList.add(description);
-			comicInfoList.add(Integer.toString(issueNumber));
-			comicInfoList.add(formato);
-			comicInfoList.add(Float.toString(price));
-			comicInfoList.add(String.join(", ", coverPencillers));
-			comicInfoList.add(String.join(", ", pencillers));
-			comicInfoList.add(String.join(", ", writers));
-			comicInfoList.add(onsaleDate);
-			comicInfoList.add(detailURL);
-			comicInfoList.add(thumbnailURL);
+			String nombre = title;
+			String issueKey = description;
+			String numero = Integer.toString(issueNumber);
+			String formatoComic = formato;
+			String precio = Float.toString(price);
+			String variant = String.join(", ", coverPencillers);
+			String artist = String.join(", ", pencillers);
+			String writer = String.join(", ", writers);
+			String fecha = onsaleDate;
+			String marvel_Url = detailURL;
+			String portadaImagen = thumbnailURL;
 			// Editorial (En este caso, siempre es "Marvel")
-			comicInfoList.add("Marvel");
+			String editorial = "Marvel";
 
-			// Convierte la lista en un array de cadenas
-			String[] comicInfoArray = new String[comicInfoList.size()];
-			comicInfoList.toArray(comicInfoArray);
+			Comic comic = new Comic("", nombre, "0", numero, variant, "", editorial, formatoComic,
+					"Estados Unidos (United States)", fecha, writer, artist, "En posesion", issueKey, "Sin puntuacion",
+					portadaImagen, marvel_Url, precio, comicCode);
 
-			return comicInfoArray;
+			return comic;
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 
-		return new String[0];
+		return null;
 	}
 
 }

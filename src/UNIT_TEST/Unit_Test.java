@@ -37,10 +37,10 @@ import org.jsoup.nodes.Element;
 import Apis.ApiISBNGeneral;
 import Apis.ApiMarvel;
 import Controladores.VentanaAccionController;
-import Funcionamiento.Comic;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBManager;
+import comicManagement.Comic;
 import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -441,14 +441,9 @@ public class Unit_Test extends Application {
 
 		String comicCode = "75960607918600111";
 
-		String datosMarvel[] = ApiMarvel.infoComicCode(comicCode, null);
-		if (datosMarvel.length == 0) {
-			System.err.println("No hay datos sobre el comic");
-		} else {
-			for (String string : datosMarvel) {
-				System.out.println(string);
-			}
-		}
+		Comic comic = ApiMarvel.infoComicCode(comicCode, null);
+
+		System.out.println(comic.toString());
 	}
 
 	/**
@@ -459,25 +454,16 @@ public class Unit_Test extends Application {
 	 * @throws URISyntaxException Si ocurre un error en la URI.
 	 */
 	public static void mostrarComicGeneral() throws IOException, JSONException, URISyntaxException {
-		
+
 		ApiISBNGeneral isbnGeneral = new ApiISBNGeneral();
-		
+
 		System.err.println("Datos de comics de búsqueda genérica: ");
 
 		String comicCode = "978-1684157648";
 
-		String datosGeneral[] = isbnGeneral.getBookInfo(comicCode, null);
+		Comic comic = isbnGeneral.getBookInfo(comicCode, null);
 
-		if (datosGeneral.length == 0) {
-
-			System.err.println("No hay datos sobre el comic");
-
-		} else {
-
-			for (String dato : datosGeneral) {
-				System.out.println(dato);
-			}
-		}
+		System.out.println(comic.toString());
 	}
 
 	/**

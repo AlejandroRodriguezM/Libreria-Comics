@@ -1,4 +1,4 @@
-package Apis;
+package webScrap;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -20,7 +20,7 @@ import org.jsoup.select.Elements;
  * el título, número, creadores, imagen principal, fecha de salida, valor (SRP),
  * editorial y URL de referencia.
  */
-public class WebScraperopenLibrary{
+public class WebScraperMarvel{
 
 	public static int verificarCodigoRespuesta(String urlString) throws IOException, URISyntaxException {
 		URI uri = new URI(urlString);
@@ -80,25 +80,29 @@ public class WebScraperopenLibrary{
 	 * @return El título extraído y formateado, o null si no se encuentra.
 	 */
 	private static String scrapeCodigo(Document document) {
-	    // Buscar la etiqueta dt con el valor "ISBN 13"
-	    Element isbnDtElement = document.selectFirst("dt:containsOwn(ISBN 13)");
+	    Element detailWrapElement = document.selectFirst("div.detail-wrap");
 
-	    if (isbnDtElement != null) {
-	        // Obtener el siguiente hermano (etiqueta dd) con la clase "object itemprop isbn"
-	        Element isbnDdElement = isbnDtElement.nextElementSibling();
-	        
-	        if (isbnDdElement != null && isbnDdElement.hasClass("object") && isbnDdElement.hasClass("itemprop") && isbnDdElement.hasClass("isbn")) {
-	            // Obtener el contenido de la etiqueta dd
-	            String isbnContent = isbnDdElement.text().trim();
+	    if (detailWrapElement != null) {
+	        // Buscar el li con strong igual a "ISBN:"
+	        Element isbnElement = detailWrapElement.selectFirst("li:has(strong:containsOwn(ISBN:))");
+	        if (isbnElement != null) {
+	            String isbnContent = isbnElement.text().replace("ISBN:", "").trim();
 	            // Puedes realizar cualquier otra manipulación necesaria con el contenido de ISBN
 	            return isbnContent;
 	        }
+
+	        // Si no se encontró el ISBN, buscar el li con strong igual a "UPC:"
+	        Element upcElement = detailWrapElement.selectFirst("li:has(strong:containsOwn(UPC:))");
+	        if (upcElement != null) {
+	            String upcContent = upcElement.text().replace("UPC:", "").trim();
+	            // Puedes realizar cualquier otra manipulación necesaria con el contenido de UPC
+	            return upcContent;
+	        }
 	    }
 
-	    // Si no se encontró la información deseada, devolver null o un valor por defecto según tu lógica
+	    // Si no se encontró ni ISBN ni UPC, devolver null o un valor por defecto según tu lógica
 	    return null;
 	}
-
 
 
 	/**

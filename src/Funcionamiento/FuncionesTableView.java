@@ -36,6 +36,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import JDBC.DBLibreriaManager;
+import comicManagement.Comic;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
@@ -152,7 +153,7 @@ public class FuncionesTableView {
 					if (comic != null && !tooltip.isShowing()) {
 						String mensaje = "Nombre: " + comic.getNombre() + "\nNúmero: " + comic.getNumero()
 								+ "\nVariante: " + comic.getVariante() + "\nPrecio: "
-								+ (!comic.precio_comic.isEmpty() ? comic.precio_comic + " $" : "");
+								+ (!comic.getPrecio_comic().isEmpty() ? comic.getPrecio_comic() + " $" : "");
 
 						if (!comic.getFirma().isEmpty()) {
 							mensaje += "\nFirma: " + comic.getFirma();

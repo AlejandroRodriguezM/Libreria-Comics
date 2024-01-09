@@ -1,4 +1,4 @@
-package Apis;
+package webScrap;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -8,11 +8,16 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import comicManagement.Comic;
+import javafx.scene.control.TextArea;
 
 /**
  * Clase principal para realizar el web scraping de información específica de la
@@ -20,7 +25,7 @@ import org.jsoup.select.Elements;
  * el título, número, creadores, imagen principal, fecha de salida, valor (SRP),
  * editorial y URL de referencia.
  */
-public class WebScraperMarvel{
+public class WebScraperPreviewsWorld {
 
 	public static int verificarCodigoRespuesta(String urlString) throws IOException, URISyntaxException {
 		URI uri = new URI(urlString);
@@ -44,24 +49,98 @@ public class WebScraperMarvel{
 	 *         vacío si ocurre un error.
 	 * @throws URISyntaxException
 	 */
-	public static String displayComicInfo(String urlMarvel) throws URISyntaxException {
-
-		String codeComic = "";
+	public Comic displayComicInfo(String diamondCode, TextArea prontInfo) throws URISyntaxException {
 
 		try {
 
+			String previews_World_Url = "https://www.previewsworld.com/Catalog/" + diamondCode;
 			// Realizar la conexión y obtener el documento HTML de la página
 
-			int codigoRespuesta = verificarCodigoRespuesta(urlMarvel);
+			int codigoRespuesta = verificarCodigoRespuesta(previews_World_Url);
 
-			if (codigoRespuesta != 404) {
-				Document document = Jsoup.connect(urlMarvel).get();
+			// Expresión regular para verificar el patrón deseado
+			String patron = "^(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\\d{6}";
 
-				codeComic = scrapeCodigo(document);
-				
-				System.out.println(codeComic);
+			// Compilar la expresión regular en un patrón
+			Pattern pattern = Pattern.compile(patron);
 
-				return codeComic;
+			// Crear un objeto Matcher para realizar la coincidencia
+			Matcher matcher = pattern.matcher(diamondCode);
+
+			if (codigoRespuesta == 404 || diamondCode.length() <= 8 && diamondCode.length() >= 10
+					|| !matcher.matches()) {
+				prontInfo.setOpacity(1);
+				prontInfo.setText("No se encontró el cómic con Diamond Code: " + diamondCode);
+				return null;
+			} else {
+				Document document = Jsoup.connect(previews_World_Url).get();
+				String titulo = scrapeTitle(document);
+
+				String issueKey = "";
+
+				String numero = extractNumeroFromTitle(document);
+
+				String formato = "Grapa (Issue individual)";
+
+				// Scraping de la etiqueta div con class "SRP"
+				String precio = scrapeAndPrintSRP(document);
+
+				// Scraping del elemento <div> con la clase "Creators"
+				String creatorsText = scrapeElementText(document, "div.Creators");
+
+				// Variables para almacenar los creadores
+				String writer = null;
+				String artist = null;
+				String variant = null;
+
+				if (creatorsText != null && !creatorsText.isEmpty()) {
+					String[] parts = creatorsText.split("\\(|\\)");
+					for (int i = 1; i < parts.length; i += 2) {
+						String type = parts[i].trim();
+						String value = parts[i + 1].trim();
+
+						// Almacenar en la variable correspondiente según el tipo
+						switch (type) {
+						case "W":
+							writer = value;
+							break;
+						case "A":
+							artist = value;
+							break;
+						case "CA":
+						case "A/CA":
+							artist = value;
+							variant = value;
+							break;
+						default:
+							break;
+						}
+					}
+				}
+
+				// Scraping de la etiqueta div con class "ReleaseDate"
+				String fecha = scrapeAndPrintReleaseDate(document);
+
+				// Scraping de la etiqueta img con id "MainContentImage"
+				String portadaImagen = scrapeAndPrintMainImage(document);
+
+				// Scraping de la etiqueta div con class "Publisher"
+				String editorial = scrapeAndPrintPublisher(document);
+
+				if (editorial.equalsIgnoreCase("Marvel Comics")) {
+					editorial = "Marvel";
+				}
+
+				Comic comicInfoArray = new Comic("", titulo, "0", numero, variant, "", editorial, formato, "Estados Unidos (United States)", fecha,
+						writer, artist, "En posesion", issueKey, "Sin puntuacion", portadaImagen, previews_World_Url, precio, diamondCode);
+
+				if (titulo == null) {
+					prontInfo.setOpacity(1);
+					prontInfo.setText("No se encontró el cómic con Diamond Code: " + diamondCode);
+					return null;
+				}
+
+				return comicInfoArray;
 			}
 
 		} catch (IOException e) {
@@ -79,31 +158,18 @@ public class WebScraperMarvel{
 	 * @param document El documento HTML a analizar.
 	 * @return El título extraído y formateado, o null si no se encuentra.
 	 */
-	private static String scrapeCodigo(Document document) {
-	    Element detailWrapElement = document.selectFirst("div.detail-wrap");
-
-	    if (detailWrapElement != null) {
-	        // Buscar el li con strong igual a "ISBN:"
-	        Element isbnElement = detailWrapElement.selectFirst("li:has(strong:containsOwn(ISBN:))");
-	        if (isbnElement != null) {
-	            String isbnContent = isbnElement.text().replace("ISBN:", "").trim();
-	            // Puedes realizar cualquier otra manipulación necesaria con el contenido de ISBN
-	            return isbnContent;
-	        }
-
-	        // Si no se encontró el ISBN, buscar el li con strong igual a "UPC:"
-	        Element upcElement = detailWrapElement.selectFirst("li:has(strong:containsOwn(UPC:))");
-	        if (upcElement != null) {
-	            String upcContent = upcElement.text().replace("UPC:", "").trim();
-	            // Puedes realizar cualquier otra manipulación necesaria con el contenido de UPC
-	            return upcContent;
-	        }
-	    }
-
-	    // Si no se encontró ni ISBN ni UPC, devolver null o un valor por defecto según tu lógica
-	    return null;
+	private static String scrapeTitle(Document document) {
+		Element titleElement = document.selectFirst("h1.Title");
+		if (titleElement != null) {
+			String titleContent = titleElement.text().trim();
+			// Eliminar el símbolo "#" y todo lo que le sigue
+			titleContent = removeHashtagAndFollowing(titleContent);
+			// Capitalizar la primera letra de cada palabra en el título
+			titleContent = capitalizeFirstLetter(titleContent);
+			return titleContent;
+		}
+		return null;
 	}
-
 
 	/**
 	 * Extrae el número que sigue al símbolo "#" en el título.
@@ -115,11 +181,22 @@ public class WebScraperMarvel{
 		Element titleElement = document.selectFirst("h1.Title");
 		if (titleElement != null) {
 			String titleContent = titleElement.text().trim();
-			// Obtener el número después del símbolo "#"
-			int hashtagIndexNumero = titleContent.indexOf('#');
-			if (hashtagIndexNumero != -1 && hashtagIndexNumero + 1 < titleContent.length()) {
-				return String.valueOf(titleContent.charAt(hashtagIndexNumero + 1)).trim();
-			}else {
+			// Buscar el índice del símbolo "#"
+			int hashtagIndex = titleContent.indexOf('#');
+			if (hashtagIndex != -1 && hashtagIndex + 1 < titleContent.length()) {
+				// Obtener la subcadena que sigue al símbolo "#"
+				String subStringAfterHashtag = titleContent.substring(hashtagIndex + 1);
+
+				// Utilizar una expresión regular para extraer todos los números hasta el
+				// próximo espacio o caracteres no numéricos
+				java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("(\\d+).*?")
+						.matcher(subStringAfterHashtag);
+				if (matcher.find()) {
+					return matcher.group(1).trim();
+				} else {
+					return "0";
+				}
+			} else {
 				return "0";
 			}
 		}
@@ -133,28 +210,27 @@ public class WebScraperMarvel{
 	 * @return El contenido del título sin el "#" y el texto siguiente.
 	 */
 	private static String removeHashtagAndFollowing(String titleContent) {
-	    if (titleContent.contains("#")) {
-	        int hashtagIndex = titleContent.indexOf('#');
-	        return titleContent.substring(0, hashtagIndex).trim().toLowerCase();
-	    }
-	    return titleContent;
+		if (titleContent.contains("#")) {
+			int hashtagIndex = titleContent.indexOf('#');
+			return titleContent.substring(0, hashtagIndex).trim().toLowerCase();
+		}
+		return titleContent;
 	}
-
 
 	/**
 	 * Extrae e imprime la URL de la imagen principal del documento.
 	 *
 	 * @param document El documento HTML a analizar.
 	 * @return La URL de la imagen principal, o null si no se encuentra.
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	private static String scrapeAndPrintMainImage(Document document) throws IOException {
 		Element mainImageElement = document.selectFirst("#MainContentImage");
 		if (mainImageElement != null) {
 			String mainImageUrl = "https://www.previewsworld.com" + mainImageElement.attr("src");
-			
+
 //			String imagen = Utilidades.descargarImagen(mainImageUrl, DOCUMENTS_PATH);
-			
+
 			return mainImageUrl;
 		}
 		return null;
@@ -201,17 +277,17 @@ public class WebScraperMarvel{
 		Element publisherElement = document.selectFirst("div.Publisher");
 		if (publisherElement != null) {
 			String publisherName = capitalizeFirstLetter(publisherElement.text().trim().toLowerCase());
-			
-			if(publisherName.equalsIgnoreCase("Boom! Studios")) {
+
+			if (publisherName.equalsIgnoreCase("Boom! Studios")) {
 				publisherName = "Boom Studios";
 			}
-			
-	        if (publisherName.contains("comics")) {
-	            publisherName = publisherName.replace("comics", "").trim();
-	        } else if (publisherName.contains("comic")) {
-	            publisherName = publisherName.replace("comic", "").trim();
-	        }
-			
+
+			if (publisherName.contains("comics")) {
+				publisherName = publisherName.replace("comics", "").trim();
+			} else if (publisherName.contains("comic")) {
+				publisherName = publisherName.replace("comic", "").trim();
+			}
+
 			return publisherName;
 		}
 		return null;
@@ -274,23 +350,23 @@ public class WebScraperMarvel{
 	 *         mayúscula.
 	 */
 	private static String capitalizeFirstLetter(String input) {
-	    StringBuilder result = new StringBuilder();
+		StringBuilder result = new StringBuilder();
 
-	    input = input.toLowerCase();
-	    
-	    boolean capitalizeNext = true;
+		input = input.toLowerCase();
 
-	    for (char ch : input.toCharArray()) {
-	        if (Character.isWhitespace(ch)) {
-	            capitalizeNext = true;
-	        } else if (capitalizeNext) {
-	            ch = Character.toTitleCase(ch);
-	            capitalizeNext = false;
-	        }
+		boolean capitalizeNext = true;
 
-	        result.append(ch);
-	    }
+		for (char ch : input.toCharArray()) {
+			if (Character.isWhitespace(ch)) {
+				capitalizeNext = true;
+			} else if (capitalizeNext) {
+				ch = Character.toTitleCase(ch);
+				capitalizeNext = false;
+			}
 
-	    return result.toString();
+			result.append(ch);
+		}
+
+		return result.toString();
 	}
 }

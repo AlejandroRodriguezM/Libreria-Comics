@@ -82,10 +82,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import Controladores.CargaComicsController;
-import Funcionamiento.Comic;
 import Funcionamiento.FuncionesExcel;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
+import comicManagement.Comic;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.scene.image.Image;

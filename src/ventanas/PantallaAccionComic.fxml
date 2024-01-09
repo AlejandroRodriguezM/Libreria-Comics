@@ -111,7 +111,7 @@
       <Label fx:id="label_portada" disable="true" focusTraversable="false" layoutX="5.0" layoutY="257.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Portada" visible="false" />
       <Label fx:id="label_id_mod" disable="true" focusTraversable="false" layoutX="5.0" layoutY="281.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="ID comic" visible="false" />
       <Button fx:id="botonIntroducir" disable="true" focusTraversable="false" layoutX="273.0" layoutY="29.0" mnemonicParsing="false" onAction="#agregarDatos" prefHeight="42.0" prefWidth="81.0" stylesheets="@../style/genericos_style.css" text="Añadir Comic" visible="false" />
-      <Button fx:id="botonLimpiar" layoutX="197.0" layoutY="29.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="42.0" prefWidth="68.0" stylesheets="@../style/genericos_style.css" text="Limpiar" />
+      <Button fx:id="botonLimpiar" layoutX="194.0" layoutY="29.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="42.0" prefWidth="68.0" stylesheets="@../style/genericos_style.css" text="Limpiar" />
       <Button fx:id="botonBusquedaAvanzada" disable="true" focusTraversable="false" layoutX="4.0" layoutY="282.0" mnemonicParsing="false" onAction="#busquedaAvanzada" prefHeight="25.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Busqueda avanzada" visible="false" />
       <Label fx:id="label_id" layoutX="3.0" layoutY="104.0" prefHeight="21.0" prefWidth="57.0" stylesheets="@../style/genericos_style.css" text="ID Comic*" textFill="WHITE" visible="false">
          <font>
@@ -131,13 +131,13 @@
          </font></Button>
       <Button fx:id="botonEliminar" disable="true" layoutX="5.0" layoutY="138.0" mnemonicParsing="false" onAction="#eliminarDatos" prefHeight="73.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Eliminar comic" visible="false" />
       <Button fx:id="botonVender" disable="true" ellipsisString="" layoutX="112.0" layoutY="137.0" mnemonicParsing="false" onAction="#ventaComic" prefHeight="73.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Vender comic" visible="false" />
-      <Button fx:id="botonbbdd" disable="true" layoutX="286.0" layoutY="29.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="35.0" prefWidth="57.0" stylesheets="@../style/genericos_style.css" text="Ver todo" visible="false" />
+      <Button fx:id="botonbbdd" disable="true" layoutX="266.0" layoutY="29.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="35.0" prefWidth="57.0" stylesheets="@../style/genericos_style.css" text="Ver todo" visible="false" />
       <TextField fx:id="idComicTratar_mod" disable="true" layoutX="62.0" layoutY="281.0" prefHeight="21.0" prefWidth="125.0" promptText="ID Comic " visible="false">
          <font>
             <Font size="10.0" />
          </font>
       </TextField>
-      <Button fx:id="botonParametroComic" disable="true" layoutX="347.0" layoutY="29.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="33.0" prefWidth="57.0" stylesheets="@../style/genericos_style.css" text="Busqueda" visible="false" wrapText="true">
+      <Button fx:id="botonParametroComic" disable="true" layoutX="327.0" layoutY="29.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="33.0" prefWidth="57.0" stylesheets="@../style/genericos_style.css" text="Busqueda" visible="false" wrapText="true">
          <font>
             <Font size="10.0" />
          </font>

@@ -45,7 +45,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import Funcionamiento.Comic;
 import Funcionamiento.FuncionesComboBox;
 import Funcionamiento.FuncionesExcel;
 import Funcionamiento.FuncionesTableView;
@@ -54,6 +53,7 @@ import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
 import JDBC.DBManager;
+import comicManagement.Comic;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -456,8 +456,6 @@ public class MenuPrincipalController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		
-		
 		libreria = new DBLibreriaManager();
 		utilidad = new Utilidades();
 
@@ -926,7 +924,7 @@ public class MenuPrincipalController implements Initializable {
 		botonImprimir.setDisable(true);
 		botonGuardarResultado.setVisible(false);
 		botonGuardarResultado.setDisable(true);
-		
+
 		Utilidades.borrarArchivosNoEnLista(DBLibreriaManager.listaImagenes);
 	}
 
@@ -1436,13 +1434,16 @@ public class MenuPrincipalController implements Initializable {
 		utilidad = new Utilidades();
 
 		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
-		String id_comic = idRow.getID();
+		// Verificar si idRow es nulo antes de intentar acceder a sus métodos
+		if (idRow != null) {
+			String id_comic = idRow.getID();
 
-		prontInfo.setOpacity(1);
-		prontInfo.setText(libreria.comicDatos(id_comic).toString().replace("[", "").replace("]", ""));
-		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
-		imagencomic.setImage(libreria.selectorImage(id_comic));
+			prontInfo.setOpacity(1);
+			prontInfo.setText(libreria.comicDatos(id_comic).toString().replace("[", "").replace("]", ""));
+			funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
+			funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
+			imagencomic.setImage(libreria.selectorImage(id_comic));
+		}
 	}
 
 	/////////////////////////////////

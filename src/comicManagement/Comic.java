@@ -2,7 +2,7 @@
  * Contiene las clases que hacen funcionar las diferentes funciones de uso de back end y front de todo el proyecto
  *  
 */
-package Funcionamiento;
+package comicManagement;
 
 /**
  * Esta clase objeto sirve para dar forma al comic que estara dentro de la base

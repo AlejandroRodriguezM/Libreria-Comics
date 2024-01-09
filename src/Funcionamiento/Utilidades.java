@@ -35,6 +35,7 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -54,6 +55,7 @@ import java.util.zip.ZipOutputStream;
 import javax.imageio.ImageIO;
 
 import JDBC.DBManager;
+import comicManagement.Comic;
 import javafx.application.Platform;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
@@ -99,6 +101,19 @@ public class Utilidades {
 	private static final Map<String, Double> tasasDeCambio = new HashMap<>();
 
 	/**
+	 * Obtenemos el directorio de inicio del usuario
+	 */
+	private final static String USER_DIR = System.getProperty("user.home");
+
+	/**
+	 * Construimos la ruta al directorio "Documents"
+	 */
+	private final static String DOCUMENTS_PATH = USER_DIR + File.separator + "Documents";
+
+	private final static String SOURCE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+			+ DBManager.DB_NAME + File.separator + "portadas" + File.separator;
+
+	/**
 	 * Verifica si el sistema operativo es Windows.
 	 *
 	 * @return true si el sistema operativo es Windows, false en caso contrario.
@@ -125,16 +140,6 @@ public class Utilidades {
 	public static boolean isUnix() {
 		return os.contains("nux");
 	}
-
-	/**
-	 * Obtenemos el directorio de inicio del usuario
-	 */
-	private static String USER_DIR = System.getProperty("user.home");
-
-	/**
-	 * Construimos la ruta al directorio "Documents"
-	 */
-	private static String DOCUMENTS_PATH = USER_DIR + File.separator + "Documents";
 
 	/**
 	 * Funcion que permite comprobar que navegadores tienes instalados en el sistema
@@ -202,54 +207,6 @@ public class Utilidades {
 		} catch (IOException e) {
 			nav.alertaException("Error: No funciona el boton \n" + e.toString());
 		}
-	}
-
-	/**
-	 * Funcion que devuelve una lista en la que solamente se guardan aquellos datos
-	 * que no se repiten
-	 *
-	 * @param listaComics
-	 * @return
-	 */
-	public static List<Comic> listaArreglada(List<Comic> listaComics) {
-
-		// Forma número 1 (Uso de Maps).
-		Map<String, Comic> mapComics = new HashMap<>(listaComics.size());
-
-		// Aquí está la magia
-		for (Comic c : listaComics) {
-			mapComics.put(c.getID(), c);
-		}
-
-		// Agrego cada elemento del map a una nueva lista y muestro cada elemento.
-
-		for (Entry<String, Comic> c : mapComics.entrySet()) {
-
-			listaLimpia.add(c.getValue());
-
-		}
-		return listaLimpia;
-	}
-
-	/**
-	 * Funcion que devuelve una lista en la que solamente se guardan aquellos datos
-	 * que no se repiten
-	 *
-	 * @param listaComics
-	 * @return
-	 */
-	public static List<String> listaArregladaAutoComplete(List<String> listaComics) {
-
-		ArrayList<String> newList = new ArrayList<>();
-		newList.clear();
-
-		for (String s : listaComics) {
-			if (!newList.contains(s)) {
-				newList.add(s);
-			}
-		}
-
-		return newList;
 	}
 
 	/**
@@ -605,6 +562,54 @@ public class Utilidades {
 	}
 
 	/**
+	 * Funcion que devuelve una lista en la que solamente se guardan aquellos datos
+	 * que no se repiten
+	 *
+	 * @param listaComics
+	 * @return
+	 */
+	public static List<Comic> listaArreglada(List<Comic> listaComics) {
+
+		// Forma número 1 (Uso de Maps).
+		Map<String, Comic> mapComics = new HashMap<>(listaComics.size());
+
+		// Aquí está la magia
+		for (Comic c : listaComics) {
+			mapComics.put(c.getID(), c);
+		}
+
+		// Agrego cada elemento del map a una nueva lista y muestro cada elemento.
+
+		for (Entry<String, Comic> c : mapComics.entrySet()) {
+
+			listaLimpia.add(c.getValue());
+
+		}
+		return listaLimpia;
+	}
+
+	/**
+	 * Funcion que devuelve una lista en la que solamente se guardan aquellos datos
+	 * que no se repiten
+	 *
+	 * @param listaComics
+	 * @return
+	 */
+	public static List<String> listaArregladaAutoComplete(List<String> listaComics) {
+
+		ArrayList<String> newList = new ArrayList<>();
+		newList.clear();
+
+		for (String s : listaComics) {
+			if (!newList.contains(s)) {
+				newList.add(s);
+			}
+		}
+
+		return newList;
+	}
+
+	/**
 	 * Elimina la imagen temporal de muestra de la base de datos.
 	 */
 	public void deleteImage() {
@@ -949,16 +954,22 @@ public class Utilidades {
 	 * @param cantidadMonedaLocal La cantidad de moneda local a convertir.
 	 * @return La cantidad equivalente en dólares.
 	 */
-	public static double convertirMonedaADolar(String pais, double cantidadMonedaLocal) {
-
+	public static double convertirMonedaADolar(String pais, String precio_comic) {
 		if (tasasDeCambio.containsKey(pais)) {
 			double tasaDeCambio = tasasDeCambio.get(pais);
-			if (cantidadMonedaLocal > 0) {
-				double resultado = cantidadMonedaLocal / tasaDeCambio;
-				return Math.round(resultado * 100.0) / 100.0;
+			try {
+				double cantidadMonedaLocal = Double.parseDouble(precio_comic);
+				if (cantidadMonedaLocal > 0) {
+					double resultado = cantidadMonedaLocal / tasaDeCambio;
+					return Math.round(resultado * 100.0) / 100.0;
+				}
+			} catch (NumberFormatException e) {
+				// Manejo de error si la conversión de la cadena a double falla
+				e.printStackTrace();
 			}
 		}
-		return cantidadMonedaLocal; // Devolver 0 si el país no está en la lista o si la cantidad es negativa
+		return 0.0; // Devolver 0 si el país no está en la lista, la cantidad no es un número o si
+					// es negativa
 	}
 
 	/**
@@ -1486,19 +1497,11 @@ public class Utilidades {
 		return fileChooser; // Devuelve el FileChooser para que la interfaz gráfica lo utilice
 	}
 
-//	/**
-//	 * Devuelve un objeto Comic asociado a un identificador.
-//	 * @param id Identificador del cómic.
-//	 * @return Objeto Comic asociado al identificador o null si no se encuentra.
-//	 */
-//	public static Comic devolverComic(String id) {
-//		return null;
-//	}
-
 	/**
 	 * Imprime un mensaje de error en un archivo, junto con la fecha y hora actual.
 	 * Abre el archivo después de escribir en él.
-	 * @param mensajeError Mensaje de error a imprimir.
+	 * 
+	 * @param mensajeError     Mensaje de error a imprimir.
 	 * @param ubicacionArchivo Ruta del directorio donde se guardará el archivo.
 	 */
 	public static void imprimirEnArchivo(String mensajeError, String ubicacionArchivo) {
@@ -1528,6 +1531,7 @@ public class Utilidades {
 
 	/**
 	 * Abre un archivo en el sistema por su ubicación.
+	 * 
 	 * @param ubicacionArchivo Ruta del archivo que se desea abrir.
 	 */
 	private static void abrirArchivo(String ubicacionArchivo) {
@@ -1552,38 +1556,42 @@ public class Utilidades {
 	}
 
 	/**
-	 * Elimina archivos en un directorio común que no están presentes en la lista proporcionada de URLs.
+	 * Elimina archivos en un directorio común que no están presentes en la lista
+	 * proporcionada de URLs.
+	 * 
 	 * @param listaUrls Lista de URLs que representan los archivos a conservar.
 	 */
-    public static void borrarArchivosNoEnLista(List<String> listaUrls) {
-        // Obtén la ruta del directorio común a todas las URLs
-        String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
-                + DBManager.DB_NAME + File.separator + "portadas" + File.separator;
+	public static void borrarArchivosNoEnLista(List<String> listaUrls) {
+		// Obtén la ruta del directorio común a todas las URLs
+		String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+				+ DBManager.DB_NAME + File.separator + "portadas" + File.separator;
 
-        // Obtén la lista de nombres de archivos en el directorio común
-        List<String> nombresArchivosEnDirectorio = obtenerNombresArchivosEnDirectorio(directorioComun);
+		// Obtén la lista de nombres de archivos en el directorio común
+		List<String> nombresArchivosEnDirectorio = obtenerNombresArchivosEnDirectorio(directorioComun);
 
-        // Itera sobre la lista de nombres en el directorio y elimina los que no están en la lista de URLs
-        for (String nombreArchivo : nombresArchivosEnDirectorio) {
-        	        	
-            if (!listaUrls.contains(nombreArchivo)) {
-                File archivoAEliminar = new File(nombreArchivo);
-                if (archivoAEliminar.exists() && archivoAEliminar.isFile()) {
-                    if (archivoAEliminar.delete()) {
-                        System.out.println("Archivo eliminado: " + archivoAEliminar.getAbsolutePath());
-                    } else {
-                        System.out.println("No se pudo eliminar el archivo: " + archivoAEliminar.getAbsolutePath());
-                    }
-                }
-            }
-        }
-    }
+		// Itera sobre la lista de nombres en el directorio y elimina los que no están
+		// en la lista de URLs
+		for (String nombreArchivo : nombresArchivosEnDirectorio) {
 
-    /**
-     * Obtiene la lista de nombres de archivos en un directorio especificado.
-     * @param directorio La ruta del directorio.
-     * @return Lista de nombres de archivos en el directorio.
-     */
+			if (!listaUrls.contains(nombreArchivo)) {
+				File archivoAEliminar = new File(nombreArchivo);
+				if (archivoAEliminar.exists() && archivoAEliminar.isFile()) {
+					if (archivoAEliminar.delete()) {
+						System.out.println("Archivo eliminado: " + archivoAEliminar.getAbsolutePath());
+					} else {
+						System.out.println("No se pudo eliminar el archivo: " + archivoAEliminar.getAbsolutePath());
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Obtiene la lista de nombres de archivos en un directorio especificado.
+	 * 
+	 * @param directorio La ruta del directorio.
+	 * @return Lista de nombres de archivos en el directorio.
+	 */
 	private static List<String> obtenerNombresArchivosEnDirectorio(String directorio) {
 		List<String> nombresArchivos = new ArrayList<>();
 
@@ -1601,6 +1609,7 @@ public class Utilidades {
 
 	/**
 	 * Obtiene la lista de nombres de archivos con extensiones de una lista de URLs.
+	 * 
 	 * @param listaUrls Lista de URLs que representan archivos.
 	 * @return Lista de nombres de archivos con extensiones.
 	 */
@@ -1614,6 +1623,56 @@ public class Utilidades {
 		}
 
 		return nombresYExtensiones;
+	}
+
+	/**
+	 * Obtiene la ruta de la imagen del cómic.
+	 * 
+	 * @param rutaImagen La ruta de la imagen del cómic.
+	 * @return La ruta de la imagen del cómic en forma de URI.
+	 * @throws IOException        Si hay un error de lectura o escritura al
+	 *                            manipular archivos.
+	 * @throws URISyntaxException Si la sintaxis de la URI es incorrecta.
+	 */
+	public static String obtenerImagenComic(String rutaImagen) throws IOException, URISyntaxException {
+		String imagenPath = "";
+
+		if (!rutaImagen.isEmpty()) {
+			File file = new File(rutaImagen);
+
+			if (Utilidades.isImageURL(rutaImagen)) {
+				// Es una URL en internet
+				String portada = Utilidades.descargarImagen(rutaImagen, SOURCE_PATH);
+				imagenPath = new File(portada).toURI().toString();
+			} else if (!file.exists()) {
+				// La imagen no existe en la ruta especificada
+				imagenPath = new File("Funcionamiento/sinPortada.jpg").toURI().toString();
+			} else {
+				// La ruta de la imagen es local
+				imagenPath = file.toURI().toString();
+			}
+		} else {
+			// La ruta de la imagen está vacía
+			imagenPath = new File("Funcionamiento/sinPortada.jpg").toURI().toString();
+		}
+
+		return imagenPath;
+	}
+	
+	/**
+	 * Parsea la cadena de fecha y devuelve la fecha correspondiente. Si la cadena
+	 * es nula o vacía, devuelve la fecha actual.
+	 *
+	 * @param fechaVenta Cadena de fecha a ser parseada.
+	 * @return Objeto LocalDate que representa la fecha parseada.
+	 */
+	public static LocalDate parseFecha(String fechaVenta) {
+		if (fechaVenta == null || fechaVenta.isEmpty()) {
+			return LocalDate.of(2000, 1, 1); // Obtener la fecha actual si la cadena de fecha no está presente
+		} else {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			return LocalDate.parse(fechaVenta, formatter);
+		}
 	}
 
 	/**
