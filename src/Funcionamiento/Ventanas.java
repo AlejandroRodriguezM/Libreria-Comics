@@ -361,7 +361,7 @@ public class Ventanas {
 
 		try {
 			// Cargo la vista
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/opcionesAcceso.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/OpcionesAcceso.fxml"));
 
 			// Cargo el padre
 			Parent root = loader.load();

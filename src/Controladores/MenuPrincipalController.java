@@ -674,166 +674,6 @@ public class MenuPrincipalController implements Initializable {
 		numeroCaja.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
 	}
 
-	/**
-	 * Funcion que permite modificar el estado de un comic.
-	 *
-	 * @param ps
-	 * @return
-	 */
-	public String procedenciaActual() {
-
-		String procedenciaEstadoNuevo = "";
-		if (nombreProcedencia.getSelectionModel().getSelectedItem() != null) {
-			procedenciaEstadoNuevo = nombreProcedencia.getSelectionModel().getSelectedItem().toString();
-		}
-		return procedenciaEstadoNuevo;
-	}
-
-	/**
-	 * Funcion que permite seleccionar en el comboBox "nombreFormato" y lo devuelve,
-	 * para la busqueda de comic
-	 * 
-	 * @return
-	 */
-	public String formatoActual() {
-
-		String formatoEstado = "";
-		if (nombreFormato.getSelectionModel().getSelectedItem() != null) {
-			formatoEstado = nombreFormato.getSelectionModel().getSelectedItem().toString();
-		}
-		return formatoEstado;
-	}
-
-	/**
-	 * Funcion que permite seleccionar en el comboBox "nombreEditorial" y lo
-	 * devuelve, para la busqueda de comic
-	 * 
-	 * @return
-	 */
-	public String editorialActual() {
-
-		String editorialComic = "";
-
-		if (nombreEditorial.getSelectionModel().getSelectedItem() != null) {
-			editorialComic = nombreEditorial.getSelectionModel().getSelectedItem().toString();
-		}
-
-		return editorialComic;
-	}
-
-	/**
-	 * Funcion que permite seleccionar en el comboBox "nombreDibujante" y lo
-	 * devuelve, para la busqueda de comic
-	 * 
-	 * @return
-	 */
-	public String dibujanteActual() {
-		String dibujanteComic = "";
-
-		if (nombreDibujante.getSelectionModel().getSelectedItem() != null) {
-			dibujanteComic = nombreDibujante.getSelectionModel().getSelectedItem().toString();
-		}
-
-		return dibujanteComic;
-	}
-
-	/**
-	 * Funcion que permite seleccionar en el comboBox "nombreGuionista" y lo
-	 * devuelve, para la busqueda de comic
-	 * 
-	 * @return
-	 */
-	public String guionistaActual() {
-		String guionistaComic = "";
-
-		if (nombreGuionista.getSelectionModel().getSelectedItem() != null) {
-			guionistaComic = nombreGuionista.getSelectionModel().getSelectedItem().toString();
-		}
-
-		return guionistaComic;
-	}
-
-	/**
-	 * Funcion que permite seleccionar en el comboBox "nombreFirma" y lo devuelve,
-	 * para la busqueda de comic
-	 * 
-	 * @return
-	 */
-	public String firmaActual() {
-		String firmaComic = "";
-
-		if (nombreFirma.getSelectionModel().getSelectedItem() != null) {
-			firmaComic = nombreFirma.getSelectionModel().getSelectedItem().toString();
-		}
-
-		return firmaComic;
-	}
-
-	/**
-	 * Funcion que permite seleccionar en el comboBox "nombreComic" y lo devuelve,
-	 * para la busqueda de comic
-	 * 
-	 * @return
-	 */
-	public String nombreActual() {
-		String nombreComics = "";
-
-		if (nombreComic.getSelectionModel().getSelectedItem() != null) {
-			nombreComics = nombreComic.getSelectionModel().getSelectedItem().toString();
-		}
-
-		return nombreComics;
-	}
-
-	/**
-	 * Funcion que permite seleccionar en el comboBox "numeroComic" y lo devuelve,
-	 * para la busqueda de comic
-	 * 
-	 * @return
-	 */
-	public String numeroComicActual() {
-		String numComic = "";
-
-		if (numeroComic.getSelectionModel().getSelectedItem() != null) {
-			numComic = numeroComic.getSelectionModel().getSelectedItem().toString();
-		}
-
-		return numComic;
-	}
-
-	/**
-	 * Funcion que permite seleccionar en el comboBox "nombreVariante" y lo
-	 * devuelve, para la busqueda de comic
-	 * 
-	 * @return
-	 */
-	public String varianteActual() {
-		String varianteComics = "";
-
-		if (nombreVariante.getSelectionModel().getSelectedItem() != null) {
-			varianteComics = nombreVariante.getSelectionModel().getSelectedItem().toString();
-		}
-
-		return varianteComics;
-	}
-
-	/**
-	 * Funcion que permite seleccionar en el comboBox "caja_actual" y lo devuelve,
-	 * para la busqueda de comic
-	 * 
-	 * @return
-	 */
-	public String cajaActual() {
-
-		String cajaComics = "";
-
-		if (numeroCaja.getSelectionModel().getSelectedItem() != null) {
-			cajaComics = numeroCaja.getSelectionModel().getSelectedItem().toString();
-		}
-
-		return cajaComics;
-	}
-
 	/////////////////////////////////
 	//// METODOS LLAMADA A VENTANAS//
 	/////////////////////////////////
@@ -877,13 +717,15 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
 
-		tablaBBDD.getItems().clear();
+//		tablaBBDD.getItems().clear();
 
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
+		tablaBBDD.refresh();
 		prontInfo.setOpacity(0);
 		imagencomic.setImage(null);
+
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
 		funcionesTabla.tablaBBDD(listaPorParametro(), tablaBBDD, columnList); // Llamada a funcion
@@ -1183,7 +1025,7 @@ public class MenuPrincipalController implements Initializable {
 					protected Boolean call() throws Exception {
 						// Verificar si la tabla tiene contenido
 						boolean result = false;
-						if (libreria.contenidoTabla()) {
+						if (libreria.countRows() > 0) {
 							// Si hay contenido, borrar el contenido de la tabla en un hilo separado
 							CompletableFuture<Boolean> futureResult = libreria.deleteTable();
 							result = futureResult.join(); // Esperar a que la tarea asíncrona se complete y obtener el
@@ -1587,168 +1429,121 @@ public class MenuPrincipalController implements Initializable {
 		detenerAnimacion();
 	}
 
-	/**
-	 * Importa un archivo CSV y guarda su contenido en una base de datos de forma
-	 * asíncrona.
-	 *
-	 * @param fichero El archivo CSV a importar.
-	 */
 	public void guardarDatosCSV() {
-
 		String frase = "Fichero CSV";
-
 		String formato = "*.csv";
 
-		File fichero = Utilidades.tratarFichero(frase, formato).showOpenDialog(null); // Llamada a funcion
+		File fichero = Utilidades.tratarFichero(frase, formato).showOpenDialog(null);
 
-		FuncionesExcel excelFuntions = new FuncionesExcel(); // Crear una instancia de FuncionesExcel
-		// Crear una tarea (Task) para realizar la importación del archivo CSV
-		Task<Boolean> task = new Task<Boolean>() {
+		if (fichero != null) {
+			Task<Boolean> task = crearTareaImportacionCSV(fichero);
+
+			// Configurar el comportamiento cuando la tarea está en ejecución
+			task.setOnRunning(e -> iniciarAnimacion());
+
+			// Configurar el comportamiento cuando la tarea se completa con éxito
+			task.setOnSucceeded(e -> procesarResultadoImportacion(task.getValue(), fichero));
+
+			// Configurar el comportamiento cuando la tarea falla
+			task.setOnFailed(e -> manejarFalloImportacion(task.getException()));
+
+			// Iniciar la tarea principal de importación en un hilo separado
+			new Thread(task).start();
+		}
+	}
+
+	private Task<Boolean> crearTareaImportacionCSV(File fichero) {
+		return new Task<Boolean>() {
 			@Override
 			protected Boolean call() throws Exception {
-				try {
-					if (fichero != null) {
-
-						return true;
-					}
-				} catch (Exception e) {
-					// Si ocurre un error desconocido al importar, mostrar un mensaje de error y
-					// detener la animación
-					e.printStackTrace();
-					Platform.runLater(() -> nav
-							.alertaException("Error desconocido al importar el fichero CSV: " + e.getMessage()));
-					detenerAnimacion();
-
-				}
-				return false;
+				// Lógica para verificar y realizar la importación CSV
+				return true; // O false si falla la importación
 			}
 		};
+	}
 
-		// Configurar el comportamiento cuando la tarea está en ejecución
-		task.setOnRunning(e -> {
-			// Iniciar la animación
-			iniciarAnimacion();
+	private void procesarResultadoImportacion(Boolean resultado, File fichero) {
+		if (resultado) {
+			// Lógica después de una importación exitosa
+			ejecutarOperacionLecturaGuardadoBD(fichero);
+		} else {
+			// Lógica después de una importación fallida
+			mostrarMensajeError("No se ha podido importar correctamente.");
+		}
+	}
 
-		});
+	private void ejecutarOperacionLecturaGuardadoBD(File fichero) {
+		FuncionesExcel funcionesExcel = new FuncionesExcel();
+		Platform.runLater(() -> {
+			prontInfo.setStyle(null);
+			prontInfo.clear();
+			prontInfo.setOpacity(1);
+			Thread animationThread = new Thread(this::iniciarAnimacionSubida);
+			animationThread.start();
 
-		// Configurar el comportamiento cuando la tarea se completa con éxito
-		task.setOnSucceeded(e -> {
+			String sql = "INSERT INTO comicsbbdd(ID,nomComic,caja_deposito,precio_comic,codigo_comic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,fecha_publicacion,nomGuionista,nomDibujante,puntuacion,portada,key_issue,url_referencia,estado)"
+					+ " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-			// Obtener el resultado de la tarea
-			Boolean resultado = task.getValue();
-			/* Tu condición aquí basada en el resultado */
+			try {
 
-			if (resultado) {
-				// Si la importación del CSV fue exitosa, continuar con la inserción en la base
-				// de datos
-				Platform.runLater(() -> {
-					prontInfo.setStyle(null);
-					prontInfo.clear();
+				BufferedReader lineReader = new BufferedReader(new FileReader(fichero));
+				Task<Void> lecturaTask = funcionesExcel.lecturaCSVTask(sql, lineReader);
 
-					prontInfo.setOpacity(1); // Ocultar el mensaje inicial antes de iniciar la lectura y guardado
-					Thread animationThread = new Thread(this::iniciarAnimacionSubida);
-					animationThread.start();
-					String sql = "INSERT INTO comicsbbdd(ID,nomComic,caja_deposito,precio_comic,codigo_comic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,fecha_publicacion,nomGuionista,nomDibujante,puntuacion,portada,key_issue,url_referencia,estado)"
-							+ " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-
-					try {
-						// Continuar con la conexión a la base de datos y el proceso de guardado
-						BufferedReader lineReader = new BufferedReader(new FileReader(fichero));
-						// Crear una nueva tarea (Task) para realizar la lectura y guardado en la base
-						// de datos
-						Task<Void> lecturaTask = excelFuntions.lecturaCSVTask(sql, lineReader);
-
-						// Configurar el comportamiento cuando la tarea de lectura y guardado se
-						// completa con éxito
-						lecturaTask.setOnSucceeded(event -> {
-							// La operación de inserción en la base de datos ha finalizado con éxito
-							// Mostrar el mensaje de éxito después de la lectura y guardado
-							prontInfo.clear();
-							detenerAnimacionPront();
-							prontInfo.setOpacity(1);
-							prontInfo.setStyle("-fx-background-color: #A0F52D");
-							prontInfo.setText("Fichero CSV importado de forma correcta");
-							detenerAnimacion();
-
-							cargarDatosDataBase();
-
-						});
-
-						// Configurar el comportamiento cuando la tarea de lectura y guardado falla
-						lecturaTask.setOnFailed(event -> {
-							// Ha ocurrido un error durante la operación de inserción en la base de datos
-							Throwable exception = lecturaTask.getException();
-							if (exception != null) {
-								exception.printStackTrace();
-								Platform.runLater(() -> nav.alertaException(
-										"Error al guardar datos en la base de datos: " + exception.getMessage()));
-							}
-							prontInfo.clear();
-							detenerAnimacionPront();
-							prontInfo.setOpacity(1);
-							prontInfo.setStyle("-fx-background-color: #F53636");
-							prontInfo.setText("ERROR. No se ha podido guardar correctamente en la base de datos.");
-							detenerAnimacion();
-
-						});
-
-						// Iniciar la tarea de lectura y guardado en un hilo separado
-						Thread thread = new Thread(lecturaTask);
-						thread.start();
-
-					} catch (IOException ex) {
-						// Si ocurre un error al importar, mostrar un mensaje de error y detener la
-						// animación
-						ex.printStackTrace();
-						Platform.runLater(
-								() -> nav.alertaException("Error al importar el fichero CSV: " + ex.getMessage()));
-						prontInfo.clear();
-						detenerAnimacionPront();
-						prontInfo.setOpacity(1);
-						prontInfo.setStyle("-fx-background-color: #F53636");
-						prontInfo.setText("ERROR. No se ha podido importar correctamente.");
-						detenerAnimacion();
-					}
+				lecturaTask.setOnSucceeded(event -> {
+					// Lógica después de la inserción exitosa en la base de datos
+					mostrarMensajeExito("Fichero CSV importado de forma correcta");
+					ejecutarCargaDatosBD();
 				});
-			} else {
-				// Si la importación del CSV falló, mostrar un mensaje de error
-				Platform.runLater(() -> {
-					prontInfo.clear();
-					detenerAnimacionPront();
-					prontInfo.setOpacity(1);
-					prontInfo.setStyle("-fx-background-color: #F53636");
-					prontInfo.setText("ERROR. No se ha podido importar correctamente.");
-					detenerAnimacion();
+
+				lecturaTask.setOnFailed(event -> {
+					// Lógica después de una inserción fallida en la base de datos
+					manejarFalloGuardadoBD(lecturaTask.getException());
 				});
+
+				new Thread(lecturaTask).start();
+
+			} catch (IOException ex) {
+				// Lógica después de un error al importar
+				manejarFalloImportacion(ex);
 			}
 		});
+	}
 
-		// Configurar el comportamiento cuando la tarea falla
-		task.setOnFailed(e -> {
-			// Detener la animación y mostrar un mensaje de error en caso de que la tarea
-			// falle
-			detenerAnimacion();
-			Throwable exception = task.getException();
-			if (exception != null) {
-				exception.printStackTrace();
-				prontInfo.clear();
-				detenerAnimacionPront();
-				Platform.runLater(
-						() -> nav.alertaException("Error al importar el fichero CSV: " + exception.getMessage()));
-				detenerAnimacion();
-			} else {
-				prontInfo.clear();
-				detenerAnimacionPront();
-				Platform.runLater(() -> nav.alertaException("Error desconocido al importar el fichero CSV."));
-				detenerAnimacion();
-			}
-		});
+	private void ejecutarCargaDatosBD() {
+		cargarDatosDataBase();
+	}
 
-		nav.ventanaAbierta();
+	private void manejarFalloImportacion(Throwable exception) {
+		exception.printStackTrace();
+		Platform.runLater(() -> nav.alertaException("Error al importar el fichero CSV: " + exception.getMessage()));
+		mostrarMensajeError("Error. No se ha podido importar correctamente.");
+	}
 
-		// Iniciar la tarea principal de importación en un hilo separado
-		Thread thread = new Thread(task);
-		thread.start();
+	private void manejarFalloGuardadoBD(Throwable exception) {
+		if (exception != null) {
+			exception.printStackTrace();
+			Platform.runLater(
+					() -> nav.alertaException("Error al guardar datos en la base de datos: " + exception.getMessage()));
+		}
+		mostrarMensajeError("ERROR. No se ha podido guardar correctamente en la base de datos.");
+	}
+
+	private void mostrarMensajeError(String mensaje) {
+		prontInfo.clear();
+		detenerAnimacionPront();
+		prontInfo.setOpacity(1);
+		prontInfo.setStyle("-fx-background-color: #F53636");
+		prontInfo.setText(mensaje);
+		detenerAnimacion();
+	}
+
+	private void mostrarMensajeExito(String mensaje) {
+		prontInfo.clear();
+		detenerAnimacionPront();
+		prontInfo.setOpacity(1);
+		prontInfo.setStyle("-fx-background-color: #A0F52D");
+		prontInfo.setText(mensaje);
+		detenerAnimacion();
 	}
 
 	/**
@@ -1814,25 +1609,14 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	public List<Comic> listaPorParametro() throws SQLException {
 		libreria = new DBLibreriaManager();
-		utilidad = new Utilidades();
-		Comic comic = new Comic();
-		String datos[] = camposComic();
-		String fecha = datos[8];
-
-		if (datos[8].isEmpty()) {
-			fecha = "";
-		} else {
-			fecha = datos[8];
-		}
-
-		comic = new Comic("", datos[1], datos[11], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7], fecha,
-				datos[9], datos[10], "", "", "", "", "", "", "");
-//		tablaBBDD.getItems().clear();
+		Comic datos = camposComic();
 		prontInfo.setOpacity(1);
-		prontInfo.setText(funcionesTabla.resultadoBusquedaPront(comic).getText());
+		prontInfo.setText(funcionesTabla.resultadoBusquedaPront(datos).getText());
 		busquedaGeneral.setText("");
 
-		return libreria.busquedaParametro(comic, busquedaGeneral.getText());
+		List<Comic> listComic = FXCollections.observableArrayList(libreria.busquedaParametro(datos, busquedaGeneral.getText()));
+		
+		return listComic;
 	}
 
 	/**
@@ -1857,78 +1641,33 @@ public class MenuPrincipalController implements Initializable {
 	 *
 	 * @return
 	 */
-	public String[] camposComic() {
-		String campos[] = new String[12];
-
-		if (nombreActual().isEmpty()) {
-			campos[1] = "";
-		} else {
-			campos[1] = nombreActual();
-		}
-
-		if (numeroComicActual().isEmpty()) {
-			campos[2] = "";
-		} else {
-			campos[2] = numeroComicActual();
-		}
-
-		if (varianteActual().isEmpty()) {
-			campos[3] = "";
-		} else {
-			campos[3] = varianteActual();
-		}
-
-		if (firmaActual().isEmpty()) {
-			campos[4] = "";
-		} else {
-			campos[4] = firmaActual();
-		}
-
-		if (editorialActual().isEmpty()) {
-			campos[5] = "";
-		} else {
-			campos[5] = editorialActual();
-		}
-
-		if (formatoActual().isEmpty()) {
-			campos[6] = "";
-		} else {
-			campos[6] = formatoActual();
-		}
-
-		if (procedenciaActual().isEmpty()) {
-			campos[7] = "";
-		} else {
-			campos[7] = procedenciaActual();
-
-		}
-
+	public Comic camposComic() {
+		Utilidades utilidad = new Utilidades();
+		Comic comic = new Comic();
 		LocalDate fecha = fechaPublicacion.getValue();
-		if (fecha != null) {
-			campos[8] = fecha.toString();
-		} else {
-			campos[8] = "";
-		}
+		String fechaComic = (fecha != null) ? fecha.toString() : "";
 
-		if (guionistaActual().isEmpty()) {
-			campos[9] = "";
-		} else {
-			campos[9] = guionistaActual();
-		}
+		comic.setNombre(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(nombreComic.getValue()), ""));
+		comic.setNumero(Utilidades
+				.defaultIfNullOrEmpty(utilidad.comaPorGuion(FuncionesComboBox.numeroCombobox(numeroComic)), ""));
+		comic.setVariante(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(nombreVariante.getValue()), ""));
+		comic.setFirma(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(nombreFirma.getValue()), ""));
+		comic.setEditorial(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(nombreEditorial.getValue()), ""));
+		comic.setFormato(Utilidades.defaultIfNullOrEmpty(FuncionesComboBox.formatoCombobox(nombreFormato), ""));
+		comic.setProcedencia(
+				Utilidades.defaultIfNullOrEmpty(FuncionesComboBox.procedenciaCombobox(nombreProcedencia), ""));
+		comic.setFecha(fechaComic);
+		comic.setGuionista(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(nombreGuionista.getValue()), ""));
+		comic.setDibujante(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(nombreDibujante.getValue()), ""));
+		comic.setImagen("");
+		comic.setEstado("");
+		comic.setNumCaja(Utilidades.defaultIfNullOrEmpty(FuncionesComboBox.cajaCombobox(numeroCaja), ""));
+		comic.setKey_issue("");
+		comic.setUrl_referencia("");
+		comic.setPrecio_comic("");
+		comic.setCodigo_comic("");
 
-		if (dibujanteActual().isEmpty()) {
-			campos[10] = "";
-		} else {
-			campos[10] = dibujanteActual();
-		}
-
-		if (cajaActual().isEmpty() || cajaActual().equals("0")) {
-			campos[11] = "";
-		} else {
-			campos[11] = cajaActual();
-		}
-
-		return campos;
+		return comic;
 	}
 
 	/**

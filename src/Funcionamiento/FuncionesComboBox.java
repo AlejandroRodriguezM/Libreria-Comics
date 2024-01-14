@@ -667,5 +667,100 @@ public class FuncionesComboBox {
 
 		}
 	}
+	
+	/**
+	 * Funcion que permite modificar la puntuacion de un comic, siempre y cuando el
+	 * ID exista en la base de datos
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public static String puntuacionCombobox(ComboBox<String> puntuacionMenu) {
+
+		String puntuacion = puntuacionMenu.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+																								// "puntuacion"
+		return puntuacion;
+	}
+
+	/**
+	 * Funcion que permite seleccionar en el comboBox "numeroComic" y lo devuelve,
+	 * para la busqueda de comic
+	 * 
+	 * @return
+	 */
+	public static String numeroCombobox(ComboBox<String> numeroComic) {
+		String numComic = "";
+
+		if (numeroComic.getSelectionModel().getSelectedItem() != null) {
+			numComic = numeroComic.getSelectionModel().getSelectedItem().toString();
+		}
+
+		return numComic;
+	}
+
+	/**
+	 * Funcion que permite seleccionar en el comboBox "caja_actual" y lo devuelve,
+	 * para la busqueda de comic
+	 * 
+	 * @return
+	 */
+	public static String cajaCombobox(ComboBox<String> numeroCajaComic) {
+
+		String cajaComics = "";
+
+		if (numeroCajaComic.getSelectionModel().getSelectedItem() != null) {
+			cajaComics = numeroCajaComic.getSelectionModel().getSelectedItem().toString();
+		}
+
+		return cajaComics;
+	}
+
+	/**
+	 * Funcion que permite seleccionar en el comboBox "caja_actual" y lo devuelve,
+	 * para la busqueda de comic
+	 * 
+	 * @return
+	 */
+	public static String estadoCombobox(ComboBox<String> estadoComic) {
+
+		String estadoNuevo = "";
+
+		if (estadoComic.getSelectionModel().getSelectedItem() != null) {
+			estadoNuevo = estadoComic.getSelectionModel().getSelectedItem().toString();
+		}
+
+		return estadoNuevo;
+	}
+
+	/**
+	 * Funcion que permite seleccionar en el comboBox "nombreFormato" y lo devuelve,
+	 * para la busqueda de comic
+	 * 
+	 * @return
+	 */
+	public static String formatoCombobox(ComboBox<String> formatoComic) {
+
+		String formatoEstado = "";
+		if (formatoComic.getSelectionModel().getSelectedItem() != null) {
+			formatoEstado = formatoComic.getSelectionModel().getSelectedItem().toString();
+		}
+		return formatoEstado;
+	}
+
+	/**
+	 * Funcion que permite modificar el estado de un comic.
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public static String procedenciaCombobox(ComboBox<String> procedenciaComic) {
+
+		String procedenciaEstadoNuevo = "";
+		if (procedenciaComic.getSelectionModel().getSelectedItem() != null) {
+			procedenciaEstadoNuevo = procedenciaComic.getSelectionModel().getSelectedItem().toString();
+		}
+
+		return procedenciaEstadoNuevo;
+	}
 
 }

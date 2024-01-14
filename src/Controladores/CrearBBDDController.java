@@ -4,32 +4,6 @@
 */
 package Controladores;
 
-/**
- * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
- * Las ventanas graficas se realizan con JavaFX.
- * El programa permite:
- *  - Conectarse a la base de datos.
- *  - Ver la base de datos completa o parcial segun parametros introducidos.
- *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
- *  - Copia de seguridad de la base de datos en formato .sql
- *  - Introducir comics a la base de datos.
- *  - Modificar comics de la base de datos.
- *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
- *  - Ver frases de personajes de comics
- *  - Opcion de escoger algo para leer de forma aleatoria.
- *  - Puntuar comics que se encuentren dentro de la base de datos.
- *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
- *
- *  Version 8.0.0.0
- *
- *  @author Alejandro Rodriguez
- *
- */
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 
@@ -63,6 +37,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import Funcionamiento.Utilidades;
@@ -185,11 +160,6 @@ public class CrearBBDDController implements Initializable {
 	private static Ventanas nav = new Ventanas();
 
 	/**
-	 * Controlador para el acceso a la base de datos.
-	 */
-	private static AccesoBBDDController acceso = new AccesoBBDDController();
-
-	/**
 	 * Controlador para la creación de la base de datos.
 	 */
 	private static CrearBBDDController cbd = null;
@@ -202,6 +172,9 @@ public class CrearBBDDController implements Initializable {
 	public static String DB_PORT;
 	public static String DB_NAME;
 	public static String DB_HOST;
+
+	private Image eyeOpenImage;
+	private Image eyeClosedImage;
 
 	/**
 	 * Línea de tiempo para animaciones.
@@ -228,80 +201,66 @@ public class CrearBBDDController implements Initializable {
 		});
 		puertoBBDD.setTextFormatter(textFormatterAni);
 
-		String userHome = System.getProperty("user.home");
-		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
-		String carpetaLibreria = ubicacion + File.separator + "libreria";
-		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion_local.conf";
+		formulario_local();
 
-		try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				if (line.startsWith("Usuario: ")) {
-					String usuarioTexto = line.substring("Usuario: ".length());
-					userBBDD.setText(usuarioTexto);
-				} else if (line.startsWith("Password: ")) {
-					String passwordTexto = line.substring("Password: ".length());
-					passBBDD.setText(passwordTexto);
-				} else if (line.startsWith("Puerto: ")) {
-					String puertoTexto = line.substring("Puerto: ".length());
-					puertoBBDD.setText(puertoTexto);
-				} else if (line.startsWith("Database: ")) {
-					nombreBBDD.setText("");
-				} else if (line.startsWith("Hosting: ")) {
-					String hostingTexto = line.substring("Hosting: ".length());
-					nombreHost.setText(hostingTexto);
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		configureEyeToggle();
 
-		Image eyeOpenImage = new Image(getClass().getResourceAsStream("/imagenes/visible.png"), 20, 20, true, true);
-		Image eyeClosedImage = new Image(getClass().getResourceAsStream("/imagenes/hide.png"), 20, 20, true, true);
+	}
+
+	private void configureEyeToggle() {
+		eyeOpenImage = new Image(getClass().getResourceAsStream("/imagenes/visible.png"), 20, 20, true, true);
+		eyeClosedImage = new Image(getClass().getResourceAsStream("/imagenes/hide.png"), 20, 20, true, true);
 
 		// Configurar el ImageView con la imagen de ojo abierto inicialmente
 		toggleEyeImageView.setImage(eyeClosedImage);
 
 		// Establecer el manejador de eventos para el ImageView
-		toggleEyeImageView.setOnMouseClicked(event -> {
-			if (toggleEyeImageView.getImage() == eyeOpenImage) {
-				passUsuarioText.setVisible(false);
-				passUsuarioText.setDisable(true);
-				passBBDD.setVisible(true);
-				passBBDD.setDisable(false);
+		toggleEyeImageView.setOnMouseClicked(event -> toggleEye());
+	}
 
-				passBBDD.setPromptText(passBBDD.getPromptText());
-				passUsuarioText.setText(passBBDD.getText());
-				toggleEyeImageView.setImage(eyeClosedImage); // Cambiar a la imagen de ojo cerrado
-			} else {
-				passUsuarioText.setVisible(true);
-				passUsuarioText.setDisable(false);
-				passBBDD.setVisible(false);
-				passBBDD.setDisable(true);
+	private void toggleEye() {
+		if (toggleEyeImageView.getImage() == eyeOpenImage) {
+			passUsuarioText.setVisible(false);
+			passUsuarioText.setDisable(true);
+			passBBDD.setVisible(true);
+			passBBDD.setDisable(false);
 
-				passBBDD.setText(passUsuarioText.getText());
-				passBBDD.setPromptText(passBBDD.getPromptText());
-				toggleEyeImageView.setImage(eyeOpenImage); // Cambiar a la imagen de ojo abierto
-			}
-		});
-
-		// Escuchador para el campo de texto "password"
-		passBBDD.textProperty().addListener((observable, oldValue, newValue) -> {
+			passBBDD.setPromptText(passUsuarioText.getPromptText());
+			passUsuarioText.setText(passBBDD.getText());
+			toggleEyeImageView.setImage(eyeClosedImage); // Cambiar a la imagen de ojo cerrado
+		} else {
+			passUsuarioText.setVisible(true);
+			passUsuarioText.setDisable(false);
+			passBBDD.setVisible(false);
+			passBBDD.setDisable(true);
 
 			passUsuarioText.setText(passBBDD.getText());
-		});
+			passBBDD.setPromptText(passUsuarioText.getPromptText());
+			toggleEyeImageView.setImage(eyeOpenImage); // Cambiar a la imagen de ojo abierto
+		}
+	}
 
-		// Escuchador para el campo de texto "puerto"
-		passBBDD.textProperty().addListener((observable, oldValue, newValue) -> {
-			passBBDD.setText(passUsuarioText.getText());
-		});
+	/**
+	 * Llena el formulario de configuración local con valores previamente guardados.
+	 */
+	public void formulario_local() {
+
+		Map<String, String> datosConfiguracion = Utilidades.devolverDatosConfig();
+
+		userBBDD.setText(datosConfiguracion.get("Usuario"));
+
+		passBBDD.setText(datosConfiguracion.get("Password"));
+
+		puertoBBDD.setText(datosConfiguracion.get("Puerto"));
+
+		nombreHost.setText(datosConfiguracion.get("Hosting"));
 
 	}
 
 	/**
 	 * Funcion que guarda los datos de la nueva base de datos.
 	 */
-	public String [] datosBBDD() {
+	public String[] datosBBDD() {
 
 		String datos[] = new String[5];
 		DB_PORT = puertoBBDD.getText();
@@ -316,7 +275,7 @@ public class CrearBBDDController implements Initializable {
 		datos[3] = DB_PASS;
 		datos[4] = DB_HOST;
 
-		if(!comprobarEntradas()) {
+		if (!comprobarEntradas()) {
 			return datos;
 		}
 		return null;
@@ -380,9 +339,8 @@ public class CrearBBDDController implements Initializable {
 			Utilidades.crearCarpeta();
 			prontInformativo.setStyle("-fx-background-color: #A0F52D");
 			iniciarAnimacionBaseCreada();
-			guardarDatos();
-		}
-		else {
+			Utilidades.guardarDatosBaseLocal(datosBBDD(), prontInformativo, null);
+		} else {
 			System.out.println("Je");
 		}
 	}
@@ -406,7 +364,7 @@ public class CrearBBDDController implements Initializable {
 			nav.alertaException("No se ha podido crear la base de datos: \n" + e.toString());
 		}
 	}
-	
+
 	/**
 	 * Crea las tablas de la base de datos si no existen.
 	 */
@@ -666,53 +624,7 @@ public class CrearBBDDController implements Initializable {
 		timeline.play();
 	}
 
-	/**
-	 * Guarda los datos de configuración en un archivo de configuración.
-	 * 
-	 * @throws SQLException si ocurre un error en la conexión a la base de datos.
-	 */
-	private void guardarDatos() throws SQLException {
-
-		String userHome = System.getProperty("user.home");
-		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
-		String carpetaLibreria = ubicacion + File.separator + "libreria";
-		String carpetaBackup = carpetaLibreria + File.separator + nombreBBDD.getText() + File.separator + "backups";
-		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion.conf";
-
-		try {
-			acceso.crearEstructura();
-
-			FileWriter fileWriter = new FileWriter(archivoConfiguracion);
-			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-
-			bufferedWriter.write("###############################");
-			bufferedWriter.newLine();
-			bufferedWriter.write("Fichero de configuracion de la libreria");
-			bufferedWriter.newLine();
-			bufferedWriter.write("###############################");
-			bufferedWriter.newLine();
-			bufferedWriter.write("Usuario: " + DB_USER);
-			bufferedWriter.newLine();
-			bufferedWriter.write("Password: " + DB_PASS);
-			bufferedWriter.newLine();
-			bufferedWriter.write("Puerto: " + DB_PORT);
-			bufferedWriter.newLine();
-			bufferedWriter.write("Database: " + DB_NAME);
-			bufferedWriter.newLine();
-			bufferedWriter.write("Hosting: " + DB_HOST);
-			bufferedWriter.newLine();
-
-			bufferedWriter.close();
-
-			File carpeta_backupsFile = new File(carpetaBackup);
-			if (!carpeta_backupsFile.exists()) {
-				carpeta_backupsFile.mkdir();
-			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+	
 
 	/**
 	 * Detiene la animación actual si está en ejecución.

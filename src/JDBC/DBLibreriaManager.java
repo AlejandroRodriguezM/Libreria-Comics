@@ -81,12 +81,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import Controladores.CargaComicsController;
-import Funcionamiento.FuncionesExcel;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import comicManagement.Comic;
-import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
@@ -97,7 +94,7 @@ import javafx.stage.FileChooser;
  *
  * @author Alejandro Rodriguez
  */
-public class DBLibreriaManager extends Comic {
+public class DBLibreriaManager {
 
 	/**
 	 * Lista de cómics.
@@ -257,11 +254,6 @@ public class DBLibreriaManager extends Comic {
 	private static Utilidades utilidad = new Utilidades();
 
 	/**
-	 * Funciones relacionadas con Excel.
-	 */
-	private static FuncionesExcel carpeta = new FuncionesExcel();
-
-	/**
 	 * Ventanas de la aplicación.
 	 */
 	private static Ventanas ventanas = new Ventanas();
@@ -289,13 +281,13 @@ public class DBLibreriaManager extends Comic {
 	 *
 	 * @param listaAAnadir Lista de cómics a añadir a la lista principal.
 	 */
-	public static void agregarElementosUnicos(List<Comic> listaAAnadir) {
+	public static void agregarElementosUnicos(List<Comic> listaAnadir) {
 		// Usamos un Set para mantener los elementos únicos
 		Set<String> idsUnicos = comicsGuardadosList.stream().map(Comic::getID).collect(Collectors.toSet());
 
 		// Filtramos la lista a añadir para obtener solo aquellos cuyas ID no estén
 		// repetidas
-		List<Comic> comicsNoRepetidos = listaAAnadir.stream().filter(comic -> !idsUnicos.contains(comic.getID()))
+		List<Comic> comicsNoRepetidos = listaAnadir.stream().filter(comic -> !idsUnicos.contains(comic.getID()))
 				.sorted(Comparator.comparing(Comic::getID, Comparator.comparingInt(String::length).reversed()))
 				.collect(Collectors.toList());
 
@@ -316,9 +308,7 @@ public class DBLibreriaManager extends Comic {
 	 * Funcion que permite limpiar de contenido la lista de comics guardados
 	 */
 	public static void limpiarListaGuardados() {
-
 		comicsGuardadosList.clear();
-
 	}
 
 	/**
@@ -362,29 +352,21 @@ public class DBLibreriaManager extends Comic {
 	 * @return
 	 */
 	public int countRows() {
-		conn = DBManager.conexion();
 		String sql = "SELECT COUNT(*) FROM comicsbbdd";
-		Statement stmt = null;
-		ResultSet rs = null;
-		try {
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(sql);
+		try (Connection conn = DBManager.conexion();
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql)) {
 
-			int total = -1;
+			if (rs.next()) {
+				return rs.getInt(1);
+			} else {
+				return 0;
+			}
 
-			total = rs.getRow();
-
-			return total;
 		} catch (SQLException e) {
 			nav.alertaException(e.toString());
-		} finally {
-			try {
-				rs.close();
-			} catch (SQLException e) {
-				nav.alertaException(e.toString());
-			}
+			return 0;
 		}
-		return 0;
 	}
 
 	/**
@@ -442,38 +424,38 @@ public class DBLibreriaManager extends Comic {
 		return futureResult;
 	}
 
-	/**
-	 * Verifica si la tabla 'comicsbbdd' contiene registros.
-	 *
-	 * @return true si existen más de un registro en la tabla, false en caso
-	 *         contrario.
-	 */
-	public boolean contenidoTabla() {
-		String sql = "SELECT COUNT(*) FROM comicsbbdd";
-		boolean existeMasDeUnRegistro = false;
-
-		try {
-			// Obtener la conexión a la base de datos y crear la sentencia
-			conn = DBManager.conexion();
-			Statement statement = conn.createStatement();
-
-			// Ejecutar la consulta y obtener el resultado
-			ResultSet resultSet = statement.executeQuery(sql);
-			if (resultSet.next()) {
-				int count = resultSet.getInt(1);
-				existeMasDeUnRegistro = count >= 1;
-			}
-
-			// Cerrar recursos
-			resultSet.close();
-			statement.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			// Manejar la excepción según tus necesidades
-		}
-
-		return existeMasDeUnRegistro;
-	}
+//	/**
+//	 * Verifica si la tabla 'comicsbbdd' contiene registros.
+//	 *
+//	 * @return true si existen más de un registro en la tabla, false en caso
+//	 *         contrario.
+//	 */
+//	public boolean contenidoTabla() {
+//		String sql = "SELECT COUNT(*) FROM comicsbbdd";
+//		boolean existeMasDeUnRegistro = false;
+//
+//		try {
+//			// Obtener la conexión a la base de datos y crear la sentencia
+//			conn = DBManager.conexion();
+//			Statement statement = conn.createStatement();
+//
+//			// Ejecutar la consulta y obtener el resultado
+//			ResultSet resultSet = statement.executeQuery(sql);
+//			if (resultSet.next()) {
+//				int count = resultSet.getInt(1);
+//				existeMasDeUnRegistro = count >= 1;
+//			}
+//
+//			// Cerrar recursos
+//			resultSet.close();
+//			statement.close();
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//			// Manejar la excepción según tus necesidades
+//		}
+//
+//		return existeMasDeUnRegistro;
+//	}
 
 	/**
 	 * Función que ejecuta un conjunto de sentencias PreparedStatement en la base de
@@ -606,49 +588,49 @@ public class DBLibreriaManager extends Comic {
 	 * @throws SQLException Si ocurre algún error al ejecutar la consulta SQL.
 	 */
 	public List<String> guardarDatosAutoCompletado(String sentenciaSQL, String columna) {
-	    List<String> listaAutoCompletado = new ArrayList<>();
-	    ResultSet rs = null;
+		List<String> listaAutoCompletado = new ArrayList<>();
+		ResultSet rs = null;
 
-	    try (Connection conn = DBManager.conexion();
-	         PreparedStatement stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+		try (Connection conn = DBManager.conexion();
+				PreparedStatement stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE,
+						ResultSet.CONCUR_UPDATABLE)) {
 
-	        rs = stmt.executeQuery();
+			rs = stmt.executeQuery();
 
-	        if (rs != null && rs.first()) {
-	            do {
-	                String datosAutocompletado = rs.getString(columna);
-	                if (columna.equals("nomComic")) {
-	                    listaAutoCompletado.add(datosAutocompletado.trim());
-	                } else if (columna.equals("portada")) {
-	                    listaAutoCompletado.add(SOURCE_PATH + obtenerUltimoSegmentoRuta(datosAutocompletado));
-	                } else {
-	                    String[] nombres = datosAutocompletado.split("-");
-	                    for (String nombre : nombres) {
-	                        nombre = nombre.trim();
-	                        if (!nombre.isEmpty()) {
-	                            listaAutoCompletado.add(nombre);
-	                        }
-	                    }
-	                }
-	            } while (rs.next());
+			if (rs != null && rs.first()) {
+				do {
+					String datosAutocompletado = rs.getString(columna);
+					if (columna.equals("nomComic")) {
+						listaAutoCompletado.add(datosAutocompletado.trim());
+					} else if (columna.equals("portada")) {
+						listaAutoCompletado.add(SOURCE_PATH + obtenerUltimoSegmentoRuta(datosAutocompletado));
+					} else {
+						String[] nombres = datosAutocompletado.split("-");
+						for (String nombre : nombres) {
+							nombre = nombre.trim();
+							if (!nombre.isEmpty()) {
+								listaAutoCompletado.add(nombre);
+							}
+						}
+					}
+				} while (rs.next());
 
-	            listaAutoCompletado = Utilidades.listaArregladaAutoComplete(listaAutoCompletado);
-	        }
-	    } catch (SQLException e) {
-	        nav.alertaException(e.toString());
-	    } finally {
-	        if (rs != null) {
-	            try {
-	                rs.close();
-	            } catch (SQLException e) {
-	                nav.alertaException("Error al cerrar el ResultSet: " + e.toString());
-	            }
-	        }
-	    }
+				listaAutoCompletado = Utilidades.listaArregladaAutoComplete(listaAutoCompletado);
+			}
+		} catch (SQLException e) {
+			nav.alertaException(e.toString());
+		} finally {
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					nav.alertaException("Error al cerrar el ResultSet: " + e.toString());
+				}
+			}
+		}
 
-	    return listaAutoCompletado;
+		return listaAutoCompletado;
 	}
-
 
 	public static String obtenerUltimoSegmentoRuta(String ruta) {
 		if (ruta == null || ruta.isEmpty()) {
@@ -732,8 +714,7 @@ public class DBLibreriaManager extends Comic {
 				ResultSet rs = stmt.executeQuery()) {
 
 			while (rs.next()) {
-				Comic comic = listaDatos(rs);
-				listaComics.add(comic);
+				listaComics.add(devolverComic(rs));
 			}
 
 		} catch (SQLException e) {
@@ -750,34 +731,28 @@ public class DBLibreriaManager extends Comic {
 	 * @param datos Objeto Comic con los datos para filtrar.
 	 * @return Lista de cómics filtrados.
 	 */
-	public List<Comic> filtadroBBDD(Comic datos) {
+	public List<Comic> filtroBBDD(Comic datos) {
 		// Reiniciar la lista de cómics antes de realizar el filtrado
 		reiniciarBBDD();
 
 		// Crear la consulta SQL a partir de los datos proporcionados
 		String sql = datosConcatenados(datos);
 
-		// Limpiar la lista de cómics antes de llenarla con los resultados
-		listaComics.clear();
+		System.out.println(sql);
 
 		// Verificar si la consulta SQL no está vacía
-		if (sql.length() != 0) {
-			try {
-				conn = DBManager.conexion();
-
-				PreparedStatement ps = conn.prepareStatement(sql);
-
-				// Ejecutar la consulta y obtener el resultado
-				ResultSet rs = ps.executeQuery();
+		if (!sql.isEmpty()) {
+			try (Connection conn = DBManager.conexion();
+					PreparedStatement ps = conn.prepareStatement(sql);
+					ResultSet rs = ps.executeQuery()) {
 
 				// Llenar la lista de cómics con los resultados obtenidos
-				if (rs.next()) {
-					listaDatos(rs);
+				while (rs.next()) {
+					listaComics.add(devolverComic(rs));
 				}
 
-				// Cerrar recursos y devolver la lista de cómics filtrados
-				rs.close();
-				ps.close();
+				// No es necesario cerrar recursos explícitamente en try-with-resources
+
 				return listaComics;
 			} catch (SQLException ex) {
 				// Manejar la excepción según tus necesidades (en este caso, mostrar una alerta)
@@ -788,94 +763,30 @@ public class DBLibreriaManager extends Comic {
 		return listaComics; // Devolver null si la consulta SQL está vacía
 	}
 
-	/**
-	 * Funcion que segun los datos introducir mediante parametros, concatenara las
-	 * siguientes cadenas de texto. Sirve para hacer busqueda en una base de datos
-	 *
-	 * @param datos
-	 * @return
-	 */
 	public String datosConcatenados(Comic comic) {
-
 		int datosRellenados = 0;
 
 		String connector = " WHERE ";
-		StringBuilder sql = new StringBuilder();
-		sql.append("SELECT * FROM comicsbbdd");
+		StringBuilder sql = new StringBuilder("SELECT * FROM comicsbbdd");
 
-		if (comic.getID().length() != 0) {
+		datosRellenados += agregarCondicion(sql, connector, "ID", comic.getID());
+		datosRellenados += agregarCondicionLike(sql, connector, "nomComic", comic.getNombre());
+		datosRellenados += agregarCondicion(sql, connector, "caja_deposito", comic.getNumCaja());
+		datosRellenados += agregarCondicion(sql, connector, "numComic", comic.getNumero());
+		datosRellenados += agregarCondicionLike(sql, connector, "nomVariante", comic.getVariante());
+		datosRellenados += agregarCondicionLike(sql, connector, "firma", comic.getFirma());
+		datosRellenados += agregarCondicionLike(sql, connector, "nomEditorial", comic.getEditorial());
+		datosRellenados += agregarCondicionLike(sql, connector, "formato", comic.getFormato());
+		datosRellenados += agregarCondicionLike(sql, connector, "procedencia", comic.getProcedencia());
+		datosRellenados += agregarCondicionLike(sql, connector, "fecha_publicacion", comic.getFecha());
+		datosRellenados += agregarCondicionLike(sql, connector, "nomGuionista", comic.getGuionista());
+		datosRellenados += agregarCondicionLike(sql, connector, "nomDibujante", comic.getDibujante());
 
-			sql.append(connector).append("ID = " + comic.getID());
-			connector = " AND ";
-			datosRellenados++;
-		}
-		if (comic.getNombre().length() != 0) {
-
-			sql.append(connector).append("nomComic like'%" + comic.getNombre() + "%'");
-			connector = " AND ";
-			datosRellenados++;
-		}
-		if (comic.getNumCaja().length() != 0) {
-			sql.append(connector).append("caja_deposito = '" + comic.getNumCaja() + "'");
-			connector = " AND ";
-			datosRellenados++;
-		}
-		if (comic.getNumero().length() != 0) {
-			sql.append(connector).append("numComic = " + comic.getNumero());
-			connector = " AND ";
-			datosRellenados++;
-		}
-		if (comic.getVariante().length() != 0) {
-			sql.append(connector).append("nomVariante like'%" + comic.getVariante() + "%'");
-			connector = " AND ";
-			datosRellenados++;
-		}
-		if (comic.getFirma().length() != 0) {
-			sql.append(connector).append("firma like'%" + comic.getFirma() + "%'");
-			connector = " AND ";
-			datosRellenados++;
-		}
-		if (comic.getEditorial().length() != 0) {
-			sql.append(connector).append("nomEditorial like'%" + comic.getEditorial() + "%'");
-			connector = " AND ";
-			datosRellenados++;
-		}
-		if (comic.getFormato().length() != 0) {
-			sql.append(connector).append("formato like'%" + comic.getFormato() + "%'");
-			connector = " AND ";
-			datosRellenados++;
-		}
-		if (comic.getProcedencia().length() != 0) {
-			sql.append(connector).append("procedencia like'%" + comic.getProcedencia() + "%'");
-			connector = " AND ";
-			datosRellenados++;
-		}
-		if (comic.getFecha().length() != 0) {
-			sql.append(connector).append("fecha_publicacion like'%" + comic.getFecha() + "%'");
-			connector = " AND ";
-			datosRellenados++;
-		}
-		if (comic.getGuionista().length() != 0) {
-			sql.append(connector).append("nomGuionista like'%" + comic.getGuionista() + "%'");
-			connector = " AND ";
-			datosRellenados++;
-		}
-		if (comic.getDibujante().length() != 0) {
-			sql.append(connector).append("nomDibujante like'%" + comic.getDibujante() + "%'");
-			connector = " AND ";
-			datosRellenados++;
-		}
-
-		if (datosRellenados != 0) {
-			return sql.toString();
-		}
-
-		return "";
+		return (datosRellenados > 0) ? sql.toString() : "";
 	}
 
 	/**
 	 * Verifica si existen resultados que coincidan con los criterios de búsqueda
-	 * proporcionados en un objeto Comic.
 	 *
 	 * @param comic El objeto Comic que contiene los criterios de búsqueda.
 	 * @return true si se encontraron resultados que coinciden con los criterios,
@@ -885,132 +796,55 @@ public class DBLibreriaManager extends Comic {
 		int datosRellenados = 0;
 
 		String connector = " WHERE ";
-		StringBuilder sql = new StringBuilder();
-		sql.append("SELECT COUNT(*) FROM comicsbbdd");
+		StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM comicsbbdd");
 		conn = DBManager.conexion();
-		if (comic.getID().length() != 0) {
-			sql.append(connector).append("ID = " + comic.getID());
-			connector = " AND ";
-			datosRellenados++;
-		}
-		if (comic.getNombre().length() != 0) {
-			sql.append(connector).append("nomComic like'%" + comic.getNombre() + "%'");
-			connector = " AND ";
-			datosRellenados++;
-		}
 
-		if (comic.getNumCaja().length() != 0) {
-			sql.append(connector).append("caja_deposito like'%" + comic.getNumCaja() + "%'");
-			connector = " AND ";
-			datosRellenados++;
-		}
-		if (comic.getNumero().length() != 0) {
-			sql.append(connector).append("numComic = " + comic.getNumero());
-			connector = " AND ";
-			datosRellenados++;
-		}
-		if (comic.getVariante().length() != 0) {
-			sql.append(connector).append("nomVariante like'%" + comic.getVariante() + "%'");
-			connector = " AND ";
-			datosRellenados++;
-		}
-		if (comic.getFirma().length() != 0) {
-			sql.append(connector).append("firma like'%" + comic.getFirma() + "%'");
-			connector = " AND ";
-			datosRellenados++;
-		}
-		if (comic.getEditorial().length() != 0) {
-			sql.append(connector).append("nomEditorial like'%" + comic.getEditorial() + "%'");
-			connector = " AND ";
-			datosRellenados++;
-		}
-		if (comic.getFormato().length() != 0) {
-			sql.append(connector).append("formato like'%" + comic.getFormato() + "%'");
-			connector = " AND ";
-			datosRellenados++;
-		}
-		if (comic.getProcedencia().length() != 0) {
-			sql.append(connector).append("procedencia like'%" + comic.getProcedencia() + "%'");
-			connector = " AND ";
-			datosRellenados++;
-		}
-		if (comic.getFecha().length() != 0) {
-			sql.append(connector).append("fecha_publicacion like'%" + comic.getFecha() + "%'");
-			connector = " AND ";
-			datosRellenados++;
-		}
-		if (comic.getGuionista().length() != 0) {
-			sql.append(connector).append("nomGuionista like'%" + comic.getGuionista() + "%'");
-			connector = " AND ";
-			datosRellenados++;
-		}
-		if (comic.getDibujante().length() != 0) {
-			sql.append(connector).append("nomDibujante like'%" + comic.getDibujante() + "%'");
-			connector = " AND ";
-			datosRellenados++;
-		}
-		if (datosRellenados != 0) {
-			try {
-				PreparedStatement preparedStatement = conn.prepareStatement(sql.toString());
-				ResultSet resultSet = preparedStatement.executeQuery();
+		datosRellenados += agregarCondicion(sql, connector, "ID", comic.getID());
+		datosRellenados += agregarCondicionLike(sql, connector, "nomComic", comic.getNombre());
+		datosRellenados += agregarCondicionLike(sql, connector, "caja_deposito", comic.getNumCaja());
+		datosRellenados += agregarCondicion(sql, connector, "numComic", comic.getNumero());
+		datosRellenados += agregarCondicionLike(sql, connector, "nomVariante", comic.getVariante());
+		datosRellenados += agregarCondicionLike(sql, connector, "firma", comic.getFirma());
+		datosRellenados += agregarCondicionLike(sql, connector, "nomEditorial", comic.getEditorial());
+		datosRellenados += agregarCondicionLike(sql, connector, "formato", comic.getFormato());
+		datosRellenados += agregarCondicionLike(sql, connector, "procedencia", comic.getProcedencia());
+		datosRellenados += agregarCondicionLike(sql, connector, "fecha_publicacion", comic.getFecha());
+		datosRellenados += agregarCondicionLike(sql, connector, "nomGuionista", comic.getGuionista());
+		datosRellenados += agregarCondicionLike(sql, connector, "nomDibujante", comic.getDibujante());
+
+		if (datosRellenados > 0) {
+			try (PreparedStatement preparedStatement = conn.prepareStatement(sql.toString());
+					ResultSet resultSet = preparedStatement.executeQuery()) {
 
 				if (resultSet.next()) {
 					int count = resultSet.getInt(1);
-					if (count > 0) {
-						return true;
-					}
+					return count > 0;
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
+
 		return false;
 	}
 
-	/**
-	 * Obtiene resultados de la base de datos según una consulta SQL y un campo
-	 * específico.
-	 *
-	 * @param sql   Consulta SQL para obtener los datos.
-	 * @param campo Campo específico de la consulta.
-	 * @return Lista de resultados obtenidos.
-	 * @throws SQLException
-	 */
-//	public List<String> obtenerResultadosDeLaBaseDeDatos(String sql, String campo) throws SQLException {
-//		HashMap<String, Integer> mapa = new HashMap<>();
-//		List<String> resultados = new ArrayList<>();
-//
-//		try (Connection conn = DBManager.conexion()) {
-//			PreparedStatement statement = conn.prepareStatement(sql);
-//			ResultSet resultSet = statement.executeQuery();
-//
-//			// Iterar a través de los resultados del conjunto de resultados
-//			while (resultSet.next()) {
-//				String valor = resultSet.getString(campo);
-//				// Verificar si el valor es diferente de nulo y no está vacío
-//				if (valor != null && !valor.isEmpty()) {
-//					mapa.put(valor, mapa.getOrDefault(valor, 0) + 1);
-//				}
-//			}
-//
-//			resultSet.close();
-//			statement.close();
-//		} catch (SQLException e) {
-//			// En caso de excepción, imprimir un mensaje de error simplificado
-//			nav.alertaException("Error al obtener resultados de la base de datos: " + e.getMessage());
-//		}
-//
-//		// Si el mapa está vacío, retornar una lista vacía
-//		if (mapa.isEmpty()) {
-//			return resultados;
-//		}
-//
-//		// Agregar las claves del mapa (resultados) a la lista de resultados
-//		for (String clave : mapa.keySet()) {
-//			resultados.add(clave);
-//		}
-//		return  resultados;
-//	}
+	private int agregarCondicion(StringBuilder sql, String connector, String columna, String valor) {
+		if (valor.length() != 0) {
+			sql.append(connector).append(columna).append(" = ").append(valor);
+			connector = " AND ";
+			return 1;
+		}
+		return 0;
+	}
+
+	private int agregarCondicionLike(StringBuilder sql, String connector, String columna, String valor) {
+		if (valor.length() != 0) {
+			sql.append(connector).append(columna).append(" LIKE '%").append(valor).append("%'");
+			connector = " AND ";
+			return 1;
+		}
+		return 0;
+	}
 
 	/**
 	 * Funcion que permite hacer una busqueda general mediante 1 sola palabra, hace
@@ -1021,77 +855,46 @@ public class DBLibreriaManager extends Comic {
 	 * @throws SQLException
 	 */
 	public List<Comic> verBusquedaGeneral(String busquedaGeneral) throws SQLException {
-		conn = DBManager.conexion();
 		String sql1 = datosGeneralesNombre(busquedaGeneral);
 		String sql2 = datosGeneralesVariante(busquedaGeneral);
 		String sql3 = datosGeneralesFirma(busquedaGeneral);
 		String sql4 = datosGeneralesGuionista(busquedaGeneral);
 		String sql5 = datosGeneralesDibujante(busquedaGeneral);
 
-		PreparedStatement ps1 = null;
-		PreparedStatement ps2 = null;
-		PreparedStatement ps3 = null;
-		PreparedStatement ps4 = null;
-		PreparedStatement ps5 = null;
+		try (Connection conn = DBManager.conexion();
+				PreparedStatement ps1 = conn.prepareStatement(sql1);
+				PreparedStatement ps2 = conn.prepareStatement(sql2);
+				PreparedStatement ps3 = conn.prepareStatement(sql3);
+				PreparedStatement ps4 = conn.prepareStatement(sql4);
+				PreparedStatement ps5 = conn.prepareStatement(sql5);
+				ResultSet rs1 = ps1.executeQuery();
+				ResultSet rs2 = ps2.executeQuery();
+				ResultSet rs3 = ps3.executeQuery();
+				ResultSet rs4 = ps4.executeQuery();
+				ResultSet rs5 = ps5.executeQuery()) {
 
-		ResultSet rs1 = null;
-		ResultSet rs2 = null;
-		ResultSet rs3 = null;
-		ResultSet rs4 = null;
-		ResultSet rs5 = null;
+			listaComics.clear();
 
-		reiniciarBBDD();
-
-		listaComics.clear();
-
-		try {
-			ps1 = conn.prepareStatement(sql1);
-			ps2 = conn.prepareStatement(sql2);
-			ps3 = conn.prepareStatement(sql3);
-			ps4 = conn.prepareStatement(sql4);
-			ps5 = conn.prepareStatement(sql5);
-
-			rs1 = ps1.executeQuery();
-			rs2 = ps2.executeQuery();
-			rs3 = ps3.executeQuery();
-			rs4 = ps4.executeQuery();
-			rs5 = ps5.executeQuery();
-
-			if (rs1.next()) {
-				listaDatos(rs1);
-			}
-			if (rs2.next()) {
-				listaDatos(rs2);
-			}
-			if (rs3.next()) {
-				listaDatos(rs3);
-			}
-			if (rs4.next()) {
-				listaDatos(rs4);
-			}
-			if (rs5.next()) {
-				listaDatos(rs5);
-			}
+			agregarSiHayDatos(rs1);
+			agregarSiHayDatos(rs2);
+			agregarSiHayDatos(rs3);
+			agregarSiHayDatos(rs4);
+			agregarSiHayDatos(rs5);
 
 			listaComics = Utilidades.listaArreglada(listaComics);
 			return listaComics;
 
 		} catch (SQLException ex) {
 			nav.alertaException(ex.toString());
-		} finally {
-			ps1.close();
-			ps2.close();
-			ps3.close();
-			ps4.close();
-			ps5.close();
-
-			rs1.close();
-			rs2.close();
-			rs3.close();
-			rs4.close();
-			rs5.close();
 		}
+
 		return null;
+	}
+
+	private void agregarSiHayDatos(ResultSet rs) throws SQLException {
+		if (rs.next()) {
+			devolverComic(rs);
+		}
 	}
 
 	/**
@@ -1185,33 +988,32 @@ public class DBLibreriaManager extends Comic {
 	 * @param rs el ResultSet con los datos de los cómics
 	 * @return una lista de objetos Comic
 	 */
-	private Comic listaDatos(ResultSet rs) {
+	private Comic devolverComic(ResultSet rs) {
 		Comic comic = new Comic();
 
 		try {
-			this.ID = rs.getString("ID");
-			this.nombre = rs.getString("nomComic");
-			this.numCaja = rs.getString("caja_deposito");
-			this.numero = rs.getString("numComic");
-			this.variante = rs.getString("nomVariante");
-			this.firma = rs.getString("firma");
-			this.editorial = rs.getString("nomEditorial");
-			this.formato = rs.getString("formato");
-			this.procedencia = rs.getString("procedencia");
-			this.fecha = rs.getString("fecha_publicacion");
-			this.guionista = rs.getString("nomGuionista");
-			this.dibujante = rs.getString("nomDibujante");
-			this.key_issue = rs.getString("key_issue");
-			this.estado = rs.getString("estado");
-			this.puntuacion = rs.getString("puntuacion");
-			this.imagen = rs.getString("portada");
-			this.url_referencia = rs.getString("url_referencia");
-			this.precio_comic = rs.getString("precio_comic");
-			this.codigo_comic = rs.getString("codigo_comic");
+			String ID = rs.getString("ID");
+			String nombre = rs.getString("nomComic");
+			String numCaja = rs.getString("caja_deposito");
+			String numero = rs.getString("numComic");
+			String variante = rs.getString("nomVariante");
+			String firma = rs.getString("firma");
+			String editorial = rs.getString("nomEditorial");
+			String formato = rs.getString("formato");
+			String procedencia = rs.getString("procedencia");
+			String fecha = rs.getString("fecha_publicacion");
+			String guionista = rs.getString("nomGuionista");
+			String dibujante = rs.getString("nomDibujante");
+			String key_issue = rs.getString("key_issue");
+			String estado = rs.getString("estado");
+			String puntuacion = rs.getString("puntuacion");
+			String imagen = rs.getString("portada");
+			String url_referencia = rs.getString("url_referencia");
+			String precio_comic = rs.getString("precio_comic");
+			String codigo_comic = rs.getString("codigo_comic");
 
-			comic = new Comic(this.ID, this.nombre, this.numCaja, this.numero, this.variante, this.firma,
-					this.editorial, this.formato, this.procedencia, this.fecha, this.guionista, this.dibujante,
-					this.estado, this.key_issue, this.puntuacion, this.imagen, this.url_referencia, this.precio_comic,
+			comic = new Comic(ID, nombre, numCaja, numero, variante, firma, editorial, formato, procedencia, fecha,
+					guionista, dibujante, estado, key_issue, puntuacion, imagen, url_referencia, precio_comic,
 					codigo_comic);
 		} catch (SQLException e) {
 			nav.alertaException("Datos introducidos incorrectos.");
@@ -1337,64 +1139,48 @@ public class DBLibreriaManager extends Comic {
 	 * 
 	 * @throws SQLException
 	 */
-	public void saveImageFromDataBase() throws SQLException {
-		String sentenciaSQL = "SELECT * FROM comicsbbdd";
-		new CargaComicsController();
+	public void saveImageFromDataBase(String direccionImagen, File directorio) {
 
 		conn = DBManager.conexion();
-		File directorio = carpeta.carpetaPortadas();
 		InputStream input = null;
-		PreparedStatement preparedStatement = null;
-		ResultSet rs = null;
 
 		try {
-			preparedStatement = conn.prepareStatement(sentenciaSQL);
-			rs = preparedStatement.executeQuery();
-
 			if (directorio != null) {
-				while (rs.next()) {
-					String direccionImagen = rs.getString(16);
 
-					String nombreImagen = utilidad.obtenerNombreArchivo(direccionImagen);
+				String nombreImagen = utilidad.obtenerNombreArchivo(direccionImagen);
 
-					File imagenArchivo = new File(direccionImagen);
+				File imagenArchivo = new File(direccionImagen);
 
-					if (!imagenArchivo.exists()) {
-						input = getClass().getResourceAsStream("sinPortada.jpg");
-						if (input == null) {
-							throw new FileNotFoundException("La imagen predeterminada no se encontró en el paquete");
+				if (!imagenArchivo.exists()) {
+					input = getClass().getResourceAsStream("sinPortada.jpg");
+					if (input == null) {
+						throw new FileNotFoundException("La imagen predeterminada no se encontró en el paquete");
+					}
+					imagenArchivo = File.createTempFile("tmp", ".jpg");
+					imagenArchivo.deleteOnExit();
+					try (OutputStream output = new FileOutputStream(imagenArchivo)) {
+						byte[] buffer = new byte[4096];
+						int bytesRead;
+						while ((bytesRead = input.read(buffer)) != -1) {
+							output.write(buffer, 0, bytesRead);
 						}
-						imagenArchivo = File.createTempFile("tmp", ".jpg");
-						imagenArchivo.deleteOnExit();
-						try (OutputStream output = new FileOutputStream(imagenArchivo)) {
-							byte[] buffer = new byte[4096];
-							int bytesRead;
-							while ((bytesRead = input.read(buffer)) != -1) {
-								output.write(buffer, 0, bytesRead);
-							}
-						}
-					} else {
-						FileInputStream fileInputStream = new FileInputStream(imagenArchivo);
-						FileOutputStream fileOutputStream = new FileOutputStream(
-								directorio.getAbsolutePath() + "/" + nombreImagen);
+					}
+				} else {
+					try (FileInputStream fileInputStream = new FileInputStream(imagenArchivo);
+							FileOutputStream fileOutputStream = new FileOutputStream(
+									directorio.getAbsolutePath() + "/" + nombreImagen)) {
 
 						byte[] buffer = new byte[4096];
 						int bytesRead;
 						while ((bytesRead = fileInputStream.read(buffer)) != -1) {
 							fileOutputStream.write(buffer, 0, bytesRead);
 						}
-						fileInputStream.close();
-						fileOutputStream.close();
-
 					}
-
 				}
+
 			}
-		} catch (SQLException | IOException e) {
+		} catch (IOException e) {
 			nav.alertaException(e.toString());
-		} finally {
-			preparedStatement.close();
-			rs.close();
 		}
 	}
 
@@ -1508,16 +1294,14 @@ public class DBLibreriaManager extends Comic {
 //	}
 
 	public boolean hayDatosEnLibreria(String sentenciaSQL) {
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
+		try (Connection conn = DBManager.conexion();
+				PreparedStatement stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE,
+						ResultSet.CONCUR_UPDATABLE);
+				ResultSet rs = stmt.executeQuery()) {
 
-		try {
-			conn = DBManager.conexion();
-			stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-			rs = stmt.executeQuery();
-
-			// Si no hay resultados, devolver false
+			// Si hay resultados, devolver true
 			return rs.first();
+
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 			nav.alertaException("Error al tomar datos de la biblioteca: " + ex.toString());
@@ -1870,13 +1654,13 @@ public class DBLibreriaManager extends Comic {
 		boolean existeBase = hayDatosEnLibreria(sentenciaSQL);
 
 		List<Comic> listComic = new ArrayList<Comic>();
-
+		System.out.println(existeBase);
 		if (existeBase) {
 			if (busquedaGeneral.length() != 0) {
-				return listComic = FXCollections.observableArrayList(verBusquedaGeneral(busquedaGeneral));
+				return listComic = verBusquedaGeneral(busquedaGeneral);
 			} else {
 				try {
-					return listComic = FXCollections.observableArrayList(filtadroBBDD(comic));
+					return listComic = filtroBBDD(comic);
 				} catch (NullPointerException ex) {
 					ex.getStackTrace();
 				}

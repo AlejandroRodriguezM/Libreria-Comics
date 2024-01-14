@@ -331,6 +331,15 @@ public class FuncionesExcel {
 		return directorio;
 	}
 
+	public File carpetaExcelExportado() {
+		String frase = "Fichero Excel xlsx";
+
+		String formato = "*.xlsx";
+
+		File fichero = Utilidades.tratarFichero(frase, formato).showSaveDialog(null); // Llamada a funcion
+		return fichero;
+	}
+
 	/**
 	 * Abre un cuadro de diálogo para seleccionar una carpeta de portadas en un hilo
 	 * de tarea (Task).
@@ -367,33 +376,15 @@ public class FuncionesExcel {
 	public Task<Boolean> crearExcelTask(List<Comic> listaComics, String tipoBusqueda) {
 
 		libreria = new DBLibreriaManager();
-		new CargaComicsController();
-		conn = DBManager.conexion();
 
-		String frase = "Fichero Excel xlsx";
-
-		String formato = "*.xlsx";
-
-		File fichero = Utilidades.tratarFichero(frase, formato).showSaveDialog(null); // Llamada a funcion
-
-//		Platform.runLater(() -> {
-		try {
-			if (tipoBusqueda.equalsIgnoreCase("Completa")) {
-				libreria.saveImageFromDataBase();
-
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-//		});
+		File directorioImagenes = carpetaPortadas();
+		File directorioFichero = carpetaExcelExportado();
 
 		Task<Boolean> task = new Task<Boolean>() {
 			@Override
 			protected Boolean call() throws Exception {
-				try {
-					libreria = new DBLibreriaManager();
-					FileOutputStream outputStream;
+	            try (FileOutputStream outputStream = new FileOutputStream(directorioFichero)) {
+					
 					Cell celda;
 					Row fila;
 					Sheet hoja;
@@ -406,7 +397,7 @@ public class FuncionesExcel {
 					int indiceFila = 0;
 					long processedItems = 0; // Processed items count
 
-					fichero.createNewFile();
+					directorioFichero.createNewFile();
 
 					libro = new XSSFWorkbook();
 
@@ -420,9 +411,10 @@ public class FuncionesExcel {
 					}
 
 					verCargaComics();
-					indiceFila++;
+//					indiceFila++;
 
 					for (Comic comic : listaComics) {
+
 						fila = hoja.createRow(indiceFila);
 						fila.createCell(0).setCellValue("");
 						fila.createCell(1).setCellValue(comic.getNombre());
@@ -443,11 +435,10 @@ public class FuncionesExcel {
 						fila.createCell(16).setCellValue(comic.getKey_issue());
 						fila.createCell(17).setCellValue(comic.getUrl_referencia());
 						fila.createCell(18).setCellValue(comic.getEstado());
-						indiceFila++;
+//						indiceFila++;
 
 						final long finalProcessedItems = processedItems;
 
-						// Update UI elements using Platform.runLater
 						Platform.runLater(() -> {
 							String texto = "Comic: " + comic.getNombre() + " - " + comic.getNumero() + " - "
 									+ comic.getVariante() + "\n";
@@ -464,13 +455,15 @@ public class FuncionesExcel {
 
 						processedItems++;
 						indiceFila++;
-					}
 
-					outputStream = new FileOutputStream(fichero);
+						if (tipoBusqueda.equalsIgnoreCase("Completa") && directorioFichero != null) {
+							libreria.saveImageFromDataBase(comic.getImagen(), directorioImagenes);
+
+						}
+					}
 					libro.write(outputStream);
 					libro.close();
-					outputStream.close();
-					createCSV(fichero);
+					createCSV(directorioFichero);
 
 					return true;
 				} catch (FileNotFoundException ex) {
@@ -533,10 +526,6 @@ public class FuncionesExcel {
 
 					String logFileName = "log_"
 							+ LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")) + ".txt";
-
-					if (conn == null) {
-						System.out.println("Error");
-					}
 
 					PreparedStatement statement = conn.prepareStatement(sql);
 					int count = 0;

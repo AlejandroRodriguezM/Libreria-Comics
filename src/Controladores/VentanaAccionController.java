@@ -627,7 +627,7 @@ public class VentanaAccionController implements Initializable {
 
 	public static List<Comic> comicsImportados = new ArrayList<Comic>();
 
-	private static String id_comic_selecionado = "";
+	public static String id_comic_selecionado = "";
 
 	/**
 	 * Inicializa la interfaz de usuario y configura el comportamiento de los
@@ -656,7 +656,7 @@ public class VentanaAccionController implements Initializable {
 
 		establecerDinamismoAnchor();
 	}
-	
+
 	/**
 	 * Establece una lista de ComboBoxes para su uso en la clase
 	 * VentanaAccionController.
@@ -769,8 +769,6 @@ public class VentanaAccionController implements Initializable {
 		dibujante.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
 
 	}
-
-
 
 	/**
 	 * Metodo que mostrara los comics o comic buscados por parametro
@@ -954,19 +952,19 @@ public class VentanaAccionController implements Initializable {
 	 */
 	private void seleccionarComics() {
 		try {
-			comprobacionListaComics();
+			Utilidades.comprobacionListaComics();
 
-			String id_comic = obtenerIdComicSeleccionado();
+			String id_comic = Utilidades.obtenerIdComicSeleccionado(tablaBBDD);
 			System.out.println(id_comic);
 			prontInfo.setStyle("");
 			idComicTratar.setStyle("");
 			idComicTratar.setText(id_comic);
 
-			Comic comic_temp = obtenerComicSeleccionado(id_comic);
+			Comic comic_temp = Utilidades.obtenerComicSeleccionado(id_comic);
 
 			if (!comicsImportados.isEmpty()) {
 				id_comic_selecionado = id_comic;
-				comic_temp = devolverComic(id_comic);
+				comic_temp = Utilidades.devolverComic(id_comic);
 			} else {
 				comic_temp = libreria.comicDatos(id_comic);
 			}
@@ -1034,7 +1032,7 @@ public class VentanaAccionController implements Initializable {
 		codigoComicTratar.setText(comic_temp.getCodigo_comic());
 
 		if (!comicsImportados.isEmpty()) {
-			String direccionImagenURL = convertirRutaAURL(comic_temp.getImagen().replace("\\\\", "/"));
+			String direccionImagenURL = Utilidades.convertirRutaAURL(comic_temp.getImagen().replace("\\\\", "/"));
 
 			if (direccionImagenURL == null || direccionImagenURL.isEmpty()) {
 				String rutaImagen = "/Funcionamiento/sinPortada.jpg";
@@ -1046,49 +1044,6 @@ public class VentanaAccionController implements Initializable {
 		} else {
 			imagencomic.setImage(libreria.selectorImage(comic_temp.getID()));
 		}
-	}
-
-	/**
-	 * Realiza la comprobación previa para determinar si la lista de cómics está
-	 * vacía. En caso afirmativo, se inicializa la librería.
-	 */
-	private void comprobacionListaComics() {
-		if (DBLibreriaManager.listaComics.isEmpty()) {
-			return;
-		}
-
-		libreria = new DBLibreriaManager();
-		libreria.libreriaCompleta();
-	}
-
-	/**
-	 * Obtiene el ID del cómic seleccionado desde la tabla.
-	 * 
-	 * @return El ID del cómic seleccionado o null si no hay selección.
-	 */
-	private String obtenerIdComicSeleccionado() {
-		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
-		return (idRow != null) ? idRow.getID() : null;
-	}
-
-	/**
-	 * Obtiene el objeto Comic seleccionado según el ID proporcionado.
-	 * 
-	 * @param id_comic El ID del cómic a obtener.
-	 * @return El objeto Comic correspondiente al ID proporcionado.
-	 * @throws SQLException Si hay un error al acceder a la base de datos.
-	 */
-	private Comic obtenerComicSeleccionado(String id_comic) throws SQLException {
-		Comic comic_temp;
-
-		if (!comicsImportados.isEmpty()) {
-			id_comic_selecionado = id_comic;
-			comic_temp = devolverComic(id_comic);
-		} else {
-			comic_temp = libreria.comicDatos(id_comic);
-		}
-
-		return comic_temp;
 	}
 
 	/**
@@ -1121,40 +1076,6 @@ public class VentanaAccionController implements Initializable {
 
 			seleccionarComics();
 		}
-	}
-
-	/**
-	 * Convierte una ruta de archivo a una URL válida.
-	 * 
-	 * @param rutaArchivo La ruta del archivo a convertir.
-	 * @return La URL generada a partir de la ruta del archivo.
-	 */
-	private static String convertirRutaAURL(String rutaArchivo) {
-		String rutaConBarrasInclinadas = "";
-
-		if (rutaArchivo == null || rutaArchivo.isEmpty()) {
-			return null;
-		} else {
-			rutaConBarrasInclinadas = "file:///" + rutaArchivo.replace("\\", "/");
-		}
-		return rutaConBarrasInclinadas;
-	}
-
-	/**
-	 * Devuelve un objeto Comic correspondiente al ID proporcionado.
-	 * 
-	 * @param id_comic El ID del cómic a buscar.
-	 * @return El objeto Comic correspondiente al ID proporcionado. Si no se
-	 *         encuentra, devuelve null.
-	 */
-	private Comic devolverComic(String id_comic) {
-		for (Comic comic : comicsImportados) {
-			if (comic.getID().equals(id_comic)) {
-				return comic;
-			}
-		}
-		// Si no se encuentra el cómic con el ID proporcionado, devolver null
-		return null;
 	}
 
 	/**
@@ -1328,7 +1249,7 @@ public class VentanaAccionController implements Initializable {
 		if (comprobarID(id_comic)) {
 
 			if (esAgregar) {
-				libreria.actualizarPuntuacion(id_comic, comicPuntuacion()); // Llamada a funcion
+				libreria.actualizarPuntuacion(id_comic, FuncionesComboBox.puntuacionCombobox(puntuacionMenu));
 			} else {
 				libreria.borrarPuntuacion(id_comic);
 			}
@@ -1696,8 +1617,10 @@ public class VentanaAccionController implements Initializable {
 			Utilidades.descargarYConvertirImagenAsync(uri, SOURCE_PATH, codigo_imagen);
 
 			// Creación del objeto Comic importado y actualización de la tabla
-			Comic comicImport = new Comic(id, titulo, "0", numero, variante, "", editorial, formato(), procedencia(),
-					fecha.toString(), escritores, dibujantes, estado(), issueKey, "Sin puntuar", urlFinal, referencia,
+			Comic comicImport = new Comic(id, titulo, "0", numero, variante, "", editorial,
+					FuncionesComboBox.formatoCombobox(formatoComic),
+					FuncionesComboBox.procedenciaCombobox(procedenciaComic), fecha.toString(), escritores, dibujantes,
+					FuncionesComboBox.estadoCombobox(estadoComic), issueKey, "Sin puntuar", urlFinal, referencia,
 					precio, codigo_comic);
 
 			comicsImportados.add(comicImport);
@@ -2208,101 +2131,6 @@ public class VentanaAccionController implements Initializable {
 	}
 
 	/**
-	 * Funcion que permite modificar la puntuacion de un comic, siempre y cuando el
-	 * ID exista en la base de datos
-	 *
-	 * @param ps
-	 * @return
-	 */
-	public String comicPuntuacion() {
-
-		String puntuacion = puntuacionMenu.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
-																								// "puntuacion"
-		return puntuacion;
-	}
-
-	/**
-	 * Funcion que permite seleccionar en el comboBox "numeroComic" y lo devuelve,
-	 * para la busqueda de comic
-	 * 
-	 * @return
-	 */
-	public String numero() {
-		String numComic = "0";
-
-		if (numeroComic.getSelectionModel().getSelectedItem() != null) {
-			numComic = numeroComic.getSelectionModel().getSelectedItem().toString();
-		}
-
-		return numComic;
-	}
-
-	/**
-	 * Funcion que permite seleccionar en el comboBox "caja_actual" y lo devuelve,
-	 * para la busqueda de comic
-	 * 
-	 * @return
-	 */
-	public String caja() {
-
-		String cajaComics = "0";
-
-		if (numeroCajaComic.getSelectionModel().getSelectedItem() != null) {
-			cajaComics = numeroCajaComic.getSelectionModel().getSelectedItem().toString();
-		}
-
-		return cajaComics;
-	}
-
-	/**
-	 * Funcion que permite seleccionar en el comboBox "caja_actual" y lo devuelve,
-	 * para la busqueda de comic
-	 * 
-	 * @return
-	 */
-	public String estado() {
-
-		String estadoNuevo = "En posesion";
-
-		if (estadoComic.getSelectionModel().getSelectedItem() != null) {
-			estadoNuevo = estadoComic.getSelectionModel().getSelectedItem().toString();
-		}
-
-		return estadoNuevo;
-	}
-
-	/**
-	 * Funcion que permite seleccionar en el comboBox "nombreFormato" y lo devuelve,
-	 * para la busqueda de comic
-	 * 
-	 * @return
-	 */
-	public String formato() {
-
-		String formatoEstado = "Grapa (Issue individual)";
-		if (formatoComic.getSelectionModel().getSelectedItem() != null) {
-			formatoEstado = formatoComic.getSelectionModel().getSelectedItem().toString();
-		}
-		return formatoEstado;
-	}
-
-	/**
-	 * Funcion que permite modificar el estado de un comic.
-	 *
-	 * @param ps
-	 * @return
-	 */
-	public String procedencia() {
-
-		String procedenciaEstadoNuevo = "Estados Unidos (United States)";
-		if (procedenciaComic.getSelectionModel().getSelectedItem() != null) {
-			procedenciaEstadoNuevo = procedenciaComic.getSelectionModel().getSelectedItem().toString();
-		}
-
-		return procedenciaEstadoNuevo;
-	}
-
-	/**
 	 * Método que maneja el evento de guardar los datos de un cómic.
 	 * 
 	 * @param event El evento de acción que desencadena la llamada al método.
@@ -2310,9 +2138,11 @@ public class VentanaAccionController implements Initializable {
 	@FXML
 	void guardarDatos(ActionEvent event) {
 
-		LocalDate fecha_comic;
 		utilidad = new Utilidades();
-		if (id_comic_selecionado != null) {
+
+		System.out.println("id: " + id_comic_selecionado);
+
+		if (id_comic_selecionado != null && !id_comic_selecionado.isEmpty()) {
 			String id_comic = id_comic_selecionado;
 
 			Comic datos = camposComic();
@@ -2327,7 +2157,7 @@ public class VentanaAccionController implements Initializable {
 			String formato = Utilidades.defaultIfNullOrEmpty(datos.getFormato(), "Grapa (Issue individual)");
 			String procedencia = Utilidades.defaultIfNullOrEmpty(datos.getProcedencia(),
 					"Estados Unidos (United States)");
-			fecha_comic = Utilidades.parseFecha(datos.getFecha());
+			String fecha_comic = datos.getFecha();
 			String guionista = Utilidades.defaultIfNullOrEmpty(datos.getGuionista(), "Vacio");
 			String dibujante = Utilidades.defaultIfNullOrEmpty(datos.getDibujante(), "Vacio");
 			String estado = Utilidades.defaultIfNullOrEmpty(datos.getEstado(), "Comprado");
@@ -2431,21 +2261,25 @@ public class VentanaAccionController implements Initializable {
 		Utilidades utilidad = new Utilidades();
 		Comic comic = new Comic();
 
-		LocalDate fecha = Utilidades.parseFecha(fechaComic.getValue().toString());
+		LocalDate fecha = fechaComic.getValue();
+		String fechaComic = (fecha != null) ? fecha.toString() : "";
 
 		comic.setNombre(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(nombreComic.getText()), ""));
-		comic.setNumero(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(numero()), ""));
+		comic.setNumero(Utilidades
+				.defaultIfNullOrEmpty(utilidad.comaPorGuion(FuncionesComboBox.numeroCombobox(numeroComic)), ""));
 		comic.setVariante(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(varianteComic.getText()), ""));
 		comic.setFirma(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(firmaComic.getText()), ""));
 		comic.setEditorial(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(editorialComic.getText()), ""));
-		comic.setFormato(Utilidades.defaultIfNullOrEmpty(formato(), ""));
-		comic.setProcedencia(Utilidades.defaultIfNullOrEmpty(procedencia(), ""));
-		comic.setFecha(fecha.toString());
+		comic.setFormato(Utilidades.defaultIfNullOrEmpty(FuncionesComboBox.formatoCombobox(formatoComic), ""));
+		comic.setProcedencia(
+				Utilidades.defaultIfNullOrEmpty(FuncionesComboBox.procedenciaCombobox(procedenciaComic), ""));
+		comic.setFecha(fechaComic);
 		comic.setGuionista(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(guionistaComic.getText()), ""));
 		comic.setDibujante(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(dibujanteComic.getText()), ""));
 		comic.setImagen(Utilidades.defaultIfNullOrEmpty(direccionImagen.getText(), ""));
-		comic.setEstado(Utilidades.defaultIfNullOrEmpty(estado(), ""));
-		comic.setNumCaja(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(caja().equals("0") ? "" : caja()), ""));
+		comic.setEstado(Utilidades.defaultIfNullOrEmpty(FuncionesComboBox.estadoCombobox(estadoComic), ""));
+		comic.setNumCaja(Utilidades.defaultIfNullOrEmpty(FuncionesComboBox.cajaCombobox(numeroCajaComic), ""));
+//		comic.setNumCaja(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(caja().equals("0") ? "" : caja()), ""));
 		comic.setKey_issue(Utilidades.defaultIfNullOrEmpty(nombreKeyIssue.getText().trim(), ""));
 		comic.setUrl_referencia((Utilidades.defaultIfNullOrEmpty(urlReferencia.getText().trim(), "")));
 		comic.setPrecio_comic((Utilidades.defaultIfNullOrEmpty(precioComic.getText().trim(), "")));

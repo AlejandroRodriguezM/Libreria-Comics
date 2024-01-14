@@ -3,6 +3,7 @@
  *  
 */
 package JDBC;
+
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  * Las ventanas graficas se realizan con JavaFX.
@@ -80,8 +81,6 @@ public class DBManager {
 	 */
 	public static String DB_URL;
 
-
-
 	/**
 	 * Carga el controlador JDBC para el proyecto.
 	 * 
@@ -106,7 +105,6 @@ public class DBManager {
 	 */
 	public static boolean isConnected() {
 		try {
-			
 			if (conn != null && !conn.isClosed()) {
 				return true;
 			}
@@ -126,23 +124,23 @@ public class DBManager {
 	 * @param contraBBDD
 	 */
 	public static void datosBBDD(String[] datos) {
-	        DB_PORT = datos[0];
-	        DB_NAME = datos[1];
-	        DB_USER = datos[2];
-	        DB_PASS = datos[3];
-	        DB_HOST = datos[4];
+		DB_PORT = datos[0];
+		DB_NAME = datos[1];
+		DB_USER = datos[2];
+		DB_PASS = datos[3];
+		DB_HOST = datos[4];
 	}
-	
+
 	/**
 	 * Comprueba si los datos de conexión a la base de datos son correctos.
 	 *
-	 * @return true si todos los datos de conexión son válidos y no están vacíos, de lo contrario, false.
+	 * @return true si todos los datos de conexión son válidos y no están vacíos, de
+	 *         lo contrario, false.
 	 */
 	public static boolean datosConexionCorrectos() {
-		
-	    return !(DB_HOST == null || DB_HOST.isEmpty() || DB_PORT == null || DB_PORT.isEmpty() ||
-	             DB_NAME == null || DB_NAME.isEmpty() || DB_USER == null || DB_USER.isEmpty() ||
-	             DB_PASS == null || DB_PASS.isEmpty());
+
+		return !(DB_HOST == null || DB_HOST.isEmpty() || DB_PORT == null || DB_PORT.isEmpty() || DB_NAME == null
+				|| DB_NAME.isEmpty() || DB_USER == null || DB_USER.isEmpty() || DB_PASS == null || DB_PASS.isEmpty());
 	}
 
 	/**
@@ -155,34 +153,33 @@ public class DBManager {
 	 * @return objeto Connection
 	 */
 	public static Connection conexion() {
-	    if (!datosConexionCorrectos()) {
+		if (!datosConexionCorrectos()) {
 //	        nav.alertaException("Los datos de conexión son incorrectos");
-	        return null;
-	    }
+			return null;
+		}
 
-	    DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
+		DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
 
-	    // Validar la URL de conexión
-	    if (!DB_URL.startsWith("jdbc:mysql://") || DB_URL.indexOf(':', 12) == -1 || DB_URL.indexOf('/', 12) == -1) {
-	        nav.alertaException("La URL de conexión no es válida");
-	        return null;
-	    }
+		// Validar la URL de conexión
+		if (!DB_URL.startsWith("jdbc:mysql://") || DB_URL.indexOf(':', 12) == -1 || DB_URL.indexOf('/', 12) == -1) {
+			nav.alertaException("La URL de conexión no es válida");
+			return null;
+		}
 
-	    try {
-	        conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
-	        
-	        if (conn == null) {
-	            nav.alertaException("No se pudo establecer la conexión a la base de datos");
-	        }
-	        return conn;
-	    } catch (SQLException ex) {
-	        nav.alertaException("ERROR. Revisa los datos del fichero de conexion.");
-	    }
-	    catch(NullPointerException ex) {
-	        nav.alertaException("ERROR. Revisa los datos del fichero de conexion.");
-	    }
+		try {
+			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
 
-	    return null;
+			if (conn == null) {
+				nav.alertaException("No se pudo establecer la conexión a la base de datos");
+			}
+			return conn;
+		} catch (SQLException ex) {
+			nav.alertaException("ERROR. Revisa los datos del fichero de conexion.");
+		} catch (NullPointerException ex) {
+			nav.alertaException("ERROR. Revisa los datos del fichero de conexion.");
+		}
+
+		return null;
 	}
 
 	/**
@@ -195,7 +192,8 @@ public class DBManager {
 			}
 			conn = conexion();
 		} catch (SQLException ex) {
-			nav.alertaException("No ha sido posible restablecer la conexion a la base de datos. Parece que esta desconectada");
+			nav.alertaException(
+					"No ha sido posible restablecer la conexion a la base de datos. Parece que esta desconectada");
 		}
 	}
 

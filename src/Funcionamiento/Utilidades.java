@@ -21,6 +21,7 @@ import java.io.PrintWriter;
 import java.lang.ProcessBuilder.Redirect;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -33,11 +34,16 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -54,9 +60,14 @@ import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
 
+import Controladores.VentanaAccionController;
+import JDBC.DBLibreriaManager;
 import JDBC.DBManager;
+import alarmas.AlarmaList;
 import comicManagement.Comic;
 import javafx.application.Platform;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -1544,10 +1555,6 @@ public class Utilidades {
 		String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
 				+ DBManager.DB_NAME + File.separator + "portadas" + File.separator;
 
-		for (String string : listaUrls) {
-			System.out.println(string);
-		}
-
 		List<String> nombresArchivosEnDirectorio = obtenerNombresArchivosEnDirectorio(directorioComun);
 
 		for (String nombreArchivo : nombresArchivosEnDirectorio) {
@@ -1619,30 +1626,17 @@ public class Utilidades {
 		if (fechaVenta == null || fechaVenta.isEmpty()) {
 			return LocalDate.of(2000, 1, 1); // Obtener la fecha actual si la cadena de fecha no está presente
 		} else {
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-			return LocalDate.parse(fechaVenta, formatter);
+			try {
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+				return LocalDate.parse(fechaVenta, formatter);
+			} catch (DateTimeParseException e) {
+				// Manejar la excepción de formato de fecha, imprimir o registrar según sea
+				// necesario
+				e.printStackTrace();
+				return LocalDate.of(2000, 1, 1); // Valor predeterminado en caso de error de formato
+			}
 		}
 	}
-
-//	public static void copiarYRenombrarArchivo(String rutaOrigen, String nombreOrigen, String carpetaDestino,
-//			String nuevoNombre) {
-//		// Construir las rutas de origen y destino
-//		Path origenPath = Paths.get(rutaOrigen, nombreOrigen);
-//		Path destinoPath = Paths.get(carpetaDestino, nuevoNombre);
-//
-//		// Verificar si el archivo de origen existe
-//		if (Files.exists(origenPath)) {
-//			try {
-//				// Copiar el archivo al destino y renombrarlo
-//				Files.copy(origenPath, destinoPath);
-//				System.out.println("Archivo copiado y renombrado con éxito.");
-//			} catch (IOException e) {
-//				System.err.println("Error al copiar o renombrar el archivo: " + e.getMessage());
-//			}
-//		} else {
-//			System.err.println("El archivo de origen no existe.");
-//		}
-//	}
 
 	/**
 	 * Obtiene la dirección de la portada de un cómic.
@@ -1651,60 +1645,62 @@ public class Utilidades {
 	 * @return La dirección de la portada actualizada después de procesar la lógica.
 	 */
 	public static String obtenerPortada(String direccionPortada) {
-	    String portada = "";
-	    File file;
+		String portada = "";
+		File file;
 
-	    if (!direccionPortada.isEmpty() || direccionPortada == null) {
-	        file = new File(direccionPortada);
-	        if (Utilidades.isImageURL(direccionPortada)) {
-	            // Es una URL en internet
-	            CompletableFuture<String> futurePortada = descargarImagenAsync(direccionPortada, DOCUMENTS_PATH);
-	            // Esperar a que el CompletableFuture se complete y obtener el resultado
-	            portada = futurePortada.join();
-	            file = new File(portada);
-	        } else if (!file.exists()) {
-	            portada = new File("Funcionamiento/sinPortada.jpg").toURI().toString();
-	        } else {
-	            portada = file.toURI().toString();
-	        }
-	    } else {
-	        portada = new File("Funcionamiento/sinPortada.jpg").toURI().toString();
-	    }
+		if (!direccionPortada.isEmpty() || direccionPortada == null) {
+			file = new File(direccionPortada);
+			if (Utilidades.isImageURL(direccionPortada)) {
+				// Es una URL en internet
+				CompletableFuture<String> futurePortada = descargarImagenAsync(direccionPortada, DOCUMENTS_PATH);
+				// Esperar a que el CompletableFuture se complete y obtener el resultado
+				portada = futurePortada.join();
+				file = new File(portada);
+			} else if (!file.exists()) {
+				portada = new File("Funcionamiento/sinPortada.jpg").toURI().toString();
+			} else {
+				portada = file.toURI().toString();
+			}
+		} else {
+			portada = new File("Funcionamiento/sinPortada.jpg").toURI().toString();
+		}
 
-	    // Realizar cualquier operación adicional si es necesario
+		// Realizar cualquier operación adicional si es necesario
 
-	    return portada;
+		return portada;
 	}
 
 	/**
 	 * Busca un cómic por su ID en una lista de cómics.
 	 *
-	 * @param comics    La lista de cómics en la que se realizará la búsqueda.
-	 * @param idComic   La ID del cómic que se está buscando.
-	 * @return          El cómic encontrado por la ID, o null si no se encuentra ninguno.
+	 * @param comics  La lista de cómics en la que se realizará la búsqueda.
+	 * @param idComic La ID del cómic que se está buscando.
+	 * @return El cómic encontrado por la ID, o null si no se encuentra ninguno.
 	 */
 	public static Comic buscarComicPorID(List<Comic> comics, String idComic) {
-	    for (Comic c : comics) {
-	        if (c.getID().equals(idComic)) {
-	            return c;  // Devuelve el cómic si encuentra la coincidencia por ID
-	        }
-	    }
-	    return null;  // Retorna null si no se encuentra ningún cómic con la ID especificada
+		for (Comic c : comics) {
+			if (c.getID().equals(idComic)) {
+				return c; // Devuelve el cómic si encuentra la coincidencia por ID
+			}
+		}
+		return null; // Retorna null si no se encuentra ningún cómic con la ID especificada
 	}
-	
+
 	/**
-	 * Agrega una etiqueta y un valor al constructor StringBuilder si el valor no está vacío o nulo.
+	 * Agrega una etiqueta y un valor al constructor StringBuilder si el valor no
+	 * está vacío o nulo.
 	 *
-	 * @param builder El constructor StringBuilder al que se va a agregar la etiqueta y el valor.
-	 * @param label La etiqueta que se va a agregar.
-	 * @param value El valor que se va a agregar.
+	 * @param builder El constructor StringBuilder al que se va a agregar la
+	 *                etiqueta y el valor.
+	 * @param label   La etiqueta que se va a agregar.
+	 * @param value   El valor que se va a agregar.
 	 */
 	public static void appendIfNotEmpty(StringBuilder builder, String label, String value) {
 		if (value != null && !value.isEmpty()) {
 			builder.append(label).append(": ").append(value).append("\n");
 		}
 	}
-	
+
 	/**
 	 * Devuelve el valor predeterminado si la cadena dada es nula o vacía, de lo
 	 * contrario, devuelve la cadena original.
@@ -1716,6 +1712,396 @@ public class Utilidades {
 	 */
 	public static String defaultIfNullOrEmpty(String value, String defaultValue) {
 		return (value == null || value.isEmpty()) ? defaultValue : value;
+	}
+
+	/**
+	 * Convierte una ruta de archivo a una URL válida.
+	 * 
+	 * @param rutaArchivo La ruta del archivo a convertir.
+	 * @return La URL generada a partir de la ruta del archivo.
+	 */
+	public static String convertirRutaAURL(String rutaArchivo) {
+		String rutaConBarrasInclinadas = "";
+
+		if (rutaArchivo == null || rutaArchivo.isEmpty()) {
+			return null;
+		} else {
+			rutaConBarrasInclinadas = "file:///" + rutaArchivo.replace("\\", "/");
+		}
+		return rutaConBarrasInclinadas;
+	}
+
+	/**
+	 * Devuelve un objeto Comic correspondiente al ID proporcionado.
+	 * 
+	 * @param id_comic El ID del cómic a buscar.
+	 * @return El objeto Comic correspondiente al ID proporcionado. Si no se
+	 *         encuentra, devuelve null.
+	 */
+	public static Comic devolverComic(String id_comic) {
+		for (Comic comic : VentanaAccionController.comicsImportados) {
+			if (comic.getID().equals(id_comic)) {
+				return comic;
+			}
+		}
+		// Si no se encuentra el cómic con el ID proporcionado, devolver null
+		return null;
+	}
+
+	/**
+	 * Realiza la comprobación previa para determinar si la lista de cómics está
+	 * vacía. En caso afirmativo, se inicializa la librería.
+	 */
+	public static void comprobacionListaComics() {
+
+		DBLibreriaManager libreria = new DBLibreriaManager();
+
+		if (DBLibreriaManager.listaComics.isEmpty()) {
+			return;
+		}
+
+		libreria = new DBLibreriaManager();
+		libreria.libreriaCompleta();
+	}
+
+	/**
+	 * Obtiene el ID del cómic seleccionado desde la tabla.
+	 * 
+	 * @return El ID del cómic seleccionado o null si no hay selección.
+	 */
+	public static String obtenerIdComicSeleccionado(TableView<Comic> tablaBBDD) {
+		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
+		return (idRow != null) ? idRow.getID() : null;
+	}
+
+	/**
+	 * Obtiene el objeto Comic seleccionado según el ID proporcionado.
+	 * 
+	 * @param id_comic El ID del cómic a obtener.
+	 * @return El objeto Comic correspondiente al ID proporcionado.
+	 * @throws SQLException Si hay un error al acceder a la base de datos.
+	 */
+	public static Comic obtenerComicSeleccionado(String id_comic) throws SQLException {
+		Comic comic_temp;
+		DBLibreriaManager libreria = new DBLibreriaManager();
+		if (!VentanaAccionController.comicsImportados.isEmpty()) {
+			VentanaAccionController.id_comic_selecionado = id_comic;
+			comic_temp = Utilidades.devolverComic(id_comic);
+		} else {
+			comic_temp = libreria.comicDatos(id_comic);
+		}
+
+		return comic_temp;
+	}
+
+	public static Map<String, String> devolverDatosConfig() {
+		Map<String, String> datosConfiguracion = new HashMap<>();
+
+		String userHome = System.getProperty("user.home");
+		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
+		String carpetaLibreria = ubicacion + File.separator + "libreria";
+		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion_local.conf";
+
+		try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				if (line.startsWith("Usuario: ")) {
+					datosConfiguracion.put("Usuario", defaultIfNullOrEmpty(line.substring("Usuario: ".length()), ""));
+				} else if (line.startsWith("Password: ")) {
+					datosConfiguracion.put("Password", defaultIfNullOrEmpty(line.substring("Password: ".length()), ""));
+				} else if (line.startsWith("Puerto: ")) {
+					datosConfiguracion.put("Puerto", defaultIfNullOrEmpty(line.substring("Puerto: ".length()), ""));
+				} else if (line.startsWith("Database: ")) {
+					datosConfiguracion.put("Database", defaultIfNullOrEmpty(line.substring("Database: ".length()), ""));
+				} else if (line.startsWith("Hosting: ")) {
+					datosConfiguracion.put("Hosting", defaultIfNullOrEmpty(line.substring("Hosting: ".length()), ""));
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return datosConfiguracion;
+	}
+
+	/**
+	 * Guarda los datos de configuración de la base de datos local en un archivo de
+	 * configuración.
+	 *
+	 * @throws SQLException Si ocurre un error de SQL.
+	 */
+	public static void guardarDatosBaseLocal(String[] datos, Label prontEstadoFichero, Label alarmaConexion)
+			throws SQLException {
+
+		String puertobbdd = datos[0];
+		String nombreBBDD = datos[1];
+		String usuario = datos[2];
+		String pass = datos[3];
+		String nombreHost = datos[4];
+
+		String userHome = System.getProperty("user.home");
+		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
+		String carpetaLibreria = ubicacion + File.separator + "libreria";
+		String carpetaBackup = carpetaLibreria + File.separator + nombreBBDD + File.separator + "backups";
+		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion_local.conf";
+		AlarmaList alarmaList = new AlarmaList();
+
+		try {
+			if (verificarDatos(datos, prontEstadoFichero)) {
+				Utilidades.crearEstructura();
+
+				// Utilizamos try-with-resources para asegurar el cierre de recursos
+				try (FileWriter fileWriter = new FileWriter(archivoConfiguracion);
+						BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+
+					bufferedWriter.write("###############################");
+					bufferedWriter.newLine();
+					bufferedWriter.write("Fichero de configuracion de la libreria");
+					bufferedWriter.newLine();
+					bufferedWriter.write("###############################");
+					bufferedWriter.newLine();
+					bufferedWriter.write("Usuario: " + usuario);
+					bufferedWriter.newLine();
+					bufferedWriter.write("Password: " + pass);
+					bufferedWriter.newLine();
+					bufferedWriter.write("Puerto: " + puertobbdd);
+					bufferedWriter.newLine();
+					bufferedWriter.write("Database: " + nombreBBDD);
+					bufferedWriter.newLine();
+					bufferedWriter.write("Hosting: " + nombreHost);
+					bufferedWriter.newLine();
+				}
+
+				// Crear carpeta de backups si no existe
+				File carpetaBackupsFile = new File(carpetaBackup);
+				if (!carpetaBackupsFile.exists()) {
+					carpetaBackupsFile.mkdirs(); // Usa mkdirs para crear directorios recursivamente
+				}
+
+				alarmaList.mensajeRespuestaGuardado(prontEstadoFichero, alarmaConexion);
+
+			} else {
+				alarmaList.mensajeRespuestaError(prontEstadoFichero, alarmaConexion);
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Comprueba si los datos ingresados coinciden con los datos en la base de
+	 * datos.
+	 *
+	 * @return true si los datos coinciden, false si no coinciden o si hay un error
+	 *         en la conexión
+	 * @throws SQLException si hay un error al consultar la base de datos
+	 */
+	private static boolean verificarDatos(String[] datos, Label prontEstadoFichero) throws SQLException {
+
+		DBManager.datosBBDD(datos);
+		AlarmaList alarmaList = new AlarmaList();
+		Connection connection = DBManager.conexion();
+		if (connection == null) {
+			prontEstadoFichero.setStyle("-fx-background-color: #DD370F");
+			alarmaList.iniciarAnimacionBBDDError(prontEstadoFichero);
+			return false;
+		}
+
+		if (JDBC.DBManager.isConnected()) {
+			DBManager.close();
+			return true;
+		} else {
+			prontEstadoFichero.setStyle("-fx-background-color: #DD370F");
+			alarmaList.iniciarAnimacionBBDDError(prontEstadoFichero);
+			return false;
+		}
+	}
+
+	/**
+	 * Verifica si el servicio MySQL está en ejecución en el host y puerto
+	 * proporcionados.
+	 *
+	 * @param host       El host del servicio MySQL.
+	 * @param portString El número de puerto del servicio MySQL.
+	 * @return true si el servicio está en ejecución, false si no lo está.
+	 */
+	public static boolean isMySQLServiceRunning(String host, String portString) {
+		try {
+			int port = Integer.parseInt(portString); // Convertir la cadena a un entero
+			InetAddress address = InetAddress.getByName(host);
+			Socket socket = new Socket(address, port);
+			socket.close();
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Crea las carpetas necesarias para realizar backups.
+	 */
+	public static void crearCarpetasBackup() {
+		String userHome = System.getProperty("user.home");
+		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
+		String carpetaLibreria = ubicacion + File.separator + "libreria";
+		String carpetaBackup = carpetaLibreria + File.separator + Utilidades.obtenerDatoDespuesDeDosPuntos("Database")
+				+ File.separator + "backups";
+
+		try {
+			File carpeta_backupsFile = new File(carpetaBackup);
+			Utilidades.crearCarpeta();
+			if (!carpeta_backupsFile.exists()) {
+				carpeta_backupsFile.mkdirs();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Método que crea la estructura de carpetas y archivos necesarios para la
+	 * librería.
+	 */
+	public static void crearEstructura() {
+		String userHome = System.getProperty("user.home");
+		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
+		String carpetaLibreria = ubicacion + File.separator + "libreria";
+
+		// Verificar y crear la carpeta "libreria" si no existe
+		File carpetaLibreriaFile = new File(carpetaLibreria);
+		if (!carpetaLibreriaFile.exists()) {
+			carpetaLibreriaFile.mkdir();
+			carpetaLibreriaFile.setWritable(true);
+		}
+
+		// Verificar y crear los archivos de configuración si no existen
+		String archivoConfiguracionLocal = carpetaLibreria + File.separator + "configuracion_local.conf";
+		String archivoConfiguracionOnline = carpetaLibreria + File.separator + "configuracion_usuario.conf";
+
+		File archivoConfiguracionLocalFile = new File(archivoConfiguracionLocal);
+		File archivoConfiguracionOnlineFile = new File(archivoConfiguracionOnline);
+
+		if (!archivoConfiguracionLocalFile.exists()) {
+			try {
+				archivoConfiguracionLocalFile.createNewFile();
+
+				// Escribir líneas en el archivo de configuración local
+				FileWriter fileWriterLocal = new FileWriter(archivoConfiguracionLocalFile);
+				BufferedWriter bufferedWriterLocal = new BufferedWriter(fileWriterLocal);
+				bufferedWriterLocal.write("###############################");
+				bufferedWriterLocal.newLine();
+				bufferedWriterLocal.write("Fichero de configuracion local de la libreria");
+				bufferedWriterLocal.newLine();
+				bufferedWriterLocal.write("###############################");
+				bufferedWriterLocal.newLine();
+				bufferedWriterLocal.write("Usuario:");
+				bufferedWriterLocal.newLine();
+				bufferedWriterLocal.write("Password:");
+				bufferedWriterLocal.newLine();
+				bufferedWriterLocal.write("Puerto:");
+				bufferedWriterLocal.newLine();
+				bufferedWriterLocal.write("Database:");
+				bufferedWriterLocal.newLine();
+				bufferedWriterLocal.write("Hosting: Localhost");
+				bufferedWriterLocal.newLine();
+				bufferedWriterLocal.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		if (!archivoConfiguracionOnlineFile.exists()) {
+			try {
+				archivoConfiguracionOnlineFile.createNewFile();
+
+				// Escribir líneas en el archivo de configuración online
+				FileWriter fileWriterOnline = new FileWriter(archivoConfiguracionOnlineFile);
+				BufferedWriter bufferedWriterOnline = new BufferedWriter(fileWriterOnline);
+				bufferedWriterOnline.write("###############################");
+				bufferedWriterOnline.newLine();
+				bufferedWriterOnline.write("Usuario y contraseño del usuario");
+				bufferedWriterOnline.newLine();
+				bufferedWriterOnline.write("###############################");
+				bufferedWriterOnline.newLine();
+				bufferedWriterOnline.write("Usuario: ");
+				bufferedWriterOnline.newLine();
+				bufferedWriterOnline.write("Password: ");
+				bufferedWriterOnline.newLine();
+				bufferedWriterOnline.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Valida los datos de conexión a la base de datos MySQL.
+	 *
+	 * @param usuario  El nombre de usuario para la conexión.
+	 * @param password La contraseña para la conexión.
+	 * @param puerto   El puerto para la conexión.
+	 * @param hosting  El host para la conexión.
+	 * @return true si la validación fue exitosa, false si no lo fue.
+	 */
+	public static boolean validarDatosConexion(String usuario, String password, String puerto, String hosting) {
+		String url = construirURL(hosting, puerto);
+		if (Utilidades.isMySQLServiceRunning(hosting, puerto)) {
+			try (Connection connection = DriverManager.getConnection(url, usuario, password)) {
+				return true; // La conexión se estableció correctamente
+			} catch (SQLException e) {
+				e.printStackTrace();
+
+			}
+		}
+
+		return false; // La conexión no se pudo establecer
+	}
+
+	private static String construirURL(String hosting, String puerto) {
+		return "jdbc:mysql://" + hosting + ":" + puerto + "/";
+	}
+
+	/**
+	 * Obtiene opciones para el ComboBox de nombreBBDD basado en la configuración.
+	 *
+	 * @param usuario  El nombre de usuario para la conexión.
+	 * @param password La contraseña para la conexión.
+	 * @param puerto   El puerto para la conexión.
+	 * @param hosting  El host para la conexión.
+	 * @return Lista de opciones para el ComboBox de nombreBBDD.
+	 */
+	public static List<String> obtenerOpcionesNombreBBDD(String usuario, String password, String puerto,
+			String hosting) {
+		List<String> opciones = new ArrayList<>();
+
+		try (Connection connection = DriverManager.getConnection("jdbc:mysql://" + hosting + ":" + puerto + "/",
+				usuario, password);
+				Statement statement = connection.createStatement();
+				ResultSet resultSet = statement.executeQuery("SHOW DATABASES");) {
+
+			// Agregar los nombres de las bases de datos a la lista de opciones
+			while (resultSet.next()) {
+				String nombreBD = resultSet.getString(1);
+				String urlBD = "jdbc:mysql://" + hosting + ":" + puerto + "/" + nombreBD;
+				try (Connection dbConnection = DriverManager.getConnection(urlBD, usuario, password);
+						Statement dbStatement = dbConnection.createStatement();
+						ResultSet dbResultSet = dbStatement.executeQuery("SHOW TABLES LIKE 'comicsbbdd'");) {
+					if (dbResultSet.next()) {
+						opciones.add(nombreBD);
+					}
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return opciones;
+	}
+
+	public static boolean validarConexionMySQL(String usuarioTexto, String passwordTexto, String puertoTexto,
+			String hostingTexto) {
+		return isMySQLServiceRunning(hostingTexto, puertoTexto)
+				&& validarDatosConexion(usuarioTexto, passwordTexto, puertoTexto, hostingTexto);
 	}
 
 }

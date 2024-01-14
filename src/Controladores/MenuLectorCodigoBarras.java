@@ -76,6 +76,9 @@ public class MenuLectorCodigoBarras {
 
 	private String codigoEscaneado = "";
 
+	private static final long UMBRAL_TIEMPO_ENTRE_TECLAS = 100; // Ajusta según sea necesario
+	private long ultimoTiempo = 0;
+
 	/**
 	 * Inicializa la lógica y los eventos al cargar la interfaz gráfica.
 	 */
@@ -87,23 +90,23 @@ public class MenuLectorCodigoBarras {
 			campoCodigoTexto.getParent().requestFocus();
 		});
 
-		// Agrega un evento para procesar la tecla Enter en el campo de texto
 		campoCodigoTexto.setOnKeyPressed(event -> {
-			// Obtener el carácter asociado con la tecla presionada
-			String caracter = event.getText();
-
-			// Concatenar el carácter al código escaneado
-			codigoEscaneado += caracter;
-
-			// Verificar si se presionó la tecla Enter
 			if (event.getCode() == KeyCode.ENTER) {
-				// Limpiar el campo de texto después de procesar el código escaneado
-				campoCodigoTexto.clear();
-				// Mostrar el código escaneado en el campo de texto
-				campoCodigoTexto.setText(codigoEscaneado);
-				// Reiniciar el código escaneado
-				codigoEscaneado = "";
+				long tiempoActual = System.currentTimeMillis();
+				long tiempoDiferencia = tiempoActual - ultimoTiempo;
 
+				if (tiempoDiferencia > UMBRAL_TIEMPO_ENTRE_TECLAS) {
+					// Entrada rápida, probablemente desde el lector de código de barras
+					// Procesar el código escaneado
+					codigoEscaneado = campoCodigoTexto.getText();
+					System.out.println("Código escaneado: " + codigoEscaneado);
+					// Limpiar el campo de texto
+					campoCodigoTexto.clear();
+				}
+
+				// Actualizar el último tiempo
+				ultimoTiempo = tiempoActual;
+				agregarCodigoBarras(codigoEscaneado);
 				// Consumir el evento para evitar que se propague más allá de este punto
 				event.consume();
 			}
@@ -220,7 +223,9 @@ public class MenuLectorCodigoBarras {
 	 */
 	private void agregarCodigoBarras(String codigoBarras) {
 		listaCodigosBarras.add(codigoBarras);
+
 		actualizarTextArea();
+		barcodeField.setText("");
 	}
 
 	/**
@@ -231,9 +236,8 @@ public class MenuLectorCodigoBarras {
 	 */
 	@FXML
 	void introducirCodigoDesdeBoton(ActionEvent event) {
-		barcodeField.setText("");
 		String codigo = campoCodigoTexto.getText();
-
+		System.out.println(esCodigoValido(codigo));
 		if (esCodigoValido(codigo)) {
 			agregarCodigoBarras(codigo);
 			campoCodigoTexto.setText("");
@@ -261,7 +265,7 @@ public class MenuLectorCodigoBarras {
 	 * @return true si el código es válido, false de lo contrario.
 	 */
 	private boolean esCodigoValido(String codigo) {
-		return codigo.length() >= 8 && codigo.matches("^[0-9]+$");
+		return codigo.length() >= 8 && codigo.matches("^[a-zA-Z0-9]+$");
 	}
 
 	/**
