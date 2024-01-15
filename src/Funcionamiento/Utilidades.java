@@ -47,10 +47,12 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -90,16 +92,6 @@ public class Utilidades {
 	 * Lista de sugerencias de autocompletado de entrada limpia.
 	 */
 	public static List<String> listaLimpiaAutoCompletado = new ArrayList<>();
-
-	/**
-	 * Funciones para la manipulación de archivos Excel.
-	 */
-	private static FuncionesExcel excel = null;
-
-	/**
-	 * Ventanas de la aplicación.
-	 */
-	private static Ventanas nav = new Ventanas();
 
 	/**
 	 * Sistema operativo actual.
@@ -180,7 +172,7 @@ public class Utilidades {
 		try {
 			java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
 		} catch (IOException e) {
-			nav.alertaException("Error: No funciona el boton \n" + e.toString());
+			manejarExcepcion(e);
 		}
 	}
 
@@ -198,7 +190,7 @@ public class Utilidades {
 			rt.exec(new String[] { "sh", "-c", cmd.toString() }); // Ejecuta el bucle y permite abrir el navegador que
 			// tengas principal
 		} catch (IOException e) {
-			nav.alertaException("Error: No funciona el boton \n" + e.toString());
+			manejarExcepcion(e);
 		}
 	}
 
@@ -213,7 +205,7 @@ public class Utilidades {
 		try {
 			runtime.exec(args);
 		} catch (IOException e) {
-			nav.alertaException("Error: No funciona el boton \n" + e.toString());
+			manejarExcepcion(e);
 		}
 	}
 
@@ -303,7 +295,7 @@ public class Utilidades {
 			Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			manejarExcepcion(e);
 		}
 	}
 
@@ -347,7 +339,7 @@ public class Utilidades {
 				}
 			});
 		} catch (IOException e) {
-			System.err.println("Se produjo un error al copiar el directorio: " + e.getMessage());
+			manejarExcepcion(e);
 		}
 	}
 
@@ -397,7 +389,7 @@ public class Utilidades {
 	 * @param rutaCompleta La ruta completa del archivo.
 	 * @return El nombre del archivo sin la ruta.
 	 */
-	public String obtenerNombreArchivo(String rutaCompleta) {
+	public static String obtenerNombreArchivo(String rutaCompleta) {
 		// Obtener el separador de ruta del archivo según el sistema operativo
 		String separadorRuta = File.separator;
 
@@ -418,8 +410,7 @@ public class Utilidades {
 	 */
 	public void copia_seguridad() throws SQLException {
 		// Realizar copia de seguridad
-
-		excel = new FuncionesExcel();
+		FuncionesExcel excel = new FuncionesExcel();
 
 		try {
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
@@ -434,7 +425,6 @@ public class Utilidades {
 			String ubicacion = userDir + File.separator + "AppData" + File.separator + "Roaming";
 			String carpetaLibreria = ubicacion + File.separator + "libreria" + File.separator + DBManager.DB_NAME
 					+ File.separator + "backups" + File.separator + nombre_carpeta;
-//					File libreria_backup = new File(carpetaLibreria);
 
 			if (sourceFolder.exists()) {
 				// Create the backups folder if it doesn't exist
@@ -457,7 +447,7 @@ public class Utilidades {
 				excel.savedataExcel(nombre_carpeta);
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			manejarExcepcion(e);
 		}
 	}
 
@@ -550,7 +540,7 @@ public class Utilidades {
 			pb.start();
 
 		} catch (Exception e) {
-			nav.alertaException(e.toString());
+			manejarExcepcion(e);
 		}
 	}
 
@@ -588,19 +578,21 @@ public class Utilidades {
 	 * @param listaComics
 	 * @return
 	 */
-	public static List<String> listaArregladaAutoComplete(List<String> listaComics) {
+    public static List<String> listaArregladaAutoComplete(List<String> listaComics) {
+        Set<String> uniqueSet = new HashSet<>();
+        List<String> result = new ArrayList<>();
 
-		ArrayList<String> newList = new ArrayList<>();
-		newList.clear();
+        for (String s : listaComics) {
+            if (uniqueSet.add(s)) {
+                result.add(s);
+            }
+        }
 
-		for (String s : listaComics) {
-			if (!newList.contains(s)) {
-				newList.add(s);
-			}
-		}
+        // Ordenar la lista resultante de forma ascendente
+        result.sort(String::compareTo);
 
-		return newList;
-	}
+        return result;
+    }
 
 	/**
 	 * Elimina la imagen temporal de muestra de la base de datos.
@@ -609,7 +601,7 @@ public class Utilidades {
 		try {
 			Files.deleteIfExists(Paths.get("tmp.jpg"));
 		} catch (IOException e) {
-			e.printStackTrace();
+			manejarExcepcion(e);
 		}
 	}
 
@@ -835,7 +827,7 @@ public class Utilidades {
 
 				writer.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				manejarExcepcion(e);
 			}
 		}
 	}
@@ -877,8 +869,7 @@ public class Utilidades {
 				return ""; // Manejo de error: devuelve una cadena vacía en caso de que falte alguna clave
 			}
 		} catch (IOException e) {
-			System.err.println("Error al obtener las claves desde el archivo " + nombreArchivo);
-			e.printStackTrace();
+			manejarExcepcion(e);
 			return ""; // Manejo de error: devuelve una cadena vacía en caso de error
 		}
 	}
@@ -908,7 +899,7 @@ public class Utilidades {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			manejarExcepcion(e);
 		}
 	}
 
@@ -932,11 +923,8 @@ public class Utilidades {
 			for (String valor : valoresPredeterminados) {
 				writer.println(valor);
 			}
-
-			System.out.println("Archivo " + nombreArchivo + " creado con valores predeterminados.");
 		} catch (IOException e) {
-			System.err.println("Error al crear el archivo " + nombreArchivo);
-			e.printStackTrace();
+			manejarExcepcion(e);
 		}
 	}
 
@@ -958,7 +946,7 @@ public class Utilidades {
 				}
 			} catch (NumberFormatException e) {
 				// Manejo de error si la conversión de la cadena a double falla
-				e.printStackTrace();
+				manejarExcepcion(e);
 			}
 		}
 		return 0.0; // Devolver 0 si el país no está en la lista, la cantidad no es un número o si
@@ -987,28 +975,34 @@ public class Utilidades {
 	 * @param pass    La contraseña del usuario.
 	 * @throws IOException Si ocurre un error al escribir en el archivo.
 	 */
-	public static void guardarUsuario(TextField usuario, String pass) throws IOException {
+	public static void guardarUsuario(TextField usuario, String pass) {
 
 		String userHome = System.getProperty("user.home");
 		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
 		String carpetaLibreria = ubicacion + File.separator + "libreria";
 		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion_usuario.conf";
 
-		FileWriter fileWriter = new FileWriter(archivoConfiguracion);
-		BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+		FileWriter fileWriter;
+		try {
+			fileWriter = new FileWriter(archivoConfiguracion);
+			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
-		bufferedWriter.write("###############################");
-		bufferedWriter.newLine();
-		bufferedWriter.write("Usuario y contraseño del usuario");
-		bufferedWriter.newLine();
-		bufferedWriter.write("###############################");
-		bufferedWriter.newLine();
-		bufferedWriter.write("Usuario: " + usuario.getText());
-		bufferedWriter.newLine();
-		bufferedWriter.write("Password: " + pass);
-		bufferedWriter.newLine();
+			bufferedWriter.write("###############################");
+			bufferedWriter.newLine();
+			bufferedWriter.write("Usuario y contraseño del usuario");
+			bufferedWriter.newLine();
+			bufferedWriter.write("###############################");
+			bufferedWriter.newLine();
+			bufferedWriter.write("Usuario: " + usuario.getText());
+			bufferedWriter.newLine();
+			bufferedWriter.write("Password: " + pass);
+			bufferedWriter.newLine();
 
-		bufferedWriter.close();
+			bufferedWriter.close();
+		} catch (IOException e) {
+			manejarExcepcion(e);
+		}
+
 	}
 
 	/**
@@ -1032,7 +1026,7 @@ public class Utilidades {
 
 				writer.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				manejarExcepcion(e);
 			}
 		}
 	}
@@ -1057,7 +1051,7 @@ public class Utilidades {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			manejarExcepcion(e);
 		}
 		return null;
 	}
@@ -1185,32 +1179,6 @@ public class Utilidades {
 		return "";
 	}
 
-//	public static String descargarImagen(String urlImagen, String carpetaDestino)
-//			throws IOException, URISyntaxException {
-//		URI uri = new URI(urlImagen);
-//
-//		// Obtener el nombre de la imagen a partir de la URI
-//		String[] partesURL = uri.getPath().split("/");
-//		String nombreImagen = partesURL[partesURL.length - 1];
-//
-//		// Crear la carpeta de destino si no existe
-//		File carpeta = new File(carpetaDestino);
-//		if (!carpeta.exists()) {
-//			carpeta.mkdirs();
-//		}
-//
-//		// Crear la ruta completa de destino
-//		String rutaDestino = carpetaDestino + File.separator + nombreImagen;
-//
-//		try (InputStream in = uri.toURL().openStream()) {
-//			// Descargar la imagen y guardarla en la carpeta de destino
-//			Path destino = new File(rutaDestino).toPath();
-//			Files.copy(in, destino, StandardCopyOption.REPLACE_EXISTING);
-//		}
-//
-//		return rutaDestino;
-//	}
-
 	/**
 	 * Descarga una imagen desde una URL y la guarda en una carpeta de destino.
 	 * 
@@ -1226,9 +1194,6 @@ public class Utilidades {
 		@SuppressWarnings("unused")
 		CompletableFuture<Void> asyncTask = CompletableFuture.runAsync(() -> {
 			try {
-//				URI uri = validarURL(urlImagen);
-
-//				descargarYConvertirImagenAsync(uri, carpetaDestino);
 
 				String nombreImagen = "";
 				nombreImagen = obtenerNombreImagen(urlImagen);
@@ -1255,32 +1220,6 @@ public class Utilidades {
 
 		return downloadTask;
 	}
-
-//    public static Task<String> descargarImagenTask(String urlImagen, String carpetaDestino) {
-//        return new Task<String>() {
-//            @Override
-//            protected String call() throws Exception {
-//                try {
-//                    URI uri = validarURL(urlImagen);
-//                    String nombreImagen = obtenerNombreImagen(urlImagen);
-//                    crearCarpetaSiNoExiste(carpetaDestino);
-//                    String rutaDestino = carpetaDestino + File.separator + nombreImagen;
-//
-//                    if (descargarYConvertirImagen(uri, carpetaDestino)) {
-//                        System.out.println("Imagen descargada y guardada como JPG correctamente");
-//                        return rutaDestino;
-//                    }
-//                } catch (IllegalArgumentException e) {
-//                    System.err.println(e.getMessage());
-//                } catch (Exception e) {
-//                    System.err.println("No se pudo acceder a la URL: " + urlImagen);
-//                    e.printStackTrace();
-//                }
-//
-//                return null;
-//            }
-//        };
-//    }
 
 	/**
 	 * Valida una URL y la convierte en una URI.
@@ -1377,8 +1316,7 @@ public class Utilidades {
 					return true;
 				}
 			} catch (IOException e) {
-				System.err.println("Error al descargar o convertir la imagen desde " + urlImagen);
-				e.printStackTrace();
+				manejarExcepcion(e);
 				return false;
 			}
 		});
@@ -1469,7 +1407,7 @@ public class Utilidades {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			manejarExcepcion(e);
 		}
 		return "";
 	}
@@ -1518,7 +1456,7 @@ public class Utilidades {
 			// Abrir el archivo
 			abrirArchivo(direccionCompleta);
 		} catch (IOException e) {
-			System.out.println("Ocurrió un error al intentar escribir en el archivo: " + e.getMessage());
+			manejarExcepcion(e);
 		}
 	}
 
@@ -1541,7 +1479,7 @@ public class Utilidades {
 				desktop.open(archivo);
 			}
 		} catch (IOException e) {
-			System.out.println("No se pudo abrir el archivo: " + e.getMessage());
+			manejarExcepcion(e);
 		}
 	}
 
@@ -1570,7 +1508,7 @@ public class Utilidades {
 						}
 					}
 				} catch (SecurityException e) {
-					System.err.println("Error de seguridad al intentar eliminar el archivo: " + e.getMessage());
+					manejarExcepcion(e);
 				}
 			}
 		}
@@ -1632,7 +1570,7 @@ public class Utilidades {
 			} catch (DateTimeParseException e) {
 				// Manejar la excepción de formato de fecha, imprimir o registrar según sea
 				// necesario
-				e.printStackTrace();
+				manejarExcepcion(e);
 				return LocalDate.of(2000, 1, 1); // Valor predeterminado en caso de error de formato
 			}
 		}
@@ -1818,7 +1756,7 @@ public class Utilidades {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			manejarExcepcion(e);
 		}
 
 		return datosConfiguracion;
@@ -1885,7 +1823,7 @@ public class Utilidades {
 			}
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			manejarExcepcion(e);
 		}
 	}
 
@@ -1934,6 +1872,7 @@ public class Utilidades {
 			socket.close();
 			return true;
 		} catch (Exception e) {
+			manejarExcepcion(e);
 			return false;
 		}
 	}
@@ -1955,7 +1894,7 @@ public class Utilidades {
 				carpeta_backupsFile.mkdirs();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			manejarExcepcion(e);
 		}
 	}
 
@@ -2007,7 +1946,7 @@ public class Utilidades {
 				bufferedWriterLocal.newLine();
 				bufferedWriterLocal.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				manejarExcepcion(e);
 			}
 		}
 
@@ -2030,7 +1969,7 @@ public class Utilidades {
 				bufferedWriterOnline.newLine();
 				bufferedWriterOnline.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				manejarExcepcion(e);
 			}
 		}
 	}
@@ -2093,7 +2032,7 @@ public class Utilidades {
 				}
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			manejarExcepcion(e);
 		}
 		return opciones;
 	}
@@ -2102,6 +2041,76 @@ public class Utilidades {
 			String hostingTexto) {
 		return isMySQLServiceRunning(hostingTexto, puertoTexto)
 				&& validarDatosConexion(usuarioTexto, passwordTexto, puertoTexto, hostingTexto);
+	}
+
+	/**
+	 * Verifica si el código es válido, es decir, contiene solo números y letras y
+	 * tiene una longitud mayor a 0.
+	 *
+	 * @param codigo El código a validar.
+	 * @return true si el código es válido, false de lo contrario.
+	 */
+	public static boolean esCodigoValido(String codigo) {
+		return codigo.length() >= 8 && codigo.matches("^[a-zA-Z0-9]+$");
+	}
+
+	public static void saveImageFromDataBase(String direccionImagen, File directorio) {
+
+		try (Connection conn = DBManager.conexion()) {
+			if (directorio != null) {
+				String nombreImagen = obtenerNombreArchivo(direccionImagen);
+				File imagenArchivo = new File(direccionImagen);
+
+				if (!imagenArchivo.exists()) {
+					copiarImagenPredeterminada(directorio, nombreImagen);
+				} else {
+					copiarImagenDesdeArchivo(imagenArchivo, directorio, nombreImagen);
+				}
+			}
+		} catch (IOException | SQLException e) {
+			manejarExcepcion(e);
+		}
+	}
+
+	
+	//OJO CON ESTA FUNCION, EL ERROR FUE PONER STATIC EN VEZ DE getClass() DONDE UTILIDADES.CLASS
+	
+	private static void copiarImagenPredeterminada(File directorio, String nombreImagen) throws IOException {
+		try (InputStream input = Utilidades.class.getResourceAsStream("sinPortada.jpg")) {
+			if (input == null) {
+				throw new FileNotFoundException("La imagen predeterminada no se encontró en el paquete");
+			}
+
+			File imagenArchivo = File.createTempFile("tmp", ".jpg");
+			imagenArchivo.deleteOnExit();
+
+			Path tempPath = imagenArchivo.toPath();
+			Files.copy(input, tempPath, StandardCopyOption.REPLACE_EXISTING);
+
+			Files.copy(tempPath, Paths.get(directorio.getAbsolutePath(), nombreImagen),
+					StandardCopyOption.REPLACE_EXISTING);
+		}
+	}
+
+	private static void copiarImagenDesdeArchivo(File imagenArchivo, File directorio, String nombreImagen) throws IOException {
+		try (InputStream fileInputStream = new FileInputStream(imagenArchivo);
+				OutputStream fileOutputStream = new FileOutputStream(
+						Paths.get(directorio.getAbsolutePath(), nombreImagen).toFile())) {
+
+			byte[] buffer = new byte[4096];
+			int bytesRead;
+			while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+				fileOutputStream.write(buffer, 0, bytesRead);
+			}
+		}
+	}
+
+	public static void manejarExcepcion(Exception e) {
+
+		Ventanas nav = new Ventanas();
+
+		nav.alertaException(e.toString());
+		e.printStackTrace();
 	}
 
 }

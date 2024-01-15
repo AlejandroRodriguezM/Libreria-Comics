@@ -233,13 +233,6 @@ public class OpcionesDatosController implements Initializable {
 
 		AlarmaList alarmaList = new AlarmaList();
 
-//		List<AlarmaItem> alarmaItems = alarmaList.getAlarmaItems();
-//		alarmaItems.add(new AlarmaItem(alarmaConexionSql, animacionAlarmaTimelineMySql));
-//
-//		alarmaItems.add(new AlarmaItem(alarmaConexionInternet, animacionAlarmaTimelineInternet));
-//
-//		alarmaItems.add(new AlarmaItem(alarmaConexion, animacionAlarmaOnlineTimeline));
-
 		alarmaList.setAlarmaConexion(alarmaConexion);
 		alarmaList.setAlarmaConexionInternet(alarmaConexionInternet);
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);

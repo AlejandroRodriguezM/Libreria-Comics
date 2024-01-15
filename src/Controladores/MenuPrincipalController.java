@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -53,10 +54,8 @@ import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
 import JDBC.DBManager;
+import alarmas.AlarmaList;
 import comicManagement.Comic;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -83,7 +82,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 /**
  * Esta clase sirve viajar a las diferentes ventanas del programa, asi como
@@ -410,11 +408,6 @@ public class MenuPrincipalController implements Initializable {
 	private Button botonAgregarPuntuacion;
 
 	/**
-	 * Línea de tiempo para la animación.
-	 */
-	private Timeline timeline;
-
-	/**
 	 * Instancia de la clase Ventanas para la navegación.
 	 */
 	private static Ventanas nav = new Ventanas();
@@ -423,12 +416,6 @@ public class MenuPrincipalController implements Initializable {
 	 * Instancia de DBLibreriaManager para la gestión de la base de datos.
 	 */
 	private static DBLibreriaManager libreria = null;
-
-	/**
-	 * Instancia de Utilidades para funciones de utilidad.
-	 */
-	@SuppressWarnings("unused")
-	private static Utilidades utilidad = null;
 
 	/**
 	 * Instancia de FuncionesComboBox para funciones relacionadas con ComboBox.
@@ -457,7 +444,6 @@ public class MenuPrincipalController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 
 		libreria = new DBLibreriaManager();
-		utilidad = new Utilidades();
 
 		prontInfo.textProperty().addListener((observable, oldValue, newValue) -> {
 			funcionesTabla.ajustarAnchoVBox(prontInfo, vboxContenido);
@@ -534,11 +520,7 @@ public class MenuPrincipalController implements Initializable {
 		scheduler.schedule(() -> {
 
 			Platform.runLater(() -> {
-				try {
-					libreria.listasAutoCompletado();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+				libreria.listasAutoCompletado();
 
 				Task<Void> task = new Task<Void>() {
 					@Override
@@ -716,29 +698,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
-
-//		tablaBBDD.getItems().clear();
-
-		libreria = new DBLibreriaManager();
-		libreria.reiniciarBBDD();
-		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
-		tablaBBDD.refresh();
-		prontInfo.setOpacity(0);
-		imagencomic.setImage(null);
-
-		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
-		funcionesTabla.tablaBBDD(listaPorParametro(), tablaBBDD, columnList); // Llamada a funcion
-
-		if (listaPorParametro().size() > 0) {
-			botonImprimir.setVisible(true);
-			botonImprimir.setDisable(false);
-			botonGuardarResultado.setVisible(true);
-			botonGuardarResultado.setDisable(false);
-		}
-
-		busquedaGeneral.setText("");
-		Utilidades.borrarArchivosNoEnLista(DBLibreriaManager.listaImagenes);
+		verBasedeDatos(false);
 	}
 
 	/**
@@ -750,6 +710,10 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
+		verBasedeDatos(true);
+	}
+
+	public void verBasedeDatos(boolean completo) {
 
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
@@ -760,13 +724,22 @@ public class MenuPrincipalController implements Initializable {
 
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
-		funcionesTabla.tablaBBDD(libreria.libreriaCompleta(), tablaBBDD, columnList); // Llamada a funcion
 
-		botonImprimir.setVisible(false);
-		botonImprimir.setDisable(true);
-		botonGuardarResultado.setVisible(false);
-		botonGuardarResultado.setDisable(true);
+		if (completo) {
+			funcionesTabla.tablaBBDD(libreria.libreriaCompleta(), tablaBBDD, columnList); // Llamada a funcion
 
+			botonImprimir.setVisible(false);
+			botonGuardarResultado.setVisible(false);
+
+		} else {
+			funcionesTabla.tablaBBDD(listaPorParametro(), tablaBBDD, columnList); // Llamada a funcion
+
+			if (!listaPorParametro().isEmpty()) {
+				botonImprimir.setVisible(true);
+				botonGuardarResultado.setVisible(true);
+			}
+			busquedaGeneral.setText("");
+		}
 		Utilidades.borrarArchivosNoEnLista(DBLibreriaManager.listaImagenes);
 	}
 
@@ -779,14 +752,8 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsPuntuacion(ActionEvent event) throws SQLException {
-		prontInfo.setOpacity(0);
-		limpiezaDeDatos();
-		tablaBBDD.refresh();
-		libreria = new DBLibreriaManager();
-		libreria.reiniciarBBDD();
-		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
-		funcionesTabla.tablaBBDD(libreria.libreriaPuntuacion(), tablaBBDD, columnList); // Llamada a funcion
+
+		imprimirComicsEstado("puntuados");
 
 	}
 
@@ -799,13 +766,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsVendidos(ActionEvent event) throws SQLException {
-		prontInfo.setOpacity(0);
-		limpiezaDeDatos();
-		libreria = new DBLibreriaManager();
-		libreria.reiniciarBBDD();
-		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
-		funcionesTabla.tablaBBDD(libreria.libreriaVendidos(), tablaBBDD, columnList); // Llamada a funcion
+		imprimirComicsEstado("vendidos");
 	}
 
 	/**
@@ -817,13 +778,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsFirmados(ActionEvent event) throws SQLException {
-		prontInfo.setOpacity(0);
-		limpiezaDeDatos();
-		libreria = new DBLibreriaManager();
-		libreria.reiniciarBBDD();
-		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
-		funcionesTabla.tablaBBDD(libreria.libreriaFirmados(), tablaBBDD, columnList); // Llamada a funcion
+		imprimirComicsEstado("firmados");
 	}
 
 	/**
@@ -835,13 +790,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsComprados(ActionEvent event) throws SQLException {
-		prontInfo.setOpacity(0);
-		limpiezaDeDatos();
-		libreria = new DBLibreriaManager();
-		libreria.reiniciarBBDD();
-		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
-		funcionesTabla.tablaBBDD(libreria.libreriaComprados(), tablaBBDD, columnList); // Llamada a funcion
+		imprimirComicsEstado("comprados");
 	}
 
 	/**
@@ -853,13 +802,8 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsEnPosesion(ActionEvent event) throws SQLException {
-		prontInfo.setOpacity(0);
-		limpiezaDeDatos();
-		libreria = new DBLibreriaManager();
-		libreria.reiniciarBBDD();
-		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
-		funcionesTabla.tablaBBDD(libreria.libreriaPosesion(), tablaBBDD, columnList); // Llamada a funcion
+		imprimirComicsEstado("posesion");
+
 	}
 
 	/**
@@ -870,12 +814,52 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsKeyIssue(ActionEvent event) throws SQLException {
+		imprimirComicsEstado("key");
+
+	}
+
+	private void imprimirComicsEstado(String tipoBusqueda) {
+
 		prontInfo.setOpacity(0); // Ocultar la información en pantalla
 		libreria = new DBLibreriaManager(); // Crear una instancia del gestor de la base de datos
 		libreria.reiniciarBBDD(); // Reiniciar la base de datos si es necesario
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a la función para establecer nombres de
 		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList); // columnas
-		funcionesTabla.tablaBBDD(libreria.libreriaKeyIssue(), tablaBBDD, columnList);
+
+		switch (tipoBusqueda) {
+		case "key": {
+			funcionesTabla.tablaBBDD(libreria.libreriaKeyIssue(), tablaBBDD, columnList);
+			break;
+		}
+		case "posesion": {
+			funcionesTabla.tablaBBDD(libreria.libreriaPosesion(), tablaBBDD, columnList); // Llamada a funcion
+			break;
+		}
+
+		case "comprados": {
+			funcionesTabla.tablaBBDD(libreria.libreriaComprados(), tablaBBDD, columnList); // Llamada a funcion
+
+			break;
+		}
+		case "firmados": {
+			funcionesTabla.tablaBBDD(libreria.libreriaFirmados(), tablaBBDD, columnList); // Llamada a funcion
+
+			break;
+		}
+		case "vendidos": {
+			funcionesTabla.tablaBBDD(libreria.libreriaVendidos(), tablaBBDD, columnList); // Llamada a funcion
+
+			break;
+		}
+		case "puntuados": {
+			funcionesTabla.tablaBBDD(libreria.libreriaPuntuacion(), tablaBBDD, columnList); // Llamada a funcion
+
+			break;
+		}
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + tipoBusqueda);
+		}
+
 	}
 
 	////////////////////////////
@@ -899,6 +883,8 @@ public class MenuPrincipalController implements Initializable {
 		libreria.listasAutoCompletado();
 
 		DBLibreriaManager.limpiarListaGuardados();
+
+		prontInfo.clear();
 	}
 
 	/**
@@ -948,7 +934,6 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void limpiarDatos(ActionEvent event) {
 		limpiezaDeDatos();
-
 		botonImprimir.setVisible(false);
 		botonImprimir.setDisable(true);
 		botonGuardarResultado.setVisible(false);
@@ -956,20 +941,15 @@ public class MenuPrincipalController implements Initializable {
 
 		int tamanioListaGuardada = DBLibreriaManager.comicsGuardadosList.size();
 
-		if (tamanioListaGuardada > 0) {
+		if (tamanioListaGuardada > 0 && nav.borrarListaGuardada()) {
 
-			if (nav.borrarListaGuardada()) {
-				DBLibreriaManager.limpiarListaGuardados();
+			DBLibreriaManager.limpiarListaGuardados();
 
-				String mensaje = "Has eliminado el contenido de la lista guardada que contenia un total de: "
-						+ tamanioListaGuardada + " comics guardados.\n \n \n";
-				String estilo = "#A0F52D";
-				mostrarMensaje(mensaje, estilo);
+			String mensaje = "Has eliminado el contenido de la lista guardada que contenia un total de: "
+					+ tamanioListaGuardada + " comics guardados.\n \n \n";
 
-			}
-
+			AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
 		}
-
 	}
 
 	/**
@@ -983,147 +963,139 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void borrarContenidoTabla(ActionEvent event) throws SQLException {
 
-		// Crear una tarea (Task) para realizar la operación de borrado de contenido de
-		// la tabla
+		// Crear tarea para borrar contenido de la tabla
 		Task<Boolean> task = new Task<Boolean>() {
 			@Override
 			protected Boolean call() throws Exception {
-				// Obtener la CompletableFuture<Boolean> del método borrarContenidoTabla de la
-				// clase nav
 				boolean result = false;
-				if (DBLibreriaManager.listaNombre.size() > 0) {
+				if (!DBLibreriaManager.listaNombre.isEmpty()) {
 					CompletableFuture<Boolean> futureResult = nav.borrarContenidoTabla();
-					// Obtener el resultado real (Boolean) de la CompletableFuture utilizando join()
 					result = futureResult.join();
 				}
-
-				return result; // Devolver el resultado actual
+				return result;
 			}
 		};
 
-		// Configurar el comportamiento cuando la tarea está en ejecución
-		task.setOnRunning(e -> {
-			// Iniciar la animación
-			iniciarAnimacion();
-		});
+		// Configurar comportamiento cuando la tarea está en ejecución
+		task.setOnRunning(e -> AlarmaList.iniciarAnimacionCarga(progresoCarga));
 
-		// Configurar el comportamiento cuando la tarea se completa con éxito
+		// Configurar comportamiento cuando la tarea se completa con éxito
 		task.setOnSucceeded(e -> {
-			// Obtener el resultado de la tarea
 			Boolean resultado = task.getValue();
-			/* Tu condición aquí basada en el resultado */
 
 			if (resultado) {
-				prontInfo.clear();
-				prontInfo.setStyle(null);
-				Thread animationThread = new Thread(this::iniciarAnimacionBajada);
-				animationThread.start();
+				limpiarInformacion();
 
-				// Ejecutar el método deleteTable en su propio hilo
-				Task<Boolean> deleteTask = new Task<Boolean>() {
-					@Override
-					protected Boolean call() throws Exception {
-						// Verificar si la tabla tiene contenido
-						boolean result = false;
-						if (libreria.countRows() > 0) {
-							// Si hay contenido, borrar el contenido de la tabla en un hilo separado
-							CompletableFuture<Boolean> futureResult = libreria.deleteTable();
-							result = futureResult.join(); // Esperar a que la tarea asíncrona se complete y obtener el
-															// resultado
-						} else {
-							// Si no hay contenido, mostrar un mensaje de error
-							Platform.runLater(() -> {
-								prontInfo.clear();
-								detenerAnimacionPront();
-								prontInfo.setOpacity(1);
-								prontInfo.setStyle("-fx-background-color: #F53636");
-								prontInfo.setText("La base de datos ya se encuentra vacia.");
-								detenerAnimacion();
-							});
+				Task<Boolean> deleteTask = createDeleteTask();
 
-						}
-						return result; // Devolver el resultado actual
-					}
-				};
-
-				// Configurar el comportamiento cuando la tarea de borrado se completa con éxito
+				// Configurar comportamiento cuando la tarea de borrado se completa con éxito
 				deleteTask.setOnSucceeded(ev -> {
-					// Obtener el resultado de la tarea de borrado
-					boolean result = deleteTask.getValue();
-					if (result) {
-						// Mostrar el mensaje de éxito y limpiar la tabla y la imagen
-						Platform.runLater(() -> {
-							limpiezaDeDatos();
-							detenerAnimacionPront();
-							prontInfo.setOpacity(1);
-							prontInfo.setStyle("-fx-background-color: #A0F52D");
-							prontInfo.setText("Has borrado correctamente el contenido de la base de datos.");
-							tablaBBDD.getItems().clear();
-							imagencomic.setImage(null);
-							detenerAnimacion();
-							cargarDatosDataBase();
-							DBLibreriaManager.limpiarListaGuardados();
-						});
-					}
+					Platform.runLater(() -> {
+						limpiezaDeDatos();
+						mostrarMensajeExito();
+						cargarDatosDataBase();
+						DBLibreriaManager.limpiarListaGuardados();
+						detenerAnimaciones();
+					});
 				});
 
-				// Configurar el comportamiento cuando la tarea de borrado falla
-				deleteTask.setOnFailed(ev -> {
-					// Detener la animación y mostrar el mensaje de error
-					detenerAnimacion();
-					Throwable exception = deleteTask.getException();
-					if (exception != null) {
-						prontInfo.clear();
-						detenerAnimacionPront();
-						exception.printStackTrace();
-						Platform.runLater(() -> nav.alertaException(
-								"Error al borrar el contenido de la base de datos: " + exception.getMessage()));
-					} else {
-						prontInfo.clear();
-						detenerAnimacionPront();
-						Platform.runLater(() -> nav
-								.alertaException("Error desconocido al borrar el contenido de la base de datos"));
-					}
-				});
+				// Configurar comportamiento cuando la tarea de borrado falla
+				deleteTask.setOnFailed(ev -> handleDeleteTaskFailure(deleteTask));
 
 				// Iniciar la tarea de borrado en un hilo separado
-				Thread deleteThread = new Thread(deleteTask);
-				deleteThread.start();
+				new Thread(deleteTask).start();
 			} else {
-				// Si el resultado es falso, mostrar el mensaje de cancelación
-				Platform.runLater(() -> {
-					prontInfo.clear();
-					detenerAnimacionPront();
-					prontInfo.setOpacity(1);
-					prontInfo.setStyle("-fx-background-color: #F53636");
-					prontInfo.setText("Has cancelado el borrado de la base de datos.");
-					detenerAnimacion();
-				});
+				mostrarMensajeCancelacion();
+				detenerAnimaciones();
 			}
 		});
 
-		// Configurar el comportamiento cuando la tarea falla
-		task.setOnFailed(e -> {
-			// Detener la animación y mostrar el mensaje de error
-			detenerAnimacion();
-			Throwable exception = task.getException();
-			if (exception != null) {
-				prontInfo.clear();
-				detenerAnimacionPront();
-				exception.printStackTrace();
-				Platform.runLater(
-						() -> nav.alertaException("Error al importar el fichero CSV: " + exception.getMessage()));
-			} else {
-				prontInfo.clear();
-				detenerAnimacionPront();
-				Platform.runLater(() -> nav.alertaException("Error desconocido al importar el fichero CSV."));
-			}
-		});
+		// Configurar comportamiento cuando la tarea falla
+		task.setOnFailed(e -> handleTaskFailure(task));
+
 		nav.ventanaAbierta();
 
 		// Iniciar la tarea principal de borrado en un hilo separado
-		Thread thread = new Thread(task);
-		thread.start();
+		new Thread(task).start();
+	}
+
+	private Task<Boolean> createDeleteTask() {
+		return new Task<Boolean>() {
+			@Override
+			protected Boolean call() throws Exception {
+				boolean result = false;
+				if (libreria.countRows() > 0) {
+					CompletableFuture<Boolean> futureResult = libreria.deleteTable();
+					result = futureResult.join();
+				} else {
+					showEmptyDatabaseError();
+				}
+				return result;
+			}
+		};
+	}
+
+	private void handleDeleteTaskFailure(Task<Boolean> deleteTask) {
+		AlarmaList.detenerAnimacion();
+		Throwable exception = deleteTask.getException();
+		if (exception != null) {
+			mostrarErrorBorrado(exception.getMessage());
+		} else {
+			mostrarErrorDesconocidoBorrado();
+		}
+	}
+
+	private void handleTaskFailure(Task<Boolean> task) {
+		AlarmaList.detenerAnimacion();
+		Throwable exception = task.getException();
+		if (exception != null) {
+			nav.alertaException("Error al importar el fichero CSV: " + exception.getMessage());
+		} else {
+			nav.alertaException("Error desconocido al importar el fichero CSV.");
+		}
+	}
+
+	private void limpiarInformacion() {
+		prontInfo.clear();
+		prontInfo.setStyle(null);
+		new Thread(() -> AlarmaList.iniciarAnimacionBajada(prontInfo)).start();
+	}
+
+	private void mostrarMensajeExito() {
+		String mensaje = "Has borrado correctamente el contenido de la base de datos.";
+		AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
+	}
+
+	private void mostrarMensajeCancelacion() {
+		prontInfo.clear();
+		String mensaje = "Has cancelado el borrado de la base de datos.";
+		AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+	}
+
+	private void showEmptyDatabaseError() {
+		Platform.runLater(() -> {
+			String mensaje = "La base de datos ya se encuentra vacía.";
+			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+			detenerAnimaciones();
+		});
+	}
+
+	private void mostrarErrorBorrado(String errorMessage) {
+		prontInfo.clear();
+		String mensaje = "ERROR. No se ha podido borrar el contenido de la base de datos. " + errorMessage;
+		AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+		detenerAnimaciones();
+	}
+
+	private void mostrarErrorDesconocidoBorrado() {
+		prontInfo.clear();
+		Platform.runLater(() -> nav.alertaException("Error desconocido al borrar el contenido de la base de datos"));
+		detenerAnimaciones();
+	}
+
+	private void detenerAnimaciones() {
+		AlarmaList.detenerAnimacion();
+		AlarmaList.detenerAnimacionCarga(progresoCarga);
 	}
 
 	/**
@@ -1134,98 +1106,16 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void verEstadistica(ActionEvent event) throws IOException {
-		prontInfo.setOpacity(0);
+
+		AlarmaList alarmaList = new AlarmaList();
 		libreria = new DBLibreriaManager();
+		prontInfo.setOpacity(0);
+
 		prontInfo.setOpacity(1);
-		iniciarAnimacionEstadistica();
+		alarmaList.iniciarAnimacionEstadistica(prontInfo);
 		libreria.generar_fichero_estadisticas();
-		detenerAnimacionPront();
+		AlarmaList.detenerAnimacionPront(prontInfo);
 		prontInfo.setText("Fichero creado correctamente");
-	}
-
-	/**
-	 * Metodo que permite crear una animacion
-	 */
-	private void iniciarAnimacionEstadistica() {
-		timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
-
-		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarDescarga1 = new KeyFrame(Duration.ZERO,
-				new KeyValue(prontInfo.textProperty(), "Generando fichero de estadisticas ."));
-		KeyFrame mostrarDescarga2 = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(prontInfo.textProperty(), "Generando fichero de estadisticas .."));
-		KeyFrame mostrarDescarga3 = new KeyFrame(Duration.seconds(1),
-				new KeyValue(prontInfo.textProperty(), "Generando fichero de estadisticas ..."));
-		KeyFrame mostrarDescarga4 = new KeyFrame(Duration.seconds(1.5),
-				new KeyValue(prontInfo.textProperty(), "Generando fichero de estadisticas ...."));
-
-		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(mostrarDescarga1, mostrarDescarga2, mostrarDescarga3, mostrarDescarga4);
-
-		// Iniciar la animación
-		timeline.play();
-	}
-
-	/**
-	 * Metodo que permite detener una animacion
-	 */
-	private void detenerAnimacionPront() {
-		if (timeline != null) {
-			timeline.stop();
-			timeline = null; // Destruir el objeto timeline
-			prontInfo.setText("Fichero creado correctamente");
-		}
-	}
-
-	/**
-	 * Metodo que permite crear una animacion
-	 */
-	private void iniciarAnimacionSubida() {
-		prontInfo.setOpacity(1);
-		timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
-
-		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarSubida1 = new KeyFrame(Duration.ZERO,
-				new KeyValue(prontInfo.textProperty(), "Subido datos a la " + DBManager.DB_NAME + " ."));
-		KeyFrame mostrarSubida2 = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(prontInfo.textProperty(), "Subido datos a la " + DBManager.DB_NAME + " .."));
-		KeyFrame mostrarSubida3 = new KeyFrame(Duration.seconds(1),
-				new KeyValue(prontInfo.textProperty(), "Subido datos a la " + DBManager.DB_NAME + " ..."));
-		KeyFrame mostrarSubida4 = new KeyFrame(Duration.seconds(1.5),
-				new KeyValue(prontInfo.textProperty(), "Subido datos a la " + DBManager.DB_NAME + " ...."));
-
-		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(mostrarSubida1, mostrarSubida2, mostrarSubida3, mostrarSubida4);
-
-		// Iniciar la animación
-		timeline.play();
-	}
-
-	/**
-	 * Metodo que permite crear una animacion
-	 */
-	private void iniciarAnimacionBajada() {
-		prontInfo.setOpacity(1);
-		timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
-
-		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarBajada1 = new KeyFrame(Duration.ZERO,
-				new KeyValue(prontInfo.textProperty(), "Eliminando base de datos ."));
-		KeyFrame mostrarBajada2 = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(prontInfo.textProperty(), "Eliminando base de datos .."));
-		KeyFrame mostrarBajada3 = new KeyFrame(Duration.seconds(1),
-				new KeyValue(prontInfo.textProperty(), "Eliminando base de datos ..."));
-		KeyFrame mostrarBajada4 = new KeyFrame(Duration.seconds(1.5),
-				new KeyValue(prontInfo.textProperty(), "Eliminando base de datos ...."));
-
-		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(mostrarBajada1, mostrarBajada2, mostrarBajada3, mostrarBajada4);
-
-		// Iniciar la animación
-		timeline.play();
 	}
 
 	/////////////////////////////////
@@ -1273,15 +1163,14 @@ public class MenuPrincipalController implements Initializable {
 	private void seleccionarComics() throws SQLException {
 		libreria = new DBLibreriaManager();
 		libreria.libreriaCompleta();
-		utilidad = new Utilidades();
 
 		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 		// Verificar si idRow es nulo antes de intentar acceder a sus métodos
 		if (idRow != null) {
 			String id_comic = idRow.getID();
 
-			prontInfo.setOpacity(1);
-			prontInfo.setText(libreria.comicDatos(id_comic).toString().replace("[", "").replace("]", ""));
+			String mensaje = libreria.comicDatos(id_comic).toString().replace("[", "").replace("]", "");
+			AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
 			funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 			funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
 			imagencomic.setImage(libreria.selectorImage(id_comic));
@@ -1330,22 +1219,20 @@ public class MenuPrincipalController implements Initializable {
 		List<Comic> listaComics = listaPorParametro();
 
 		String mensaje = "";
-		String estilo = "";
 
-		if (listaPorParametro().size() > 0) {
+		if (listaPorParametro().size() > 0 && listaPorParametro() != null) {
 			DBLibreriaManager.agregarElementosUnicos(listaComics);
 
 			mensaje = "Hay un total de: " + DBLibreriaManager.comicsGuardadosList.size()
 					+ ". Comics guardados a la espera de ser impresos \n \n \n";
-			estilo = "#A0F52D";
+			AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
 
 		} else {
 			mensaje = "No se esta mostrando ningun comic, prueba a buscar por parametro \n \n \n";
-			estilo = "#FF2400";
+			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 		}
 
 		limpiezaDeDatos();
-		mostrarMensaje(mensaje, estilo);
 
 	}
 
@@ -1358,6 +1245,9 @@ public class MenuPrincipalController implements Initializable {
 	private void cargaExportExcel(List<Comic> listaComics, String tipoBusqueda) {
 
 		FuncionesExcel excelFuntions = new FuncionesExcel();
+		AlarmaList alarmaList = new AlarmaList();
+		String mensajeErrorExportar = "ERROR. No se ha podido exportar correctamente.";
+		String mensajeCancelarExportar = "ERROR. Se ha cancelado la exportación.";
 
 		// Configuración de la tarea para crear el archivo Excel
 		Task<Boolean> crearExcelTask = excelFuntions.crearExcelTask(listaComics, tipoBusqueda);
@@ -1366,7 +1256,7 @@ public class MenuPrincipalController implements Initializable {
 		// Configuración del comportamiento cuando la tarea está en ejecución
 		crearExcelTask.setOnRunning(e -> {
 			// Iniciar la animación
-			iniciarAnimacion();
+			AlarmaList.iniciarAnimacionCarga(progresoCarga);
 		});
 
 		// Configuración del comportamiento cuando la tarea tiene éxito
@@ -1374,59 +1264,30 @@ public class MenuPrincipalController implements Initializable {
 			boolean result = crearExcelTask.getValue();
 			if (result) {
 				// Tarea completada con éxito, muestra el mensaje de éxito.
-				mostrarMensaje("Fichero excel exportado de forma correcta", "#A0F52D");
+				String mensaje = "Fichero excel exportado de forma correcta";
+				AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
+
 			} else {
 				// La tarea no se completó correctamente, muestra un mensaje de error.
-				mostrarMensaje("ERROR. No se ha podido exportar correctamente.", "#F53636");
+				String mensaje = "ERROR. No se ha podido exportar correctamente.";
+				AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+
 			}
-			detenerAnimacionPront();
-			detenerAnimacion();
+			AlarmaList.detenerAnimacionPront(prontInfo);
+			AlarmaList.detenerAnimacionCarga(progresoCarga);
 
 			// Detener el hilo de la tarea
 			excelThread.interrupt();
 		});
 
 		// Configuración del comportamiento cuando la tarea falla
-		crearExcelTask.setOnFailed(event -> manejarFallo());
+		crearExcelTask.setOnFailed(event -> alarmaList.manejarFallo(mensajeErrorExportar, prontInfo));
 
 		// Configuración del comportamiento cuando la tarea es cancelada
-		crearExcelTask.setOnCancelled(event -> manejarCancelacion());
+		crearExcelTask.setOnCancelled(event -> alarmaList.manejarFallo(mensajeCancelarExportar, prontInfo));
 
 		// Iniciar la tarea principal de creación de Excel en un hilo separado
 		excelThread.start();
-	}
-
-	/**
-	 * Muestra un mensaje en la interfaz con el texto proporcionado y el estilo de
-	 * fondo especificado.
-	 *
-	 * @param mensaje El mensaje a mostrar.
-	 * @param estilo  El estilo de fondo del mensaje.
-	 */
-	private void mostrarMensaje(String mensaje, String estilo) {
-		prontInfo.setOpacity(1);
-		prontInfo.setStyle("-fx-background-color: " + estilo);
-		prontInfo.setText(mensaje);
-	}
-
-	/**
-	 * Maneja el fallo de la tarea, mostrando un mensaje de error y deteniendo las
-	 * animaciones.
-	 */
-	private void manejarFallo() {
-		mostrarMensaje("ERROR. No se ha podido exportar correctamente.", "#F53636");
-		detenerAnimacionPront();
-		detenerAnimacion();
-	}
-
-	/**
-	 * Maneja la cancelación de la tarea, mostrando un mensaje de error y deteniendo
-	 * las animaciones.
-	 */
-	private void manejarCancelacion() {
-		mostrarMensaje("ERROR. Se ha cancelado la exportación.", "#F53636");
-		detenerAnimacionPront();
-		detenerAnimacion();
 	}
 
 	public void guardarDatosCSV() {
@@ -1439,13 +1300,13 @@ public class MenuPrincipalController implements Initializable {
 			Task<Boolean> task = crearTareaImportacionCSV(fichero);
 
 			// Configurar el comportamiento cuando la tarea está en ejecución
-			task.setOnRunning(e -> iniciarAnimacion());
+			task.setOnRunning(e -> AlarmaList.iniciarAnimacionCarga(progresoCarga));
 
 			// Configurar el comportamiento cuando la tarea se completa con éxito
 			task.setOnSucceeded(e -> procesarResultadoImportacion(task.getValue(), fichero));
 
 			// Configurar el comportamiento cuando la tarea falla
-			task.setOnFailed(e -> manejarFalloImportacion(task.getException()));
+			task.setOnFailed(e -> AlarmaList.manejarFalloImportacion(task.getException(), prontInfo));
 
 			// Iniciar la tarea principal de importación en un hilo separado
 			new Thread(task).start();
@@ -1463,22 +1324,26 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	private void procesarResultadoImportacion(Boolean resultado, File fichero) {
+
 		if (resultado) {
 			// Lógica después de una importación exitosa
 			ejecutarOperacionLecturaGuardadoBD(fichero);
+			AlarmaList.detenerAnimacion();
 		} else {
 			// Lógica después de una importación fallida
-			mostrarMensajeError("No se ha podido importar correctamente.");
+			String mensaje = "No se ha podido importar correctamente.";
+			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 		}
 	}
 
 	private void ejecutarOperacionLecturaGuardadoBD(File fichero) {
 		FuncionesExcel funcionesExcel = new FuncionesExcel();
+		AlarmaList alarmaList = new AlarmaList();
 		Platform.runLater(() -> {
 			prontInfo.setStyle(null);
 			prontInfo.clear();
 			prontInfo.setOpacity(1);
-			Thread animationThread = new Thread(this::iniciarAnimacionSubida);
+			Thread animationThread = new Thread(() -> alarmaList.iniciarAnimacionSubida(prontInfo));
 			animationThread.start();
 
 			String sql = "INSERT INTO comicsbbdd(ID,nomComic,caja_deposito,precio_comic,codigo_comic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,fecha_publicacion,nomGuionista,nomDibujante,puntuacion,portada,key_issue,url_referencia,estado)"
@@ -1491,75 +1356,27 @@ public class MenuPrincipalController implements Initializable {
 
 				lecturaTask.setOnSucceeded(event -> {
 					// Lógica después de la inserción exitosa en la base de datos
-					mostrarMensajeExito("Fichero CSV importado de forma correcta");
-					ejecutarCargaDatosBD();
+					String mensaje = "Fichero CSV importado de forma correcta";
+					AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
+					cargarDatosDataBase();
 				});
 
 				lecturaTask.setOnFailed(event -> {
 					// Lógica después de una inserción fallida en la base de datos
-					manejarFalloGuardadoBD(lecturaTask.getException());
+					AlarmaList.manejarFalloGuardadoBD(lecturaTask.getException(), prontInfo);
 				});
 
 				new Thread(lecturaTask).start();
 
 			} catch (IOException ex) {
 				// Lógica después de un error al importar
-				manejarFalloImportacion(ex);
+				AlarmaList.manejarFalloImportacion(ex, prontInfo);
 			}
+
+//			AlarmaList.detenerAnimacionPront(prontInfo);
+			AlarmaList.detenerAnimacion();
+			AlarmaList.detenerAnimacionCarga(progresoCarga);
 		});
-	}
-
-	private void ejecutarCargaDatosBD() {
-		cargarDatosDataBase();
-	}
-
-	private void manejarFalloImportacion(Throwable exception) {
-		exception.printStackTrace();
-		Platform.runLater(() -> nav.alertaException("Error al importar el fichero CSV: " + exception.getMessage()));
-		mostrarMensajeError("Error. No se ha podido importar correctamente.");
-	}
-
-	private void manejarFalloGuardadoBD(Throwable exception) {
-		if (exception != null) {
-			exception.printStackTrace();
-			Platform.runLater(
-					() -> nav.alertaException("Error al guardar datos en la base de datos: " + exception.getMessage()));
-		}
-		mostrarMensajeError("ERROR. No se ha podido guardar correctamente en la base de datos.");
-	}
-
-	private void mostrarMensajeError(String mensaje) {
-		prontInfo.clear();
-		detenerAnimacionPront();
-		prontInfo.setOpacity(1);
-		prontInfo.setStyle("-fx-background-color: #F53636");
-		prontInfo.setText(mensaje);
-		detenerAnimacion();
-	}
-
-	private void mostrarMensajeExito(String mensaje) {
-		prontInfo.clear();
-		detenerAnimacionPront();
-		prontInfo.setOpacity(1);
-		prontInfo.setStyle("-fx-background-color: #A0F52D");
-		prontInfo.setText(mensaje);
-		detenerAnimacion();
-	}
-
-	/**
-	 * Inicia la animación del progreso de carga.
-	 */
-	public void iniciarAnimacion() {
-		progresoCarga.setVisible(true);
-		progresoCarga.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
-	}
-
-	/**
-	 * Detiene la animación del progreso de carga.
-	 */
-	public void detenerAnimacion() {
-		progresoCarga.setVisible(false);
-		progresoCarga.setProgress(0); // Establece el progreso en 0 para detener la animación
 	}
 
 	/**
@@ -1570,34 +1387,35 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	public void makeSQL() {
 
+		libreria = new DBLibreriaManager();
+
 		String frase = "Fichero SQL";
 
 		String formato = "*.sql";
 
 		File fichero = Utilidades.tratarFichero(frase, formato).showSaveDialog(null); // Llamada a funcion
 
-		libreria = new DBLibreriaManager();
 		prontInfo.setOpacity(0);
 		if (fichero != null) {
 
 			if (Utilidades.isWindows()) {
 				libreria.backupWindows(fichero); // Llamada a funcion
-				prontInfo.setOpacity(1);
-				prontInfo.setStyle("-fx-background-color: #A0F52D");
-				prontInfo.setText("Base de datos exportada \ncorrectamente");
+				String mensaje = "Base de datos exportada \ncorrectamente";
+
+				AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
 
 			} else {
 				if (Utilidades.isUnix()) {
 					libreria.backupLinux(fichero); // Llamada a funcion
-					prontInfo.setOpacity(1);
-					prontInfo.setStyle("-fx-background-color: #A0F52D");
-					prontInfo.setText("Base de datos exportada \ncorrectamente");
+					String mensaje = "Base de datos exportada \ncorrectamente";
+
+					AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
 				}
 			}
 		} else {
-			prontInfo.setOpacity(1);
-			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("ERROR. Se ha cancelado la exportacion de la base de datos.");
+			String mensaje = "ERROR. Se ha cancelado la exportacion de la base de datos.";
+
+			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 		}
 	}
 
@@ -1607,15 +1425,16 @@ public class MenuPrincipalController implements Initializable {
 	 * 
 	 * @throws SQLException
 	 */
-	public List<Comic> listaPorParametro() throws SQLException {
+	public List<Comic> listaPorParametro() {
 		libreria = new DBLibreriaManager();
 		Comic datos = camposComic();
 		prontInfo.setOpacity(1);
 		prontInfo.setText(funcionesTabla.resultadoBusquedaPront(datos).getText());
 		busquedaGeneral.setText("");
 
-		List<Comic> listComic = FXCollections.observableArrayList(libreria.busquedaParametro(datos, busquedaGeneral.getText()));
-		
+		List<Comic> listComic = FXCollections
+				.observableArrayList(libreria.busquedaParametro(datos, busquedaGeneral.getText()));
+
 		return listComic;
 	}
 
@@ -1674,9 +1493,14 @@ public class MenuPrincipalController implements Initializable {
 	 * Realiza la limpieza de datos en la interfaz gráfica.
 	 */
 	private void limpiezaDeDatos() {
-		// Limpiar todos los campos de ComboBox y sus valores
-		for (ComboBox<String> comboBox : Arrays.asList(nombreComic, numeroComic, nombreFirma, nombreGuionista,
-				nombreVariante, numeroCaja, nombreProcedencia, nombreFormato, nombreEditorial, nombreDibujante)) {
+
+		List<ComboBox<String>> listaComboBox = new ArrayList<>(
+				List.of(nombreComic, numeroComic, nombreVariante, nombreProcedencia, nombreFormato, nombreDibujante,
+						nombreGuionista, nombreEditorial, nombreFirma, numeroCaja));
+
+		// Iterar sobre todos los ComboBox para realizar la limpieza
+		for (ComboBox<String> comboBox : listaComboBox) {
+			// Limpiar el campo
 			comboBox.setValue("");
 			comboBox.getEditor().setText("");
 		}
@@ -1687,6 +1511,7 @@ public class MenuPrincipalController implements Initializable {
 		prontInfo.setOpacity(0);
 		tablaBBDD.getItems().clear();
 		imagencomic.setImage(null);
+		tablaBBDD.refresh();
 
 	}
 
@@ -1750,7 +1575,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void volverMenu(ActionEvent event) throws IOException {
-		JDBC.DBManager.close();
+		DBManager.close();
 		nav.verAccesoBBDD();
 
 		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();

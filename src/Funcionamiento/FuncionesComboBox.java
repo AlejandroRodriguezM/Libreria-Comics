@@ -228,18 +228,54 @@ public class FuncionesComboBox {
 					DBLibreriaManager.nombreEditorialList, DBLibreriaManager.nombreFirmaList,
 					DBLibreriaManager.numeroCajaList);
 
-			for (int i = 0; i < totalComboboxes; i++) {
-				comboboxes.get(i).hide();
-				List<String> itemsActuales = DBLibreriaManager.listaOrdenada.get(i);
-				if (itemsActuales != null && !itemsActuales.isEmpty()) {
-					ObservableList<String> itemsObservable = FXCollections.observableArrayList(itemsActuales);
-					comboboxes.get(i).setItems(itemsObservable);
+			if (sonListasSimilares(DBLibreriaManager.listaOrdenada, DBLibreriaManager.itemsList)) {
+				System.out.println("Las listas son idénticas.");
 
-					itemsActuales = FXCollections.observableArrayList(itemsActuales);
+				for (int i = 0; i < totalComboboxes; i++) {
+					comboboxes.get(i).hide();
+					List<String> itemsActuales = DBLibreriaManager.listaOrdenada.get(i);
+					if (itemsActuales != null && !itemsActuales.isEmpty()) {
+						ObservableList<String> itemsObservable = FXCollections.observableArrayList(itemsActuales);
+						comboboxes.get(i).setItems(itemsObservable);
+
+						itemsActuales = FXCollections.observableArrayList(itemsActuales);
+					}
 				}
+
+			} else {
+				System.out.println("Las listas no son identicas");
+				limpiezaDeDatos(comboboxes);
 			}
+
 			isUserInput = true; // Re-enable user input after programmatic updates
 		}
+	}
+
+	public static boolean sonListasSimilares(List<List<String>> lista1, List<List<String>> lista2) {
+
+		// Comparamos cada sublista
+		for (int i = 0; i < lista1.size(); i++) {
+			List<String> sublista1 = lista1.get(i);
+			List<String> sublista2 = lista2.get(i);
+
+			// Verificamos si hay al menos un elemento en común
+			if (tieneElementoComun(sublista1, sublista2)) {
+				return true;
+			}
+		}
+
+		// Si llegamos aquí, no hay coincidencias en ninguna sublista
+		return false;
+	}
+
+	private static boolean tieneElementoComun(List<String> lista1, List<String> lista2) {
+		// Verificamos si hay al menos un elemento en común entre las listas
+		for (String elemento : lista1) {
+			if (lista2.contains(elemento)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -269,15 +305,6 @@ public class FuncionesComboBox {
 
 		isUserInput = false; // Deshabilitar la entrada del usuario durante la limpieza
 
-		// Limpiar todos los campos de texto y valores de los ComboBoxes
-		for (ComboBox<String> comboBox : comboboxes) {
-			// Configurar el tamaño y apariencia del despliegue del ComboBox
-			modificarPopup(comboBox);
-
-			comboBox.setValue("");
-			comboBox.getEditor().setText("");
-		}
-
 		// Restaurar los elementos originales para cada ComboBox
 		for (ComboBox<String> comboBox : originalComboBoxItems.keySet()) {
 			ObservableList<String> originalItems = originalComboBoxItems.get(comboBox);
@@ -297,19 +324,15 @@ public class FuncionesComboBox {
 	 * @param comboboxes La lista de ComboBoxes a rellenar.
 	 */
 	public void rellenarComboBox(List<ComboBox<String>> comboboxes) {
-
-		List<List<String>> itemsList = Arrays.asList(DBLibreriaManager.listaNombre, DBLibreriaManager.listaNumeroComic,
-				DBLibreriaManager.listaVariante, DBLibreriaManager.listaProcedencia, DBLibreriaManager.listaFormato,
-				DBLibreriaManager.listaDibujante, DBLibreriaManager.listaGuionista, DBLibreriaManager.listaEditorial,
-				DBLibreriaManager.listaFirma, DBLibreriaManager.listaCaja);
-
+		
 		int i = 0;
 
 		for (ComboBox<String> comboBox : comboboxes) {
 			if (comboBox != null) {
 				modificarPopup(comboBox);
 
-				List<String> items = itemsList.get(i);
+//				List<String> items = Utilidades.listaArregladaAutoComplete(DBLibreriaManager.itemsList.get(i));
+				List<String> items = DBLibreriaManager.itemsList.get(i);
 				try {
 					final int currentIndex = i; // Copia final de i para usar en expresiones lambda
 
@@ -349,6 +372,7 @@ public class FuncionesComboBox {
 							}
 						}
 					});
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -667,7 +691,7 @@ public class FuncionesComboBox {
 
 		}
 	}
-	
+
 	/**
 	 * Funcion que permite modificar la puntuacion de un comic, siempre y cuando el
 	 * ID exista en la base de datos

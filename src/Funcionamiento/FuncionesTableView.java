@@ -261,42 +261,21 @@ public class FuncionesTableView {
 	 * @return Un TextArea con el resultado de búsqueda.
 	 * @throws SQLException Si ocurre un error de base de datos.
 	 */
-	public TextArea resultadoBusquedaPront(Comic comic) throws SQLException {
+	public TextArea resultadoBusquedaPront(Comic comic) {
 		libreria = new DBLibreriaManager();
-		StringBuilder datoSeleccionadoBuilder = new StringBuilder();
 		TextArea prontInfoTable = new TextArea(); // Crear un nuevo TextArea
 
-		if (comic != null) {
-			String[] campos = { comic.getNombre(), comic.getNumero(), comic.getVariante(), comic.getProcedencia(),
-					comic.getFormato(), comic.getEditorial(), comic.getFecha(), comic.getNumCaja(),
-					comic.getGuionista(), comic.getDibujante(), comic.getFirma() };
-
-			int nonEmptyFieldCount = 0;
-			for (String campo : campos) {
-				if (!campo.isEmpty()) {
-					nonEmptyFieldCount++;
-					if (nonEmptyFieldCount > 1) {
-						datoSeleccionadoBuilder.append(", ");
-					}
-					datoSeleccionadoBuilder.append(campo);
-				}
-			}
-		}
 		prontInfoTable.setOpacity(1);
 
-		String datoSeleccionado = datoSeleccionadoBuilder.toString();
-		if (!libreria.numeroResultados(comic) && !datoSeleccionado.isEmpty()) {
+		String datoSeleccionado = libreria.datosConcatenados(comic);
+		if (datoSeleccionado.isEmpty()) {
 			// Show error message in red when no search fields are specified
 			prontInfoTable.setStyle("-fx-text-fill: red;");
 			prontInfoTable.setText("Error: No existe comic con los datos: " + datoSeleccionado + "\n \n \n");
-		} else if (datoSeleccionado.isEmpty()) {
-			prontInfoTable.setStyle("-fx-text-fill: red;");
-			prontInfoTable.setText("Error: No has seleccionado ningun comic para filtrar.\n \n \n");
 		} else {
 			int totalComics = libreria.numeroTotalSelecionado(comic);
 			prontInfoTable.setStyle("-fx-text-fill: black;"); // Reset the text color to black
-			prontInfoTable.setText("El número de cómics donde aparece la búsqueda: " + datoSeleccionado + " es: "
-					+ totalComics + "\n \n \n");
+			prontInfoTable.setText("El número de cómics donde aparece la búsqueda es: " + totalComics + "\n \n \n");
 		}
 
 		return prontInfoTable;
@@ -360,7 +339,7 @@ public class FuncionesTableView {
 			PropertyValueFactory<Comic, String> valueFactory = new PropertyValueFactory<>(columnName);
 			column.setCellValueFactory(valueFactory);
 		}
-		
+
 	}
 
 	/**

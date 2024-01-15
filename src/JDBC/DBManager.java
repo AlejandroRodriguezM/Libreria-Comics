@@ -80,6 +80,8 @@ public class DBManager {
 	 * URL de la base de datos.
 	 */
 	public static String DB_URL;
+	
+	public static boolean estadoConexion = false;
 
 	/**
 	 * Carga el controlador JDBC para el proyecto.
@@ -129,6 +131,8 @@ public class DBManager {
 		DB_USER = datos[2];
 		DB_PASS = datos[3];
 		DB_HOST = datos[4];
+
+		conexion();
 	}
 
 	/**
@@ -172,6 +176,8 @@ public class DBManager {
 			if (conn == null) {
 				nav.alertaException("No se pudo establecer la conexión a la base de datos");
 			}
+			
+			estadoConexion = true;
 			return conn;
 		} catch (SQLException ex) {
 			nav.alertaException("ERROR. Revisa los datos del fichero de conexion.");

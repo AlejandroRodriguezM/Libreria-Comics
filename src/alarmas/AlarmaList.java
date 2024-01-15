@@ -5,12 +5,16 @@ import java.util.List;
 import java.util.Map;
 
 import Funcionamiento.Utilidades;
+import Funcionamiento.Ventanas;
+import JDBC.DBManager;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.Tooltip;
 import javafx.util.Duration;
 
@@ -36,6 +40,11 @@ public class AlarmaList {
 	private Label alarmaConexionInternet = new Label("alarmaConexionInternet");
 	private Label alarmaConexionSql = new Label("alarmaConexionSql");
 	private Label iniciarAnimacionEspera = new Label("prontEstadoConexion");
+
+	/**
+	 * Instancia de la clase Ventanas para la navegación.
+	 */
+	private static Ventanas nav = new Ventanas();
 
 	public AlarmaList() {
 		// Agregar instancias de AlarmaItem a la lista alarmaItems
@@ -518,4 +527,245 @@ public class AlarmaList {
 		Tooltip tooltip = new Tooltip(mensaje);
 		label.setTooltip(tooltip);
 	}
+
+	// Alarmas de pront en MenuPrincipal
+
+	/**
+	 * Metodo que permite crear una animacion
+	 */
+	public void iniciarAnimacionSubida(TextArea prontInfo) {
+		prontInfo.setOpacity(1);
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarSubida1 = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontInfo.textProperty(), "Subido datos a la " + DBManager.DB_NAME + " ."));
+		KeyFrame mostrarSubida2 = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(prontInfo.textProperty(), "Subido datos a la " + DBManager.DB_NAME + " .."));
+		KeyFrame mostrarSubida3 = new KeyFrame(Duration.seconds(1),
+				new KeyValue(prontInfo.textProperty(), "Subido datos a la " + DBManager.DB_NAME + " ..."));
+		KeyFrame mostrarSubida4 = new KeyFrame(Duration.seconds(1.5),
+				new KeyValue(prontInfo.textProperty(), "Subido datos a la " + DBManager.DB_NAME + " ...."));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarSubida1, mostrarSubida2, mostrarSubida3, mostrarSubida4);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+
+	/**
+	 * Metodo que permite crear una animacion
+	 */
+	public static void iniciarAnimacionBajada(TextArea prontInfo) {
+		prontInfo.setOpacity(1);
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarBajada1 = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontInfo.textProperty(), "Eliminando base de datos ."));
+		KeyFrame mostrarBajada2 = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(prontInfo.textProperty(), "Eliminando base de datos .."));
+		KeyFrame mostrarBajada3 = new KeyFrame(Duration.seconds(1),
+				new KeyValue(prontInfo.textProperty(), "Eliminando base de datos ..."));
+		KeyFrame mostrarBajada4 = new KeyFrame(Duration.seconds(1.5),
+				new KeyValue(prontInfo.textProperty(), "Eliminando base de datos ...."));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarBajada1, mostrarBajada2, mostrarBajada3, mostrarBajada4);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+
+	/**
+	 * Metodo que permite crear una animacion
+	 */
+	public void iniciarAnimacionEstadistica(TextArea prontInfo) {
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarDescarga1 = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontInfo.textProperty(), "Generando fichero de estadisticas ."));
+		KeyFrame mostrarDescarga2 = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(prontInfo.textProperty(), "Generando fichero de estadisticas .."));
+		KeyFrame mostrarDescarga3 = new KeyFrame(Duration.seconds(1),
+				new KeyValue(prontInfo.textProperty(), "Generando fichero de estadisticas ..."));
+		KeyFrame mostrarDescarga4 = new KeyFrame(Duration.seconds(1.5),
+				new KeyValue(prontInfo.textProperty(), "Generando fichero de estadisticas ...."));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarDescarga1, mostrarDescarga2, mostrarDescarga3, mostrarDescarga4);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+
+	/**
+	 * Maneja el fallo de la tarea, mostrando un mensaje de error y deteniendo las
+	 * animaciones.
+	 */
+	public void manejarFallo(String mensaje, TextArea prontInfo) {
+		prontInfo.clear();
+		mostrarMensajePront(mensaje, false, prontInfo);
+		detenerAnimacionPront(prontInfo);
+		detenerAnimacion();
+	}
+
+	public static void mostrarMensajePront(String mensaje, boolean exito, TextArea prontInfo) {
+		prontInfo.clear();
+		detenerAnimacionPront(prontInfo);
+		prontInfo.setOpacity(1);
+		if (exito) {
+			prontInfo.setStyle("-fx-background-color: #A0F52D");
+		} else {
+			prontInfo.setStyle("-fx-background-color: #F53636");
+		}
+		prontInfo.setText(mensaje);
+		detenerAnimacion();
+	}
+
+	/**
+	 * Metodo que permite detener una animacion
+	 */
+	public static void detenerAnimacionPront(TextArea prontInfo) {
+		if (timeline != null) {
+			timeline.stop();
+			timeline = null; // Destruir el objeto timeline
+			prontInfo.setText("Fichero creado correctamente");
+		}
+	}
+
+	/**
+	 * Inicia la animación del progreso de carga.
+	 */
+	public static void iniciarAnimacionCarga(ProgressIndicator progresoCarga) {
+		progresoCarga.setVisible(true);
+		progresoCarga.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
+	}
+
+	/**
+	 * Detiene la animación del progreso de carga.
+	 */
+	public static void detenerAnimacionCarga(ProgressIndicator progresoCarga) {
+		
+		progresoCarga.setVisible(false);
+		progresoCarga.setProgress(0); // Establece el progreso en 0 para detener la animación
+	}
+
+	public static void manejarFalloImportacion(Throwable exception, TextArea prontInfo) {
+		exception.printStackTrace();
+		Platform.runLater(() -> nav.alertaException("Error al importar el fichero CSV: " + exception.getMessage()));
+		String mensaje = "Error. No se ha podido importar correctamente.";
+		mostrarMensajePront(mensaje, false, prontInfo);
+	}
+
+	public static void manejarFalloGuardadoBD(Throwable exception, TextArea prontInfo) {
+		if (exception != null) {
+			exception.printStackTrace();
+			Platform.runLater(
+					() -> nav.alertaException("Error al guardar datos en la base de datos: " + exception.getMessage()));
+		}
+		String mensaje = "ERROR. No se ha podido guardar correctamente en la base de datos.";
+
+		mostrarMensajePront(mensaje, false, prontInfo);
+	}
+
+	// Funciones CrearBBDDController
+
+	/**
+	 * Metodo que permite crear una animacion
+	 * 
+	 */
+	public static void iniciarAnimacionBaseCreada(Label prontInformativo, String DB_NAME) {
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarConectado = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontInformativo.textProperty(), "Base de datos: " + DB_NAME + " creada correctamente"));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.6), new KeyValue(prontInformativo.textProperty(), ""));
+		KeyFrame mostrarConectado2 = new KeyFrame(Duration.seconds(1.1),
+				new KeyValue(prontInformativo.textProperty(), "Base de datos: " + DB_NAME + " creada correctamente"));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarConectado, ocultarTexto, mostrarConectado2);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+
+	/**
+	 * Metodo que permite crear una animacion
+	 * 
+	 */
+	public static void iniciarAnimacionBaseExiste(Label prontInformativo, String DB_NAME) {
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarConectado = new KeyFrame(Duration.ZERO, new KeyValue(prontInformativo.textProperty(),
+				"ERROR. Ya existe una base de datos llamada: " + DB_NAME));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.6), new KeyValue(prontInformativo.textProperty(), ""));
+		KeyFrame mostrarConectado2 = new KeyFrame(Duration.seconds(1.1), new KeyValue(prontInformativo.textProperty(),
+				"ERROR. Ya existe una base de datos llamada: " + DB_NAME));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarConectado, ocultarTexto, mostrarConectado2);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+
+	/**
+	 * Metodo que permite crear una animacion
+	 * 
+	 */
+	public static void iniciarAnimacionBaseError(String error, Label prontInformativo) {
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarConectado = new KeyFrame(Duration.ZERO, new KeyValue(prontInformativo.textProperty(), error));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.6), new KeyValue(prontInformativo.textProperty(), ""));
+		KeyFrame mostrarConectado2 = new KeyFrame(Duration.seconds(1.1),
+				new KeyValue(prontInformativo.textProperty(), error));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarConectado, ocultarTexto, mostrarConectado2);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+	
+	/**
+	 * Metodo que permite crear una animacion
+	 * 
+	 */
+	public static void iniciarAnimacionEsperaCreacion(Label prontInformativo) {
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarEsperando = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontInformativo.textProperty(), "Esperando entrada de datos"));
+		KeyFrame mostrarPunto = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(prontInformativo.textProperty(), "Esperando entrada de datos."));
+		KeyFrame mostrarDosPuntos = new KeyFrame(Duration.seconds(1),
+				new KeyValue(prontInformativo.textProperty(), "Esperando entrada de datos.."));
+		KeyFrame mostrarTresPuntos = new KeyFrame(Duration.seconds(1.5),
+				new KeyValue(prontInformativo.textProperty(), "Esperando entrada de datos..."));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(2), new KeyValue(prontInformativo.textProperty(), ""));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarEsperando, mostrarPunto, mostrarDosPuntos, mostrarTresPuntos,
+				ocultarTexto);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+
 }

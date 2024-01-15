@@ -11,6 +11,7 @@ import java.util.ResourceBundle;
 
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
+import JDBC.DBLibreriaManager;
 import JDBC.DBManager;
 import alarmas.AlarmaList;
 import javafx.event.ActionEvent;
@@ -155,26 +156,6 @@ public class AccesoBBDDController implements Initializable {
 	@FXML
 	private TextField passUsuarioTextField;
 
-//	/**
-//	 * Objeto para gestionar animaciones de la alarma.
-//	 */
-//	private Timeline animacionAlarmaTimeline;
-//
-//	/**
-//	 * Objeto para gestionar animaciones de la alarma en línea.
-//	 */
-//	private Timeline animacionAlarmaOnlineTimeline;
-//
-//	/**
-//	 * Objeto para gestionar animaciones de la alarma de conexión a Internet.
-//	 */
-//	private Timeline animacionAlarmaTimelineInternet;
-//
-//	/**
-//	 * Objeto para gestionar animaciones de la alarma de conexión a MySQL.
-//	 */
-//	private Timeline animacionAlarmaTimelineMySql;
-
 	/**
 	 * Estado del botón de alternancia del ojo.
 	 */
@@ -184,11 +165,6 @@ public class AccesoBBDDController implements Initializable {
 	 * Objeto para gestionar las ventanas de navegación.
 	 */
 	private static Ventanas nav = new Ventanas();
-
-	/**
-	 * Controlador para crear la base de datos.
-	 */
-	private static CrearBBDDController cbd = null;
 
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
@@ -272,28 +248,6 @@ public class AccesoBBDDController implements Initializable {
 	}
 
 	/**
-	 * Funcion que permite el acceso a la ventana de menuPrincipal
-	 *
-	 * @param event
-	 */
-	@FXML
-	void entrarMenu(ActionEvent event) {
-
-		if (JDBC.DBManager.isConnected()) { // Siempre que el metodo de la clase DBManager sea true, permitira acceder
-			DBManager.resetConnection();
-			// al menu principal
-			nav.verMenuPrincipal(); // Llamada a metodo de la clase NavegacionVentanas. Permite cargar y mostrar el
-									// menu principal
-			Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
-			myStage.close();
-		} else { // En caso contrario mostrara el siguiente mensaje.
-			AlarmaList.detenerAnimacion();
-			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
-			AlarmaList.iniciarAnimacionConexion(prontEstadoConexion);
-		}
-	}
-
-	/**
 	 * Maneja el evento de entrar en línea. Guarda el usuario y contraseña si se
 	 * seleccionó la opción "Recordar".
 	 *
@@ -337,6 +291,28 @@ public class AccesoBBDDController implements Initializable {
 	}
 
 	/**
+	 * Funcion que permite el acceso a la ventana de menuPrincipal
+	 *
+	 * @param event
+	 */
+	@FXML
+	void entrarMenu(ActionEvent event) {
+
+		if (DBManager.estadoConexion) { // Siempre que el metodo de la clase DBManager sea true, permitira acceder
+			DBManager.resetConnection();
+			// al menu principal
+			nav.verMenuPrincipal(); // Llamada a metodo de la clase NavegacionVentanas. Permite cargar y mostrar el
+									// menu principal
+			Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
+			myStage.close();
+		} else { // En caso contrario mostrara el siguiente mensaje.
+			AlarmaList.detenerAnimacion();
+			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
+			AlarmaList.iniciarAnimacionConexion(prontEstadoConexion);
+		}
+	}
+
+	/**
 	 * Maneja el evento de enviar datos a la base de datos.
 	 *
 	 * @param event El evento de acción que desencadenó la función.
@@ -345,11 +321,11 @@ public class AccesoBBDDController implements Initializable {
 	void enviarDatos(ActionEvent event) {
 
 		AlarmaList alarmaList = new AlarmaList();
-
 		if (configurarConexion()) {
 
 			if (JDBC.DBManager.isConnected()) {
-				if (cbd.chechTables()) {
+				if (DBLibreriaManager.checkTables()) {
+
 					alarmaList.iniciarAnimacionAlarmaOnline(alarmaConexion);
 					alarmaList.manejarConexionExitosa(prontEstadoConexion);
 
@@ -369,12 +345,12 @@ public class AccesoBBDDController implements Initializable {
 	 * @return true si la configuración es exitosa, false de lo contrario.
 	 */
 	private boolean configurarConexion() {
+
 		if (!JDBC.DBManager.loadDriver()) {
 			return false;
 		}
 		envioDatosBBDD();
-		DBManager.conexion();
-		cbd = new CrearBBDDController();
+
 		return true;
 	}
 

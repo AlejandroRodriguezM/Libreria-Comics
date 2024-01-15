@@ -31,9 +31,7 @@ import java.net.URL;
  */
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -42,9 +40,8 @@ import java.util.ResourceBundle;
 
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
-import JDBC.DBManager;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
+import JDBC.DBLibreriaManager;
+import alarmas.AlarmaList;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -59,7 +56,6 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import javafx.util.converter.IntegerStringConverter;
 
 /**
@@ -160,11 +156,6 @@ public class CrearBBDDController implements Initializable {
 	private static Ventanas nav = new Ventanas();
 
 	/**
-	 * Controlador para la creación de la base de datos.
-	 */
-	private static CrearBBDDController cbd = null;
-
-	/**
 	 * Variables para almacenar información de la base de datos.
 	 */
 	public static String DB_USER;
@@ -190,7 +181,7 @@ public class CrearBBDDController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		detenerAnimacion();
-		iniciarAnimacionEspera();
+		AlarmaList.iniciarAnimacionEsperaCreacion(prontInformativo);
 
 		TextFormatter<Integer> textFormatterAni = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			String newText = change.getControlNewText();
@@ -307,7 +298,7 @@ public class CrearBBDDController implements Initializable {
 
 		if (!errorMessage.isEmpty()) {
 			prontInformativo.setStyle("-fx-background-color: #DD370F");
-			iniciarAnimacionBaseError(errorMessage);
+			AlarmaList.iniciarAnimacionBaseError(errorMessage, prontInformativo);
 			return true;
 		}
 		return false;
@@ -335,10 +326,10 @@ public class CrearBBDDController implements Initializable {
 	void crearBBDD(ActionEvent event) throws IOException, SQLException {
 		if (datosBBDD() != null && checkDatabaseExists()) {
 			createDataBase();
-			createTable();
+			DBLibreriaManager.createTable();
 			Utilidades.crearCarpeta();
 			prontInformativo.setStyle("-fx-background-color: #A0F52D");
-			iniciarAnimacionBaseCreada();
+			AlarmaList.iniciarAnimacionBaseCreada(prontInformativo, DB_NAME);
 			Utilidades.guardarDatosBaseLocal(datosBBDD(), prontInformativo, null);
 		} else {
 			System.out.println("Je");
@@ -361,39 +352,7 @@ public class CrearBBDDController implements Initializable {
 			statement.executeUpdate(sentenciaSQL);
 
 		} catch (SQLException e) {
-			nav.alertaException("No se ha podido crear la base de datos: \n" + e.toString());
-		}
-	}
-
-	/**
-	 * Crea las tablas de la base de datos si no existen.
-	 */
-	public static void createTable() {
-		Statement statement;
-		PreparedStatement preparedStatement;
-		String url = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
-
-		try {
-			Connection connection = DriverManager.getConnection(url, DB_USER, DB_PASS);
-			statement = connection.createStatement();
-
-			String dropTableSQL = "DROP TABLE IF EXISTS comicsbbdd";
-			String createTableSQL = "CREATE TABLE comicsbbdd (" + "ID INT NOT NULL AUTO_INCREMENT, "
-					+ "nomComic VARCHAR(150) NOT NULL, " + "caja_deposito TEXT, " + "precio_comic DOUBLE NOT NULL, "
-					+ "codigo_comic VARCHAR(150), " + "numComic INT NOT NULL, " + "nomVariante VARCHAR(150) NOT NULL, "
-					+ "firma VARCHAR(150) NOT NULL, " + "nomEditorial VARCHAR(150) NOT NULL, "
-					+ "formato VARCHAR(150) NOT NULL, " + "procedencia VARCHAR(150) NOT NULL, "
-					+ "fecha_publicacion DATE NOT NULL, " + "nomGuionista TEXT NOT NULL, "
-					+ "nomDibujante TEXT NOT NULL, " + "puntuacion VARCHAR(300) NOT NULL, " + "portada TEXT, "
-					+ "key_issue TEXT, " + "url_referencia TEXT NOT NULL, " + "estado TEXT NOT NULL, "
-					+ "PRIMARY KEY (ID)) " + "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-			statement.executeUpdate(dropTableSQL);
-			statement.executeUpdate(createTableSQL);
-
-			preparedStatement = connection.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");
-			preparedStatement.executeUpdate();
-		} catch (SQLException e) {
-			nav.alertaException(e.toString());
+			Utilidades.manejarExcepcion(e);
 		}
 	}
 
@@ -407,35 +366,24 @@ public class CrearBBDDController implements Initializable {
 	public boolean checkDatabaseExists() {
 		detenerAnimacion();
 		boolean exists = false;
-		ResultSet rs = null;
 		String sentenciaSQL = "SELECT COUNT(*) FROM information_schema.tables";
 
 		if (!DB_NAME.isEmpty()) {
 			sentenciaSQL += " WHERE table_schema = '" + DB_NAME + "'";
 		}
 
-		try {
-			rs = comprobarDataBase(sentenciaSQL);
-			exists = rs.getInt("COUNT(*)") < 1;
+		try (ResultSet rs = comprobarDataBase(sentenciaSQL)) {
+			int count = rs.getInt("COUNT(*)");
+			exists = count < 1;
 
 			if (exists) {
 				return true;
 			} else {
 				prontInformativo.setStyle("-fx-background-color: #DD370F");
-				iniciarAnimacionBaseExiste();
+				AlarmaList.iniciarAnimacionBaseExiste(prontInformativo, DB_NAME);
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
-			nav.alertaException("ERROR. Revisa los datos del fichero de conexion.");
-		} finally {
-			// Close the ResultSet if it's not null
-			if (rs != null) {
-				try {
-					rs.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
+			Utilidades.manejarExcepcion(e);
 		}
 		return false;
 	}
@@ -493,138 +441,7 @@ public class CrearBBDDController implements Initializable {
 		nombreBBDD.setText("");
 	}
 
-	/**
-	 * Método que verifica si las tablas de la base de datos existen. Si las tablas
-	 * existen, devuelve true. Si las tablas no existen, reconstruye la base de
-	 * datos y devuelve false.
-	 * 
-	 * @return true si las tablas existen, false si las tablas no existen y se
-	 *         reconstruyó la base de datos.
-	 */
-	public boolean chechTables() {
-		cbd = new CrearBBDDController();
-		DatabaseMetaData dbm;
-		try {
-			dbm = DBManager.conexion().getMetaData();
-			ResultSet tables = dbm.getTables(null, null, "comicsbbdd", null);
-			if (tables.next()) {
-				return true;
-			} else {
-				cbd.reconstruirBBDD();
-				return false;
-			}
-		} catch (SQLException e) {
 
-			nav.alertaException(e.toString());
-		}
-		return false;
-	}
-
-	/**
-	 * Funcion que reconstruye una base de datos.
-	 */
-	public void reconstruirBBDD() {
-		if (nav.alertaTablaError()) {
-			createTable();
-		} else {
-			String excepcion = "Debes de reconstruir la base de datos. Si no, no podras entrar";
-			nav.alertaException(excepcion);
-		}
-	}
-
-	/**
-	 * Metodo que permite crear una animacion
-	 * 
-	 */
-	private void iniciarAnimacionBaseCreada() {
-		timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
-
-		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarConectado = new KeyFrame(Duration.ZERO,
-				new KeyValue(prontInformativo.textProperty(), "Base de datos: " + DB_NAME + " creada correctamente"));
-		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.6), new KeyValue(prontInformativo.textProperty(), ""));
-		KeyFrame mostrarConectado2 = new KeyFrame(Duration.seconds(1.1),
-				new KeyValue(prontInformativo.textProperty(), "Base de datos: " + DB_NAME + " creada correctamente"));
-
-		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(mostrarConectado, ocultarTexto, mostrarConectado2);
-
-		// Iniciar la animación
-		timeline.play();
-	}
-
-	/**
-	 * Metodo que permite crear una animacion
-	 * 
-	 */
-	private void iniciarAnimacionBaseExiste() {
-		timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
-
-		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarConectado = new KeyFrame(Duration.ZERO, new KeyValue(prontInformativo.textProperty(),
-				"ERROR. Ya existe una base de datos llamada: " + DB_NAME));
-		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.6), new KeyValue(prontInformativo.textProperty(), ""));
-		KeyFrame mostrarConectado2 = new KeyFrame(Duration.seconds(1.1), new KeyValue(prontInformativo.textProperty(),
-				"ERROR. Ya existe una base de datos llamada: " + DB_NAME));
-
-		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(mostrarConectado, ocultarTexto, mostrarConectado2);
-
-		// Iniciar la animación
-		timeline.play();
-	}
-
-	/**
-	 * Metodo que permite crear una animacion
-	 * 
-	 */
-	private void iniciarAnimacionBaseError(String error) {
-		timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
-
-		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarConectado = new KeyFrame(Duration.ZERO, new KeyValue(prontInformativo.textProperty(), error));
-		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.6), new KeyValue(prontInformativo.textProperty(), ""));
-		KeyFrame mostrarConectado2 = new KeyFrame(Duration.seconds(1.1),
-				new KeyValue(prontInformativo.textProperty(), error));
-
-		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(mostrarConectado, ocultarTexto, mostrarConectado2);
-
-		// Iniciar la animación
-		timeline.play();
-	}
-
-	/**
-	 * Metodo que permite crear una animacion
-	 * 
-	 */
-	private void iniciarAnimacionEspera() {
-		timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
-
-		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarEsperando = new KeyFrame(Duration.ZERO,
-				new KeyValue(prontInformativo.textProperty(), "Esperando entrada de datos"));
-		KeyFrame mostrarPunto = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(prontInformativo.textProperty(), "Esperando entrada de datos."));
-		KeyFrame mostrarDosPuntos = new KeyFrame(Duration.seconds(1),
-				new KeyValue(prontInformativo.textProperty(), "Esperando entrada de datos.."));
-		KeyFrame mostrarTresPuntos = new KeyFrame(Duration.seconds(1.5),
-				new KeyValue(prontInformativo.textProperty(), "Esperando entrada de datos..."));
-		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(2), new KeyValue(prontInformativo.textProperty(), ""));
-
-		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(mostrarEsperando, mostrarPunto, mostrarDosPuntos, mostrarTresPuntos,
-				ocultarTexto);
-
-		// Iniciar la animación
-		timeline.play();
-	}
-
-	
 
 	/**
 	 * Detiene la animación actual si está en ejecución.

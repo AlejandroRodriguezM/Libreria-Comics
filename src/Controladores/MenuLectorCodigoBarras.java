@@ -203,7 +203,7 @@ public class MenuLectorCodigoBarras {
 			// Verificar si se presionó la tecla ENTER
 			if (keyCode == KeyCode.ENTER) {
 				// Verificar la validez del código de barras antes de procesarlo
-				if (esCodigoValido(codigoEscaneado.trim())) {
+				if (Utilidades.esCodigoValido(codigoEscaneado.trim())) {
 					agregarCodigoBarras(codigoEscaneado);
 				}
 
@@ -237,8 +237,7 @@ public class MenuLectorCodigoBarras {
 	@FXML
 	void introducirCodigoDesdeBoton(ActionEvent event) {
 		String codigo = campoCodigoTexto.getText();
-		System.out.println(esCodigoValido(codigo));
-		if (esCodigoValido(codigo)) {
+		if (Utilidades.esCodigoValido(codigo)) {
 			agregarCodigoBarras(codigo);
 			campoCodigoTexto.setText("");
 		}
@@ -255,17 +254,6 @@ public class MenuLectorCodigoBarras {
 		}
 		codigoBarrasTextArea.setText(contenidoTextArea.toString());
 
-	}
-
-	/**
-	 * Verifica si el código es válido, es decir, contiene solo números y letras y
-	 * tiene una longitud mayor a 0.
-	 *
-	 * @param codigo El código a validar.
-	 * @return true si el código es válido, false de lo contrario.
-	 */
-	private boolean esCodigoValido(String codigo) {
-		return codigo.length() >= 8 && codigo.matches("^[a-zA-Z0-9]+$");
 	}
 
 	/**

@@ -457,7 +457,7 @@ public class FuncionesExcel {
 						indiceFila++;
 
 						if (tipoBusqueda.equalsIgnoreCase("Completa") && directorioFichero != null) {
-							libreria.saveImageFromDataBase(comic.getImagen(), directorioImagenes);
+							Utilidades.saveImageFromDataBase(comic.getImagen(), directorioImagenes);
 
 						}
 					}
@@ -538,6 +538,7 @@ public class FuncionesExcel {
 					verCargaComics();
 					// Se leerán los datos hasta que no existan más datos
 					while ((lineText = lineReader.readLine()) != null) {
+						nuevoID++;
 						String[] data = lineText.split(";");
 						String id = Integer.toString(nuevoID);
 						String nombre = data[1];
