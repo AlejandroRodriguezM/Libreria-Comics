@@ -578,21 +578,21 @@ public class Utilidades {
 	 * @param listaComics
 	 * @return
 	 */
-    public static List<String> listaArregladaAutoComplete(List<String> listaComics) {
-        Set<String> uniqueSet = new HashSet<>();
-        List<String> result = new ArrayList<>();
+	public static List<String> listaArregladaAutoComplete(List<String> listaComics) {
+		Set<String> uniqueSet = new HashSet<>();
+		List<String> result = new ArrayList<>();
 
-        for (String s : listaComics) {
-            if (uniqueSet.add(s)) {
-                result.add(s);
-            }
-        }
+		for (String s : listaComics) {
+			if (uniqueSet.add(s)) {
+				result.add(s);
+			}
+		}
 
-        // Ordenar la lista resultante de forma ascendente
-        result.sort(String::compareTo);
+		// Ordenar la lista resultante de forma ascendente
+		result.sort(String::compareTo);
 
-        return result;
-    }
+		return result;
+	}
 
 	/**
 	 * Elimina la imagen temporal de muestra de la base de datos.
@@ -842,8 +842,6 @@ public class Utilidades {
 
 		File archivo = new File(nombreArchivo);
 		if (!archivo.exists()) {
-			System.out.println(
-					"El archivo " + nombreArchivo + " no existe. Creando archivo con claves predeterminadas...");
 			guardarDatosClavesMarvel();
 		}
 
@@ -865,7 +863,6 @@ public class Utilidades {
 			if (clavePublica != null && clavePrivada != null) {
 				return clavePrivada + ":" + clavePublica; // Retornar ambas claves en un formato deseado
 			} else {
-				System.err.println("No se encontraron ambas claves en el archivo " + nombreArchivo);
 				return ""; // Manejo de error: devuelve una cadena vacía en caso de que falte alguna clave
 			}
 		} catch (IOException e) {
@@ -1112,9 +1109,6 @@ public class Utilidades {
 	 * @return true si la cadena es una URL válida, false en caso contrario.
 	 */
 	public static boolean isImageURL(String cadena) {
-		// Verificar si la cadena es una URL válida
-		System.out.println(cadena);
-		System.out.println("Valor: " + isURL(cadena));
 
 		if (isURL(cadena)) {
 			// Obtener la extensión del archivo desde la URL
@@ -1201,7 +1195,6 @@ public class Utilidades {
 				crearCarpetaSiNoExiste(carpetaDestino);
 				String rutaDestino = carpetaDestino + File.separator + nombreImagen;
 
-				System.out.println("Imagen descargada y guardada como JPG correctamente");
 				downloadTask.complete(rutaDestino);
 			} catch (IllegalArgumentException e) {
 				System.err.println(e.getMessage());
@@ -1303,9 +1296,7 @@ public class Utilidades {
 						BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(),
 								BufferedImage.TYPE_INT_RGB);
 						newImage.createGraphics().drawImage(image, 0, 0, null);
-						System.out.println("Original nuevoNombre: " + finalNuevoNombre[0]);
 						finalNuevoNombre[0] = finalNuevoNombre[0] + ".jpg";
-						System.out.println("Nuevo nuevoNombre: " + finalNuevoNombre[0]);
 						rutaDestino = carpetaDestino + File.separator + finalNuevoNombre[0];
 					} else {
 						rutaDestino = carpetaDestino + File.separator + finalNuevoNombre[0];
@@ -1336,14 +1327,11 @@ public class Utilidades {
 		// Verificar si el archivo existe antes de intentar borrarlo
 		if (archivo.exists()) {
 			if (archivo.delete()) {
-				System.out.println("Imagen borrada: " + rutaImagen);
 				return true;
 			} else {
-				System.err.println("No se pudo borrar la imagen: " + rutaImagen);
 				return false;
 			}
 		} else {
-			System.err.println("El archivo no existe: " + rutaImagen + rutaImagen);
 			return false;
 		}
 	}
@@ -1452,7 +1440,6 @@ public class Utilidades {
 			PrintWriter escritor = new PrintWriter(new FileWriter(direccionCompleta, true));
 			escritor.println(mensajeError);
 			escritor.close();
-			System.out.println("Se ha escrito el mensaje de error en el archivo: " + ubicacionArchivo);
 			// Abrir el archivo
 			abrirArchivo(direccionCompleta);
 		} catch (IOException e) {
@@ -1470,7 +1457,6 @@ public class Utilidades {
 			File archivo = new File(ubicacionArchivo);
 
 			if (!Desktop.isDesktopSupported()) {
-				System.out.println("El entorno de escritorio no es compatible para abrir archivos automáticamente.");
 				return;
 			}
 			Desktop desktop = Desktop.getDesktop();
@@ -1501,11 +1487,7 @@ public class Utilidades {
 			if (!listaUrls.stream().anyMatch(url -> url.equalsIgnoreCase(archivoAEliminarPath.toString()))) {
 				try {
 					if (archivoAEliminarPath.toFile().exists() && archivoAEliminarPath.toFile().isFile()) {
-						if (archivoAEliminarPath.toFile().delete()) {
-							System.out.println("Archivo eliminado: " + archivoAEliminarPath.toString());
-						} else {
-							System.out.println("No se pudo eliminar el archivo: " + archivoAEliminarPath.toString());
-						}
+						archivoAEliminarPath.toFile().delete();
 					}
 				} catch (SecurityException e) {
 					manejarExcepcion(e);
@@ -2072,9 +2054,9 @@ public class Utilidades {
 		}
 	}
 
-	
-	//OJO CON ESTA FUNCION, EL ERROR FUE PONER STATIC EN VEZ DE getClass() DONDE UTILIDADES.CLASS
-	
+	// OJO CON ESTA FUNCION, EL ERROR FUE PONER STATIC EN VEZ DE getClass() DONDE
+	// UTILIDADES.CLASS
+
 	private static void copiarImagenPredeterminada(File directorio, String nombreImagen) throws IOException {
 		try (InputStream input = Utilidades.class.getResourceAsStream("sinPortada.jpg")) {
 			if (input == null) {
@@ -2092,7 +2074,8 @@ public class Utilidades {
 		}
 	}
 
-	private static void copiarImagenDesdeArchivo(File imagenArchivo, File directorio, String nombreImagen) throws IOException {
+	private static void copiarImagenDesdeArchivo(File imagenArchivo, File directorio, String nombreImagen)
+			throws IOException {
 		try (InputStream fileInputStream = new FileInputStream(imagenArchivo);
 				OutputStream fileOutputStream = new FileOutputStream(
 						Paths.get(directorio.getAbsolutePath(), nombreImagen).toFile())) {

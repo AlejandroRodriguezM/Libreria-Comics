@@ -1,5 +1,6 @@
 package alarmas;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
 public class AlarmaList {
@@ -45,6 +48,8 @@ public class AlarmaList {
 	 * Instancia de la clase Ventanas para la navegación.
 	 */
 	private static Ventanas nav = new Ventanas();
+
+	private static final String GIF_PATH = "/imagenes/cargaImagen.gif";
 
 	public AlarmaList() {
 		// Agregar instancias de AlarmaItem a la lista alarmaItems
@@ -651,7 +656,7 @@ public class AlarmaList {
 	 * Detiene la animación del progreso de carga.
 	 */
 	public static void detenerAnimacionCarga(ProgressIndicator progresoCarga) {
-		
+
 		progresoCarga.setVisible(false);
 		progresoCarga.setProgress(0); // Establece el progreso en 0 para detener la animación
 	}
@@ -683,7 +688,7 @@ public class AlarmaList {
 	public static void iniciarAnimacionBaseCreada(Label prontInformativo, String DB_NAME) {
 		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
-
+		prontInformativo.setStyle("-fx-background-color: #A0F52D");
 		// Agregar los keyframes para cambiar el texto
 		KeyFrame mostrarConectado = new KeyFrame(Duration.ZERO,
 				new KeyValue(prontInformativo.textProperty(), "Base de datos: " + DB_NAME + " creada correctamente"));
@@ -740,7 +745,7 @@ public class AlarmaList {
 		// Iniciar la animación
 		timeline.play();
 	}
-	
+
 	/**
 	 * Metodo que permite crear una animacion
 	 * 
@@ -766,6 +771,115 @@ public class AlarmaList {
 
 		// Iniciar la animación
 		timeline.play();
+	}
+
+	// Funciones de VentanaAccionController
+
+	/**
+	 * Inicia una animación que alterna entre dos imágenes en un ImageView para
+	 * lograr un efecto visual llamativo. La animación se ejecuta de forma
+	 * indefinida y cambia las imágenes cada 0.1 segundos.
+	 */
+	public static void iniciarAnimacionCambioImagen(ImageView imagenFondo) {
+
+		// Agrega las imágenes que deseas mostrar en cada KeyFrame
+		InputStream imagenStream1 = Utilidades.class.getResourceAsStream("/imagenes/accionComicDeseo.jpg");
+		InputStream imagenStream2 = Utilidades.class.getResourceAsStream("/imagenes/accionComic.jpg");
+
+		// Convierte las corrientes de entrada en objetos Image
+		Image imagen1 = new Image(imagenStream1);
+		Image imagen2 = new Image(imagenStream2);
+
+		// Establece la imagen inicial en el ImageView
+		imagenFondo.setImage(imagen1);
+
+		// Configura la opacidad inicial
+		imagenFondo.setOpacity(1);
+
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar la imagen
+		KeyFrame cambiarImagen1 = new KeyFrame(Duration.ZERO, new KeyValue(imagenFondo.imageProperty(), imagen1));
+		KeyFrame cambiarImagen2 = new KeyFrame(Duration.seconds(0.1),
+				new KeyValue(imagenFondo.imageProperty(), imagen2));
+		KeyFrame cambiarImagen3 = new KeyFrame(Duration.seconds(0.2),
+				new KeyValue(imagenFondo.imageProperty(), imagen1));
+		KeyFrame cambiarImagen4 = new KeyFrame(Duration.seconds(0.3),
+				new KeyValue(imagenFondo.imageProperty(), imagen2));
+		KeyFrame cambiarImagen5 = new KeyFrame(Duration.seconds(0.4),
+				new KeyValue(imagenFondo.imageProperty(), imagen1));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(cambiarImagen1, cambiarImagen2, cambiarImagen3, cambiarImagen4, cambiarImagen5);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+
+	/**
+	 * Inicia la animación de carga de imagen, mostrando un GIF animado en un bucle
+	 * continuo.
+	 */
+	public static void iniciarAnimacionCargaImagen(ImageView cargaImagen) {
+		Image gif = cargarGif(GIF_PATH);
+
+		// Establecer la imagen inicial en el ImageView
+		cargaImagen.setImage(gif);
+
+		// Configurar la opacidad inicial
+		cargaImagen.setOpacity(1);
+
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar el keyframe para cambiar la imagen
+		KeyFrame cambiarGif = new KeyFrame(Duration.ZERO, new KeyValue(cargaImagen.imageProperty(), gif));
+
+		// Agregar el keyframe al timeline
+		timeline.getKeyFrames().add(cambiarGif);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+
+	/**
+	 * Carga un GIF desde la ruta proporcionada.
+	 *
+	 * @param path Ruta del archivo GIF.
+	 * @return La imagen del GIF cargado.
+	 */
+	private static Image cargarGif(String path) {
+		InputStream gifStream = Utilidades.class.getResourceAsStream(path);
+		return new Image(gifStream);
+	}
+
+	/**
+	 * Metodo que permite detener una animacion
+	 */
+	public static void detenerAnimacionProntAccion(ImageView imagenFondo) {
+		if (timeline != null) {
+			timeline.stop();
+			timeline = null; // Destruir el objeto timeline
+
+			Platform.runLater(() -> {
+				InputStream imagenStream = Utilidades.class.getResourceAsStream("/imagenes/accionComic.jpg");
+				Image imagen = new Image(imagenStream);
+				imagenFondo.setImage(imagen);
+			});
+		}
+	}
+
+	public static void detenerAnimacionCargaImagen(ImageView cargaImagen) {
+		if (timeline != null) {
+			timeline.stop();
+			timeline = null; // Destruir el objeto timeline
+
+			Platform.runLater(() -> {
+				cargaImagen.setImage(null);
+				cargaImagen.setVisible(false);
+			});
+		}
 	}
 
 }

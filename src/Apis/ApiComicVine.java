@@ -109,7 +109,6 @@ public class ApiComicVine {
 	 */
 	private static String extractWriterOrArtist(String text) {
 	    // Imprime el texto de entrada para depuración
-	    System.out.println(text);
 
 	    // Utiliza expresiones regulares para buscar la primera coincidencia de "writer" o "artist"
 	    // \b indica límites de palabra para que solo coincida con "writer" o "artist" como palabras completas

@@ -32,7 +32,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -63,10 +62,8 @@ import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
 import JDBC.DBManager;
+import alarmas.AlarmaList;
 import comicManagement.Comic;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -94,7 +91,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import webScrap.WebScraperPreviewsWorld;
 
 /**
@@ -547,16 +543,6 @@ public class VentanaAccionController implements Initializable {
 	private List<TableColumn<Comic, String>> columnList;
 
 	/**
-	 * Línea de tiempo para animaciones.
-	 */
-	private Timeline timeline;
-
-	/**
-	 * Línea de tiempo para animaciones.
-	 */
-	private Timeline timelineCargaImagen;
-
-	/**
 	 * Referencia a la ventana (stage).
 	 */
 	private Stage stage;
@@ -622,8 +608,6 @@ public class VentanaAccionController implements Initializable {
 	 * Mapa que contiene elementos de la interfaz y sus tooltips correspondientes.
 	 */
 	private static Map<Node, String> tooltipsMap = new HashMap<>();
-
-	private static final String GIF_PATH = "/imagenes/cargaImagen.gif";
 
 	public static List<Comic> comicsImportados = new ArrayList<Comic>();
 
@@ -778,8 +762,6 @@ public class VentanaAccionController implements Initializable {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
-		libreria = new DBLibreriaManager();
-		libreria.reiniciarBBDD();
 		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
 		prontInfo.setOpacity(0);
 		imagencomic.setImage(null);
@@ -797,12 +779,13 @@ public class VentanaAccionController implements Initializable {
 	 */
 	public void listaPorParametro() throws SQLException {
 
-		rootVBox.setVisible(true);
-		rootVBox.setDisable(false);
-
 		libreria = new DBLibreriaManager();
+		libreria.reiniciarBBDD();
 		utilidad = new Utilidades();
 		Comic comic = camposComic();
+		
+		rootVBox.setVisible(true);
+		rootVBox.setDisable(false);
 
 		funcionesTabla.tablaBBDD(libreria.busquedaParametro(comic, ""), tablaBBDD, columnList);
 		prontInfo.setOpacity(1);
@@ -955,7 +938,6 @@ public class VentanaAccionController implements Initializable {
 			Utilidades.comprobacionListaComics();
 
 			String id_comic = Utilidades.obtenerIdComicSeleccionado(tablaBBDD);
-			System.out.println(id_comic);
 			prontInfo.setStyle("");
 			idComicTratar.setStyle("");
 			idComicTratar.setText(id_comic);
@@ -978,8 +960,7 @@ public class VentanaAccionController implements Initializable {
 			}
 
 		} catch (SQLException e) {
-			// Handle SQLException
-			e.printStackTrace(); // Log or handle the exception appropriately
+			Utilidades.manejarExcepcion(e);
 		} finally {
 			DBManager.resetConnection();
 		}
@@ -1191,7 +1172,6 @@ public class VentanaAccionController implements Initializable {
 	public void agregarDatos(ActionEvent event)
 			throws IOException, SQLException, InterruptedException, ExecutionException {
 		libreria = new DBLibreriaManager();
-		menuPrincipal = new MenuPrincipalController();
 
 		if (nav.alertaAccionGeneral()) {
 			accionComicAsync(false); // Llama a la función para procesar la subida de un cómic
@@ -1199,9 +1179,10 @@ public class VentanaAccionController implements Initializable {
 			libreria.reiniciarBBDD(); // Reinicia la base de datos
 
 		} else {
-			prontInfo.setOpacity(1);
-			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("Se ha cancelado la subida del nuevo comic.");
+
+			String mensaje = "Se ha cancelado la subida del nuevo comic.";
+
+			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 		}
 
 	}
@@ -1253,9 +1234,9 @@ public class VentanaAccionController implements Initializable {
 			} else {
 				libreria.borrarPuntuacion(id_comic);
 			}
+			String mensaje = "Deseo concedido. Has borrado la puntuacion del comic.";
 
-			prontInfo.setOpacity(1);
-			prontInfo.setText("Deseo concedido. Has borrado la puntuacion del comic.");
+			AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
 
 			Image nuevaImagen = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
 			imagenFondo.setImage(nuevaImagen);
@@ -1350,7 +1331,7 @@ public class VentanaAccionController implements Initializable {
 
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			Utilidades.manejarExcepcion(e);
 		}
 	}
 
@@ -1362,8 +1343,6 @@ public class VentanaAccionController implements Initializable {
 	 *                ocultarlos.
 	 */
 	private void cambiarVisibilidad(boolean mostrar) {
-
-		System.out.println(mostrar);
 
 		botonBusquedaCodigo.setVisible(mostrar);
 		busquedaEditorial.setVisible(mostrar);
@@ -1455,8 +1434,6 @@ public class VentanaAccionController implements Initializable {
 					}
 
 					if (comprobarCodigo(comicInfo)) {
-						// Rellenar campos con la información del cómic
-
 						rellenarCamposAni(comicInfo);
 						codigoComicTratar.setText(valorCodigo.trim());
 
@@ -1467,7 +1444,7 @@ public class VentanaAccionController implements Initializable {
 			}
 		};
 
-		iniciarAnimacionCambioImagen();
+		AlarmaList.iniciarAnimacionCambioImagen(imagenFondo);
 
 		// Configurar un manejador de eventos para actualizar la interfaz de usuario
 		// cuando la tarea esté completa
@@ -1475,13 +1452,14 @@ public class VentanaAccionController implements Initializable {
 			Platform.runLater(() -> {
 				prontInfo.setOpacity(0);
 				prontInfo.setText("");
-				detenerAnimacionPront();
+				AlarmaList.detenerAnimacionProntAccion(imagenFondo);
 			});
 		});
 
 		tarea.setOnFailed(ev -> {
 			Platform.runLater(() -> {
-				detenerAnimacionPront();
+				AlarmaList.detenerAnimacionProntAccion(imagenFondo);
+				;
 			});
 		});
 
@@ -1690,7 +1668,7 @@ public class VentanaAccionController implements Initializable {
 			}
 		};
 
-		iniciarAnimacionCargaImagen();
+		AlarmaList.iniciarAnimacionCargaImagen(cargaImagen);
 
 		// Configurar un manejador de eventos para actualizar la interfaz de usuario
 		// cuando la tarea esté completa
@@ -1702,13 +1680,13 @@ public class VentanaAccionController implements Initializable {
 				}
 				prontInfo.setOpacity(0);
 				prontInfo.setText("");
-				detenerAnimacionCargaImagen();
+				AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
 			});
 		});
 
 		tarea.setOnFailed(ev -> {
 			Platform.runLater(() -> {
-				detenerAnimacionCargaImagen();
+				AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
 			});
 		});
 
@@ -1753,144 +1731,39 @@ public class VentanaAccionController implements Initializable {
 
 						return imagenCargada;
 					} catch (FileNotFoundException e) {
-						e.printStackTrace(); // Imprime el rastreo de la excepción
+						Utilidades.manejarExcepcion(e);
 						Thread.sleep(1000); // Puedes ajustar el tiempo de espera según sea necesario
 					} catch (Exception e) {
-						e.printStackTrace(); // Imprime el rastreo de la excepción
+						Utilidades.manejarExcepcion(e);
 						Thread.sleep(1000); // Puedes ajustar el tiempo de espera según sea necesario
 					}
 				}
 			}
 		};
 
-		iniciarAnimacionCargaImagen();
+		AlarmaList.iniciarAnimacionCargaImagen(cargaImagen);
 
 		cargarImagenTask.setOnSucceeded(event -> {
 
 			Image imagenCargada = cargarImagenTask.getValue();
 			imageView.setImage(imagenCargada);
-			detenerAnimacionCargaImagen();
-			detenerAnimacionPront();
+			AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
+			AlarmaList.detenerAnimacionProntAccion(imagenFondo);
+			;
 		});
 
 		cargarImagenTask.setOnFailed(ev -> {
 
 			Platform.runLater(() -> {
-				detenerAnimacionCargaImagen();
-				detenerAnimacionPront();
+				AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
+				AlarmaList.detenerAnimacionProntAccion(imagenFondo);
+				;
 			});
 		});
 
 		Thread thread = new Thread(cargarImagenTask);
 		thread.setDaemon(true);
 		thread.start();
-	}
-
-	/**
-	 * Inicia una animación que alterna entre dos imágenes en un ImageView para
-	 * lograr un efecto visual llamativo. La animación se ejecuta de forma
-	 * indefinida y cambia las imágenes cada 0.1 segundos.
-	 */
-	private void iniciarAnimacionCambioImagen() {
-
-		// Agrega las imágenes que deseas mostrar en cada KeyFrame
-		InputStream imagenStream1 = getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg");
-		InputStream imagenStream2 = getClass().getResourceAsStream("/imagenes/accionComic.jpg");
-
-		// Convierte las corrientes de entrada en objetos Image
-		Image imagen1 = new Image(imagenStream1);
-		Image imagen2 = new Image(imagenStream2);
-
-		// Establece la imagen inicial en el ImageView
-		imagenFondo.setImage(imagen1);
-
-		// Configura la opacidad inicial
-		imagenFondo.setOpacity(1);
-
-		timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
-
-		// Agregar los keyframes para cambiar la imagen
-		KeyFrame cambiarImagen1 = new KeyFrame(Duration.ZERO, new KeyValue(imagenFondo.imageProperty(), imagen1));
-		KeyFrame cambiarImagen2 = new KeyFrame(Duration.seconds(0.1),
-				new KeyValue(imagenFondo.imageProperty(), imagen2));
-		KeyFrame cambiarImagen3 = new KeyFrame(Duration.seconds(0.2),
-				new KeyValue(imagenFondo.imageProperty(), imagen1));
-		KeyFrame cambiarImagen4 = new KeyFrame(Duration.seconds(0.3),
-				new KeyValue(imagenFondo.imageProperty(), imagen2));
-		KeyFrame cambiarImagen5 = new KeyFrame(Duration.seconds(0.4),
-				new KeyValue(imagenFondo.imageProperty(), imagen1));
-
-		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(cambiarImagen1, cambiarImagen2, cambiarImagen3, cambiarImagen4, cambiarImagen5);
-
-		// Iniciar la animación
-		timeline.play();
-	}
-
-	/**
-	 * Inicia la animación de carga de imagen, mostrando un GIF animado en un bucle
-	 * continuo.
-	 */
-	private void iniciarAnimacionCargaImagen() {
-		Image gif = cargarGif(GIF_PATH);
-
-		// Establecer la imagen inicial en el ImageView
-		cargaImagen.setImage(gif);
-
-		// Configurar la opacidad inicial
-		cargaImagen.setOpacity(1);
-
-		timelineCargaImagen = new Timeline();
-		timelineCargaImagen.setCycleCount(Timeline.INDEFINITE);
-
-		// Agregar el keyframe para cambiar la imagen
-		KeyFrame cambiarGif = new KeyFrame(Duration.ZERO, new KeyValue(cargaImagen.imageProperty(), gif));
-
-		// Agregar el keyframe al timeline
-		timelineCargaImagen.getKeyFrames().add(cambiarGif);
-
-		// Iniciar la animación
-		timelineCargaImagen.play();
-	}
-
-	/**
-	 * Carga un GIF desde la ruta proporcionada.
-	 *
-	 * @param path Ruta del archivo GIF.
-	 * @return La imagen del GIF cargado.
-	 */
-	private Image cargarGif(String path) {
-		InputStream gifStream = getClass().getResourceAsStream(path);
-		return new Image(gifStream);
-	}
-
-	/**
-	 * Metodo que permite detener una animacion
-	 */
-	private void detenerAnimacionPront() {
-		if (timeline != null) {
-			timeline.stop();
-			timeline = null; // Destruir el objeto timeline
-
-			Platform.runLater(() -> {
-				InputStream imagenStream = getClass().getResourceAsStream("/imagenes/accionComic.jpg");
-				Image imagen = new Image(imagenStream);
-				imagenFondo.setImage(imagen);
-			});
-		}
-	}
-
-	private void detenerAnimacionCargaImagen() {
-		if (timelineCargaImagen != null) {
-			timelineCargaImagen.stop();
-			timelineCargaImagen = null; // Destruir el objeto timeline
-
-			Platform.runLater(() -> {
-				cargaImagen.setImage(null);
-				cargaImagen.setVisible(false);
-			});
-		}
 	}
 
 	/**
@@ -1907,8 +1780,9 @@ public class VentanaAccionController implements Initializable {
 		libreria = new DBLibreriaManager();
 		String id_comic = idComicTratar.getText();
 		idComicTratar.setStyle("");
-		detenerAnimacionPront();
-		iniciarAnimacionCambioImagen();
+		AlarmaList.detenerAnimacionProntAccion(imagenFondo);
+		;
+		AlarmaList.iniciarAnimacionCambioImagen(imagenFondo);
 		if (comprobarID(id_comic)) {
 			libreria.eliminarComicBBDD(id_comic);
 			libreria.reiniciarBBDD();
@@ -1925,7 +1799,8 @@ public class VentanaAccionController implements Initializable {
 			funcionesCombo.rellenarComboBox(comboboxes);
 
 		}
-		detenerAnimacionPront();
+		AlarmaList.detenerAnimacionProntAccion(imagenFondo);
+		;
 	}
 
 	/**
@@ -1948,16 +1823,15 @@ public class VentanaAccionController implements Initializable {
 
 				return true;
 			} else {
-				prontInfo.setOpacity(1);
-				prontInfo.setStyle("-fx-background-color: #F53636");
-				prontInfo.setText("ERROR. ID desconocido.");
+				String mensaje = "ERROR. ID desconocido.";
 				idComicTratar.setStyle("-fx-background-color: red");
+				AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 				return false;
 			}
 		} else { // Si se cancela el borra del comic, saltara el siguiente mensaje.
 			idComicTratar.setStyle(null);
-			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("Accion cancelada");
+			String mensaje = "Accion cancelada";
+			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 			return false;
 		}
 	}
@@ -2084,23 +1958,26 @@ public class VentanaAccionController implements Initializable {
 		String id_comic = idComicTratar.getText();
 		idComicTratar.setStyle("");
 
-		detenerAnimacionPront();
-		iniciarAnimacionCambioImagen();
+		AlarmaList.detenerAnimacionProntAccion(imagenFondo);
+		;
+		AlarmaList.iniciarAnimacionCambioImagen(imagenFondo);
 		if (comprobarID(id_comic)) {
 			libreria.venderComicBBDD(id_comic);
 			libreria.reiniciarBBDD();
 
-			prontInfo.setOpacity(1);
-			prontInfo.setText("Deseo concedido. Has puesto a la venta el comic");
 			Image nuevaImagen = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
 			imagenFondo.setImage(nuevaImagen);
+
+			String mensaje = "Deseo concedido. Has puesto a la venta el comic";
+			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 
 			List<ComboBox<String>> comboboxes = getComboBoxes();
 
 			funcionesCombo.rellenarComboBox(comboboxes);
 
 		}
-		detenerAnimacionPront();
+		AlarmaList.detenerAnimacionProntAccion(imagenFondo);
+		;
 	}
 
 	/**
@@ -2123,10 +2000,15 @@ public class VentanaAccionController implements Initializable {
 		File file = tratarFichero().showOpenDialog(null); // Llamada a funcion
 		if (file != null) {
 			direccionImagen.setText(file.getAbsolutePath().toString());
+
+			String mensaje = "Portada subida correctamente.";
+
+			AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
+
 		} else {
-			prontInfo.setOpacity(1);
-			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("Has cancelado la subida de portada.");
+			String mensaje = "Has cancelado la subida de portada.";
+
+			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 		}
 	}
 
@@ -2139,8 +2021,6 @@ public class VentanaAccionController implements Initializable {
 	void guardarDatos(ActionEvent event) {
 
 		utilidad = new Utilidades();
-
-		System.out.println("id: " + id_comic_selecionado);
 
 		if (id_comic_selecionado != null && !id_comic_selecionado.isEmpty()) {
 			String id_comic = id_comic_selecionado;
@@ -2219,8 +2099,9 @@ public class VentanaAccionController implements Initializable {
 			if (nav.alertaInsertar()) {
 				libreria = new DBLibreriaManager();
 				String mensajePront = "";
-				detenerAnimacionPront();
-				iniciarAnimacionCambioImagen();
+				AlarmaList.detenerAnimacionProntAccion(imagenFondo);
+				;
+				AlarmaList.iniciarAnimacionCambioImagen(imagenFondo);
 				utilidad = new Utilidades();
 
 				Collections.sort(comicsImportados, Comparator.comparing(Comic::getNombre));
@@ -2243,10 +2124,10 @@ public class VentanaAccionController implements Initializable {
 				comicsImportados.clear();
 				tablaBBDD.getItems().clear();
 				funcionesTabla.tablaBBDD(comicsImportados, tablaBBDD, columnList); // Llamada a funcion
-				prontInfo.setOpacity(1);
-				prontInfo.setStyle("-fx-background-color: #A0F52D");
-				prontInfo.setText(mensajePront);
-				detenerAnimacionPront();
+
+				AlarmaList.mostrarMensajePront(mensajePront, true, prontInfo);
+				AlarmaList.detenerAnimacionProntAccion(imagenFondo);
+				;
 			}
 		}
 	}
@@ -2352,8 +2233,9 @@ public class VentanaAccionController implements Initializable {
 		utilidad = new Utilidades();
 
 		Utilidades.convertirNombresCarpetas(SOURCE_PATH);
-		detenerAnimacionPront();
-		iniciarAnimacionCambioImagen();
+		AlarmaList.detenerAnimacionProntAccion(imagenFondo);
+		;
+		AlarmaList.iniciarAnimacionCambioImagen(imagenFondo);
 
 		Comic comic = camposComic();
 		actualizarCamposUnicos(comic);
@@ -2361,7 +2243,8 @@ public class VentanaAccionController implements Initializable {
 		prontInfo.setOpacity(1);
 
 		procesarComic(comic, false);
-		detenerAnimacionPront();
+		AlarmaList.detenerAnimacionProntAccion(imagenFondo);
+		;
 	}
 
 	/**
@@ -2451,8 +2334,9 @@ public class VentanaAccionController implements Initializable {
 
 				utilidad.nueva_imagen(comic.getImagen(), codigo_imagen);
 				libreria.actualizarComic(comic);
-				prontInfo.setStyle("-fx-background-color: #A0F52D");
-				prontInfo.setText("Deseo Concedido...\nHas modificado correctamente el cómic");
+				String mensaje = "Deseo Concedido...\nHas modificado correctamente el cómic";
+
+				AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
 
 				Platform.runLater(() -> {
 					funcionesTabla.tablaBBDD(libreria.libreriaCompleta(), tablaBBDD, columnList); // Llamada a funcion
@@ -2463,12 +2347,13 @@ public class VentanaAccionController implements Initializable {
 				utilidad.nueva_imagen(comic.getImagen(), codigo_imagen);
 				comic.setImagen(SOURCE_PATH + File.separator + codigo_imagen + ".jpg");
 				libreria.insertarDatos(comic);
-				prontInfo.setStyle("-fx-background-color: #A0F52D");
-				prontInfo.setText("Deseo Concedido...\n Has introducido correctamente el cómic");
 
+				String mensaje = "Deseo Concedido...\n Has introducido correctamente el cómic";
+				AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
 				Image imagenDeseo = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
 				imagenFondo.setImage(imagenDeseo);
-				detenerAnimacionPront();
+				AlarmaList.detenerAnimacionProntAccion(imagenFondo);
+				;
 			}
 
 			procesarBloqueComun(comic);
@@ -2514,7 +2399,7 @@ public class VentanaAccionController implements Initializable {
 		Thread updateThread = new Thread(() -> {
 			try {
 				// Iniciar la animación de cambio de imagen
-				iniciarAnimacionCambioImagen();
+				AlarmaList.iniciarAnimacionCambioImagen(imagenFondo);
 
 				// Realizar la modificación o subida del cómic según la indicación
 				if (esModificacion) {
@@ -2524,11 +2409,12 @@ public class VentanaAccionController implements Initializable {
 				}
 
 				// Detener la animación cuando la acción ha concluido
-				detenerAnimacionPront();
+				AlarmaList.detenerAnimacionProntAccion(imagenFondo);
+				;
 			} catch (NumberFormatException | SQLException | IOException | InterruptedException | ExecutionException
 					| URISyntaxException e) {
-				// Manejar las excepciones que pueden ocurrir durante la ejecución
-				e.printStackTrace();
+				Utilidades.manejarExcepcion(e);
+
 			}
 		});
 

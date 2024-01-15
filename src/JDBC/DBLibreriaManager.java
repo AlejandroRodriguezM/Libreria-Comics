@@ -925,11 +925,7 @@ public class DBLibreriaManager {
 				stmt.setString(1, id);
 
 				// Ejecutar la sentencia SQL
-				int filasAfectadas = stmt.executeUpdate();
-
-				if (filasAfectadas > 0) {
-					System.out.println("Se afectaron " + filasAfectadas + " filas en la base de datos.");
-				}
+				stmt.executeUpdate();
 			}
 		} catch (SQLException ex) {
 			Utilidades.manejarExcepcion(ex);
@@ -1853,8 +1849,6 @@ public class DBLibreriaManager {
 		try {
 			if (Desktop.isDesktopSupported()) {
 				Desktop.getDesktop().open(new File(rutaArchivo));
-			} else {
-				System.out.println("La apertura del archivo no es compatible con este sistema operativo.");
 			}
 		} catch (IOException e) {
 			Utilidades.manejarExcepcion(e);

@@ -564,8 +564,6 @@ public class FuncionesExcel {
 						String url_referencia = data[17];
 						String estado = data[18];
 
-						System.out.println(data.length);
-
 						if (precio_comic.isEmpty()) {
 							precio_comic = "0";
 						}

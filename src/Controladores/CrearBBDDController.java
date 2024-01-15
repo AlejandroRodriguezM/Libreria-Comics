@@ -328,11 +328,9 @@ public class CrearBBDDController implements Initializable {
 			createDataBase();
 			DBLibreriaManager.createTable();
 			Utilidades.crearCarpeta();
-			prontInformativo.setStyle("-fx-background-color: #A0F52D");
+			
 			AlarmaList.iniciarAnimacionBaseCreada(prontInformativo, DB_NAME);
 			Utilidades.guardarDatosBaseLocal(datosBBDD(), prontInformativo, null);
-		} else {
-			System.out.println("Je");
 		}
 	}
 
@@ -440,8 +438,6 @@ public class CrearBBDDController implements Initializable {
 		puertoBBDD.setText("");
 		nombreBBDD.setText("");
 	}
-
-
 
 	/**
 	 * Detiene la animación actual si está en ejecución.

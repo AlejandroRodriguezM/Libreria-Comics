@@ -229,7 +229,6 @@ public class FuncionesComboBox {
 					DBLibreriaManager.numeroCajaList);
 
 			if (sonListasSimilares(DBLibreriaManager.listaOrdenada, DBLibreriaManager.itemsList)) {
-				System.out.println("Las listas son idénticas.");
 
 				for (int i = 0; i < totalComboboxes; i++) {
 					comboboxes.get(i).hide();
@@ -243,7 +242,6 @@ public class FuncionesComboBox {
 				}
 
 			} else {
-				System.out.println("Las listas no son identicas");
 				limpiezaDeDatos(comboboxes);
 			}
 

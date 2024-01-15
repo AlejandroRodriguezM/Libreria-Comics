@@ -96,11 +96,7 @@ public class MenuLectorCodigoBarras {
 				long tiempoDiferencia = tiempoActual - ultimoTiempo;
 
 				if (tiempoDiferencia > UMBRAL_TIEMPO_ENTRE_TECLAS) {
-					// Entrada rápida, probablemente desde el lector de código de barras
-					// Procesar el código escaneado
 					codigoEscaneado = campoCodigoTexto.getText();
-					System.out.println("Código escaneado: " + codigoEscaneado);
-					// Limpiar el campo de texto
 					campoCodigoTexto.clear();
 				}
 

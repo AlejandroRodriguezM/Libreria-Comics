@@ -119,7 +119,6 @@ public class ApiMarvel {
 			int codigoRespuesta = codigoRespuesta(apiUrl);
 
 			if (codigoRespuesta != 200) {
-				System.out.println(claveComic);
 				return null;
 			}
 

@@ -79,12 +79,6 @@ public class ApiGoogle {
 			JSONArray translationArray = jsonArray.getJSONArray(0);
 			String translation = translationArray.getJSONArray(0).getString(0);
 
-			// Imprimir información sobre el texto original, el idioma detectado y la
-			// traducción
-			System.out.println("\n" + "Texto original: " + text);
-			System.out.println("Idioma de origen detectado: " + sourceLang);
-			System.out.println("Traducción: " + translation);
-
 			return translation;
 		} catch (Exception e) {
 			// Manejar cualquier excepción que pueda ocurrir durante el proceso
