@@ -26,6 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import Funcionamiento.Utilidades;
+import alarmas.AlarmaList;
 import comicManagement.Comic;
 //import javafx.scene.control.TextArea;
 //import javafx.scene.control.TextArea;
@@ -61,17 +62,14 @@ public class ApiISBNGeneral {
 			// Verifica si bookInfo es nulo antes de intentar acceder a sus propiedades.
 			JSONObject bookInfo = jsonObject.optJSONObject("ISBN:" + isbn);
 
-			if (jsonObject.length() == 0) {
-				prontInfo.setOpacity(1);
-				prontInfo.setText("No se encontró el cómic con código: " + isbn);
-				return null;
-			} else if (bookInfo.length() == 0) {
-				// Configura la visibilidad y el texto de un elemento (prontInfo) para informar
-				// que no se encontró el cómic.
-				prontInfo.setOpacity(1);
-				prontInfo.setText("No se encontró el cómic con código: " + isbn);
+			if (jsonObject.length() == 0 || bookInfo.length() == 0) {
+			    if (prontInfo != null) {
+			        String mensaje = "No se encontró el cómic con código: " + isbn;
 
-				return null;
+			        AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+			    }
+
+			    return null;
 			}
 
 			// Ahora puedes acceder a las propiedades de bookInfo, ya que se ha verificado
@@ -119,8 +117,9 @@ public class ApiISBNGeneral {
 		}
 	}
 
-	/** 
+	/**
 	 * Extrae y procesa el título del libro a partir de un objeto JSON.
+	 * 
 	 * @param details Objeto JSON con información del libro.
 	 * @return Título del libro procesado.
 	 * @throws JSONException Si hay un error al manejar el objeto JSON.
@@ -141,8 +140,9 @@ public class ApiISBNGeneral {
 		return "";
 	}
 
-	/** 
+	/**
 	 * Extrae la descripción del libro a partir de un objeto JSON.
+	 * 
 	 * @param details Objeto JSON con información del libro.
 	 * @return Descripción del libro.
 	 * @throws JSONException Si hay un error al manejar el objeto JSON.
@@ -156,8 +156,9 @@ public class ApiISBNGeneral {
 		}
 	}
 
-	/** 
+	/**
 	 * Extrae la editorial del libro a partir de un objeto JSON.
+	 * 
 	 * @param details Objeto JSON con información del libro.
 	 * @return Editorial del libro.
 	 * @throws JSONException Si hay un error al manejar el objeto JSON.
@@ -176,8 +177,9 @@ public class ApiISBNGeneral {
 		return editorial;
 	}
 
-	/** 
+	/**
 	 * Extrae la URL de la imagen del libro a partir de un objeto JSON.
+	 * 
 	 * @param bookInfo Objeto JSON con información del libro.
 	 * @return URL de la imagen del libro.
 	 * @throws JSONException Si hay un error al manejar el objeto JSON.
@@ -199,8 +201,9 @@ public class ApiISBNGeneral {
 		return "";
 	}
 
-	/** 
+	/**
 	 * Extrae la referencia del libro a partir de un objeto JSON.
+	 * 
 	 * @param bookInfo Objeto JSON con información del libro.
 	 * @return Referencia del libro.
 	 * @throws JSONException Si hay un error al manejar el objeto JSON.
@@ -215,8 +218,9 @@ public class ApiISBNGeneral {
 		}
 	}
 
-	/** 
+	/**
 	 * Extrae la fecha de publicación del libro a partir de un objeto JSON.
+	 * 
 	 * @param details Objeto JSON con información del libro.
 	 * @return Fecha de publicación del libro.
 	 * @throws JSONException Si hay un error al manejar el objeto JSON.
@@ -235,13 +239,15 @@ public class ApiISBNGeneral {
 		return "";
 	}
 
-	/** 
-	 * Obtiene los nombres de los autores del libro y los clasifica como artistas o escritores.
+	/**
+	 * Obtiene los nombres de los autores del libro y los clasifica como artistas o
+	 * escritores.
+	 * 
 	 * @param details Objeto JSON con información del libro.
-	 * @param apiKey Clave de API para realizar consultas externas.
+	 * @param apiKey  Clave de API para realizar consultas externas.
 	 * @return Mapa que contiene listas de artistas y escritores.
-	 * @throws JSONException Si hay un error al manejar el objeto JSON.
-	 * @throws IOException Si hay un error de entrada/salida.
+	 * @throws JSONException      Si hay un error al manejar el objeto JSON.
+	 * @throws IOException        Si hay un error de entrada/salida.
 	 * @throws URISyntaxException Si hay un error en la sintaxis de la URI.
 	 */
 	private Map<String, List<String>> obtenerAutoresSeparados(JSONObject details, String apiKey)
@@ -282,8 +288,9 @@ public class ApiISBNGeneral {
 		return autoresSeparados;
 	}
 
-	/** 
+	/**
 	 * Extrae el formato físico del libro a partir de un objeto JSON.
+	 * 
 	 * @param details Objeto JSON con información del libro.
 	 * @return Formato físico del libro.
 	 * @throws JSONException Si hay un error al manejar el objeto JSON.

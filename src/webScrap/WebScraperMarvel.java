@@ -20,7 +20,7 @@ import org.jsoup.select.Elements;
  * el título, número, creadores, imagen principal, fecha de salida, valor (SRP),
  * editorial y URL de referencia.
  */
-public class WebScraperMarvel{
+public class WebScraperMarvel {
 
 	public static int verificarCodigoRespuesta(String urlString) throws IOException, URISyntaxException {
 		URI uri = new URI(urlString);
@@ -58,7 +58,7 @@ public class WebScraperMarvel{
 				Document document = Jsoup.connect(urlMarvel).get();
 
 				codeComic = scrapeCodigo(document);
-				
+
 				System.out.println(codeComic);
 
 				return codeComic;
@@ -80,30 +80,31 @@ public class WebScraperMarvel{
 	 * @return El título extraído y formateado, o null si no se encuentra.
 	 */
 	private static String scrapeCodigo(Document document) {
-	    Element detailWrapElement = document.selectFirst("div.detail-wrap");
+		Element detailWrapElement = document.selectFirst("div.detail-wrap");
 
-	    if (detailWrapElement != null) {
-	        // Buscar el li con strong igual a "ISBN:"
-	        Element isbnElement = detailWrapElement.selectFirst("li:has(strong:containsOwn(ISBN:))");
-	        if (isbnElement != null) {
-	            String isbnContent = isbnElement.text().replace("ISBN:", "").trim();
-	            // Puedes realizar cualquier otra manipulación necesaria con el contenido de ISBN
-	            return isbnContent;
-	        }
+		if (detailWrapElement != null) {
+			// Buscar el li con strong igual a "ISBN:"
+			Element isbnElement = detailWrapElement.selectFirst("li:has(strong:containsOwn(ISBN:))");
+			if (isbnElement != null) {
+				String isbnContent = isbnElement.text().replace("ISBN:", "").trim();
+				// Puedes realizar cualquier otra manipulación necesaria con el contenido de
+				// ISBN
+				return isbnContent;
+			}
 
-	        // Si no se encontró el ISBN, buscar el li con strong igual a "UPC:"
-	        Element upcElement = detailWrapElement.selectFirst("li:has(strong:containsOwn(UPC:))");
-	        if (upcElement != null) {
-	            String upcContent = upcElement.text().replace("UPC:", "").trim();
-	            // Puedes realizar cualquier otra manipulación necesaria con el contenido de UPC
-	            return upcContent;
-	        }
-	    }
+			// Si no se encontró el ISBN, buscar el li con strong igual a "UPC:"
+			Element upcElement = detailWrapElement.selectFirst("li:has(strong:containsOwn(UPC:))");
+			if (upcElement != null) {
+				String upcContent = upcElement.text().replace("UPC:", "").trim();
+				// Puedes realizar cualquier otra manipulación necesaria con el contenido de UPC
+				return upcContent;
+			}
+		}
 
-	    // Si no se encontró ni ISBN ni UPC, devolver null o un valor por defecto según tu lógica
-	    return null;
+		// Si no se encontró ni ISBN ni UPC, devolver null o un valor por defecto según
+		// tu lógica
+		return null;
 	}
-
 
 	/**
 	 * Extrae el número que sigue al símbolo "#" en el título.
@@ -119,7 +120,7 @@ public class WebScraperMarvel{
 			int hashtagIndexNumero = titleContent.indexOf('#');
 			if (hashtagIndexNumero != -1 && hashtagIndexNumero + 1 < titleContent.length()) {
 				return String.valueOf(titleContent.charAt(hashtagIndexNumero + 1)).trim();
-			}else {
+			} else {
 				return "0";
 			}
 		}
@@ -133,28 +134,27 @@ public class WebScraperMarvel{
 	 * @return El contenido del título sin el "#" y el texto siguiente.
 	 */
 	private static String removeHashtagAndFollowing(String titleContent) {
-	    if (titleContent.contains("#")) {
-	        int hashtagIndex = titleContent.indexOf('#');
-	        return titleContent.substring(0, hashtagIndex).trim().toLowerCase();
-	    }
-	    return titleContent;
+		if (titleContent.contains("#")) {
+			int hashtagIndex = titleContent.indexOf('#');
+			return titleContent.substring(0, hashtagIndex).trim().toLowerCase();
+		}
+		return titleContent;
 	}
-
 
 	/**
 	 * Extrae e imprime la URL de la imagen principal del documento.
 	 *
 	 * @param document El documento HTML a analizar.
 	 * @return La URL de la imagen principal, o null si no se encuentra.
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	private static String scrapeAndPrintMainImage(Document document) throws IOException {
 		Element mainImageElement = document.selectFirst("#MainContentImage");
 		if (mainImageElement != null) {
 			String mainImageUrl = "https://www.previewsworld.com" + mainImageElement.attr("src");
-			
+
 //			String imagen = Utilidades.descargarImagen(mainImageUrl, DOCUMENTS_PATH);
-			
+
 			return mainImageUrl;
 		}
 		return null;
@@ -201,17 +201,17 @@ public class WebScraperMarvel{
 		Element publisherElement = document.selectFirst("div.Publisher");
 		if (publisherElement != null) {
 			String publisherName = capitalizeFirstLetter(publisherElement.text().trim().toLowerCase());
-			
-			if(publisherName.equalsIgnoreCase("Boom! Studios")) {
+
+			if (publisherName.equalsIgnoreCase("Boom! Studios")) {
 				publisherName = "Boom Studios";
 			}
-			
-	        if (publisherName.contains("comics")) {
-	            publisherName = publisherName.replace("comics", "").trim();
-	        } else if (publisherName.contains("comic")) {
-	            publisherName = publisherName.replace("comic", "").trim();
-	        }
-			
+
+			if (publisherName.contains("comics")) {
+				publisherName = publisherName.replace("comics", "").trim();
+			} else if (publisherName.contains("comic")) {
+				publisherName = publisherName.replace("comic", "").trim();
+			}
+
 			return publisherName;
 		}
 		return null;
@@ -274,23 +274,23 @@ public class WebScraperMarvel{
 	 *         mayúscula.
 	 */
 	private static String capitalizeFirstLetter(String input) {
-	    StringBuilder result = new StringBuilder();
+		StringBuilder result = new StringBuilder();
 
-	    input = input.toLowerCase();
-	    
-	    boolean capitalizeNext = true;
+		input = input.toLowerCase();
 
-	    for (char ch : input.toCharArray()) {
-	        if (Character.isWhitespace(ch)) {
-	            capitalizeNext = true;
-	        } else if (capitalizeNext) {
-	            ch = Character.toTitleCase(ch);
-	            capitalizeNext = false;
-	        }
+		boolean capitalizeNext = true;
 
-	        result.append(ch);
-	    }
+		for (char ch : input.toCharArray()) {
+			if (Character.isWhitespace(ch)) {
+				capitalizeNext = true;
+			} else if (capitalizeNext) {
+				ch = Character.toTitleCase(ch);
+				capitalizeNext = false;
+			}
 
-	    return result.toString();
+			result.append(ch);
+		}
+
+		return result.toString();
 	}
 }

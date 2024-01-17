@@ -897,12 +897,6 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void exportCSV(ActionEvent event) throws SQLException {
 
-		prontInfo.setText(null);
-		prontInfo.setOpacity(0);
-		tablaBBDD.getItems().clear();
-		imagencomic.setImage(null);
-		prontInfo.setOpacity(0);
-
 		List<Comic> listaComics = libreria.libreriaCompleta();
 
 		String tipoBusqueda = "completa";
@@ -1248,6 +1242,12 @@ public class MenuPrincipalController implements Initializable {
 		AlarmaList alarmaList = new AlarmaList();
 		String mensajeErrorExportar = "ERROR. No se ha podido exportar correctamente.";
 		String mensajeCancelarExportar = "ERROR. Se ha cancelado la exportación.";
+
+		prontInfo.setText(null);
+		prontInfo.setOpacity(0);
+		tablaBBDD.getItems().clear();
+		imagencomic.setImage(null);
+		prontInfo.setOpacity(0);
 
 		// Configuración de la tarea para crear el archivo Excel
 		Task<Boolean> crearExcelTask = excelFuntions.crearExcelTask(listaComics, tipoBusqueda);

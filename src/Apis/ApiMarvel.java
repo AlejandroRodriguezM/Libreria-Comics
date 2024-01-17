@@ -20,6 +20,7 @@ import org.json.JSONObject;
 
 import Controladores.VentanaAccionController;
 import Funcionamiento.Utilidades;
+import alarmas.AlarmaList;
 import comicManagement.Comic;
 import javafx.scene.control.TextArea;
 
@@ -128,17 +129,27 @@ public class ApiMarvel {
 			JSONObject jsonObject = new JSONObject(jsonResponse);
 			JSONArray resultsArray = jsonObject.getJSONObject("data").getJSONArray("results");
 
-			if (resultsArray.length() == 0 && VentanaAccionController.comicsImportados.size() < 1) {
-				prontInfo.setOpacity(1);
-				prontInfo.setText("No se encontró el cómic con codigo: " + claveComic);
+			if (resultsArray.length() == 0 && VentanaAccionController.comicsImportados.size() < 1
+					&& prontInfo != null) {
+		        String mensaje = "No se encontró el cómic con código: " + claveComic;
+
+		        AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 				return null;
 			} else {
-				if (resultsArray.length() == 0) {
-					prontInfo.setOpacity(1);
-					prontInfo.setText("No se encontró el cómic con código: " + claveComic);
+				if (resultsArray.length() == 0 && prontInfo != null) {
+					
+			        String mensaje = "No se encontró el cómic con código: " + claveComic;
+
+			        AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+					
 					return null;
 				} else {
-					return resultsArray.getJSONObject(0); // Devuelve el primer cómic encontrado
+					if (resultsArray != null && resultsArray.length() > 0 && prontInfo != null) {
+						// Obtener el primer elemento del JSONArray
+						return resultsArray.getJSONObject(0);
+					} else {
+						return null;
+					}
 				}
 			}
 		} catch (IOException e) {

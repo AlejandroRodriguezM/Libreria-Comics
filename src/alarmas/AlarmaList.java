@@ -34,10 +34,16 @@ public class AlarmaList {
 	 * Etiqueta para mostrar el estado del fichero.
 	 */
 	private Label prontEstadoFichero;
+
 	/**
 	 * Línea de tiempo para la animación.
 	 */
 	private static Timeline timeline;
+
+	/**
+	 * Línea de tiempo para la animación.
+	 */
+	private static Timeline timelineGif;
 
 	private Label alarmaConexion = new Label("alarmaConexion");
 	private Label alarmaConexionInternet = new Label("alarmaConexionInternet");
@@ -622,7 +628,7 @@ public class AlarmaList {
 
 	public static void mostrarMensajePront(String mensaje, boolean exito, TextArea prontInfo) {
 		prontInfo.clear();
-		detenerAnimacionPront(prontInfo);
+//		detenerAnimacionPront(prontInfo);
 		prontInfo.setOpacity(1);
 		if (exito) {
 			prontInfo.setStyle("-fx-background-color: #A0F52D");
@@ -822,6 +828,8 @@ public class AlarmaList {
 	 * continuo.
 	 */
 	public static void iniciarAnimacionCargaImagen(ImageView cargaImagen) {
+//	    detenerAnimacionCargaImagen(cargaImagen); // Detener animación anterior
+
 		Image gif = cargarGif(GIF_PATH);
 
 		// Establecer la imagen inicial en el ImageView
@@ -830,8 +838,8 @@ public class AlarmaList {
 		// Configurar la opacidad inicial
 		cargaImagen.setOpacity(1);
 
-		timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
+		timelineGif = new Timeline();
+		timelineGif.setCycleCount(Timeline.INDEFINITE);
 
 		// Agregar el keyframe para cambiar la imagen
 		KeyFrame cambiarGif = new KeyFrame(Duration.ZERO, new KeyValue(cargaImagen.imageProperty(), gif));
@@ -871,9 +879,9 @@ public class AlarmaList {
 	}
 
 	public static void detenerAnimacionCargaImagen(ImageView cargaImagen) {
-		if (timeline != null) {
-			timeline.stop();
-			timeline = null; // Destruir el objeto timeline
+		if (timelineGif != null) {
+			timelineGif.stop();
+			timelineGif = null; // Destruir el objeto timeline
 
 			Platform.runLater(() -> {
 				cargaImagen.setImage(null);

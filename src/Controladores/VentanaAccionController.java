@@ -47,6 +47,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -783,7 +788,7 @@ public class VentanaAccionController implements Initializable {
 		libreria.reiniciarBBDD();
 		utilidad = new Utilidades();
 		Comic comic = camposComic();
-		
+
 		rootVBox.setVisible(true);
 		rootVBox.setDisable(false);
 
@@ -1311,7 +1316,9 @@ public class VentanaAccionController implements Initializable {
 		File fichero = Utilidades.tratarFichero(frase, formato).showOpenDialog(null); // Llamada a funcion
 
 		if (fichero != null) {
-			Platform.runLater(() -> codigosFichero(fichero));
+			Platform.runLater(() -> {
+				codigosFichero(fichero);
+			});
 
 		}
 
@@ -1321,18 +1328,11 @@ public class VentanaAccionController implements Initializable {
 	 * Lee códigos desde un archivo y realiza búsquedas por código de importación.
 	 *
 	 * @param fichero El archivo que contiene los códigos a procesar.
+	 * @throws URISyntaxException
+	 * @throws JSONException
 	 */
 	private void codigosFichero(File fichero) {
-		try (BufferedReader br = new BufferedReader(new FileReader(fichero))) {
-			String linea;
-			while ((linea = br.readLine()) != null) {
-
-				busquedaPorCodigoImportacion(linea);
-
-			}
-		} catch (IOException e) {
-			Utilidades.manejarExcepcion(e);
-		}
+		busquedaPorCodigoImportacion(fichero);
 	}
 
 	/**
@@ -1409,8 +1409,6 @@ public class VentanaAccionController implements Initializable {
 	 */
 	@FXML
 	void busquedaPorCodigo(ActionEvent event) throws IOException, JSONException, URISyntaxException {
-//		limpiarDatosPantalla();
-
 		ApiISBNGeneral isbnGeneral = new ApiISBNGeneral();
 		WebScraperPreviewsWorld previewsScraper = new WebScraperPreviewsWorld();
 
@@ -1445,6 +1443,7 @@ public class VentanaAccionController implements Initializable {
 		};
 
 		AlarmaList.iniciarAnimacionCambioImagen(imagenFondo);
+		AlarmaList.iniciarAnimacionCargaImagen(cargaImagen);
 
 		// Configurar un manejador de eventos para actualizar la interfaz de usuario
 		// cuando la tarea esté completa
@@ -1459,7 +1458,6 @@ public class VentanaAccionController implements Initializable {
 		tarea.setOnFailed(ev -> {
 			Platform.runLater(() -> {
 				AlarmaList.detenerAnimacionProntAccion(imagenFondo);
-				;
 			});
 		});
 
@@ -1548,7 +1546,7 @@ public class VentanaAccionController implements Initializable {
 	 * @param comicInfo Un arreglo de strings con información del cómic.
 	 * @throws IOException
 	 */
-	private void rellenarTablaImport(Comic comic, String codigo_comic) throws IOException {
+	private void rellenarTablaImport(Comic comic, String codigo_comic) {
 		Platform.runLater(() -> {
 			// Variables relacionadas con la importación de cómics
 			String id = "A" + 0 + "" + comicsImportados.size() + 1;
@@ -1609,93 +1607,120 @@ public class VentanaAccionController implements Initializable {
 	}
 
 	/**
-	 * Realiza una búsqueda utilizando un código de importación y muestra los
+	 * Realiza una búsqueda utilizando un archivo de importaciones y muestra los
 	 * resultados en la interfaz gráfica.
 	 *
-	 * @param valorCodigo El código de importación a buscar.
+	 * @param fichero El archivo que contiene los códigos de importación a buscar.
 	 */
-	private void busquedaPorCodigoImportacion(String valorCodigo) {
-		limpiarDatosPantalla();
-		ApiISBNGeneral isbnGeneral = new ApiISBNGeneral();
-		WebScraperPreviewsWorld previewsScraper = new WebScraperPreviewsWorld();
+	private void busquedaPorCodigoImportacion(File fichero) {
+
 		botonGuardarCambioComic.setVisible(true);
 		botonGuardarComic.setVisible(true);
 		botonEliminarImportadoComic.setVisible(true);
-		final int contadorFaltas[] = { 0 };
-		final String codigosFaltantes[] = { "" };
 
-		String sourcePath = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator + DBManager.DB_NAME;
+		String carpetaDatabase = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+				+ DBManager.DB_NAME + File.separator;
 
-		// Crear una tarea que se ejecutará en segundo plano
-		Task<Boolean> tarea = new Task<Boolean>() {
+		AtomicBoolean comicLectura = new AtomicBoolean(false);
+		StringBuilder codigoFaltante = new StringBuilder();
+		AtomicInteger contadorTotal = new AtomicInteger(0);
+		AtomicInteger contadorErrores = new AtomicInteger(0);
 
+		Task<Void> tarea = new Task<>() {
 			@Override
-			protected Boolean call() throws Exception {
-
-				final String finalValorCodigo = Utilidades.eliminarEspacios(valorCodigo).replace("-", "");
-
-				Comic comicInfo = new Comic();
-
-				if (!finalValorCodigo.isEmpty()) {
-
-					if (finalValorCodigo.length() == 9) {
-						comicInfo = previewsScraper.displayComicInfo(finalValorCodigo.trim(), prontInfo);
-
-					} else {
-						comicInfo = ApiMarvel.infoComicCode(finalValorCodigo.trim(), prontInfo);
-						contadorFaltas[0]++;
-
-						if (comicInfo == null) {
-							comicInfo = isbnGeneral.getBookInfo(finalValorCodigo.trim(), prontInfo);
-
-							if (comicInfo == null) {
-								contadorFaltas[0]++;
-							}
-
-						}
-					}
-
-					if (contadorFaltas[0] > 1) {
-						codigosFaltantes[0] += "Falta comic con codigo: " + valorCodigo;
-					}
-					contadorFaltas[0] = 0;
-					if (comprobarCodigo(comicInfo)) {
-						rellenarTablaImport(comicInfo, finalValorCodigo.trim());
-						return true;
-					}
+			protected Void call() throws Exception {
+				ExecutorService executorService = Executors
+						.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+				try (BufferedReader reader = new BufferedReader(new FileReader(fichero))) {
+					reader.lines().map(linea -> Utilidades.eliminarEspacios(linea).replace("-", ""))
+							.filter(finalValorCodigo -> !finalValorCodigo.isEmpty()).forEach(finalValorCodigo -> {
+								try {
+									procesarComic(finalValorCodigo, comicLectura, codigoFaltante, contadorTotal,
+											contadorErrores);
+								} catch (URISyntaxException | IOException | JSONException e) {
+									Utilidades.manejarExcepcion(e);
+								}
+							});
+				} catch (IOException e) {
+					Utilidades.manejarExcepcion(e);
+				} finally {
+					cerrarExecutorService(executorService);
+					actualizarInterfaz(contadorErrores, codigoFaltante, carpetaDatabase, contadorTotal);
 				}
-				return false;
+				return null;
 			}
 		};
 
 		AlarmaList.iniciarAnimacionCargaImagen(cargaImagen);
+		tarea.setOnSucceeded(ev -> AlarmaList.detenerAnimacionCargaImagen(cargaImagen));
 
-		// Configurar un manejador de eventos para actualizar la interfaz de usuario
-		// cuando la tarea esté completa
-		tarea.setOnSucceeded(ev -> {
-			Platform.runLater(() -> {
-
-				if (codigosFaltantes[0].length() > 0) {
-					Utilidades.imprimirEnArchivo(codigosFaltantes[0], sourcePath);
-				}
-				prontInfo.setOpacity(0);
-				prontInfo.setText("");
-				AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
-			});
-		});
-
-		tarea.setOnFailed(ev -> {
-			Platform.runLater(() -> {
-				AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
-			});
-		});
-
-		// Iniciar la tarea en un nuevo hilo
 		Thread thread = new Thread(tarea);
-		thread.setDaemon(true); // Hacer que el hilo sea demonio para que se cierre al
-								// salir de la aplicación
-		// Iniciar la tarea
+		thread.setDaemon(true);
 		thread.start();
+	}
+
+	private void procesarComic(String finalValorCodigo, AtomicBoolean comicLectura, StringBuilder codigoFaltante,
+			AtomicInteger contadorTotal, AtomicInteger contadorErrores)
+			throws URISyntaxException, IOException, JSONException {
+
+		Comic comicInfo = obtenerComicInfo(finalValorCodigo, comicLectura);
+
+		contadorTotal.incrementAndGet(); // Incrementar contadorTotal después del if
+
+		if (comprobarCodigo(comicInfo)) {
+			rellenarTablaImport(comicInfo, finalValorCodigo);
+			System.out.println("Codigo correcto: " + finalValorCodigo);
+		} else {
+			System.err.println("Codigo erroneo: " + finalValorCodigo);
+
+			synchronized (contadorErrores) {
+				codigoFaltante.append("Falta comic con codigo: ").append(finalValorCodigo).append("\n");
+				contadorErrores.incrementAndGet();
+			}
+		}
+	}
+
+	private Comic obtenerComicInfo(String finalValorCodigo, AtomicBoolean comicLectura)
+			throws URISyntaxException, IOException, JSONException {
+
+		ApiISBNGeneral isbnGeneral = new ApiISBNGeneral();
+		WebScraperPreviewsWorld previewsScraper = new WebScraperPreviewsWorld();
+
+		if (finalValorCodigo.length() == 9) {
+			return previewsScraper.displayComicInfo(finalValorCodigo.trim(), prontInfo);
+		} else {
+			Comic comicInfo = ApiMarvel.infoComicCode(finalValorCodigo.trim(), prontInfo);
+
+			if (comicInfo == null) {
+				comicInfo = isbnGeneral.getBookInfo(finalValorCodigo.trim(), prontInfo);
+
+				if (comicInfo == null) {
+					comicLectura.set(true);
+				}
+			}
+			return comicInfo;
+		}
+	}
+
+	private void cerrarExecutorService(ExecutorService executorService) {
+		executorService.shutdown();
+		try {
+			executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+		} catch (InterruptedException e) {
+			Utilidades.manejarExcepcion(e);
+		}
+	}
+
+	private void actualizarInterfaz(AtomicInteger contadorErrores, StringBuilder codigoFaltante, String carpetaDatabase,
+			AtomicInteger contadorTotal) {
+		Platform.runLater(() -> {
+			if (contadorErrores.get() > 0) {
+				Utilidades.imprimirEnArchivo(codigoFaltante.toString(), carpetaDatabase);
+			}
+			String mensaje = "Se han procesado: " + (contadorTotal.get() - contadorErrores.get()) + " de "
+					+ contadorTotal.get();
+			AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
+		});
 	}
 
 	/**
@@ -1729,36 +1754,28 @@ public class VentanaAccionController implements Initializable {
 							throw new IOException("Error al cargar la imagen desde la URL local.");
 						}
 
+						// Actualizar la interfaz de usuario en el hilo de JavaFX
+						Platform.runLater(() -> {
+							imageView.setImage(imagenCargada);
+							AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
+							AlarmaList.detenerAnimacionProntAccion(imagenFondo);
+						});
 						return imagenCargada;
 					} catch (FileNotFoundException e) {
-						Utilidades.manejarExcepcion(e);
-						Thread.sleep(1000); // Puedes ajustar el tiempo de espera según sea necesario
+						Thread.sleep(1500); // Puedes ajustar el tiempo de espera según sea necesario
 					} catch (Exception e) {
-						Utilidades.manejarExcepcion(e);
-						Thread.sleep(1000); // Puedes ajustar el tiempo de espera según sea necesario
+						Thread.sleep(1500); // Puedes ajustar el tiempo de espera según sea necesario
 					}
 				}
 			}
 		};
 
-		AlarmaList.iniciarAnimacionCargaImagen(cargaImagen);
-
 		cargarImagenTask.setOnSucceeded(event -> {
-
-			Image imagenCargada = cargarImagenTask.getValue();
-			imageView.setImage(imagenCargada);
 			AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
-			AlarmaList.detenerAnimacionProntAccion(imagenFondo);
-			;
 		});
 
 		cargarImagenTask.setOnFailed(ev -> {
-
-			Platform.runLater(() -> {
-				AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
-				AlarmaList.detenerAnimacionProntAccion(imagenFondo);
-				;
-			});
+			AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
 		});
 
 		Thread thread = new Thread(cargarImagenTask);
@@ -2234,7 +2251,6 @@ public class VentanaAccionController implements Initializable {
 
 		Utilidades.convertirNombresCarpetas(SOURCE_PATH);
 		AlarmaList.detenerAnimacionProntAccion(imagenFondo);
-		;
 		AlarmaList.iniciarAnimacionCambioImagen(imagenFondo);
 
 		Comic comic = camposComic();
@@ -2243,8 +2259,6 @@ public class VentanaAccionController implements Initializable {
 		prontInfo.setOpacity(1);
 
 		procesarComic(comic, false);
-		AlarmaList.detenerAnimacionProntAccion(imagenFondo);
-		;
 	}
 
 	/**
@@ -2353,7 +2367,6 @@ public class VentanaAccionController implements Initializable {
 				Image imagenDeseo = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
 				imagenFondo.setImage(imagenDeseo);
 				AlarmaList.detenerAnimacionProntAccion(imagenFondo);
-				;
 			}
 
 			procesarBloqueComun(comic);

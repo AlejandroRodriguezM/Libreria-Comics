@@ -16,6 +16,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import alarmas.AlarmaList;
 import comicManagement.Comic;
 import javafx.scene.control.TextArea;
 
@@ -69,11 +70,22 @@ public class WebScraperPreviewsWorld {
 
 			if (codigoRespuesta == 404 || diamondCode.length() <= 8 && diamondCode.length() >= 10
 					|| !matcher.matches()) {
-				prontInfo.setOpacity(1);
-				prontInfo.setText("No se encontró el cómic con Diamond Code: " + diamondCode);
+				String mensaje = "No se encontró el cómic con Diamond Code: " + diamondCode;
+				AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+
 				return null;
 			} else {
 				Document document = Jsoup.connect(previews_World_Url).get();
+
+				if (document == null) {
+					String mensaje = "Error al obtener el documento HTML para el cómic con Diamond Code: "
+							+ diamondCode;
+
+					AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+
+					return null;
+				}
+
 				String titulo = scrapeTitle(document);
 
 				String issueKey = "";
@@ -131,14 +143,9 @@ public class WebScraperPreviewsWorld {
 					editorial = "Marvel";
 				}
 
-				Comic comicInfoArray = new Comic("", titulo, "0", numero, variant, "", editorial, formato, "Estados Unidos (United States)", fecha,
-						writer, artist, "En posesion", issueKey, "Sin puntuacion", portadaImagen, previews_World_Url, precio, diamondCode);
-
-				if (titulo == null) {
-					prontInfo.setOpacity(1);
-					prontInfo.setText("No se encontró el cómic con Diamond Code: " + diamondCode);
-					return null;
-				}
+				Comic comicInfoArray = new Comic("", titulo, "0", numero, variant, "", editorial, formato,
+						"Estados Unidos (United States)", fecha, writer, artist, "En posesion", issueKey,
+						"Sin puntuacion", portadaImagen, previews_World_Url, precio, diamondCode);
 
 				return comicInfoArray;
 			}

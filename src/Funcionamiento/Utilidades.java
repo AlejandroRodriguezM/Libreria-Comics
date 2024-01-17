@@ -62,6 +62,10 @@ import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
 
+import org.json.JSONException;
+
+import Apis.ApiISBNGeneral;
+import Apis.ApiMarvel;
 import Controladores.VentanaAccionController;
 import JDBC.DBLibreriaManager;
 import JDBC.DBManager;
@@ -73,6 +77,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import webScrap.WebScraperPreviewsWorld;
 
 /**
  * Esta clase sirve para realizar diferentes funciones realizanas con la
@@ -1265,7 +1270,6 @@ public class Utilidades {
 	 */
 	public static CompletableFuture<Boolean> descargarYConvertirImagenAsync(URI urlImagen, String carpetaDestino,
 			String nuevoNombre) {
-		final String[] finalNuevoNombre = { nuevoNombre }; // Usar un array de longitud 1
 
 		return CompletableFuture.supplyAsync(() -> {
 			try {
@@ -1277,40 +1281,53 @@ public class Utilidades {
 					int responseCode = ((HttpURLConnection) connection).getResponseCode();
 
 					if (responseCode != HttpURLConnection.HTTP_OK) {
-						System.err.println("La URL no apunta a una imagen válida o no se pudo acceder: " + url);
+						if (responseCode == HttpURLConnection.HTTP_INTERNAL_ERROR) {
+							System.err.println("Error interno del servidor al acceder a la URL: " + url);
+							// Realiza acciones específicas para manejar el error interno del servidor
+							// Puede ser útil registrar o notificar sobre este tipo de errores
+						} else {
+							System.err.println("La URL no apunta a una imagen válida o no se pudo acceder: " + url);
+						}
 						return false;
 					}
 				}
 
-				String rutaDestino;
+				String finalNuevoNombre = nuevoNombre; // Create a new effectively final variable
 
-				try (InputStream in = url.openStream()) {
-					BufferedImage image = ImageIO.read(in);
+				String extension = obtenerExtension(finalNuevoNombre);
+				if (!extension.equals("jpg")) {
+					BufferedImage image = ImageIO.read(url);
 
 					if (image == null) {
 						System.err.println("No se pudo cargar la imagen desde " + urlImagen);
 						return false;
 					}
 
-					if (!finalNuevoNombre[0].toLowerCase().endsWith(".jpg")) {
-						BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(),
-								BufferedImage.TYPE_INT_RGB);
-						newImage.createGraphics().drawImage(image, 0, 0, null);
-						finalNuevoNombre[0] = finalNuevoNombre[0] + ".jpg";
-						rutaDestino = carpetaDestino + File.separator + finalNuevoNombre[0];
-					} else {
-						rutaDestino = carpetaDestino + File.separator + finalNuevoNombre[0];
-					}
+					finalNuevoNombre += ".jpg";
+					Path rutaDestino = Path.of(carpetaDestino, finalNuevoNombre);
 
-					File output = new File(rutaDestino);
-					ImageIO.write(image, "jpg", output);
-					return true;
+					ImageIO.write(image, "jpg", rutaDestino.toFile());
+				} else {
+					Path rutaDestino = Path.of(carpetaDestino, finalNuevoNombre);
+					try (InputStream in = url.openStream()) {
+						java.nio.file.Files.copy(in, rutaDestino, StandardCopyOption.REPLACE_EXISTING);
+					}
 				}
+
+				return true;
 			} catch (IOException e) {
 				manejarExcepcion(e);
 				return false;
 			}
 		});
+	}
+
+	private static String obtenerExtension(String nombreArchivo) {
+		int ultimoPunto = nombreArchivo.lastIndexOf(".");
+		if (ultimoPunto == -1) {
+			return "";
+		}
+		return nombreArchivo.substring(ultimoPunto + 1).toLowerCase();
 	}
 
 	/**
@@ -2094,6 +2111,87 @@ public class Utilidades {
 
 		nav.alertaException(e.toString());
 		e.printStackTrace();
+	}
+
+	public static void procesarArchivo(File archivo) {
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+
+		executor.submit(() -> {
+			String linea;
+			int contadorFaltas = 0;
+			ApiISBNGeneral isbnGeneral = new ApiISBNGeneral();
+			WebScraperPreviewsWorld previewsScraper = new WebScraperPreviewsWorld();
+			String codigosFaltantes = "";
+			Comic comicInfo = new Comic();
+			String sourcePath = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+					+ DBManager.DB_NAME;
+
+			try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
+				while ((linea = br.readLine()) != null) {
+					// Procesar cada línea según tus requisitos
+					String finalValorCodigo = linea.trim();
+					String valorCodigo = finalValorCodigo; // Asignar el valor adecuado
+
+					if (!finalValorCodigo.isEmpty()) {
+						if (finalValorCodigo.length() == 9) {
+							comicInfo = previewsScraper.displayComicInfo(finalValorCodigo.trim(), null);
+
+						} else {
+							comicInfo = ApiMarvel.infoComicCode(finalValorCodigo.trim(), null);
+							contadorFaltas++;
+
+							if (comicInfo == null) {
+								comicInfo = isbnGeneral.getBookInfo(finalValorCodigo.trim(), null);
+
+								if (comicInfo == null) {
+									contadorFaltas++;
+								}
+
+							}
+						}
+
+						if (contadorFaltas > 1) {
+							codigosFaltantes += "Falta comic con codigo: " + valorCodigo;
+						}
+					}
+				}
+			} catch (IOException | URISyntaxException | JSONException e) {
+				e.printStackTrace();
+			}
+
+			// Verificar el contador de faltas al final y actualizar el resultado
+			if (contadorFaltas > 1) {
+				Utilidades.imprimirEnArchivo(codigosFaltantes, sourcePath);
+			}
+		});
+
+		executor.shutdown();
+	}
+
+	public static boolean codigoCorrectoImportado(String valorCodigo) {
+		try {
+			String finalValorCodigo = eliminarEspacios(valorCodigo).replace("-", "");
+			ApiISBNGeneral isbnGeneral = new ApiISBNGeneral();
+			WebScraperPreviewsWorld previewsScraper = new WebScraperPreviewsWorld();
+			Comic comicInfo = null;
+
+			if (finalValorCodigo.length() == 9) {
+				comicInfo = previewsScraper.displayComicInfo(finalValorCodigo.trim(), null);
+			} else {
+				comicInfo = ApiMarvel.infoComicCode(finalValorCodigo.trim(), null);
+
+				if (comicInfo == null) {
+					comicInfo = isbnGeneral.getBookInfo(finalValorCodigo.trim(), null);
+				}
+			}
+
+			// Realiza cualquier lógica adicional aquí si es necesario.
+
+			return comicInfo != null; // Devuelve true si se encontró información del cómic.
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 }
