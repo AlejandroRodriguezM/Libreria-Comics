@@ -394,6 +394,7 @@ public class AccesoBBDDController implements Initializable {
 	 */
 	@FXML
 	void opcionesPrograma(ActionEvent event) {
+		
 		nav.verOpciones();
 
 		Stage myStage = (Stage) this.botonOpciones.getScene().getWindow();
@@ -405,7 +406,7 @@ public class AccesoBBDDController implements Initializable {
 	 */
 	public void closeWindows() { // Metodo que permite cerrar completamente el programa en caso de cerrar a la //
 		// fuerza.
-		Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
+		Stage myStage = (Stage) this.botonEnviar.getScene().getWindow();
 		myStage.close();
 	}
 }
