@@ -1871,7 +1871,7 @@ public class Utilidades {
 			socket.close();
 			return true;
 		} catch (Exception e) {
-			manejarExcepcion(e);
+//			manejarExcepcion(e);
 			return false;
 		}
 	}
@@ -2192,6 +2192,21 @@ public class Utilidades {
 			e.printStackTrace();
 			return false;
 		}
+	}
+
+	public static int contarLineas(File fichero) {
+		int contador = 0;
+
+		try (BufferedReader br = new BufferedReader(new FileReader(fichero))) {
+			// Lee el archivo línea por línea
+			while (br.readLine() != null) {
+				contador++;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return contador;
 	}
 
 }

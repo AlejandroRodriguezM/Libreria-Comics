@@ -4,6 +4,9 @@
 */
 package Controladores;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  * Las ventanas graficas se realizan con JavaFX.
@@ -27,6 +30,7 @@ package Controladores;
  */
 
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
@@ -35,7 +39,7 @@ import javafx.stage.Stage;
 /**
  * Controlador para la carga de cómics en una interfaz gráfica JavaFX.
  */
-public class CargaComicsController {
+public class CargaComicsController implements Initializable {
 
 	/**
 	 * Barra de progreso para mostrar el progreso de carga de cómics.
@@ -60,49 +64,72 @@ public class CargaComicsController {
 	 */
 	private Stage stage; // Campo para almacenar la referencia a la ventana
 
-    /**
-     * Actualiza el progreso de la barra de progreso.
-     *
-     * @param progress El progreso de la carga (valor entre 0.0 y 1.0).
-     */
-    public void updateProgress(double progress) {
-        cargaComics.setProgress(progress);
-    }
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		updateProgress(0);
+		appendTextToTextArea("");
+		updateLabel("");
+	}
+	
+	/**
+	 * Actualiza el progreso de la barra de progreso.
+	 *
+	 * @param progress El progreso de la carga (valor entre 0.0 y 1.0).
+	 */
+	public void updateProgress(double progress) {
+		cargaComics.setProgress(progress);
+	}
 
-    /**
-     * Añade texto al área de texto.
-     *
-     * @param text El texto que se va a añadir al área de texto.
-     */
-    public void appendTextToTextArea(String text) {
-        comicsCarga.appendText(text);
-    }
+	/**
+	 * Añade texto al área de texto.
+	 *
+	 * @param text El texto que se va a añadir al área de texto.
+	 */
+	public void appendTextToTextArea(String text) {
+		comicsCarga.appendText(text);
+		
+	}
 
-    /**
-     * Actualiza el texto de la etiqueta.
-     *
-     * @param text El nuevo texto que se mostrará en la etiqueta.
-     */
-    public void updateLabel(String text) {
-        porcentajeCarga.setText(text);
-    }
+	/**
+	 * Actualiza el texto de la etiqueta.
+	 *
+	 * @param text El nuevo texto que se mostrará en la etiqueta.
+	 */
+	public void updateLabel(String text) {
+		porcentajeCarga.setText(text);
+	}
 
-    /**
-     * Establece la referencia a la ventana principal.
-     *
-     * @param stage La ventana principal de la aplicación.
-     */
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
+	/**
+	 * Establece la referencia a la ventana principal.
+	 *
+	 * @param stage La ventana principal de la aplicación.
+	 */
+	public void setStage(Stage stage) {
+		this.stage = stage;
+	}
 
-    /**
-     * Cierra la ventana actual si está abierta.
-     */
-    public void closeWindow() {
-        if (stage != null) {
-            stage.close();
-        }
-    }
+	/**
+	 * Pasa datos a los métodos del controlador de la ventana de carga de cómics.
+	 *
+	 * @param nombreComic El nombre del cómic a mostrar.
+	 * @param porcentaje  El porcentaje de carga a mostrar.
+	 * @param progreso    El progreso de carga a mostrar.
+	 */
+	public void cargarDatosEnCargaComics(String nombreComic, String porcentaje, Double progreso) {
+		appendTextToTextArea(nombreComic);
+		updateLabel(porcentaje);
+		updateProgress(progreso);
+
+	}
+
+	/**
+	 * Cierra la ventana actual si está abierta.
+	 */
+	public void closeWindow() {
+		if (stage != null) {
+			stage.close();
+		}
+	}
+
+
 }
-

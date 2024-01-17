@@ -52,6 +52,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -1111,7 +1112,7 @@ public class VentanaAccionController implements Initializable {
 					urlReferencia, botonIntroducir, botonBusquedaAvanzada, precioComic, direccionImagen, label_portada,
 					label_precio, label_caja, label_dibujante, label_editorial, label_estado, label_fecha, label_firma,
 					label_formato, label_guionista, label_key, label_procedencia, label_referencia, codigoComicTratar,
-					label_codigo_comic, tablaBBDD, rootVBox));
+					label_codigo_comic, tablaBBDD, rootVBox, botonSubidaPortada));
 			rootVBox.setPrefHeight(230);
 			rootVBox.setLayoutY(370);
 			break;
@@ -1122,8 +1123,7 @@ public class VentanaAccionController implements Initializable {
 					label_precio, label_caja, label_dibujante, label_editorial, label_estado, label_fecha, label_firma,
 					label_formato, label_guionista, label_key, label_procedencia, label_referencia, botonbbdd,
 					idComicTratar_mod, label_id_mod, botonParametroComic, codigoComicTratar, label_codigo_comic,
-					rootVBox));
-//			autoRelleno();
+					rootVBox, botonSubidaPortada));
 			rootVBox.toFront();
 			break;
 		case "puntuar":
@@ -1134,7 +1134,6 @@ public class VentanaAccionController implements Initializable {
 			break;
 		default:
 			closeWindow();
-			// Opción no reconocida, no hacer nada
 			return;
 		}
 
@@ -1382,7 +1381,7 @@ public class VentanaAccionController implements Initializable {
 				botonVender, botonEliminar, idComicTratar, botonModificarComic, botonBusquedaCodigo, botonIntroducir,
 				botonbbdd, precioComic, direccionImagen, label_portada, label_precio, label_caja, label_dibujante,
 				label_editorial, label_estado, label_fecha, label_firma, label_formato, label_guionista, label_key,
-				label_procedencia, label_referencia, codigoComicTratar, label_codigo_comic);
+				label_procedencia, label_referencia, codigoComicTratar, label_codigo_comic, botonSubidaPortada);
 
 		ocultarElementos(elementos);
 	}
@@ -1617,26 +1616,44 @@ public class VentanaAccionController implements Initializable {
 		botonGuardarCambioComic.setVisible(true);
 		botonGuardarComic.setVisible(true);
 		botonEliminarImportadoComic.setVisible(true);
-
 		String carpetaDatabase = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
 				+ DBManager.DB_NAME + File.separator;
 
 		AtomicBoolean comicLectura = new AtomicBoolean(false);
 		StringBuilder codigoFaltante = new StringBuilder();
-		AtomicInteger contadorTotal = new AtomicInteger(0);
 		AtomicInteger contadorErrores = new AtomicInteger(0);
-
+		AtomicInteger comicsProcesados = new AtomicInteger(0);
+		AtomicInteger numLineas = new AtomicInteger(0); // Declarar como AtomicInteger
+		numLineas.set(Utilidades.contarLineas(fichero)); // Asignar el valor aquí
+		AtomicReference<CargaComicsController> cargaComicsControllerRef = new AtomicReference<>();
+		nav.verCargaComics(cargaComicsControllerRef);
 		Task<Void> tarea = new Task<>() {
 			@Override
 			protected Void call() throws Exception {
 				ExecutorService executorService = Executors
 						.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
 				try (BufferedReader reader = new BufferedReader(new FileReader(fichero))) {
 					reader.lines().map(linea -> Utilidades.eliminarEspacios(linea).replace("-", ""))
 							.filter(finalValorCodigo -> !finalValorCodigo.isEmpty()).forEach(finalValorCodigo -> {
 								try {
-									procesarComic(finalValorCodigo, comicLectura, codigoFaltante, contadorTotal,
-											contadorErrores);
+									procesarComic(finalValorCodigo, comicLectura, codigoFaltante, contadorErrores,
+											comicsProcesados);
+
+									final long finalProcessedItems = comicsProcesados.get();
+
+									// Update UI elements using Platform.runLater
+									Platform.runLater(() -> {
+										String texto = "";
+										texto = ("Comic: " + finalValorCodigo + "\n");
+
+										double progress = (double) finalProcessedItems / (numLineas.get() + 1);
+										String porcentaje = String.format("%.2f%%", progress * 100);
+
+										cargaComicsControllerRef.get().cargarDatosEnCargaComics(texto, porcentaje,
+												progress);
+									});
+
 								} catch (URISyntaxException | IOException | JSONException e) {
 									Utilidades.manejarExcepcion(e);
 								}
@@ -1645,7 +1662,11 @@ public class VentanaAccionController implements Initializable {
 					Utilidades.manejarExcepcion(e);
 				} finally {
 					cerrarExecutorService(executorService);
-					actualizarInterfaz(contadorErrores, codigoFaltante, carpetaDatabase, contadorTotal);
+					actualizarInterfaz(contadorErrores, codigoFaltante, carpetaDatabase, numLineas);
+
+					Platform.runLater(() -> {
+						cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0);
+					});
 				}
 				return null;
 			}
@@ -1660,15 +1681,18 @@ public class VentanaAccionController implements Initializable {
 	}
 
 	private void procesarComic(String finalValorCodigo, AtomicBoolean comicLectura, StringBuilder codigoFaltante,
-			AtomicInteger contadorTotal, AtomicInteger contadorErrores)
+			AtomicInteger contadorErrores, AtomicInteger comicsProcesados)
 			throws URISyntaxException, IOException, JSONException {
 
 		Comic comicInfo = obtenerComicInfo(finalValorCodigo, comicLectura);
 
-		contadorTotal.incrementAndGet(); // Incrementar contadorTotal después del if
-
 		if (comprobarCodigo(comicInfo)) {
 			rellenarTablaImport(comicInfo, finalValorCodigo);
+
+			synchronized (comicsProcesados) {
+				comicsProcesados.incrementAndGet();
+			}
+
 			System.out.println("Codigo correcto: " + finalValorCodigo);
 		} else {
 			System.err.println("Codigo erroneo: " + finalValorCodigo);

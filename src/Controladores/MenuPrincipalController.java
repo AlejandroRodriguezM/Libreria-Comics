@@ -719,6 +719,7 @@ public class MenuPrincipalController implements Initializable {
 		libreria.reiniciarBBDD();
 		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
 		tablaBBDD.refresh();
+		prontInfo.clear();
 		prontInfo.setOpacity(0);
 		imagencomic.setImage(null);
 
@@ -902,6 +903,8 @@ public class MenuPrincipalController implements Initializable {
 		String tipoBusqueda = "completa";
 
 		cargaExportExcel(listaComics, tipoBusqueda);
+		
+		prontInfo.clear();
 
 		DBLibreriaManager.limpiarListaGuardados();
 	}
@@ -1090,6 +1093,7 @@ public class MenuPrincipalController implements Initializable {
 	private void detenerAnimaciones() {
 		AlarmaList.detenerAnimacion();
 		AlarmaList.detenerAnimacionCarga(progresoCarga);
+		prontInfo.clear();
 	}
 
 	/**
@@ -1103,8 +1107,7 @@ public class MenuPrincipalController implements Initializable {
 
 		AlarmaList alarmaList = new AlarmaList();
 		libreria = new DBLibreriaManager();
-		prontInfo.setOpacity(0);
-
+		prontInfo.clear();
 		prontInfo.setOpacity(1);
 		alarmaList.iniciarAnimacionEstadistica(prontInfo);
 		libreria.generar_fichero_estadisticas();
@@ -1161,6 +1164,7 @@ public class MenuPrincipalController implements Initializable {
 		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 		// Verificar si idRow es nulo antes de intentar acceder a sus métodos
 		if (idRow != null) {
+			prontInfo.clear();
 			String id_comic = idRow.getID();
 
 			String mensaje = libreria.comicDatos(id_comic).toString().replace("[", "").replace("]", "");
@@ -1189,9 +1193,13 @@ public class MenuPrincipalController implements Initializable {
 		List<Comic> listaComics = listaPorParametro();
 
 		String tipoBusqueda = "Parcial";
-
+		prontInfo.clear();
 		if (DBLibreriaManager.comicsGuardadosList.size() > 0) {
 			cargaExportExcel(DBLibreriaManager.comicsGuardadosList, tipoBusqueda);
+			
+			String mensaje = "Lista guardada de forma correcta";
+			AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
+			
 		} else {
 			cargaExportExcel(listaComics, tipoBusqueda);
 
@@ -1329,6 +1337,9 @@ public class MenuPrincipalController implements Initializable {
 			// Lógica después de una importación exitosa
 			ejecutarOperacionLecturaGuardadoBD(fichero);
 			AlarmaList.detenerAnimacion();
+			
+			String mensaje = "Datos importados correctamente.";
+			AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
 		} else {
 			// Lógica después de una importación fallida
 			String mensaje = "No se ha podido importar correctamente.";
@@ -1350,9 +1361,9 @@ public class MenuPrincipalController implements Initializable {
 					+ " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 			try {
-
+				int numLineas = Utilidades.contarLineas(fichero);
 				BufferedReader lineReader = new BufferedReader(new FileReader(fichero));
-				Task<Void> lecturaTask = funcionesExcel.lecturaCSVTask(sql, lineReader);
+				Task<Void> lecturaTask = funcionesExcel.lecturaCSVTask(sql, lineReader, numLineas);
 
 				lecturaTask.setOnSucceeded(event -> {
 					// Lógica después de la inserción exitosa en la base de datos
@@ -1507,6 +1518,7 @@ public class MenuPrincipalController implements Initializable {
 
 		// Limpiar elementos adicionales de la interfaz
 		fechaPublicacion.setValue(null);
+		prontInfo.clear();
 		prontInfo.setText(null);
 		prontInfo.setOpacity(0);
 		tablaBBDD.getItems().clear();

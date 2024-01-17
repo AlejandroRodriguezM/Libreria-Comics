@@ -29,8 +29,10 @@ package Funcionamiento;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 import Controladores.AccesoBBDDController;
+import Controladores.CargaComicsController;
 import Controladores.CrearBBDDController;
 import Controladores.MenuLectorCodigoBarras;
 import Controladores.MenuPrincipalController;
@@ -430,6 +432,43 @@ public class Ventanas {
 			alertaException(ex.toString());
 			ex.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Muestra una ventana de carga para la carga de cómics.
+	 */
+    public void verCargaComics(AtomicReference<CargaComicsController> cargaComicsControllerRef) {
+		Platform.runLater(() -> {
+			try {
+				FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/PantallaCargaComics.fxml"));
+//				loader.setController(this);  // Make sure this line is present
+				Parent root = loader.load();
+				
+                CargaComicsController cargaComicsController = loader.getController();
+                cargaComicsControllerRef.set(cargaComicsController);
+				
+				Scene scene = new Scene(root);
+				Stage stage = new Stage();
+				stage.setResizable(false);
+				stage.setTitle("Carga de comics"); // Titulo de la aplicacion.
+				stage.getIcons().add(new Image("/Icono/icon2.png"));
+
+				// Indico que debe hacer al cerrar
+				stage.setOnCloseRequest(e -> {
+					cargaComicsController.closeWindow();
+				});
+
+				// Asocio el stage con el scene
+				stage.setScene(scene);
+				stage.show();
+
+				// Now you can call methods on cargaComicsController
+//				cargaComicsController.cargarDatosEnCargaComics("", "", 0.0); // Call the data passing function
+
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		});
 	}
 
 

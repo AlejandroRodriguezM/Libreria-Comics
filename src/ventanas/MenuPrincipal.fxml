@@ -189,8 +189,8 @@
          </font></Button>
       <Button fx:id="botonEliminar" layoutX="407.0" layoutY="72.0" mnemonicParsing="false" onAction="#accionComic" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Eliminar Comic" />
       <Button fx:id="botonAgregarPuntuacion" layoutX="506.0" layoutY="72.0" mnemonicParsing="false" onAction="#accionComic" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Puntuar Comic" />
-      <Button fx:id="botonImprimir" disable="true" layoutX="407.0" layoutY="331.0" mnemonicParsing="false" onAction="#imprimirResultado" prefHeight="35.0" prefWidth="116.0" stylesheets="@../style/genericos_style.css" text="Imprimir resultado" visible="false" />
-      <Button fx:id="botonGuardarResultado" disable="true" layoutX="277.0" layoutY="331.0" mnemonicParsing="false" onAction="#guardarResultado" prefHeight="35.0" prefWidth="116.0" stylesheets="@../style/genericos_style.css" text="Guardar resultado" visible="false" />
+      <Button fx:id="botonImprimir" layoutX="407.0" layoutY="331.0" mnemonicParsing="false" onAction="#imprimirResultado" prefHeight="35.0" prefWidth="116.0" stylesheets="@../style/genericos_style.css" text="Imprimir resultado" visible="false" />
+      <Button fx:id="botonGuardarResultado" layoutX="277.0" layoutY="331.0" mnemonicParsing="false" onAction="#guardarResultado" prefHeight="35.0" prefWidth="116.0" stylesheets="@../style/genericos_style.css" text="Guardar resultado" visible="false" />
 
     </children>
 </AnchorPane>

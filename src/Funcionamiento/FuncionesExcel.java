@@ -5,7 +5,6 @@
 package Funcionamiento;
 
 import java.awt.Desktop;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -31,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -46,12 +46,7 @@ import JDBC.DBManager;
 import comicManagement.Comic;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.Stage;
 
 /**
  * Esta clase sirve para crear tanto los ficheros Excel como los ficheros CSV,
@@ -77,11 +72,6 @@ public class FuncionesExcel {
 	private static DBLibreriaManager libreria = null;
 
 	/**
-	 * Controlador para la carga de cómics en la interfaz gráfica.
-	 */
-	private CargaComicsController cargaComicsController;
-
-	/**
 	 * Guarda los datos en un archivo de Excel y crea un archivo ZIP que contiene el
 	 * archivo Excel.
 	 *
@@ -91,6 +81,7 @@ public class FuncionesExcel {
 	public void savedataExcel(String nombre_carpeta) throws SQLException {
 
 		libreria = new DBLibreriaManager();
+
 		Cell celda;
 		Row fila;
 		Sheet hoja;
@@ -107,10 +98,13 @@ public class FuncionesExcel {
 		String direccion = ubicacion + File.separator + "libreria" + File.separator + DBManager.DB_NAME + File.separator
 				+ "backups" + File.separator + nombre_carpeta;
 		try {
-			verCargaComics();
+
 			File carpetaLibreria = new File(direccion);
 			File fichero = new File(carpetaLibreria, "BaseDatos.xlsx");
 			fichero.createNewFile();
+
+			int numLineas = libreria.countRows();
+
 			List<Comic> listaComics = libreria.libreriaCompleta();
 
 			libro = new XSSFWorkbook();
@@ -127,6 +121,9 @@ public class FuncionesExcel {
 
 			Thread excelThread = new Thread(() -> {
 				try {
+					AtomicReference<CargaComicsController> cargaComicsControllerRef = new AtomicReference<>();
+					nav.verCargaComics(cargaComicsControllerRef);
+
 					Row filaCopy = fila; // Create a copy of fila here
 					int indiceFinal = indiceFila;
 					indiceFinal++;
@@ -154,26 +151,26 @@ public class FuncionesExcel {
 						filaCopy.createCell(18).setCellValue(comic.getEstado());
 
 						final long finalProcessedItems = indiceFinal;
-
 						Platform.runLater(() -> {
-							String texto = ("Comic: " + comic.getNombre() + " - " + comic.getNumero() + " - "
-									+ comic.getVariante() + "\n");
-							double progress = (double) finalProcessedItems / listaComics.size();
+
+							String texto = "Comic: " + comic.getNombre() + " - " + comic.getNumero() + " - "
+									+ comic.getVariante() + "\n";
+							double progress = (double) finalProcessedItems / numLineas;
 							String porcentaje = String.format("%.2f%%", progress * 100);
-							cargarDatosEnCargaComics(texto, porcentaje, progress);
+							cargaComicsControllerRef.get().cargarDatosEnCargaComics(texto, porcentaje, progress);
+
 						});
 
 						indiceFinal++;
 					}
 
-					try {
+					try (FileOutputStream outputStream = new FileOutputStream(fichero);) {
 						Platform.runLater(() -> {
-							cargarDatosEnCargaComics("", "100%", 100.0);
+							cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0);
 						});
-						FileOutputStream outputStream = new FileOutputStream(fichero);
+
 						libro.write(outputStream);
 						libro.close();
-						outputStream.close();
 
 						String zipPath = carpetaLibreria.getAbsolutePath() + File.separator + "excel_" + nombre_carpeta
 								+ ".zip";
@@ -191,7 +188,6 @@ public class FuncionesExcel {
 						nav.alertaException(ex.toString());
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
 					nav.alertaException(e.toString());
 				}
 			});
@@ -303,8 +299,9 @@ public class FuncionesExcel {
 	public boolean comprobarCSV(File fichero, String sql) {
 		conn = DBManager.conexion();
 		try {
+			int numLineas = Utilidades.contarLineas(fichero);
 			BufferedReader lineReader = new BufferedReader(new FileReader(fichero));
-			lecturaCSVTask(sql, lineReader);
+			lecturaCSVTask(sql, lineReader, numLineas);
 			return true;
 		} catch (Exception e) {
 			try {
@@ -379,12 +376,12 @@ public class FuncionesExcel {
 
 		File directorioImagenes = carpetaPortadas();
 		File directorioFichero = carpetaExcelExportado();
-
+		int numComics = libreria.countRows();
 		Task<Boolean> task = new Task<Boolean>() {
 			@Override
 			protected Boolean call() throws Exception {
-	            try (FileOutputStream outputStream = new FileOutputStream(directorioFichero)) {
-					
+				try (FileOutputStream outputStream = new FileOutputStream(directorioFichero)) {
+
 					Cell celda;
 					Row fila;
 					Sheet hoja;
@@ -409,9 +406,8 @@ public class FuncionesExcel {
 						celda = fila.createCell(i);
 						celda.setCellValue(encabezado);
 					}
-
-					verCargaComics();
-//					indiceFila++;
+					AtomicReference<CargaComicsController> cargaComicsControllerRef = new AtomicReference<>();
+					nav.verCargaComics(cargaComicsControllerRef);
 
 					for (Comic comic : listaComics) {
 
@@ -435,7 +431,6 @@ public class FuncionesExcel {
 						fila.createCell(16).setCellValue(comic.getKey_issue());
 						fila.createCell(17).setCellValue(comic.getUrl_referencia());
 						fila.createCell(18).setCellValue(comic.getEstado());
-//						indiceFila++;
 
 						final long finalProcessedItems = processedItems;
 
@@ -443,14 +438,14 @@ public class FuncionesExcel {
 							String texto = "Comic: " + comic.getNombre() + " - " + comic.getNumero() + " - "
 									+ comic.getVariante() + "\n";
 
-							double progress = (double) finalProcessedItems / listaComics.size();
+							double progress = (double) finalProcessedItems / numComics;
 							// Redondear al 100% si está muy cerca
 							if (progress >= 0.999) {
 								progress = 1.0;
 							}
 							String porcentaje = String.format("%.2f%%", progress * 100);
 
-							cargarDatosEnCargaComics(texto, porcentaje, progress);
+							cargaComicsControllerRef.get().cargarDatosEnCargaComics(texto, porcentaje, progress);
 						});
 
 						processedItems++;
@@ -489,9 +484,9 @@ public class FuncionesExcel {
 	 * @return La tarea asincrónica que realiza la lectura y almacenamiento de
 	 *         datos.
 	 */
-	public Task<Void> lecturaCSVTask(String sql, BufferedReader lineReader) {
+	public Task<Void> lecturaCSVTask(String sql, BufferedReader lineReader, int numLineas) {
 		libreria = new DBLibreriaManager();
-		new CargaComicsController();
+
 		conn = DBManager.conexion();
 
 		Task<Void> task = new Task<Void>() {
@@ -534,8 +529,8 @@ public class FuncionesExcel {
 
 					lineReader.readLine();
 					Utilidades.copyDirectory(directorio.getAbsolutePath(), defaultImagePath);
-
-					verCargaComics();
+					AtomicReference<CargaComicsController> cargaComicsControllerRef = new AtomicReference<>();
+					nav.verCargaComics(cargaComicsControllerRef);
 					// Se leerán los datos hasta que no existan más datos
 					while ((lineText = lineReader.readLine()) != null) {
 						nuevoID++;
@@ -614,10 +609,10 @@ public class FuncionesExcel {
 								texto = ("Comic: " + nombre + " - " + numero + " - " + variante + "\n");
 							}
 
-							double progress = (double) finalProcessedItems / (finalProcessedItems + 1);
+							double progress = (double) finalProcessedItems / (numLineas + 1);
 							String porcentaje = String.format("%.2f%%", progress * 100);
 
-							cargarDatosEnCargaComics(texto, porcentaje, progress);
+							cargaComicsControllerRef.get().cargarDatosEnCargaComics(texto, porcentaje, progress);
 						});
 
 						processedItems++;
@@ -627,7 +622,7 @@ public class FuncionesExcel {
 						}
 					}
 					Platform.runLater(() -> {
-						cargarDatosEnCargaComics("", "100%", 100.0);
+						cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0);
 					});
 
 					lineReader.close();
@@ -647,57 +642,6 @@ public class FuncionesExcel {
 		};
 
 		return task;
-	}
-
-	/**
-	 * Muestra una ventana de carga para la carga de cómics.
-	 */
-	public void verCargaComics() {
-		Platform.runLater(() -> {
-			try {
-				FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/PantallaCargaComics.fxml"));
-				Parent root = loader.load();
-				cargaComicsController = loader.getController(); // Get the instance
-				Scene scene = new Scene(root);
-				Stage stage = new Stage();
-				stage.setResizable(false);
-				stage.setTitle("Carga de comics"); // Titulo de la aplicacion.
-				stage.getIcons().add(new Image("/Icono/icon2.png"));
-
-				// Indico que debe hacer al cerrar
-				stage.setOnCloseRequest(e -> {
-					cargaComicsController.closeWindow();
-				});
-
-				// Asocio el stage con el scene
-				stage.setScene(scene);
-				stage.show();
-
-				// Now you can call methods on cargaComicsController
-				cargarDatosEnCargaComics("", "", 0.0); // Call the data passing function
-
-			} catch (IOException ex) {
-				ex.printStackTrace();
-			}
-		});
-	}
-
-	/**
-	 * Pasa datos a los métodos del controlador de la ventana de carga de cómics.
-	 *
-	 * @param nombreComic El nombre del cómic a mostrar.
-	 * @param porcentaje  El porcentaje de carga a mostrar.
-	 * @param progreso    El progreso de carga a mostrar.
-	 */
-	public void cargarDatosEnCargaComics(String nombreComic, String porcentaje, Double progreso) {
-		if (cargaComicsController != null) {
-			cargaComicsController.appendTextToTextArea(nombreComic);
-			cargaComicsController.updateLabel(porcentaje);
-			cargaComicsController.updateProgress(progreso);
-		} else {
-			// Controlador no inicializado, manejar el error apropiadamente
-			System.err.println("Error: cargaComicsController no está inicializado");
-		}
 	}
 
 	/**
