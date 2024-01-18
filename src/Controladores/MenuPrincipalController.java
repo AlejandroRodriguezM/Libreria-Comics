@@ -741,7 +741,7 @@ public class MenuPrincipalController implements Initializable {
 			}
 			busquedaGeneral.setText("");
 		}
-		Utilidades.borrarArchivosNoEnLista(DBLibreriaManager.listaImagenes);
+
 	}
 
 	/**
@@ -885,6 +885,8 @@ public class MenuPrincipalController implements Initializable {
 
 		DBLibreriaManager.limpiarListaGuardados();
 
+		Utilidades.borrarArchivosNoEnLista(DBLibreriaManager.listaImagenes);
+
 		prontInfo.clear();
 	}
 
@@ -903,10 +905,12 @@ public class MenuPrincipalController implements Initializable {
 		String tipoBusqueda = "completa";
 
 		cargaExportExcel(listaComics, tipoBusqueda);
-		
+
 		prontInfo.clear();
 
 		DBLibreriaManager.limpiarListaGuardados();
+
+		Utilidades.borrarArchivosNoEnLista(DBLibreriaManager.listaImagenes);
 	}
 
 	/**
@@ -920,6 +924,8 @@ public class MenuPrincipalController implements Initializable {
 		makeSQL();
 
 		limpiezaDeDatos();
+
+		Utilidades.borrarArchivosNoEnLista(DBLibreriaManager.listaImagenes);
 
 	}
 
@@ -959,6 +965,8 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void borrarContenidoTabla(ActionEvent event) throws SQLException {
+
+		Utilidades.borrarArchivosNoEnLista(DBLibreriaManager.listaImagenes);
 
 		// Crear tarea para borrar contenido de la tabla
 		Task<Boolean> task = new Task<Boolean>() {
@@ -1196,10 +1204,10 @@ public class MenuPrincipalController implements Initializable {
 		prontInfo.clear();
 		if (DBLibreriaManager.comicsGuardadosList.size() > 0) {
 			cargaExportExcel(DBLibreriaManager.comicsGuardadosList, tipoBusqueda);
-			
+
 			String mensaje = "Lista guardada de forma correcta";
 			AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
-			
+
 		} else {
 			cargaExportExcel(listaComics, tipoBusqueda);
 
@@ -1337,7 +1345,7 @@ public class MenuPrincipalController implements Initializable {
 			// Lógica después de una importación exitosa
 			ejecutarOperacionLecturaGuardadoBD(fichero);
 			AlarmaList.detenerAnimacion();
-			
+
 			String mensaje = "Datos importados correctamente.";
 			AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
 		} else {

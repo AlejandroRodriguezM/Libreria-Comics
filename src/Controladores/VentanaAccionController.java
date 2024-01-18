@@ -638,6 +638,8 @@ public class VentanaAccionController implements Initializable {
 			mostrarOpcion(TIPO_ACCION);
 		});
 
+		comicsImportados.clear();
+
 		asignarTooltips();
 
 		formatearInterfaz();

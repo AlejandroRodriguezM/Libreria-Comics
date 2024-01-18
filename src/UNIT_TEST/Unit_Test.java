@@ -165,7 +165,7 @@ public class Unit_Test extends Application {
 
 //		pruebaSubidaComic();
 //		pruebaModificacionComic();
-//		getComicInfo("75960609999302511");
+		getComicInfo("75960607826401511");
 //		pruebaDiamondCode_imagen("JUL220767");
 //		launch(args);
 //		verLibroGoogle("9788411505963");
@@ -178,7 +178,7 @@ public class Unit_Test extends Application {
 //		comicModificarCodigoPrueba();
 //		comicModificarCodigoPruebaCompleta();
 
-		nav.verMenuCodigosBarra();
+//		nav.verMenuCodigosBarra();
 
 	}
 
@@ -264,6 +264,7 @@ public class Unit_Test extends Application {
 			JSONArray resultsArray = jsonObject.getJSONObject("data").getJSONArray("results");
 
 			if (resultsArray.length() == 0) {
+				System.err.println("No esta vez");
 				return null;
 			} else {
 				System.out.println(apiUrl);
