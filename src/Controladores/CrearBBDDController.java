@@ -326,9 +326,17 @@ public class CrearBBDDController implements Initializable {
 	void crearBBDD(ActionEvent event) throws IOException, SQLException {
 		if (datosBBDD() != null && checkDatabaseExists()) {
 			createDataBase();
-			DBLibreriaManager.createTable();
+			String port = puertoBBDD.getText(); // Reemplaza con el valor deseado
+			String dbName = nombreBBDD.getText(); // Reemplaza con el valor deseado
+			String userName = userBBDD.getText(); // Reemplaza con el valor deseado
+			String password = passBBDD.getText(); // Reemplaza con el valor deseado
+			String host = nombreHost.getText(); // Reemplaza con el valor deseado
+
+			String[] datos = { port, dbName, password, userName, host };
+
+			DBLibreriaManager.createTable(datos);
 			Utilidades.crearCarpeta();
-			
+
 			AlarmaList.iniciarAnimacionBaseCreada(prontInformativo, DB_NAME);
 			Utilidades.guardarDatosBaseLocal(datosBBDD(), prontInformativo, null);
 		}

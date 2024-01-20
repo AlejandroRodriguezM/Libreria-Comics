@@ -43,6 +43,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import Controladores.CargaComicsController;
 import JDBC.DBLibreriaManager;
 import JDBC.DBManager;
+import JDBC.DBLibreriaManager.TipoBusqueda;
 import comicManagement.Comic;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -105,7 +106,7 @@ public class FuncionesExcel {
 
 			int numLineas = libreria.countRows();
 
-			List<Comic> listaComics = libreria.libreriaCompleta();
+			List<Comic> listaComics = libreria.buscarEnLibreria(TipoBusqueda.COMPLETA);
 
 			libro = new XSSFWorkbook();
 

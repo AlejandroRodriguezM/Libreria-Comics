@@ -8,8 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Funcionamiento.Utilidades;
+import JDBC.DBManager;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -86,6 +89,9 @@ public class MenuLectorCodigoBarras {
 	void initialize() {
 		// Agrega un evento para quitar el foco cuando se hace clic en el contenedor
 		// principal
+
+		Platform.runLater(() -> DBManager.iniciarThreadCheckerConexion(miStageVentana()));
+		
 		contenedorPrincipal.setOnMouseClicked(event -> {
 			campoCodigoTexto.getParent().requestFocus();
 		});
@@ -249,6 +255,13 @@ public class MenuLectorCodigoBarras {
 			contenidoTextArea.append(codigo).append("\n");
 		}
 		codigoBarrasTextArea.setText(contenidoTextArea.toString());
+
+	}
+	
+	public Scene miStageVentana() {
+
+		Scene scene = botonIntroducirCodigo.getScene();
+		return scene;
 
 	}
 

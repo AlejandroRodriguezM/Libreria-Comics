@@ -246,7 +246,7 @@ public class OpcionesDatosController implements Initializable {
 		formulario_local();
 
 		alarmaList.iniciarAnimacionEspera(prontEstadoFichero);
-		alarmaList.iniciarAnimacionAlarma(alarmaConexion);
+		AlarmaList.iniciarAnimacionAlarma(alarmaConexion);
 	}
 
 	private void configureEyeToggle() {
@@ -309,7 +309,7 @@ public class OpcionesDatosController implements Initializable {
 		String databaseTexto = datosConfiguracion.get("Database");
 		String hostingTexto = datosConfiguracion.get("Hosting");
 
-		if (Utilidades.validarConexionMySQL(usuarioTexto, passwordTexto, puertoTexto, hostingTexto)) {
+		if (Utilidades.validarConexionMySQL(puertoTexto, hostingTexto)) {
 
 			List<String> opciones = Utilidades.obtenerOpcionesNombreBBDD(usuarioTexto, passwordTexto, puertoTexto,
 					hostingTexto);
@@ -328,7 +328,7 @@ public class OpcionesDatosController implements Initializable {
 			devolverDB(opciones, databaseTexto);
 			nombreHost.setEditable(false);
 		} else {
-			alarmaList.iniciarAnimacionSql(alarmaConexionSql);
+			alarmaList.iniciarAnimacionConexionRed(alarmaConexionSql);
 		}
 	}
 

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
+import JDBC.DBLibreriaManager;
 import JDBC.DBManager;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -25,7 +26,7 @@ public class AlarmaList {
 
 	private List<AlarmaItem> alarmaItems = new ArrayList<>();
 
-	private Timeline animacionAlarmaTimeline = new Timeline();
+	private static Timeline animacionAlarmaTimeline = new Timeline();
 	private Timeline animacionAlarmaOnlineTimeline = new Timeline();
 	private Timeline animacionAlarmaTimelineInternet = new Timeline();
 	private Timeline animacionAlarmaTimelineMySql = new Timeline();
@@ -43,9 +44,14 @@ public class AlarmaList {
 	/**
 	 * Línea de tiempo para la animación.
 	 */
+	private static Timeline timelineError;
+
+	/**
+	 * Línea de tiempo para la animación.
+	 */
 	private static Timeline timelineGif;
 
-	private Label alarmaConexion = new Label("alarmaConexion");
+	private static Label alarmaConexion = new Label("alarmaConexion");
 	private Label alarmaConexionInternet = new Label("alarmaConexionInternet");
 	private Label alarmaConexionSql = new Label("alarmaConexionSql");
 	private Label iniciarAnimacionEspera = new Label("prontEstadoConexion");
@@ -70,7 +76,7 @@ public class AlarmaList {
 	}
 
 	public void setAlarmaConexion(Label alarmaConexion) {
-		this.alarmaConexion = alarmaConexion;
+		AlarmaList.alarmaConexion = alarmaConexion;
 		// Actualizar el Label en el primer elemento de la lista
 		if (!alarmaItems.isEmpty()) {
 			alarmaItems.get(0).setLabel(alarmaConexion);
@@ -122,7 +128,8 @@ public class AlarmaList {
 
 						} else {
 							asignarTooltip(alarmaConexionInternet, "No tienes conexión a internet");
-							iniciarAnimacionInternet(alarmaConexionInternet);
+							iniciarAnimacionConexionRed(alarmaConexionInternet);
+
 						}
 
 						if (Utilidades.isMySQLServiceRunning(host, port)) {
@@ -131,18 +138,17 @@ public class AlarmaList {
 									&& animacionAlarmaTimelineMySql.getStatus() == Animation.Status.RUNNING) {
 								animacionAlarmaTimelineMySql.stop();
 							}
-							iniciarAnimacionSql(alarmaConexionSql);
-							detenerAnimacion(animacionAlarmaTimelineMySql);
 							asignarTooltip(alarmaConexionSql, "Servicio de MySQL activado");
-							alarmaConexionSql.setStyle("-fx-background-color: green;");
-//						iniciarAnimacionSql();
+							iniciarAnimacionAlarmaOnline(alarmaConexionSql);
+
 						} else {
 							asignarTooltip(alarmaConexionSql, "Servicio de MySQL desactivado");
-							iniciarAnimacionSql(alarmaConexionSql);
+							iniciarAnimacionErrorMySql(iniciarAnimacionEspera);
+							iniciarAnimacionConexionRed(alarmaConexionSql);
 						}
 
 						asignarTooltip(alarmaConexion,
-								"Esperando guardado/modificación de datos de la base de datos local");
+								"Esperando guardado/modificación/conexion de datos de la base de datos local");
 
 					});
 					Thread.sleep(5000); // Espera 15 segundos
@@ -165,53 +171,73 @@ public class AlarmaList {
 			animacion.stop();
 		}
 	}
+	
+	public static void manejarConexionExitosa(AlarmaList alarmaList, String[] datosFichero, Label prontEstadoConexion) {
+		if (Utilidades.isMySQLServiceRunning(datosFichero[4], datosFichero[0])) {
+			if (DBLibreriaManager.checkTablesAndColumns(datosFichero)) {
+				alarmaList.iniciarAnimacionAlarmaOnline(alarmaConexion);
+				alarmaList.manejarConexionExitosa(prontEstadoConexion);
+			} else {
+				alarmaList.manejarErrorConexion("Error al verificar tablas en la base de datos.", prontEstadoConexion);
+			}
+		} else {
+			AlarmaList.iniciarAnimacionErrorMySql(prontEstadoConexion);
+		}
+	}
 
 	/**
 	 * Metodo que permite crear una animacion
 	 */
 	public void iniciarAnimacionEspera(Label prontEstadoConexion) {
-		timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
+		timelineError = new Timeline();
+		timelineError.setCycleCount(Timeline.INDEFINITE);
+		if (timeline == null) {
+			prontEstadoConexion.setStyle("-fx-background-color: #29B6CC;");
 
-		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarEsperando = new KeyFrame(Duration.ZERO,
-				new KeyValue(prontEstadoConexion.textProperty(), "Esperando"));
-		KeyFrame mostrarPunto = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(prontEstadoConexion.textProperty(), "Esperando."));
-		KeyFrame mostrarDosPuntos = new KeyFrame(Duration.seconds(1),
-				new KeyValue(prontEstadoConexion.textProperty(), "Esperando.."));
-		KeyFrame mostrarTresPuntos = new KeyFrame(Duration.seconds(1.5),
-				new KeyValue(prontEstadoConexion.textProperty(), "Esperando..."));
-		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(2), new KeyValue(prontEstadoConexion.textProperty(), ""));
+			// Agregar los keyframes para cambiar el texto
+			KeyFrame mostrarEsperando = new KeyFrame(Duration.ZERO,
+					new KeyValue(prontEstadoConexion.textProperty(), "Esperando"));
+			KeyFrame mostrarPunto = new KeyFrame(Duration.seconds(0.5),
+					new KeyValue(prontEstadoConexion.textProperty(), "Esperando."));
+			KeyFrame mostrarDosPuntos = new KeyFrame(Duration.seconds(1),
+					new KeyValue(prontEstadoConexion.textProperty(), "Esperando.."));
+			KeyFrame mostrarTresPuntos = new KeyFrame(Duration.seconds(1.5),
+					new KeyValue(prontEstadoConexion.textProperty(), "Esperando..."));
+			KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(2),
+					new KeyValue(prontEstadoConexion.textProperty(), ""));
 
-		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(mostrarEsperando, mostrarPunto, mostrarDosPuntos, mostrarTresPuntos,
-				ocultarTexto);
+			// Agregar los keyframes al timeline
+			timelineError.getKeyFrames().addAll(mostrarEsperando, mostrarPunto, mostrarDosPuntos, mostrarTresPuntos,
+					ocultarTexto);
 
-		// Iniciar la animación
-		timeline.play();
+			// Iniciar la animación
+			timelineError.play();
+		}
 	}
-
-	private void iniciarAnimacionInternet(Label alarmaConexionInternet) {
-		animacionAlarmaTimelineInternet = new Timeline();
-		animacionAlarmaTimelineInternet.setCycleCount(Timeline.INDEFINITE);
+	
+	/**
+	 * Inicia la animación de espera en la interfaz.
+	 */
+	public void iniciarAnimacionConexionRed(Label alarmaConexion) {
+		animacionAlarmaTimeline = new Timeline();
+		animacionAlarmaTimeline.setCycleCount(Timeline.INDEFINITE);
 
 		KeyFrame mostrarAmarillo1 = new KeyFrame(Duration.ZERO,
-				new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: orange;"));
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: yellow;"));
 		KeyFrame mostratRojo1 = new KeyFrame(Duration.seconds(0.0),
-				new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: red;"));
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: orange;"));
 		KeyFrame mostrarAmarillo2 = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: orange;"));
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: yellow;"));
 		KeyFrame mostratRojo2 = new KeyFrame(Duration.seconds(1.0),
-				new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: red;"));
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: orange;"));
 		KeyFrame mostrarAmarillo3 = new KeyFrame(Duration.seconds(1.5),
-				new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: orange;"));
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: yellow;"));
 		KeyFrame mostratRojo3 = new KeyFrame(Duration.seconds(2.0),
-				new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: red;"));
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: orange;"));
 
-		animacionAlarmaTimelineInternet.getKeyFrames().addAll(mostrarAmarillo1, mostratRojo1, mostrarAmarillo2,
+		animacionAlarmaTimeline.getKeyFrames().addAll(mostrarAmarillo1, mostratRojo1, mostrarAmarillo2,
 				mostratRojo2, mostrarAmarillo3, mostratRojo3);
-		animacionAlarmaTimelineInternet.play();
+		animacionAlarmaTimeline.play();
 	}
 
 	/**
@@ -242,14 +268,13 @@ public class AlarmaList {
 	public void iniciarAnimacionBBDDError(Label prontEstadoFichero) {
 		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
+		prontEstadoFichero.setStyle("-fx-background-color: red;");
 
 		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarError = new KeyFrame(Duration.ZERO,
-				new KeyValue(prontEstadoFichero.textProperty(), "La base de datos no existe"));
+		KeyFrame mostrarError = new KeyFrame(Duration.ZERO, new KeyValue(prontEstadoFichero.textProperty(), "ERROR"));
 		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(prontEstadoFichero.textProperty(), ""));
-		KeyFrame mostrarError2 = new KeyFrame(Duration.seconds(1),
-				new KeyValue(prontEstadoFichero.textProperty(), "ERROR"));
+				new KeyValue(prontEstadoFichero.textProperty(), "La base de datos no existe"));
+		KeyFrame mostrarError2 = new KeyFrame(Duration.seconds(1), new KeyValue(prontEstadoFichero.textProperty(), ""));
 
 		// Agregar los keyframes al timeline
 		timeline.getKeyFrames().addAll(mostrarError, ocultarTexto, mostrarError2);
@@ -264,6 +289,8 @@ public class AlarmaList {
 	public void iniciarAnimacionDatosError(String puerto) {
 		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		prontEstadoFichero.setStyle("-fx-background-color: red;");
 
 		// Agregar los keyframes para cambiar el texto
 		KeyFrame mostrarError = new KeyFrame(Duration.ZERO,
@@ -280,88 +307,57 @@ public class AlarmaList {
 		timeline.play();
 	}
 
-	/**
-	 * Inicia la animación de espera en la interfaz.
-	 */
-	public void iniciarAnimacionSql(Label alarmaConexionSql) {
-		animacionAlarmaTimelineMySql = new Timeline();
-		animacionAlarmaTimelineMySql.setCycleCount(Timeline.INDEFINITE);
 
-		KeyFrame mostrarAmarillo1 = new KeyFrame(Duration.ZERO,
-				new KeyValue(alarmaConexionSql.styleProperty(), "-fx-background-color: orange;"));
-		KeyFrame mostratRojo1 = new KeyFrame(Duration.seconds(0.0),
-				new KeyValue(alarmaConexionSql.styleProperty(), "-fx-background-color: yellow;"));
-		KeyFrame mostrarAmarillo2 = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(alarmaConexionSql.styleProperty(), "-fx-background-color: orange;"));
-		KeyFrame mostratRojo2 = new KeyFrame(Duration.seconds(1.0),
-				new KeyValue(alarmaConexionSql.styleProperty(), "-fx-background-color: yellow;"));
-		KeyFrame mostrarAmarillo3 = new KeyFrame(Duration.seconds(1.5),
-				new KeyValue(alarmaConexionSql.styleProperty(), "-fx-background-color: orange;"));
-		KeyFrame mostratRojo3 = new KeyFrame(Duration.seconds(2.0),
-				new KeyValue(alarmaConexionSql.styleProperty(), "-fx-background-color: yellow;"));
 
-		animacionAlarmaTimelineMySql.getKeyFrames().addAll(mostrarAmarillo1, mostratRojo1, mostrarAmarillo2,
-				mostratRojo2, mostrarAmarillo3, mostratRojo3);
-		animacionAlarmaTimelineMySql.play();
+	public static void iniciarAnimacionErrorMySql(Label prontEstadoConexion) {
+
+		detenerAnimacion();
+		
+		if (timeline == null) {
+
+			timelineError = new Timeline();
+			timelineError.setCycleCount(Timeline.INDEFINITE);
+
+			prontEstadoConexion.setStyle("-fx-background-color: red;");
+			// Agregar los keyframes para cambiar el texto
+			KeyFrame mostrarError = new KeyFrame(Duration.ZERO, new KeyValue(prontEstadoConexion.textProperty(), ""));
+			KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
+					new KeyValue(prontEstadoConexion.textProperty(), "ERROR. Activa MySql"));
+			KeyFrame mostrarError2 = new KeyFrame(Duration.seconds(1),
+					new KeyValue(prontEstadoConexion.textProperty(), ""));
+
+			// Agregar los keyframes al timeline
+			timelineError.getKeyFrames().addAll(mostrarError, ocultarTexto, mostrarError2);
+
+			// Iniciar la animación
+			timelineError.play();
+		}
 	}
 
-	private void iniciarAnimacionError(Label prontEstadoConexion) {
-		timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
 
-		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarError = new KeyFrame(Duration.ZERO,
-				new KeyValue(prontEstadoConexion.textProperty(), "ERROR. Activa MySql"));
-		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(prontEstadoConexion.textProperty(), ""));
-		KeyFrame mostrarError2 = new KeyFrame(Duration.seconds(1),
-				new KeyValue(prontEstadoConexion.textProperty(), "ERROR. Activa MySql"));
-
-		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(mostrarError, ocultarTexto, mostrarError2);
-
-		// Iniciar la animación
-		timeline.play();
-	}
-
-	public void iniciarAnimacionAlarmaOnline(Label alarmaConexion) {
-		animacionAlarmaOnlineTimeline = new Timeline();
-		animacionAlarmaOnlineTimeline.setCycleCount(Timeline.INDEFINITE);
-
-		KeyFrame mostrarVerde = new KeyFrame(Duration.ZERO,
-				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: green;"));
-		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.0),
-				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
-		KeyFrame mostrarTransparente = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: green;"));
-		KeyFrame mostrarVerdeNuevamente = new KeyFrame(Duration.seconds(1.0),
-				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
-
-		animacionAlarmaOnlineTimeline.getKeyFrames().addAll(mostrarVerde, ocultarTexto, mostrarTransparente,
-				mostrarVerdeNuevamente);
-		animacionAlarmaOnlineTimeline.play();
-	}
 
 	/**
 	 * Metodo que permite crear una animacion
 	 */
 	public static void iniciarAnimacionConexion(Label prontEstadoConexion) {
-		timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
+		if (timelineError == null) {
+			timelineError = new Timeline();
+			timelineError.setCycleCount(Timeline.INDEFINITE);
+			prontEstadoConexion.setStyle("-fx-background-color: red;");
 
-		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarError = new KeyFrame(Duration.ZERO,
-				new KeyValue(prontEstadoConexion.textProperty(), "ERROR. Conectate primero"));
-		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(prontEstadoConexion.textProperty(), ""));
-		KeyFrame mostrarError2 = new KeyFrame(Duration.seconds(1),
-				new KeyValue(prontEstadoConexion.textProperty(), "ERROR. Conectate primero"));
+			// Agregar los keyframes para cambiar el texto
+			KeyFrame mostrarError = new KeyFrame(Duration.ZERO, new KeyValue(prontEstadoConexion.textProperty(), ""));
+			KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
+					new KeyValue(prontEstadoConexion.textProperty(), "ERROR. Conectate primero"));
+			KeyFrame mostrarError2 = new KeyFrame(Duration.seconds(1),
+					new KeyValue(prontEstadoConexion.textProperty(), ""));
 
-		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(mostrarError, ocultarTexto, mostrarError2);
+			// Agregar los keyframes al timeline
+			timelineError.getKeyFrames().addAll(mostrarError, ocultarTexto, mostrarError2);
 
-		// Iniciar la animación
-		timeline.play();
+			// Iniciar la animación
+			timelineError.play();
+		}
 	}
 
 	/**
@@ -372,20 +368,62 @@ public class AlarmaList {
 		timeline.setCycleCount(Timeline.INDEFINITE);
 
 		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarConectado = new KeyFrame(Duration.ZERO,
+		KeyFrame mostrarConectado = new KeyFrame(Duration.ZERO, new KeyValue(prontEstadoConexion.textProperty(), ""));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.0),
 				new KeyValue(prontEstadoConexion.textProperty(), "Conectado"));
-		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
+		KeyFrame mostrarConectado2 = new KeyFrame(Duration.seconds(0.5),
 				new KeyValue(prontEstadoConexion.textProperty(), ""));
-		KeyFrame mostrarConectado2 = new KeyFrame(Duration.seconds(1),
+		KeyFrame ocultarTextoDeNuevo = new KeyFrame(Duration.seconds(1.0),
 				new KeyValue(prontEstadoConexion.textProperty(), "Conectado"));
 
 		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(mostrarConectado, ocultarTexto, mostrarConectado2);
+		timeline.getKeyFrames().addAll(mostrarConectado, ocultarTexto, mostrarConectado2, ocultarTextoDeNuevo);
 
 		// Iniciar la animación
 		timeline.play();
 	}
 
+
+	/**
+	 * Inicia la animación de alarma, que cambia el color de fondo de la alarma
+	 * entre amarillo y transparente.
+	 */
+	public static void iniciarAnimacionAlarma(Label alarmaConexion) {
+		animacionAlarmaTimeline = new Timeline();
+		animacionAlarmaTimeline.setCycleCount(Timeline.INDEFINITE);
+
+		KeyFrame mostrarAmarillo = new KeyFrame(Duration.ZERO,
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.0),
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: yellow;"));
+		KeyFrame mostrarTransparente = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
+		KeyFrame mostrarAmarilloNuevamente = new KeyFrame(Duration.seconds(1.0),
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: yellow;"));
+
+		animacionAlarmaTimeline.getKeyFrames().addAll(mostrarAmarillo, ocultarTexto, mostrarTransparente, mostrarAmarilloNuevamente);
+
+		animacionAlarmaTimeline.play();
+	}
+	
+	public void iniciarAnimacionAlarmaOnline(Label alarmaConexion) {
+		animacionAlarmaOnlineTimeline = new Timeline();
+		animacionAlarmaOnlineTimeline.setCycleCount(Timeline.INDEFINITE);
+
+		KeyFrame mostrarVerde = new KeyFrame(Duration.ZERO,
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.0),
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: green;"));
+		KeyFrame mostrarTransparente = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
+		KeyFrame mostrarVerdeNuevamente = new KeyFrame(Duration.seconds(1.0),
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: green;"));
+
+		animacionAlarmaOnlineTimeline.getKeyFrames().addAll(mostrarVerde, ocultarTexto, mostrarTransparente,
+				mostrarVerdeNuevamente);
+		animacionAlarmaOnlineTimeline.play();
+	}
+	
 	/**
 	 * Maneja las acciones después de una conexión exitosa.
 	 */
@@ -409,7 +447,7 @@ public class AlarmaList {
 		asignarTooltip(alarmaConexion, mensaje);
 		detenerAnimacion();
 		prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
-		iniciarAnimacionError(prontEstadoConexion);
+		prontEstadoConexion.setText(mensaje);
 	}
 
 	/**
@@ -421,30 +459,15 @@ public class AlarmaList {
 			timeline.getKeyFrames().clear(); // Eliminar los KeyFrames del Timeline
 			timeline = null; // Destruir el objeto timeline
 		}
+
+		if (timelineError != null) {
+
+			timelineError.stop();
+			timelineError.getKeyFrames().clear(); // Eliminar los KeyFrames del Timeline
+			timelineError = null; // Destruir el objeto timeline
+		}
 	}
 
-	/**
-	 * Inicia la animación de alarma, que cambia el color de fondo de la alarma
-	 * entre amarillo y transparente.
-	 */
-	public void iniciarAnimacionAlarma(Label alarmaConexion) {
-		animacionAlarmaTimeline = new Timeline();
-		animacionAlarmaTimeline.setCycleCount(Timeline.INDEFINITE);
-
-		KeyFrame mostrarAmarillo = new KeyFrame(Duration.ZERO,
-				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: yellow;"));
-		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.0),
-				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
-		KeyFrame mostrarTransparente = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: yellow;"));
-		KeyFrame mostrarAmarilloNuevamente = new KeyFrame(Duration.seconds(1.0),
-				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
-
-		animacionAlarmaTimeline.getKeyFrames().addAll(mostrarAmarillo, ocultarTexto, mostrarTransparente,
-				mostrarAmarilloNuevamente);
-
-		animacionAlarmaTimeline.play();
-	}
 
 	/**
 	 * Inicia la animación de conexión exitosa en la interfaz.
@@ -628,7 +651,6 @@ public class AlarmaList {
 
 	public static void mostrarMensajePront(String mensaje, boolean exito, TextArea prontInfo) {
 		prontInfo.clear();
-//		detenerAnimacionPront(prontInfo);
 		prontInfo.setOpacity(1);
 		if (exito) {
 			prontInfo.setStyle("-fx-background-color: #A0F52D");

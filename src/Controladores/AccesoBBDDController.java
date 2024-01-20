@@ -6,17 +6,18 @@ package Controladores;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.ResourceBundle;
 
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
-import JDBC.DBLibreriaManager;
 import JDBC.DBManager;
 import alarmas.AlarmaList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -174,7 +175,7 @@ public class AccesoBBDDController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
+		
 		Utilidades.guardarDatosClavesMarvel();
 		Utilidades.cargarTasasDeCambioDesdeArchivo();
 		Utilidades.guardarApiComicVine();
@@ -298,6 +299,12 @@ public class AccesoBBDDController implements Initializable {
 	@FXML
 	void entrarMenu(ActionEvent event) {
 
+		if(!Utilidades.isMySQLServiceRunning(DBManager.DB_HOST, DBManager.DB_PORT)) {
+			AlarmaList.iniciarAnimacionErrorMySql(prontEstadoConexion);
+			AlarmaList.iniciarAnimacionAlarma(alarmaConexion);
+			return;
+		}
+		
 		if (DBManager.estadoConexion) { // Siempre que el metodo de la clase DBManager sea true, permitira acceder
 			DBManager.resetConnection();
 			// al menu principal
@@ -316,40 +323,39 @@ public class AccesoBBDDController implements Initializable {
 	 * Maneja el evento de enviar datos a la base de datos.
 	 *
 	 * @param event El evento de acción que desencadenó la función.
+	 * @throws SQLException
 	 */
 	@FXML
-	void enviarDatos(ActionEvent event) {
+	void enviarDatos(ActionEvent event) throws SQLException {
+
+		String[] datosFichero = Utilidades.datosEnvioFichero();
 
 		AlarmaList alarmaList = new AlarmaList();
-		if (configurarConexion()) {
+		if (configurarConexion(datosFichero)) {
 
-			if (JDBC.DBManager.isConnected()) {
-				if (DBLibreriaManager.checkTables()) {
-
-					alarmaList.iniciarAnimacionAlarmaOnline(alarmaConexion);
-					alarmaList.manejarConexionExitosa(prontEstadoConexion);
-
-				} else {
-					alarmaList.manejarErrorConexion("Error al verificar tablas en la base de datos.",
-							prontEstadoConexion);
-				}
+			envioDatosBBDD(datosFichero);
+			if (DBManager.isConnected()) {
+				AlarmaList.detenerAnimacion();
+				AlarmaList.iniciarAnimacionConectado(prontEstadoConexion);
+				AlarmaList.manejarConexionExitosa(alarmaList,datosFichero,prontEstadoConexion);
 			} else {
 				alarmaList.manejarErrorConexion("No estás conectado a la base de datos.", prontEstadoConexion);
 			}
 		}
 	}
 
+
+
 	/**
 	 * Configura la conexión a la base de datos.
 	 * 
 	 * @return true si la configuración es exitosa, false de lo contrario.
 	 */
-	private boolean configurarConexion() {
+	private boolean configurarConexion(String[] datos) {
 
-		if (!JDBC.DBManager.loadDriver()) {
+		if (!DBManager.loadDriver()) {
 			return false;
 		}
-		envioDatosBBDD();
 
 		return true;
 	}
@@ -358,20 +364,16 @@ public class AccesoBBDDController implements Initializable {
 	 * Funcion que permite mandar los datos a la clase DBManager
 	 *
 	 */
-	public void envioDatosBBDD() {
-		AlarmaList.detenerAnimacion();
-
-		Map<String, String> datosConfiguracion = Utilidades.devolverDatosConfig();
-
-		String puertoTexto = datosConfiguracion.get("Puerto");
-		String databaseTexto = datosConfiguracion.get("Database");
-		String usuarioTexto = datosConfiguracion.get("Usuario");
-		String passwordTexto = datosConfiguracion.get("Password");
-		String hostingTexto = datosConfiguracion.get("Hosting");
-
-		String[] datosConfiguracionArray = { puertoTexto, databaseTexto, usuarioTexto, passwordTexto, hostingTexto };
+	public void envioDatosBBDD(String[] datosConfiguracionArray) {
 
 		DBManager.datosBBDD(datosConfiguracionArray);
+	}
+	
+	public Scene miStageVentana() {
+
+		Scene scene = botonEnviar.getScene();
+		return scene;
+
 	}
 
 	/**
@@ -394,7 +396,7 @@ public class AccesoBBDDController implements Initializable {
 	 */
 	@FXML
 	void opcionesPrograma(ActionEvent event) {
-		
+
 		nav.verOpciones();
 
 		Stage myStage = (Stage) this.botonOpciones.getScene().getWindow();

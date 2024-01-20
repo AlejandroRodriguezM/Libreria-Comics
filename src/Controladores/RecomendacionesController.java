@@ -58,6 +58,7 @@ import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
 import JDBC.DBManager;
+import JDBC.DBLibreriaManager.TipoBusqueda;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -66,6 +67,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
@@ -200,7 +202,6 @@ public class RecomendacionesController {
 	 */
 	private static Utilidades utilidad = null;
 
-
 	/**
 	 * Llama a funcion que genera una lectura recomendada
 	 *
@@ -228,19 +229,24 @@ public class RecomendacionesController {
 		Random r = new Random();
 		utilidad = new Utilidades();
 		libreria = new DBLibreriaManager();
-		String ID;
+		String id_comic;
 
 		limpiarPront(); // Llamada a función para limpiar la pantalla "TextArea"
 
-		if (libreria.libreriaCompleta().size() != 0) {
-			int n = r.nextInt(libreria.libreriaCompleta().size()); // Generar un número aleatorio dentro del rango
-																	// válido
+		if (libreria.buscarEnLibreria(TipoBusqueda.COMPLETA).size() != 0) {
+			int n = r.nextInt(libreria.buscarEnLibreria(TipoBusqueda.COMPLETA).size()); // Generar un número aleatorio
+																						// dentro del rango
+			// válido
 
-			ID = libreria.libreriaCompleta().get(n).getID();
+			id_comic = libreria.buscarEnLibreria(TipoBusqueda.COMPLETA).get(n).getID();
 
-			imagencomic.setImage(libreria.selectorImage(ID));
+			String direccionImagen = libreria.obtenerDireccionPortada(id_comic);
+			Image imagenComic = Utilidades.pasarImagenComic(direccionImagen);
+
+			imagencomic.setImage(imagenComic);
 			utilidad.deleteImage();
-			return libreria.libreriaCompleta().get(n).toString(); // Devuelve un cómic de la lista de cómics
+			return libreria.buscarEnLibreria(TipoBusqueda.COMPLETA).get(n).toString(); // Devuelve un cómic de la lista
+																						// de cómics
 		} else {
 			printComicRecomendado.setText("ERROR. No hay ningún dato en la base de datos");
 			printComicRecomendado.setStyle("-fx-background-color: #F53636");
@@ -260,7 +266,8 @@ public class RecomendacionesController {
 	/////////////////////////////////
 
 	/**
-	 * Maneja la acción del usuario en relación a los cómics, como agregar, modificar, eliminar o puntuar un cómic.
+	 * Maneja la acción del usuario en relación a los cómics, como agregar,
+	 * modificar, eliminar o puntuar un cómic.
 	 *
 	 * @param event El evento de acción que desencadenó la llamada a esta función.
 	 */

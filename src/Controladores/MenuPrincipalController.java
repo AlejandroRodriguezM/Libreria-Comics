@@ -53,6 +53,7 @@ import Funcionamiento.FuncionesTooltips;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
+import JDBC.DBLibreriaManager.TipoBusqueda;
 import JDBC.DBManager;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
@@ -64,6 +65,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -75,6 +77,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -445,6 +448,8 @@ public class MenuPrincipalController implements Initializable {
 
 		libreria = new DBLibreriaManager();
 
+		Platform.runLater(() -> DBManager.iniciarThreadCheckerConexion(miStageVentana()));
+
 		prontInfo.textProperty().addListener((observable, oldValue, newValue) -> {
 			funcionesTabla.ajustarAnchoVBox(prontInfo, vboxContenido);
 		});
@@ -517,9 +522,11 @@ public class MenuPrincipalController implements Initializable {
 		imagencomic.setImage(null);
 
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
 		scheduler.schedule(() -> {
 
 			Platform.runLater(() -> {
+
 				libreria.listasAutoCompletado();
 
 				Task<Void> task = new Task<Void>() {
@@ -667,7 +674,6 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void ventanaRecomendar(ActionEvent event) {
-
 		nav.verRecomendacion();
 		DBManager.resetConnection();
 
@@ -682,7 +688,6 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void verSobreMi(ActionEvent event) {
-
 		nav.verSobreMi();
 		DBManager.resetConnection();
 
@@ -714,7 +719,6 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	public void verBasedeDatos(boolean completo) {
-
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
@@ -726,20 +730,27 @@ public class MenuPrincipalController implements Initializable {
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
 
-		if (completo) {
-			funcionesTabla.tablaBBDD(libreria.libreriaCompleta(), tablaBBDD, columnList); // Llamada a funcion
+		if (libreria.hayDatosEnLibreria("")) {
+			if (completo) {
+				funcionesTabla.tablaBBDD(libreria.buscarEnLibreria(TipoBusqueda.COMPLETA), tablaBBDD, columnList);
+				botonImprimir.setVisible(false);
+				botonGuardarResultado.setVisible(false);
 
-			botonImprimir.setVisible(false);
-			botonGuardarResultado.setVisible(false);
+			} else {
+				funcionesTabla.tablaBBDD(listaPorParametro(), tablaBBDD, columnList); // Llamada a funcion
 
-		} else {
-			funcionesTabla.tablaBBDD(listaPorParametro(), tablaBBDD, columnList); // Llamada a funcion
-
-			if (!listaPorParametro().isEmpty()) {
-				botonImprimir.setVisible(true);
-				botonGuardarResultado.setVisible(true);
+				if (!listaPorParametro().isEmpty()) {
+					botonImprimir.setVisible(true);
+					botonGuardarResultado.setVisible(true);
+				}
+				busquedaGeneral.setText("");
 			}
-			busquedaGeneral.setText("");
+		} else {
+
+			String mensaje = "ERROR. No hay datos en la base de datos";
+
+			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+
 		}
 
 	}
@@ -753,9 +764,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsPuntuacion(ActionEvent event) throws SQLException {
-
-		imprimirComicsEstado("puntuados");
-
+		imprimirComicsEstado(TipoBusqueda.PUNTUACION);
 	}
 
 	/**
@@ -767,7 +776,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsVendidos(ActionEvent event) throws SQLException {
-		imprimirComicsEstado("vendidos");
+		imprimirComicsEstado(TipoBusqueda.VENDIDOS);
 	}
 
 	/**
@@ -779,7 +788,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsFirmados(ActionEvent event) throws SQLException {
-		imprimirComicsEstado("firmados");
+		imprimirComicsEstado(TipoBusqueda.FIRMADOS);
 	}
 
 	/**
@@ -791,7 +800,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsComprados(ActionEvent event) throws SQLException {
-		imprimirComicsEstado("comprados");
+		imprimirComicsEstado(TipoBusqueda.COMPRADOS);
 	}
 
 	/**
@@ -803,7 +812,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsEnPosesion(ActionEvent event) throws SQLException {
-		imprimirComicsEstado("posesion");
+		imprimirComicsEstado(TipoBusqueda.POSESION);
 
 	}
 
@@ -815,11 +824,11 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsKeyIssue(ActionEvent event) throws SQLException {
-		imprimirComicsEstado("key");
+		imprimirComicsEstado(TipoBusqueda.KEY_ISSUE);
 
 	}
 
-	private void imprimirComicsEstado(String tipoBusqueda) {
+	private void imprimirComicsEstado(TipoBusqueda tipoBusqueda) {
 
 		prontInfo.setOpacity(0); // Ocultar la información en pantalla
 		libreria = new DBLibreriaManager(); // Crear una instancia del gestor de la base de datos
@@ -827,40 +836,7 @@ public class MenuPrincipalController implements Initializable {
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a la función para establecer nombres de
 		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList); // columnas
 
-		switch (tipoBusqueda) {
-		case "key": {
-			funcionesTabla.tablaBBDD(libreria.libreriaKeyIssue(), tablaBBDD, columnList);
-			break;
-		}
-		case "posesion": {
-			funcionesTabla.tablaBBDD(libreria.libreriaPosesion(), tablaBBDD, columnList); // Llamada a funcion
-			break;
-		}
-
-		case "comprados": {
-			funcionesTabla.tablaBBDD(libreria.libreriaComprados(), tablaBBDD, columnList); // Llamada a funcion
-
-			break;
-		}
-		case "firmados": {
-			funcionesTabla.tablaBBDD(libreria.libreriaFirmados(), tablaBBDD, columnList); // Llamada a funcion
-
-			break;
-		}
-		case "vendidos": {
-			funcionesTabla.tablaBBDD(libreria.libreriaVendidos(), tablaBBDD, columnList); // Llamada a funcion
-
-			break;
-		}
-		case "puntuados": {
-			funcionesTabla.tablaBBDD(libreria.libreriaPuntuacion(), tablaBBDD, columnList); // Llamada a funcion
-
-			break;
-		}
-		default:
-			throw new IllegalArgumentException("Unexpected value: " + tipoBusqueda);
-		}
-
+		funcionesTabla.tablaBBDD(libreria.buscarEnLibreria(tipoBusqueda), tablaBBDD, columnList);
 	}
 
 	////////////////////////////
@@ -878,7 +854,6 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void importCSV(ActionEvent event) throws SQLException, InterruptedException, ExecutionException {
-
 		guardarDatosCSV();
 
 		libreria.listasAutoCompletado();
@@ -899,8 +874,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void exportCSV(ActionEvent event) throws SQLException {
-
-		List<Comic> listaComics = libreria.libreriaCompleta();
+		List<Comic> listaComics = libreria.buscarEnLibreria(TipoBusqueda.COMPLETA);
 
 		String tipoBusqueda = "completa";
 
@@ -920,7 +894,6 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void exportarSQL(ActionEvent event) {
-
 		makeSQL();
 
 		limpiezaDeDatos();
@@ -965,7 +938,6 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void borrarContenidoTabla(ActionEvent event) throws SQLException {
-
 		Utilidades.borrarArchivosNoEnLista(DBLibreriaManager.listaImagenes);
 
 		// Crear tarea para borrar contenido de la tabla
@@ -1063,10 +1035,11 @@ public class MenuPrincipalController implements Initializable {
 	private void limpiarInformacion() {
 		prontInfo.clear();
 		prontInfo.setStyle(null);
-		new Thread(() -> AlarmaList.iniciarAnimacionBajada(prontInfo)).start();
+		AlarmaList.iniciarAnimacionBajada(prontInfo);
 	}
 
 	private void mostrarMensajeExito() {
+		prontInfo.clear();
 		String mensaje = "Has borrado correctamente el contenido de la base de datos.";
 		AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
 	}
@@ -1115,12 +1088,12 @@ public class MenuPrincipalController implements Initializable {
 
 		AlarmaList alarmaList = new AlarmaList();
 		libreria = new DBLibreriaManager();
-		prontInfo.clear();
-		prontInfo.setOpacity(1);
 		alarmaList.iniciarAnimacionEstadistica(prontInfo);
 		libreria.generar_fichero_estadisticas();
 		AlarmaList.detenerAnimacionPront(prontInfo);
-		prontInfo.setText("Fichero creado correctamente");
+		String mensaje = "Fichero creado correctamente";
+
+		AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
 	}
 
 	/////////////////////////////////
@@ -1166,20 +1139,25 @@ public class MenuPrincipalController implements Initializable {
 	 * @throws SQLException Si se produce un error al acceder a la base de datos.
 	 */
 	private void seleccionarComics() throws SQLException {
+
 		libreria = new DBLibreriaManager();
-		libreria.libreriaCompleta();
+		libreria.buscarEnLibreria(TipoBusqueda.COMPLETA);
 
 		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 		// Verificar si idRow es nulo antes de intentar acceder a sus métodos
 		if (idRow != null) {
-			prontInfo.clear();
+			detenerAnimaciones();
 			String id_comic = idRow.getID();
 
 			String mensaje = libreria.comicDatos(id_comic).toString().replace("[", "").replace("]", "");
 			AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
 			funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 			funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
-			imagencomic.setImage(libreria.selectorImage(id_comic));
+
+			String direccionImagen = libreria.obtenerDireccionPortada(id_comic);
+			Image imagenComic = Utilidades.pasarImagenComic(direccionImagen);
+
+			imagencomic.setImage(imagenComic);
 		}
 	}
 
@@ -1197,7 +1175,6 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void imprimirResultado(ActionEvent event) throws SQLException {
-
 		List<Comic> listaComics = listaPorParametro();
 
 		String tipoBusqueda = "Parcial";
@@ -1225,7 +1202,6 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void guardarResultado(ActionEvent event) throws SQLException {
-
 		List<Comic> listaComics = listaPorParametro();
 
 		String mensaje = "";
@@ -1253,7 +1229,6 @@ public class MenuPrincipalController implements Initializable {
 	 * @param listaComics La lista de cómics a exportar.
 	 */
 	private void cargaExportExcel(List<Comic> listaComics, String tipoBusqueda) {
-
 		FuncionesExcel excelFuntions = new FuncionesExcel();
 		AlarmaList alarmaList = new AlarmaList();
 		String mensajeErrorExportar = "ERROR. No se ha podido exportar correctamente.";
@@ -1405,7 +1380,6 @@ public class MenuPrincipalController implements Initializable {
 	 * @param fichero
 	 */
 	public void makeSQL() {
-
 		libreria = new DBLibreriaManager();
 
 		String frase = "Fichero SQL";
@@ -1468,7 +1442,7 @@ public class MenuPrincipalController implements Initializable {
 	public List<Comic> libreriaCompleta() throws IOException, SQLException {
 		libreria = new DBLibreriaManager();
 		limpiezaDeDatos();
-		List<Comic> listComic = FXCollections.observableArrayList(libreria.libreriaCompleta());
+		List<Comic> listComic = FXCollections.observableArrayList(libreria.buscarEnLibreria(TipoBusqueda.COMPLETA));
 
 		return listComic;
 	}
@@ -1587,6 +1561,13 @@ public class MenuPrincipalController implements Initializable {
 	/////////////////////////////
 	//// FUNCIONES PARA SALIR////
 	/////////////////////////////
+
+	public Scene miStageVentana() {
+
+		Scene scene = menu_navegacion.getScene();
+		return scene;
+
+	}
 
 	/**
 	 * Vuelve al menu inicial de conexion de la base de datos.

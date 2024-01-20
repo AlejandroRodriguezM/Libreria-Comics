@@ -31,7 +31,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
+import javafx.scene.Scene;
 
 /**
  * Clase que gestiona la conexión a la base de datos y proporciona métodos para
@@ -80,7 +82,7 @@ public class DBManager {
 	 * URL de la base de datos.
 	 */
 	public static String DB_URL;
-	
+
 	public static boolean estadoConexion = false;
 
 	/**
@@ -162,6 +164,12 @@ public class DBManager {
 			return null;
 		}
 
+		if (!Utilidades.validarDatosConexion()) {
+			nav.alertaException("La URL de conexión no es válida");
+			System.out.println("Error no conectado a mysql");
+			return null;
+		}
+
 		DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
 
 		// Validar la URL de conexión
@@ -176,8 +184,16 @@ public class DBManager {
 			if (conn == null) {
 				nav.alertaException("No se pudo establecer la conexión a la base de datos");
 			}
-			
+
 			estadoConexion = true;
+
+			if (!Utilidades.validarDatosConexion()) {
+				System.out.println("SQL cerrado");
+				estadoConexion = false;
+				nav.alertaException("Error. Servicio MySql apagado o desconectado de forma repentina.");
+				return null;
+			}
+
 			return conn;
 		} catch (SQLException ex) {
 			nav.alertaException("ERROR. Revisa los datos del fichero de conexion.");
@@ -203,13 +219,52 @@ public class DBManager {
 		}
 	}
 
+	public static void iniciarThreadCheckerConexion(Scene miSceneVentana) {
+		Thread checkerThread = new Thread(() -> {
+			try {
+				while (true) {
+
+					if (!Utilidades.comprobarConexion(miSceneVentana) || conexion() == null) {
+
+						break;
+					}
+
+					Thread.sleep(1000); // Espera 15 segundos
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		});
+
+		checkerThread.setDaemon(true); // Marcar el hilo como daemon
+		checkerThread.start();
+	}
+
+	/**
+	 * Asigna valores predeterminados si las variables están vacías.
+	 */
+	public static void asignarValoresPorDefecto() {
+		DB_USER = null;
+
+		DB_PASS = null;
+
+		DB_PORT = null;
+
+		DB_NAME = null;
+
+		DB_HOST = null;
+	}
+
 	/**
 	 * Método estático que cierra la conexion con la base de datos
 	 */
 	public static void close() {
 		try {
-			conn.close();
-			conn = null;
+			if (conn != null && !conn.isClosed()) {
+				conn.close();
+				conn = null;
+				estadoConexion = false;
+			}
 		} catch (SQLException ex) {
 			nav.alertaException("No ha sido posible cerrar su conexion con la base de datos");
 		}

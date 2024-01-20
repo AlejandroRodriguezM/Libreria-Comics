@@ -26,6 +26,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.DirectoryStream;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -68,15 +69,19 @@ import Apis.ApiISBNGeneral;
 import Apis.ApiMarvel;
 import Controladores.VentanaAccionController;
 import JDBC.DBLibreriaManager;
+import JDBC.DBLibreriaManager.TipoBusqueda;
 import JDBC.DBManager;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
 import javafx.application.Platform;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Stage;
 import webScrap.WebScraperPreviewsWorld;
 
 /**
@@ -413,7 +418,7 @@ public class Utilidades {
 	 * 
 	 * @throws SQLException
 	 */
-	public void copia_seguridad() throws SQLException {
+	public static void copia_seguridad() throws SQLException {
 		// Realizar copia de seguridad
 		FuncionesExcel excel = new FuncionesExcel();
 
@@ -464,40 +469,39 @@ public class Utilidades {
 	 * @param zipOut    El flujo de salida del archivo zip.
 	 * @throws IOException Si ocurre un error de E/S durante la compresión.
 	 */
-	private void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut) throws IOException {
+	private static void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut) throws IOException {
 		if (fileToZip.isHidden()) {
 			return;
 		}
+
 		if (fileToZip.isDirectory()) {
-			if (fileName.endsWith("/")) {
-				zipOut.putNextEntry(new ZipEntry(fileName));
-				zipOut.closeEntry();
-			} else {
-				zipOut.putNextEntry(new ZipEntry(fileName + "/"));
-				zipOut.closeEntry();
-			}
-			File[] children = fileToZip.listFiles();
-			for (File childFile : children) {
-				zipFile(childFile, fileName + "/" + childFile.getName(), zipOut);
+			fileName = fileName.endsWith("/") ? fileName : fileName + "/";
+			zipOut.putNextEntry(new ZipEntry(fileName));
+
+			try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(fileToZip.toPath())) {
+				for (Path childPath : dirStream) {
+					zipFile(childPath.toFile(), fileName + childPath.getFileName(), zipOut);
+				}
 			}
 			return;
 		}
-		FileInputStream fis = new FileInputStream(fileToZip);
-		ZipEntry zipEntry = new ZipEntry(fileName);
-		zipOut.putNextEntry(zipEntry);
-		byte[] bytes = new byte[1024];
-		int length;
-		while ((length = fis.read(bytes)) >= 0) {
-			zipOut.write(bytes, 0, length);
-		}
 
-		fis.close();
+		try (FileInputStream fis = new FileInputStream(fileToZip)) {
+			ZipEntry zipEntry = new ZipEntry(fileName);
+			zipOut.putNextEntry(zipEntry);
+
+			byte[] bytes = new byte[4096];
+			int length;
+			while ((length = fis.read(bytes)) >= 0) {
+				zipOut.write(bytes, 0, length);
+			}
+		}
 	}
 
 	/**
 	 * Elimina todos los archivos en una carpeta específica.
 	 */
-	public void eliminarArchivosEnCarpeta() {
+	public static void eliminarArchivosEnCarpeta() {
 
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
@@ -1698,7 +1702,7 @@ public class Utilidades {
 		}
 
 		libreria = new DBLibreriaManager();
-		libreria.libreriaCompleta();
+		libreria.buscarEnLibreria(TipoBusqueda.COMPLETA);
 	}
 
 	/**
@@ -1982,15 +1986,26 @@ public class Utilidades {
 	 * @param hosting  El host para la conexión.
 	 * @return true si la validación fue exitosa, false si no lo fue.
 	 */
-	public static boolean validarDatosConexion(String usuario, String password, String puerto, String hosting) {
+	public static boolean validarDatosConexion() {
+
+		String[] datosFichero = datosEnvioFichero();
+
+		String puerto = datosFichero[0];
+		String usuario = datosFichero[2];
+		String password = datosFichero[3];
+		String hosting = datosFichero[4];
+
 		String url = construirURL(hosting, puerto);
 		if (Utilidades.isMySQLServiceRunning(hosting, puerto)) {
 			try (Connection connection = DriverManager.getConnection(url, usuario, password)) {
+
 				return true; // La conexión se estableció correctamente
 			} catch (SQLException e) {
 				e.printStackTrace();
-
 			}
+		} else {
+			DBManager.asignarValoresPorDefecto();
+			DBManager.close();
 		}
 
 		return false; // La conexión no se pudo establecer
@@ -2036,10 +2051,8 @@ public class Utilidades {
 		return opciones;
 	}
 
-	public static boolean validarConexionMySQL(String usuarioTexto, String passwordTexto, String puertoTexto,
-			String hostingTexto) {
-		return isMySQLServiceRunning(hostingTexto, puertoTexto)
-				&& validarDatosConexion(usuarioTexto, passwordTexto, puertoTexto, hostingTexto);
+	public static boolean validarConexionMySQL(String puertoTexto, String hostingTexto) {
+		return isMySQLServiceRunning(hostingTexto, puertoTexto) && validarDatosConexion();
 	}
 
 	/**
@@ -2207,6 +2220,62 @@ public class Utilidades {
 		}
 
 		return contador;
+	}
+
+	public static Image pasarImagenComic(String direccionComic) {
+		if (direccionComic != null && !direccionComic.isEmpty()) {
+			try {
+				Image imagen = new Image(new File(direccionComic).toURI().toString());
+				return new Image(imagen.getUrl(), 250, 0, true, true);
+			} catch (Exception e) {
+				Utilidades.manejarExcepcion(e);
+			}
+		}
+		return null;
+	}
+
+	public static String[] datosEnvioFichero() {
+		Map<String, String> datosConfiguracion = Utilidades.devolverDatosConfig();
+
+		String puertoTexto = datosConfiguracion.get("Puerto");
+		String databaseTexto = datosConfiguracion.get("Database");
+		String usuarioTexto = datosConfiguracion.get("Usuario");
+		String passwordTexto = datosConfiguracion.get("Password");
+		String hostingTexto = datosConfiguracion.get("Hosting");
+
+		String[] datosConfiguracionArray = { puertoTexto, databaseTexto, usuarioTexto, passwordTexto, hostingTexto };
+
+		return datosConfiguracionArray;
+	}
+
+	public static boolean comprobarConexionContante(Stage myStage) {
+
+		if (!validarDatosConexion()) {
+			Platform.runLater(() -> {
+				DBManager.close();
+				Ventanas.cerrarVentanaActual(myStage);
+			});
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean comprobarConexion(Scene ventana) {
+		Ventanas nav = new Ventanas();
+		if (ventana != null) {
+			Stage stage = (Stage) ventana.getWindow();
+
+			if (Utilidades.comprobarConexionContante(stage)) {
+				Platform.runLater(() -> {
+					nav.verAccesoBBDD();
+					nav.alertaException("Error. Servicio MySql apagado o desconectado de forma repentina.");
+
+				});
+
+				return false; // No está conectado
+			}
+		}
+		return true; // Está conectado
 	}
 
 }

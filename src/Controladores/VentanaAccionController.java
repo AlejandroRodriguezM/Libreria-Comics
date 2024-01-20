@@ -67,6 +67,7 @@ import Funcionamiento.FuncionesTooltips;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import JDBC.DBLibreriaManager;
+import JDBC.DBLibreriaManager.TipoBusqueda;
 import JDBC.DBManager;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
@@ -78,6 +79,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -629,6 +631,7 @@ public class VentanaAccionController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
+		Platform.runLater(() -> DBManager.iniciarThreadCheckerConexion(miStageVentana()));
 		Platform.runLater(() -> {
 
 			listas_autocompletado();
@@ -762,6 +765,85 @@ public class VentanaAccionController implements Initializable {
 
 	}
 
+//	/**
+//	 * Metodo que mostrara los comics o comic buscados por parametro
+//	 *
+//	 * @param event
+//	 * @throws SQLException
+//	 */
+//	@FXML
+//	void mostrarPorParametro(ActionEvent event) throws SQLException {
+//		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
+//		prontInfo.setOpacity(0);
+//		imagencomic.setImage(null);
+//		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
+//		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
+//		listaPorParametro(); // Llamada a funcion
+//	}
+
+//	/**
+//	 * Realiza una búsqueda de cómics en la base de datos según los parámetros
+//	 * proporcionados. Muestra los resultados en una tabla en la interfaz gráfica y
+//	 * actualiza elementos visuales.
+//	 *
+//	 * @throws SQLException si hay un error al interactuar con la base de datos.
+//	 */
+//	public void listaPorParametro() throws SQLException {
+//
+//		libreria = new DBLibreriaManager();
+//		libreria.reiniciarBBDD();
+//		utilidad = new Utilidades();
+//		Comic comic = camposComic();
+//
+//		funcionesTabla.tablaBBDD(libreria.busquedaParametro(comic, ""), tablaBBDD, columnList);
+//		prontInfo.setOpacity(1);
+//		prontInfo.setText(funcionesTabla.resultadoBusquedaPront(comic).getText());
+//	}
+
+	/**
+	 * Funcion que comprueba segun los datos escritos en los textArea, que comic
+	 * estas buscando.
+	 * 
+	 * @throws SQLException
+	 */
+	public List<Comic> listaPorParametro() {
+		libreria = new DBLibreriaManager();
+		libreria.reiniciarBBDD();
+		utilidad = new Utilidades();
+		Comic datos = camposComic();
+
+		rootVBox.setVisible(true);
+		rootVBox.setDisable(false);
+
+		prontInfo.setOpacity(1);
+		prontInfo.setText(funcionesTabla.resultadoBusquedaPront(datos).getText());
+
+		List<Comic> listComic = FXCollections.observableArrayList(libreria.busquedaParametro(datos, ""));
+
+		return listComic;
+	}
+//
+//	/**
+//	 * Muestra todos los registros de la base de datos en la tabla de visualización
+//	 * y restaura la vista.
+//	 */
+//	@FXML
+//	void verTodabbdd() {
+//		libreria = new DBLibreriaManager();
+//		rootVBox.setVisible(true);
+//		rootVBox.setDisable(false);
+//
+//		tablaBBDD.refresh();
+//		prontInfo.setOpacity(0);
+//		imagencomic.setImage(null);
+//
+//		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
+//		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
+//		funcionesTabla.tablaBBDD(libreria.buscarEnLibreria(TipoBusqueda.COMPLETA), tablaBBDD, columnList); // Llamada a
+//																											// funcion
+//		libreria.reiniciarBBDD();
+//	}
+
 	/**
 	 * Metodo que mostrara los comics o comic buscados por parametro
 	 *
@@ -770,54 +852,48 @@ public class VentanaAccionController implements Initializable {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
-		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
-		prontInfo.setOpacity(0);
-		imagencomic.setImage(null);
-		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
-		listaPorParametro(); // Llamada a funcion
+		verBasedeDatos(false);
 	}
 
 	/**
-	 * Realiza una búsqueda de cómics en la base de datos según los parámetros
-	 * proporcionados. Muestra los resultados en una tabla en la interfaz gráfica y
-	 * actualiza elementos visuales.
+	 * Metodo que muestra toda la base de datos.
 	 *
-	 * @throws SQLException si hay un error al interactuar con la base de datos.
-	 */
-	public void listaPorParametro() throws SQLException {
-
-		libreria = new DBLibreriaManager();
-		libreria.reiniciarBBDD();
-		utilidad = new Utilidades();
-		Comic comic = camposComic();
-
-		rootVBox.setVisible(true);
-		rootVBox.setDisable(false);
-
-		funcionesTabla.tablaBBDD(libreria.busquedaParametro(comic, ""), tablaBBDD, columnList);
-		prontInfo.setOpacity(1);
-		prontInfo.setText(funcionesTabla.resultadoBusquedaPront(comic).getText());
-	}
-
-	/**
-	 * Muestra todos los registros de la base de datos en la tabla de visualización
-	 * y restaura la vista.
+	 * @param event
+	 * @throws IOException
+	 * @throws SQLException
 	 */
 	@FXML
-	void verTodabbdd() {
-		libreria = new DBLibreriaManager();
-		rootVBox.setVisible(true);
-		rootVBox.setDisable(false);
+	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
+		verBasedeDatos(true);
+	}
 
+	public void verBasedeDatos(boolean completo) {
+		libreria = new DBLibreriaManager();
+		libreria.reiniciarBBDD();
+		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
 		tablaBBDD.refresh();
+		prontInfo.clear();
 		prontInfo.setOpacity(0);
 		imagencomic.setImage(null);
 
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
-		funcionesTabla.tablaBBDD(libreria.libreriaCompleta(), tablaBBDD, columnList); // Llamada a funcion
-		libreria.reiniciarBBDD();
+
+		if (libreria.hayDatosEnLibreria("")) {
+			if (completo) {
+				funcionesTabla.tablaBBDD(libreria.buscarEnLibreria(TipoBusqueda.COMPLETA), tablaBBDD, columnList);
+
+			} else {
+				funcionesTabla.tablaBBDD(listaPorParametro(), tablaBBDD, columnList); // Llamada a funcion
+			}
+		} else {
+
+			String mensaje = "ERROR. No hay datos en la base de datos";
+
+			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+
+		}
+
 	}
 
 	/**
@@ -1031,7 +1107,9 @@ public class VentanaAccionController implements Initializable {
 				cargarImagenAsync(comic_temp.getImagen(), imagencomic);
 			}
 		} else {
-			imagencomic.setImage(libreria.selectorImage(comic_temp.getID()));
+			String direccionImagen = libreria.obtenerDireccionPortada(comic_temp.getID());
+			Image imagenComic = Utilidades.pasarImagenComic(direccionImagen);
+			imagencomic.setImage(imagenComic);
 		}
 	}
 
@@ -1308,21 +1386,21 @@ public class VentanaAccionController implements Initializable {
 	 */
 	@FXML
 	void importarFicheroCodigoBarras(ActionEvent evento) {
-		// Implementación pendiente
 
-		String frase = "Fichero txt";
+		if (Utilidades.isInternetAvailable()) {
+			String frase = "Fichero txt";
 
-		String formato = "*.txt";
+			String formato = "*.txt";
 
-		File fichero = Utilidades.tratarFichero(frase, formato).showOpenDialog(null); // Llamada a funcion
+			File fichero = Utilidades.tratarFichero(frase, formato).showOpenDialog(null); // Llamada a funcion
 
-		if (fichero != null) {
-			Platform.runLater(() -> {
-				codigosFichero(fichero);
-			});
+			if (fichero != null) {
+				Platform.runLater(() -> {
+					codigosFichero(fichero);
+				});
 
+			}
 		}
-
 	}
 
 	/**
@@ -1410,6 +1488,11 @@ public class VentanaAccionController implements Initializable {
 	 */
 	@FXML
 	void busquedaPorCodigo(ActionEvent event) throws IOException, JSONException, URISyntaxException {
+
+		if (!Utilidades.isInternetAvailable()) {
+			return;
+		}
+
 		ApiISBNGeneral isbnGeneral = new ApiISBNGeneral();
 		WebScraperPreviewsWorld previewsScraper = new WebScraperPreviewsWorld();
 
@@ -1615,6 +1698,10 @@ public class VentanaAccionController implements Initializable {
 	 */
 	private void busquedaPorCodigoImportacion(File fichero) {
 
+		if (!Utilidades.isInternetAvailable()) {
+			return;
+		}
+
 		botonGuardarCambioComic.setVisible(true);
 		botonGuardarComic.setVisible(true);
 		botonEliminarImportadoComic.setVisible(true);
@@ -1647,7 +1734,7 @@ public class VentanaAccionController implements Initializable {
 									// Update UI elements using Platform.runLater
 									Platform.runLater(() -> {
 										String texto = "";
-										texto = ("Comic: " + finalValorCodigo + "\n");
+										texto = "Comic: " + finalValorCodigo + "\n";
 
 										double progress = (double) finalProcessedItems / (numLineas.get() + 1);
 										String porcentaje = String.format("%.2f%%", progress * 100);
@@ -1694,11 +1781,7 @@ public class VentanaAccionController implements Initializable {
 			synchronized (comicsProcesados) {
 				comicsProcesados.incrementAndGet();
 			}
-
-			System.out.println("Codigo correcto: " + finalValorCodigo);
 		} else {
-			System.err.println("Codigo erroneo: " + finalValorCodigo);
-
 			synchronized (contadorErrores) {
 				codigoFaltante.append("Falta comic con codigo: ").append(finalValorCodigo).append("\n");
 				contadorErrores.incrementAndGet();
@@ -1827,13 +1910,12 @@ public class VentanaAccionController implements Initializable {
 		;
 		AlarmaList.iniciarAnimacionCambioImagen(imagenFondo);
 		if (comprobarID(id_comic)) {
-			libreria.eliminarComicBBDD(id_comic);
+			libreria.modificarComicBBDD(id_comic, "eliminar");
 			libreria.reiniciarBBDD();
 			libreria.listasAutoCompletado();
 			funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 			funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
-			funcionesTabla.tablaBBDD(libreria.libreriaCompleta(), tablaBBDD, columnList); // Llamada a funcion
-
+			funcionesTabla.tablaBBDD(libreria.buscarEnLibreria(TipoBusqueda.COMPLETA), tablaBBDD, columnList);
 			Image nuevaImagen = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
 			imagenFondo.setImage(nuevaImagen);
 
@@ -1862,8 +1944,7 @@ public class VentanaAccionController implements Initializable {
 
 				funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 				funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
-				funcionesTabla.tablaBBDD(libreria.libreriaCompleta(), tablaBBDD, columnList); // Llamada a funcion
-
+				funcionesTabla.tablaBBDD(libreria.buscarEnLibreria(TipoBusqueda.COMPLETA), tablaBBDD, columnList);
 				return true;
 			} else {
 				String mensaje = "ERROR. ID desconocido.";
@@ -2005,7 +2086,7 @@ public class VentanaAccionController implements Initializable {
 		;
 		AlarmaList.iniciarAnimacionCambioImagen(imagenFondo);
 		if (comprobarID(id_comic)) {
-			libreria.venderComicBBDD(id_comic);
+			libreria.modificarComicBBDD(id_comic, "vender");
 			libreria.reiniciarBBDD();
 
 			Image nuevaImagen = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
@@ -2153,8 +2234,7 @@ public class VentanaAccionController implements Initializable {
 					c.setID("");
 					libreria.insertarDatos(c);
 
-					mensajePront += "Comic " + c.getNombre() + " con codigo " + c.getCodigo_comic()
-							+ " introducido correctamente\n";
+					mensajePront += "Has introducido los comics correctamente\n";
 
 					Image imagenDeseo = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
 					imagenFondo.setImage(imagenDeseo);
@@ -2265,14 +2345,9 @@ public class VentanaAccionController implements Initializable {
 	/**
 	 * Permite introducir un comic en la base de datos de forma manual
 	 * 
-	 * @throws IOException
-	 * @throws SQLException
-	 * @throws ExecutionException
-	 * @throws InterruptedException
-	 * @throws URISyntaxException
+	 * @throws Exception
 	 */
-	public void subidaComic()
-			throws IOException, SQLException, InterruptedException, ExecutionException, URISyntaxException {
+	public void subidaComic() throws Exception {
 		utilidad = new Utilidades();
 
 		Utilidades.convertirNombresCarpetas(SOURCE_PATH);
@@ -2290,14 +2365,9 @@ public class VentanaAccionController implements Initializable {
 	/**
 	 * Funcion que permite modificar un comic, segun los datos introducidos
 	 * 
-	 * @throws SQLException
-	 * @throws NumberFormatException
-	 * @throws ExecutionException
-	 * @throws InterruptedException
-	 * @throws URISyntaxException
+	 * @throws Exception
 	 */
-	public void modificacionComic() throws NumberFormatException, SQLException, IOException, InterruptedException,
-			ExecutionException, URISyntaxException {
+	public void modificacionComic() throws Exception {
 		libreria = new DBLibreriaManager();
 
 		String id_comic = idComicTratar_mod.getText();
@@ -2352,20 +2422,18 @@ public class VentanaAccionController implements Initializable {
 	 * @param comic          El cómic con la información a procesar.
 	 * @param esModificacion Indica si se está realizando una modificación (true) o
 	 *                       una inserción (false).
-	 * @throws IOException  Si ocurre un error de entrada/salida.
-	 * @throws SQLException Si ocurre un error de base de datos.
+	 * @throws Exception
 	 */
-	public void procesarComic(Comic comic, boolean esModificacion) throws IOException, SQLException {
+	public void procesarComic(Comic comic, boolean esModificacion) throws Exception {
 
 		libreria = new DBLibreriaManager();
 		utilidad = new Utilidades();
 		prontInfo.setOpacity(1);
 		if (!validateComicFields(comic)) {
-			String excepcion = esModificacion ? "ERROR.Faltan datos por rellenar"
-					: "No puedes introducir un cómic si no has completado todos los datos";
-			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("Error. Debes de introducir los datos correctos");
-			nav.alertaException(excepcion);
+			String mensaje = "Error. Debes de introducir los datos correctos";
+
+			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+
 		} else {
 			String codigo_imagen = Utilidades.generarCodigoUnico(SOURCE_PATH + File.separator);
 
@@ -2379,7 +2447,9 @@ public class VentanaAccionController implements Initializable {
 				AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
 
 				Platform.runLater(() -> {
-					funcionesTabla.tablaBBDD(libreria.libreriaCompleta(), tablaBBDD, columnList); // Llamada a funcion
+					funcionesTabla.tablaBBDD(libreria.buscarEnLibreria(TipoBusqueda.COMPLETA), tablaBBDD, columnList); // Llamada
+																														// a
+																														// funcion
 				});
 				tablaBBDD.refresh();
 
@@ -2450,8 +2520,7 @@ public class VentanaAccionController implements Initializable {
 				// Detener la animación cuando la acción ha concluido
 				AlarmaList.detenerAnimacionProntAccion(imagenFondo);
 				;
-			} catch (NumberFormatException | SQLException | IOException | InterruptedException | ExecutionException
-					| URISyntaxException e) {
+			} catch (Exception e) {
 				Utilidades.manejarExcepcion(e);
 
 			}
@@ -2526,7 +2595,10 @@ public class VentanaAccionController implements Initializable {
 
 					prontInfo.clear();
 					prontInfo.setOpacity(1);
-					imagencomic.setImage(libreria.selectorImage(idComicTratar_mod.getText()));
+
+					Image imagenComic = Utilidades.pasarImagenComic(comic_temp.getImagen());
+					imagencomic.setImage(imagenComic);
+
 				} else {
 					borrar_datos_autorellenos();
 				}
@@ -2582,6 +2654,13 @@ public class VentanaAccionController implements Initializable {
 	 */
 	public void setStage(Stage stage) {
 		this.stage = stage;
+	}
+
+	public Scene miStageVentana() {
+
+		Scene scene = menu_navegacion.getScene();
+		return scene;
+
 	}
 
 	/**
