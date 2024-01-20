@@ -31,6 +31,9 @@ public class AlarmaList {
 	private Timeline animacionAlarmaTimelineInternet = new Timeline();
 	private Timeline animacionAlarmaTimelineMySql = new Timeline();
 
+	private static final Object timelineLock = new Object();
+	private static final Object timelineGifLock = new Object();
+
 	/**
 	 * Etiqueta para mostrar el estado del fichero.
 	 */
@@ -171,7 +174,7 @@ public class AlarmaList {
 			animacion.stop();
 		}
 	}
-	
+
 	public static void manejarConexionExitosa(AlarmaList alarmaList, String[] datosFichero, Label prontEstadoConexion) {
 		if (Utilidades.isMySQLServiceRunning(datosFichero[4], datosFichero[0])) {
 			if (DBLibreriaManager.checkTablesAndColumns(datosFichero)) {
@@ -214,7 +217,7 @@ public class AlarmaList {
 			timelineError.play();
 		}
 	}
-	
+
 	/**
 	 * Inicia la animación de espera en la interfaz.
 	 */
@@ -235,8 +238,8 @@ public class AlarmaList {
 		KeyFrame mostratRojo3 = new KeyFrame(Duration.seconds(2.0),
 				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: orange;"));
 
-		animacionAlarmaTimeline.getKeyFrames().addAll(mostrarAmarillo1, mostratRojo1, mostrarAmarillo2,
-				mostratRojo2, mostrarAmarillo3, mostratRojo3);
+		animacionAlarmaTimeline.getKeyFrames().addAll(mostrarAmarillo1, mostratRojo1, mostrarAmarillo2, mostratRojo2,
+				mostrarAmarillo3, mostratRojo3);
 		animacionAlarmaTimeline.play();
 	}
 
@@ -307,12 +310,10 @@ public class AlarmaList {
 		timeline.play();
 	}
 
-
-
 	public static void iniciarAnimacionErrorMySql(Label prontEstadoConexion) {
 
 		detenerAnimacion();
-		
+
 		if (timeline == null) {
 
 			timelineError = new Timeline();
@@ -333,8 +334,6 @@ public class AlarmaList {
 			timelineError.play();
 		}
 	}
-
-
 
 	/**
 	 * Metodo que permite crear una animacion
@@ -383,7 +382,6 @@ public class AlarmaList {
 		timeline.play();
 	}
 
-
 	/**
 	 * Inicia la animación de alarma, que cambia el color de fondo de la alarma
 	 * entre amarillo y transparente.
@@ -401,11 +399,12 @@ public class AlarmaList {
 		KeyFrame mostrarAmarilloNuevamente = new KeyFrame(Duration.seconds(1.0),
 				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: yellow;"));
 
-		animacionAlarmaTimeline.getKeyFrames().addAll(mostrarAmarillo, ocultarTexto, mostrarTransparente, mostrarAmarilloNuevamente);
+		animacionAlarmaTimeline.getKeyFrames().addAll(mostrarAmarillo, ocultarTexto, mostrarTransparente,
+				mostrarAmarilloNuevamente);
 
 		animacionAlarmaTimeline.play();
 	}
-	
+
 	public void iniciarAnimacionAlarmaOnline(Label alarmaConexion) {
 		animacionAlarmaOnlineTimeline = new Timeline();
 		animacionAlarmaOnlineTimeline.setCycleCount(Timeline.INDEFINITE);
@@ -423,7 +422,7 @@ public class AlarmaList {
 				mostrarVerdeNuevamente);
 		animacionAlarmaOnlineTimeline.play();
 	}
-	
+
 	/**
 	 * Maneja las acciones después de una conexión exitosa.
 	 */
@@ -467,7 +466,6 @@ public class AlarmaList {
 			timelineError = null; // Destruir el objeto timeline
 		}
 	}
-
 
 	/**
 	 * Inicia la animación de conexión exitosa en la interfaz.
@@ -653,11 +651,12 @@ public class AlarmaList {
 		prontInfo.clear();
 		prontInfo.setOpacity(1);
 		if (exito) {
-			prontInfo.setStyle("-fx-background-color: #A0F52D");
+			prontInfo.setStyle("-fx-border-color: green;");
 		} else {
-			prontInfo.setStyle("-fx-background-color: #F53636");
+			prontInfo.setStyle("-fx-border-color: red;");
 		}
 		prontInfo.setText(mensaje);
+				
 		detenerAnimacion();
 	}
 
@@ -867,10 +866,10 @@ public class AlarmaList {
 		KeyFrame cambiarGif = new KeyFrame(Duration.ZERO, new KeyValue(cargaImagen.imageProperty(), gif));
 
 		// Agregar el keyframe al timeline
-		timeline.getKeyFrames().add(cambiarGif);
+		timelineGif.getKeyFrames().add(cambiarGif);
 
 		// Iniciar la animación
-		timeline.play();
+		timelineGif.play();
 	}
 
 	/**
@@ -888,27 +887,31 @@ public class AlarmaList {
 	 * Metodo que permite detener una animacion
 	 */
 	public static void detenerAnimacionProntAccion(ImageView imagenFondo) {
-		if (timeline != null) {
-			timeline.stop();
-			timeline = null; // Destruir el objeto timeline
+		synchronized (timelineLock) {
+			if (timeline != null) {
+				timeline.stop();
+				timeline = null; // Destruir el objeto timeline
 
-			Platform.runLater(() -> {
-				InputStream imagenStream = Utilidades.class.getResourceAsStream("/imagenes/accionComic.jpg");
-				Image imagen = new Image(imagenStream);
-				imagenFondo.setImage(imagen);
-			});
+				Platform.runLater(() -> {
+					InputStream imagenStream = Utilidades.class.getResourceAsStream("/imagenes/accionComic.jpg");
+					Image imagen = new Image(imagenStream);
+					imagenFondo.setImage(imagen);
+				});
+			}
 		}
 	}
 
 	public static void detenerAnimacionCargaImagen(ImageView cargaImagen) {
-		if (timelineGif != null) {
-			timelineGif.stop();
-			timelineGif = null; // Destruir el objeto timeline
+		synchronized (timelineGifLock) {
+			if (timelineGif != null) {
+				timelineGif.stop();
+				timelineGif = null; // Destruir el objeto timeline
 
-			Platform.runLater(() -> {
-				cargaImagen.setImage(null);
-				cargaImagen.setVisible(false);
-			});
+				Platform.runLater(() -> {
+					cargaImagen.setImage(null);
+					cargaImagen.setVisible(false);
+				});
+			}
 		}
 	}
 

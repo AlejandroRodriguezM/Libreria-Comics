@@ -78,8 +78,7 @@ public class WebScraperPreviewsWorld {
 				Document document = Jsoup.connect(previews_World_Url).get();
 
 				if (document == null) {
-					String mensaje = "Error al obtener el documento HTML para el cómic con Diamond Code: "
-							+ diamondCode;
+					String mensaje = "Codigo de diamond code: " + diamondCode + " incorrecto";
 
 					AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 

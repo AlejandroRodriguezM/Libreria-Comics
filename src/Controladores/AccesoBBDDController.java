@@ -175,7 +175,7 @@ public class AccesoBBDDController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		
+
 		Utilidades.guardarDatosClavesMarvel();
 		Utilidades.cargarTasasDeCambioDesdeArchivo();
 		Utilidades.guardarApiComicVine();
@@ -191,37 +191,8 @@ public class AccesoBBDDController implements Initializable {
 
 		Utilidades.crearEstructura();
 
-		comprobarApisComics();
+		Utilidades.comprobarApisComics();
 
-	}
-
-	private void comprobarApisComics() {
-		String apiKey = Utilidades.cargarApiComicVine();
-		String clavesMarvel[] = Utilidades.clavesApiMarvel();
-
-		if (!Utilidades.existeContenido(apiKey, clavesMarvel)) {
-
-			String excepcion = "";
-
-			if (apiKey == null || apiKey.isEmpty()) {
-				excepcion += "\n - Debes de conseguir una clave API de Comic Vine. La pagina es https://comicvine.gamespot.com/api/ es gratuito";
-			}
-
-			// Comprueba si claves es nulo o está vacío
-			if (clavesMarvel == null || clavesMarvel.length < 2 || clavesMarvel[0] == null || clavesMarvel[0].isEmpty()
-					|| clavesMarvel[1] == null || clavesMarvel[1].isEmpty()) {
-
-				excepcion += "\n - Debes de conseguir una clave API de Marvel. La pagina es https://developer.marvel.com/  es gratuito";
-			}
-
-			if (excepcion.length() > 0) {
-
-				excepcion += "\n - Para poner las claves, debes de añadirlas dentro de sus respectivos ficheros en la carpeta 'AppData/Roaming/libreria' de su ordenador";
-
-				nav.alertaNoApi(excepcion);
-			}
-
-		}
 	}
 
 	/**
@@ -299,19 +270,16 @@ public class AccesoBBDDController implements Initializable {
 	@FXML
 	void entrarMenu(ActionEvent event) {
 
-		if(!Utilidades.isMySQLServiceRunning(DBManager.DB_HOST, DBManager.DB_PORT)) {
+		if (!Utilidades.isMySQLServiceRunning(DBManager.DB_HOST, DBManager.DB_PORT)) {
 			AlarmaList.iniciarAnimacionErrorMySql(prontEstadoConexion);
 			AlarmaList.iniciarAnimacionAlarma(alarmaConexion);
 			return;
 		}
-		
+
 		if (DBManager.estadoConexion) { // Siempre que el metodo de la clase DBManager sea true, permitira acceder
 			DBManager.resetConnection();
 			// al menu principal
-			nav.verMenuPrincipal(); // Llamada a metodo de la clase NavegacionVentanas. Permite cargar y mostrar el
-									// menu principal
-			Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
-			myStage.close();
+			nav.verMenuPrincipal();
 		} else { // En caso contrario mostrara el siguiente mensaje.
 			AlarmaList.detenerAnimacion();
 			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
@@ -337,14 +305,12 @@ public class AccesoBBDDController implements Initializable {
 			if (DBManager.isConnected()) {
 				AlarmaList.detenerAnimacion();
 				AlarmaList.iniciarAnimacionConectado(prontEstadoConexion);
-				AlarmaList.manejarConexionExitosa(alarmaList,datosFichero,prontEstadoConexion);
+				AlarmaList.manejarConexionExitosa(alarmaList, datosFichero, prontEstadoConexion);
 			} else {
 				alarmaList.manejarErrorConexion("No estás conectado a la base de datos.", prontEstadoConexion);
 			}
 		}
 	}
-
-
 
 	/**
 	 * Configura la conexión a la base de datos.
@@ -368,7 +334,7 @@ public class AccesoBBDDController implements Initializable {
 
 		DBManager.datosBBDD(datosConfiguracionArray);
 	}
-	
+
 	public Scene miStageVentana() {
 
 		Scene scene = botonEnviar.getScene();

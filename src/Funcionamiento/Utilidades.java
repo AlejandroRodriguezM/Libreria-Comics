@@ -1087,31 +1087,6 @@ public class Utilidades {
 	}
 
 	/**
-	 * Verifica si hay contenido en las cadenas apiKey y claves.
-	 *
-	 * @param apiKey La cadena que contiene la clave API de Comic Vine.
-	 * @param claves Un arreglo de cadenas que contiene las claves API de Marvel.
-	 * @return true si ambas cadenas contienen contenido válido, false en caso
-	 *         contrario.
-	 */
-	public static boolean existeContenido(String apiKey, String[] clavesMarvel) {
-		// Comprueba si apiKey es nulo o está vacío
-		if (apiKey == null || apiKey.isEmpty()) {
-			return false;
-		}
-
-		// Comprueba si claves es nulo o está vacío
-		if (clavesMarvel == null || clavesMarvel.length < 2 || clavesMarvel[0] == null || clavesMarvel[0].isEmpty()
-				|| clavesMarvel[1] == null || clavesMarvel[1].isEmpty()) {
-			return false;
-		}
-
-		// Si no se cumplen las condiciones anteriores, significa que hay contenido
-		// válido
-		return true;
-	}
-
-	/**
 	 * Verifica si una cadena es una URL válida.
 	 *
 	 * @param cadena Cadena que se va a verificar como URL.
@@ -2005,7 +1980,6 @@ public class Utilidades {
 			}
 		} else {
 			DBManager.asignarValoresPorDefecto();
-			DBManager.close();
 		}
 
 		return false; // La conexión no se pudo establecer
@@ -2276,6 +2250,41 @@ public class Utilidades {
 			}
 		}
 		return true; // Está conectado
+	}
+
+	public static void comprobarApisComics() {
+		String apiKey = Utilidades.cargarApiComicVine();
+		String clavesMarvel[] = Utilidades.clavesApiMarvel();
+
+		if (!verificarClavesAPI(clavesMarvel, apiKey)) {
+			return; // Salir si hay errores en las claves API
+		}
+	}
+
+	/**
+	 * Verifica si las claves API están ausentes o vacías y muestra una alerta en
+	 * caso de error.
+	 *
+	 * @param clavesMarvel Claves API de Marvel.
+	 * @param apiKey       Clave API de Comic Vine.
+	 */
+	public static boolean verificarClavesAPI(String[] clavesMarvel, String apiKey) {
+		String exception = "";
+		Ventanas nav = new Ventanas();
+
+		if (clavesMarvel.length == 0) {
+			exception += "\nDebes obtener una clave API de Marvel. Visita https://developer.marvel.com/";
+		}
+
+		if (apiKey.isEmpty()) {
+			exception += "\nDebes obtener una clave API de Comic Vine. Visita https://comicvine.gamespot.com/api/ (gratuito)";
+		}
+
+		if (!exception.isEmpty()) {
+			nav.alertaNoApi(exception); // Mostrar alerta de error
+			return false;
+		}
+		return true;
 	}
 
 }

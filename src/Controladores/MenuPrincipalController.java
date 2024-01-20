@@ -829,8 +829,7 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	private void imprimirComicsEstado(TipoBusqueda tipoBusqueda) {
-
-		prontInfo.setOpacity(0); // Ocultar la información en pantalla
+		limpiezaDeDatos();
 		libreria = new DBLibreriaManager(); // Crear una instancia del gestor de la base de datos
 		libreria.reiniciarBBDD(); // Reiniciar la base de datos si es necesario
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a la función para establecer nombres de
@@ -854,6 +853,9 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void importCSV(ActionEvent event) throws SQLException, InterruptedException, ExecutionException {
+
+		limpiezaDeDatos();
+
 		guardarDatosCSV();
 
 		libreria.listasAutoCompletado();
@@ -862,7 +864,6 @@ public class MenuPrincipalController implements Initializable {
 
 		Utilidades.borrarArchivosNoEnLista(DBLibreriaManager.listaImagenes);
 
-		prontInfo.clear();
 	}
 
 	/**
@@ -874,13 +875,13 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void exportCSV(ActionEvent event) throws SQLException {
+		limpiezaDeDatos();
+
 		List<Comic> listaComics = libreria.buscarEnLibreria(TipoBusqueda.COMPLETA);
 
 		String tipoBusqueda = "completa";
 
 		cargaExportExcel(listaComics, tipoBusqueda);
-
-		prontInfo.clear();
 
 		DBLibreriaManager.limpiarListaGuardados();
 
@@ -938,6 +939,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void borrarContenidoTabla(ActionEvent event) throws SQLException {
+
 		Utilidades.borrarArchivosNoEnLista(DBLibreriaManager.listaImagenes);
 
 		// Crear tarea para borrar contenido de la tabla
@@ -948,6 +950,9 @@ public class MenuPrincipalController implements Initializable {
 				if (!DBLibreriaManager.listaNombre.isEmpty()) {
 					CompletableFuture<Boolean> futureResult = nav.borrarContenidoTabla();
 					result = futureResult.join();
+				} else {
+					showEmptyDatabaseError();
+
 				}
 				return result;
 			}
@@ -956,9 +961,10 @@ public class MenuPrincipalController implements Initializable {
 		// Configurar comportamiento cuando la tarea está en ejecución
 		task.setOnRunning(e -> AlarmaList.iniciarAnimacionCarga(progresoCarga));
 
-		// Configurar comportamiento cuando la tarea se completa con éxito
 		task.setOnSucceeded(e -> {
 			Boolean resultado = task.getValue();
+
+			System.out.println(resultado);
 
 			if (resultado) {
 				limpiarInformacion();
@@ -981,19 +987,30 @@ public class MenuPrincipalController implements Initializable {
 
 				// Iniciar la tarea de borrado en un hilo separado
 				new Thread(deleteTask).start();
-			} else {
-				mostrarMensajeCancelacion();
-				detenerAnimaciones();
 			}
 		});
 
-		// Configurar comportamiento cuando la tarea falla
-		task.setOnFailed(e -> handleTaskFailure(task));
+		task.setOnFailed(e -> {
+
+			System.out.println("Test");
+
+			showEmptyDatabaseError();
+			detenerAnimaciones();
+			handleTaskFailure(task);
+		});
+
+		// Configurar comportamiento cuando la tarea se completa con fracaso
+		task.setOnCancelled(e -> {
+			mostrarMensajeCancelacion();
+			detenerAnimaciones();
+			handleTaskFailure(task);
+		});
 
 		nav.ventanaAbierta();
 
 		// Iniciar la tarea principal de borrado en un hilo separado
 		new Thread(task).start();
+
 	}
 
 	private Task<Boolean> createDeleteTask() {
@@ -1039,23 +1056,19 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	private void mostrarMensajeExito() {
-		prontInfo.clear();
 		String mensaje = "Has borrado correctamente el contenido de la base de datos.";
 		AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
 	}
 
 	private void mostrarMensajeCancelacion() {
-		prontInfo.clear();
 		String mensaje = "Has cancelado el borrado de la base de datos.";
 		AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 	}
 
 	private void showEmptyDatabaseError() {
-		Platform.runLater(() -> {
-			String mensaje = "La base de datos ya se encuentra vacía.";
-			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
-			detenerAnimaciones();
-		});
+		String mensaje = "La base de datos ya se encuentra vacía.";
+		AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+		detenerAnimaciones();
 	}
 
 	private void mostrarErrorBorrado(String errorMessage) {
@@ -1072,9 +1085,11 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	private void detenerAnimaciones() {
-		AlarmaList.detenerAnimacion();
-		AlarmaList.detenerAnimacionCarga(progresoCarga);
-		prontInfo.clear();
+		Platform.runLater(() -> {
+			AlarmaList.detenerAnimacion();
+			AlarmaList.detenerAnimacionCarga(progresoCarga);
+		});
+
 	}
 
 	/**

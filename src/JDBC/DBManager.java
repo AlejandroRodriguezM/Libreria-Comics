@@ -196,12 +196,20 @@ public class DBManager {
 
 			return conn;
 		} catch (SQLException ex) {
-			nav.alertaException("ERROR. Revisa los datos del fichero de conexion.");
-		} catch (NullPointerException ex) {
-			nav.alertaException("ERROR. Revisa los datos del fichero de conexion.");
-		}
-
-		return null;
+			nav.alertaException("ERROR. Revisa los datos del fichero de conexión.");
+		} 
+//		finally {
+//			// Cerrar la conexión en el bloque finally para asegurarse de que siempre se
+//			// cierre
+//			if (conn != null) {
+//				try {
+//					conn.close();
+//				} catch (SQLException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		}
+		return conn;
 	}
 
 	/**

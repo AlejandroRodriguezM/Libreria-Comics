@@ -59,6 +59,29 @@ public class ApiMarvel {
 		return null;
 	}
 
+	private static String[][] listaErrores() {
+
+		String[][] tablaErrores = {
+				{ "409", "Clave API Ausente", "Ocurre cuando el parámetro apikey no está incluido en una solicitud." },
+				{ "409", "Hash Ausente",
+						"Error 409: Ocurre cuando se incluye el parámetro apikey en una solicitud, se presenta un parámetro ts, pero no se envía un parámetro hash. Ocurre solo en aplicaciones del lado del servidor." },
+				{ "409", "Timestamp Ausente",
+						"Ocurre cuando se incluye el parámetro apikey en una solicitud, se presenta un parámetro hash, pero no se envía un parámetro ts. Ocurre solo en aplicaciones del lado del servidor." },
+				{ "401", "Referente Inválido",
+						"Ocurre cuando se envía un referente que no es válido para el parámetro apikey pasado." },
+				{ "401", "Hash Inválido",
+						"Ocurre cuando se envían los parámetros ts, hash y apikey, pero el hash no es válido según la regla de generación de hash anterior." },
+				{ "405", "Método No Permitido",
+						"Ocurre cuando se accede a un punto de conexión de la API utilizando un verbo HTTP que no está permitido para ese punto de conexión." },
+				{ "403", "Prohibido",
+						"Ocurre cuando un usuario con una solicitud autenticada intenta acceder a un punto de conexión al que no tiene acceso." },
+				{ "200", "Limite maximo de busqueda alcanzado",
+						"Ocurre cuando un usuario con una solicitud autenticada intenta acceder a la busqueda de comics marvel pero ya alcanzo el maximo diario de 3000 busquedas." } };
+
+		return tablaErrores;
+
+	}
+
 	/**
 	 * Formatea un ISBN agregando guiones de acuerdo al formato estándar. Por
 	 * ejemplo, convierte "9781302948207" en "978-1-302-94820-7".
@@ -119,8 +142,21 @@ public class ApiMarvel {
 
 			int codigoRespuesta = codigoRespuesta(apiUrl);
 
-			if (codigoRespuesta != 200) {
-				return null;
+			int[] codigosError = { 200, 401, 403, 405, 409 };
+
+			String[][] tablaErrores = listaErrores();
+
+			for (int i : codigosError) {
+				if (i == codigoRespuesta) {
+
+					for (String[] filaError : tablaErrores) {
+						if (filaError[0].equals(String.valueOf(codigoRespuesta))) {
+							String mensaje = filaError[1] + ": " + filaError[2];
+							AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+						}
+					}
+					return null;
+				}
 			}
 
 			jsonResponse = sendHttpGetRequest(apiUrl);
@@ -129,29 +165,19 @@ public class ApiMarvel {
 			JSONObject jsonObject = new JSONObject(jsonResponse);
 			JSONArray resultsArray = jsonObject.getJSONObject("data").getJSONArray("results");
 
-			if (resultsArray.length() == 0 && VentanaAccionController.comicsImportados.size() < 1
-					&& prontInfo != null) {
-		        String mensaje = "No se encontró el cómic con código: " + claveComic;
+			if (resultsArray.length() == 0) {
 
-		        AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+				String mensaje = "No se encontró el cómic con código: " + claveComic;
+				AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+
 				return null;
 			} else {
-				if (resultsArray.length() == 0 && prontInfo != null) {
-					
-			        String mensaje = "No se encontró el cómic con código: " + claveComic;
-
-			        AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
-					
-					return null;
-				} else {
-					if (resultsArray != null && resultsArray.length() > 0 && prontInfo != null) {
-						// Obtener el primer elemento del JSONArray
-						return resultsArray.getJSONObject(0);
-					} else {
-						return null;
-					}
+				if (resultsArray.length() > 0) {
+					// Obtener el primer elemento del JSONArray
+					return resultsArray.getJSONObject(0);
 				}
 			}
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (URISyntaxException e) {

@@ -621,6 +621,9 @@ public class VentanaAccionController implements Initializable {
 
 	public static String id_comic_selecionado = "";
 
+	public static String apiKey = Utilidades.cargarApiComicVine();
+	public static String clavesMarvel[] = Utilidades.clavesApiMarvel();
+
 	/**
 	 * Inicializa la interfaz de usuario y configura el comportamiento de los
 	 * elementos al cargar la vista.
@@ -631,9 +634,8 @@ public class VentanaAccionController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		Platform.runLater(() -> DBManager.iniciarThreadCheckerConexion(miStageVentana()));
 		Platform.runLater(() -> {
-
+			DBManager.iniciarThreadCheckerConexion(miStageVentana());
 			listas_autocompletado();
 
 			rellenarCombosEstaticos();
@@ -765,41 +767,6 @@ public class VentanaAccionController implements Initializable {
 
 	}
 
-//	/**
-//	 * Metodo que mostrara los comics o comic buscados por parametro
-//	 *
-//	 * @param event
-//	 * @throws SQLException
-//	 */
-//	@FXML
-//	void mostrarPorParametro(ActionEvent event) throws SQLException {
-//		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
-//		prontInfo.setOpacity(0);
-//		imagencomic.setImage(null);
-//		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-//		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
-//		listaPorParametro(); // Llamada a funcion
-//	}
-
-//	/**
-//	 * Realiza una búsqueda de cómics en la base de datos según los parámetros
-//	 * proporcionados. Muestra los resultados en una tabla en la interfaz gráfica y
-//	 * actualiza elementos visuales.
-//	 *
-//	 * @throws SQLException si hay un error al interactuar con la base de datos.
-//	 */
-//	public void listaPorParametro() throws SQLException {
-//
-//		libreria = new DBLibreriaManager();
-//		libreria.reiniciarBBDD();
-//		utilidad = new Utilidades();
-//		Comic comic = camposComic();
-//
-//		funcionesTabla.tablaBBDD(libreria.busquedaParametro(comic, ""), tablaBBDD, columnList);
-//		prontInfo.setOpacity(1);
-//		prontInfo.setText(funcionesTabla.resultadoBusquedaPront(comic).getText());
-//	}
-
 	/**
 	 * Funcion que comprueba segun los datos escritos en los textArea, que comic
 	 * estas buscando.
@@ -822,27 +789,6 @@ public class VentanaAccionController implements Initializable {
 
 		return listComic;
 	}
-//
-//	/**
-//	 * Muestra todos los registros de la base de datos en la tabla de visualización
-//	 * y restaura la vista.
-//	 */
-//	@FXML
-//	void verTodabbdd() {
-//		libreria = new DBLibreriaManager();
-//		rootVBox.setVisible(true);
-//		rootVBox.setDisable(false);
-//
-//		tablaBBDD.refresh();
-//		prontInfo.setOpacity(0);
-//		imagencomic.setImage(null);
-//
-//		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-//		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
-//		funcionesTabla.tablaBBDD(libreria.buscarEnLibreria(TipoBusqueda.COMPLETA), tablaBBDD, columnList); // Llamada a
-//																											// funcion
-//		libreria.reiniciarBBDD();
-//	}
 
 	/**
 	 * Metodo que mostrara los comics o comic buscados por parametro
@@ -872,9 +818,7 @@ public class VentanaAccionController implements Initializable {
 		libreria.reiniciarBBDD();
 		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
 		tablaBBDD.refresh();
-		prontInfo.clear();
-		prontInfo.setOpacity(0);
-		imagencomic.setImage(null);
+		borrar_datos_autorellenos();
 
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
@@ -1018,36 +962,46 @@ public class VentanaAccionController implements Initializable {
 	 * @throws SQLException Si se produce un error al acceder a la base de datos.
 	 */
 	private void seleccionarComics() {
-		try {
-			Utilidades.comprobacionListaComics();
+		Platform.runLater(() -> {
+			try {
+				Utilidades.comprobacionListaComics();
 
-			String id_comic = Utilidades.obtenerIdComicSeleccionado(tablaBBDD);
-			prontInfo.setStyle("");
-			idComicTratar.setStyle("");
-			idComicTratar.setText(id_comic);
+				// Lógica para manejar la selección
+				tablaBBDD.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+					if (newSelection != null) {
+						// Se ha seleccionado un elemento en la tabla
+						Comic comicSeleccionado = newSelection;
+						String idComicSeleccionado = comicSeleccionado.getID();
 
-			Comic comic_temp = Utilidades.obtenerComicSeleccionado(id_comic);
+						// Realiza las operaciones necesarias con el ID del cómic seleccionado
+						// Puedes llamar a otras funciones o realizar acciones directamente aquí
+						prontInfo.setStyle("");
+						idComicTratar.setStyle("");
+						idComicTratar.setText(idComicSeleccionado);
 
-			if (!comicsImportados.isEmpty()) {
-				id_comic_selecionado = id_comic;
-				comic_temp = Utilidades.devolverComic(id_comic);
-			} else {
-				comic_temp = libreria.comicDatos(id_comic);
+						Comic comicTemp;
+						if (!comicsImportados.isEmpty()) {
+							id_comic_selecionado = idComicSeleccionado;
+							comicTemp = Utilidades.devolverComic(idComicSeleccionado);
+						} else {
+							comicTemp = libreria.comicDatos(idComicSeleccionado);
+						}
+
+						setAtributosDesdeTabla(comicTemp);
+						validarCamposComic(false);
+						prontInfo.setOpacity(0);
+
+						if (TIPO_ACCION.equals("modificar")) {
+							mostrarOpcion(TIPO_ACCION);
+							idComicTratar_mod.setText(comicTemp.getID());
+						}
+					}
+				});
+
+			} finally {
+				DBManager.resetConnection();
 			}
-
-			setAtributosDesdeTabla(comic_temp);
-
-			prontInfo.setOpacity(0);
-			if (TIPO_ACCION.equals("modificar")) {
-				mostrarOpcion(TIPO_ACCION);
-				idComicTratar_mod.setText(comic_temp.getID());
-			}
-
-		} catch (SQLException e) {
-			Utilidades.manejarExcepcion(e);
-		} finally {
-			DBManager.resetConnection();
-		}
+		});
 	}
 
 	/**
@@ -1340,20 +1294,11 @@ public class VentanaAccionController implements Initializable {
 	 */
 	@FXML
 	void busquedaAvanzada(ActionEvent event) {
-		String claves[] = Utilidades.clavesApiMarvel();
-		String apiKey = Utilidades.cargarApiComicVine();
-		String exception = "";
-
 		// Verificar si las claves API están ausentes o vacías
-		if (claves.length == 0 || apiKey.isEmpty()) {
-			if (claves.length == 0) {
-				exception += "\nDebes obtener una clave API de Marvel. Visita https://developer.marvel.com/";
-			}
-			if (apiKey.isEmpty()) {
-				exception += "\nDebes obtener una clave API de Comic Vine. Visita https://comicvine.gamespot.com/api/ (gratuito)";
-			}
-			nav.alertaNoApi(exception); // Mostrar alerta de error
+		if (!Utilidades.verificarClavesAPI(clavesMarvel, apiKey)) {
+			return;
 		} else {
+			borrar_datos_autorellenos();
 			// Continuar con la lógica cuando ambas claves están presentes
 			if (busquedaEditorial.isVisible()) {
 				cambiarVisibilidad(false);
@@ -1387,18 +1332,23 @@ public class VentanaAccionController implements Initializable {
 	@FXML
 	void importarFicheroCodigoBarras(ActionEvent evento) {
 
-		if (Utilidades.isInternetAvailable()) {
-			String frase = "Fichero txt";
+		if (Utilidades.verificarClavesAPI(clavesMarvel, apiKey)) {
+			if (Utilidades.isInternetAvailable()) {
 
-			String formato = "*.txt";
+				borrar_datos_autorellenos();
 
-			File fichero = Utilidades.tratarFichero(frase, formato).showOpenDialog(null); // Llamada a funcion
+				String frase = "Fichero txt";
 
-			if (fichero != null) {
-				Platform.runLater(() -> {
-					codigosFichero(fichero);
-				});
+				String formato = "*.txt";
 
+				File fichero = Utilidades.tratarFichero(frase, formato).showOpenDialog(null); // Llamada a funcion
+
+				if (fichero != null) {
+					Platform.runLater(() -> {
+						codigosFichero(fichero);
+					});
+
+				}
 			}
 		}
 	}
@@ -1489,10 +1439,12 @@ public class VentanaAccionController implements Initializable {
 	@FXML
 	void busquedaPorCodigo(ActionEvent event) throws IOException, JSONException, URISyntaxException {
 
-		if (!Utilidades.isInternetAvailable()) {
-			return;
+		if (!Utilidades.verificarClavesAPI(clavesMarvel, apiKey)) {
+			if (!Utilidades.isInternetAvailable()) {
+				prontInfo.setText("No estas conectado a internet. Revisa tu conexion");
+				return;
+			}
 		}
-
 		ApiISBNGeneral isbnGeneral = new ApiISBNGeneral();
 		WebScraperPreviewsWorld previewsScraper = new WebScraperPreviewsWorld();
 
@@ -1533,15 +1485,15 @@ public class VentanaAccionController implements Initializable {
 		// cuando la tarea esté completa
 		tarea.setOnSucceeded(ev -> {
 			Platform.runLater(() -> {
-				prontInfo.setOpacity(0);
-				prontInfo.setText("");
 				AlarmaList.detenerAnimacionProntAccion(imagenFondo);
+				AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
 			});
 		});
 
 		tarea.setOnFailed(ev -> {
 			Platform.runLater(() -> {
 				AlarmaList.detenerAnimacionProntAccion(imagenFondo);
+				AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
 			});
 		});
 
@@ -2013,6 +1965,7 @@ public class VentanaAccionController implements Initializable {
 		}
 		// Borrar cualquier mensaje de error presente
 		borrarErrores();
+		validarCamposComic(true);
 	}
 
 	/**
@@ -2204,6 +2157,7 @@ public class VentanaAccionController implements Initializable {
 			}
 
 			tablaBBDD.getItems().clear();
+			validarCamposComic(true);
 			funcionesTabla.tablaBBDD(comicsImportados, tablaBBDD, columnList); // Llamada a funcion
 		}
 
@@ -2246,6 +2200,7 @@ public class VentanaAccionController implements Initializable {
 
 				comicsImportados.clear();
 				tablaBBDD.getItems().clear();
+				validarCamposComic(true);
 				funcionesTabla.tablaBBDD(comicsImportados, tablaBBDD, columnList); // Llamada a funcion
 
 				AlarmaList.mostrarMensajePront(mensajePront, true, prontInfo);
@@ -2316,30 +2271,46 @@ public class VentanaAccionController implements Initializable {
 		comic.setNumCaja(comic.getNumCaja().isEmpty() ? "0" : comic.getNumCaja());
 	}
 
-	/**
-	 * Valida los campos del cómic y resalta en rojo aquellos que estén vacíos.
-	 *
-	 * @param comic El cómic a validar.
-	 */
-	public boolean validateComicFields(Comic comic) {
-		List<String> camposImportantes = Arrays.asList(comic.getNombre(), comic.getEditorial(), comic.getGuionista(),
-				comic.getDibujante());
-		List<TextField> camposUi = Arrays.asList(nombreComic, editorialComic, guionistaComic, dibujanteComic);
+	public void validarCamposComic(boolean esBorrado) {
+		List<TextField> camposUi = Arrays.asList(nombreComic, varianteComic, editorialComic, precioComic,
+				codigoComicTratar, guionistaComic, dibujanteComic);
 
-		int camposInvalidos = 0;
+		for (TextField campoUi : camposUi) {
+			String datoComic = campoUi.getText();
 
-		for (int i = 0; i < camposImportantes.size(); i++) {
-			String datoComic = camposImportantes.get(i);
-			TextField campoUi = camposUi.get(i);
-			if (datoComic.isEmpty()) {
+			if (esBorrado) {
+				if (datoComic == null || datoComic.isEmpty() || datoComic.equalsIgnoreCase("vacio")) {
+					campoUi.setStyle("");
+				}
+			} else {
+				// Verificar si el campo está vacío, es nulo o tiene el valor "Vacio"
+				if (datoComic == null || datoComic.isEmpty() || datoComic.equalsIgnoreCase("vacio")) {
+					campoUi.setStyle("-fx-background-color: red;");
+				} else {
+					campoUi.setStyle("");
+				}
+			}
+
+		}
+	}
+
+	public boolean camposComicSonValidos() {
+		List<TextField> camposUi = Arrays.asList(nombreComic, varianteComic, editorialComic, precioComic,
+				codigoComicTratar, guionistaComic, dibujanteComic);
+
+		for (TextField campoUi : camposUi) {
+			String datoComic = campoUi.getText();
+
+			// Verificar si el campo está vacío, es nulo o tiene el valor "Vacio"
+			if (datoComic == null || datoComic.isEmpty() || datoComic.equalsIgnoreCase("vacio")) {
 				campoUi.setStyle("-fx-background-color: #FF0000;");
-				camposInvalidos++;
+				return false; // Devolver false si al menos un campo no es válido
 			} else {
 				campoUi.setStyle("");
 			}
 		}
 
-		return camposInvalidos == 0; // Devolver true si no hay campos vacíos, false si al menos uno está vacío
+		return true; // Devolver true si todos los campos son válidos
 	}
 
 	/**
@@ -2429,7 +2400,7 @@ public class VentanaAccionController implements Initializable {
 		libreria = new DBLibreriaManager();
 		utilidad = new Utilidades();
 		prontInfo.setOpacity(1);
-		if (!validateComicFields(comic)) {
+		if (!camposComicSonValidos()) {
 			String mensaje = "Error. Debes de introducir los datos correctos";
 
 			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
@@ -2546,8 +2517,8 @@ public class VentanaAccionController implements Initializable {
 				existeComic = libreria.checkID(newValue);
 
 				if (existeComic || newValue.isEmpty()) {
-					botonBusquedaAvanzada.setVisible(false);
-					botonBusquedaAvanzada.setDisable(true);
+//					botonBusquedaAvanzada.setVisible(false);
+//					botonBusquedaAvanzada.setDisable(true);
 					Comic comic_temp = new Comic();
 					comic_temp = libreria.comicDatos(idComicTratar_mod.getText());
 					// Limpiar selecciones previas en los ComboBox
@@ -2632,6 +2603,9 @@ public class VentanaAccionController implements Initializable {
 		dibujanteComic.setText("");
 		nombreKeyIssue.setText("");
 
+		precioComic.setText("");
+		codigoComicTratar.setText("");
+		urlReferencia.setText("");
 		numeroCajaComic.setValue("");
 		numeroCajaComic.getEditor().setText("");
 
@@ -2642,8 +2616,10 @@ public class VentanaAccionController implements Initializable {
 		tablaBBDD.getItems().clear();
 		imagencomic.setImage(null);
 
-		botonBusquedaAvanzada.setVisible(false);
-		botonBusquedaAvanzada.setDisable(true);
+//		botonBusquedaAvanzada.setVisible(false);
+//		botonBusquedaAvanzada.setDisable(true);
+
+		validarCamposComic(true);
 	}
 
 	/**
