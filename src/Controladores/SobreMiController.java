@@ -53,7 +53,7 @@ import java.io.IOException;
 
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
-import JDBC.DBManager;
+import dbmanager.DBManager;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

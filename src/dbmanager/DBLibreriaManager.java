@@ -1,4 +1,4 @@
-package JDBC;
+package dbmanager;
 
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
@@ -50,10 +50,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import Controladores.CrearBBDDController;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
+import alarmas.AlarmaList;
 import comicManagement.Comic;
 import javafx.concurrent.Task;
+import javafx.scene.control.Label;
 import javafx.stage.FileChooser;
 
 /**
@@ -1298,11 +1301,10 @@ public class DBLibreriaManager {
 		if (sentenciaSQL.isEmpty()) {
 			sentenciaSQL = "SELECT * from comicsbbdd";
 		}
-		
+
 		if (!Utilidades.validarDatosConexion()) {
 			return false;
 		}
-		
 
 		try (Connection conn = DBManager.conexion();
 				PreparedStatement stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -1894,6 +1896,91 @@ public class DBLibreriaManager {
 			return false;
 		}
 		return false;
+	}
+
+	/**
+	 * Verifica la base de datos ejecutando una sentencia SQL y devuelve el
+	 * ResultSet correspondiente.
+	 * 
+	 * @param sentenciaSQL la sentencia SQL a ejecutar
+	 * @return el ResultSet que contiene los resultados de la consulta
+	 */
+	public static ResultSet comprobarDataBase(String sentenciaSQL) {
+		Ventanas nav = new Ventanas();
+
+		String url = "jdbc:mysql://" + CrearBBDDController.DB_HOST + ":" + CrearBBDDController.DB_PORT
+				+ "?serverTimezone=UTC";
+		Statement statement;
+
+		try {
+			Connection connection = DriverManager.getConnection(url, CrearBBDDController.DB_USER,
+					CrearBBDDController.DB_PASS);
+			statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+			ResultSet rs = statement.executeQuery(sentenciaSQL);
+
+			if (rs.next()) {
+				return rs;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+			nav.alertaException("ERROR. Revisa los datos del fichero de conexion.");
+		}
+
+		return null;
+	}
+
+	/**
+	 * Comprueba si existe una base de datos con el nombre especificado para la
+	 * creación.
+	 *
+	 * @return true si la base de datos no existe, false si ya existe o si hay un
+	 *         error en la conexión
+	 */
+	public static boolean checkDatabaseExists(Label prontInformativo, String nombreDataBase) {
+		AlarmaList.detenerAnimacion();
+		boolean exists = false;
+		String sentenciaSQL = "SELECT COUNT(*) FROM information_schema.tables";
+
+		if (!CrearBBDDController.DB_NAME.isEmpty()) {
+			sentenciaSQL += " WHERE table_schema = '" + CrearBBDDController.DB_NAME + "'";
+		}
+
+		try (ResultSet rs = comprobarDataBase(sentenciaSQL)) {
+			int count = rs.getInt("COUNT(*)");
+			exists = count < 1;
+
+			if (exists) {
+				return true;
+			} else {
+				AlarmaList.iniciarAnimacionBaseExiste(prontInformativo, CrearBBDDController.DB_NAME);
+			}
+		} catch (SQLException e) {
+			Utilidades.manejarExcepcion(e);
+		}
+		return false;
+	}
+
+	/**
+	 * Funcion que permite crear una base de datos MySql
+	 */
+	public static void createDataBase() {
+
+		String sentenciaSQL = "CREATE DATABASE " + CrearBBDDController.DB_NAME + ";";
+
+		String url = "jdbc:mysql://" + CrearBBDDController.DB_HOST + ":" + CrearBBDDController.DB_PORT
+				+ "?serverTimezone=UTC";
+		Statement statement;
+		try {
+			Connection connection = DriverManager.getConnection(url, CrearBBDDController.DB_USER,
+					CrearBBDDController.DB_PASS);
+
+			statement = connection.createStatement();
+			statement.executeUpdate(sentenciaSQL);
+
+		} catch (SQLException e) {
+			Utilidades.manejarExcepcion(e);
+		}
 	}
 
 }

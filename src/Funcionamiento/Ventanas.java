@@ -40,7 +40,7 @@ import Controladores.OpcionesDatosController;
 import Controladores.RecomendacionesController;
 import Controladores.SobreMiController;
 import Controladores.VentanaAccionController;
-import JDBC.DBManager;
+import dbmanager.DBManager;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;

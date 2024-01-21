@@ -41,10 +41,10 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import Controladores.CargaComicsController;
-import JDBC.DBLibreriaManager;
-import JDBC.DBManager;
-import JDBC.DBLibreriaManager.TipoBusqueda;
 import comicManagement.Comic;
+import dbmanager.DBLibreriaManager;
+import dbmanager.DBManager;
+import dbmanager.DBLibreriaManager.TipoBusqueda;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.stage.DirectoryChooser;

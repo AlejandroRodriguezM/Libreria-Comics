@@ -12,8 +12,8 @@ import java.util.ResourceBundle;
 
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
-import JDBC.DBManager;
 import alarmas.AlarmaList;
+import dbmanager.DBManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -298,16 +298,15 @@ public class AccesoBBDDController implements Initializable {
 
 		String[] datosFichero = Utilidades.datosEnvioFichero();
 
-		AlarmaList alarmaList = new AlarmaList();
 		if (configurarConexion(datosFichero)) {
 
 			envioDatosBBDD(datosFichero);
 			if (DBManager.isConnected()) {
 				AlarmaList.detenerAnimacion();
 				AlarmaList.iniciarAnimacionConectado(prontEstadoConexion);
-				AlarmaList.manejarConexionExitosa(alarmaList, datosFichero, prontEstadoConexion);
+				AlarmaList.manejarConexionExitosa(datosFichero, prontEstadoConexion);
 			} else {
-				alarmaList.manejarErrorConexion("No estás conectado a la base de datos.", prontEstadoConexion);
+				AlarmaList.manejarErrorConexion("No estás conectado a la base de datos.", prontEstadoConexion);
 			}
 		}
 	}

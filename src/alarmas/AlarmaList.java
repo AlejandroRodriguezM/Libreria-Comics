@@ -7,16 +7,18 @@ import java.util.Map;
 
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
-import JDBC.DBLibreriaManager;
-import JDBC.DBManager;
+import dbmanager.DBLibreriaManager;
+import dbmanager.DBManager;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -27,9 +29,9 @@ public class AlarmaList {
 	private List<AlarmaItem> alarmaItems = new ArrayList<>();
 
 	private static Timeline animacionAlarmaTimeline = new Timeline();
-	private Timeline animacionAlarmaOnlineTimeline = new Timeline();
-	private Timeline animacionAlarmaTimelineInternet = new Timeline();
-	private Timeline animacionAlarmaTimelineMySql = new Timeline();
+	private static Timeline animacionAlarmaOnlineTimeline = new Timeline();
+	private static Timeline animacionAlarmaTimelineInternet = new Timeline();
+	private static Timeline animacionAlarmaTimelineMySql = new Timeline();
 
 	private static final Object timelineLock = new Object();
 	private static final Object timelineGifLock = new Object();
@@ -65,6 +67,9 @@ public class AlarmaList {
 	private static Ventanas nav = new Ventanas();
 
 	private static final String GIF_PATH = "/imagenes/cargaImagen.gif";
+	
+	private static Image eyeOpenImage;
+	private static Image eyeClosedImage;
 
 	public AlarmaList() {
 		// Agregar instancias de AlarmaItem a la lista alarmaItems
@@ -175,16 +180,16 @@ public class AlarmaList {
 		}
 	}
 
-	public static void manejarConexionExitosa(AlarmaList alarmaList, String[] datosFichero, Label prontEstadoConexion) {
+	public static void manejarConexionExitosa(String[] datosFichero, Label prontEstadoConexion) {
 		if (Utilidades.isMySQLServiceRunning(datosFichero[4], datosFichero[0])) {
 			if (DBLibreriaManager.checkTablesAndColumns(datosFichero)) {
-				alarmaList.iniciarAnimacionAlarmaOnline(alarmaConexion);
-				alarmaList.manejarConexionExitosa(prontEstadoConexion);
+				iniciarAnimacionAlarmaOnline(alarmaConexion);
+				manejarConexionExitosa(prontEstadoConexion);
 			} else {
-				alarmaList.manejarErrorConexion("Error al verificar tablas en la base de datos.", prontEstadoConexion);
+				manejarErrorConexion("Error al verificar tablas en la base de datos.", prontEstadoConexion);
 			}
 		} else {
-			AlarmaList.iniciarAnimacionErrorMySql(prontEstadoConexion);
+			iniciarAnimacionErrorMySql(prontEstadoConexion);
 		}
 	}
 
@@ -405,7 +410,7 @@ public class AlarmaList {
 		animacionAlarmaTimeline.play();
 	}
 
-	public void iniciarAnimacionAlarmaOnline(Label alarmaConexion) {
+	public static void iniciarAnimacionAlarmaOnline(Label alarmaConexion) {
 		animacionAlarmaOnlineTimeline = new Timeline();
 		animacionAlarmaOnlineTimeline.setCycleCount(Timeline.INDEFINITE);
 
@@ -426,7 +431,7 @@ public class AlarmaList {
 	/**
 	 * Maneja las acciones después de una conexión exitosa.
 	 */
-	public void manejarConexionExitosa(Label prontEstadoConexion) {
+	public static void manejarConexionExitosa(Label prontEstadoConexion) {
 		Utilidades.crearCarpetasBackup();
 		detenerAnimacion();
 		prontEstadoConexion.setStyle("-fx-background-color: #A0F52D");
@@ -442,7 +447,7 @@ public class AlarmaList {
 	 * 
 	 * @param mensaje Mensaje de error.
 	 */
-	public void manejarErrorConexion(String mensaje, Label prontEstadoConexion) {
+	public static void manejarErrorConexion(String mensaje, Label prontEstadoConexion) {
 		asignarTooltip(alarmaConexion, mensaje);
 		detenerAnimacion();
 		prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
@@ -737,6 +742,7 @@ public class AlarmaList {
 	public static void iniciarAnimacionBaseExiste(Label prontInformativo, String DB_NAME) {
 		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
+		prontInformativo.setStyle("-fx-background-color: #DD370F");
 
 		// Agregar los keyframes para cambiar el texto
 		KeyFrame mostrarConectado = new KeyFrame(Duration.ZERO, new KeyValue(prontInformativo.textProperty(),
@@ -912,6 +918,39 @@ public class AlarmaList {
 					cargaImagen.setVisible(false);
 				});
 			}
+		}
+	}
+	
+	public static void configureEyeToggle(ImageView toggleEyeImageView, TextField passUsuarioText, PasswordField passBBDD) {
+		eyeOpenImage = new Image(Utilidades.class.getResourceAsStream("/imagenes/visible.png"), 20, 20, true, true);
+		eyeClosedImage = new Image(Utilidades.class.getResourceAsStream("/imagenes/hide.png"), 20, 20, true, true);
+
+		// Configurar el ImageView con la imagen de ojo abierto inicialmente
+		toggleEyeImageView.setImage(eyeClosedImage);
+
+		// Establecer el manejador de eventos para el ImageView
+		toggleEyeImageView.setOnMouseClicked(event -> toggleEye(toggleEyeImageView, passUsuarioText, passBBDD));
+	}
+
+	private static void toggleEye(ImageView toggleEyeImageView, TextField passUsuarioText, PasswordField passBBDD) {
+		if (toggleEyeImageView.getImage() == eyeOpenImage) {
+			passUsuarioText.setVisible(false);
+			passUsuarioText.setDisable(true);
+			passBBDD.setVisible(true);
+			passBBDD.setDisable(false);
+
+			passBBDD.setPromptText(passUsuarioText.getPromptText());
+			passUsuarioText.setText(passBBDD.getText());
+			toggleEyeImageView.setImage(eyeClosedImage); // Cambiar a la imagen de ojo cerrado
+		} else {
+			passUsuarioText.setVisible(true);
+			passUsuarioText.setDisable(false);
+			passBBDD.setVisible(false);
+			passBBDD.setDisable(true);
+
+			passUsuarioText.setText(passBBDD.getText());
+			passBBDD.setPromptText(passUsuarioText.getPromptText());
+			toggleEyeImageView.setImage(eyeOpenImage); // Cambiar a la imagen de ojo abierto
 		}
 	}
 

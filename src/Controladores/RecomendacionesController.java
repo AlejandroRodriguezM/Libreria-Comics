@@ -56,9 +56,9 @@ import java.util.Random;
 
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
-import JDBC.DBLibreriaManager;
-import JDBC.DBManager;
-import JDBC.DBLibreriaManager.TipoBusqueda;
+import dbmanager.DBLibreriaManager;
+import dbmanager.DBManager;
+import dbmanager.DBLibreriaManager.TipoBusqueda;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

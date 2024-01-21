@@ -2,7 +2,7 @@
  * Contiene las clases que hacen funcionar el acceso de la base de datos y las diferentes funciones para el uso de la misma
  *  
 */
-package JDBC;
+package dbmanager;
 
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
@@ -197,7 +197,7 @@ public class DBManager {
 			return conn;
 		} catch (SQLException ex) {
 			nav.alertaException("ERROR. Revisa los datos del fichero de conexión.");
-		} 
+		}
 //		finally {
 //			// Cerrar la conexión en el bloque finally para asegurarse de que siempre se
 //			// cierre

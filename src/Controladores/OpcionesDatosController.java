@@ -49,7 +49,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
@@ -199,28 +198,10 @@ public class OpcionesDatosController implements Initializable {
 	@FXML
 	private Label usuario_label;
 
-//	/**
-//	 * Línea de tiempo para la animación de la alarma en línea.
-//	 */
-//	private Timeline animacionAlarmaOnlineTimeline;
-//
-//	/**
-//	 * Línea de tiempo para la animación de la alarma de conexión a Internet.
-//	 */
-//	private Timeline animacionAlarmaTimelineInternet;
-//
-//	/**
-//	 * Línea de tiempo para la animación de la alarma de conexión a MySQL.
-//	 */
-//	private Timeline animacionAlarmaTimelineMySql;
-
 	/**
 	 * Instancia de la clase Ventanas para la navegación.
 	 */
 	private static Ventanas nav = new Ventanas();
-
-	private Image eyeOpenImage;
-	private Image eyeClosedImage;
 
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
@@ -240,46 +221,13 @@ public class OpcionesDatosController implements Initializable {
 		alarmaList.iniciarThreadChecker();
 
 		Utilidades.crearEstructura();
-		configureEyeToggle();
+		AlarmaList.configureEyeToggle(toggleEyeImageView, passUsuarioTextField, pass);
 		restringir_entrada_datos();
 
 		formulario_local();
 
 		alarmaList.iniciarAnimacionEspera(prontEstadoFichero);
 		AlarmaList.iniciarAnimacionAlarma(alarmaConexion);
-	}
-
-	private void configureEyeToggle() {
-		eyeOpenImage = new Image(getClass().getResourceAsStream("/imagenes/visible.png"), 20, 20, true, true);
-		eyeClosedImage = new Image(getClass().getResourceAsStream("/imagenes/hide.png"), 20, 20, true, true);
-
-		// Configurar el ImageView con la imagen de ojo abierto inicialmente
-		toggleEyeImageView.setImage(eyeClosedImage);
-
-		// Establecer el manejador de eventos para el ImageView
-		toggleEyeImageView.setOnMouseClicked(event -> toggleEye());
-	}
-
-	private void toggleEye() {
-		if (toggleEyeImageView.getImage() == eyeOpenImage) {
-			passUsuarioTextField.setVisible(false);
-			passUsuarioTextField.setDisable(true);
-			pass.setVisible(true);
-			pass.setDisable(false);
-
-			pass.setPromptText(passUsuarioTextField.getPromptText());
-			passUsuarioTextField.setText(pass.getText());
-			toggleEyeImageView.setImage(eyeClosedImage); // Cambiar a la imagen de ojo cerrado
-		} else {
-			passUsuarioTextField.setVisible(true);
-			passUsuarioTextField.setDisable(false);
-			pass.setVisible(false);
-			pass.setDisable(true);
-
-			passUsuarioTextField.setText(pass.getText());
-			pass.setPromptText(passUsuarioTextField.getPromptText());
-			toggleEyeImageView.setImage(eyeOpenImage); // Cambiar a la imagen de ojo abierto
-		}
 	}
 
 	/**
@@ -424,8 +372,6 @@ public class OpcionesDatosController implements Initializable {
 
 		Utilidades.guardarDatosBaseLocal(datos, prontEstadoFichero, alarmaConexion);
 	}
-
-
 
 	/**
 	 * Restaura la configuración a los valores predeterminados.

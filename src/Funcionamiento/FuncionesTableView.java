@@ -35,8 +35,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import JDBC.DBLibreriaManager;
 import comicManagement.Comic;
+import dbmanager.DBLibreriaManager;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;

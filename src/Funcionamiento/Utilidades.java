@@ -68,11 +68,11 @@ import org.json.JSONException;
 import Apis.ApiISBNGeneral;
 import Apis.ApiMarvel;
 import Controladores.VentanaAccionController;
-import JDBC.DBLibreriaManager;
-import JDBC.DBLibreriaManager.TipoBusqueda;
-import JDBC.DBManager;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
+import dbmanager.DBLibreriaManager;
+import dbmanager.DBManager;
+import dbmanager.DBLibreriaManager.TipoBusqueda;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -1824,7 +1824,7 @@ public class Utilidades {
 			return false;
 		}
 
-		if (JDBC.DBManager.isConnected()) {
+		if (dbmanager.DBManager.isConnected()) {
 			DBManager.close();
 			return true;
 		} else {

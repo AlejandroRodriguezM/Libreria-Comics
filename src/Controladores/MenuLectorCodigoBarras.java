@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Funcionamiento.Utilidades;
-import JDBC.DBManager;
+import dbmanager.DBManager;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
