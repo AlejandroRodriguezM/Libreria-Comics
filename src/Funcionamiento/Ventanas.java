@@ -40,7 +40,7 @@ import Controladores.OpcionesDatosController;
 import Controladores.RecomendacionesController;
 import Controladores.SobreMiController;
 import Controladores.VentanaAccionController;
-import dbmanager.DBManager;
+import dbmanager.ConectManager;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -157,7 +157,7 @@ public class Ventanas {
 
 			// Actualizar el estado de la ventana abierta
 			ventanaActual = stage;
-			DBManager.resetConnection();
+			ConectManager.resetConnection();
 		} catch (IOException ex) {
 			alertaException(ex.toString());
 			ex.printStackTrace();
@@ -211,7 +211,7 @@ public class Ventanas {
 				} catch (IOException ex) {
 					alertaException(ex.toString());
 				}
-				DBManager.resetConnection();
+				ConectManager.resetConnection();
 			});
 		} catch (Exception e) {
 			alertaException(e.toString());
@@ -314,7 +314,7 @@ public class Ventanas {
 				controlador.closeWindows();
 			});
 
-			DBManager.resetConnection();
+			ConectManager.resetConnection();
 
 		} catch (IOException ex) {
 			alertaException(ex.toString());
@@ -435,7 +435,7 @@ public class Ventanas {
 			stage.setOnCloseRequest(e -> {
 				controlador.closeWindows();
 			});
-			DBManager.resetConnection();
+			ConectManager.resetConnection();
 
 		} catch (IOException ex) {
 			alertaException(ex.toString());

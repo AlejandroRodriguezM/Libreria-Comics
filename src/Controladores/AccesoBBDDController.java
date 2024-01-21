@@ -13,7 +13,7 @@ import java.util.ResourceBundle;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
-import dbmanager.DBManager;
+import dbmanager.ConectManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -270,16 +270,17 @@ public class AccesoBBDDController implements Initializable {
 	@FXML
 	void entrarMenu(ActionEvent event) {
 
-		if (!Utilidades.isMySQLServiceRunning(DBManager.DB_HOST, DBManager.DB_PORT)) {
+		if (!Utilidades.isMySQLServiceRunning(ConectManager.DB_HOST, ConectManager.DB_PORT)) {
 			AlarmaList.iniciarAnimacionErrorMySql(prontEstadoConexion);
 			AlarmaList.iniciarAnimacionAlarma(alarmaConexion);
 			return;
 		}
 
-		if (DBManager.estadoConexion) { // Siempre que el metodo de la clase DBManager sea true, permitira acceder
-			DBManager.resetConnection();
+		if (ConectManager.estadoConexion) { // Siempre que el metodo de la clase DBManager sea true, permitira acceder
+			ConectManager.resetConnection();
 			// al menu principal
 			nav.verMenuPrincipal();
+			closeWindows();
 		} else { // En caso contrario mostrara el siguiente mensaje.
 			AlarmaList.detenerAnimacion();
 			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
@@ -298,13 +299,14 @@ public class AccesoBBDDController implements Initializable {
 
 		String[] datosFichero = Utilidades.datosEnvioFichero();
 
-		if (configurarConexion(datosFichero)) {
+		if (configurarConexion()) {
 
-			envioDatosBBDD(datosFichero);
-			if (DBManager.isConnected()) {
+			ConectManager.datosBBDD(datosFichero);
+			if (ConectManager.isConnected()) {
 				AlarmaList.detenerAnimacion();
 				AlarmaList.iniciarAnimacionConectado(prontEstadoConexion);
 				AlarmaList.manejarConexionExitosa(datosFichero, prontEstadoConexion);
+				
 			} else {
 				AlarmaList.manejarErrorConexion("No estás conectado a la base de datos.", prontEstadoConexion);
 			}
@@ -316,22 +318,13 @@ public class AccesoBBDDController implements Initializable {
 	 * 
 	 * @return true si la configuración es exitosa, false de lo contrario.
 	 */
-	private boolean configurarConexion(String[] datos) {
+	private boolean configurarConexion() {
 
-		if (!DBManager.loadDriver()) {
+		if (!ConectManager.loadDriver()) {
 			return false;
 		}
 
 		return true;
-	}
-
-	/**
-	 * Funcion que permite mandar los datos a la clase DBManager
-	 *
-	 */
-	public void envioDatosBBDD(String[] datosConfiguracionArray) {
-
-		DBManager.datosBBDD(datosConfiguracionArray);
 	}
 
 	public Scene miStageVentana() {

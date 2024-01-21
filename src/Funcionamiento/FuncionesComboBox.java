@@ -10,7 +10,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import comicManagement.Comic;
+import dbmanager.CommonFunctions;
 import dbmanager.DBLibreriaManager;
+import dbmanager.SelectManager;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -33,8 +35,6 @@ import javafx.util.converter.IntegerStringConverter;
  * una interfaz gráfica.
  */
 public class FuncionesComboBox {
-
-	private static DBLibreriaManager libreria = null;
 
 	// Mapa que almacena los elementos originales de los ComboBox junto a los
 	// ComboBox correspondientes
@@ -198,28 +198,26 @@ public class FuncionesComboBox {
 	public void actualizarComboBoxes(int totalComboboxes, List<ComboBox<String>> comboboxes, Comic comic)
 			throws SQLException, InterruptedException, ExecutionException {
 
-		libreria = new DBLibreriaManager();
-
 		Comic comicTemp = new Comic("", comic.getNombre(), comic.getNumCaja(), comic.getNumero(), comic.getVariante(),
 				comic.getFirma(), comic.getEditorial(), comic.getFormato(), comic.getProcedencia(), "",
 				comic.getGuionista(), comic.getDibujante(), "", "", "", "", "", "", "");
-		String sql = libreria.datosConcatenados(comicTemp);
+		String sql = SelectManager.datosConcatenados(comicTemp);
 
 		if (!sql.isEmpty()) {
 			isUserInput = false; // Disable user input during programmatic updates
 
-			DBLibreriaManager.nombreComicList = libreria.guardarDatosAutoCompletado(sql, "nomComic");
-			DBLibreriaManager.nombreGuionistaList = libreria.guardarDatosAutoCompletado(sql, "nomGuionista");
+			DBLibreriaManager.nombreComicList = CommonFunctions.guardarDatosAutoCompletado(sql, "nomComic");
+			DBLibreriaManager.nombreGuionistaList = CommonFunctions.guardarDatosAutoCompletado(sql, "nomGuionista");
 			DBLibreriaManager.numeroComicList = convertirYOrdenarListaNumeros(
-					libreria.guardarDatosAutoCompletado(sql, "numComic"));
-			DBLibreriaManager.nombreVarianteList = libreria.guardarDatosAutoCompletado(sql, "nomVariante");
+					CommonFunctions.guardarDatosAutoCompletado(sql, "numComic"));
+			DBLibreriaManager.nombreVarianteList = CommonFunctions.guardarDatosAutoCompletado(sql, "nomVariante");
 			DBLibreriaManager.numeroCajaList = convertirYOrdenarListaNumeros(
-					libreria.guardarDatosAutoCompletado(sql, "caja_deposito"));
-			DBLibreriaManager.nombreProcedenciaList = libreria.guardarDatosAutoCompletado(sql, "procedencia");
-			DBLibreriaManager.nombreFormatoList = libreria.guardarDatosAutoCompletado(sql, "formato");
-			DBLibreriaManager.nombreEditorialList = libreria.guardarDatosAutoCompletado(sql, "nomEditorial");
-			DBLibreriaManager.nombreDibujanteList = libreria.guardarDatosAutoCompletado(sql, "nomDibujante");
-			DBLibreriaManager.nombreFirmaList = libreria.guardarDatosAutoCompletado(sql, "firma");
+					CommonFunctions.guardarDatosAutoCompletado(sql, "caja_deposito"));
+			DBLibreriaManager.nombreProcedenciaList = CommonFunctions.guardarDatosAutoCompletado(sql, "procedencia");
+			DBLibreriaManager.nombreFormatoList = CommonFunctions.guardarDatosAutoCompletado(sql, "formato");
+			DBLibreriaManager.nombreEditorialList = CommonFunctions.guardarDatosAutoCompletado(sql, "nomEditorial");
+			DBLibreriaManager.nombreDibujanteList = CommonFunctions.guardarDatosAutoCompletado(sql, "nomDibujante");
+			DBLibreriaManager.nombreFirmaList = CommonFunctions.guardarDatosAutoCompletado(sql, "firma");
 
 			DBLibreriaManager.listaOrdenada = Arrays.asList(DBLibreriaManager.nombreComicList,
 					DBLibreriaManager.numeroComicList, DBLibreriaManager.nombreVarianteList,

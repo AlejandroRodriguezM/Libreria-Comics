@@ -71,8 +71,9 @@ import Controladores.VentanaAccionController;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
 import dbmanager.DBLibreriaManager;
-import dbmanager.DBManager;
-import dbmanager.DBLibreriaManager.TipoBusqueda;
+import dbmanager.CommonFunctions;
+import dbmanager.ConectManager;
+import dbmanager.SelectManager;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -288,7 +289,7 @@ public class Utilidades {
 			String userDir = System.getProperty("user.home");
 			String documentsPath = userDir + File.separator + "Documents";
 			String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
-					+ DBManager.DB_NAME + File.separator + "portadas";
+					+ ConectManager.DB_NAME + File.separator + "portadas";
 
 			// Esto se modificara para hacerlo dinamico
 			String imagePath = defaultImagePath;
@@ -363,7 +364,7 @@ public class Utilidades {
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
 		String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
-				+ DBManager.DB_NAME + File.separator + "portadas" + File.separator;
+				+ ConectManager.DB_NAME + File.separator + "portadas" + File.separator;
 		String nombre_comic = datos.getNombre().replace(" ", "_").replace(":", "_").replace("-", "_");
 		String numero_comic = datos.getNumero();
 		String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_").replace(":",
@@ -428,12 +429,12 @@ public class Utilidades {
 
 			String userDir = System.getProperty("user.home");
 			String documentsPath = userDir + File.separator + "Documents";
-			String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + DBManager.DB_NAME
+			String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + ConectManager.DB_NAME
 					+ File.separator + "portadas";
 			File sourceFolder = new File(sourcePath);
 
 			String ubicacion = userDir + File.separator + "AppData" + File.separator + "Roaming";
-			String carpetaLibreria = ubicacion + File.separator + "libreria" + File.separator + DBManager.DB_NAME
+			String carpetaLibreria = ubicacion + File.separator + "libreria" + File.separator + ConectManager.DB_NAME
 					+ File.separator + "backups" + File.separator + nombre_carpeta;
 
 			if (sourceFolder.exists()) {
@@ -505,7 +506,7 @@ public class Utilidades {
 
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
-		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + DBManager.DB_NAME
+		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + ConectManager.DB_NAME
 				+ File.separator + "portadas";
 
 		File carpeta = new File(sourcePath);
@@ -530,7 +531,7 @@ public class Utilidades {
 			String userHome = System.getProperty("user.home");
 			String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
 			String carpeta_backups = ubicacion + File.separator + "libreria" + File.separator + "backups"
-					+ File.separator + DBManager.DB_NAME + File.separator;
+					+ File.separator + ConectManager.DB_NAME + File.separator;
 
 			String pathMySql = "C:\\Program Files\\MySQL";
 			String mysqlDump = pathMySql + "\\mysqldump.exe";
@@ -539,8 +540,8 @@ public class Utilidades {
 			File carpetaDestino = new File(carpeta_backups);
 			File archivoCopia = new File(carpetaDestino, nombreCopia);
 
-			String[] command = new String[] { mysqlDump, "-u" + DBManager.DB_USER, "-p" + DBManager.DB_PASS, "-B",
-					DBManager.DB_NAME, "--hex-blob", "--routines=true",
+			String[] command = new String[] { mysqlDump, "-u" + ConectManager.DB_USER, "-p" + ConectManager.DB_PASS, "-B",
+					ConectManager.DB_NAME, "--hex-blob", "--routines=true",
 					"--result-file=" + archivoCopia.getAbsolutePath() };
 
 			ProcessBuilder pb = new ProcessBuilder(command);
@@ -1473,7 +1474,7 @@ public class Utilidades {
 	 */
 	public static void borrarArchivosNoEnLista(List<String> listaUrls) {
 		String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
-				+ DBManager.DB_NAME + File.separator + "portadas" + File.separator;
+				+ ConectManager.DB_NAME + File.separator + "portadas" + File.separator;
 
 		List<String> nombresArchivosEnDirectorio = obtenerNombresArchivosEnDirectorio(directorioComun);
 
@@ -1670,15 +1671,14 @@ public class Utilidades {
 	 */
 	public static void comprobacionListaComics() {
 
-		DBLibreriaManager libreria = new DBLibreriaManager();
-
 		if (DBLibreriaManager.listaComics.isEmpty()) {
 			return;
 		}
 
-		libreria = new DBLibreriaManager();
-		libreria.buscarEnLibreria(TipoBusqueda.COMPLETA);
+		SelectManager.buscarEnLibreria(CommonFunctions.TipoBusqueda.COMPLETA);
 	}
+	
+
 
 	/**
 	 * Obtiene el ID del cómic seleccionado desde la tabla.
@@ -1699,12 +1699,11 @@ public class Utilidades {
 	 */
 	public static Comic obtenerComicSeleccionado(String id_comic) throws SQLException {
 		Comic comic_temp;
-		DBLibreriaManager libreria = new DBLibreriaManager();
 		if (!VentanaAccionController.comicsImportados.isEmpty()) {
 			VentanaAccionController.id_comic_selecionado = id_comic;
 			comic_temp = Utilidades.devolverComic(id_comic);
 		} else {
-			comic_temp = libreria.comicDatos(id_comic);
+			comic_temp = SelectManager.comicDatos(id_comic);
 		}
 
 		return comic_temp;
@@ -1815,17 +1814,17 @@ public class Utilidades {
 	 */
 	private static boolean verificarDatos(String[] datos, Label prontEstadoFichero) throws SQLException {
 
-		DBManager.datosBBDD(datos);
+		ConectManager.datosBBDD(datos);
 		AlarmaList alarmaList = new AlarmaList();
-		Connection connection = DBManager.conexion();
+		Connection connection = ConectManager.conexion();
 		if (connection == null) {
 			prontEstadoFichero.setStyle("-fx-background-color: #DD370F");
 			alarmaList.iniciarAnimacionBBDDError(prontEstadoFichero);
 			return false;
 		}
 
-		if (dbmanager.DBManager.isConnected()) {
-			DBManager.close();
+		if (dbmanager.ConectManager.isConnected()) {
+			ConectManager.close();
 			return true;
 		} else {
 			prontEstadoFichero.setStyle("-fx-background-color: #DD370F");
@@ -1979,7 +1978,7 @@ public class Utilidades {
 				e.printStackTrace();
 			}
 		} else {
-			DBManager.asignarValoresPorDefecto();
+			ConectManager.asignarValoresPorDefecto();
 		}
 
 		return false; // La conexión no se pudo establecer
@@ -2042,7 +2041,7 @@ public class Utilidades {
 
 	public static void saveImageFromDataBase(String direccionImagen, File directorio) {
 
-		try (Connection conn = DBManager.conexion()) {
+		try (Connection conn = ConectManager.conexion()) {
 			if (directorio != null) {
 				String nombreImagen = obtenerNombreArchivo(direccionImagen);
 				File imagenArchivo = new File(direccionImagen);
@@ -2111,7 +2110,7 @@ public class Utilidades {
 			String codigosFaltantes = "";
 			Comic comicInfo = new Comic();
 			String sourcePath = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
-					+ DBManager.DB_NAME;
+					+ ConectManager.DB_NAME;
 
 			try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
 				while ((linea = br.readLine()) != null) {
@@ -2226,7 +2225,7 @@ public class Utilidades {
 
 		if (!validarDatosConexion()) {
 			Platform.runLater(() -> {
-				DBManager.close();
+				ConectManager.close();
 				Ventanas.cerrarVentanaActual(myStage);
 			});
 			return true;
@@ -2285,6 +2284,27 @@ public class Utilidades {
 			return false;
 		}
 		return true;
+	}
+	
+	/**
+	 * Devuelve el último segmento de una ruta dada.
+	 *
+	 * @param ruta La ruta de la cual se desea obtener el último segmento.
+	 * @return El último segmento de la ruta. Si la ruta es nula o vacía, se
+	 *         devuelve una cadena vacía.
+	 */
+	public static String obtenerUltimoSegmentoRuta(String ruta) {
+		if (ruta == null || ruta.isEmpty()) {
+			return "";
+		}
+
+		int indiceUltimoSeparador = ruta.lastIndexOf(File.separator);
+		if (indiceUltimoSeparador != -1 && indiceUltimoSeparador < ruta.length() - 1) {
+			return ruta.substring(indiceUltimoSeparador + 1);
+		} else {
+			// La ruta no contiene separador o es la última parte de la ruta
+			return ruta;
+		}
 	}
 
 }

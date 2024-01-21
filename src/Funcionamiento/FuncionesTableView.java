@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
 
 import comicManagement.Comic;
 import dbmanager.DBLibreriaManager;
+import dbmanager.SelectManager;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
@@ -267,13 +268,13 @@ public class FuncionesTableView {
 
 		prontInfoTable.setOpacity(1);
 
-		String datoSeleccionado = libreria.datosConcatenados(comic);
+		String datoSeleccionado = SelectManager.datosConcatenados(comic);
 		if (datoSeleccionado.isEmpty()) {
 			// Show error message in red when no search fields are specified
 			prontInfoTable.setStyle("-fx-text-fill: red;");
 			prontInfoTable.setText("Error: No existe comic con los datos: " + datoSeleccionado + "\n \n \n");
 		} else {
-			int totalComics = libreria.numeroTotalSelecionado(comic);
+			int totalComics = SelectManager.numeroTotalSelecionado(comic);
 			prontInfoTable.setStyle("-fx-text-fill: black;"); // Reset the text color to black
 			prontInfoTable.setText("El número de cómics donde aparece la búsqueda es: " + totalComics + "\n \n \n");
 		}
@@ -306,7 +307,7 @@ public class FuncionesTableView {
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		nombreColumnas(columnList, tablaBBDD);
-		tablaBBDD(libreria.libreriaSeleccionado(rawSelecionado), tablaBBDD, columnList);
+		tablaBBDD(SelectManager.libreriaSeleccionado(rawSelecionado), tablaBBDD, columnList);
 	}
 
 	/**

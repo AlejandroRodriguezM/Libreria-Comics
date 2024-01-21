@@ -6,28 +6,6 @@ package Controladores;
 
 import java.io.BufferedReader;
 
-/**
- * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
- * Las ventanas graficas se realizan con JavaFX.
- * El programa permite:
- *  - Conectarse a la base de datos.
- *  - Ver la base de datos completa o parcial segun parametros introducidos.
- *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
- *  - Copia de seguridad de la base de datos en formato .sql
- *  - Introducir comics a la base de datos.
- *  - Modificar comics de la base de datos.
- *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
- *  - Ver frases de personajes de comics
- *  - Opcion de escoger algo para leer de forma aleatoria.
- *  - Puntuar comics que se encuentren dentro de la base de datos.
- *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
- *
- *  Version 8.0.0.0
- *
- *  @author Alejandro Rodriguez
- *
- */
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -68,9 +46,13 @@ import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
+import dbmanager.CommonFunctions.TipoBusqueda;
+import dbmanager.ConectManager;
 import dbmanager.DBLibreriaManager;
-import dbmanager.DBManager;
-import dbmanager.DBLibreriaManager.TipoBusqueda;
+import dbmanager.DeleteManager;
+import dbmanager.InsertManager;
+import dbmanager.SelectManager;
+import dbmanager.UpdateManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -610,7 +592,7 @@ public class VentanaAccionController implements Initializable {
 	 * añadimos el nombre de la base de datos y la carpeta "portadas".
 	 */
 	private final String SOURCE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
-			+ DBManager.DB_NAME + File.separator + "portadas";
+			+ ConectManager.DB_NAME + File.separator + "portadas";
 
 	/**
 	 * Mapa que contiene elementos de la interfaz y sus tooltips correspondientes.
@@ -635,7 +617,7 @@ public class VentanaAccionController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 
 		Platform.runLater(() -> {
-			DBManager.iniciarThreadCheckerConexion(miStageVentana());
+			ConectManager.iniciarThreadCheckerConexion(miStageVentana());
 			listas_autocompletado();
 
 			rellenarCombosEstaticos();
@@ -785,7 +767,7 @@ public class VentanaAccionController implements Initializable {
 		prontInfo.setOpacity(1);
 		prontInfo.setText(funcionesTabla.resultadoBusquedaPront(datos).getText());
 
-		List<Comic> listComic = FXCollections.observableArrayList(libreria.busquedaParametro(datos, ""));
+		List<Comic> listComic = FXCollections.observableArrayList(SelectManager.busquedaParametro(datos, ""));
 
 		return listComic;
 	}
@@ -823,9 +805,9 @@ public class VentanaAccionController implements Initializable {
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
 
-		if (libreria.hayDatosEnLibreria("")) {
+		if (SelectManager.hayDatosEnLibreria("")) {
 			if (completo) {
-				funcionesTabla.tablaBBDD(libreria.buscarEnLibreria(TipoBusqueda.COMPLETA), tablaBBDD, columnList);
+				funcionesTabla.tablaBBDD(SelectManager.buscarEnLibreria(TipoBusqueda.COMPLETA), tablaBBDD, columnList);
 
 			} else {
 				funcionesTabla.tablaBBDD(listaPorParametro(), tablaBBDD, columnList); // Llamada a funcion
@@ -984,7 +966,7 @@ public class VentanaAccionController implements Initializable {
 							id_comic_selecionado = idComicSeleccionado;
 							comicTemp = Utilidades.devolverComic(idComicSeleccionado);
 						} else {
-							comicTemp = libreria.comicDatos(idComicSeleccionado);
+							comicTemp = SelectManager.comicDatos(idComicSeleccionado);
 						}
 
 						setAtributosDesdeTabla(comicTemp);
@@ -999,7 +981,7 @@ public class VentanaAccionController implements Initializable {
 				});
 
 			} finally {
-				DBManager.resetConnection();
+				ConectManager.resetConnection();
 			}
 		});
 	}
@@ -1061,7 +1043,7 @@ public class VentanaAccionController implements Initializable {
 				cargarImagenAsync(comic_temp.getImagen(), imagencomic);
 			}
 		} else {
-			String direccionImagen = libreria.obtenerDireccionPortada(comic_temp.getID());
+			String direccionImagen = SelectManager.obtenerDireccionPortada(comic_temp.getID());
 			Image imagenComic = Utilidades.pasarImagenComic(direccionImagen);
 			imagencomic.setImage(imagenComic);
 		}
@@ -1268,9 +1250,9 @@ public class VentanaAccionController implements Initializable {
 		if (comprobarID(id_comic)) {
 
 			if (esAgregar) {
-				libreria.actualizarPuntuacion(id_comic, FuncionesComboBox.puntuacionCombobox(puntuacionMenu));
+				UpdateManager.actualizarOpinion(id_comic, FuncionesComboBox.puntuacionCombobox(puntuacionMenu));
 			} else {
-				libreria.borrarPuntuacion(id_comic);
+				UpdateManager.actualizarOpinion(id_comic, "0");
 			}
 			String mensaje = "Deseo concedido. Has borrado la puntuacion del comic.";
 
@@ -1658,7 +1640,7 @@ public class VentanaAccionController implements Initializable {
 		botonGuardarComic.setVisible(true);
 		botonEliminarImportadoComic.setVisible(true);
 		String carpetaDatabase = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
-				+ DBManager.DB_NAME + File.separator;
+				+ ConectManager.DB_NAME + File.separator;
 
 		AtomicBoolean comicLectura = new AtomicBoolean(false);
 		StringBuilder codigoFaltante = new StringBuilder();
@@ -1862,12 +1844,12 @@ public class VentanaAccionController implements Initializable {
 		;
 		AlarmaList.iniciarAnimacionCambioImagen(imagenFondo);
 		if (comprobarID(id_comic)) {
-			libreria.modificarComicBBDD(id_comic, "eliminar");
+			DeleteManager.eliminarComicBBDD(id_comic);
 			libreria.reiniciarBBDD();
-			libreria.listasAutoCompletado();
+			SelectManager.listasAutoCompletado();
 			funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 			funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
-			funcionesTabla.tablaBBDD(libreria.buscarEnLibreria(TipoBusqueda.COMPLETA), tablaBBDD, columnList);
+			funcionesTabla.tablaBBDD(SelectManager.buscarEnLibreria(TipoBusqueda.COMPLETA), tablaBBDD, columnList);
 			Image nuevaImagen = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
 			imagenFondo.setImage(nuevaImagen);
 
@@ -1891,12 +1873,12 @@ public class VentanaAccionController implements Initializable {
 	public boolean comprobarID(String ID) throws SQLException {
 		libreria = new DBLibreriaManager();
 		if (nav.alertaAccionGeneral()) {
-			if (libreria.checkID(ID)) {
+			if (SelectManager.comprobarIdentificadorComic(ID)) {
 				idComicTratar.setStyle(null);
 
 				funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 				funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
-				funcionesTabla.tablaBBDD(libreria.buscarEnLibreria(TipoBusqueda.COMPLETA), tablaBBDD, columnList);
+				funcionesTabla.tablaBBDD(SelectManager.buscarEnLibreria(TipoBusqueda.COMPLETA), tablaBBDD, columnList);
 				return true;
 			} else {
 				String mensaje = "ERROR. ID desconocido.";
@@ -2000,7 +1982,7 @@ public class VentanaAccionController implements Initializable {
 		if (comprobarID(id_comic)) {
 			accionComicAsync(true); // Llamada a funcion que modificara el contenido de un comic especifico.
 			libreria.reiniciarBBDD();
-			libreria.listasAutoCompletado();
+			SelectManager.listasAutoCompletado();
 
 			List<ComboBox<String>> comboboxes = getComboBoxes();
 
@@ -2039,7 +2021,7 @@ public class VentanaAccionController implements Initializable {
 		;
 		AlarmaList.iniciarAnimacionCambioImagen(imagenFondo);
 		if (comprobarID(id_comic)) {
-			libreria.modificarComicBBDD(id_comic, "vender");
+			UpdateManager.actualizarComicBBDD(id_comic, "vender");
 			libreria.reiniciarBBDD();
 
 			Image nuevaImagen = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
@@ -2186,7 +2168,7 @@ public class VentanaAccionController implements Initializable {
 
 				for (Comic c : comicsImportados) {
 					c.setID("");
-					libreria.insertarDatos(c);
+					InsertManager.insertarDatos(c);
 
 					mensajePront += "Has introducido los comics correctamente\n";
 
@@ -2194,7 +2176,7 @@ public class VentanaAccionController implements Initializable {
 					imagenFondo.setImage(imagenDeseo);
 
 				}
-				libreria.listasAutoCompletado();
+				SelectManager.listasAutoCompletado();
 				List<ComboBox<String>> comboboxes = getComboBoxes();
 				funcionesCombo.rellenarComboBox(comboboxes);
 
@@ -2343,7 +2325,7 @@ public class VentanaAccionController implements Initializable {
 
 		String id_comic = idComicTratar_mod.getText();
 
-		Comic comic_temp = libreria.comicDatos(id_comic);
+		Comic comic_temp = SelectManager.comicDatos(id_comic);
 		Comic datos = camposComic();
 		Comic comicModificado = new Comic();
 
@@ -2412,22 +2394,23 @@ public class VentanaAccionController implements Initializable {
 				comic.setID(idComicTratar_mod.getText());
 
 				utilidad.nueva_imagen(comic.getImagen(), codigo_imagen);
-				libreria.actualizarComic(comic);
+				UpdateManager.actualizarComic(comic);
 				String mensaje = "Deseo Concedido...\nHas modificado correctamente el cómic";
 
 				AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
 
 				Platform.runLater(() -> {
-					funcionesTabla.tablaBBDD(libreria.buscarEnLibreria(TipoBusqueda.COMPLETA), tablaBBDD, columnList); // Llamada
-																														// a
-																														// funcion
+					funcionesTabla.tablaBBDD(SelectManager.buscarEnLibreria(TipoBusqueda.COMPLETA), tablaBBDD,
+							columnList); // Llamada
+					// a
+					// funcion
 				});
 				tablaBBDD.refresh();
 
 			} else {
 				utilidad.nueva_imagen(comic.getImagen(), codigo_imagen);
 				comic.setImagen(SOURCE_PATH + File.separator + codigo_imagen + ".jpg");
-				libreria.insertarDatos(comic);
+				InsertManager.insertarDatos(comic);
 
 				String mensaje = "Deseo Concedido...\n Has introducido correctamente el cómic";
 				AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
@@ -2462,7 +2445,7 @@ public class VentanaAccionController implements Initializable {
 
 		List<ComboBox<String>> comboboxes = getComboBoxes();
 
-		libreria.listasAutoCompletado();
+		SelectManager.listasAutoCompletado();
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD);
 		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
 		funcionesCombo.rellenarComboBox(comboboxes);
@@ -2514,13 +2497,13 @@ public class VentanaAccionController implements Initializable {
 		idComicTratar_mod.textProperty().addListener((observable, oldValue, newValue) -> {
 			if (!newValue.isEmpty()) {
 				boolean existeComic = false;
-				existeComic = libreria.checkID(newValue);
+				existeComic = SelectManager.comprobarIdentificadorComic(newValue);
 
 				if (existeComic || newValue.isEmpty()) {
 //					botonBusquedaAvanzada.setVisible(false);
 //					botonBusquedaAvanzada.setDisable(true);
 					Comic comic_temp = new Comic();
-					comic_temp = libreria.comicDatos(idComicTratar_mod.getText());
+					comic_temp = SelectManager.comicDatos(idComicTratar_mod.getText());
 					// Limpiar selecciones previas en los ComboBox
 					numeroComic.getSelectionModel().clearSelection();
 					formatoComic.getSelectionModel().clearSelection();

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Funcionamiento.Utilidades;
-import dbmanager.DBManager;
+import dbmanager.ConectManager;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -90,7 +90,7 @@ public class MenuLectorCodigoBarras {
 		// Agrega un evento para quitar el foco cuando se hace clic en el contenedor
 		// principal
 
-		Platform.runLater(() -> DBManager.iniciarThreadCheckerConexion(miStageVentana()));
+		Platform.runLater(() -> ConectManager.iniciarThreadCheckerConexion(miStageVentana()));
 		
 		contenedorPrincipal.setOnMouseClicked(event -> {
 			campoCodigoTexto.getParent().requestFocus();

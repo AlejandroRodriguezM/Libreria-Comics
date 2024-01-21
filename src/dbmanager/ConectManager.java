@@ -40,7 +40,7 @@ import javafx.scene.Scene;
  * cargar el controlador JDBC, verificar la conexión y obtener una conexión
  * activa.
  */
-public class DBManager {
+public class ConectManager {
 
 	// Conexion a la base de datos
 	/**
@@ -160,7 +160,6 @@ public class DBManager {
 	 */
 	public static Connection conexion() {
 		if (!datosConexionCorrectos()) {
-//	        nav.alertaException("Los datos de conexión son incorrectos");
 			return null;
 		}
 

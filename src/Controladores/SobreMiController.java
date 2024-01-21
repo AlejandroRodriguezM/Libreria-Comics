@@ -53,7 +53,7 @@ import java.io.IOException;
 
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
-import dbmanager.DBManager;
+import dbmanager.ConectManager;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -402,7 +402,7 @@ public class SobreMiController {
 	@FXML
 	public void desconectar(ActionEvent event) throws IOException {
 		nav.verAccesoBBDD();
-		DBManager.close();
+		ConectManager.close();
 
 		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 		myStage.close();

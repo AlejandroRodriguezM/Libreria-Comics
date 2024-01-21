@@ -42,9 +42,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import Controladores.CargaComicsController;
 import comicManagement.Comic;
-import dbmanager.DBLibreriaManager;
-import dbmanager.DBManager;
-import dbmanager.DBLibreriaManager.TipoBusqueda;
+import dbmanager.CommonFunctions.TipoBusqueda;
+import dbmanager.ConectManager;
+import dbmanager.SelectManager;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.stage.DirectoryChooser;
@@ -68,11 +68,6 @@ public class FuncionesExcel {
 	private static Ventanas nav = new Ventanas();
 
 	/**
-	 * Gestor de la base de datos de la librería.
-	 */
-	private static DBLibreriaManager libreria = null;
-
-	/**
 	 * Guarda los datos en un archivo de Excel y crea un archivo ZIP que contiene el
 	 * archivo Excel.
 	 *
@@ -80,8 +75,6 @@ public class FuncionesExcel {
 	 * @throws SQLException
 	 */
 	public void savedataExcel(String nombre_carpeta) throws SQLException {
-
-		libreria = new DBLibreriaManager();
 
 		Cell celda;
 		Row fila;
@@ -96,17 +89,17 @@ public class FuncionesExcel {
 		String userDir = System.getProperty("user.home");
 
 		String ubicacion = userDir + File.separator + "AppData" + File.separator + "Roaming";
-		String direccion = ubicacion + File.separator + "libreria" + File.separator + DBManager.DB_NAME + File.separator
-				+ "backups" + File.separator + nombre_carpeta;
+		String direccion = ubicacion + File.separator + "libreria" + File.separator + ConectManager.DB_NAME
+				+ File.separator + "backups" + File.separator + nombre_carpeta;
 		try {
 
 			File carpetaLibreria = new File(direccion);
 			File fichero = new File(carpetaLibreria, "BaseDatos.xlsx");
 			fichero.createNewFile();
 
-			int numLineas = libreria.countRows();
+			int numLineas = SelectManager.countRows();
 
-			List<Comic> listaComics = libreria.buscarEnLibreria(TipoBusqueda.COMPLETA);
+			List<Comic> listaComics = SelectManager.buscarEnLibreria(TipoBusqueda.COMPLETA);
 
 			libro = new XSSFWorkbook();
 
@@ -298,7 +291,7 @@ public class FuncionesExcel {
 	 *         correctamente, false en caso contrario.
 	 */
 	public boolean comprobarCSV(File fichero, String sql) {
-		conn = DBManager.conexion();
+		conn = ConectManager.conexion();
 		try {
 			int numLineas = Utilidades.contarLineas(fichero);
 			BufferedReader lineReader = new BufferedReader(new FileReader(fichero));
@@ -373,11 +366,9 @@ public class FuncionesExcel {
 	 */
 	public Task<Boolean> crearExcelTask(List<Comic> listaComics, String tipoBusqueda) {
 
-		libreria = new DBLibreriaManager();
-
 		File directorioImagenes = carpetaPortadas();
 		File directorioFichero = carpetaExcelExportado();
-		int numComics = libreria.countRows();
+		int numComics = SelectManager.countRows();
 		Task<Boolean> task = new Task<Boolean>() {
 			@Override
 			protected Boolean call() throws Exception {
@@ -486,9 +477,8 @@ public class FuncionesExcel {
 	 *         datos.
 	 */
 	public Task<Void> lecturaCSVTask(String sql, BufferedReader lineReader, int numLineas) {
-		libreria = new DBLibreriaManager();
 
-		conn = DBManager.conexion();
+		conn = ConectManager.conexion();
 
 		Task<Void> task = new Task<Void>() {
 			@Override
@@ -498,7 +488,7 @@ public class FuncionesExcel {
 					String userDir = System.getProperty("user.home");
 					String documentsPath = userDir + File.separator + "Documents";
 					String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
-							+ DBManager.DB_NAME + File.separator + "portadas";
+							+ ConectManager.DB_NAME + File.separator + "portadas";
 					File directorio = new File("");
 					CompletableFuture<Boolean> confirmacionFuture = nav.cancelar_subida_portadas();
 
@@ -518,14 +508,14 @@ public class FuncionesExcel {
 					Utilidades.convertirNombresCarpetas(defaultImagePath + File.separator);
 					Utilidades.convertirNombresCarpetas(directorio.getAbsolutePath());
 					String defaultImagePathBase = documentsPath + File.separator + "libreria_comics" + File.separator
-							+ DBManager.DB_NAME;
+							+ ConectManager.DB_NAME;
 
 					String logFileName = "log_"
 							+ LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")) + ".txt";
 
 					PreparedStatement statement = conn.prepareStatement(sql);
 					int count = 0;
-					int nuevoID = libreria.countRows();
+					int nuevoID = SelectManager.countRows();
 					long processedItems = 0; // Processed items count
 
 					lineReader.readLine();

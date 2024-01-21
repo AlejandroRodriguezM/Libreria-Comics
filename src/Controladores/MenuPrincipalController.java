@@ -54,9 +54,11 @@ import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
+import dbmanager.CommonFunctions;
+import dbmanager.ConectManager;
 import dbmanager.DBLibreriaManager;
-import dbmanager.DBManager;
-import dbmanager.DBLibreriaManager.TipoBusqueda;
+import dbmanager.DeleteManager;
+import dbmanager.SelectManager;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -448,7 +450,7 @@ public class MenuPrincipalController implements Initializable {
 
 		libreria = new DBLibreriaManager();
 
-		Platform.runLater(() -> DBManager.iniciarThreadCheckerConexion(miStageVentana()));
+		Platform.runLater(() -> ConectManager.iniciarThreadCheckerConexion(miStageVentana()));
 
 		prontInfo.textProperty().addListener((observable, oldValue, newValue) -> {
 			funcionesTabla.ajustarAnchoVBox(prontInfo, vboxContenido);
@@ -527,7 +529,7 @@ public class MenuPrincipalController implements Initializable {
 
 			Platform.runLater(() -> {
 
-				libreria.listasAutoCompletado();
+				SelectManager.listasAutoCompletado();
 
 				Task<Void> task = new Task<Void>() {
 					@Override
@@ -675,7 +677,7 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void ventanaRecomendar(ActionEvent event) {
 		nav.verRecomendacion();
-		DBManager.resetConnection();
+		ConectManager.resetConnection();
 
 		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 		myStage.close();
@@ -689,7 +691,7 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void verSobreMi(ActionEvent event) {
 		nav.verSobreMi();
-		DBManager.resetConnection();
+		ConectManager.resetConnection();
 
 		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 		myStage.close();
@@ -730,9 +732,9 @@ public class MenuPrincipalController implements Initializable {
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
 
-		if (libreria.hayDatosEnLibreria("")) {
+		if (SelectManager.hayDatosEnLibreria("")) {
 			if (completo) {
-				funcionesTabla.tablaBBDD(libreria.buscarEnLibreria(TipoBusqueda.COMPLETA), tablaBBDD, columnList);
+				funcionesTabla.tablaBBDD(SelectManager.buscarEnLibreria(CommonFunctions.TipoBusqueda.COMPLETA), tablaBBDD, columnList);
 				botonImprimir.setVisible(false);
 				botonGuardarResultado.setVisible(false);
 
@@ -764,7 +766,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsPuntuacion(ActionEvent event) throws SQLException {
-		imprimirComicsEstado(TipoBusqueda.PUNTUACION);
+		imprimirComicsEstado(CommonFunctions.TipoBusqueda.PUNTUACION);
 	}
 
 	/**
@@ -776,7 +778,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsVendidos(ActionEvent event) throws SQLException {
-		imprimirComicsEstado(TipoBusqueda.VENDIDOS);
+		imprimirComicsEstado(CommonFunctions.TipoBusqueda.VENDIDOS);
 	}
 
 	/**
@@ -788,7 +790,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsFirmados(ActionEvent event) throws SQLException {
-		imprimirComicsEstado(TipoBusqueda.FIRMADOS);
+		imprimirComicsEstado(CommonFunctions.TipoBusqueda.FIRMADOS);
 	}
 
 	/**
@@ -800,7 +802,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsComprados(ActionEvent event) throws SQLException {
-		imprimirComicsEstado(TipoBusqueda.COMPRADOS);
+		imprimirComicsEstado(CommonFunctions.TipoBusqueda.COMPRADOS);
 	}
 
 	/**
@@ -812,7 +814,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsEnPosesion(ActionEvent event) throws SQLException {
-		imprimirComicsEstado(TipoBusqueda.POSESION);
+		imprimirComicsEstado(CommonFunctions.TipoBusqueda.POSESION);
 
 	}
 
@@ -824,18 +826,18 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsKeyIssue(ActionEvent event) throws SQLException {
-		imprimirComicsEstado(TipoBusqueda.KEY_ISSUE);
+		imprimirComicsEstado(CommonFunctions.TipoBusqueda.KEY_ISSUE);
 
 	}
 
-	private void imprimirComicsEstado(TipoBusqueda tipoBusqueda) {
+	private void imprimirComicsEstado(CommonFunctions.TipoBusqueda tipoBusqueda) {
 		limpiezaDeDatos();
 		libreria = new DBLibreriaManager(); // Crear una instancia del gestor de la base de datos
 		libreria.reiniciarBBDD(); // Reiniciar la base de datos si es necesario
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a la función para establecer nombres de
 		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList); // columnas
 
-		funcionesTabla.tablaBBDD(libreria.buscarEnLibreria(tipoBusqueda), tablaBBDD, columnList);
+		funcionesTabla.tablaBBDD(SelectManager.buscarEnLibreria(tipoBusqueda), tablaBBDD, columnList);
 	}
 
 	////////////////////////////
@@ -858,7 +860,7 @@ public class MenuPrincipalController implements Initializable {
 
 		guardarDatosCSV();
 
-		libreria.listasAutoCompletado();
+		SelectManager.listasAutoCompletado();
 
 		DBLibreriaManager.limpiarListaGuardados();
 
@@ -877,7 +879,7 @@ public class MenuPrincipalController implements Initializable {
 	void exportCSV(ActionEvent event) throws SQLException {
 		limpiezaDeDatos();
 
-		List<Comic> listaComics = libreria.buscarEnLibreria(TipoBusqueda.COMPLETA);
+		List<Comic> listaComics = SelectManager.buscarEnLibreria(CommonFunctions.TipoBusqueda.COMPLETA);
 
 		String tipoBusqueda = "completa";
 
@@ -1018,8 +1020,8 @@ public class MenuPrincipalController implements Initializable {
 			@Override
 			protected Boolean call() throws Exception {
 				boolean result = false;
-				if (libreria.countRows() > 0) {
-					CompletableFuture<Boolean> futureResult = libreria.deleteTable();
+				if (SelectManager.countRows() > 0) {
+					CompletableFuture<Boolean> futureResult = DeleteManager.deleteTable();
 					result = futureResult.join();
 				} else {
 					showEmptyDatabaseError();
@@ -1156,7 +1158,7 @@ public class MenuPrincipalController implements Initializable {
 	private void seleccionarComics() throws SQLException {
 
 		libreria = new DBLibreriaManager();
-		libreria.buscarEnLibreria(TipoBusqueda.COMPLETA);
+		SelectManager.buscarEnLibreria(CommonFunctions.TipoBusqueda.COMPLETA);
 
 		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 		// Verificar si idRow es nulo antes de intentar acceder a sus métodos
@@ -1164,12 +1166,12 @@ public class MenuPrincipalController implements Initializable {
 			detenerAnimaciones();
 			String id_comic = idRow.getID();
 
-			String mensaje = libreria.comicDatos(id_comic).toString().replace("[", "").replace("]", "");
+			String mensaje = SelectManager.comicDatos(id_comic).toString().replace("[", "").replace("]", "");
 			AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
 			funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 			funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
 
-			String direccionImagen = libreria.obtenerDireccionPortada(id_comic);
+			String direccionImagen = SelectManager.obtenerDireccionPortada(id_comic);
 			Image imagenComic = Utilidades.pasarImagenComic(direccionImagen);
 
 			imagencomic.setImage(imagenComic);
@@ -1407,14 +1409,14 @@ public class MenuPrincipalController implements Initializable {
 		if (fichero != null) {
 
 			if (Utilidades.isWindows()) {
-				libreria.backupWindows(fichero); // Llamada a funcion
+				DBLibreriaManager.backupWindows(fichero); // Llamada a funcion
 				String mensaje = "Base de datos exportada \ncorrectamente";
 
 				AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
 
 			} else {
 				if (Utilidades.isUnix()) {
-					libreria.backupLinux(fichero); // Llamada a funcion
+					DBLibreriaManager.backupLinux(fichero); // Llamada a funcion
 					String mensaje = "Base de datos exportada \ncorrectamente";
 
 					AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
@@ -1441,7 +1443,7 @@ public class MenuPrincipalController implements Initializable {
 		busquedaGeneral.setText("");
 
 		List<Comic> listComic = FXCollections
-				.observableArrayList(libreria.busquedaParametro(datos, busquedaGeneral.getText()));
+				.observableArrayList(SelectManager.busquedaParametro(datos, busquedaGeneral.getText()));
 
 		return listComic;
 	}
@@ -1457,7 +1459,7 @@ public class MenuPrincipalController implements Initializable {
 	public List<Comic> libreriaCompleta() throws IOException, SQLException {
 		libreria = new DBLibreriaManager();
 		limpiezaDeDatos();
-		List<Comic> listComic = FXCollections.observableArrayList(libreria.buscarEnLibreria(TipoBusqueda.COMPLETA));
+		List<Comic> listComic = FXCollections.observableArrayList(SelectManager.buscarEnLibreria(CommonFunctions.TipoBusqueda.COMPLETA));
 
 		return listComic;
 	}
@@ -1591,7 +1593,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void volverMenu(ActionEvent event) throws IOException {
-		DBManager.close();
+		ConectManager.close();
 		nav.verAccesoBBDD();
 
 		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();

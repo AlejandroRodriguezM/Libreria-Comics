@@ -14,6 +14,7 @@ import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
 import dbmanager.DBLibreriaManager;
+import dbmanager.SelectManager;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -254,7 +255,7 @@ public class CrearBBDDController implements Initializable {
 	@FXML
 	void crearBBDD(ActionEvent event) throws IOException, SQLException {
 
-		if (datosBBDD() != null && DBLibreriaManager.checkDatabaseExists(prontInformativo, DB_NAME)) {
+		if (datosBBDD() != null && SelectManager.checkDatabaseExists(prontInformativo, DB_NAME)) {
 			DBLibreriaManager.createDataBase();
 			String port = puertoBBDD.getText(); // Reemplaza con el valor deseado
 			String dbName = nombreBBDD.getText(); // Reemplaza con el valor deseado

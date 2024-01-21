@@ -40,7 +40,7 @@ import Controladores.VentanaAccionController;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import comicManagement.Comic;
-import dbmanager.DBManager;
+import dbmanager.ConectManager;
 import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -141,7 +141,7 @@ public class Unit_Test extends Application {
 	 * añadimos el nombre de la base de datos y la carpeta "portadas".
 	 */
 	private static final String SOURCE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
-			+ DBManager.DB_NAME + File.separator + "portadas";
+			+ ConectManager.DB_NAME + File.separator + "portadas";
 
 	private static Scanner ent = new Scanner(System.in);
 
@@ -706,7 +706,7 @@ public class Unit_Test extends Application {
 		}
 
 		String sentenciaSQL = "SELECT * FROM comicsbbdd WHERE ID = ?";
-		conn = DBManager.conexion();
+		conn = ConectManager.conexion();
 		ResultSet rs = null;
 		PreparedStatement preparedStatement = null;
 		boolean existe = false; // Variable para almacenar si el identificador existe en la base de datos
@@ -754,7 +754,7 @@ public class Unit_Test extends Application {
 
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
-		String imagePath = documentsPath + File.separator + "libreria_comics" + File.separator + DBManager.DB_NAME
+		String imagePath = documentsPath + File.separator + "libreria_comics" + File.separator + ConectManager.DB_NAME
 				+ File.separator + "portadas" + File.separator + nuevoNombreArchivo;
 
 		String sql = "UPDATE comicsbbdd SET portada = ? WHERE ID = ?";
@@ -782,7 +782,7 @@ public class Unit_Test extends Application {
 		datos[3] = "1234";
 		datos[4] = "localhost";
 
-		DBManager.datosBBDD(datos);
+		ConectManager.datosBBDD(datos);
 	}
 
 	/**
@@ -795,7 +795,7 @@ public class Unit_Test extends Application {
 	 * @throws SQLException
 	 */
 	public static void subirComicPrueba(String sentenciaSQL, Comic datos) throws IOException, SQLException {
-		conn = DBManager.conexion();
+		conn = ConectManager.conexion();
 		PreparedStatement statement = null;
 
 		try {
@@ -1111,7 +1111,7 @@ public class Unit_Test extends Application {
 		ResultSet rs = null;
 
 		try {
-			conn = DBManager.conexion();
+			conn = ConectManager.conexion();
 			statement = conn.prepareStatement(sentenciaSQL);
 			statement.setString(1, identificador);
 			rs = statement.executeQuery();
@@ -1274,7 +1274,7 @@ public class Unit_Test extends Application {
 		String consultaSQL = "SELECT ID FROM comicsbbdd"; // Completa esta consulta con tu tabla y condiciones
 															// necesarias
 		try {
-			conn = DBManager.conexion();
+			conn = ConectManager.conexion();
 			PreparedStatement stmt = conn.prepareStatement(consultaSQL);
 			ResultSet rs = stmt.executeQuery();
 

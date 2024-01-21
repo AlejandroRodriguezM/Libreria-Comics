@@ -8,7 +8,7 @@ import java.util.Map;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import dbmanager.DBLibreriaManager;
-import dbmanager.DBManager;
+import dbmanager.ConectManager;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -577,13 +577,13 @@ public class AlarmaList {
 
 		// Agregar los keyframes para cambiar el texto
 		KeyFrame mostrarSubida1 = new KeyFrame(Duration.ZERO,
-				new KeyValue(prontInfo.textProperty(), "Subido datos a la " + DBManager.DB_NAME + " ."));
+				new KeyValue(prontInfo.textProperty(), "Subido datos a la " + ConectManager.DB_NAME + " ."));
 		KeyFrame mostrarSubida2 = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(prontInfo.textProperty(), "Subido datos a la " + DBManager.DB_NAME + " .."));
+				new KeyValue(prontInfo.textProperty(), "Subido datos a la " + ConectManager.DB_NAME + " .."));
 		KeyFrame mostrarSubida3 = new KeyFrame(Duration.seconds(1),
-				new KeyValue(prontInfo.textProperty(), "Subido datos a la " + DBManager.DB_NAME + " ..."));
+				new KeyValue(prontInfo.textProperty(), "Subido datos a la " + ConectManager.DB_NAME + " ..."));
 		KeyFrame mostrarSubida4 = new KeyFrame(Duration.seconds(1.5),
-				new KeyValue(prontInfo.textProperty(), "Subido datos a la " + DBManager.DB_NAME + " ...."));
+				new KeyValue(prontInfo.textProperty(), "Subido datos a la " + ConectManager.DB_NAME + " ...."));
 
 		// Agregar los keyframes al timeline
 		timeline.getKeyFrames().addAll(mostrarSubida1, mostrarSubida2, mostrarSubida3, mostrarSubida4);

@@ -56,9 +56,9 @@ import java.util.Random;
 
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
-import dbmanager.DBLibreriaManager;
-import dbmanager.DBManager;
-import dbmanager.DBLibreriaManager.TipoBusqueda;
+import dbmanager.CommonFunctions.TipoBusqueda;
+import dbmanager.ConectManager;
+import dbmanager.SelectManager;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -193,11 +193,6 @@ public class RecomendacionesController {
 	private static Ventanas nav = new Ventanas();
 
 	/**
-	 * Instancia de DBLibreriaManager para la gestión de la base de datos.
-	 */
-	private static DBLibreriaManager libreria = null;
-
-	/**
 	 * Instancia de Utilidades para funciones auxiliares.
 	 */
 	private static Utilidades utilidad = null;
@@ -228,24 +223,23 @@ public class RecomendacionesController {
 
 		Random r = new Random();
 		utilidad = new Utilidades();
-		libreria = new DBLibreriaManager();
 		String id_comic;
 
 		limpiarPront(); // Llamada a función para limpiar la pantalla "TextArea"
 
-		if (libreria.buscarEnLibreria(TipoBusqueda.COMPLETA).size() != 0) {
-			int n = r.nextInt(libreria.buscarEnLibreria(TipoBusqueda.COMPLETA).size()); // Generar un número aleatorio
+		if (SelectManager.buscarEnLibreria(TipoBusqueda.COMPLETA).size() != 0) {
+			int n = r.nextInt(SelectManager.buscarEnLibreria(TipoBusqueda.COMPLETA).size()); // Generar un número aleatorio
 																						// dentro del rango
 			// válido
 
-			id_comic = libreria.buscarEnLibreria(TipoBusqueda.COMPLETA).get(n).getID();
+			id_comic = SelectManager.buscarEnLibreria(TipoBusqueda.COMPLETA).get(n).getID();
 
-			String direccionImagen = libreria.obtenerDireccionPortada(id_comic);
+			String direccionImagen = SelectManager.obtenerDireccionPortada(id_comic);
 			Image imagenComic = Utilidades.pasarImagenComic(direccionImagen);
 
 			imagencomic.setImage(imagenComic);
 			utilidad.deleteImage();
-			return libreria.buscarEnLibreria(TipoBusqueda.COMPLETA).get(n).toString(); // Devuelve un cómic de la lista
+			return SelectManager.buscarEnLibreria(TipoBusqueda.COMPLETA).get(n).toString(); // Devuelve un cómic de la lista
 																						// de cómics
 		} else {
 			printComicRecomendado.setText("ERROR. No hay ningún dato en la base de datos");
@@ -319,7 +313,7 @@ public class RecomendacionesController {
 	@FXML
 	public void desconectar(ActionEvent event) throws IOException {
 		nav.verAccesoBBDD();
-		DBManager.close();
+		ConectManager.close();
 
 		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 		myStage.close();
