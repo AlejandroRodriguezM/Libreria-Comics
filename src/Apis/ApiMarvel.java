@@ -74,9 +74,7 @@ public class ApiMarvel {
 				{ "405", "Método No Permitido",
 						"Ocurre cuando se accede a un punto de conexión de la API utilizando un verbo HTTP que no está permitido para ese punto de conexión." },
 				{ "403", "Prohibido",
-						"Ocurre cuando un usuario con una solicitud autenticada intenta acceder a un punto de conexión al que no tiene acceso." },
-				{ "200", "Limite maximo de busqueda alcanzado",
-						"Ocurre cuando un usuario con una solicitud autenticada intenta acceder a la busqueda de comics marvel pero ya alcanzo el maximo diario de 3000 busquedas." } };
+						"Ocurre cuando un usuario con una solicitud autenticada intenta acceder a un punto de conexión al que no tiene acceso." } };
 
 		return tablaErrores;
 
@@ -142,7 +140,7 @@ public class ApiMarvel {
 
 			int codigoRespuesta = codigoRespuesta(apiUrl);
 
-			int[] codigosError = { 200, 401, 403, 405, 409 };
+			int[] codigosError = { 401, 403, 405, 409 };
 
 			String[][] tablaErrores = listaErrores();
 
