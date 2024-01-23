@@ -30,6 +30,8 @@ package dbmanager;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -38,7 +40,6 @@ import Funcionamiento.Ventanas;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 
 /**
  * Clase que gestiona la conexión a la base de datos y proporciona métodos para
@@ -90,7 +91,9 @@ public class ConectManager {
 
 	public static boolean estadoConexion = false;
 
-	private static Timer checkerTimer;
+	private final static Timer checkerTimer = new Timer();
+
+	public static List<Scene> activeScenes = new ArrayList<>();
 
 	/**
 	 * Carga el controlador JDBC para el proyecto.
@@ -222,38 +225,30 @@ public class ConectManager {
 		}
 	}
 
-	public static void iniciarThreadCheckerConexion(Scene miSceneVentana) {
-		if (checkerTimer != null) {
-			checkerTimer.cancel();
-		}
-
-//	    final int[] segundos = { 0 };
-		checkerTimer = new Timer(true); // Hacer el temporizador de fondo
-
+	public synchronized static void startCheckerTimer(Scene miSceneVentana) {
 		checkerTimer.scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
 				Platform.runLater(() -> {
 					if (!Utilidades.comprobarYManejarConexion(miSceneVentana) || conexion() == null) {
 						Ventanas nav = new Ventanas();
+
+	                    for (Scene ventanaActiva : activeScenes) {
+	                        if (ventanaActiva.getWindow() instanceof Stage) {
+	                            ((Stage) ventanaActiva.getWindow()).close();
+	                        }
+	                    }
 						nav.verAccesoBBDD();
 
-						// Cierra todas las ventanas
-						Platform.runLater(() -> {
-							for (Window window : Window.getWindows()) {
-								if (window instanceof Stage) {
-									((Stage) window).close();
-								}
-							}
-						});
-
-						checkerTimer.cancel();
+						// Cancel the timer in a synchronized block
+						synchronized (checkerTimer) {
+							checkerTimer.cancel();
+						}
 					}
 				});
-//	            segundos[0]++;
-//	            System.out.println("Temporizador: " + segundos[0]);
+				// Other code...
 			}
-		}, 0, 1000); // Comienza inmediatamente y repite cada segundo
+		}, 0, 1000);
 	}
 
 	/**

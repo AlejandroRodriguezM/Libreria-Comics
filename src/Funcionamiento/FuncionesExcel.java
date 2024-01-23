@@ -4,7 +4,6 @@
 */
 package Funcionamiento;
 
-import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -28,8 +27,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -39,6 +36,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import Controladores.CargaComicsController;
 import comicManagement.Comic;
+import comicManagement.ComicFichero;
 import dbmanager.CommonFunctions.TipoBusqueda;
 import dbmanager.ConectManager;
 import dbmanager.InsertManager;
@@ -64,7 +62,7 @@ public class FuncionesExcel {
 	private static final String DOCUMENTS_PATH = USER_HOME_DIRECTORY + File.separator + "Documents";
 
 	// Para portadas
-	private static final String DEFAULT_PORTADA_IMAGE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics"
+	public static final String DEFAULT_PORTADA_IMAGE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics"
 			+ File.separator + ConectManager.DB_NAME + File.separator + "portadas";
 
 	// Para la base de la ruta de imágenes predeterminada
@@ -77,29 +75,6 @@ public class FuncionesExcel {
 	private static int NUMERO_LINEAS_FICHERO = 0;
 
 	private static int NUMERO_COMICS_LEIDOS = 0;
-
-	/**
-	 * Añade un archivo al archivo ZIP especificado con el nombre de entrada dado.
-	 *
-	 * @param file      El archivo que se va a agregar al ZIP.
-	 * @param entryName El nombre de entrada del archivo en el ZIP.
-	 * @param zipFile   El archivo ZIP al que se va a agregar el nuevo archivo.
-	 * @throws IOException Si ocurre un error de lectura o escritura durante la
-	 *                     operación.
-	 */
-	private void addFileToZip(File file, String entryName, File zipFile) throws IOException {
-		try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile, true))) {
-			ZipEntry zipEntry = new ZipEntry(entryName);
-			zipOut.putNextEntry(zipEntry);
-			try (FileInputStream fileInputStream = new FileInputStream(file)) {
-				byte[] buffer = new byte[1024];
-				int length;
-				while ((length = fileInputStream.read(buffer)) > 0) {
-					zipOut.write(buffer, 0, length);
-				}
-			}
-		}
-	}
 
 	/**
 	 * Convierte un archivo Excel (XLSX) en formato CSV y guarda los datos en un
@@ -413,7 +388,7 @@ public class FuncionesExcel {
 							}
 						}
 
-						addFileToZip(fichero, "BaseDatos.xlsx", zipFile);
+						Utilidades.addFileToZip(fichero, "BaseDatos.xlsx", zipFile);
 						fichero.delete();
 					} catch (IOException ex) {
 						nav.alertaException(ex.toString());
@@ -430,8 +405,6 @@ public class FuncionesExcel {
 			nav.alertaException(e.toString());
 		}
 	}
-
-
 
 	public Task<Boolean> procesarArchivoCSVTask(File fichero) {
 		Task<Boolean> task = new Task<Boolean>() {
@@ -501,7 +474,7 @@ public class FuncionesExcel {
 			// Procesar líneas restantes del archivo
 			lineReader.lines().forEach(lineText -> {
 				try {
-					Comic comicNuevo = datosComicFichero(lineText);
+					Comic comicNuevo = ComicFichero.datosComicFichero(lineText);
 
 					InsertManager.insertarDatos(comicNuevo, true);
 					cargaComics(comicNuevo, cargaComicsControllerRef, directorioRef.get(), true);
@@ -516,7 +489,10 @@ public class FuncionesExcel {
 			Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0));
 
 			// Abrir el archivo de registro
-			abrirArchivoRegistro(DEFAULT_IMAGE_PATH_BASE + File.separator + logFileName);
+			Platform.runLater(
+					() -> Utilidades.abrirArchivoRegistro(DEFAULT_IMAGE_PATH_BASE + File.separator + logFileName));
+			
+			System.out.println(DEFAULT_IMAGE_PATH_BASE + File.separator + logFileName);
 
 		} catch (IOException e) {
 			// Propagar la excepción al nivel superior
@@ -524,130 +500,37 @@ public class FuncionesExcel {
 		}
 	}
 
-	public static Comic datosComicFichero(String lineText) {
-		String[] data = lineText.split(";");
-		String nombre = data[1];
-		String numCaja = data[2];
-		String precio_comic = data[3];
-		String codigo_comic = data[4];
-		String numero = data[5];
-		String variante = data[6];
-		String firma = data[7];
-		String editorial = data[8];
-		String formato = data[9];
-		String procedencia = obtenerProcedencia(data[10]);
-		String fecha = data[11];
-		String guionista = data[12];
-		String dibujante = data[13];
-		String puntuacion = obtenerPuntuacion(data[13], data[14]);
-		String direccion_portada = data[15];
-		String nombre_portada = Utilidades.obtenerDespuesPortadas(direccion_portada);
-		String nombre_modificado = Utilidades.convertirNombreArchivo(nombre_portada);
-		String nombre_completo_portada = DEFAULT_PORTADA_IMAGE_PATH + File.separator + nombre_modificado;
-		String key_issue = data[16];
-		key_issue = key_issue.replaceAll("\\r|\\n", "");
-		String url_referencia = data[17];
-		String estado = data[18];
-
-		// Verificaciones y asignaciones predeterminadas
-		precio_comic = (precio_comic.isEmpty()) ? "0" : precio_comic;
-		codigo_comic = (codigo_comic.isEmpty()) ? "0" : codigo_comic;
-		url_referencia = (url_referencia.isEmpty()) ? "Sin referencia" : url_referencia;
-
-		Comic comic = new Comic("", nombre, numCaja, numero, variante, firma, editorial, formato, procedencia, fecha,
-				guionista, dibujante, estado, key_issue, puntuacion, nombre_completo_portada, url_referencia,
-				precio_comic, codigo_comic);
-		return comic;
-	}
-
 	public void cargaComics(Comic comicNuevo, AtomicReference<CargaComicsController> cargaComicsControllerRef,
 			File directorio, boolean esImportado) {
 		String nombre_portada = "";
-		String nombre_modificado = ""; // Cambiado a no final
+		String nombre_modificado = "";
+
 		if (esImportado) {
 			nombre_portada = Utilidades.obtenerDespuesPortadas(comicNuevo.getImagen());
 			nombre_modificado = Utilidades.convertirNombreArchivo(nombre_portada);
 
 			if (!Utilidades.existeArchivo(DEFAULT_PORTADA_IMAGE_PATH, nombre_modificado) || directorio == null) {
-				final String finalNombreModificado = nombre_modificado; // Nueva variable final
-				copiarPortadaPredeterminada(DEFAULT_PORTADA_IMAGE_PATH, finalNombreModificado);
-				generarLogFaltaPortada(DEFAULT_IMAGE_PATH_BASE, LOG_FILE_NAME, finalNombreModificado);
+				copiarPortadaPredeterminada(DEFAULT_PORTADA_IMAGE_PATH, nombre_modificado);
+				generarLogFaltaPortada(DEFAULT_IMAGE_PATH_BASE, LOG_FILE_NAME, nombre_modificado);
 			}
 		}
 
-		final String finalNombreModificado = nombre_modificado; // Nueva variable final
-		final String finalTexto; // Nueva variable final
-		if (esImportado) {
-			if (!Utilidades.existeArchivo(DEFAULT_PORTADA_IMAGE_PATH, finalNombreModificado)) {
-				finalTexto = "Comic: " + comicNuevo.getNombre() + " - " + comicNuevo.getNumero() + " - "
-						+ comicNuevo.getVariante() + "\n";
-			} else {
-				finalTexto = "Comic: " + comicNuevo.getNombre() + " - " + comicNuevo.getNumero() + " - "
-						+ comicNuevo.getVariante() + "\n";
-			}
-		} else {
-			finalTexto = "Comic: " + comicNuevo.getNombre() + " - " + comicNuevo.getNumero() + " - "
-					+ comicNuevo.getVariante() + "\n";
+		StringBuilder finalTextoBuilder = new StringBuilder("Comic: ").append(comicNuevo.getNombre()).append(" - ")
+				.append(comicNuevo.getNumero()).append(" - ").append(comicNuevo.getVariante()).append("\n");
+
+		if (esImportado && !Utilidades.existeArchivo(DEFAULT_PORTADA_IMAGE_PATH, nombre_modificado)) {
+			finalTextoBuilder.append("Comic: ").append(comicNuevo.getNombre()).append(" - ")
+					.append(comicNuevo.getNumero()).append(" - ").append(comicNuevo.getVariante()).append("\n");
 		}
 
 		Platform.runLater(() -> {
 			double progress = (double) NUMERO_COMICS_LEIDOS / (NUMERO_LINEAS_FICHERO + 1);
 			String porcentaje = String.format("%.2f%%", progress * 100);
 
-			cargaComicsControllerRef.get().cargarDatosEnCargaComics(finalTexto, porcentaje, progress);
+			cargaComicsControllerRef.get().cargarDatosEnCargaComics(finalTextoBuilder.toString(), porcentaje, progress);
 		});
 
 		NUMERO_COMICS_LEIDOS++;
-	}
-
-	/**
-	 * Abre un archivo en el registro a través del programa predeterminado del
-	 * sistema.
-	 *
-	 * @param filePath La ruta del archivo que se va a abrir.
-	 */
-	private void abrirArchivoRegistro(String filePath) {
-		File file = new File(filePath);
-
-		if (file.exists()) {
-			try {
-				Desktop.getDesktop().open(file);
-			} catch (IOException e) {
-				nav.alertaException(e.toString());
-				e.printStackTrace();
-			}
-		}
-	}
-
-	/**
-	 * Función que obtiene la procedencia según el país
-	 *
-	 * @param pais El país de origen
-	 * @return La procedencia actualizada
-	 */
-	private static String obtenerProcedencia(String pais) {
-		String procedencia;
-		if (pais.toLowerCase().contains("españa")) {
-			procedencia = pais.toLowerCase().replace("españa", "Spain");
-		} else {
-			procedencia = pais;
-		}
-		return procedencia;
-	}
-
-	/**
-	 * Función que obtiene la puntuación del cómic
-	 *
-	 * @param dibujante  El nombre del dibujante
-	 * @param puntuacion La puntuación actual
-	 * @return La puntuación actualizada
-	 */
-	private static String obtenerPuntuacion(String dibujante, String puntuacion) {
-		if (dibujante.length() != 0) {
-			return puntuacion;
-		} else {
-			return "Sin puntuación";
-		}
 	}
 
 	/**

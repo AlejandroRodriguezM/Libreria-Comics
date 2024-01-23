@@ -62,6 +62,9 @@ import dbmanager.SelectManager;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -198,6 +201,15 @@ public class RecomendacionesController {
 	private static Utilidades utilidad = null;
 
 	/**
+	 * Inicializa la lógica y los eventos al cargar la interfaz gráfica.
+	 */
+	@FXML
+	void initialize() {
+
+		Platform.runLater(() -> ConectManager.startCheckerTimer(miStageVentana()));
+	}
+	
+	/**
 	 * Llama a funcion que genera una lectura recomendada
 	 *
 	 * @param event
@@ -319,6 +331,22 @@ public class RecomendacionesController {
 		myStage.close();
 	}
 
+	public Scene miStageVentana() {
+		Node rootNode = botonElegir;
+		while (rootNode.getParent() != null) {
+			rootNode = rootNode.getParent();
+		}
+
+		if (rootNode instanceof Parent) {
+			Scene scene = ((Parent) rootNode).getScene();
+			ConectManager.activeScenes.add(scene);
+			return scene;
+		} else {
+			// Manejar el caso en el que no se pueda encontrar un nodo raíz adecuado
+			return null;
+		}
+	}
+	
 	/**
 	 * Vuelve al menu inicial de conexion de la base de datos.
 	 *

@@ -64,6 +64,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -445,9 +446,9 @@ public class MenuPrincipalController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		libreria = new DBLibreriaManager();
+//		libreria = new DBLibreriaManager();
 
-		Platform.runLater(() -> ConectManager.iniciarThreadCheckerConexion(miStageVentana()));
+		Platform.runLater(() -> ConectManager.startCheckerTimer(miStageVentana()));
 
 		prontInfo.textProperty().addListener((observable, oldValue, newValue) -> {
 			funcionesTabla.ajustarAnchoVBox(prontInfo, vboxContenido);
@@ -1272,7 +1273,7 @@ public class MenuPrincipalController implements Initializable {
 
 			} else {
 				// La tarea no se completó correctamente, muestra un mensaje de error.
-				
+
 				procesarResultadoImportacion(crearExcelTask.getValue());
 
 			}
@@ -1321,13 +1322,13 @@ public class MenuPrincipalController implements Initializable {
 
 	private void procesarResultadoImportacion(Boolean resultado) {
 		String mensaje = "";
-	
-		if(resultado) {
+
+		if (resultado) {
 			mensaje = "Operacion realizada con exito";
-		}else {
+		} else {
 			mensaje = "ERROR. No se ha podido completar la operacion";
 		}
-		
+
 		AlarmaList.detenerAnimacion();
 		AlarmaList.mostrarMensajePront(mensaje, resultado, prontInfo);
 	}
@@ -1456,9 +1457,9 @@ public class MenuPrincipalController implements Initializable {
 		imagencomic.setImage(null);
 		tablaBBDD.refresh();
 	}
-	
+
 	private void limpiarComboBox() {
-		
+
 		List<ComboBox<String>> listaComboBox = new ArrayList<>(
 				List.of(nombreComic, numeroComic, nombreVariante, nombreProcedencia, nombreFormato, nombreDibujante,
 						nombreGuionista, nombreEditorial, nombreFirma, numeroCaja));
@@ -1469,7 +1470,7 @@ public class MenuPrincipalController implements Initializable {
 			comboBox.setValue("");
 			comboBox.getEditor().setText("");
 		}
-		
+
 	}
 
 	/**
@@ -1526,10 +1527,21 @@ public class MenuPrincipalController implements Initializable {
 	/////////////////////////////
 
 	public Scene miStageVentana() {
+		Node rootNode = menu_navegacion;
+		while (rootNode.getParent() != null) {
+			rootNode = rootNode.getParent();
+		}
 
-		Scene scene = menu_navegacion.getScene();
-		return scene;
-
+		if (rootNode instanceof Parent) {
+			Scene scene = ((Parent) rootNode).getScene();
+			
+			ConectManager.activeScenes.add(scene);
+			
+			return scene;
+		} else {
+			// Manejar el caso en el que no se pueda encontrar un nodo raíz adecuado
+			return null;
+		}
 	}
 
 	/**

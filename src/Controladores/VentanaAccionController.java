@@ -61,6 +61,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -608,7 +609,6 @@ public class VentanaAccionController implements Initializable {
 
 	AlarmaList alarmaList = new AlarmaList();
 
-	
 	/**
 	 * Inicializa la interfaz de usuario y configura el comportamiento de los
 	 * elementos al cargar la vista.
@@ -619,9 +619,9 @@ public class VentanaAccionController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		Platform.runLater(() -> {
+		Platform.runLater(() -> ConectManager.startCheckerTimer(miStageVentana()));
 
-			ConectManager.iniciarThreadCheckerConexion(miStageVentana());
+		Platform.runLater(() -> {
 
 			listas_autocompletado();
 
@@ -2619,10 +2619,19 @@ public class VentanaAccionController implements Initializable {
 	}
 
 	public Scene miStageVentana() {
+	    Node rootNode = botonLimpiar;
+	    while (rootNode.getParent() != null) {
+	        rootNode = rootNode.getParent();
+	    }
 
-		Scene scene = menu_navegacion.getScene();
-		return scene;
-
+	    if (rootNode instanceof Parent) {
+	        Scene scene = ((Parent) rootNode).getScene();
+	        ConectManager.activeScenes.add(scene);
+	        return scene;
+	    } else {
+	        // Manejar el caso en el que no se pueda encontrar un nodo raíz adecuado
+	        return null;
+	    }
 	}
 
 	/**

@@ -12,6 +12,8 @@ import dbmanager.ConectManager;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
@@ -90,8 +92,8 @@ public class MenuLectorCodigoBarras {
 		// Agrega un evento para quitar el foco cuando se hace clic en el contenedor
 		// principal
 
-		Platform.runLater(() -> ConectManager.iniciarThreadCheckerConexion(miStageVentana()));
-		
+		Platform.runLater(() -> ConectManager.startCheckerTimer(miStageVentana()));
+
 		contenedorPrincipal.setOnMouseClicked(event -> {
 			campoCodigoTexto.getParent().requestFocus();
 		});
@@ -257,12 +259,21 @@ public class MenuLectorCodigoBarras {
 		codigoBarrasTextArea.setText(contenidoTextArea.toString());
 
 	}
-	
+
 	public Scene miStageVentana() {
+		Node rootNode = botonIntroducirCodigo;
+		while (rootNode.getParent() != null) {
+			rootNode = rootNode.getParent();
+		}
 
-		Scene scene = botonIntroducirCodigo.getScene();
-		return scene;
-
+		if (rootNode instanceof Parent) {
+			Scene scene = ((Parent) rootNode).getScene();
+			ConectManager.activeScenes.add(scene);
+			return scene;
+		} else {
+			// Manejar el caso en el que no se pueda encontrar un nodo raíz adecuado
+			return null;
+		}
 	}
 
 	/**

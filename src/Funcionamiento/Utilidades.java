@@ -438,7 +438,7 @@ public class Utilidades {
 	            // Guardar datos en Excel
 	            excel.savedataExcel(nombreCarpeta);
 	        }
-	    } catch (IOException | SQLException e) {
+	    } catch (IOException e) {
 	        manejarExcepcion(e);
 	    }
 	}
@@ -460,6 +460,29 @@ public class Utilidades {
 	    try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(backupFile))) {
 	        zipFile(sourceFolder, sourceFolder.getName(), zipOut);
 	    }
+	}
+	
+	/**
+	 * Añade un archivo al archivo ZIP especificado con el nombre de entrada dado.
+	 *
+	 * @param file      El archivo que se va a agregar al ZIP.
+	 * @param entryName El nombre de entrada del archivo en el ZIP.
+	 * @param zipFile   El archivo ZIP al que se va a agregar el nuevo archivo.
+	 * @throws IOException Si ocurre un error de lectura o escritura durante la
+	 *                     operación.
+	 */
+	public static void addFileToZip(File file, String entryName, File zipFile) throws IOException {
+		try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile, true))) {
+			ZipEntry zipEntry = new ZipEntry(entryName);
+			zipOut.putNextEntry(zipEntry);
+			try (FileInputStream fileInputStream = new FileInputStream(file)) {
+				byte[] buffer = new byte[1024];
+				int length;
+				while ((length = fileInputStream.read(buffer)) > 0) {
+					zipOut.write(buffer, 0, length);
+				}
+			}
+		}
 	}
 
 	/**
@@ -1847,7 +1870,7 @@ public class Utilidades {
 			socket.close();
 			return true;
 		} catch (Exception e) {
-//			manejarExcepcion(e);
+//			e.printStackTrace();
 			return false;
 		}
 	}
@@ -2307,6 +2330,26 @@ public class Utilidades {
 	 */
 	static boolean existeArchivo(String defaultImagePath, String nombreModificado) {
 		return Files.exists(Paths.get(defaultImagePath, nombreModificado));
+	}
+	
+	/**
+	 * Abre un archivo en el registro a través del programa predeterminado del
+	 * sistema.
+	 *
+	 * @param filePath La ruta del archivo que se va a abrir.
+	 */
+	public static void abrirArchivoRegistro(String filePath) {
+		File file = new File(filePath);
+		Ventanas nav = new Ventanas();
+
+		if (file.exists()) {
+			try {
+				Desktop.getDesktop().open(file);
+			} catch (IOException e) {
+				nav.alertaException(e.toString());
+				e.printStackTrace();
+			}
+		}
 	}
 
 }
