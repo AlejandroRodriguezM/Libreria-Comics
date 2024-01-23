@@ -166,6 +166,9 @@ public class AccesoBBDDController implements Initializable {
 	 * Objeto para gestionar las ventanas de navegación.
 	 */
 	private static Ventanas nav = new Ventanas();
+	
+	private static AlarmaList alarmaList = new AlarmaList();
+
 
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
@@ -180,8 +183,6 @@ public class AccesoBBDDController implements Initializable {
 		Utilidades.cargarTasasDeCambioDesdeArchivo();
 		Utilidades.guardarApiComicVine();
 
-		AlarmaList alarmaList = new AlarmaList();
-
 		alarmaList.setAlarmaConexion(alarmaConexion);
 		alarmaList.setAlarmaConexionInternet(alarmaConexionInternet);
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
@@ -192,6 +193,7 @@ public class AccesoBBDDController implements Initializable {
 		Utilidades.crearEstructura();
 
 		Utilidades.comprobarApisComics();
+
 
 	}
 

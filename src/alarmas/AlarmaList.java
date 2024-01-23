@@ -67,7 +67,7 @@ public class AlarmaList {
 	private static Ventanas nav = new Ventanas();
 
 	private static final String GIF_PATH = "/imagenes/cargaImagen.gif";
-	
+
 	private static Image eyeOpenImage;
 	private static Image eyeClosedImage;
 
@@ -450,8 +450,11 @@ public class AlarmaList {
 	public static void manejarErrorConexion(String mensaje, Label prontEstadoConexion) {
 		asignarTooltip(alarmaConexion, mensaje);
 		detenerAnimacion();
-		prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
-		prontEstadoConexion.setText(mensaje);
+
+		if (prontEstadoConexion != null) {
+			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
+			prontEstadoConexion.setText(mensaje);
+		}
 	}
 
 	/**
@@ -465,7 +468,6 @@ public class AlarmaList {
 		}
 
 		if (timelineError != null) {
-
 			timelineError.stop();
 			timelineError.getKeyFrames().clear(); // Eliminar los KeyFrames del Timeline
 			timelineError = null; // Destruir el objeto timeline
@@ -570,9 +572,10 @@ public class AlarmaList {
 	/**
 	 * Metodo que permite crear una animacion
 	 */
-	public void iniciarAnimacionSubida(TextArea prontInfo) {
+	public static void iniciarAnimacionSubida(TextArea prontInfo) {
 		prontInfo.setOpacity(1);
-		timeline = new Timeline();
+
+		Timeline timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
 
 		// Agregar los keyframes para cambiar el texto
@@ -653,6 +656,9 @@ public class AlarmaList {
 	}
 
 	public static void mostrarMensajePront(String mensaje, boolean exito, TextArea prontInfo) {
+		
+		detenerAnimacion();
+		
 		prontInfo.clear();
 		prontInfo.setOpacity(1);
 		if (exito) {
@@ -661,7 +667,7 @@ public class AlarmaList {
 			prontInfo.setStyle("-fx-border-color: red;");
 		}
 		prontInfo.setText(mensaje);
-				
+
 		detenerAnimacion();
 	}
 
@@ -672,7 +678,6 @@ public class AlarmaList {
 		if (timeline != null) {
 			timeline.stop();
 			timeline = null; // Destruir el objeto timeline
-			prontInfo.setText("Fichero creado correctamente");
 		}
 	}
 
@@ -688,16 +693,8 @@ public class AlarmaList {
 	 * Detiene la animación del progreso de carga.
 	 */
 	public static void detenerAnimacionCarga(ProgressIndicator progresoCarga) {
-
 		progresoCarga.setVisible(false);
 		progresoCarga.setProgress(0); // Establece el progreso en 0 para detener la animación
-	}
-
-	public static void manejarFalloImportacion(Throwable exception, TextArea prontInfo) {
-		exception.printStackTrace();
-		Platform.runLater(() -> nav.alertaException("Error al importar el fichero CSV: " + exception.getMessage()));
-		String mensaje = "Error. No se ha podido importar correctamente.";
-		mostrarMensajePront(mensaje, false, prontInfo);
 	}
 
 	public static void manejarFalloGuardadoBD(Throwable exception, TextArea prontInfo) {
@@ -920,8 +917,9 @@ public class AlarmaList {
 			}
 		}
 	}
-	
-	public static void configureEyeToggle(ImageView toggleEyeImageView, TextField passUsuarioText, PasswordField passBBDD) {
+
+	public static void configureEyeToggle(ImageView toggleEyeImageView, TextField passUsuarioText,
+			PasswordField passBBDD) {
 		eyeOpenImage = new Image(Utilidades.class.getResourceAsStream("/imagenes/visible.png"), 20, 20, true, true);
 		eyeClosedImage = new Image(Utilidades.class.getResourceAsStream("/imagenes/hide.png"), 20, 20, true, true);
 

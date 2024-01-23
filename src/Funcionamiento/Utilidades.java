@@ -70,9 +70,9 @@ import Apis.ApiMarvel;
 import Controladores.VentanaAccionController;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
-import dbmanager.DBLibreriaManager;
 import dbmanager.CommonFunctions;
 import dbmanager.ConectManager;
+import dbmanager.DBLibreriaManager;
 import dbmanager.SelectManager;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -414,52 +414,52 @@ public class Utilidades {
 		return nombreArchivo;
 	}
 
-	/**
-	 * Realiza una copia de seguridad de los archivos.
-	 * 
-	 * @throws SQLException
-	 */
-	public static void copia_seguridad() throws SQLException {
-		// Realizar copia de seguridad
-		FuncionesExcel excel = new FuncionesExcel();
+	public static void copiaSeguridad() throws IOException, SQLException {
+	    FuncionesExcel excel = new FuncionesExcel();
 
-		try {
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-			String nombre_carpeta = dateFormat.format(new Date());
+	    try {
+	        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+	        String nombreCarpeta = dateFormat.format(new Date());
 
-			String userDir = System.getProperty("user.home");
-			String documentsPath = userDir + File.separator + "Documents";
-			String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + ConectManager.DB_NAME
-					+ File.separator + "portadas";
-			File sourceFolder = new File(sourcePath);
+	        String userDir = System.getProperty("user.home");
+	        String documentsPath = userDir + File.separator + "Documents";
+	        String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + ConectManager.DB_NAME
+	                + File.separator + "portadas";
+	        File sourceFolder = new File(sourcePath);
 
-			String ubicacion = userDir + File.separator + "AppData" + File.separator + "Roaming";
-			String carpetaLibreria = ubicacion + File.separator + "libreria" + File.separator + ConectManager.DB_NAME
-					+ File.separator + "backups" + File.separator + nombre_carpeta;
+	        String ubicacion = userDir + File.separator + "AppData" + File.separator + "Roaming";
+	        String carpetaLibreria = ubicacion + File.separator + "libreria" + File.separator + ConectManager.DB_NAME
+	                + File.separator + "backups" + File.separator + nombreCarpeta;
 
-			if (sourceFolder.exists()) {
-				// Create the backups folder if it doesn't exist
-				File backupsFolder = new File(carpetaLibreria);
-				if (!backupsFolder.exists()) {
-					if (!backupsFolder.mkdirs()) {
-						throw new IOException("Failed to create 'backups' folder.");
-					}
-				}
+	        if (sourceFolder.exists()) {
+	            crearCarpetaBackups(carpetaLibreria);
+	            crearArchivoZip(sourceFolder, carpetaLibreria, dateFormat);
 
-				// Crear archivo zip con fecha actual
-				String backupFileName = "portadas_" + dateFormat.format(new Date()) + ".zip";
-				String backupPath = carpetaLibreria + File.separator + backupFileName;
-				File backupFile = new File(backupPath);
+	            // Guardar datos en Excel
+	            excel.savedataExcel(nombreCarpeta);
+	        }
+	    } catch (IOException | SQLException e) {
+	        manejarExcepcion(e);
+	    }
+	}
 
-				// Comprimir carpeta en el archivo zip
-				try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(backupFile))) {
-					zipFile(sourceFolder, sourceFolder.getName(), zipOut);
-				}
-				excel.savedataExcel(nombre_carpeta);
-			}
-		} catch (IOException e) {
-			manejarExcepcion(e);
-		}
+	private static void crearCarpetaBackups(String carpetaLibreria) throws IOException {
+	    File backupsFolder = new File(carpetaLibreria);
+	    if (!backupsFolder.exists() && !backupsFolder.mkdirs()) {
+	        throw new IOException("Error al crear la carpeta 'backups'.");
+	    }
+	}
+
+	private static void crearArchivoZip(File sourceFolder, String carpetaLibreria, SimpleDateFormat dateFormat) throws IOException {
+	    // Crear archivo ZIP con fecha actual
+	    String backupFileName = "portadas_" + dateFormat.format(new Date()) + ".zip";
+	    String backupPath = carpetaLibreria + File.separator + backupFileName;
+	    File backupFile = new File(backupPath);
+
+	    // Comprimir carpeta en el archivo ZIP
+	    try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(backupFile))) {
+	        zipFile(sourceFolder, sourceFolder.getName(), zipOut);
+	    }
 	}
 
 	/**
@@ -540,8 +540,8 @@ public class Utilidades {
 			File carpetaDestino = new File(carpeta_backups);
 			File archivoCopia = new File(carpetaDestino, nombreCopia);
 
-			String[] command = new String[] { mysqlDump, "-u" + ConectManager.DB_USER, "-p" + ConectManager.DB_PASS, "-B",
-					ConectManager.DB_NAME, "--hex-blob", "--routines=true",
+			String[] command = new String[] { mysqlDump, "-u" + ConectManager.DB_USER, "-p" + ConectManager.DB_PASS,
+					"-B", ConectManager.DB_NAME, "--hex-blob", "--routines=true",
 					"--result-file=" + archivoCopia.getAbsolutePath() };
 
 			ProcessBuilder pb = new ProcessBuilder(command);
@@ -1677,8 +1677,6 @@ public class Utilidades {
 
 		SelectManager.buscarEnLibreria(CommonFunctions.TipoBusqueda.COMPLETA);
 	}
-	
-
 
 	/**
 	 * Obtiene el ID del cómic seleccionado desde la tabla.
@@ -1975,7 +1973,10 @@ public class Utilidades {
 
 				return true; // La conexión se estableció correctamente
 			} catch (SQLException e) {
-				e.printStackTrace();
+				AlarmaList.manejarErrorConexion(
+						"ERROR. Revisa tu configuracion de XAMPP. Es posible que la contraseña u usuario sea incorrecto en la configuracion del fichero o de XAMPP",
+						null);
+
 			}
 		} else {
 			ConectManager.asignarValoresPorDefecto();
@@ -2221,33 +2222,23 @@ public class Utilidades {
 		return datosConfiguracionArray;
 	}
 
-	public static boolean comprobarConexionContante(Stage myStage) {
-
-		if (!validarDatosConexion()) {
-			Platform.runLater(() -> {
-				ConectManager.close();
-				Ventanas.cerrarVentanaActual(myStage);
-			});
-			return true;
-		}
-		return false;
-	}
-
-	public static boolean comprobarConexion(Scene ventana) {
+	public static boolean comprobarYManejarConexion(Scene ventana) {
 		Ventanas nav = new Ventanas();
+
 		if (ventana != null) {
 			Stage stage = (Stage) ventana.getWindow();
 
-			if (Utilidades.comprobarConexionContante(stage)) {
+			if (!validarDatosConexion()) {
 				Platform.runLater(() -> {
-					nav.verAccesoBBDD();
+					ConectManager.close();
+					Ventanas.cerrarVentanaActual(stage);
 					nav.alertaException("Error. Servicio MySql apagado o desconectado de forma repentina.");
-
 				});
 
 				return false; // No está conectado
 			}
 		}
+
 		return true; // Está conectado
 	}
 
@@ -2285,7 +2276,7 @@ public class Utilidades {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Devuelve el último segmento de una ruta dada.
 	 *
@@ -2305,6 +2296,17 @@ public class Utilidades {
 			// La ruta no contiene separador o es la última parte de la ruta
 			return ruta;
 		}
+	}
+
+	/**
+	 * Función que verifica si un archivo de portada existe
+	 *
+	 * @param defaultImagePath El directorio de las portadas
+	 * @param nombreModificado El nombre del archivo modificado
+	 * @return true si el archivo existe, false en caso contrario
+	 */
+	static boolean existeArchivo(String defaultImagePath, String nombreModificado) {
+		return Files.exists(Paths.get(defaultImagePath, nombreModificado));
 	}
 
 }

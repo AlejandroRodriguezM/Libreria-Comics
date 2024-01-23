@@ -606,6 +606,9 @@ public class VentanaAccionController implements Initializable {
 	public static String apiKey = Utilidades.cargarApiComicVine();
 	public static String clavesMarvel[] = Utilidades.clavesApiMarvel();
 
+	AlarmaList alarmaList = new AlarmaList();
+
+	
 	/**
 	 * Inicializa la interfaz de usuario y configura el comportamiento de los
 	 * elementos al cargar la vista.
@@ -617,7 +620,9 @@ public class VentanaAccionController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 
 		Platform.runLater(() -> {
+
 			ConectManager.iniciarThreadCheckerConexion(miStageVentana());
+
 			listas_autocompletado();
 
 			rellenarCombosEstaticos();
@@ -2168,7 +2173,7 @@ public class VentanaAccionController implements Initializable {
 
 				for (Comic c : comicsImportados) {
 					c.setID("");
-					InsertManager.insertarDatos(c);
+					InsertManager.insertarDatos(c, true);
 
 					mensajePront += "Has introducido los comics correctamente\n";
 
@@ -2401,16 +2406,14 @@ public class VentanaAccionController implements Initializable {
 
 				Platform.runLater(() -> {
 					funcionesTabla.tablaBBDD(SelectManager.buscarEnLibreria(TipoBusqueda.COMPLETA), tablaBBDD,
-							columnList); // Llamada
-					// a
-					// funcion
+							columnList);
 				});
 				tablaBBDD.refresh();
 
 			} else {
 				utilidad.nueva_imagen(comic.getImagen(), codigo_imagen);
 				comic.setImagen(SOURCE_PATH + File.separator + codigo_imagen + ".jpg");
-				InsertManager.insertarDatos(comic);
+				InsertManager.insertarDatos(comic, true);
 
 				String mensaje = "Deseo Concedido...\n Has introducido correctamente el cómic";
 				AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);

@@ -271,8 +271,7 @@ public class CrearBBDDController implements Initializable {
 				AlarmaList.iniciarAnimacionBaseCreada(prontInformativo, DB_NAME);
 				Utilidades.guardarDatosBaseLocal(datosBBDD(), prontInformativo, null);
 			} else {
-				AlarmaList.manejarErrorConexion(
-						"El servicio MySQL no esta activado. Activalo para crear la base de datos", prontInformativo);
+				AlarmaList.manejarErrorConexion("El servicio MySQL no esta activado. Activalo para crear la base de datos", prontInformativo);
 			}
 
 		}

@@ -4,8 +4,6 @@
 */
 package Controladores;
 
-import java.io.BufferedReader;
-
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  * Las ventanas graficas se realizan con JavaFX.
@@ -29,7 +27,6 @@ import java.io.BufferedReader;
  */
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -734,10 +731,10 @@ public class MenuPrincipalController implements Initializable {
 
 		if (SelectManager.hayDatosEnLibreria("")) {
 			if (completo) {
-				funcionesTabla.tablaBBDD(SelectManager.buscarEnLibreria(CommonFunctions.TipoBusqueda.COMPLETA), tablaBBDD, columnList);
+				funcionesTabla.tablaBBDD(SelectManager.buscarEnLibreria(CommonFunctions.TipoBusqueda.COMPLETA),
+						tablaBBDD, columnList);
 				botonImprimir.setVisible(false);
 				botonGuardarResultado.setVisible(false);
-
 			} else {
 				funcionesTabla.tablaBBDD(listaPorParametro(), tablaBBDD, columnList); // Llamada a funcion
 
@@ -748,13 +745,10 @@ public class MenuPrincipalController implements Initializable {
 				busquedaGeneral.setText("");
 			}
 		} else {
-
 			String mensaje = "ERROR. No hay datos en la base de datos";
 
 			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
-
 		}
-
 	}
 
 	/**
@@ -832,6 +826,7 @@ public class MenuPrincipalController implements Initializable {
 
 	private void imprimirComicsEstado(CommonFunctions.TipoBusqueda tipoBusqueda) {
 		limpiezaDeDatos();
+		limpiarComboBox();
 		libreria = new DBLibreriaManager(); // Crear una instancia del gestor de la base de datos
 		libreria.reiniciarBBDD(); // Reiniciar la base de datos si es necesario
 		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a la función para establecer nombres de
@@ -857,7 +852,7 @@ public class MenuPrincipalController implements Initializable {
 	void importCSV(ActionEvent event) throws SQLException, InterruptedException, ExecutionException {
 
 		limpiezaDeDatos();
-
+		limpiarComboBox();
 		guardarDatosCSV();
 
 		SelectManager.listasAutoCompletado();
@@ -878,7 +873,7 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void exportCSV(ActionEvent event) throws SQLException {
 		limpiezaDeDatos();
-
+		limpiarComboBox();
 		List<Comic> listaComics = SelectManager.buscarEnLibreria(CommonFunctions.TipoBusqueda.COMPLETA);
 
 		String tipoBusqueda = "completa";
@@ -900,7 +895,7 @@ public class MenuPrincipalController implements Initializable {
 		makeSQL();
 
 		limpiezaDeDatos();
-
+		limpiarComboBox();
 		Utilidades.borrarArchivosNoEnLista(DBLibreriaManager.listaImagenes);
 
 	}
@@ -913,6 +908,7 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void limpiarDatos(ActionEvent event) {
 		limpiezaDeDatos();
+		limpiarComboBox();
 		botonImprimir.setVisible(false);
 		botonImprimir.setDisable(true);
 		botonGuardarResultado.setVisible(false);
@@ -1272,13 +1268,12 @@ public class MenuPrincipalController implements Initializable {
 			boolean result = crearExcelTask.getValue();
 			if (result) {
 				// Tarea completada con éxito, muestra el mensaje de éxito.
-				String mensaje = "Fichero excel exportado de forma correcta";
-				AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
+				procesarResultadoImportacion(crearExcelTask.getValue());
 
 			} else {
 				// La tarea no se completó correctamente, muestra un mensaje de error.
-				String mensaje = "ERROR. No se ha podido exportar correctamente.";
-				AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+				
+				procesarResultadoImportacion(crearExcelTask.getValue());
 
 			}
 			AlarmaList.detenerAnimacionPront(prontInfo);
@@ -1301,93 +1296,40 @@ public class MenuPrincipalController implements Initializable {
 	public void guardarDatosCSV() {
 		String frase = "Fichero CSV";
 		String formato = "*.csv";
+		FuncionesExcel funcionesExcel = new FuncionesExcel();
 
 		File fichero = Utilidades.tratarFichero(frase, formato).showOpenDialog(null);
 
 		if (fichero != null) {
-			Task<Boolean> task = crearTareaImportacionCSV(fichero);
+			Task<Boolean> lecturaTask = funcionesExcel.procesarArchivoCSVTask(fichero);
 
-			// Configurar el comportamiento cuando la tarea está en ejecución
-			task.setOnRunning(e -> AlarmaList.iniciarAnimacionCarga(progresoCarga));
+			lecturaTask.setOnRunning(e -> AlarmaList.iniciarAnimacionCarga(progresoCarga));
 
-			// Configurar el comportamiento cuando la tarea se completa con éxito
-			task.setOnSucceeded(e -> procesarResultadoImportacion(task.getValue(), fichero));
+			lecturaTask.setOnSucceeded(e -> {
+				cargarDatosDataBase();
+				procesarResultadoImportacion(lecturaTask.getValue());
+				AlarmaList.detenerAnimacion();
+				AlarmaList.detenerAnimacionCarga(progresoCarga);
+			});
 
-			// Configurar el comportamiento cuando la tarea falla
-			task.setOnFailed(e -> AlarmaList.manejarFalloImportacion(task.getException(), prontInfo));
+			lecturaTask.setOnFailed(e -> procesarResultadoImportacion(lecturaTask.getValue()));
 
 			// Iniciar la tarea principal de importación en un hilo separado
-			new Thread(task).start();
+			new Thread(lecturaTask).start();
 		}
 	}
 
-	private Task<Boolean> crearTareaImportacionCSV(File fichero) {
-		return new Task<Boolean>() {
-			@Override
-			protected Boolean call() throws Exception {
-				// Lógica para verificar y realizar la importación CSV
-				return true; // O false si falla la importación
-			}
-		};
-	}
-
-	private void procesarResultadoImportacion(Boolean resultado, File fichero) {
-
-		if (resultado) {
-			// Lógica después de una importación exitosa
-			ejecutarOperacionLecturaGuardadoBD(fichero);
-			AlarmaList.detenerAnimacion();
-
-			String mensaje = "Datos importados correctamente.";
-			AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
-		} else {
-			// Lógica después de una importación fallida
-			String mensaje = "No se ha podido importar correctamente.";
-			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+	private void procesarResultadoImportacion(Boolean resultado) {
+		String mensaje = "";
+	
+		if(resultado) {
+			mensaje = "Operacion realizada con exito";
+		}else {
+			mensaje = "ERROR. No se ha podido completar la operacion";
 		}
-	}
-
-	private void ejecutarOperacionLecturaGuardadoBD(File fichero) {
-		FuncionesExcel funcionesExcel = new FuncionesExcel();
-		AlarmaList alarmaList = new AlarmaList();
-		Platform.runLater(() -> {
-			prontInfo.setStyle(null);
-			prontInfo.clear();
-			prontInfo.setOpacity(1);
-			Thread animationThread = new Thread(() -> alarmaList.iniciarAnimacionSubida(prontInfo));
-			animationThread.start();
-
-			String sql = "INSERT INTO comicsbbdd(ID,nomComic,caja_deposito,precio_comic,codigo_comic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,fecha_publicacion,nomGuionista,nomDibujante,puntuacion,portada,key_issue,url_referencia,estado)"
-					+ " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-
-			try {
-				int numLineas = Utilidades.contarLineas(fichero);
-				BufferedReader lineReader = new BufferedReader(new FileReader(fichero));
-				Task<Void> lecturaTask = funcionesExcel.lecturaCSVTask(sql, lineReader, numLineas);
-
-				lecturaTask.setOnSucceeded(event -> {
-					// Lógica después de la inserción exitosa en la base de datos
-					String mensaje = "Fichero CSV importado de forma correcta";
-					AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
-					cargarDatosDataBase();
-				});
-
-				lecturaTask.setOnFailed(event -> {
-					// Lógica después de una inserción fallida en la base de datos
-					AlarmaList.manejarFalloGuardadoBD(lecturaTask.getException(), prontInfo);
-				});
-
-				new Thread(lecturaTask).start();
-
-			} catch (IOException ex) {
-				// Lógica después de un error al importar
-				AlarmaList.manejarFalloImportacion(ex, prontInfo);
-			}
-
-//			AlarmaList.detenerAnimacionPront(prontInfo);
-			AlarmaList.detenerAnimacion();
-			AlarmaList.detenerAnimacionCarga(progresoCarga);
-		});
+		
+		AlarmaList.detenerAnimacion();
+		AlarmaList.mostrarMensajePront(mensaje, resultado, prontInfo);
 	}
 
 	/**
@@ -1459,7 +1401,8 @@ public class MenuPrincipalController implements Initializable {
 	public List<Comic> libreriaCompleta() throws IOException, SQLException {
 		libreria = new DBLibreriaManager();
 		limpiezaDeDatos();
-		List<Comic> listComic = FXCollections.observableArrayList(SelectManager.buscarEnLibreria(CommonFunctions.TipoBusqueda.COMPLETA));
+		List<Comic> listComic = FXCollections
+				.observableArrayList(SelectManager.buscarEnLibreria(CommonFunctions.TipoBusqueda.COMPLETA));
 
 		return listComic;
 	}
@@ -1504,6 +1447,18 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	private void limpiezaDeDatos() {
 
+		// Limpiar elementos adicionales de la interfaz
+		fechaPublicacion.setValue(null);
+		prontInfo.clear();
+		prontInfo.setText(null);
+		prontInfo.setOpacity(0);
+		tablaBBDD.getItems().clear();
+		imagencomic.setImage(null);
+		tablaBBDD.refresh();
+	}
+	
+	private void limpiarComboBox() {
+		
 		List<ComboBox<String>> listaComboBox = new ArrayList<>(
 				List.of(nombreComic, numeroComic, nombreVariante, nombreProcedencia, nombreFormato, nombreDibujante,
 						nombreGuionista, nombreEditorial, nombreFirma, numeroCaja));
@@ -1514,16 +1469,7 @@ public class MenuPrincipalController implements Initializable {
 			comboBox.setValue("");
 			comboBox.getEditor().setText("");
 		}
-
-		// Limpiar elementos adicionales de la interfaz
-		fechaPublicacion.setValue(null);
-		prontInfo.clear();
-		prontInfo.setText(null);
-		prontInfo.setOpacity(0);
-		tablaBBDD.getItems().clear();
-		imagencomic.setImage(null);
-		tablaBBDD.refresh();
-
+		
 	}
 
 	/**

@@ -30,10 +30,15 @@ package dbmanager;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
+import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 
 /**
  * Clase que gestiona la conexión a la base de datos y proporciona métodos para
@@ -84,6 +89,8 @@ public class ConectManager {
 	public static String DB_URL;
 
 	public static boolean estadoConexion = false;
+
+	private static Timer checkerTimer;
 
 	/**
 	 * Carga el controlador JDBC para el proyecto.
@@ -197,17 +204,6 @@ public class ConectManager {
 		} catch (SQLException ex) {
 			nav.alertaException("ERROR. Revisa los datos del fichero de conexión.");
 		}
-//		finally {
-//			// Cerrar la conexión en el bloque finally para asegurarse de que siempre se
-//			// cierre
-//			if (conn != null) {
-//				try {
-//					conn.close();
-//				} catch (SQLException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		}
 		return conn;
 	}
 
@@ -227,24 +223,37 @@ public class ConectManager {
 	}
 
 	public static void iniciarThreadCheckerConexion(Scene miSceneVentana) {
-		Thread checkerThread = new Thread(() -> {
-			try {
-				while (true) {
+		if (checkerTimer != null) {
+			checkerTimer.cancel();
+		}
 
-					if (!Utilidades.comprobarConexion(miSceneVentana) || conexion() == null) {
+//	    final int[] segundos = { 0 };
+		checkerTimer = new Timer(true); // Hacer el temporizador de fondo
 
-						break;
+		checkerTimer.scheduleAtFixedRate(new TimerTask() {
+			@Override
+			public void run() {
+				Platform.runLater(() -> {
+					if (!Utilidades.comprobarYManejarConexion(miSceneVentana) || conexion() == null) {
+						Ventanas nav = new Ventanas();
+						nav.verAccesoBBDD();
+
+						// Cierra todas las ventanas
+						Platform.runLater(() -> {
+							for (Window window : Window.getWindows()) {
+								if (window instanceof Stage) {
+									((Stage) window).close();
+								}
+							}
+						});
+
+						checkerTimer.cancel();
 					}
-
-					Thread.sleep(1000); // Espera 15 segundos
-				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+				});
+//	            segundos[0]++;
+//	            System.out.println("Temporizador: " + segundos[0]);
 			}
-		});
-
-		checkerThread.setDaemon(true); // Marcar el hilo como daemon
-		checkerThread.start();
+		}, 0, 1000); // Comienza inmediatamente y repite cada segundo
 	}
 
 	/**

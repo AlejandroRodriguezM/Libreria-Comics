@@ -7,14 +7,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import Funcionamiento.Utilidades;
 import comicManagement.Comic;
-import javafx.concurrent.Task;
 
 public class CommonFunctions {
-	
+
 	/**
 	 * Obtenemos el directorio de inicio del usuario
 	 */
@@ -31,11 +29,11 @@ public class CommonFunctions {
 	 */
 	private final static String SOURCE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
 			+ ConectManager.DB_NAME + File.separator + "portadas" + File.separator;
-	
+
 	public enum TipoBusqueda {
 		POSESION, KEY_ISSUE, COMPLETA, VENDIDOS, COMPRADOS, PUNTUACION, FIRMADOS
 	}
-	
+
 	/**
 	 * Permite modificar un cómic en la base de datos.
 	 *
@@ -61,7 +59,7 @@ public class CommonFunctions {
 			Utilidades.manejarExcepcion(ex);
 		}
 	}
-	
+
 	public static void setParameters(PreparedStatement ps, Comic datos, boolean includeID) throws SQLException {
 		ps.setString(1, datos.getNombre());
 		ps.setString(2, datos.getNumCaja() == null ? "0" : datos.getNumCaja());
@@ -93,45 +91,7 @@ public class CommonFunctions {
 			ps.setString(18, datos.getEstado());
 		}
 	}
-	
-	/**
-	 * Función que ejecuta un conjunto de sentencias PreparedStatement en la base de
-	 * datos.
-	 * 
-	 * @param sentencia Un arreglo de cadenas que contiene las sentencias SQL a
-	 *                  ejecutar.
-	 * @return true si las sentencias se ejecutaron correctamente, false en caso
-	 *         contrario.
-	 */
-	public static CompletableFuture<Boolean> ejecutarPreparedStatementAsync(String[] sentencia) {
-		CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
 
-		Task<Void> task = new Task<>() {
-			@Override
-			protected Void call() {
-				try (Connection conn = ConectManager.conexion();
-						PreparedStatement statement1 = conn.prepareStatement(sentencia[0]);
-						PreparedStatement statement2 = conn.prepareStatement(sentencia[1])) {
-
-					statement1.executeUpdate();
-					statement2.executeUpdate();
-
-					futureResult.complete(true); // Assume success if it reaches here
-				} catch (Exception e) {
-					futureResult.completeExceptionally(e);
-				}
-				return null;
-			}
-		};
-
-		task.setOnFailed(e -> futureResult.completeExceptionally(task.getException()));
-
-		// Run the task in a background thread managed by JavaFX
-		new Thread(task).start();
-
-		return futureResult;
-	}
-	
 	/**
 	 * Función que guarda los datos para autocompletado en una lista.
 	 * 
@@ -155,7 +115,8 @@ public class CommonFunctions {
 					if (columna.equals("nomComic")) {
 						listaAutoCompletado.add(datosAutocompletado.trim());
 					} else if (columna.equals("portada")) {
-						listaAutoCompletado.add(SOURCE_PATH + Utilidades.obtenerUltimoSegmentoRuta(datosAutocompletado));
+						listaAutoCompletado
+								.add(SOURCE_PATH + Utilidades.obtenerUltimoSegmentoRuta(datosAutocompletado));
 					} else {
 						String[] nombres = datosAutocompletado.split("-");
 						for (String nombre : nombres) {
