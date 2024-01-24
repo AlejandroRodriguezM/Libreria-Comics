@@ -16,6 +16,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.ProcessBuilder.Redirect;
@@ -415,53 +416,54 @@ public class Utilidades {
 	}
 
 	public static void copiaSeguridad() throws IOException, SQLException {
-	    FuncionesExcel excel = new FuncionesExcel();
+		FuncionesExcel excel = new FuncionesExcel();
 
-	    try {
-	        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-	        String nombreCarpeta = dateFormat.format(new Date());
+		try {
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+			String nombreCarpeta = dateFormat.format(new Date());
 
-	        String userDir = System.getProperty("user.home");
-	        String documentsPath = userDir + File.separator + "Documents";
-	        String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + ConectManager.DB_NAME
-	                + File.separator + "portadas";
-	        File sourceFolder = new File(sourcePath);
+			String userDir = System.getProperty("user.home");
+			String documentsPath = userDir + File.separator + "Documents";
+			String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator
+					+ ConectManager.DB_NAME + File.separator + "portadas";
+			File sourceFolder = new File(sourcePath);
 
-	        String ubicacion = userDir + File.separator + "AppData" + File.separator + "Roaming";
-	        String carpetaLibreria = ubicacion + File.separator + "libreria" + File.separator + ConectManager.DB_NAME
-	                + File.separator + "backups" + File.separator + nombreCarpeta;
+			String ubicacion = userDir + File.separator + "AppData" + File.separator + "Roaming";
+			String carpetaLibreria = ubicacion + File.separator + "libreria" + File.separator + ConectManager.DB_NAME
+					+ File.separator + "backups" + File.separator + nombreCarpeta;
 
-	        if (sourceFolder.exists()) {
-	            crearCarpetaBackups(carpetaLibreria);
-	            crearArchivoZip(sourceFolder, carpetaLibreria, dateFormat);
+			if (sourceFolder.exists()) {
+				crearCarpetaBackups(carpetaLibreria);
+				crearArchivoZip(sourceFolder, carpetaLibreria, dateFormat);
 
-	            // Guardar datos en Excel
-	            excel.savedataExcel(nombreCarpeta);
-	        }
-	    } catch (IOException e) {
-	        manejarExcepcion(e);
-	    }
+				// Guardar datos en Excel
+				excel.savedataExcel(nombreCarpeta);
+			}
+		} catch (IOException e) {
+			manejarExcepcion(e);
+		}
 	}
 
 	private static void crearCarpetaBackups(String carpetaLibreria) throws IOException {
-	    File backupsFolder = new File(carpetaLibreria);
-	    if (!backupsFolder.exists() && !backupsFolder.mkdirs()) {
-	        throw new IOException("Error al crear la carpeta 'backups'.");
-	    }
+		File backupsFolder = new File(carpetaLibreria);
+		if (!backupsFolder.exists() && !backupsFolder.mkdirs()) {
+			throw new IOException("Error al crear la carpeta 'backups'.");
+		}
 	}
 
-	private static void crearArchivoZip(File sourceFolder, String carpetaLibreria, SimpleDateFormat dateFormat) throws IOException {
-	    // Crear archivo ZIP con fecha actual
-	    String backupFileName = "portadas_" + dateFormat.format(new Date()) + ".zip";
-	    String backupPath = carpetaLibreria + File.separator + backupFileName;
-	    File backupFile = new File(backupPath);
+	private static void crearArchivoZip(File sourceFolder, String carpetaLibreria, SimpleDateFormat dateFormat)
+			throws IOException {
+		// Crear archivo ZIP con fecha actual
+		String backupFileName = "portadas_" + dateFormat.format(new Date()) + ".zip";
+		String backupPath = carpetaLibreria + File.separator + backupFileName;
+		File backupFile = new File(backupPath);
 
-	    // Comprimir carpeta en el archivo ZIP
-	    try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(backupFile))) {
-	        zipFile(sourceFolder, sourceFolder.getName(), zipOut);
-	    }
+		// Comprimir carpeta en el archivo ZIP
+		try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(backupFile))) {
+			zipFile(sourceFolder, sourceFolder.getName(), zipOut);
+		}
 	}
-	
+
 	/**
 	 * Añade un archivo al archivo ZIP especificado con el nombre de entrada dado.
 	 *
@@ -870,7 +872,7 @@ public class Utilidades {
 	 *
 	 * @return Las claves de la API en el formato "Private Key: Public Key".
 	 */
-	public static String obtenerClaveApiArchivo() {
+	public static String obtenerClaveApiMarvel() {
 		String nombreArchivo = carpetaConfiguracion() + File.separator + "claves_marvel_api.conf";
 
 		File archivo = new File(nombreArchivo);
@@ -901,6 +903,67 @@ public class Utilidades {
 		} catch (IOException e) {
 			manejarExcepcion(e);
 			return ""; // Manejo de error: devuelve una cadena vacía en caso de error
+		}
+	}
+
+	/**
+	 * Comprueba si el archivo de claves de API de Marvel tiene la estructura
+	 * esperada.
+	 * 
+	 * @return true si el archivo tiene la estructura correcta, false de lo
+	 *         contrario.
+	 */
+	public static boolean verificarEstructuraClavesMarvel() {
+		String nombreArchivo = carpetaConfiguracion() + File.separator + "claves_marvel_api.conf";
+
+		try (BufferedReader reader = new BufferedReader(new FileReader(nombreArchivo))) {
+			String linea;
+			int contador = 0;
+
+			while ((linea = reader.readLine()) != null) {
+				// Verificar la estructura esperada
+				if (contador == 0 && linea.contains("Public Key:")) {
+					contador++;
+				} else if (contador == 1 && linea.contains("Private Key:")) {
+					contador++;
+				}
+			}
+
+			// Verificar que haya dos líneas en total
+			return contador == 2;
+		} catch (IOException e) {
+			manejarExcepcion(e);
+			return false;
+		}
+	}
+
+	/**
+	 * Comprueba si el archivo de clave de API de Comic Vine tiene la estructura
+	 * esperada.
+	 * 
+	 * @return true si el archivo tiene la estructura correcta, false de lo
+	 *         contrario.
+	 */
+	public static boolean verificarEstructuraApiComicVine() {
+		String nombreArchivo = carpetaConfiguracion() + File.separator + "clave_comicVine_api.conf";
+
+		try (BufferedReader reader = new BufferedReader(new FileReader(nombreArchivo))) {
+			String linea;
+			int contador = 0;
+
+			while ((linea = reader.readLine()) != null) {
+				// Verificar la estructura esperada
+				if (contador == 0 && linea.contains("Clave Api Comic Vine:")) {
+					contador++;
+				}
+
+			}
+
+			// Verificar que haya al menos una línea
+			return contador == 1;
+		} catch (IOException e) {
+			manejarExcepcion(e);
+			return false;
 		}
 	}
 
@@ -1094,7 +1157,7 @@ public class Utilidades {
 	public static String[] clavesApiMarvel() {
 		String claves[] = new String[2]; // Crear un arreglo de dos elementos para almacenar las claves
 
-		String clavesDesdeArchivo = Utilidades.obtenerClaveApiArchivo(); // Obtener las claves desde el archivo
+		String clavesDesdeArchivo = Utilidades.obtenerClaveApiMarvel(); // Obtener las claves desde el archivo
 
 		if (!clavesDesdeArchivo.isEmpty()) {
 			String[] partes = clavesDesdeArchivo.split(":");
@@ -1108,6 +1171,43 @@ public class Utilidades {
 		}
 
 		return claves;
+	}
+
+	/**
+	 * Guarda las claves de API de Marvel en un archivo de configuración.
+	 *
+	 * @param publicKey  Clave pública de Marvel
+	 * @param privateKey Clave privada de Marvel
+	 */
+	public static void reescribirClavesMarvel(String publicKey, String privateKey) {
+		String nombreArchivo = carpetaConfiguracion() + File.separator + "claves_marvel_api.conf";
+
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(nombreArchivo))) {
+			writer.write("Public Key: " + publicKey);
+			writer.newLine();
+			writer.write("Private Key: " + privateKey);
+		} catch (IOException e) {
+			manejarExcepcion(e);
+		}
+	}
+
+	/**
+	 * Guarda la clave de API de Comic Vine en un archivo de configuración.
+	 *
+	 * @param apiKey Clave de API de Comic Vine
+	 */
+	public static void reescribirClaveApiComicVine(String apiKey) {
+		String nombreArchivo = carpetaConfiguracion() + File.separator + "clave_comicVine_api.conf";
+
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(nombreArchivo))) {
+			writer.write("###############################");
+			writer.newLine();
+			writer.write("Clave Api Comic Vine: " + apiKey);
+			writer.newLine();
+			writer.write("###############################");
+		} catch (IOException e) {
+			manejarExcepcion(e);
+		}
 	}
 
 	/**
@@ -1993,7 +2093,6 @@ public class Utilidades {
 		String url = construirURL(hosting, puerto);
 		if (Utilidades.isMySQLServiceRunning(hosting, puerto)) {
 			try (Connection connection = DriverManager.getConnection(url, usuario, password)) {
-
 				return true; // La conexión se estableció correctamente
 			} catch (SQLException e) {
 				AlarmaList.manejarErrorConexion(
@@ -2001,8 +2100,6 @@ public class Utilidades {
 						null);
 
 			}
-		} else {
-			ConectManager.asignarValoresPorDefecto();
 		}
 
 		return false; // La conexión no se pudo establecer
@@ -2046,10 +2143,6 @@ public class Utilidades {
 			manejarExcepcion(e);
 		}
 		return opciones;
-	}
-
-	public static boolean validarConexionMySQL(String puertoTexto, String hostingTexto) {
-		return isMySQLServiceRunning(hostingTexto, puertoTexto) && validarDatosConexion();
 	}
 
 	/**
@@ -2253,7 +2346,9 @@ public class Utilidades {
 
 			if (!validarDatosConexion()) {
 				Platform.runLater(() -> {
+					ConectManager.asignarValoresPorDefecto();
 					ConectManager.close();
+
 					Ventanas.cerrarVentanaActual(stage);
 					nav.alertaException("Error. Servicio MySql apagado o desconectado de forma repentina.");
 				});
@@ -2331,7 +2426,7 @@ public class Utilidades {
 	static boolean existeArchivo(String defaultImagePath, String nombreModificado) {
 		return Files.exists(Paths.get(defaultImagePath, nombreModificado));
 	}
-	
+
 	/**
 	 * Abre un archivo en el registro a través del programa predeterminado del
 	 * sistema.
@@ -2349,6 +2444,128 @@ public class Utilidades {
 				nav.alertaException(e.toString());
 				e.printStackTrace();
 			}
+		}
+	}
+
+	public static boolean isXAMPPRunning() {
+		try {
+			// Verificar si el proceso principal del "XAMPP Control Panel" está en ejecución
+			ProcessBuilder processBuilder = new ProcessBuilder("tasklist.exe", "/FI", "IMAGENAME eq xampp-control.exe");
+			Process process = processBuilder.start();
+
+			// Leer la salida del comando para verificar si el proceso está en la lista
+			String output = leerSalidaProceso(process);
+
+			// Cerrar el proceso
+			process.destroy();
+
+			// Cerrar el proceso
+			process.destroy();
+
+			// Si la salida contiene "xampp-control.exe", entonces el proceso está en
+			// ejecución
+			return output.contains("xampp-control.exe");
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	private static String leerSalidaProceso(Process process) throws IOException {
+		StringBuilder salida = new StringBuilder();
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				salida.append(line).append("\n");
+			}
+		}
+		return salida.toString();
+	}
+
+	public static boolean iniciarXAMPP() {
+		try {
+			// Ruta al script de control de XAMPP en Windows
+			String rutaScriptControl = "C:\\xampp\\xampp-control.exe";
+
+			if (!isXAMPPRunning() && verificarExistencia(rutaScriptControl)) {
+				ejecutarComando(rutaScriptControl, "XAMPP Encendido correctamente", "Error al iniciar XAMPP");
+			}
+
+			iniciarConexionMySql();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public static void iniciarConexionMySql() {
+		String rutaScript = "C:\\xampp\\xampp_start.exe";
+		// Llamada a la función para ejecutar el comando
+		try {
+			if (verificarExistencia(rutaScript)) {
+				ejecutarComando(rutaScript, "XAMPP iniciado correctamente", "Error al iniciar XAMPP");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+//	// Función para detener XAMPP
+//	private static void detenerXAMPP() {
+//		try {
+//			// Ruta al script de control de XAMPP en Windows
+//			String rutaScript = "C:\\xampp\\xampp_stop.exe";
+//
+//			if (verificarExistencia(rutaScript)) {
+//				ejecutarComando(rutaScript, "XAMPP detenido correctamente", "Error al detener XAMPP");
+//			}
+//
+//			// Llamada a la función para ejecutar el comando
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
+
+	// Función para verificar la existencia de un archivo
+	private static boolean verificarExistencia(String rutaArchivo) {
+		File archivo = new File(rutaArchivo);
+		return archivo.exists();
+	}
+
+	private static void ejecutarComando(String rutaScript, String mensajeExito, String mensajeError) {
+		try {
+			// Crear un proceso para ejecutar el comando
+			ProcessBuilder processBuilder = new ProcessBuilder(rutaScript);
+			Process process = processBuilder.start();
+
+			try {
+				// Esperar a que el proceso termine
+				int exitCode = process.waitFor();
+
+				// Imprimir el mensaje según el resultado del comando
+				if (exitCode == 0) {
+					System.out.println(mensajeExito);
+				} else {
+					System.out.println(mensajeError);
+				}
+			} catch (InterruptedException e) {
+				// Manejar la interrupción del hilo aquí, si es necesario
+				System.err.println("El hilo fue interrumpido mientras esperaba el proceso.");
+//				e.printStackTrace();
+
+				// Puedes decidir si quieres volver a interrumpir el hilo o realizar alguna otra
+				// acción.
+				Thread.currentThread().interrupt();
+			} finally {
+				// Intentar destruir el proceso de manera forzada
+				process.destroyForcibly();
+
+				// Comprobar si el proceso sigue vivo (opcional)
+				System.out.println(process.isAlive());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 

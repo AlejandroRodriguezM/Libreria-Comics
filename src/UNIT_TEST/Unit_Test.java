@@ -165,7 +165,7 @@ public class Unit_Test extends Application {
 
 //		pruebaSubidaComic();
 //		pruebaModificacionComic();
-		getComicInfo("75960607826401511");
+//		getComicInfo("75960607826401511");
 //		pruebaDiamondCode_imagen("JUL220767");
 //		launch(args);
 //		verLibroGoogle("9788411505963");
@@ -179,6 +179,8 @@ public class Unit_Test extends Application {
 //		comicModificarCodigoPruebaCompleta();
 
 //		nav.verMenuCodigosBarra();
+		
+//		nav.verEstadoConexion();
 
 	}
 
@@ -287,7 +289,7 @@ public class Unit_Test extends Application {
 	private static String[] clavesApi() {
 		String claves[] = new String[2]; // Crear un arreglo de dos elementos para almacenar las claves
 
-		String clavesDesdeArchivo = Utilidades.obtenerClaveApiArchivo(); // Obtener las claves desde el archivo
+		String clavesDesdeArchivo = Utilidades.obtenerClaveApiMarvel(); // Obtener las claves desde el archivo
 
 		if (!clavesDesdeArchivo.isEmpty()) {
 			String[] partes = clavesDesdeArchivo.split(":");

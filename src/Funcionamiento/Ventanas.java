@@ -34,8 +34,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import Controladores.AccesoBBDDController;
 import Controladores.CargaComicsController;
 import Controladores.CrearBBDDController;
+import Controladores.EstadoConexionController;
 import Controladores.MenuLectorCodigoBarras;
 import Controladores.MenuPrincipalController;
+import Controladores.ModificarApiDatosController;
 import Controladores.OpcionesDatosController;
 import Controladores.RecomendacionesController;
 import Controladores.SobreMiController;
@@ -66,6 +68,8 @@ public class Ventanas {
 	private static Alert dialog = null;
 
 	private static Stage accesoBBDDStage = null;
+
+	private static Stage estadoConexionStage = null;
 
 	/**
 	 * Abre una ventana para el acceso a la base de datos. Carga la vista y muestra
@@ -101,7 +105,100 @@ public class Ventanas {
 					accesoBBDDStage.show();
 
 					// Indico que debe hacer al cerrar
-					accesoBBDDStage.setOnCloseRequest(e -> controlador.closeWindows());
+					accesoBBDDStage.setOnCloseRequest(e -> controlador.closeWindow());
+
+				} catch (IOException ex) {
+					alertaException(ex.toString());
+				}
+			}
+		});
+	}
+
+	/**
+	 * Muestra la ventana de estado de conexion a la base de datos.
+	 */
+	public void verEstadoConexion() {
+		Platform.runLater(() -> {
+			if (estadoConexionStage == null || !estadoConexionStage.isShowing()) {
+				try {
+					// Cargo la vista
+					FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/EstadoConexionVentana.fxml"));
+
+					// Cargo el padre
+					Parent root = loader.load();
+
+					// Obtengo el controlador
+					EstadoConexionController controlador = loader.getController();
+
+					// Creo la scene y el stage
+					Scene scene = new Scene(root);
+					scene.getStylesheets().add(getClass().getResource("/style/acces_style.css").toExternalForm());
+					estadoConexionStage = new Stage();
+					estadoConexionStage.setResizable(false);
+					estadoConexionStage.setTitle("Estado de conexion");
+
+					estadoConexionStage.getIcons().add(new Image("/Icono/icon2.png"));
+
+					// Asocio el stage con el scene
+					estadoConexionStage.setScene(scene);
+					estadoConexionStage.show();
+
+					// Indico que debe hacer al cerrar
+					estadoConexionStage.setOnCloseRequest(e -> controlador.closeWindow());
+
+				} catch (IOException ex) {
+					alertaException(ex.toString());
+				}
+			}
+		});
+	}
+
+	/**
+	 * Muestra la ventana de estado de conexion a la base de datos.
+	 */
+	public void verModificarApis(boolean esMarvel) {
+		Platform.runLater(() -> {
+			ventanaAbierta();
+			if (estadoConexionStage == null || !estadoConexionStage.isShowing()) {
+				try {
+					// Verifica si hay una ventana abierta y ciérrala si es necesario
+
+					FXMLLoader loader;
+
+					if (esMarvel) {
+						loader = new FXMLLoader(getClass().getResource("/ventanas/EstablecerApiMarvel.fxml"));
+					} else {
+						loader = new FXMLLoader(getClass().getResource("/ventanas/EstablecerApiVine.fxml"));
+					}
+
+					// Cargo el padre
+					Parent root = loader.load();
+
+					// Obtengo el controlador
+					ModificarApiDatosController controlador = loader.getController();
+
+					// Creo la scene y el stage
+					Scene scene = new Scene(root);
+					scene.getStylesheets().add(getClass().getResource("/style/acces_style.css").toExternalForm());
+					estadoConexionStage = new Stage();
+					estadoConexionStage.setResizable(false);
+					estadoConexionStage.setTitle("Estado de conexion");
+
+					estadoConexionStage.getIcons().add(new Image("/Icono/icon2.png"));
+
+					// Asocio el stage con el scene
+					estadoConexionStage.setScene(scene);
+					estadoConexionStage.show();
+
+					// Indico que debe hacer al cerrar
+
+					estadoConexionStage.setOnCloseRequest(e -> {
+						controlador.closeWindow();
+						ventanaActual = null; // Establece la ventana actual a null cuando se cierra
+					});
+
+					// Actualizar el estado de la ventana abierta
+					ventanaActual = estadoConexionStage;
 
 				} catch (IOException ex) {
 					alertaException(ex.toString());
@@ -664,6 +761,25 @@ public class Ventanas {
 	}
 
 	/**
+	 * Llama a una ventana de alarma que avisa si se va reconstruir la base de datos
+	 *
+	 * @return
+	 */
+	public boolean alertaRestablecerApi() {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
+		stage.setResizable(false);
+		alert.setTitle("Tablas no encontradas");
+		alert.setHeaderText("Vas a reconstruir el fichero donde se encuentra el api..");
+		alert.setContentText("¿Quieres recontruir el fichero?");
+		if (alert.showAndWait().get() == ButtonType.OK) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Solicita confirmación al usuario antes de borrar el contenido de la tabla.
 	 *
 	 * @return Un objeto CompletableFuture que se completará con true si el usuario
@@ -804,12 +920,12 @@ public class Ventanas {
 	 */
 	public void alertaNoApi(String excepcion) {
 		Platform.runLater(() -> {
-			Alert dialog = new Alert(AlertType.ERROR, excepcion, ButtonType.OK);
-			Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
-			stage.getIcons().add(new Image("/Icono/icon.png")); // Reemplaza "path/to/your/icon.png" con la ruta de tu
-																// icono
-
-			dialog.show();
+			if (dialog == null || !dialog.isShowing()) {
+				Alert dialog = new Alert(AlertType.ERROR, excepcion, ButtonType.OK);
+				Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+				stage.getIcons().add(new Image("/Icono/icon.png"));
+				dialog.showAndWait(); // Mostrar y esperar hasta que se cierre
+			}
 		});
 	}
 }

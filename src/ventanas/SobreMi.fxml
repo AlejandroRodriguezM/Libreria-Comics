@@ -9,7 +9,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="413.0" prefWidth="735.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.SobreMiController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="413.0" prefWidth="735.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.SobreMiController">
    <children>
       <ImageView fitHeight="414.0" fitWidth="735.0" pickOnBounds="true" preserveRatio="true">
          <image>
@@ -63,5 +63,6 @@
       </MenuBar>
       <Button fx:id="botonOtroProyecto" layoutX="569.0" layoutY="353.0" maxWidth="143.0" mnemonicParsing="false" onAction="#misOtroProyectos" prefHeight="34.0" prefWidth="143.0" stylesheets="@../style/sobremi_style.css" text="Otro proyecto" />
       <Button fx:id="botonVolverMenu" layoutX="453.0" layoutY="353.0" maxWidth="143.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="34.0" prefWidth="104.0" style="-fx-background-color: green;" stylesheets="@../style/sobremi_style.css" text="Volver" />
+      <Label fx:id="alarmaConexionSql" layoutX="414.0" layoutY="355.0" prefHeight="30.0" prefWidth="29.0" style="-fx-background-radius: 50; -fx-background-color: red;" stylesheets="@../style/alarma_conexion_style.css" />
    </children>
 </Pane>

@@ -171,6 +171,7 @@
                <items>
                   <MenuItem fx:id="menu_leer_CodigoBarras" mnemonicParsing="false" onAction="#verMenuCodigoBarras" text="Leer codigo de barras" />
                   <MenuItem fx:id="menu_Importar_Fichero_CodigoBarras" mnemonicParsing="false" onAction="#importarFicheroCodigoBarras" text="Importar fichero" />
+                  <MenuItem fx:id="menu_archivo_conexion" mnemonicParsing="false" onAction="#verEstadoConexion" text="Comprobar Conexion" />
                </items>
             </Menu>
             <Menu fx:id="navegacion_estadistica" mnemonicParsing="false" text="Estadistica">
@@ -180,12 +181,14 @@
             </Menu>
          </menus>
       </MenuBar>
-      <TextArea fx:id="prontInfo" editable="false" layoutX="616.0" layoutY="36.0" opacity="0.0" prefHeight="199.0" prefWidth="214.0" stylesheets="@../style/panel_info_style.css" wrapText="true" />
+      <TextArea fx:id="prontInfo" editable="false" layoutX="598.0" layoutY="73.0" opacity="0.0" prefHeight="199.0" prefWidth="232.0" stylesheets="@../style/panel_info_style.css" wrapText="true" />
       <Button fx:id="botonGuardarComic" layoutX="218.0" layoutY="323.0" mnemonicParsing="false" onAction="#guardarListaImportados" prefHeight="35.0" prefWidth="81.0" stylesheets="@../style/genericos_style.css" text="Guardar lista" visible="false" />
       <Button fx:id="botonGuardarCambioComic" layoutX="218.0" layoutY="287.0" mnemonicParsing="false" onAction="#guardarDatos" prefHeight="21.0" prefWidth="81.0" stylesheets="@../style/genericos_style.css" text="Guardar" visible="false" />
       <Button fx:id="botonEliminarImportadoComic" layoutX="303.0" layoutY="286.0" mnemonicParsing="false" onAction="#eliminarComicSeleccionado" prefHeight="33.0" prefWidth="57.0" stylesheets="@../style/genericos_style.css" text="Eliminar" visible="false" wrapText="true" />
       <ImageView fx:id="cargaImagen" fitHeight="326.0" fitWidth="207.0" layoutX="368.0" layoutY="34.0" pickOnBounds="true" preserveRatio="true" />
       <ImageView fx:id="imagencomic" fitHeight="326.0" fitWidth="207.0" layoutX="368.0" layoutY="32.0" pickOnBounds="true" />
       <Button fx:id="botonSubidaPortada" layoutX="193.0" layoutY="257.0" mnemonicParsing="false" onAction="#nuevaPortada" prefHeight="25.0" prefWidth="25.0" stylesheets="@../style/boton_subida_style.css" />
+      <Label fx:id="alarmaConexionSql" layoutX="802.0" layoutY="28.0" prefHeight="30.0" prefWidth="29.0" style="-fx-background-radius: 50; -fx-background-color: red;" stylesheets="@../style/alarma_conexion_style.css" />
+      <Label fx:id="alarmaConexionInternet" layoutX="767.0" layoutY="28.0" prefHeight="19.0" prefWidth="29.0" style="-fx-background-radius: 50; -fx-background-color: red;" stylesheets="@../style/alarma_conexion_style.css" />
    </children>
 </Pane>

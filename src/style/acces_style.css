@@ -84,3 +84,21 @@
 .button:pressed {
     -fx-opacity: 0.8;
 }
+
+.button#botonReconectarSql {
+    -fx-background-color: #5cb85c;
+    -fx-border-color: #4cae4c;
+}
+
+.button#botonReconectarSql:hover {
+    -fx-background-color: #4cae4c;
+}
+
+.button#botonReconectarInternet {
+    -fx-background-color: #5cb85c;
+    -fx-border-color: #4cae4c;
+}
+
+.button#botonReconectarInternet:hover {
+    -fx-background-color: #4cae4c;
+}

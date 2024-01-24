@@ -90,6 +90,12 @@ import webScrap.WebScraperPreviewsWorld;
  */
 public class VentanaAccionController implements Initializable {
 
+	@FXML
+	private Label alarmaConexionInternet;
+
+	@FXML
+	private Label alarmaConexionSql;
+
 	/**
 	 * Campo de texto para la dirección de la imagen.
 	 */
@@ -496,6 +502,9 @@ public class VentanaAccionController implements Initializable {
 	private MenuItem menu_Importar_Fichero_CodigoBarras;
 
 	@FXML
+	private MenuItem menu_archivo_conexion;
+
+	@FXML
 	private MenuItem menu_leer_CodigoBarras;
 
 	@FXML
@@ -564,11 +573,6 @@ public class VentanaAccionController implements Initializable {
 	private static FuncionesTableView funcionesTabla = new FuncionesTableView();
 
 	/**
-	 * Controlador de la ventana del menú principal.
-	 */
-	MenuPrincipalController menuPrincipal = null;
-
-	/**
 	 * Tipo de acción a realizar en la interfaz.
 	 */
 	private static String TIPO_ACCION;
@@ -607,7 +611,7 @@ public class VentanaAccionController implements Initializable {
 	public static String apiKey = Utilidades.cargarApiComicVine();
 	public static String clavesMarvel[] = Utilidades.clavesApiMarvel();
 
-	AlarmaList alarmaList = new AlarmaList();
+	private static AlarmaList alarmaList = new AlarmaList();
 
 	/**
 	 * Inicializa la interfaz de usuario y configura el comportamiento de los
@@ -619,7 +623,9 @@ public class VentanaAccionController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		Platform.runLater(() -> ConectManager.startCheckerTimer(miStageVentana()));
+		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
+		alarmaList.setAlarmaConexionInternet(alarmaConexionInternet);
+		alarmaList.iniciarThreadChecker(true);
 
 		Platform.runLater(() -> {
 
@@ -801,6 +807,11 @@ public class VentanaAccionController implements Initializable {
 	}
 
 	public void verBasedeDatos(boolean completo) {
+
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
@@ -1090,13 +1101,17 @@ public class VentanaAccionController implements Initializable {
 	 * Asigna autocompletado a campos de texto en la interfaz.
 	 */
 	public void listas_autocompletado() {
-		TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
-		TextFields.bindAutoCompletion(varianteComic, DBLibreriaManager.listaVariante);
-		TextFields.bindAutoCompletion(firmaComic, DBLibreriaManager.listaFirma);
-		TextFields.bindAutoCompletion(editorialComic, DBLibreriaManager.listaEditorial);
-		TextFields.bindAutoCompletion(guionistaComic, DBLibreriaManager.listaGuionista);
-		TextFields.bindAutoCompletion(dibujanteComic, DBLibreriaManager.listaDibujante);
-		TextFields.bindAutoCompletion(numeroComic.getEditor(), DBLibreriaManager.listaNumeroComic);
+
+		if (ConectManager.conexionActiva()) {
+			TextFields.bindAutoCompletion(nombreComic, DBLibreriaManager.listaNombre);
+			TextFields.bindAutoCompletion(varianteComic, DBLibreriaManager.listaVariante);
+			TextFields.bindAutoCompletion(firmaComic, DBLibreriaManager.listaFirma);
+			TextFields.bindAutoCompletion(editorialComic, DBLibreriaManager.listaEditorial);
+			TextFields.bindAutoCompletion(guionistaComic, DBLibreriaManager.listaGuionista);
+			TextFields.bindAutoCompletion(dibujanteComic, DBLibreriaManager.listaDibujante);
+			TextFields.bindAutoCompletion(numeroComic.getEditor(), DBLibreriaManager.listaNumeroComic);
+		}
+
 	}
 
 	/**
@@ -1196,18 +1211,21 @@ public class VentanaAccionController implements Initializable {
 	@FXML
 	public void agregarDatos(ActionEvent event)
 			throws IOException, SQLException, InterruptedException, ExecutionException {
-		libreria = new DBLibreriaManager();
 
-		if (nav.alertaAccionGeneral()) {
-			accionComicAsync(false); // Llama a la función para procesar la subida de un cómic
+		if (ConectManager.conexionActiva()) {
+			libreria = new DBLibreriaManager();
 
-			libreria.reiniciarBBDD(); // Reinicia la base de datos
+			if (nav.alertaAccionGeneral()) {
+				accionComicAsync(false); // Llama a la función para procesar la subida de un cómic
 
-		} else {
+				libreria.reiniciarBBDD(); // Reinicia la base de datos
 
-			String mensaje = "Se ha cancelado la subida del nuevo comic.";
+			} else {
 
-			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+				String mensaje = "Se ha cancelado la subida del nuevo comic.";
+
+				AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+			}
 		}
 
 	}
@@ -1249,28 +1267,31 @@ public class VentanaAccionController implements Initializable {
 	 */
 	private void accionPuntuar(boolean esAgregar) throws SQLException {
 
-		libreria = new DBLibreriaManager();
-		String id_comic = idComicTratar.getText();
-		idComicTratar.setStyle("");
-		if (comprobarID(id_comic)) {
+		if (ConectManager.conexionActiva()) {
+			libreria = new DBLibreriaManager();
+			String id_comic = idComicTratar.getText();
+			idComicTratar.setStyle("");
+			if (comprobarID(id_comic)) {
 
-			if (esAgregar) {
-				UpdateManager.actualizarOpinion(id_comic, FuncionesComboBox.puntuacionCombobox(puntuacionMenu));
-			} else {
-				UpdateManager.actualizarOpinion(id_comic, "0");
+				if (esAgregar) {
+					UpdateManager.actualizarOpinion(id_comic, FuncionesComboBox.puntuacionCombobox(puntuacionMenu));
+				} else {
+					UpdateManager.actualizarOpinion(id_comic, "0");
+				}
+				String mensaje = "Deseo concedido. Has borrado la puntuacion del comic.";
+
+				AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
+
+				Image nuevaImagen = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
+				imagenFondo.setImage(nuevaImagen);
+
+				List<ComboBox<String>> comboboxes = getComboBoxes();
+
+				funcionesCombo.rellenarComboBox(comboboxes);
+
 			}
-			String mensaje = "Deseo concedido. Has borrado la puntuacion del comic.";
-
-			AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
-
-			Image nuevaImagen = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
-			imagenFondo.setImage(nuevaImagen);
-
-			List<ComboBox<String>> comboboxes = getComboBoxes();
-
-			funcionesCombo.rellenarComboBox(comboboxes);
-
 		}
+
 	}
 
 	/**
@@ -1292,21 +1313,6 @@ public class VentanaAccionController implements Initializable {
 			} else {
 				cambiarVisibilidad(true);
 			}
-		}
-	}
-
-	/**
-	 * Método asociado al evento de acción que se dispara al seleccionar la opción
-	 * "Ver Menú Código de Barras". Invoca el método correspondiente en el objeto
-	 * 'nav' para mostrar el menú de códigos de barras.
-	 *
-	 * @param event Objeto que representa el evento de acción.
-	 */
-	@FXML
-	void verMenuCodigoBarras(ActionEvent event) {
-
-		if ("aniadir".equals(TIPO_ACCION)) {
-			nav.verMenuCodigosBarra();
 		}
 	}
 
@@ -1426,6 +1432,10 @@ public class VentanaAccionController implements Initializable {
 	@FXML
 	void busquedaPorCodigo(ActionEvent event) throws IOException, JSONException, URISyntaxException {
 
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
 		if (!Utilidades.verificarClavesAPI(clavesMarvel, apiKey)) {
 			if (!Utilidades.isInternetAvailable()) {
 				prontInfo.setText("No estas conectado a internet. Revisa tu conexion");
@@ -1514,6 +1524,10 @@ public class VentanaAccionController implements Initializable {
 
 		Platform.runLater(() -> {
 
+			if (!ConectManager.conexionActiva()) {
+				return;
+			}
+
 			String correctedUrl = comic.getImagen().replace("\\", "/").replace("http:", "https:");
 
 			String codigo_imagen = Utilidades.generarCodigoUnico(SOURCE_PATH + File.separator);
@@ -1571,6 +1585,11 @@ public class VentanaAccionController implements Initializable {
 	 */
 	private void rellenarTablaImport(Comic comic, String codigo_comic) {
 		Platform.runLater(() -> {
+
+			if (!ConectManager.conexionActiva()) {
+				return;
+			}
+
 			// Variables relacionadas con la importación de cómics
 			String id = "A" + 0 + "" + comicsImportados.size() + 1;
 			String titulo = Utilidades.defaultIfNullOrEmpty(comic.getNombre(), "Vacio");
@@ -1601,6 +1620,10 @@ public class VentanaAccionController implements Initializable {
 				urlImagen = file.toString();
 			}
 
+			String formato = Utilidades.defaultIfNullOrEmpty(comic.getFormato(), "Grapa (Issue individual)");
+			String procedencia = Utilidades.defaultIfNullOrEmpty(comic.getProcedencia(),
+					"Estados Unidos (United States)");
+
 			// Corrección y generación de la URL final de la imagen
 			String correctedUrl = urlImagen.replace("\\", "/").replace("http:", "https:").replace("https:", "https:/");
 			String codigo_imagen = Utilidades.generarCodigoUnico(SOURCE_PATH + File.separator);
@@ -1616,10 +1639,8 @@ public class VentanaAccionController implements Initializable {
 			Utilidades.descargarYConvertirImagenAsync(uri, SOURCE_PATH, codigo_imagen);
 
 			// Creación del objeto Comic importado y actualización de la tabla
-			Comic comicImport = new Comic(id, titulo, "0", numero, variante, "", editorial,
-					FuncionesComboBox.formatoCombobox(formatoComic),
-					FuncionesComboBox.procedenciaCombobox(procedenciaComic), fecha.toString(), escritores, dibujantes,
-					FuncionesComboBox.estadoCombobox(estadoComic), issueKey, "Sin puntuar", urlFinal, referencia,
+			Comic comicImport = new Comic(id, titulo, "0", numero, variante, "", editorial, formato, procedencia,
+					fecha.toString(), escritores, dibujantes, "Comprado", issueKey, "Sin puntuar", urlFinal, referencia,
 					precio, codigo_comic);
 
 			comicsImportados.add(comicImport);
@@ -1636,6 +1657,10 @@ public class VentanaAccionController implements Initializable {
 	 * @param fichero El archivo que contiene los códigos de importación a buscar.
 	 */
 	private void busquedaPorCodigoImportacion(File fichero) {
+
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
 
 		if (!Utilidades.isInternetAvailable()) {
 			return;
@@ -1712,6 +1737,10 @@ public class VentanaAccionController implements Initializable {
 			AtomicInteger contadorErrores, AtomicInteger comicsProcesados)
 			throws URISyntaxException, IOException, JSONException {
 
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
 		Comic comicInfo = obtenerComicInfo(finalValorCodigo, comicLectura);
 
 		if (comprobarCodigo(comicInfo)) {
@@ -1731,23 +1760,26 @@ public class VentanaAccionController implements Initializable {
 	private Comic obtenerComicInfo(String finalValorCodigo, AtomicBoolean comicLectura)
 			throws URISyntaxException, IOException, JSONException {
 
-		ApiISBNGeneral isbnGeneral = new ApiISBNGeneral();
-		WebScraperPreviewsWorld previewsScraper = new WebScraperPreviewsWorld();
+		if (ConectManager.conexionActiva()) {
+			ApiISBNGeneral isbnGeneral = new ApiISBNGeneral();
+			WebScraperPreviewsWorld previewsScraper = new WebScraperPreviewsWorld();
 
-		if (finalValorCodigo.length() == 9) {
-			return previewsScraper.displayComicInfo(finalValorCodigo.trim(), prontInfo);
-		} else {
-			Comic comicInfo = ApiMarvel.infoComicCode(finalValorCodigo.trim(), prontInfo);
-
-			if (comicInfo == null) {
-				comicInfo = isbnGeneral.getBookInfo(finalValorCodigo.trim(), prontInfo);
+			if (finalValorCodigo.length() == 9) {
+				return previewsScraper.displayComicInfo(finalValorCodigo.trim(), prontInfo);
+			} else {
+				Comic comicInfo = ApiMarvel.infoComicCode(finalValorCodigo.trim(), prontInfo);
 
 				if (comicInfo == null) {
-					comicLectura.set(true);
+					comicInfo = isbnGeneral.getBookInfo(finalValorCodigo.trim(), prontInfo);
+
+					if (comicInfo == null) {
+						comicLectura.set(true);
+					}
 				}
+				return comicInfo;
 			}
-			return comicInfo;
 		}
+		return null;
 	}
 
 	private void cerrarExecutorService(ExecutorService executorService) {
@@ -1842,6 +1874,11 @@ public class VentanaAccionController implements Initializable {
 	 */
 	@FXML
 	void eliminarDatos(ActionEvent event) throws IOException, SQLException, InterruptedException, ExecutionException {
+
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
 		libreria = new DBLibreriaManager();
 		String id_comic = idComicTratar.getText();
 		idComicTratar.setStyle("");
@@ -1876,6 +1913,11 @@ public class VentanaAccionController implements Initializable {
 	 * @throws SQLException
 	 */
 	public boolean comprobarID(String ID) throws SQLException {
+
+		if (!ConectManager.conexionActiva()) {
+			return false;
+		}
+
 		libreria = new DBLibreriaManager();
 		if (nav.alertaAccionGeneral()) {
 			if (SelectManager.comprobarIdentificadorComic(ID)) {
@@ -1981,6 +2023,10 @@ public class VentanaAccionController implements Initializable {
 	void modificarDatos(ActionEvent event)
 			throws NumberFormatException, SQLException, IOException, InterruptedException, ExecutionException {
 
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
 		libreria = new DBLibreriaManager();
 		String id_comic = idComicTratar_mod.getText();
 		idComicTratar.setStyle("");
@@ -2018,6 +2064,11 @@ public class VentanaAccionController implements Initializable {
 	 */
 	@FXML
 	void ventaComic(ActionEvent event) throws IOException, SQLException {
+
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
 		libreria = new DBLibreriaManager();
 		String id_comic = idComicTratar.getText();
 		idComicTratar.setStyle("");
@@ -2160,6 +2211,11 @@ public class VentanaAccionController implements Initializable {
 	 */
 	@FXML
 	void guardarListaImportados(ActionEvent event) throws IOException, SQLException, URISyntaxException {
+
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
 		if (comicsImportados.size() > 0) {
 			if (nav.alertaInsertar()) {
 				libreria = new DBLibreriaManager();
@@ -2306,6 +2362,11 @@ public class VentanaAccionController implements Initializable {
 	 * @throws Exception
 	 */
 	public void subidaComic() throws Exception {
+
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
 		utilidad = new Utilidades();
 
 		Utilidades.convertirNombresCarpetas(SOURCE_PATH);
@@ -2326,6 +2387,11 @@ public class VentanaAccionController implements Initializable {
 	 * @throws Exception
 	 */
 	public void modificacionComic() throws Exception {
+
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
 		libreria = new DBLibreriaManager();
 
 		String id_comic = idComicTratar_mod.getText();
@@ -2383,6 +2449,10 @@ public class VentanaAccionController implements Initializable {
 	 * @throws Exception
 	 */
 	public void procesarComic(Comic comic, boolean esModificacion) throws Exception {
+
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
 
 		libreria = new DBLibreriaManager();
 		utilidad = new Utilidades();
@@ -2464,6 +2534,11 @@ public class VentanaAccionController implements Initializable {
 		// Crear un nuevo hilo para la ejecución asíncrona
 		Thread updateThread = new Thread(() -> {
 			try {
+
+				if (!ConectManager.conexionActiva()) {
+					return;
+				}
+
 				// Iniciar la animación de cambio de imagen
 				AlarmaList.iniciarAnimacionCambioImagen(imagenFondo);
 
@@ -2609,6 +2684,27 @@ public class VentanaAccionController implements Initializable {
 	}
 
 	/**
+	 * Método asociado al evento de acción que se dispara al seleccionar la opción
+	 * "Ver Menú Código de Barras". Invoca el método correspondiente en el objeto
+	 * 'nav' para mostrar el menú de códigos de barras.
+	 *
+	 * @param event Objeto que representa el evento de acción.
+	 */
+	@FXML
+	void verMenuCodigoBarras(ActionEvent event) {
+
+		if ("aniadir".equals(TIPO_ACCION)) {
+			nav.verMenuCodigosBarra();
+		}
+	}
+
+	@FXML
+	void verEstadoConexion(ActionEvent event) {
+		nav.verEstadoConexion();
+
+	}
+
+	/**
 	 * Establece la instancia de la ventana (Stage) asociada a este controlador.
 	 *
 	 * @param stage La instancia de la ventana (Stage) que se asocia con este
@@ -2619,19 +2715,19 @@ public class VentanaAccionController implements Initializable {
 	}
 
 	public Scene miStageVentana() {
-	    Node rootNode = botonLimpiar;
-	    while (rootNode.getParent() != null) {
-	        rootNode = rootNode.getParent();
-	    }
+		Node rootNode = botonLimpiar;
+		while (rootNode.getParent() != null) {
+			rootNode = rootNode.getParent();
+		}
 
-	    if (rootNode instanceof Parent) {
-	        Scene scene = ((Parent) rootNode).getScene();
-	        ConectManager.activeScenes.add(scene);
-	        return scene;
-	    } else {
-	        // Manejar el caso en el que no se pueda encontrar un nodo raíz adecuado
-	        return null;
-	    }
+		if (rootNode instanceof Parent) {
+			Scene scene = ((Parent) rootNode).getScene();
+			ConectManager.activeScenes.add(scene);
+			return scene;
+		} else {
+			// Manejar el caso en el que no se pueda encontrar un nodo raíz adecuado
+			return null;
+		}
 	}
 
 	/**

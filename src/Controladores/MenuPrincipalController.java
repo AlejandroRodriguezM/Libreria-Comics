@@ -69,6 +69,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -169,6 +170,9 @@ public class MenuPrincipalController implements Initializable {
 	private MenuItem menu_estadistica_comprados, menu_estadistica_estadistica, menu_estadistica_firmados,
 			menu_estadistica_key_issue, menu_estadistica_posesion, menu_estadistica_puntuados,
 			menu_estadistica_vendidos;
+
+	@FXML
+	private MenuItem menu_archivo_conexion;
 
 	/**
 	 * Barra de menús de navegación.
@@ -437,6 +441,11 @@ public class MenuPrincipalController implements Initializable {
 
 	private Map<Node, String> tooltipsMap = new HashMap<>();
 
+	@FXML
+	private Label alarmaConexionSql;
+
+	private static AlarmaList alarmaList = new AlarmaList();
+
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
 	 *
@@ -446,10 +455,8 @@ public class MenuPrincipalController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-//		libreria = new DBLibreriaManager();
-
-		Platform.runLater(() -> ConectManager.startCheckerTimer(miStageVentana()));
-
+		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
+		alarmaList.iniciarThreadChecker(true);
 		prontInfo.textProperty().addListener((observable, oldValue, newValue) -> {
 			funcionesTabla.ajustarAnchoVBox(prontInfo, vboxContenido);
 		});
@@ -719,6 +726,11 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	public void verBasedeDatos(boolean completo) {
+
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
 		libreria = new DBLibreriaManager();
 		libreria.reiniciarBBDD();
 		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
@@ -826,6 +838,11 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	private void imprimirComicsEstado(CommonFunctions.TipoBusqueda tipoBusqueda) {
+
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
 		limpiezaDeDatos();
 		limpiarComboBox();
 		libreria = new DBLibreriaManager(); // Crear una instancia del gestor de la base de datos
@@ -852,6 +869,10 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void importCSV(ActionEvent event) throws SQLException, InterruptedException, ExecutionException {
 
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
 		limpiezaDeDatos();
 		limpiarComboBox();
 		guardarDatosCSV();
@@ -873,6 +894,11 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void exportCSV(ActionEvent event) throws SQLException {
+
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
 		limpiezaDeDatos();
 		limpiarComboBox();
 		List<Comic> listaComics = SelectManager.buscarEnLibreria(CommonFunctions.TipoBusqueda.COMPLETA);
@@ -893,6 +919,11 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void exportarSQL(ActionEvent event) {
+
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
 		makeSQL();
 
 		limpiezaDeDatos();
@@ -938,6 +969,10 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void borrarContenidoTabla(ActionEvent event) throws SQLException {
+
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
 
 		Utilidades.borrarArchivosNoEnLista(DBLibreriaManager.listaImagenes);
 
@@ -1100,6 +1135,10 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void verEstadistica(ActionEvent event) throws IOException {
 
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
 		AlarmaList alarmaList = new AlarmaList();
 		libreria = new DBLibreriaManager();
 		alarmaList.iniciarAnimacionEstadistica(prontInfo);
@@ -1154,6 +1193,10 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	private void seleccionarComics() throws SQLException {
 
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
 		libreria = new DBLibreriaManager();
 		SelectManager.buscarEnLibreria(CommonFunctions.TipoBusqueda.COMPLETA);
 
@@ -1189,6 +1232,11 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void imprimirResultado(ActionEvent event) throws SQLException {
+
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
 		List<Comic> listaComics = listaPorParametro();
 
 		String tipoBusqueda = "Parcial";
@@ -1216,6 +1264,11 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void guardarResultado(ActionEvent event) throws SQLException {
+
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
 		List<Comic> listaComics = listaPorParametro();
 
 		String mensaje = "";
@@ -1243,6 +1296,11 @@ public class MenuPrincipalController implements Initializable {
 	 * @param listaComics La lista de cómics a exportar.
 	 */
 	private void cargaExportExcel(List<Comic> listaComics, String tipoBusqueda) {
+
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
 		FuncionesExcel excelFuntions = new FuncionesExcel();
 		AlarmaList alarmaList = new AlarmaList();
 		String mensajeErrorExportar = "ERROR. No se ha podido exportar correctamente.";
@@ -1295,6 +1353,11 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	public void guardarDatosCSV() {
+
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
 		String frase = "Fichero CSV";
 		String formato = "*.csv";
 		FuncionesExcel funcionesExcel = new FuncionesExcel();
@@ -1340,6 +1403,11 @@ public class MenuPrincipalController implements Initializable {
 	 * @param fichero
 	 */
 	public void makeSQL() {
+
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
 		libreria = new DBLibreriaManager();
 
 		String frase = "Fichero SQL";
@@ -1379,6 +1447,11 @@ public class MenuPrincipalController implements Initializable {
 	 * @throws SQLException
 	 */
 	public List<Comic> listaPorParametro() {
+
+		if (!ConectManager.conexionActiva()) {
+			return null;
+		}
+
 		libreria = new DBLibreriaManager();
 		Comic datos = camposComic();
 		prontInfo.setOpacity(1);
@@ -1400,6 +1473,11 @@ public class MenuPrincipalController implements Initializable {
 	 * @throws SQLException
 	 */
 	public List<Comic> libreriaCompleta() throws IOException, SQLException {
+
+		if (!ConectManager.conexionActiva()) {
+			return null;
+		}
+
 		libreria = new DBLibreriaManager();
 		limpiezaDeDatos();
 		List<Comic> listComic = FXCollections
@@ -1522,6 +1600,40 @@ public class MenuPrincipalController implements Initializable {
 		nav.verAccionComic();
 	}
 
+	/**
+	 * Maneja la acción del usuario en relación a los cómics, como agregar,
+	 * modificar, eliminar o puntuar un cómic.
+	 *
+	 * @param event El evento de acción que desencadenó la llamada a esta función.
+	 */
+	@FXML
+	void modificarApiMarvel(ActionEvent event) {
+		tablaBBDD.getItems().clear();
+		ModificarApiDatosController.tipoAccion("Marvel");
+		nav.verModificarApis(true);
+	}
+
+	/**
+	 * Maneja la acción del usuario en relación a los cómics, como agregar,
+	 * modificar, eliminar o puntuar un cómic.
+	 *
+	 * @param event El evento de acción que desencadenó la llamada a esta función.
+	 */
+	@FXML
+	void modificarApiVine(ActionEvent event) {
+		tablaBBDD.getItems().clear();
+
+		ModificarApiDatosController.tipoAccion("Vine");
+
+		nav.verModificarApis(false);
+	}
+
+	@FXML
+	void verEstadoConexion(ActionEvent event) {
+		nav.verEstadoConexion();
+
+	}
+
 	/////////////////////////////
 	//// FUNCIONES PARA SALIR////
 	/////////////////////////////
@@ -1534,9 +1646,9 @@ public class MenuPrincipalController implements Initializable {
 
 		if (rootNode instanceof Parent) {
 			Scene scene = ((Parent) rootNode).getScene();
-			
+
 			ConectManager.activeScenes.add(scene);
-			
+
 			return scene;
 		} else {
 			// Manejar el caso en el que no se pueda encontrar un nodo raíz adecuado
@@ -1566,6 +1678,7 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	public void salirPrograma(ActionEvent event) {
 		// Lógica para manejar la acción de "Salir"
+
 		if (nav.salirPrograma(event)) {
 			Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 			myStage.close();

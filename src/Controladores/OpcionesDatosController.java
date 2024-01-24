@@ -218,7 +218,7 @@ public class OpcionesDatosController implements Initializable {
 		alarmaList.setAlarmaConexionInternet(alarmaConexionInternet);
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
 
-		alarmaList.iniciarThreadChecker();
+		alarmaList.iniciarThreadChecker(false);
 
 		Utilidades.crearEstructura();
 		AlarmaList.configureEyeToggle(toggleEyeImageView, passUsuarioTextField, pass);
@@ -257,7 +257,7 @@ public class OpcionesDatosController implements Initializable {
 		String databaseTexto = datosConfiguracion.get("Database");
 		String hostingTexto = datosConfiguracion.get("Hosting");
 
-		if (Utilidades.validarConexionMySQL(puertoTexto, hostingTexto)) {
+		if (Utilidades.isMySQLServiceRunning(puertoTexto, hostingTexto)) {
 
 			List<String> opciones = Utilidades.obtenerOpcionesNombreBBDD(usuarioTexto, passwordTexto, puertoTexto,
 					hostingTexto);

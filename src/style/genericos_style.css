@@ -128,7 +128,8 @@
 }
 
 .button#botonIntroducir:hover {
-    -fx-background-color: #6495ED;
+    -fx-background-color: #3b71d3;
+    -fx-border-color: #3b71d3;
 }
 
 .button#botonNuevaPortada {
@@ -298,4 +299,23 @@
     -fx-background-color: #ec5353;
 }
 
+.button#guardarDatosApi {
+    -fx-background-color: #6495ED;
+    -fx-border-color: #6495ED;
+}
+
+.button#guardarDatosApi:hover {
+    -fx-background-color: #3b71d3;
+    -fx-border-color: #3b71d3;
+}
+
+.button#restablecerDatos {
+    -fx-background-color: #E49B0F;
+    -fx-border-color: #E49B0F;
+}
+
+.button#restablecerDatos:hover {
+    -fx-background-color: #b47a0c;
+    -fx-border-color: #b47a0c;
+}
 

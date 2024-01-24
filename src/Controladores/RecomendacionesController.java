@@ -27,6 +27,7 @@ package Controladores;
  */
 
 import java.io.IOException;
+import java.net.URL;
 import java.sql.SQLException;
 
 /**
@@ -53,19 +54,22 @@ import java.sql.SQLException;
  */
 
 import java.util.Random;
+import java.util.ResourceBundle;
 
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
+import alarmas.AlarmaList;
 import dbmanager.CommonFunctions.TipoBusqueda;
 import dbmanager.ConectManager;
 import dbmanager.SelectManager;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -80,7 +84,7 @@ import javafx.stage.Stage;
  *
  * @author Alejandro Rodriguez
  */
-public class RecomendacionesController {
+public class RecomendacionesController implements Initializable {
 
 	/**
 	 * Elemento del menú para desconectar.
@@ -200,15 +204,24 @@ public class RecomendacionesController {
 	 */
 	private static Utilidades utilidad = null;
 
-	/**
-	 * Inicializa la lógica y los eventos al cargar la interfaz gráfica.
-	 */
 	@FXML
-	void initialize() {
+	private Label alarmaConexionSql;
 
-		Platform.runLater(() -> ConectManager.startCheckerTimer(miStageVentana()));
+	private static AlarmaList alarmaList = new AlarmaList();
+
+	/**
+	 * Inicializa el controlador cuando se carga la vista.
+	 *
+	 * @param location  la ubicación del archivo FXML
+	 * @param resources los recursos utilizados por la vista
+	 */
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+
+		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
+		alarmaList.iniciarThreadChecker(true);
 	}
-	
+
 	/**
 	 * Llama a funcion que genera una lectura recomendada
 	 *
@@ -233,6 +246,10 @@ public class RecomendacionesController {
 	 */
 	public String generarLectura() throws IOException, SQLException {
 
+		if (!ConectManager.conexionActiva()) {
+			return null;
+		}
+
 		Random r = new Random();
 		utilidad = new Utilidades();
 		String id_comic;
@@ -240,8 +257,9 @@ public class RecomendacionesController {
 		limpiarPront(); // Llamada a función para limpiar la pantalla "TextArea"
 
 		if (SelectManager.buscarEnLibreria(TipoBusqueda.COMPLETA).size() != 0) {
-			int n = r.nextInt(SelectManager.buscarEnLibreria(TipoBusqueda.COMPLETA).size()); // Generar un número aleatorio
-																						// dentro del rango
+			int n = r.nextInt(SelectManager.buscarEnLibreria(TipoBusqueda.COMPLETA).size()); // Generar un número
+																								// aleatorio
+			// dentro del rango
 			// válido
 
 			id_comic = SelectManager.buscarEnLibreria(TipoBusqueda.COMPLETA).get(n).getID();
@@ -251,8 +269,9 @@ public class RecomendacionesController {
 
 			imagencomic.setImage(imagenComic);
 			utilidad.deleteImage();
-			return SelectManager.buscarEnLibreria(TipoBusqueda.COMPLETA).get(n).toString(); // Devuelve un cómic de la lista
-																						// de cómics
+			return SelectManager.buscarEnLibreria(TipoBusqueda.COMPLETA).get(n).toString(); // Devuelve un cómic de la
+																							// lista
+			// de cómics
 		} else {
 			printComicRecomendado.setText("ERROR. No hay ningún dato en la base de datos");
 			printComicRecomendado.setStyle("-fx-background-color: #F53636");
@@ -324,6 +343,11 @@ public class RecomendacionesController {
 	 */
 	@FXML
 	public void desconectar(ActionEvent event) throws IOException {
+
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
 		nav.verAccesoBBDD();
 		ConectManager.close();
 
@@ -346,7 +370,7 @@ public class RecomendacionesController {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Vuelve al menu inicial de conexion de la base de datos.
 	 *
@@ -380,7 +404,9 @@ public class RecomendacionesController {
 	 */
 	public void closeWindows() {
 
-		Platform.exit();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
+		nav.verAccesoBBDD();
 
 	}
 

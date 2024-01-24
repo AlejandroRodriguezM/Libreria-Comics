@@ -305,7 +305,7 @@ public class ApiMarvel {
 	private static String[] clavesApi() {
 		String claves[] = new String[2]; // Crear un arreglo de dos elementos para almacenar las claves
 
-		String clavesDesdeArchivo = Utilidades.obtenerClaveApiArchivo(); // Obtener las claves desde el archivo
+		String clavesDesdeArchivo = Utilidades.obtenerClaveApiMarvel(); // Obtener las claves desde el archivo
 
 		if (!clavesDesdeArchivo.isEmpty()) {
 			String[] partes = clavesDesdeArchivo.split(":");

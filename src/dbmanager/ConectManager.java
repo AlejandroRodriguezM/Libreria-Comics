@@ -32,14 +32,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
-import javafx.application.Platform;
 import javafx.scene.Scene;
-import javafx.stage.Stage;
 
 /**
  * Clase que gestiona la conexión a la base de datos y proporciona métodos para
@@ -90,8 +86,6 @@ public class ConectManager {
 	public static String DB_URL;
 
 	public static boolean estadoConexion = false;
-
-	private final static Timer checkerTimer = new Timer();
 
 	public static List<Scene> activeScenes = new ArrayList<>();
 
@@ -197,7 +191,6 @@ public class ConectManager {
 			estadoConexion = true;
 
 			if (!Utilidades.validarDatosConexion()) {
-				System.out.println("SQL cerrado");
 				estadoConexion = false;
 				nav.alertaException("Error. Servicio MySql apagado o desconectado de forma repentina.");
 				return null;
@@ -225,30 +218,15 @@ public class ConectManager {
 		}
 	}
 
-	public synchronized static void startCheckerTimer(Scene miSceneVentana) {
-		checkerTimer.scheduleAtFixedRate(new TimerTask() {
-			@Override
-			public void run() {
-				Platform.runLater(() -> {
-					if (!Utilidades.comprobarYManejarConexion(miSceneVentana) || conexion() == null) {
-						Ventanas nav = new Ventanas();
+	public static boolean conexionActiva() {
 
-	                    for (Scene ventanaActiva : activeScenes) {
-	                        if (ventanaActiva.getWindow() instanceof Stage) {
-	                            ((Stage) ventanaActiva.getWindow()).close();
-	                        }
-	                    }
-						nav.verAccesoBBDD();
+		boolean estadoConexion = Utilidades.isMySQLServiceRunning(DB_HOST, DB_PORT);
 
-						// Cancel the timer in a synchronized block
-						synchronized (checkerTimer) {
-							checkerTimer.cancel();
-						}
-					}
-				});
-				// Other code...
-			}
-		}, 0, 1000);
+		if (!estadoConexion) {
+			nav.alertaException("Tu conexion con xampp o el servicio MySql se ha detenido");
+		}
+
+		return estadoConexion;
 	}
 
 	/**

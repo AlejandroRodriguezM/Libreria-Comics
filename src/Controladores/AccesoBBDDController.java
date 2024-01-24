@@ -9,11 +9,17 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import com.gluonhq.charm.glisten.control.ProgressIndicator;
 
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
 import dbmanager.ConectManager;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -157,6 +163,9 @@ public class AccesoBBDDController implements Initializable {
 	@FXML
 	private TextField passUsuarioTextField;
 
+	@FXML
+	private ProgressIndicator progresoCarga;
+	
 	/**
 	 * Estado del botón de alternancia del ojo.
 	 */
@@ -166,9 +175,10 @@ public class AccesoBBDDController implements Initializable {
 	 * Objeto para gestionar las ventanas de navegación.
 	 */
 	private static Ventanas nav = new Ventanas();
-	
+
 	private static AlarmaList alarmaList = new AlarmaList();
 
+	private static ExecutorService executorService;
 
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
@@ -188,13 +198,23 @@ public class AccesoBBDDController implements Initializable {
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
 		alarmaList.setAlarmaConexionPrincipal(prontEstadoConexion);
 
-		alarmaList.iniciarThreadChecker();
+		alarmaList.iniciarThreadChecker(false);
 
 		Utilidades.crearEstructura();
 
 		Utilidades.comprobarApisComics();
-
-
+		
+		ConectManager.asignarValoresPorDefecto();
+		
+        Platform.runLater(() -> {
+            progresoCarga.getScene().getWindow().setOnHidden(e -> {
+                if (executorService != null && !executorService.isShutdown()) {
+                    executorService.shutdownNow();
+                }
+            });
+        });
+        
+        
 	}
 
 	/**
@@ -273,7 +293,8 @@ public class AccesoBBDDController implements Initializable {
 	void entrarMenu(ActionEvent event) {
 
 		if (!Utilidades.isMySQLServiceRunning(ConectManager.DB_HOST, ConectManager.DB_PORT)) {
-			AlarmaList.iniciarAnimacionErrorMySql(prontEstadoConexion);
+			AlarmaList.detenerAnimacion();
+			AlarmaList.iniciarAnimacionConexion(prontEstadoConexion);
 			AlarmaList.iniciarAnimacionAlarma(alarmaConexion);
 			return;
 		}
@@ -282,9 +303,10 @@ public class AccesoBBDDController implements Initializable {
 			ConectManager.resetConnection();
 			// al menu principal
 			nav.verMenuPrincipal();
-			closeWindows();
+			closeWindow();
 		} else { // En caso contrario mostrara el siguiente mensaje.
 			AlarmaList.detenerAnimacion();
+			ConectManager.asignarValoresPorDefecto();
 			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
 			AlarmaList.iniciarAnimacionConexion(prontEstadoConexion);
 		}
@@ -308,7 +330,7 @@ public class AccesoBBDDController implements Initializable {
 				AlarmaList.detenerAnimacion();
 				AlarmaList.iniciarAnimacionConectado(prontEstadoConexion);
 				AlarmaList.manejarConexionExitosa(datosFichero, prontEstadoConexion);
-				
+
 			} else {
 				AlarmaList.manejarErrorConexion("No estás conectado a la base de datos.", prontEstadoConexion);
 			}
@@ -335,6 +357,43 @@ public class AccesoBBDDController implements Initializable {
 		return scene;
 
 	}
+
+	@FXML
+    void reActivarConexion(ActionEvent event) {
+        Task<Boolean> iniciarXAMPPTask = new Task<Boolean>() {
+            @Override
+            protected Boolean call() throws Exception {
+                // Realizar las operaciones de inicio de XAMPP aquí
+                return Utilidades.iniciarXAMPP();
+            }
+        };
+
+        // Configurar eventos onRunning y onSucceeded
+        iniciarXAMPPTask.setOnRunning(e -> {
+            AlarmaList.iniciarAnimacionCarga(progresoCarga);
+        });
+
+        iniciarXAMPPTask.setOnSucceeded(e -> {
+            boolean exito = iniciarXAMPPTask.getValue();
+
+            Platform.runLater(() -> {
+                if (exito) {
+                    AlarmaList.detenerAnimacionCarga(progresoCarga);
+                } else {
+                    AlarmaList.detenerAnimacionCarga(progresoCarga);
+                }
+            });
+
+            // Cerrar el hilo después de completar la tarea
+            if (!executorService.isShutdown()) {
+                executorService.shutdown();
+            }
+        });
+
+        // Iniciar la tarea en un nuevo hilo utilizando un ExecutorService
+        executorService = Executors.newSingleThreadExecutor();
+        executorService.submit(iniciarXAMPPTask);
+    }
 
 	/**
 	 * Permite salir completamente del programa.
@@ -366,7 +425,7 @@ public class AccesoBBDDController implements Initializable {
 	/**
 	 * Cierra el programa a la fuerza correctamente.
 	 */
-	public void closeWindows() { // Metodo que permite cerrar completamente el programa en caso de cerrar a la //
+	public void closeWindow() { // Metodo que permite cerrar completamente el programa en caso de cerrar a la //
 		// fuerza.
 		Stage myStage = (Stage) this.botonEnviar.getScene().getWindow();
 		myStage.close();

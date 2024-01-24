@@ -60,6 +60,7 @@ public class AlarmaList {
 	private Label alarmaConexionInternet = new Label("alarmaConexionInternet");
 	private Label alarmaConexionSql = new Label("alarmaConexionSql");
 	private Label iniciarAnimacionEspera = new Label("prontEstadoConexion");
+	private Label iniciarAnimacionEsperaInternet = new Label("prontEstadoConexionInternet");
 
 	/**
 	 * Instancia de la clase Ventanas para la navegación.
@@ -115,7 +116,15 @@ public class AlarmaList {
 		}
 	}
 
-	public void iniciarThreadChecker() {
+	public void setAlarmaInternetLabel(Label iniciarAnimacionEsperaInternet) {
+		this.iniciarAnimacionEsperaInternet = iniciarAnimacionEsperaInternet;
+		// Actualizar el Label en el tercer elemento de la lista
+		if (alarmaItems.size() > 2) {
+			alarmaItems.get(3).setLabel(iniciarAnimacionEsperaInternet);
+		}
+	}
+
+	public void iniciarThreadChecker(boolean esComprobarConexion) {
 		Thread checkerThread = new Thread(() -> {
 			try {
 				iniciarAnimacionAlarma(alarmaConexion);
@@ -129,14 +138,18 @@ public class AlarmaList {
 						String host = datosConfiguracion.get("Hosting");
 						iniciarAnimacionEspera(iniciarAnimacionEspera);
 						if (estadoInternet) {
-
+							iniciarAnimacionConectado(iniciarAnimacionEsperaInternet);
 							detenerAnimacion(animacionAlarmaTimelineInternet);
 							asignarTooltip(alarmaConexionInternet, "Tienes conexión a internet");
-							alarmaConexionInternet.setStyle("-fx-background-color: blue;");
+							iniciarAnimacionAlarmaOnline(alarmaConexionInternet);
 
 						} else {
 							asignarTooltip(alarmaConexionInternet, "No tienes conexión a internet");
-							iniciarAnimacionConexionRed(alarmaConexionInternet);
+							iniciarAnimacionAlarmaError(alarmaConexionInternet);
+
+							if (esComprobarConexion) {
+								iniciarAnimacionDesconectado(alarmaConexionInternet);
+							}
 
 						}
 
@@ -146,13 +159,23 @@ public class AlarmaList {
 									&& animacionAlarmaTimelineMySql.getStatus() == Animation.Status.RUNNING) {
 								animacionAlarmaTimelineMySql.stop();
 							}
+
+							if (esComprobarConexion) {
+								iniciarAnimacionConectado(iniciarAnimacionEspera);
+							}
 							asignarTooltip(alarmaConexionSql, "Servicio de MySQL activado");
 							iniciarAnimacionAlarmaOnline(alarmaConexionSql);
 
 						} else {
+
+							if (esComprobarConexion) {
+								iniciarAnimacionDesconectado(iniciarAnimacionEspera);
+							} else {
+								iniciarAnimacionErrorMySql(iniciarAnimacionEspera);
+							}
+
 							asignarTooltip(alarmaConexionSql, "Servicio de MySQL desactivado");
-							iniciarAnimacionErrorMySql(iniciarAnimacionEspera);
-							iniciarAnimacionConexionRed(alarmaConexionSql);
+							iniciarAnimacionAlarmaError(alarmaConexionSql);
 						}
 
 						asignarTooltip(alarmaConexion,
@@ -344,24 +367,24 @@ public class AlarmaList {
 	 * Metodo que permite crear una animacion
 	 */
 	public static void iniciarAnimacionConexion(Label prontEstadoConexion) {
-		if (timelineError == null) {
-			timelineError = new Timeline();
-			timelineError.setCycleCount(Timeline.INDEFINITE);
-			prontEstadoConexion.setStyle("-fx-background-color: red;");
+//		if (timelineError == null) {
+		timelineError = new Timeline();
+		timelineError.setCycleCount(Timeline.INDEFINITE);
+		prontEstadoConexion.setStyle("-fx-background-color: red;");
 
-			// Agregar los keyframes para cambiar el texto
-			KeyFrame mostrarError = new KeyFrame(Duration.ZERO, new KeyValue(prontEstadoConexion.textProperty(), ""));
-			KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
-					new KeyValue(prontEstadoConexion.textProperty(), "ERROR. Conectate primero"));
-			KeyFrame mostrarError2 = new KeyFrame(Duration.seconds(1),
-					new KeyValue(prontEstadoConexion.textProperty(), ""));
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarError = new KeyFrame(Duration.ZERO, new KeyValue(prontEstadoConexion.textProperty(), ""));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(prontEstadoConexion.textProperty(), "ERROR. Conectate primero"));
+		KeyFrame mostrarError2 = new KeyFrame(Duration.seconds(1),
+				new KeyValue(prontEstadoConexion.textProperty(), ""));
 
-			// Agregar los keyframes al timeline
-			timelineError.getKeyFrames().addAll(mostrarError, ocultarTexto, mostrarError2);
+		// Agregar los keyframes al timeline
+		timelineError.getKeyFrames().addAll(mostrarError, ocultarTexto, mostrarError2);
 
-			// Iniciar la animación
-			timelineError.play();
-		}
+		// Iniciar la animación
+		timelineError.play();
+//		}
 	}
 
 	/**
@@ -370,7 +393,7 @@ public class AlarmaList {
 	public static void iniciarAnimacionConectado(Label prontEstadoConexion) {
 		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
-
+		prontEstadoConexion.setStyle("-fx-background-color: #29B6CC; -fx-text-fill: black;");
 		// Agregar los keyframes para cambiar el texto
 		KeyFrame mostrarConectado = new KeyFrame(Duration.ZERO, new KeyValue(prontEstadoConexion.textProperty(), ""));
 		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.0),
@@ -379,6 +402,28 @@ public class AlarmaList {
 				new KeyValue(prontEstadoConexion.textProperty(), ""));
 		KeyFrame ocultarTextoDeNuevo = new KeyFrame(Duration.seconds(1.0),
 				new KeyValue(prontEstadoConexion.textProperty(), "Conectado"));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarConectado, ocultarTexto, mostrarConectado2, ocultarTextoDeNuevo);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+
+	public static void iniciarAnimacionDesconectado(Label prontEstadoConexion) {
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		prontEstadoConexion.setStyle("-fx-background-color: red; -fx-text-fill: white;");
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarConectado = new KeyFrame(Duration.ZERO, new KeyValue(prontEstadoConexion.textProperty(), ""));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.0),
+				new KeyValue(prontEstadoConexion.textProperty(), "Desconectado"));
+		KeyFrame mostrarConectado2 = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(prontEstadoConexion.textProperty(), ""));
+		KeyFrame ocultarTextoDeNuevo = new KeyFrame(Duration.seconds(1.0),
+				new KeyValue(prontEstadoConexion.textProperty(), "Desconectado"));
 
 		// Agregar los keyframes al timeline
 		timeline.getKeyFrames().addAll(mostrarConectado, ocultarTexto, mostrarConectado2, ocultarTextoDeNuevo);
@@ -422,6 +467,24 @@ public class AlarmaList {
 				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
 		KeyFrame mostrarVerdeNuevamente = new KeyFrame(Duration.seconds(1.0),
 				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: green;"));
+
+		animacionAlarmaOnlineTimeline.getKeyFrames().addAll(mostrarVerde, ocultarTexto, mostrarTransparente,
+				mostrarVerdeNuevamente);
+		animacionAlarmaOnlineTimeline.play();
+	}
+
+	public static void iniciarAnimacionAlarmaError(Label alarmaConexion) {
+		animacionAlarmaOnlineTimeline = new Timeline();
+		animacionAlarmaOnlineTimeline.setCycleCount(Timeline.INDEFINITE);
+
+		KeyFrame mostrarVerde = new KeyFrame(Duration.ZERO,
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.0),
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: red;"));
+		KeyFrame mostrarTransparente = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
+		KeyFrame mostrarVerdeNuevamente = new KeyFrame(Duration.seconds(1.0),
+				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: red;"));
 
 		animacionAlarmaOnlineTimeline.getKeyFrames().addAll(mostrarVerde, ocultarTexto, mostrarTransparente,
 				mostrarVerdeNuevamente);
@@ -478,6 +541,7 @@ public class AlarmaList {
 	 * Inicia la animación de conexión exitosa en la interfaz.
 	 */
 	public static void iniciarAnimacionGuardado(Label prontEstadoFichero) {
+		prontEstadoFichero.setStyle("-fx-background-color: #A0F52D");
 		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
 
@@ -572,6 +636,105 @@ public class AlarmaList {
 	/**
 	 * Metodo que permite crear una animacion
 	 */
+	public static void iniciarAnimacionEspera(TextArea prontInfo) {
+		prontInfo.setOpacity(1);
+		Timeline timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarSubida1 = new KeyFrame(Duration.ZERO, new KeyValue(prontInfo.textProperty(), "Esperando"));
+		KeyFrame mostrarSubida2 = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(prontInfo.textProperty(), "Esperando."));
+		KeyFrame mostrarSubida3 = new KeyFrame(Duration.seconds(1),
+				new KeyValue(prontInfo.textProperty(), "Esperando.."));
+		KeyFrame mostrarSubida4 = new KeyFrame(Duration.seconds(1.5),
+				new KeyValue(prontInfo.textProperty(), "Esperando..."));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarSubida1, mostrarSubida2, mostrarSubida3, mostrarSubida4);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+
+	/**
+	 * Metodo que permite crear una animacion
+	 */
+	public static void iniciarAnimacionGuardado(TextArea prontInfo) {
+		prontInfo.setOpacity(1);
+		prontInfo.setStyle("-fx-background-color: green;");
+
+		Timeline timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarSubida1 = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontInfo.textProperty(), "Fichero guardado correctamente"));
+		KeyFrame mostrarSubida2 = new KeyFrame(Duration.seconds(0.5), new KeyValue(prontInfo.textProperty(), ""));
+		KeyFrame mostrarSubida3 = new KeyFrame(Duration.seconds(1),
+				new KeyValue(prontInfo.textProperty(), "Fichero guardado correctamente"));
+		KeyFrame mostrarSubida4 = new KeyFrame(Duration.seconds(1.5), new KeyValue(prontInfo.textProperty(), ""));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarSubida1, mostrarSubida2, mostrarSubida3, mostrarSubida4);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+
+	/**
+	 * Metodo que permite crear una animacion
+	 */
+	public static void iniciarAnimacionError(Label prontInfo) {
+		prontInfo.setOpacity(1);
+		prontInfo.setStyle("-fx-background-color: #FF6347;");
+
+		Timeline timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarSubida1 = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontInfo.textProperty(), "ERROR. No se ha podido guardar el fichero"));
+		KeyFrame mostrarSubida2 = new KeyFrame(Duration.seconds(0.5), new KeyValue(prontInfo.textProperty(), ""));
+		KeyFrame mostrarSubida3 = new KeyFrame(Duration.seconds(1),
+				new KeyValue(prontInfo.textProperty(), "ERROR. No se ha podido guardar el fichero"));
+		KeyFrame mostrarSubida4 = new KeyFrame(Duration.seconds(1.5), new KeyValue(prontInfo.textProperty(), ""));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarSubida1, mostrarSubida2, mostrarSubida3, mostrarSubida4);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+
+	/**
+	 * Metodo que permite crear una animacion
+	 */
+	public static void iniciarAnimacionReEstablecido(Label prontInfo) {
+		prontInfo.setOpacity(1);
+		prontInfo.setStyle("-fx-background-color: yellow;");
+
+		Timeline timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarSubida1 = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontInfo.textProperty(), "Fichero restablecido"));
+		KeyFrame mostrarSubida2 = new KeyFrame(Duration.seconds(0.5), new KeyValue(prontInfo.textProperty(), ""));
+		KeyFrame mostrarSubida3 = new KeyFrame(Duration.seconds(1),
+				new KeyValue(prontInfo.textProperty(), "Fichero restablecido"));
+		KeyFrame mostrarSubida4 = new KeyFrame(Duration.seconds(1.5), new KeyValue(prontInfo.textProperty(), ""));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarSubida1, mostrarSubida2, mostrarSubida3, mostrarSubida4);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+
+	/**
+	 * Metodo que permite crear una animacion
+	 */
 	public static void iniciarAnimacionSubida(TextArea prontInfo) {
 		prontInfo.setOpacity(1);
 
@@ -656,9 +819,9 @@ public class AlarmaList {
 	}
 
 	public static void mostrarMensajePront(String mensaje, boolean exito, TextArea prontInfo) {
-		
+
 		detenerAnimacion();
-		
+
 		prontInfo.clear();
 		prontInfo.setOpacity(1);
 		if (exito) {
