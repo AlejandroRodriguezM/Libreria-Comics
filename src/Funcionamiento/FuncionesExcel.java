@@ -37,8 +37,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import Controladores.CargaComicsController;
 import comicManagement.Comic;
 import comicManagement.ComicFichero;
-import dbmanager.CommonFunctions.TipoBusqueda;
+import dbmanager.DBUtilidades.TipoBusqueda;
 import dbmanager.ConectManager;
+import dbmanager.DBUtilidades;
 import dbmanager.InsertManager;
 import dbmanager.SelectManager;
 import javafx.application.Platform;
@@ -319,7 +320,9 @@ public class FuncionesExcel {
 
 			NUMERO_LINEAS_FICHERO = SelectManager.countRows();
 
-			List<Comic> listaComics = SelectManager.buscarEnLibreria(TipoBusqueda.COMPLETA);
+			String sentenciaSQL = DBUtilidades.construirSentenciaSQL(TipoBusqueda.COMPLETA);
+
+			List<Comic> listaComics = SelectManager.verLibreria(sentenciaSQL);
 
 			libro = new XSSFWorkbook();
 
@@ -491,7 +494,7 @@ public class FuncionesExcel {
 			// Abrir el archivo de registro
 			Platform.runLater(
 					() -> Utilidades.abrirArchivoRegistro(DEFAULT_IMAGE_PATH_BASE + File.separator + logFileName));
-			
+
 			System.out.println(DEFAULT_IMAGE_PATH_BASE + File.separator + logFileName);
 
 		} catch (IOException e) {

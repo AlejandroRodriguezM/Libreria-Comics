@@ -10,9 +10,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import comicManagement.Comic;
-import dbmanager.CommonFunctions;
-import dbmanager.DBLibreriaManager;
-import dbmanager.SelectManager;
+import dbmanager.DBUtilidades;
+import dbmanager.ListaComicsDAO;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -56,10 +55,9 @@ public class FuncionesComboBox {
 	 *                        Comic.
 	 * @return Un objeto Comic con los valores seleccionados en los ComboBoxes.
 	 */
-	private Comic getComicFromComboBoxes(int totalComboboxes, List<ComboBox<String>> comboboxes) {
+	private Comic getComicFromComboBoxes(int cantidadDeComboBoxes, List<ComboBox<String>> comboboxes) {
 		Comic comic = new Comic();
-
-		for (int i = 0; i < totalComboboxes; i++) {
+		for (int i = 0; i < cantidadDeComboBoxes; i++) {
 			ComboBox<String> comboBox = comboboxes.get(i);
 			modificarPopup(comboBox);
 			String value = comboBox.getValue() != null ? comboBox.getValue() : "";
@@ -113,11 +111,11 @@ public class FuncionesComboBox {
 	 * @param totalComboboxes El número total de ComboBoxes.
 	 * @param comboboxes      La lista de ComboBoxes.
 	 */
-	public void lecturaComboBox(int totalComboboxes, List<ComboBox<String>> comboboxes) {
+	public void lecturaComboBox(List<ComboBox<String>> comboboxes) {
 		isUserInput = true; // Establecemos isUserInput en true inicialmente.
-
+		int cantidadDeComboBoxes = comboboxes.size();
 		// Configuración de los escuchadores para cada ComboBox mediante un bucle
-		for (int i = 0; i < totalComboboxes; i++) {
+		for (int i = 0; i < cantidadDeComboBoxes; i++) {
 
 			final int currentIndex = i; // Copia final de i para usar en expresiones lambda
 
@@ -135,9 +133,9 @@ public class FuncionesComboBox {
 					handleComboBoxEmptyChange(comboBox, comboboxes);
 				} else {
 					modificarPopup(comboBox);
-					Comic comic = getComicFromComboBoxes(totalComboboxes, comboboxes);
+					Comic comic = getComicFromComboBoxes(cantidadDeComboBoxes, comboboxes);
 					try {
-						actualizarComboBoxes(totalComboboxes, comboboxes, comic);
+						actualizarComboBoxes(cantidadDeComboBoxes, comboboxes, comic);
 					} catch (SQLException | InterruptedException | ExecutionException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -195,42 +193,41 @@ public class FuncionesComboBox {
 	 * @throws ExecutionException
 	 * @throws InterruptedException
 	 */
-	public void actualizarComboBoxes(int totalComboboxes, List<ComboBox<String>> comboboxes, Comic comic)
+	public void actualizarComboBoxes(int cantidadDeComboBoxes, List<ComboBox<String>> comboboxes, Comic comic)
 			throws SQLException, InterruptedException, ExecutionException {
 
 		Comic comicTemp = new Comic("", comic.getNombre(), comic.getNumCaja(), comic.getNumero(), comic.getVariante(),
 				comic.getFirma(), comic.getEditorial(), comic.getFormato(), comic.getProcedencia(), "",
 				comic.getGuionista(), comic.getDibujante(), "", "", "", "", "", "", "");
-		String sql = SelectManager.datosConcatenados(comicTemp);
+		String sql = DBUtilidades.datosConcatenados(comicTemp);
 
 		if (!sql.isEmpty()) {
 			isUserInput = false; // Disable user input during programmatic updates
 
-			DBLibreriaManager.nombreComicList = CommonFunctions.guardarDatosAutoCompletado(sql, "nomComic");
-			DBLibreriaManager.nombreGuionistaList = CommonFunctions.guardarDatosAutoCompletado(sql, "nomGuionista");
-			DBLibreriaManager.numeroComicList = convertirYOrdenarListaNumeros(
-					CommonFunctions.guardarDatosAutoCompletado(sql, "numComic"));
-			DBLibreriaManager.nombreVarianteList = CommonFunctions.guardarDatosAutoCompletado(sql, "nomVariante");
-			DBLibreriaManager.numeroCajaList = convertirYOrdenarListaNumeros(
-					CommonFunctions.guardarDatosAutoCompletado(sql, "caja_deposito"));
-			DBLibreriaManager.nombreProcedenciaList = CommonFunctions.guardarDatosAutoCompletado(sql, "procedencia");
-			DBLibreriaManager.nombreFormatoList = CommonFunctions.guardarDatosAutoCompletado(sql, "formato");
-			DBLibreriaManager.nombreEditorialList = CommonFunctions.guardarDatosAutoCompletado(sql, "nomEditorial");
-			DBLibreriaManager.nombreDibujanteList = CommonFunctions.guardarDatosAutoCompletado(sql, "nomDibujante");
-			DBLibreriaManager.nombreFirmaList = CommonFunctions.guardarDatosAutoCompletado(sql, "firma");
+			ListaComicsDAO.nombreComicList = ListaComicsDAO.guardarDatosAutoCompletado(sql, "nomComic");
+			ListaComicsDAO.nombreGuionistaList = ListaComicsDAO.guardarDatosAutoCompletado(sql, "nomGuionista");
+			ListaComicsDAO.numeroComicList = convertirYOrdenarListaNumeros(
+					ListaComicsDAO.guardarDatosAutoCompletado(sql, "numComic"));
+			ListaComicsDAO.nombreVarianteList = ListaComicsDAO.guardarDatosAutoCompletado(sql, "nomVariante");
+			ListaComicsDAO.numeroCajaList = convertirYOrdenarListaNumeros(
+					ListaComicsDAO.guardarDatosAutoCompletado(sql, "caja_deposito"));
+			ListaComicsDAO.nombreProcedenciaList = ListaComicsDAO.guardarDatosAutoCompletado(sql, "procedencia");
+			ListaComicsDAO.nombreFormatoList = ListaComicsDAO.guardarDatosAutoCompletado(sql, "formato");
+			ListaComicsDAO.nombreEditorialList = ListaComicsDAO.guardarDatosAutoCompletado(sql, "nomEditorial");
+			ListaComicsDAO.nombreDibujanteList = ListaComicsDAO.guardarDatosAutoCompletado(sql, "nomDibujante");
+			ListaComicsDAO.nombreFirmaList = ListaComicsDAO.guardarDatosAutoCompletado(sql, "firma");
 
-			DBLibreriaManager.listaOrdenada = Arrays.asList(DBLibreriaManager.nombreComicList,
-					DBLibreriaManager.numeroComicList, DBLibreriaManager.nombreVarianteList,
-					DBLibreriaManager.nombreProcedenciaList, DBLibreriaManager.nombreFormatoList,
-					DBLibreriaManager.nombreDibujanteList, DBLibreriaManager.nombreGuionistaList,
-					DBLibreriaManager.nombreEditorialList, DBLibreriaManager.nombreFirmaList,
-					DBLibreriaManager.numeroCajaList);
+			ListaComicsDAO.listaOrdenada = Arrays.asList(ListaComicsDAO.nombreComicList, ListaComicsDAO.numeroComicList,
+					ListaComicsDAO.nombreVarianteList, ListaComicsDAO.nombreProcedenciaList,
+					ListaComicsDAO.nombreFormatoList, ListaComicsDAO.nombreDibujanteList,
+					ListaComicsDAO.nombreGuionistaList, ListaComicsDAO.nombreEditorialList,
+					ListaComicsDAO.nombreFirmaList, ListaComicsDAO.numeroCajaList);
 
-			if (sonListasSimilares(DBLibreriaManager.listaOrdenada, DBLibreriaManager.itemsList)) {
+			if (sonListasSimilares(ListaComicsDAO.listaOrdenada, ListaComicsDAO.itemsList)) {
 
-				for (int i = 0; i < totalComboboxes; i++) {
+				for (int i = 0; i < cantidadDeComboBoxes; i++) {
 					comboboxes.get(i).hide();
-					List<String> itemsActuales = DBLibreriaManager.listaOrdenada.get(i);
+					List<String> itemsActuales = ListaComicsDAO.listaOrdenada.get(i);
 					if (itemsActuales != null && !itemsActuales.isEmpty()) {
 						ObservableList<String> itemsObservable = FXCollections.observableArrayList(itemsActuales);
 						comboboxes.get(i).setItems(itemsObservable);
@@ -320,7 +317,7 @@ public class FuncionesComboBox {
 	 * @param comboboxes La lista de ComboBoxes a rellenar.
 	 */
 	public void rellenarComboBox(List<ComboBox<String>> comboboxes) {
-		
+
 		int i = 0;
 
 		for (ComboBox<String> comboBox : comboboxes) {
@@ -328,7 +325,7 @@ public class FuncionesComboBox {
 				modificarPopup(comboBox);
 
 //				List<String> items = Utilidades.listaArregladaAutoComplete(DBLibreriaManager.itemsList.get(i));
-				List<String> items = DBLibreriaManager.itemsList.get(i);
+				List<String> items = ListaComicsDAO.itemsList.get(i);
 				try {
 					final int currentIndex = i; // Copia final de i para usar en expresiones lambda
 
@@ -349,7 +346,7 @@ public class FuncionesComboBox {
 							if (atLeastOneNotEmpty) {
 								Comic comic = getComicFromComboBoxes(10, comboboxes);
 								setupFilteredPopup(comboboxes, comboBox,
-										DBLibreriaManager.listaOrdenada.get(currentIndex));
+										ListaComicsDAO.listaOrdenada.get(currentIndex));
 								try {
 									actualizarComboBoxes(10, comboboxes, comic);
 								} catch (SQLException | InterruptedException | ExecutionException e) {
@@ -368,7 +365,7 @@ public class FuncionesComboBox {
 							}
 						}
 					});
-					
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

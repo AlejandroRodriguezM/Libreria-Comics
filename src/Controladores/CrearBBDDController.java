@@ -13,8 +13,7 @@ import java.util.ResourceBundle;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
-import dbmanager.DBLibreriaManager;
-import dbmanager.SelectManager;
+import dbmanager.DatabaseManagerDAO;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -25,7 +24,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.image.ImageView; 
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 
@@ -255,8 +254,8 @@ public class CrearBBDDController implements Initializable {
 	@FXML
 	void crearBBDD(ActionEvent event) throws IOException, SQLException {
 
-		if (datosBBDD() != null && SelectManager.checkDatabaseExists(prontInformativo, DB_NAME)) {
-			DBLibreriaManager.createDataBase();
+		if (datosBBDD() != null && DatabaseManagerDAO.checkDatabaseExists(prontInformativo, DB_NAME)) {
+			DatabaseManagerDAO.createDataBase();
 			String port = puertoBBDD.getText(); // Reemplaza con el valor deseado
 			String dbName = nombreBBDD.getText(); // Reemplaza con el valor deseado
 			String userName = userBBDD.getText(); // Reemplaza con el valor deseado
@@ -265,7 +264,7 @@ public class CrearBBDDController implements Initializable {
 
 			String[] datos = { port, dbName, userName, password, host };
 			if (Utilidades.isMySQLServiceRunning(host, port)) {
-				DBLibreriaManager.createTable(datos);
+				DatabaseManagerDAO.createTable(datos);
 				Utilidades.crearCarpeta();
 
 				AlarmaList.iniciarAnimacionBaseCreada(prontInformativo, DB_NAME);

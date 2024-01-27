@@ -6,108 +6,71 @@ import java.sql.SQLException;
 import java.util.concurrent.CompletableFuture;
 
 import Funcionamiento.Utilidades;
-import javafx.concurrent.Task;
+import comicManagement.Comic;
 
 public class DeleteManager {
+	
+	private static final String DELETE_SENTENCIA = "DELETE FROM comicsbbdd WHERE ID = ?";
 
 	/**
-	 * Borra el contenido de la base de datos.
-	 *
-	 * @return
-	 * @throws SQLException
-	 */
-	public static CompletableFuture<Boolean> deleteTable() {
-		CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
+     * Borra y reinicia la base de datos de manera asíncrona.
+     *
+     * @return CompletableFuture que indica si la operación se realizó con éxito o no.
+     */
+    public static CompletableFuture<Boolean> deleteAndRestartDatabaseAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+            	
+                Utilidades.copiaSeguridad();
+                Utilidades.eliminarArchivosEnCarpeta();
 
-		Task<Void> task = new Task<>() {
-			@Override
-			protected Void call() throws Exception {
-				try {
-					if (DBLibreriaManager.listaNombre.isEmpty()) {
-						futureResult.complete(false);
-						return null;
-					}
+                ListaComicsDAO.limpiarListasPrincipales();
 
+                CompletableFuture<Boolean> result = CompletableFuture.supplyAsync(() -> {
+                    try (Connection conn = ConectManager.conexion();
+                         PreparedStatement deleteStatement = conn.prepareStatement("DELETE FROM comicsbbdd");
+                         PreparedStatement resetAutoIncrementStatement = conn.prepareStatement("ALTER TABLE comicsbbdd AUTO_INCREMENT = 1")) {
 
-					Utilidades.copiaSeguridad();
-					Utilidades.eliminarArchivosEnCarpeta();
+                        int deletedRows = deleteStatement.executeUpdate();
+                        resetAutoIncrementStatement.executeUpdate();
 
-					DBLibreriaManager.limpiarListasPrincipales();
+                        System.out.println("Número de filas eliminadas: " + deletedRows);
+                        return true;
+                    } catch (Exception e) {
+                        throw new RuntimeException(e); // Envuelve excepción en RuntimeException para ser manejada en el nivel superior
+                    }
+                });
 
-					CompletableFuture<Boolean> ejecucionResult = reiniciarBaseDatosAsync();
-
-					// Manejar resultado de la ejecución de la sentencia de borrado
-					ejecucionResult.whenComplete((result, exception) -> {
-						if (exception != null) {
-							futureResult.completeExceptionally(exception);
-						} else {
-							futureResult.complete(result);
-						}
-					});
-
-				} catch (Exception e) {
-					futureResult.completeExceptionally(e);
-				}
-				return null;
-			}
-		};
-
-		task.setOnFailed(e -> futureResult.completeExceptionally(task.getException()));
-
-		// Iniciar el hilo en el mismo momento que se crea
-		new Thread(task).start();
-
-		return futureResult;
-	}
-
-    public static CompletableFuture<Boolean> reiniciarBaseDatosAsync() {
-        CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
-
-        Task<Void> task = new Task<>() {
-            @Override
-            protected Void call() {
-                try (Connection conn = ConectManager.conexion();
-                     PreparedStatement deleteStatement = conn.prepareStatement("DELETE FROM comicsbbdd");
-                     PreparedStatement resetAutoIncrementStatement = conn.prepareStatement("ALTER TABLE comicsbbdd AUTO_INCREMENT = 1")) {
-
-                    int deletedRows = deleteStatement.executeUpdate();
-                    resetAutoIncrementStatement.executeUpdate();
-
-                    System.out.println("Número de filas eliminadas: " + deletedRows);
-
-                    // Completa el futuro con true si todo se realiza correctamente
-                    futureResult.complete(true);
-                } catch (Exception e) {
-                    // Completa el futuro con la excepción si hay un error
-                    futureResult.completeExceptionally(e);
-                }
-                return null;
+                return result.join(); // Espera a que la operación asíncrona se complete y devuelve el resultado
+            } catch (Exception e) {
+                throw new RuntimeException(e); // Envuelve excepción en RuntimeException para ser manejada en el nivel superior
             }
-        };
-
-        // Maneja cualquier excepción que pueda ocurrir durante la ejecución del task
-        task.setOnFailed(e -> futureResult.completeExceptionally(task.getException()));
-
-        // Ejecuta el task en un hilo de fondo gestionado por JavaFX
-        new Thread(task).start();
-
-        return futureResult;
+        });
     }
-
+    
 	/**
-	 * Realiza acciones específicas en la base de datos para un comic según la
-	 * operación indicada.
+	 * Función que comprueba si la opinión ha sido introducida correctamente.
 	 *
-	 * @param id        El ID del comic a modificar.
-	 * @param operacion La operación a realizar: "Vender", "En venta" o "Eliminar".
-	 * @throws SQLException Si ocurre un error en la consulta SQL.
+	 * @param sentenciaSQL La sentencia SQL a ejecutar
+	 * @param ID           La ID del cómic
+	 * @param puntuacion   La puntuación a insertar
+	 * @throws SQLException Si ocurre un error en la base de datos
 	 */
-	public static void eliminarComicBBDD(String id) throws SQLException {
-		String sentenciaSQL = null;
+	public static void borrarComic(String idComic) throws SQLException {
+		ListaComicsDAO.listaComics.clear();
 
-		sentenciaSQL = "DELETE FROM comicsbbdd WHERE ID = ?";
-
-		CommonFunctions.modificarDatos(id, sentenciaSQL);
+		try (Connection conn = ConectManager.conexion();
+				PreparedStatement ps = conn.prepareStatement(DELETE_SENTENCIA);) {
+			if (SelectManager.comprobarIdentificadorComic(idComic)) { // Comprueba si la ID introducida existe en la
+																		// base de datos
+				Comic comic = SelectManager.comicDatos(idComic);
+				ps.setString(1, idComic);
+				if (ps.executeUpdate() == 1) { // Si se ha modificado correctamente, se añade el cómic a la lista
+					ListaComicsDAO.listaComics.add(comic);
+				}
+			}
+		} catch (SQLException ex) {
+			Utilidades.manejarExcepcion(ex);
+		}
 	}
-
 }

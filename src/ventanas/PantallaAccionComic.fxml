@@ -132,7 +132,7 @@
       <Button fx:id="botonEliminar" disable="true" layoutX="5.0" layoutY="138.0" mnemonicParsing="false" onAction="#eliminarDatos" prefHeight="73.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Eliminar comic" visible="false" />
       <Button fx:id="botonVender" disable="true" ellipsisString="" layoutX="112.0" layoutY="137.0" mnemonicParsing="false" onAction="#ventaComic" prefHeight="73.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Vender comic" visible="false" />
       <Button fx:id="botonbbdd" disable="true" layoutX="266.0" layoutY="29.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="35.0" prefWidth="57.0" stylesheets="@../style/genericos_style.css" text="Ver todo" visible="false" />
-      <TextField fx:id="idComicTratar_mod" disable="true" layoutX="62.0" layoutY="281.0" prefHeight="21.0" prefWidth="125.0" promptText="ID Comic " visible="false">
+      <TextField fx:id="idComicTratar_mod" disable="true" layoutX="60.0" layoutY="281.0" prefHeight="21.0" prefWidth="125.0" promptText="ID Comic " visible="false">
          <font>
             <Font size="10.0" />
          </font>

@@ -251,16 +251,13 @@ public class OpcionesDatosController implements Initializable {
 	public void rellenarComboDB(Map<String, String> datosConfiguracion) {
 		AlarmaList alarmaList = new AlarmaList();
 
-		String usuarioTexto = datosConfiguracion.get("Usuario");
-		String passwordTexto = datosConfiguracion.get("Password");
 		String puertoTexto = datosConfiguracion.get("Puerto");
 		String databaseTexto = datosConfiguracion.get("Database");
 		String hostingTexto = datosConfiguracion.get("Hosting");
+				
+		if (Utilidades.isMySQLServiceRunning(hostingTexto,puertoTexto)) {
 
-		if (Utilidades.isMySQLServiceRunning(puertoTexto, hostingTexto)) {
-
-			List<String> opciones = Utilidades.obtenerOpcionesNombreBBDD(usuarioTexto, passwordTexto, puertoTexto,
-					hostingTexto);
+			List<String> opciones = Utilidades.obtenerOpcionesNombreBBDD(datosConfiguracion);
 			AlarmaList.detenerAnimacion();
 			prontEstadoFichero.setText(null);
 			if (!opciones.isEmpty()) {

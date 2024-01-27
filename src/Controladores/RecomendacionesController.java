@@ -29,29 +29,7 @@ package Controladores;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
-
-/**
- * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
- * Las ventanas graficas se realizan con JavaFX.
- * El programa permite:
- *  - Conectarse a la base de datos.
- *  - Ver la base de datos completa o parcial segun parametros introducidos.
- *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
- *  - Copia de seguridad de la base de datos en formato .sql
- *  - Introducir comics a la base de datos.
- *  - Modificar comics de la base de datos.
- *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
- *  - Ver frases de personajes de comics
- *  - Opcion de escoger algo para leer de forma aleatoria.
- *
- *  Esta clase permite acceder a la ventana que permite mostrar una recomendacion de comics.
- *
- *  Version Final
- *
- *  Por Alejandro Rodriguez
- *
- *  Twitter: @silverAlox
- */
+import java.util.List;
 
 import java.util.Random;
 import java.util.ResourceBundle;
@@ -59,8 +37,9 @@ import java.util.ResourceBundle;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
-import dbmanager.CommonFunctions.TipoBusqueda;
+import comicManagement.Comic;
 import dbmanager.ConectManager;
+import dbmanager.DBUtilidades;
 import dbmanager.SelectManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -253,24 +232,22 @@ public class RecomendacionesController implements Initializable {
 		Random r = new Random();
 		utilidad = new Utilidades();
 		String id_comic;
-
+		String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
+		List<Comic> listaComics = SelectManager.verLibreria(sentenciaSQL);
 		limpiarPront(); // Llamada a función para limpiar la pantalla "TextArea"
 
-		if (SelectManager.buscarEnLibreria(TipoBusqueda.COMPLETA).size() != 0) {
-			int n = r.nextInt(SelectManager.buscarEnLibreria(TipoBusqueda.COMPLETA).size()); // Generar un número
-																								// aleatorio
-			// dentro del rango
-			// válido
+		if (listaComics.size() != 0) {
+			int n = r.nextInt(listaComics.size());
 
-			id_comic = SelectManager.buscarEnLibreria(TipoBusqueda.COMPLETA).get(n).getID();
+			id_comic = listaComics.get(n).getID();
 
 			String direccionImagen = SelectManager.obtenerDireccionPortada(id_comic);
 			Image imagenComic = Utilidades.pasarImagenComic(direccionImagen);
 
 			imagencomic.setImage(imagenComic);
 			utilidad.deleteImage();
-			return SelectManager.buscarEnLibreria(TipoBusqueda.COMPLETA).get(n).toString(); // Devuelve un cómic de la
-																							// lista
+			return listaComics.get(n).toString(); // Devuelve un cómic de la
+													// lista
 			// de cómics
 		} else {
 			printComicRecomendado.setText("ERROR. No hay ningún dato en la base de datos");

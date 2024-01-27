@@ -47,6 +47,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -71,16 +72,18 @@ import Apis.ApiMarvel;
 import Controladores.VentanaAccionController;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
-import dbmanager.CommonFunctions;
+import dbmanager.DBUtilidades;
 import dbmanager.ConectManager;
-import dbmanager.DBLibreriaManager;
+import dbmanager.ListaComicsDAO;
 import dbmanager.SelectManager;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
@@ -1794,11 +1797,14 @@ public class Utilidades {
 	 */
 	public static void comprobacionListaComics() {
 
-		if (DBLibreriaManager.listaComics.isEmpty()) {
+		if (ListaComicsDAO.listaComics.isEmpty()) {
 			return;
 		}
 
-		SelectManager.buscarEnLibreria(CommonFunctions.TipoBusqueda.COMPLETA);
+		String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
+
+		SelectManager.verLibreria(sentenciaSQL);
+
 	}
 
 	/**
@@ -2118,9 +2124,13 @@ public class Utilidades {
 	 * @param hosting  El host para la conexión.
 	 * @return Lista de opciones para el ComboBox de nombreBBDD.
 	 */
-	public static List<String> obtenerOpcionesNombreBBDD(String usuario, String password, String puerto,
-			String hosting) {
+	public static List<String> obtenerOpcionesNombreBBDD(Map<String, String> datosConfiguracion) {
 		List<String> opciones = new ArrayList<>();
+
+		String usuario = datosConfiguracion.get("Usuario");
+		String password = datosConfiguracion.get("Password");
+		String puerto = datosConfiguracion.get("Puerto");
+		String hosting = datosConfiguracion.get("Hosting");
 
 		try (Connection connection = DriverManager.getConnection("jdbc:mysql://" + hosting + ":" + puerto + "/",
 				usuario, password);
@@ -2568,5 +2578,165 @@ public class Utilidades {
 			e.printStackTrace();
 		}
 	}
+
+	/**
+	 * Funcion que crea una copia de seguridad de la base de datos siempre que el
+	 * sistema operativo sea Linux
+	 *
+	 * @param fichero
+	 */
+	public static void backupLinux(File fichero) {
+		try {
+			fichero.createNewFile();
+
+			// Crear una lista para los comandos
+			String[] command = { "mysqldump", "-u" + ConectManager.DB_USER, "-p" + ConectManager.DB_PASS, "-B",
+					ConectManager.DB_NAME, "--routines=true", "--result-file=" + fichero.getAbsolutePath() };
+
+			// Crear un ProcessBuilder y configurar los comandos
+			ProcessBuilder pb = new ProcessBuilder(command);
+
+			// Redirigir errores y salida estándar al sistema actual
+			pb.redirectErrorStream(true);
+			pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+
+			// Iniciar el proceso
+			Process process = pb.start();
+			int exitCode = process.waitFor();
+
+			// Verificar el código de salida para manejar errores
+			if (exitCode == 0) {
+				System.out.println("Copia de seguridad creada exitosamente.");
+			} else {
+				System.err.println("Error al crear la copia de seguridad. Código de salida: " + exitCode);
+			}
+
+		} catch (IOException | InterruptedException e) {
+			Utilidades.manejarExcepcion(e);
+		}
+	}
+
+	/**
+	 * Funcion que crea una copia de seguridad de la base de datos siempre que el
+	 * sistema operativo sea Windows
+	 *
+	 * @param fichero
+	 */
+	public static void backupWindows(File fichero) {
+		try {
+			fichero.createNewFile();
+
+			String pathMySql = "C:\\Program Files\\MySQL";
+
+			File path = new File(pathMySql);
+
+			FileChooser fileChooser = new FileChooser();
+			fileChooser.setInitialDirectory(path);
+			fileChooser.getExtensionFilters()
+					.addAll(new FileChooser.ExtensionFilter("MySqlDump only", "mysqldump.exe"));
+			File directorio = fileChooser.showOpenDialog(null);
+
+			String mysqlDump = directorio.getAbsolutePath();
+
+			String command[] = new String[] { mysqlDump, "-u" + ConectManager.DB_USER, "-p" + ConectManager.DB_PASS,
+					"-B", ConectManager.DB_NAME, "--hex-blob", "--routines=true", "--result-file=" + fichero };
+			ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
+			pb.redirectError(Redirect.INHERIT);
+			pb.redirectOutput(Redirect.to(fichero));
+			pb.start();
+
+		} catch (Exception e) {
+			Utilidades.manejarExcepcion(e);
+		}
+	}
+
+	/**
+	 * Obtiene la fecha y hora actual en el formato "yyyy_MM_dd_HH_mm".
+	 *
+	 * @return La fecha y hora actual formateada como una cadena de texto.
+	 */
+	public static String obtenerFechaActual() {
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm");
+		Date date = new Date();
+		return formatter.format(date);
+	}
+
+	/**
+	 * Abre un archivo en el programa asociado en el sistema operativo.
+	 *
+	 * @param rutaArchivo La ruta del archivo que se va a abrir.
+	 */
+	public static void abrirArchivoConProgramaAsociado(String rutaArchivo) {
+		try {
+			if (Desktop.isDesktopSupported()) {
+				Desktop.getDesktop().open(new File(rutaArchivo));
+			}
+		} catch (IOException e) {
+			Utilidades.manejarExcepcion(e);
+		}
+	}
+
+	/**
+	 * Carga una imagen de forma asíncrona desde una URL y la muestra en un
+	 * ImageView.
+	 *
+	 * @param urlImagen La URL de la imagen a cargar.
+	 * @param imageView El ImageView en el que se mostrará la imagen cargada.
+	 */
+	public static void cargarImagenAsync(String urlImagen, ImageView imageView) {
+	    Task<Image> cargarImagenTask = new Task<Image>() {
+	        @Override
+	        protected Image call() throws Exception {
+	            while (true) {
+	                try {
+	                    File fichero = new File(urlImagen);
+
+	                    // Verificar si el archivo existe
+	                    if (!fichero.exists()) {
+	                        // Si el archivo no existe, cargar la imagen por defecto desde el proyecto
+	                        InputStream is = getClass().getResourceAsStream("/Funcionamiento/sinPortada.jpg");
+	                        if (is != null) {
+	                            // Intentar cargar la imagen desde el flujo de entrada
+	                            Image imagenCargada = new Image(is, 250, 0, true, true);
+	                            // Verificar si la imagen se ha cargado correctamente
+	                            if (imagenCargada.isError()) {
+	                                throw new IOException("Error al cargar la imagen por defecto.");
+	                            }
+	                            // Actualizar la interfaz de usuario en el hilo de JavaFX
+	                            Platform.runLater(() -> {
+	                                imageView.setImage(imagenCargada);
+	                            });
+	                            return imagenCargada;
+	                        }
+	                    }
+
+	                    // Si el archivo existe, cargar la imagen desde la ruta especificada
+	                    String imageUrl = fichero.toURI().toURL().toString();
+	                    Image imagenCargada = new Image(imageUrl, 250, 0, true, true);
+
+	                    // Verificar si la imagen se ha cargado correctamente
+	                    if (imagenCargada.isError()) {
+	                        throw new IOException("Error al cargar la imagen desde la URL local.");
+	                    }
+
+	                    // Actualizar la interfaz de usuario en el hilo de JavaFX
+	                    Platform.runLater(() -> {
+	                        imageView.setImage(imagenCargada);
+	                    });
+	                    return imagenCargada;
+	                } catch (FileNotFoundException e) {
+	                    Thread.sleep(1500); // Puedes ajustar el tiempo de espera según sea necesario
+	                } catch (Exception e) {
+	                    Thread.sleep(1500); // Puedes ajustar el tiempo de espera según sea necesario
+	                }
+	            }
+	        }
+	    };
+
+	    Thread thread = new Thread(cargarImagenTask);
+	    thread.setDaemon(true);
+	    thread.start();
+	}
+
 
 }

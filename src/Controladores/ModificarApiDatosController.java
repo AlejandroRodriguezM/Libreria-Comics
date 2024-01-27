@@ -88,8 +88,9 @@ public class ModificarApiDatosController implements Initializable {
 
 			String[] partes = Utilidades.clavesApiMarvel();
 
-			String passPublica = partes[0];
-			String passPrivada = partes[1];
+			String passPrivada = partes[0];
+			String passPublica = partes[1];
+			
 
 			textFieldPublica.setText(passPublica);
 			textFieldPrivada.setText(passPrivada);

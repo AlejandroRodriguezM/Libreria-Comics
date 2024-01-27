@@ -7,8 +7,8 @@ import java.util.Map;
 
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
-import dbmanager.DBLibreriaManager;
 import dbmanager.ConectManager;
+import dbmanager.DatabaseManagerDAO;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -205,7 +205,7 @@ public class AlarmaList {
 
 	public static void manejarConexionExitosa(String[] datosFichero, Label prontEstadoConexion) {
 		if (Utilidades.isMySQLServiceRunning(datosFichero[4], datosFichero[0])) {
-			if (DBLibreriaManager.checkTablesAndColumns(datosFichero)) {
+			if (DatabaseManagerDAO.checkTablesAndColumns(datosFichero)) {
 				iniciarAnimacionAlarmaOnline(alarmaConexion);
 				manejarConexionExitosa(prontEstadoConexion);
 			} else {

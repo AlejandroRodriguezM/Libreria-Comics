@@ -36,7 +36,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import comicManagement.Comic;
-import dbmanager.DBLibreriaManager;
+import dbmanager.DBUtilidades;
+import dbmanager.ListaComicsDAO;
 import dbmanager.SelectManager;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -69,7 +70,7 @@ public class FuncionesTableView {
 	/**
 	 * Gestor de la base de datos de la librería.
 	 */
-	private static DBLibreriaManager libreria = null;
+	private static ListaComicsDAO libreria = null;
 
 	/**
 	 * Funcion que permite que los diferentes raw de los TableColumn se puedan
@@ -263,18 +264,18 @@ public class FuncionesTableView {
 	 * @throws SQLException Si ocurre un error de base de datos.
 	 */
 	public TextArea resultadoBusquedaPront(Comic comic) {
-		libreria = new DBLibreriaManager();
+		libreria = new ListaComicsDAO();
 		TextArea prontInfoTable = new TextArea(); // Crear un nuevo TextArea
 
 		prontInfoTable.setOpacity(1);
 
-		String datoSeleccionado = SelectManager.datosConcatenados(comic);
+		String datoSeleccionado = DBUtilidades.datosConcatenados(comic);
 		if (datoSeleccionado.isEmpty()) {
 			// Show error message in red when no search fields are specified
 			prontInfoTable.setStyle("-fx-text-fill: red;");
 			prontInfoTable.setText("Error: No existe comic con los datos: " + datoSeleccionado + "\n \n \n");
 		} else {
-			int totalComics = SelectManager.numeroTotalSelecionado(comic);
+			int totalComics = DBUtilidades.numeroTotalSelecionado(comic);
 			prontInfoTable.setStyle("-fx-text-fill: black;"); // Reset the text color to black
 			prontInfoTable.setText("El número de cómics donde aparece la búsqueda es: " + totalComics + "\n \n \n");
 		}
@@ -304,7 +305,7 @@ public class FuncionesTableView {
 	 */
 	public void columnaSeleccionada(TableView<Comic> tablaBBDD, List<TableColumn<Comic, String>> columnList,
 			String rawSelecionado) throws SQLException {
-		libreria = new DBLibreriaManager();
+		libreria = new ListaComicsDAO();
 		libreria.reiniciarBBDD();
 		nombreColumnas(columnList, tablaBBDD);
 		tablaBBDD(SelectManager.libreriaSeleccionado(rawSelecionado), tablaBBDD, columnList);

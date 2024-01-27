@@ -1,47 +1,18 @@
 package dbmanager;
 
-/**
- * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
- * Las ventanas graficas se realizan con JavaFX.
- * El programa permite:
- *  - Conectarse a la base de datos.
- *  - Ver la base de datos completa o parcial segun parametros introducidos.
- *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
- *  - Copia de seguridad de la base de datos en formato .sql
- *  - Introducir comics a la base de datos.
- *  - Modificar comics de la base de datos.
- *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
- *  - Ver frases de personajes de comics
- *  - Opcion de escoger algo para leer de forma aleatoria.
- *  - Puntuar comics que se encuentren dentro de la base de datos.
- *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
- *
- *  Version 8.0.0.0
- *
- *  @author Alejandro Rodriguez
- *
- */
-
-import java.awt.Desktop;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.ProcessBuilder.Redirect;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -49,11 +20,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import Controladores.CrearBBDDController;
 import Funcionamiento.Utilidades;
-import Funcionamiento.Ventanas;
 import comicManagement.Comic;
-import javafx.stage.FileChooser;
 
 /**
  * Esta clase sirve para realizar diferentes operaciones que tengan que ver con
@@ -61,7 +29,24 @@ import javafx.stage.FileChooser;
  *
  * @author Alejandro Rodriguez
  */
-public class DBLibreriaManager {
+public class ListaComicsDAO {
+
+	/**
+	 * Obtenemos el directorio de inicio del usuario
+	 */
+	private final static String USER_DIR = System.getProperty("user.home");
+
+	/**
+	 * Construimos la ruta al directorio "Documents"
+	 */
+	private final static String DOCUMENTS_PATH = USER_DIR + File.separator + "Documents";
+
+	/**
+	 * Construimos la ruta al directorio "libreria_comics" dentro de "Documents" y
+	 * añadimos el nombre de la base de datos y la carpeta "portadas".
+	 */
+	private final static String SOURCE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+			+ ConectManager.DB_NAME + File.separator + "portadas" + File.separator;
 
 	/**
 	 * Lista de cómics.
@@ -201,7 +186,27 @@ public class DBLibreriaManager {
 	 */
 	public static List<Comic> comicsGuardadosList = new ArrayList<>();
 
+	/**
+	 * Realiza llamadas para inicializar listas de autocompletado.
+	 *
+	 * @throws SQLException si ocurre un error al acceder a la base de datos.
+	 */
+	public static void listasAutoCompletado() {
+		listaNombre = DBUtilidades.obtenerValoresColumna("nomComic");
+		listaNumeroComic = DBUtilidades.obtenerValoresColumna("numComic");
+		listaVariante = DBUtilidades.obtenerValoresColumna("nomVariante");
+		listaFirma = DBUtilidades.obtenerValoresColumna("firma");
+		listaFormato = DBUtilidades.obtenerValoresColumna("formato");
+		listaEditorial = DBUtilidades.obtenerValoresColumna("nomEditorial");
+		listaGuionista = DBUtilidades.obtenerValoresColumna("nomGuionista");
+		listaDibujante = DBUtilidades.obtenerValoresColumna("nomDibujante");
+		listaProcedencia = DBUtilidades.obtenerValoresColumna("procedencia");
+		listaCaja = DBUtilidades.obtenerValoresColumna("caja_deposito");
+		listaImagenes = DBUtilidades.obtenerValoresColumna("portada");
 
+		itemsList = Arrays.asList(listaNombre, listaNumeroComic, listaVariante, listaProcedencia, listaFormato,
+				listaDibujante, listaGuionista, listaEditorial, listaFirma, listaCaja);
+	}
 
 	/**
 	 * Limpia todas las listas utilizadas para autocompletado.
@@ -239,6 +244,13 @@ public class DBLibreriaManager {
 	}
 
 	/**
+	 * Permite reiniciar la lista de cómics.
+	 */
+	public void reiniciarBBDD() {
+		listaComics.clear(); // Limpia la lista de cómics
+	}
+
+	/**
 	 * Funcion que permite limpiar de contenido la lista de comics guardados
 	 */
 	public static void limpiarListaGuardados() {
@@ -257,7 +269,7 @@ public class DBLibreriaManager {
 		}
 		return false; // La lista contiene elementos
 	}
-	
+
 	/**
 	 * Agrega elementos únicos a la lista principal de cómics guardados,
 	 * ordenándolos por ID en orden descendente de longitud.
@@ -287,99 +299,6 @@ public class DBLibreriaManager {
 		}
 	}
 
-
-
-	/////////////////////////////////
-	//// FUNCIONES CREACION FICHEROS//
-	/////////////////////////////////
-
-	/**
-	 * Funcion que crea una copia de seguridad de la base de datos siempre que el
-	 * sistema operativo sea Linux
-	 *
-	 * @param fichero
-	 */
-	public static void backupLinux(File fichero) {
-		try {
-			fichero.createNewFile();
-
-			// Crear una lista para los comandos
-			String[] command = { "mysqldump", "-u" + ConectManager.DB_USER, "-p" + ConectManager.DB_PASS, "-B",
-					ConectManager.DB_NAME, "--routines=true", "--result-file=" + fichero.getAbsolutePath() };
-
-			// Crear un ProcessBuilder y configurar los comandos
-			ProcessBuilder pb = new ProcessBuilder(command);
-
-			// Redirigir errores y salida estándar al sistema actual
-			pb.redirectErrorStream(true);
-			pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
-
-			// Iniciar el proceso
-			Process process = pb.start();
-			int exitCode = process.waitFor();
-
-			// Verificar el código de salida para manejar errores
-			if (exitCode == 0) {
-				System.out.println("Copia de seguridad creada exitosamente.");
-			} else {
-				System.err.println("Error al crear la copia de seguridad. Código de salida: " + exitCode);
-			}
-
-		} catch (IOException | InterruptedException e) {
-			Utilidades.manejarExcepcion(e);
-		}
-	}
-
-	/**
-	 * Funcion que crea una copia de seguridad de la base de datos siempre que el
-	 * sistema operativo sea Windows
-	 *
-	 * @param fichero
-	 */
-	public static void backupWindows(File fichero) {
-		try {
-			fichero.createNewFile();
-
-			String pathMySql = "C:\\Program Files\\MySQL";
-
-			File path = new File(pathMySql);
-
-			FileChooser fileChooser = new FileChooser();
-			fileChooser.setInitialDirectory(path);
-			fileChooser.getExtensionFilters()
-					.addAll(new FileChooser.ExtensionFilter("MySqlDump only", "mysqldump.exe"));
-			File directorio = fileChooser.showOpenDialog(null);
-
-			String mysqlDump = directorio.getAbsolutePath();
-
-			String command[] = new String[] { mysqlDump, "-u" + ConectManager.DB_USER, "-p" + ConectManager.DB_PASS,
-					"-B", ConectManager.DB_NAME, "--hex-blob", "--routines=true", "--result-file=" + fichero };
-			ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
-			pb.redirectError(Redirect.INHERIT);
-			pb.redirectOutput(Redirect.to(fichero));
-			pb.start();
-
-		} catch (Exception e) {
-			Utilidades.manejarExcepcion(e);
-		}
-	}
-
-
-
-
-	// **************************************//
-	// ****FUNCIONES DE LA LIBRERIA**********//
-	// **************************************//
-
-	/**
-	 * Permite reiniciar la lista de cómics.
-	 */
-	public void reiniciarBBDD() {
-		listaComics.clear(); // Limpia la lista de cómics
-	}
-
-
-
 	/**
 	 * Ordena un HashMap en orden ascendente por valor (valor de tipo Integer).
 	 *
@@ -402,6 +321,51 @@ public class DBLibreriaManager {
 		List<Map.Entry<Integer, Integer>> list = new LinkedList<>(map.entrySet());
 		list.sort(Map.Entry.comparingByValue());
 		return list;
+	}
+
+	/**
+	 * Función que guarda los datos para autocompletado en una lista.
+	 * 
+	 * @param sentenciaSQL La sentencia SQL para obtener los datos.
+	 * @param columna      El nombre de la columna que contiene los datos para
+	 *                     autocompletado.
+	 * @return Una lista de cadenas con los datos para autocompletado.
+	 * @throws SQLException Si ocurre algún error al ejecutar la consulta SQL.
+	 */
+	public static List<String> guardarDatosAutoCompletado(String sentenciaSQL, String columna) {
+		List<String> listaAutoCompletado = new ArrayList<>();
+
+		try (Connection conn = ConectManager.conexion();
+				PreparedStatement stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE,
+						ResultSet.CONCUR_UPDATABLE);
+				ResultSet rs = stmt.executeQuery()) {
+
+			if (rs != null && rs.first()) {
+				do {
+					String datosAutocompletado = rs.getString(columna);
+					if (columna.equals("nomComic")) {
+						listaAutoCompletado.add(datosAutocompletado.trim());
+					} else if (columna.equals("portada")) {
+						listaAutoCompletado
+								.add(SOURCE_PATH + Utilidades.obtenerUltimoSegmentoRuta(datosAutocompletado));
+					} else {
+						String[] nombres = datosAutocompletado.split("-");
+						for (String nombre : nombres) {
+							nombre = nombre.trim();
+							if (!nombre.isEmpty()) {
+								listaAutoCompletado.add(nombre);
+							}
+						}
+					}
+				} while (rs.next());
+
+				listaAutoCompletado = Utilidades.listaArregladaAutoComplete(listaAutoCompletado);
+			}
+		} catch (SQLException e) {
+			Utilidades.manejarExcepcion(e);
+		}
+
+		return listaAutoCompletado;
 	}
 
 	/**
@@ -534,8 +498,10 @@ public class DBLibreriaManager {
 		String lineaDecorativa1 = "\n--------------------------------------------------------";
 		String lineaDecorativa2 = "--------------------------------------------------------\n";
 
+		String fechaActual = Utilidades.obtenerFechaActual();
+
 		estadisticaStr.append("Estadisticas de comics de la base de datos: " + ConectManager.DB_NAME + ", a fecha de: "
-				+ obtenerFechaActual() + "\n");
+				+ fechaActual + "\n");
 
 		// Agregar los valores de nomComic a la estadística
 		estadisticaStr.append(lineaDecorativa1);
@@ -657,7 +623,7 @@ public class DBLibreriaManager {
 		estadisticaStr.append(lineaDecorativa1);
 
 		// Crear el archivo de estadística y escribir los datos en él
-		String nombreArchivo = "estadistica_" + obtenerFechaActual() + ".txt";
+		String nombreArchivo = "estadistica_" + fechaActual + ".txt";
 		String userHome = System.getProperty("user.home");
 		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
 		String carpetaLibreria = ubicacion + File.separator + "libreria";
@@ -667,161 +633,9 @@ public class DBLibreriaManager {
 			writer.print(estadisticaStr);
 
 			// Abrir el archivo con el programa asociado en el sistema
-			abrirArchivoConProgramaAsociado(rutaCompleta);
+			Utilidades.abrirArchivoConProgramaAsociado(rutaCompleta);
 
 		} catch (IOException e) {
-			Utilidades.manejarExcepcion(e);
-		}
-	}
-
-	/**
-	 * Obtiene la fecha y hora actual en el formato "yyyy_MM_dd_HH_mm".
-	 *
-	 * @return La fecha y hora actual formateada como una cadena de texto.
-	 */
-	private String obtenerFechaActual() {
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm");
-		Date date = new Date();
-		return formatter.format(date);
-	}
-
-	/**
-	 * Abre un archivo en el programa asociado en el sistema operativo.
-	 *
-	 * @param rutaArchivo La ruta del archivo que se va a abrir.
-	 */
-	private void abrirArchivoConProgramaAsociado(String rutaArchivo) {
-		try {
-			if (Desktop.isDesktopSupported()) {
-				Desktop.getDesktop().open(new File(rutaArchivo));
-			}
-		} catch (IOException e) {
-			Utilidades.manejarExcepcion(e);
-		}
-	}
-
-	/**
-	 * Crea las tablas de la base de datos si no existen.
-	 */
-	public static void createTable(String[] datos) {
-
-		String port = datos[0];
-		String dbName = datos[1];
-		String userName = datos[2];
-		String password = datos[3];
-		String host = datos[4];
-
-		String url = "jdbc:mysql://" + host + ":" + port + "/" + dbName + "?serverTimezone=UTC";
-
-		try (Connection connection = DriverManager.getConnection(url, userName, password);
-				Statement statement = connection.createStatement();
-				PreparedStatement preparedStatement = connection
-						.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");) {
-
-			String dropTableSQL = "DROP TABLE IF EXISTS comicsbbdd";
-			String createTableSQL = "CREATE TABLE comicsbbdd (" + "ID INT NOT NULL AUTO_INCREMENT, "
-					+ "nomComic VARCHAR(150) NOT NULL, " + "caja_deposito TEXT, " + "precio_comic DOUBLE NOT NULL, "
-					+ "codigo_comic VARCHAR(150), " + "numComic INT NOT NULL, " + "nomVariante VARCHAR(150) NOT NULL, "
-					+ "firma VARCHAR(150) NOT NULL, " + "nomEditorial VARCHAR(150) NOT NULL, "
-					+ "formato VARCHAR(150) NOT NULL, " + "procedencia VARCHAR(150) NOT NULL, "
-					+ "fecha_publicacion DATE NOT NULL, " + "nomGuionista TEXT NOT NULL, "
-					+ "nomDibujante TEXT NOT NULL, " + "puntuacion VARCHAR(300) NOT NULL, " + "portada TEXT, "
-					+ "key_issue TEXT, " + "url_referencia TEXT NOT NULL, " + "estado TEXT NOT NULL, "
-					+ "PRIMARY KEY (ID)) " + "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-			statement.executeUpdate(dropTableSQL);
-			statement.executeUpdate(createTableSQL);
-
-			preparedStatement.executeUpdate();
-		} catch (SQLException e) {
-			Utilidades.manejarExcepcion(e);
-		}
-	}
-
-	/**
-	 * Funcion que reconstruye una base de datos.
-	 */
-	public static boolean reconstruirBBDD(String[] datos) {
-		Ventanas nav = new Ventanas();
-
-		if (nav.alertaTablaError()) {
-			DBLibreriaManager.createTable(datos);
-			return true;
-		} else {
-			String excepcion = "Debes de reconstruir la base de datos. Si no, no podras entrar";
-			nav.alertaException(excepcion);
-		}
-		return false;
-	}
-
-	/**
-	 * Método que verifica si las tablas de la base de datos existen y si tienen las
-	 * columnas esperadas. Si las tablas y columnas existen, devuelve true. Si no
-	 * existen, reconstruye la base de datos y devuelve false.
-	 * 
-	 * @return true si las tablas y columnas existen, false si no existen y se
-	 *         reconstruyó la base de datos.
-	 */
-	public static boolean checkTablesAndColumns(String[] datos) {
-		try (Connection connection = ConectManager.conexion()) {
-			DatabaseMetaData metaData = connection.getMetaData();
-
-			String database = datos[1];
-
-			ResultSet tables = metaData.getTables(database, null, "comicsbbdd", null);
-			if (tables.next()) {
-				// La tabla existe, ahora verifiquemos las columnas
-				ResultSet columns = metaData.getColumns(database, null, "comicsbbdd", null);
-				Set<String> expectedColumns = Set.of("ID", "nomComic", "caja_deposito", "precio_comic", "codigo_comic",
-						"numComic", "nomVariante", "firma", "nomEditorial", "formato", "procedencia",
-						"fecha_publicacion", "nomGuionista", "nomDibujante", "puntuacion", "portada", "key_issue",
-						"url_referencia", "estado");
-
-				Set<String> actualColumns = new HashSet<>();
-
-				while (columns.next()) {
-					String columnName = columns.getString("COLUMN_NAME");
-					actualColumns.add(columnName);
-				}
-
-				// Verifica si todas las columnas esperadas están presentes
-				if (actualColumns.containsAll(expectedColumns) && actualColumns.size() == expectedColumns.size()) {
-					return true;
-				} else {
-					if (DBLibreriaManager.reconstruirBBDD(datos)) {
-						return true;
-					}
-				}
-			} else {
-				// La tabla no existe, reconstruimos la base de datos
-				if (DBLibreriaManager.reconstruirBBDD(datos)) {
-					return true;
-				}
-			}
-		} catch (SQLException e) {
-			Utilidades.manejarExcepcion(e);
-			return false;
-		}
-		return false;
-	}
-
-	/**
-	 * Funcion que permite crear una base de datos MySql
-	 */
-	public static void createDataBase() {
-
-		String sentenciaSQL = "CREATE DATABASE " + CrearBBDDController.DB_NAME + ";";
-
-		String url = "jdbc:mysql://" + CrearBBDDController.DB_HOST + ":" + CrearBBDDController.DB_PORT
-				+ "?serverTimezone=UTC";
-		Statement statement;
-		try {
-			Connection connection = DriverManager.getConnection(url, CrearBBDDController.DB_USER,
-					CrearBBDDController.DB_PASS);
-
-			statement = connection.createStatement();
-			statement.executeUpdate(sentenciaSQL);
-
-		} catch (SQLException e) {
 			Utilidades.manejarExcepcion(e);
 		}
 	}
