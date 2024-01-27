@@ -1,31 +1,4 @@
-/**
- * Contiene las clases que hacen funcionar el acceso de la base de datos y las diferentes funciones para el uso de la misma
- *  
-*/
 package dbmanager;
-
-/**
- * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
- * Las ventanas graficas se realizan con JavaFX.
- * El programa permite:
- *  - Conectarse a la base de datos.
- *  - Ver la base de datos completa o parcial segun parametros introducidos.
- *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
- *  - Copia de seguridad de la base de datos en formato .sql
- *  - Introducir comics a la base de datos.
- *  - Modificar comics de la base de datos.
- *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
- *  - Ver frases de personajes de comics
- *  - Opcion de escoger algo para leer de forma aleatoria.
- *
- *  Esta clase permite conectarse a la base de datos
- *
- *  Version 8.0.0.0
- *
- *  Por Alejandro Rodriguez
- *
- *  Twitter: @silverAlox
- */
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -147,7 +120,7 @@ public class ConectManager {
 	 * @return true si todos los datos de conexión son válidos y no están vacíos, de
 	 *         lo contrario, false.
 	 */
-	public static boolean datosConexionCorrectos() {
+	public static boolean comprobarDatosConexion() {
 
 		return !(DB_HOST == null || DB_HOST.isEmpty() || DB_PORT == null || DB_PORT.isEmpty() || DB_NAME == null
 				|| DB_NAME.isEmpty() || DB_USER == null || DB_USER.isEmpty() || DB_PASS == null || DB_PASS.isEmpty());
@@ -163,7 +136,7 @@ public class ConectManager {
 	 * @return objeto Connection
 	 */
 	public static Connection conexion() {
-		if (!datosConexionCorrectos()) {
+		if (!comprobarDatosConexion()) {
 			return null;
 		}
 

@@ -256,7 +256,11 @@ public class FuncionesExcel {
 						filaCopy.createCell(17).setCellValue(comic.getUrl_referencia());
 						filaCopy.createCell(18).setCellValue(comic.getEstado());
 
-						cargaComics(comic, cargaComicsControllerRef, directorioFichero, false);
+						cargaComics(comic, cargaComicsControllerRef, directorioImagenes, false);
+
+						if (!directorioFichero.exists()) {
+							directorioFichero.mkdir();
+						}
 
 						if (tipoBusqueda.equalsIgnoreCase("Completa") && directorioFichero != null) {
 							Utilidades.saveImageFromDataBase(comic.getImagen(), directorioImagenes);
@@ -367,7 +371,7 @@ public class FuncionesExcel {
 						filaCopy.createCell(17).setCellValue(comic.getUrl_referencia());
 						filaCopy.createCell(18).setCellValue(comic.getEstado());
 
-						cargaComics(comic, cargaComicsControllerRef, carpetaLibreria, true);
+						cargaComics(comic, cargaComicsControllerRef, carpetaLibreria, false);
 
 						indiceFinal++; // Increment the index for the next row
 
@@ -449,20 +453,20 @@ public class FuncionesExcel {
 			CompletableFuture<Boolean> confirmacionFuture = nav.cancelar_subida_portadas();
 			boolean continuarSubida = confirmacionFuture.join();
 
+			System.out.println(continuarSubida);
+			
 			// Actualizar el directorio si se va a continuar la subida de portadas
 			if (continuarSubida) {
 				directorio = carpetaPortadasTask();
 				directorio = (directorio == null) ? new File(DEFAULT_PORTADA_IMAGE_PATH + File.separator) : directorio;
+				
+				
 			}
 
 			// Convertir nombres de carpetas en el directorio predeterminado y el directorio
 			// actual
 			Utilidades.convertirNombresCarpetas(DEFAULT_PORTADA_IMAGE_PATH + File.separator);
 			Utilidades.convertirNombresCarpetas(directorio.getAbsolutePath());
-
-			// Crear el nombre del archivo de registro
-			String logFileName = "log_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"))
-					+ ".txt";
 
 			// Inicializar referencia al controlador de carga de cómics
 			AtomicReference<CargaComicsController> cargaComicsControllerRef = new AtomicReference<>();
@@ -474,11 +478,12 @@ public class FuncionesExcel {
 			// Copiar directorio al directorio predeterminado
 			Utilidades.copyDirectory(directorio.getAbsolutePath(), DEFAULT_PORTADA_IMAGE_PATH);
 			AtomicReference<File> directorioRef = new AtomicReference<>(directorio);
+			
 			// Procesar líneas restantes del archivo
 			lineReader.lines().forEach(lineText -> {
 				try {
 					Comic comicNuevo = ComicFichero.datosComicFichero(lineText);
-
+					
 					InsertManager.insertarDatos(comicNuevo, true);
 					cargaComics(comicNuevo, cargaComicsControllerRef, directorioRef.get(), true);
 
@@ -493,9 +498,9 @@ public class FuncionesExcel {
 
 			// Abrir el archivo de registro
 			Platform.runLater(
-					() -> Utilidades.abrirArchivoRegistro(DEFAULT_IMAGE_PATH_BASE + File.separator + logFileName));
+					() -> Utilidades.abrirArchivoRegistro(DEFAULT_IMAGE_PATH_BASE + File.separator + LOG_FILE_NAME));
 
-			System.out.println(DEFAULT_IMAGE_PATH_BASE + File.separator + logFileName);
+			System.out.println(DEFAULT_IMAGE_PATH_BASE + File.separator + LOG_FILE_NAME);
 
 		} catch (IOException e) {
 			// Propagar la excepción al nivel superior
@@ -511,10 +516,11 @@ public class FuncionesExcel {
 		if (esImportado) {
 			nombre_portada = Utilidades.obtenerDespuesPortadas(comicNuevo.getImagen());
 			nombre_modificado = Utilidades.convertirNombreArchivo(nombre_portada);
-
-			if (!Utilidades.existeArchivo(DEFAULT_PORTADA_IMAGE_PATH, nombre_modificado) || directorio == null) {
+			System.out.println(directorio.getAbsolutePath());
+			if (!Utilidades.existeArchivo(directorio.getAbsolutePath(), nombre_portada)) {
 				copiarPortadaPredeterminada(DEFAULT_PORTADA_IMAGE_PATH, nombre_modificado);
-				generarLogFaltaPortada(DEFAULT_IMAGE_PATH_BASE, LOG_FILE_NAME, nombre_modificado);
+				generarLogFaltaPortada(DEFAULT_IMAGE_PATH_BASE, LOG_FILE_NAME, nombre_portada);
+				System.err.println("No existe");
 			}
 		}
 

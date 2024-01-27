@@ -13,10 +13,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -167,6 +169,16 @@ public class ListaComicsDAO {
 	 * Lista de nombres de dibujantes.
 	 */
 	public static List<String> listaImagenes = new ArrayList<>();
+	
+	/**
+	 * Lista de cómics limpios.
+	 */
+	public static List<Comic> listaLimpia = new ArrayList<>();
+
+	/**
+	 * Lista de sugerencias de autocompletado de entrada limpia.
+	 */
+	public static List<String> listaLimpiaAutoCompletado = new ArrayList<>();
 
 	/**
 	 * Lista ordenada que contiene todas las listas anteriores.
@@ -359,13 +371,63 @@ public class ListaComicsDAO {
 					}
 				} while (rs.next());
 
-				listaAutoCompletado = Utilidades.listaArregladaAutoComplete(listaAutoCompletado);
+				listaAutoCompletado = listaArregladaAutoComplete(listaAutoCompletado);
 			}
 		} catch (SQLException e) {
 			Utilidades.manejarExcepcion(e);
 		}
 
 		return listaAutoCompletado;
+	}
+	
+	/**
+	 * Funcion que devuelve una lista en la que solamente se guardan aquellos datos
+	 * que no se repiten
+	 *
+	 * @param listaComics
+	 * @return
+	 */
+	public static List<Comic> listaArreglada(List<Comic> listaComics) {
+
+		// Forma número 1 (Uso de Maps).
+		Map<String, Comic> mapComics = new HashMap<>(listaComics.size());
+
+		// Aquí está la magia
+		for (Comic c : listaComics) {
+			mapComics.put(c.getID(), c);
+		}
+
+		// Agrego cada elemento del map a una nueva lista y muestro cada elemento.
+
+		for (Entry<String, Comic> c : mapComics.entrySet()) {
+
+			listaLimpia.add(c.getValue());
+
+		}
+		return listaLimpia;
+	}
+
+	/**
+	 * Funcion que devuelve una lista en la que solamente se guardan aquellos datos
+	 * que no se repiten
+	 *
+	 * @param listaComics
+	 * @return
+	 */
+	public static List<String> listaArregladaAutoComplete(List<String> listaComics) {
+		Set<String> uniqueSet = new HashSet<>();
+		List<String> result = new ArrayList<>();
+
+		for (String s : listaComics) {
+			if (uniqueSet.add(s)) {
+				result.add(s);
+			}
+		}
+
+		// Ordenar la lista resultante de forma ascendente
+		result.sort(String::compareTo);
+
+		return result;
 	}
 
 	/**

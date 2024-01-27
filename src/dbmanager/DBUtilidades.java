@@ -200,7 +200,7 @@ public class DBUtilidades {
 			agregarSiHayDatos(rs4);
 			agregarSiHayDatos(rs5);
 
-			ListaComicsDAO.listaComics = Utilidades.listaArreglada(ListaComicsDAO.listaComics);
+			ListaComicsDAO.listaComics = ListaComicsDAO.listaArreglada(ListaComicsDAO.listaComics);
 			return ListaComicsDAO.listaComics;
 
 		} catch (SQLException ex) {

@@ -50,12 +50,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -72,8 +69,8 @@ import Apis.ApiMarvel;
 import Controladores.VentanaAccionController;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
-import dbmanager.DBUtilidades;
 import dbmanager.ConectManager;
+import dbmanager.DBUtilidades;
 import dbmanager.ListaComicsDAO;
 import dbmanager.SelectManager;
 import javafx.application.Platform;
@@ -98,15 +95,7 @@ import webScrap.WebScraperPreviewsWorld;
  */
 public class Utilidades {
 
-	/**
-	 * Lista de cómics limpios.
-	 */
-	public static List<Comic> listaLimpia = new ArrayList<>();
 
-	/**
-	 * Lista de sugerencias de autocompletado de entrada limpia.
-	 */
-	public static List<String> listaLimpiaAutoCompletado = new ArrayList<>();
 
 	/**
 	 * Sistema operativo actual.
@@ -583,56 +572,6 @@ public class Utilidades {
 	}
 
 	/**
-	 * Funcion que devuelve una lista en la que solamente se guardan aquellos datos
-	 * que no se repiten
-	 *
-	 * @param listaComics
-	 * @return
-	 */
-	public static List<Comic> listaArreglada(List<Comic> listaComics) {
-
-		// Forma número 1 (Uso de Maps).
-		Map<String, Comic> mapComics = new HashMap<>(listaComics.size());
-
-		// Aquí está la magia
-		for (Comic c : listaComics) {
-			mapComics.put(c.getID(), c);
-		}
-
-		// Agrego cada elemento del map a una nueva lista y muestro cada elemento.
-
-		for (Entry<String, Comic> c : mapComics.entrySet()) {
-
-			listaLimpia.add(c.getValue());
-
-		}
-		return listaLimpia;
-	}
-
-	/**
-	 * Funcion que devuelve una lista en la que solamente se guardan aquellos datos
-	 * que no se repiten
-	 *
-	 * @param listaComics
-	 * @return
-	 */
-	public static List<String> listaArregladaAutoComplete(List<String> listaComics) {
-		Set<String> uniqueSet = new HashSet<>();
-		List<String> result = new ArrayList<>();
-
-		for (String s : listaComics) {
-			if (uniqueSet.add(s)) {
-				result.add(s);
-			}
-		}
-
-		// Ordenar la lista resultante de forma ascendente
-		result.sort(String::compareTo);
-
-		return result;
-	}
-
-	/**
 	 * Elimina la imagen temporal de muestra de la base de datos.
 	 */
 	public void deleteImage() {
@@ -752,6 +691,7 @@ public class Utilidades {
 	public static String obtenerDespuesPortadas(String rutaArchivo) {
 		int indicePortadas = rutaArchivo.indexOf("portadas\\");
 		if (indicePortadas != -1) {
+			System.out.println(rutaArchivo.substring(indicePortadas + 9));
 			return rutaArchivo.substring(indicePortadas + 9);
 		} else {
 			return "";

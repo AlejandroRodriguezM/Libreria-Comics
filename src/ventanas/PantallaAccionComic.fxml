@@ -190,5 +190,6 @@
       <Button fx:id="botonSubidaPortada" layoutX="193.0" layoutY="257.0" mnemonicParsing="false" onAction="#nuevaPortada" prefHeight="25.0" prefWidth="25.0" stylesheets="@../style/boton_subida_style.css" />
       <Label fx:id="alarmaConexionSql" layoutX="802.0" layoutY="28.0" prefHeight="30.0" prefWidth="29.0" style="-fx-background-radius: 50; -fx-background-color: red;" stylesheets="@../style/alarma_conexion_style.css" />
       <Label fx:id="alarmaConexionInternet" layoutX="767.0" layoutY="28.0" prefHeight="19.0" prefWidth="29.0" style="-fx-background-radius: 50; -fx-background-color: red;" stylesheets="@../style/alarma_conexion_style.css" />
+      <Button fx:id="botonCancelarSubida" layoutX="219.0" layoutY="303.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="45.0" stylesheets="@../style/genericos_style.css" visible="false" />
    </children>
 </Pane>

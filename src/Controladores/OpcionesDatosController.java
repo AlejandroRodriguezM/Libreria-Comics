@@ -266,7 +266,7 @@ public class OpcionesDatosController implements Initializable {
 				nombreBBDD.getItems().addAll(opciones);
 				nombreBBDD.getSelectionModel().selectFirst();
 			} else {
-				alarmaList.iniciarAnimacionDatosError(puertoTexto);
+				alarmaList.iniciarAnimacionDatosError(prontEstadoFichero,puertoTexto);
 				opciones.add("");
 			}
 

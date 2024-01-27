@@ -222,7 +222,7 @@ public class AlarmaList {
 	public void iniciarAnimacionEspera(Label prontEstadoConexion) {
 		timelineError = new Timeline();
 		timelineError.setCycleCount(Timeline.INDEFINITE);
-		if (timeline == null) {
+//		if (timelineError == null) {
 			prontEstadoConexion.setStyle("-fx-background-color: #29B6CC;");
 
 			// Agregar los keyframes para cambiar el texto
@@ -243,7 +243,7 @@ public class AlarmaList {
 
 			// Iniciar la animación
 			timelineError.play();
-		}
+//		}
 	}
 
 	/**
@@ -317,7 +317,7 @@ public class AlarmaList {
 	/**
 	 * Inicia la animación de restauración con error en la interfaz.
 	 */
-	public void iniciarAnimacionDatosError(String puerto) {
+	public void iniciarAnimacionDatosError(Label prontEstadoConexion,String puerto) {
 		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
 

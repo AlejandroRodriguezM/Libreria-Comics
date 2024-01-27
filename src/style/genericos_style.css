@@ -319,3 +319,11 @@
     -fx-border-color: #b47a0c;
 }
 
+.button#botonCancelarSubida {
+    -fx-background-color: #d9534f;
+    -fx-border-color: #d43f3a;
+}
+
+.button#botonCancelarSubida:hover {
+    -fx-background-color: #c9302c;
+}

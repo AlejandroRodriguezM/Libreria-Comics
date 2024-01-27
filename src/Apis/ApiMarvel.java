@@ -360,8 +360,8 @@ public class ApiMarvel {
 
 			// Formato
 			String format = jsonComic.getString("format");
-			String formato;
-			if (format.equalsIgnoreCase("jsonComic")) {
+			String formato = "";
+			if (format.equalsIgnoreCase("jsonComic") || format.equalsIgnoreCase("Comic")) {
 				formato = "Grapa (Issue individual)";
 			} else if (format.equalsIgnoreCase("Hardcover")) {
 				formato = "Tapa dura (Hardcover)";

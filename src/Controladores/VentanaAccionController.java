@@ -137,6 +137,12 @@ public class VentanaAccionController implements Initializable {
 	private TableColumn<Comic, String> dibujante;
 
 	/**
+	 * Botón para cancelar la subida de imagenes.
+	 */
+	@FXML
+	private Button botonCancelarSubida;
+
+	/**
 	 * Botón para agregar puntuación a un cómic.
 	 */
 	@FXML
@@ -1350,23 +1356,12 @@ public class VentanaAccionController implements Initializable {
 
 				if (fichero != null) {
 					Platform.runLater(() -> {
-						codigosFichero(fichero);
+						busquedaPorCodigoImportacion(fichero);
 					});
 
 				}
 			}
 		}
-	}
-
-	/**
-	 * Lee códigos desde un archivo y realiza búsquedas por código de importación.
-	 *
-	 * @param fichero El archivo que contiene los códigos a procesar.
-	 * @throws URISyntaxException
-	 * @throws JSONException
-	 */
-	private void codigosFichero(File fichero) {
-		busquedaPorCodigoImportacion(fichero);
 	}
 
 	/**
@@ -1727,22 +1722,65 @@ public class VentanaAccionController implements Initializable {
 					Utilidades.manejarExcepcion(e);
 				} finally {
 					cerrarExecutorService(executorService);
-					actualizarInterfaz(contadorErrores, codigoFaltante, carpetaDatabase, numLineas);
 
-					Platform.runLater(() -> {
-						cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0);
-					});
 				}
 				return null;
 			}
 		};
 
+		tarea.setOnRunning(event -> {
+			cambiarEstadoBotones(false);
+		});
+
 		AlarmaList.iniciarAnimacionCargaImagen(cargaImagen);
-		tarea.setOnSucceeded(ev -> AlarmaList.detenerAnimacionCargaImagen(cargaImagen));
+		tarea.setOnSucceeded(ev -> {
+			AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
+			cambiarEstadoBotones(true);
+			
+			actualizarInterfaz(contadorErrores, codigoFaltante, carpetaDatabase, numLineas);
+
+			Platform.runLater(() -> {
+				cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0);
+			});
+		});
 
 		Thread thread = new Thread(tarea);
+
+		botonCancelarSubida.setOnAction(event -> {
+			AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
+			cambiarEstadoBotones(true);
+			cancelarTarea(thread);
+		});
+
 		thread.setDaemon(true);
 		thread.start();
+	}
+
+	public void cambiarEstadoBotones(boolean esCancelado) {
+		if (esCancelado) {
+			botonCancelarSubida.setVisible(false);
+			botonEliminarImportadoComic.setVisible(true);
+			botonGuardarCambioComic.setVisible(true);
+			botonGuardarComic.setVisible(true);
+		} else {
+			botonCancelarSubida.setVisible(true);
+			botonEliminarImportadoComic.setVisible(false);
+			botonGuardarCambioComic.setVisible(false);
+			botonGuardarComic.setVisible(false);
+		}
+	}
+
+	private void cancelarTarea(Thread thread) {
+		String mensaje = "";
+
+		if (thread != null && thread.isAlive()) { // Verifica si el hilo está en ejecución
+			mensaje = "ERROR. Has cancelado la subida de imagenes";
+
+			thread.interrupt(); // Interrumpe el hilo para detener la tarea
+		} else {
+			mensaje = "ERROR. No hay tarea en ejecución para cancelar.";
+		}
+		AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 	}
 
 	private void procesarComic(String finalValorCodigo, AtomicBoolean comicLectura, StringBuilder codigoFaltante,
@@ -1814,8 +1852,6 @@ public class VentanaAccionController implements Initializable {
 			AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
 		});
 	}
-
-
 
 	/**
 	 * Funcion que elimina un comic de la base de datos.
