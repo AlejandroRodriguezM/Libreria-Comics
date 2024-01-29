@@ -165,7 +165,7 @@ public class AccesoBBDDController implements Initializable {
 
 	@FXML
 	private ProgressIndicator progresoCarga;
-	
+
 	/**
 	 * Estado del botón de alternancia del ojo.
 	 */
@@ -203,18 +203,17 @@ public class AccesoBBDDController implements Initializable {
 		Utilidades.crearEstructura();
 
 		Utilidades.comprobarApisComics();
-		
+
 		ConectManager.asignarValoresPorDefecto();
-		
-        Platform.runLater(() -> {
-            progresoCarga.getScene().getWindow().setOnHidden(e -> {
-                if (executorService != null && !executorService.isShutdown()) {
-                    executorService.shutdownNow();
-                }
-            });
-        });
-        
-        
+
+		Platform.runLater(() -> {
+			progresoCarga.getScene().getWindow().setOnHidden(e -> {
+				if (executorService != null && !executorService.isShutdown()) {
+					executorService.shutdownNow();
+				}
+			});
+		});
+
 	}
 
 	/**
@@ -359,41 +358,42 @@ public class AccesoBBDDController implements Initializable {
 	}
 
 	@FXML
-    void reActivarConexion(ActionEvent event) {
-        Task<Boolean> iniciarXAMPPTask = new Task<Boolean>() {
-            @Override
-            protected Boolean call() throws Exception {
-                // Realizar las operaciones de inicio de XAMPP aquí
-                return Utilidades.iniciarXAMPP();
-            }
-        };
+	void reActivarConexion(ActionEvent event) {
+		Task<Boolean> iniciarXAMPPTask = new Task<Boolean>() {
+			@Override
+			protected Boolean call() throws Exception {
+				// Realizar las operaciones de inicio de XAMPP aquí
+				return Utilidades.iniciarXAMPP();
+			}
+		};
 
-        // Configurar eventos onRunning y onSucceeded
-        iniciarXAMPPTask.setOnRunning(e -> {
-            AlarmaList.iniciarAnimacionCarga(progresoCarga);
-        });
+		// Configurar eventos onRunning y onSucceeded
+		iniciarXAMPPTask.setOnRunning(e -> {
+			AlarmaList.iniciarAnimacionCarga(progresoCarga);
+		});
 
-        iniciarXAMPPTask.setOnSucceeded(e -> {
-            boolean exito = iniciarXAMPPTask.getValue();
+		iniciarXAMPPTask.setOnSucceeded(e -> {
+			boolean exito = iniciarXAMPPTask.getValue();
 
-            Platform.runLater(() -> {
-                if (exito) {
-                    AlarmaList.detenerAnimacionCarga(progresoCarga);
-                } else {
-                    AlarmaList.detenerAnimacionCarga(progresoCarga);
-                }
-            });
+			Platform.runLater(() -> {
+				if (exito) {
+					AlarmaList.detenerAnimacionCarga(progresoCarga);
+				} else {
+					AlarmaList.detenerAnimacionCarga(progresoCarga);
+				}
+			});
 
-            // Cerrar el hilo después de completar la tarea
-            if (!executorService.isShutdown()) {
-                executorService.shutdown();
-            }
-        });
+			// Cerrar el hilo después de completar la tarea
+			if (!executorService.isShutdown()) {
+				executorService.shutdown();
+			}
 
-        // Iniciar la tarea en un nuevo hilo utilizando un ExecutorService
-        executorService = Executors.newSingleThreadExecutor();
-        executorService.submit(iniciarXAMPPTask);
-    }
+		});
+
+		// Iniciar la tarea en un nuevo hilo utilizando un ExecutorService
+		executorService = Executors.newSingleThreadExecutor();
+		executorService.submit(iniciarXAMPPTask);
+	}
 
 	/**
 	 * Permite salir completamente del programa.

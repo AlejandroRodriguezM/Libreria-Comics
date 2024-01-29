@@ -71,6 +71,8 @@ public class Ventanas {
 
 	private static Stage estadoConexionStage = null;
 
+	private static Stage cargaComics = null;
+
 	/**
 	 * Abre una ventana para el acceso a la base de datos. Carga la vista y muestra
 	 * una nueva ventana con el controlador correspondiente.
@@ -532,7 +534,6 @@ public class Ventanas {
 			stage.setOnCloseRequest(e -> {
 				controlador.closeWindows();
 			});
-			ConectManager.resetConnection();
 
 		} catch (IOException ex) {
 			alertaException(ex.toString());
@@ -564,6 +565,8 @@ public class Ventanas {
 					cargaComicsController.closeWindow();
 				});
 
+				cargaComics = stage;
+
 				// Asocio el stage con el scene
 				stage.setScene(scene);
 				stage.show();
@@ -575,6 +578,15 @@ public class Ventanas {
 				ex.printStackTrace();
 			}
 		});
+	}
+
+	public void cerrarCargaComics() {
+		if (cargaComics != null) {
+
+			cargaComics.close();
+		} else {
+			System.out.println("ERROR en cerrar carga");
+		}
 	}
 
 	public static void cerrarVentanaActual(Stage nodoEscena) {

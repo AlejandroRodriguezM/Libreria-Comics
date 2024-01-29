@@ -70,7 +70,7 @@ public class CargaComicsController implements Initializable {
 		appendTextToTextArea("");
 		updateLabel("");
 	}
-	
+
 	/**
 	 * Actualiza el progreso de la barra de progreso.
 	 *
@@ -87,7 +87,7 @@ public class CargaComicsController implements Initializable {
 	 */
 	public void appendTextToTextArea(String text) {
 		comicsCarga.appendText(text);
-		
+
 	}
 
 	/**
@@ -127,9 +127,11 @@ public class CargaComicsController implements Initializable {
 	 */
 	public void closeWindow() {
 		if (stage != null) {
-			stage.close();
+			Stage myStage = (Stage) comicsCarga.getScene().getWindow();
+			myStage.close();
 		}
-	}
+		
 
+	}
 
 }

@@ -596,6 +596,9 @@ public class VentanaAccionController implements Initializable {
 	 */
 	private final String DOCUMENTS_PATH = USER_DIR + File.separator + "Documents";
 
+	private final String CARPETA_RAIZ_PORTADAS = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+			+ ConectManager.DB_NAME + File.separator;
+
 	/**
 	 * Construimos la ruta al directorio "libreria_comics" dentro de "Documents" y
 	 * añadimos el nombre de la base de datos y la carpeta "portadas".
@@ -998,6 +1001,7 @@ public class VentanaAccionController implements Initializable {
 				comicTemp = Utilidades.devolverComic(idComic);
 			} else {
 				comicTemp = SelectManager.comicDatos(idComic);
+
 			}
 
 			if (comicTemp == null) {
@@ -1012,8 +1016,11 @@ public class VentanaAccionController implements Initializable {
 
 			setAtributosDesdeTabla(comicTemp);
 			validarCamposComic(false);
-			prontInfo.setOpacity(0);
-
+			prontInfo.setOpacity(1);
+			if (!comicsImportados.isEmpty()) {
+				String mensaje = SelectManager.comicDatos(id_comic_selecionado).toString().replace("[", "").replace("]","");
+				prontInfo.setText(mensaje);
+			}
 			if (TIPO_ACCION.equals("modificar")) {
 				mostrarOpcion(TIPO_ACCION);
 				idComicTratar_mod.setText(comicTemp.getID());
@@ -1223,8 +1230,7 @@ public class VentanaAccionController implements Initializable {
 	 * @throws InterruptedException
 	 */
 	@FXML
-	public void agregarDatos(ActionEvent event)
-			throws IOException, SQLException, InterruptedException, ExecutionException {
+	public void agregarDatos(ActionEvent event) {
 
 		if (ConectManager.conexionActiva()) {
 			libreria = new ListaComicsDAO();
@@ -1253,7 +1259,7 @@ public class VentanaAccionController implements Initializable {
 	 *                      de datos.
 	 */
 	@FXML
-	void borrarPuntuacion(ActionEvent event) throws IOException, SQLException {
+	void borrarPuntuacion(ActionEvent event) {
 		accionPuntuar(false);
 	}
 
@@ -1266,7 +1272,7 @@ public class VentanaAccionController implements Initializable {
 	 *                      de datos.
 	 */
 	@FXML
-	void agregarPuntuacion(ActionEvent event) throws IOException, SQLException {
+	void agregarPuntuacion(ActionEvent event) {
 		accionPuntuar(true);
 	}
 
@@ -1279,7 +1285,7 @@ public class VentanaAccionController implements Initializable {
 	 * @throws SQLException Excepción lanzada en caso de errores de acceso a la base
 	 *                      de datos.
 	 */
-	private void accionPuntuar(boolean esAgregar) throws SQLException {
+	private void accionPuntuar(boolean esAgregar) {
 
 		if (ConectManager.conexionActiva()) {
 			libreria = new ListaComicsDAO();
@@ -1665,19 +1671,9 @@ public class VentanaAccionController implements Initializable {
 	 */
 	private void busquedaPorCodigoImportacion(File fichero) {
 
-		if (!ConectManager.conexionActiva()) {
+		if (!ConectManager.conexionActiva() && !Utilidades.isInternetAvailable()) {
 			return;
 		}
-
-		if (!Utilidades.isInternetAvailable()) {
-			return;
-		}
-
-		botonGuardarCambioComic.setVisible(true);
-		botonGuardarComic.setVisible(true);
-		botonEliminarImportadoComic.setVisible(true);
-		String carpetaDatabase = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
-				+ ConectManager.DB_NAME + File.separator;
 
 		AtomicBoolean comicLectura = new AtomicBoolean(false);
 		StringBuilder codigoFaltante = new StringBuilder();
@@ -1686,6 +1682,7 @@ public class VentanaAccionController implements Initializable {
 		AtomicInteger numLineas = new AtomicInteger(0); // Declarar como AtomicInteger
 		numLineas.set(Utilidades.contarLineas(fichero)); // Asignar el valor aquí
 		AtomicReference<CargaComicsController> cargaComicsControllerRef = new AtomicReference<>();
+		String mensaje = "ERROR. Has cancelado la subida de comics";
 		nav.verCargaComics(cargaComicsControllerRef);
 		Task<Void> tarea = new Task<>() {
 			@Override
@@ -1694,36 +1691,50 @@ public class VentanaAccionController implements Initializable {
 						.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 				try (BufferedReader reader = new BufferedReader(new FileReader(fichero))) {
-					reader.lines().map(linea -> Utilidades.eliminarEspacios(linea).replace("-", ""))
-							.filter(finalValorCodigo -> !finalValorCodigo.isEmpty()).forEach(finalValorCodigo -> {
-								try {
-									procesarComic(finalValorCodigo, comicLectura, codigoFaltante, contadorErrores,
-											comicsProcesados);
+					AtomicReference<String> finalValorCodigoWrapper = new AtomicReference<>();
+					reader.lines().forEach(linea -> {
+						// Verifica si la tarea ha sido cancelada
+						if (isCancelled()) {
 
-									final long finalProcessedItems = comicsProcesados.get();
+							comicsImportados.clear();
+							tablaBBDD.refresh();
+							AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+							return; // Sale del método call() si la tarea ha sido cancelada
+						}
 
-									// Update UI elements using Platform.runLater
-									Platform.runLater(() -> {
-										String texto = "";
-										texto = "Comic: " + finalValorCodigo + "\n";
+						String finalValorCodigo = Utilidades.eliminarEspacios(linea).replace("-", "");
+						finalValorCodigoWrapper.set(finalValorCodigo);
 
-										double progress = (double) finalProcessedItems / (numLineas.get() + 1);
-										String porcentaje = String.format("%.2f%%", progress * 100);
+						if (!finalValorCodigo.isEmpty()) {
+							final String[] texto = { "" }; // Envuelve la variable en un array de un solo elemento
+							if (procesarComic(finalValorCodigoWrapper.get(), comicLectura)) {
+								texto[0] = "Comic: " + finalValorCodigoWrapper.get() + "\n";
+							} else {
+								texto[0] = "Comic no capturado: " + finalValorCodigoWrapper.get() + "\n";
+								contadorErrores.getAndIncrement();
+							}
+							comicsProcesados.getAndIncrement();
+							final long finalProcessedItems = comicsProcesados.get();
 
-										cargaComicsControllerRef.get().cargarDatosEnCargaComics(texto, porcentaje,
-												progress);
-									});
+							// Update UI elements using Platform.runLater
+							Platform.runLater(() -> {
 
-								} catch (URISyntaxException | IOException | JSONException e) {
-									Utilidades.manejarExcepcion(e);
-								}
+								String textoFinal = texto[0];
+
+								double progress = (double) finalProcessedItems / (numLineas.get() + 1);
+								String porcentaje = String.format("%.2f%%", progress * 100);
+
+								cargaComicsControllerRef.get().cargarDatosEnCargaComics(textoFinal, porcentaje,
+										progress);
 							});
+						}
+					});
 				} catch (IOException e) {
 					Utilidades.manejarExcepcion(e);
 				} finally {
 					cerrarExecutorService(executorService);
-
 				}
+
 				return null;
 			}
 		};
@@ -1736,8 +1747,8 @@ public class VentanaAccionController implements Initializable {
 		tarea.setOnSucceeded(ev -> {
 			AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
 			cambiarEstadoBotones(true);
-			
-			actualizarInterfaz(contadorErrores, codigoFaltante, carpetaDatabase, numLineas);
+
+			actualizarInterfaz(contadorErrores, codigoFaltante, CARPETA_RAIZ_PORTADAS, numLineas);
 
 			Platform.runLater(() -> {
 				cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0);
@@ -1747,9 +1758,11 @@ public class VentanaAccionController implements Initializable {
 		Thread thread = new Thread(tarea);
 
 		botonCancelarSubida.setOnAction(event -> {
+
+			nav.cerrarCargaComics();
 			AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
 			cambiarEstadoBotones(true);
-			cancelarTarea(thread);
+			tarea.cancel(true);
 		});
 
 		thread.setDaemon(true);
@@ -1770,41 +1783,26 @@ public class VentanaAccionController implements Initializable {
 		}
 	}
 
-	private void cancelarTarea(Thread thread) {
-		String mensaje = "";
+	private boolean procesarComic(String finalValorCodigo, AtomicBoolean comicLectura) {
+		boolean procesadoCorrectamente = false;
 
-		if (thread != null && thread.isAlive()) { // Verifica si el hilo está en ejecución
-			mensaje = "ERROR. Has cancelado la subida de imagenes";
-
-			thread.interrupt(); // Interrumpe el hilo para detener la tarea
-		} else {
-			mensaje = "ERROR. No hay tarea en ejecución para cancelar.";
-		}
-		AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
-	}
-
-	private void procesarComic(String finalValorCodigo, AtomicBoolean comicLectura, StringBuilder codigoFaltante,
-			AtomicInteger contadorErrores, AtomicInteger comicsProcesados)
-			throws URISyntaxException, IOException, JSONException {
-
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
-
-		Comic comicInfo = obtenerComicInfo(finalValorCodigo, comicLectura);
-
-		if (comprobarCodigo(comicInfo)) {
-			rellenarTablaImport(comicInfo, finalValorCodigo);
-
-			synchronized (comicsProcesados) {
-				comicsProcesados.incrementAndGet();
+		try {
+			if (!ConectManager.conexionActiva()) {
+				return false;
 			}
-		} else {
-			synchronized (contadorErrores) {
-				codigoFaltante.append("Falta comic con codigo: ").append(finalValorCodigo).append("\n");
-				contadorErrores.incrementAndGet();
+
+			Comic comicInfo = obtenerComicInfo(finalValorCodigo, comicLectura);
+
+			if (comprobarCodigo(comicInfo)) {
+				rellenarTablaImport(comicInfo, finalValorCodigo);
+
+				procesadoCorrectamente = true;
 			}
+		} catch (URISyntaxException | IOException | JSONException e) {
+			Utilidades.manejarExcepcion(e);
 		}
+
+		return procesadoCorrectamente;
 	}
 
 	private Comic obtenerComicInfo(String finalValorCodigo, AtomicBoolean comicLectura)
@@ -1920,7 +1918,7 @@ public class VentanaAccionController implements Initializable {
 	 *         acciones correspondientes, false de lo contrario.
 	 * @throws SQLException Si ocurre un error al interactuar con la base de datos.
 	 */
-	public boolean comprobarExistenciaComic(String ID) throws SQLException {
+	public boolean comprobarExistenciaComic(String ID) {
 
 		// Verifica si la conexión está activa
 		if (!ConectManager.conexionActiva()) {
@@ -2254,9 +2252,8 @@ public class VentanaAccionController implements Initializable {
 		if (comicsImportados.size() > 0) {
 			if (nav.alertaInsertar()) {
 				libreria = new ListaComicsDAO();
-				String mensajePront = "";
+
 				AlarmaList.detenerAnimacionProntAccion(imagenFondo);
-				;
 				AlarmaList.iniciarAnimacionCambioImagen(imagenFondo);
 				utilidad = new Utilidades();
 
@@ -2266,12 +2263,10 @@ public class VentanaAccionController implements Initializable {
 					c.setID("");
 					InsertManager.insertarDatos(c, true);
 
-					mensajePront += "Has introducido los comics correctamente\n";
-
 					Image imagenDeseo = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
 					imagenFondo.setImage(imagenDeseo);
-
 				}
+
 				ListaComicsDAO.listasAutoCompletado();
 				List<ComboBox<String>> comboboxes = getComboBoxes();
 				funcionesCombo.rellenarComboBox(comboboxes);
@@ -2281,6 +2276,7 @@ public class VentanaAccionController implements Initializable {
 				validarCamposComic(true);
 				funcionesTabla.tablaBBDD(comicsImportados, tablaBBDD, columnList); // Llamada a funcion
 
+				String mensajePront = "Has introducido los comics correctamente\n";
 				AlarmaList.mostrarMensajePront(mensajePront, true, prontInfo);
 				AlarmaList.detenerAnimacionProntAccion(imagenFondo);
 				;
@@ -2499,18 +2495,16 @@ public class VentanaAccionController implements Initializable {
 
 		} else {
 			String codigo_imagen = Utilidades.generarCodigoUnico(SOURCE_PATH + File.separator);
+			String mensaje = "";
+			utilidad.nueva_imagen(comic.getImagen(), codigo_imagen);
 
 			if (esModificacion) {
 				comic.setID(idComicTratar_mod.getText());
 				String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
-
 				List<Comic> listaComics = SelectManager.verLibreria(sentenciaSQL);
-				utilidad.nueva_imagen(comic.getImagen(), codigo_imagen);
 				comic.setImagen(SOURCE_PATH + File.separator + codigo_imagen + ".jpg");
 				UpdateManager.actualizarComicBBDD(comic, "modificar");
-				String mensaje = "Deseo Concedido...\nHas modificado correctamente el cómic";
-
-				AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
+				mensaje = "Deseo Concedido...\nHas modificado correctamente el cómic";
 
 				Platform.runLater(() -> {
 					funcionesTabla.tablaBBDD(listaComics, tablaBBDD, columnList);
@@ -2518,17 +2512,16 @@ public class VentanaAccionController implements Initializable {
 				tablaBBDD.refresh();
 
 			} else {
-				utilidad.nueva_imagen(comic.getImagen(), codigo_imagen);
 				comic.setImagen(SOURCE_PATH + File.separator + codigo_imagen + ".jpg");
 				InsertManager.insertarDatos(comic, true);
 
-				String mensaje = "Deseo Concedido...\n Has introducido correctamente el cómic";
-				AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
-				Image imagenDeseo = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
-				imagenFondo.setImage(imagenDeseo);
-				AlarmaList.detenerAnimacionProntAccion(imagenFondo);
+				mensaje = "Deseo Concedido...\n Has introducido correctamente el cómic";
 			}
 
+			Image imagenDeseo = new Image(getClass().getResourceAsStream("/imagenes/accionComic.jpg"));
+			imagenFondo.setImage(imagenDeseo);
+			AlarmaList.detenerAnimacionProntAccion(imagenFondo);
+			AlarmaList.mostrarMensajePront(mensaje, esModificacion, prontInfo);
 			procesarBloqueComun(comic);
 		}
 	}

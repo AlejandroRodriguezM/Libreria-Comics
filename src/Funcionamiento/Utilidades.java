@@ -95,8 +95,6 @@ import webScrap.WebScraperPreviewsWorld;
  */
 public class Utilidades {
 
-
-
 	/**
 	 * Sistema operativo actual.
 	 */
@@ -2409,9 +2407,6 @@ public class Utilidades {
 			// Cerrar el proceso
 			process.destroy();
 
-			// Cerrar el proceso
-			process.destroy();
-
 			// Si la salida contiene "xampp-control.exe", entonces el proceso está en
 			// ejecución
 			return output.contains("xampp-control.exe");
@@ -2434,14 +2429,14 @@ public class Utilidades {
 
 	public static boolean iniciarXAMPP() {
 		try {
-			// Ruta al script de control de XAMPP en Windows
-			String rutaScriptControl = "C:\\xampp\\xampp-control.exe";
+			String[] datosFichero = Utilidades.datosEnvioFichero();
+			String port = datosFichero[0];
+			String host = datosFichero[4];
 
-			if (!isXAMPPRunning() && verificarExistencia(rutaScriptControl)) {
-				ejecutarComando(rutaScriptControl, "XAMPP Encendido correctamente", "Error al iniciar XAMPP");
+			if (!isMySQLServiceRunning(host, port)) {
+				iniciarConexionMySql();
+				return true;
 			}
-
-			iniciarConexionMySql();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -2449,14 +2444,88 @@ public class Utilidades {
 	}
 
 	public static void iniciarConexionMySql() {
-		String rutaScript = "C:\\xampp\\xampp_start.exe";
-		// Llamada a la función para ejecutar el comando
+		String rutaScriptControl = "C:\\xampp\\xampp-control.exe";
+
 		try {
-			if (verificarExistencia(rutaScript)) {
-				ejecutarComando(rutaScript, "XAMPP iniciado correctamente", "Error al iniciar XAMPP");
+			if (verificarExistencia(rutaScriptControl)) {
+				if (!isXAMPPRunning()) {
+					abrirPrograma(rutaScriptControl);
+//					Thread.sleep(5000); // Espera para asegurarse de que XAMPP se haya iniciado completamente
+				}
+				String rutaScript = "C:\\xampp\\xampp_start.exe";
+				if (verificarExistencia(rutaScript)) {
+					System.out.println("Tal");
+					ejecutarComando(rutaScript);
+				} else {
+					System.err.println("El archivo xampp_start.exe no existe en la ruta especificada.");
+				}
+			} else {
+				System.err.println("El archivo xampp-control.exe no existe en la ruta especificada.");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Ejecuta un comando en un proceso y maneja la salida según el resultado.
+	 *
+	 * @param rutaScript   Ruta del script o comando a ejecutar.
+	 * @param mensajeExito Mensaje a imprimir en caso de éxito. (Opcional)
+	 * @param mensajeError Mensaje a imprimir en caso de error. (Opcional)
+	 * @throws IOException Si ocurre un error de E/S al ejecutar el comando.
+	 */
+	private static void ejecutarComando(String rutaScript) throws IOException {
+		try {
+
+			String mensajeExito = "XAMPP iniciado correctamente";
+			String mensajeError = "Error al iniciar XAMPP";
+
+			ProcessBuilder processBuilder = new ProcessBuilder(rutaScript);
+			Process process = processBuilder.start();
+
+			try {
+				int exitCode = process.waitFor();
+
+				System.out.println(exitCode);
+
+				if (exitCode == 0) {
+					if (mensajeExito != null && !mensajeExito.isEmpty()) {
+						System.out.println(mensajeExito);
+					} else {
+						System.out.println("El comando se ejecutó correctamente.");
+					}
+				} else {
+					if (mensajeError != null && !mensajeError.isEmpty()) {
+						System.out.println(mensajeError);
+					} else {
+						System.out.println("El comando falló con código de salida: " + exitCode);
+					}
+				}
+			} catch (InterruptedException e) {
+				System.err.println("El hilo fue interrumpido mientras esperaba el proceso.");
+				Thread.currentThread().interrupt();
+			} finally {
+				process.destroyForcibly();
+				System.out.println("El proceso fue destruido: " + !process.isAlive());
+			}
+		} catch (IOException e) {
+			throw new IOException("Error al ejecutar el comando: " + e.getMessage());
+		}
+	}
+
+	private static void abrirPrograma(String rutaPrograma) {
+		File file = new File(rutaPrograma);
+		if (!file.exists()) {
+			System.err.println("El archivo no existe en la ruta especificada.");
+			return;
+		}
+
+		try {
+			Desktop.getDesktop().open(file);
+			System.out.println("Programa abierto correctamente.");
+		} catch (IOException e) {
+			System.err.println("Error al abrir el programa: " + e.getMessage());
 		}
 	}
 
@@ -2481,42 +2550,6 @@ public class Utilidades {
 	private static boolean verificarExistencia(String rutaArchivo) {
 		File archivo = new File(rutaArchivo);
 		return archivo.exists();
-	}
-
-	private static void ejecutarComando(String rutaScript, String mensajeExito, String mensajeError) {
-		try {
-			// Crear un proceso para ejecutar el comando
-			ProcessBuilder processBuilder = new ProcessBuilder(rutaScript);
-			Process process = processBuilder.start();
-
-			try {
-				// Esperar a que el proceso termine
-				int exitCode = process.waitFor();
-
-				// Imprimir el mensaje según el resultado del comando
-				if (exitCode == 0) {
-					System.out.println(mensajeExito);
-				} else {
-					System.out.println(mensajeError);
-				}
-			} catch (InterruptedException e) {
-				// Manejar la interrupción del hilo aquí, si es necesario
-				System.err.println("El hilo fue interrumpido mientras esperaba el proceso.");
-//				e.printStackTrace();
-
-				// Puedes decidir si quieres volver a interrumpir el hilo o realizar alguna otra
-				// acción.
-				Thread.currentThread().interrupt();
-			} finally {
-				// Intentar destruir el proceso de manera forzada
-				process.destroyForcibly();
-
-				// Comprobar si el proceso sigue vivo (opcional)
-				System.out.println(process.isAlive());
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	/**
@@ -2624,59 +2657,58 @@ public class Utilidades {
 	 * @param imageView El ImageView en el que se mostrará la imagen cargada.
 	 */
 	public static void cargarImagenAsync(String urlImagen, ImageView imageView) {
-	    Task<Image> cargarImagenTask = new Task<Image>() {
-	        @Override
-	        protected Image call() throws Exception {
-	            while (true) {
-	                try {
-	                    File fichero = new File(urlImagen);
+		Task<Image> cargarImagenTask = new Task<Image>() {
+			@Override
+			protected Image call() throws Exception {
+				while (true) {
+					try {
+						File fichero = new File(urlImagen);
 
-	                    // Verificar si el archivo existe
-	                    if (!fichero.exists()) {
-	                        // Si el archivo no existe, cargar la imagen por defecto desde el proyecto
-	                        InputStream is = getClass().getResourceAsStream("/Funcionamiento/sinPortada.jpg");
-	                        if (is != null) {
-	                            // Intentar cargar la imagen desde el flujo de entrada
-	                            Image imagenCargada = new Image(is, 250, 0, true, true);
-	                            // Verificar si la imagen se ha cargado correctamente
-	                            if (imagenCargada.isError()) {
-	                                throw new IOException("Error al cargar la imagen por defecto.");
-	                            }
-	                            // Actualizar la interfaz de usuario en el hilo de JavaFX
-	                            Platform.runLater(() -> {
-	                                imageView.setImage(imagenCargada);
-	                            });
-	                            return imagenCargada;
-	                        }
-	                    }
+						// Verificar si el archivo existe
+						if (!fichero.exists()) {
+							// Si el archivo no existe, cargar la imagen por defecto desde el proyecto
+							InputStream is = getClass().getResourceAsStream("/Funcionamiento/sinPortada.jpg");
+							if (is != null) {
+								// Intentar cargar la imagen desde el flujo de entrada
+								Image imagenCargada = new Image(is, 250, 0, true, true);
+								// Verificar si la imagen se ha cargado correctamente
+								if (imagenCargada.isError()) {
+									throw new IOException("Error al cargar la imagen por defecto.");
+								}
+								// Actualizar la interfaz de usuario en el hilo de JavaFX
+								Platform.runLater(() -> {
+									imageView.setImage(imagenCargada);
+								});
+								return imagenCargada;
+							}
+						}
 
-	                    // Si el archivo existe, cargar la imagen desde la ruta especificada
-	                    String imageUrl = fichero.toURI().toURL().toString();
-	                    Image imagenCargada = new Image(imageUrl, 250, 0, true, true);
+						// Si el archivo existe, cargar la imagen desde la ruta especificada
+						String imageUrl = fichero.toURI().toURL().toString();
+						Image imagenCargada = new Image(imageUrl, 250, 0, true, true);
 
-	                    // Verificar si la imagen se ha cargado correctamente
-	                    if (imagenCargada.isError()) {
-	                        throw new IOException("Error al cargar la imagen desde la URL local.");
-	                    }
+						// Verificar si la imagen se ha cargado correctamente
+						if (imagenCargada.isError()) {
+							throw new IOException("Error al cargar la imagen desde la URL local.");
+						}
 
-	                    // Actualizar la interfaz de usuario en el hilo de JavaFX
-	                    Platform.runLater(() -> {
-	                        imageView.setImage(imagenCargada);
-	                    });
-	                    return imagenCargada;
-	                } catch (FileNotFoundException e) {
-	                    Thread.sleep(1500); // Puedes ajustar el tiempo de espera según sea necesario
-	                } catch (Exception e) {
-	                    Thread.sleep(1500); // Puedes ajustar el tiempo de espera según sea necesario
-	                }
-	            }
-	        }
-	    };
+						// Actualizar la interfaz de usuario en el hilo de JavaFX
+						Platform.runLater(() -> {
+							imageView.setImage(imagenCargada);
+						});
+						return imagenCargada;
+					} catch (FileNotFoundException e) {
+						Thread.sleep(1500); // Puedes ajustar el tiempo de espera según sea necesario
+					} catch (Exception e) {
+						Thread.sleep(1500); // Puedes ajustar el tiempo de espera según sea necesario
+					}
+				}
+			}
+		};
 
-	    Thread thread = new Thread(cargarImagenTask);
-	    thread.setDaemon(true);
-	    thread.start();
+		Thread thread = new Thread(cargarImagenTask);
+		thread.setDaemon(true);
+		thread.start();
 	}
-
 
 }

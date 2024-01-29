@@ -651,11 +651,11 @@ public class FuncionesComboBox {
 	 */
 	public void rellenarComboBoxEstaticos(List<ComboBox<String>> comboboxes, String tipo_accion) {
 		String[] formatos = { "Grapa (Issue individual)", "Tapa blanda (Paperback)", "Cómic de bolsillo (Pocket)",
-				"Edición de lujo (Deluxe Edition)", "Edición omnibus (Omnibus)", "Edición integral (Integral)",
-				"Tapa dura (Hardcover)", "eBook (libro electrónico)", "Cómic digital (Digital Comic)",
+				"Edicion de lujo (Deluxe Edition)", "Edicion omnibus(Omnibus)", "Edicion integral (Integral)",
+				"Tapa dura (Hardcover)", "eBook (libro electrónico)", "Comic digital (Digital Comic)",
 				"Manga digital (Digital Manga)", "Manga (Manga tome)", "PDF (Portable Document Format)",
-				"Revista (Magazine)", "Edición de coleccionista (Collector's Edition)",
-				"Edición especial (Special Edition)", "Edición con extras (Bonus Edition)", "Libro (Book)" };
+				"Revista (Magazine)", "Edicion de coleccionista (Collector's Edition)",
+				"Edicion especial (Special Edition)", "Edicion con extras (Bonus Edition)", "Libro (Book)" };
 
 		String[] procedenciaEstados = { "Estados Unidos (United States)", "Japón (Japan)", "Francia (France)",
 				"Italia (Italy)", "España (Spain)", "Reino Unido (United Kingdom)", "Alemania (Germany)",
