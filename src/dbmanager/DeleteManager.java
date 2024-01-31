@@ -20,10 +20,6 @@ public class DeleteManager {
     public static CompletableFuture<Boolean> deleteAndRestartDatabaseAsync() {
         return CompletableFuture.supplyAsync(() -> {
             try {
-            	
-                Utilidades.copiaSeguridad();
-                Utilidades.eliminarArchivosEnCarpeta();
-
                 ListaComicsDAO.limpiarListasPrincipales();
 
                 CompletableFuture<Boolean> result = CompletableFuture.supplyAsync(() -> {
@@ -31,6 +27,9 @@ public class DeleteManager {
                          PreparedStatement deleteStatement = conn.prepareStatement("DELETE FROM comicsbbdd");
                          PreparedStatement resetAutoIncrementStatement = conn.prepareStatement("ALTER TABLE comicsbbdd AUTO_INCREMENT = 1")) {
 
+                        Utilidades.copiaSeguridad();
+                        Utilidades.eliminarArchivosEnCarpeta();
+                    	
                         int deletedRows = deleteStatement.executeUpdate();
                         resetAutoIncrementStatement.executeUpdate();
 

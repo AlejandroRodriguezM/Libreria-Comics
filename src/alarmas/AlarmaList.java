@@ -223,26 +223,25 @@ public class AlarmaList {
 		timelineError = new Timeline();
 		timelineError.setCycleCount(Timeline.INDEFINITE);
 //		if (timelineError == null) {
-			prontEstadoConexion.setStyle("-fx-background-color: #29B6CC;");
+		prontEstadoConexion.setStyle("-fx-background-color: #29B6CC;");
 
-			// Agregar los keyframes para cambiar el texto
-			KeyFrame mostrarEsperando = new KeyFrame(Duration.ZERO,
-					new KeyValue(prontEstadoConexion.textProperty(), "Esperando"));
-			KeyFrame mostrarPunto = new KeyFrame(Duration.seconds(0.5),
-					new KeyValue(prontEstadoConexion.textProperty(), "Esperando."));
-			KeyFrame mostrarDosPuntos = new KeyFrame(Duration.seconds(1),
-					new KeyValue(prontEstadoConexion.textProperty(), "Esperando.."));
-			KeyFrame mostrarTresPuntos = new KeyFrame(Duration.seconds(1.5),
-					new KeyValue(prontEstadoConexion.textProperty(), "Esperando..."));
-			KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(2),
-					new KeyValue(prontEstadoConexion.textProperty(), ""));
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarEsperando = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontEstadoConexion.textProperty(), "Esperando"));
+		KeyFrame mostrarPunto = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(prontEstadoConexion.textProperty(), "Esperando."));
+		KeyFrame mostrarDosPuntos = new KeyFrame(Duration.seconds(1),
+				new KeyValue(prontEstadoConexion.textProperty(), "Esperando.."));
+		KeyFrame mostrarTresPuntos = new KeyFrame(Duration.seconds(1.5),
+				new KeyValue(prontEstadoConexion.textProperty(), "Esperando..."));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(2), new KeyValue(prontEstadoConexion.textProperty(), ""));
 
-			// Agregar los keyframes al timeline
-			timelineError.getKeyFrames().addAll(mostrarEsperando, mostrarPunto, mostrarDosPuntos, mostrarTresPuntos,
-					ocultarTexto);
+		// Agregar los keyframes al timeline
+		timelineError.getKeyFrames().addAll(mostrarEsperando, mostrarPunto, mostrarDosPuntos, mostrarTresPuntos,
+				ocultarTexto);
 
-			// Iniciar la animación
-			timelineError.play();
+		// Iniciar la animación
+		timelineError.play();
 //		}
 	}
 
@@ -317,7 +316,7 @@ public class AlarmaList {
 	/**
 	 * Inicia la animación de restauración con error en la interfaz.
 	 */
-	public void iniciarAnimacionDatosError(Label prontEstadoConexion,String puerto) {
+	public void iniciarAnimacionDatosError(Label prontEstadoConexion, String puerto) {
 		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
 
@@ -824,6 +823,7 @@ public class AlarmaList {
 
 		prontInfo.clear();
 		prontInfo.setOpacity(1);
+		prontInfo.setVisible(true);
 		if (exito) {
 			prontInfo.setStyle("-fx-border-color: green;");
 		} else {
@@ -1026,6 +1026,7 @@ public class AlarmaList {
 		cargaImagen.setOpacity(1);
 
 		timelineGif = new Timeline();
+		cargaImagen.setVisible(true);
 		timelineGif.setCycleCount(Timeline.INDEFINITE);
 
 		// Agregar el keyframe para cambiar la imagen

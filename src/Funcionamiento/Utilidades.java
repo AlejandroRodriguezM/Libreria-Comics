@@ -1388,6 +1388,7 @@ public class Utilidades {
 		// Verificar si el archivo existe antes de intentar borrarlo
 		if (archivo.exists()) {
 			if (archivo.delete()) {
+				System.out.println("Borrado correctamente");
 				return true;
 			} else {
 				return false;
@@ -1720,7 +1721,7 @@ public class Utilidades {
 	 *         encuentra, devuelve null.
 	 */
 	public static Comic devolverComic(String id_comic) {
-		for (Comic comic : VentanaAccionController.comicsImportados) {
+		for (Comic comic : ListaComicsDAO.comicsImportados) {
 			if (comic.getID().equals(id_comic)) {
 				return comic;
 			}
@@ -1764,7 +1765,7 @@ public class Utilidades {
 	 */
 	public static Comic obtenerComicSeleccionado(String id_comic) throws SQLException {
 		Comic comic_temp;
-		if (!VentanaAccionController.comicsImportados.isEmpty()) {
+		if (!ListaComicsDAO.comicsImportados.isEmpty()) {
 			VentanaAccionController.id_comic_selecionado = id_comic;
 			comic_temp = Utilidades.devolverComic(id_comic);
 		} else {

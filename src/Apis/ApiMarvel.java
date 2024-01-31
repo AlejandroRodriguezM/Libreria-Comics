@@ -18,10 +18,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import Controladores.VentanaAccionController;
 import Funcionamiento.Utilidades;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
+import dbmanager.ListaComicsDAO;
 import javafx.scene.control.TextArea;
 
 /**
@@ -48,10 +48,12 @@ public class ApiMarvel {
 		if (cleanedCode.length() == 13) {
 			String formattedIsbn = formatIsbn(cleanedCode);
 			jsonComic = getComicInfo(formattedIsbn, "isbn", prontInfo);
-		} else {
+		} else if (cleanedCode.length() == 17) {
 			jsonComic = getComicInfo(cleanedCode, "upc", prontInfo);
+		} else {
+			
+			return null;
 		}
-
 		if (jsonComic != null) {
 			return displayComicInfo(jsonComic, comicCode);
 		}
@@ -211,7 +213,7 @@ public class ApiMarvel {
 			JSONObject jsonObject = new JSONObject(jsonResponse);
 			JSONArray resultsArray = jsonObject.getJSONObject("data").getJSONArray("results");
 
-			if (resultsArray.length() == 0 && VentanaAccionController.comicsImportados.size() < 1) {
+			if (resultsArray.length() == 0 && ListaComicsDAO.comicsImportados.size() < 1) {
 				prontInfo.setOpacity(1);
 				prontInfo.setText("No se encontró el cómic con codigo: " + claveComic);
 				return null;

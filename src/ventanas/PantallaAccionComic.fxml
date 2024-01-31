@@ -111,7 +111,7 @@
       <Label fx:id="label_precio" layoutX="5.0" layoutY="208.0" prefHeight="21.0" prefWidth="37.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Precio" />
       <Label fx:id="label_portada" focusTraversable="false" layoutX="5.0" layoutY="259.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Portada" />
       <Label fx:id="label_id_mod" disable="true" focusTraversable="false" layoutX="5.0" layoutY="281.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="ID comic" visible="false" />
-      <Button fx:id="botonIntroducir" disable="true" focusTraversable="false" layoutX="249.0" layoutY="29.0" mnemonicParsing="false" onAction="#agregarDatos" prefHeight="21.0" prefWidth="57.0" stylesheets="@../style/genericos_style.css" text="Agregar" visible="false">
+      <Button fx:id="botonIntroducir" focusTraversable="false" layoutX="249.0" layoutY="29.0" mnemonicParsing="false" onAction="#agregarDatos" prefHeight="21.0" prefWidth="57.0" stylesheets="@../style/genericos_style.css" text="Agregar" visible="false">
          <font>
             <Font size="10.0" />
          </font></Button>
@@ -123,9 +123,8 @@
          </font>
       </Label>
       <ComboBox fx:id="puntuacionMenu" layoutX="64.0" layoutY="131.0" prefHeight="21.0" prefWidth="125.0" visible="false" />
-      <ComboBox fx:id="busquedaEditorial" layoutX="4.0" layoutY="328.0" prefHeight="25.0" prefWidth="90.0" promptText="Editorial" visible="false" />
-      <TextField fx:id="busquedaCodigo" layoutX="98.0" layoutY="290.0" prefHeight="25.0" prefWidth="111.0" promptText="Incluye ISBN,UPC o DC" visible="false" />
-      <Button fx:id="botonBusquedaCodigo" layoutX="99.0" layoutY="320.0" mnemonicParsing="false" onAction="#busquedaPorCodigo" prefHeight="33.0" prefWidth="111.0" style="-fx-background-color: ecb653;" stylesheets="@../style/genericos_style.css" text="Buscar Comic" visible="false" />
+      <TextField fx:id="busquedaCodigo" layoutX="4.0" layoutY="328.0" prefHeight="25.0" prefWidth="111.0" promptText="Incluye ISBN,UPC o DC" visible="false" />
+      <Button fx:id="botonBusquedaCodigo" layoutX="119.0" layoutY="323.0" mnemonicParsing="false" onAction="#busquedaPorCodigo" prefHeight="23.0" prefWidth="90.0" style="-fx-background-color: ecb653;" stylesheets="@../style/genericos_style.css" text="Buscar Comic" visible="false" />
       <Button fx:id="botonAgregarPuntuacion" disable="true" layoutX="4.0" layoutY="167.0" mnemonicParsing="false" onAction="#agregarPuntuacion" prefHeight="42.0" prefWidth="117.0" stylesheets="@../style/genericos_style.css" text="Añadir puntuación" visible="false" />
       <Button fx:id="botonBorrarOpinion" disable="true" layoutX="4.0" layoutY="216.0" mnemonicParsing="false" onAction="#borrarPuntuacion" prefHeight="42.0" prefWidth="117.0" stylesheets="@../style/genericos_style.css" text="Borrar puntuación" visible="false" />
       <Label fx:id="labelPuntuacion" disable="true" layoutX="3.0" layoutY="132.0" prefHeight="23.0" prefWidth="47.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Puntuar" visible="false" />
@@ -194,7 +193,7 @@
       <Button fx:id="botonSubidaPortada" layoutX="186.0" layoutY="257.0" mnemonicParsing="false" onAction="#nuevaPortada" prefHeight="25.0" prefWidth="25.0" stylesheets="@../style/boton_subida_style.css" />
       <Label fx:id="alarmaConexionSql" layoutX="802.0" layoutY="28.0" prefHeight="30.0" prefWidth="29.0" style="-fx-background-radius: 50; -fx-background-color: red;" stylesheets="@../style/alarma_conexion_style.css" />
       <Label fx:id="alarmaConexionInternet" layoutX="767.0" layoutY="28.0" prefHeight="19.0" prefWidth="29.0" style="-fx-background-radius: 50; -fx-background-color: red;" stylesheets="@../style/alarma_conexion_style.css" />
-      <Button fx:id="botonCancelarSubida" layoutX="303.0" layoutY="301.0" mnemonicParsing="false" prefHeight="54.0" prefWidth="57.0" style="-fx-border-color: bblack;" visible="false">
+      <Button fx:id="botonCancelarSubida" layoutX="771.0" layoutY="304.0" mnemonicParsing="false" prefHeight="54.0" prefWidth="57.0" style="-fx-border-color: none; -fx-background-color: none;" visible="false">
          <stylesheets>
             <URL value="@../style/genericos_style.css" />
             <URL value="@../style/boton_reestart_style.css" />

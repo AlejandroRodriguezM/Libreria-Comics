@@ -66,7 +66,7 @@ public class ComicManagerDAO {
 	 * @param puntuacion   La puntuación a insertar
 	 * @throws SQLException Si ocurre un error en la base de datos
 	 */
-	public static void actualizarOpinion(String idComic, String puntuacion) throws SQLException {
+	public static void actualizarOpinion(String idComic, String puntuacion) {
 		UpdateManager.actualizarOpinion(idComic, puntuacion);
 	}
 

@@ -32,7 +32,7 @@ import comicManagement.Comic;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
 import dbmanager.DBUtilidades.TipoBusqueda;
-import dbmanager.DeleteManager;
+import dbmanager.ComicManagerDAO;
 import dbmanager.ListaComicsDAO;
 import dbmanager.SelectManager;
 import javafx.application.Platform;
@@ -392,6 +392,9 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	private Button botonAgregarPuntuacion;
 
+	@FXML
+	private Label alarmaConexionSql;
+
 	/**
 	 * Instancia de la clase Ventanas para la navegación.
 	 */
@@ -418,9 +421,6 @@ public class MenuPrincipalController implements Initializable {
 	private List<TableColumn<Comic, String>> columnList;
 
 	private Map<Node, String> tooltipsMap = new HashMap<>();
-
-	@FXML
-	private Label alarmaConexionSql;
 
 	private static AlarmaList alarmaList = new AlarmaList();
 
@@ -951,7 +951,7 @@ public class MenuPrincipalController implements Initializable {
 			return;
 		}
 
-		if (ListaComicsDAO.listaNombre.isEmpty()) {
+		if (ComicManagerDAO.countRows() < 1) {
 			String mensaje = "ERROR. La base de datos ya se encuentra vacia";
 			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 			return;
@@ -969,7 +969,7 @@ public class MenuPrincipalController implements Initializable {
 			boolean confirmacionBorrado = borradoTablaFuture.get(); // Espera a que el CompletableFuture se complete
 																	// y obtiene el resultado
 			if (confirmacionBorrado) {
-				CompletableFuture<Boolean> deleteResult = DeleteManager.deleteAndRestartDatabaseAsync();
+				CompletableFuture<Boolean> deleteResult = ComicManagerDAO.deleteTable();
 				return deleteResult.get(); // Espera a que el CompletableFuture se complete y obtiene el resultado
 			} else {
 				String mensaje = "ERROR. Has cancelado el borrado de la base de datos";
@@ -1083,7 +1083,7 @@ public class MenuPrincipalController implements Initializable {
 			funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
 
 			String direccionImagen = SelectManager.obtenerDireccionPortada(id_comic);
-			
+
 			Utilidades.cargarImagenAsync(direccionImagen, imagencomic);
 		}
 	}
@@ -1175,6 +1175,7 @@ public class MenuPrincipalController implements Initializable {
 		AlarmaList alarmaList = new AlarmaList();
 		String mensajeErrorExportar = "ERROR. No se ha podido exportar correctamente.";
 		String mensajeCancelarExportar = "ERROR. Se ha cancelado la exportación.";
+		String mensajeValido = "Has exportado el fichero excel correctamente";
 
 		prontInfo.setText(null);
 		prontInfo.setOpacity(0);
@@ -1212,14 +1213,45 @@ public class MenuPrincipalController implements Initializable {
 			excelThread.interrupt();
 		});
 
+		crearExcelTask.setOnRunning(event -> cambiarEstadoMenuBar(true));
+
+		crearExcelTask.setOnSucceeded(event -> {
+			cambiarEstadoMenuBar(false);
+			AlarmaList.mostrarMensajePront(mensajeValido, true, prontInfo);
+		});
+
 		// Configuración del comportamiento cuando la tarea falla
-		crearExcelTask.setOnFailed(event -> alarmaList.manejarFallo(mensajeErrorExportar, prontInfo));
+		crearExcelTask.setOnFailed(event -> {
+			alarmaList.manejarFallo(mensajeErrorExportar, prontInfo);
+			cambiarEstadoMenuBar(false);
+		});
 
 		// Configuración del comportamiento cuando la tarea es cancelada
-		crearExcelTask.setOnCancelled(event -> alarmaList.manejarFallo(mensajeCancelarExportar, prontInfo));
+		crearExcelTask.setOnCancelled(event -> {
+			alarmaList.manejarFallo(mensajeCancelarExportar, prontInfo);
+			cambiarEstadoMenuBar(false);
+		});
 
 		// Iniciar la tarea principal de creación de Excel en un hilo separado
 		excelThread.start();
+	}
+
+	public void cambiarEstadoMenuBar(boolean estadoAccion) {
+
+		menu_archivo_excel.setDisable(estadoAccion);
+		menu_archivo_importar.setDisable(estadoAccion);
+		menu_archivo_backupbbdd.setDisable(estadoAccion);
+		menu_archivo_delete.setDisable(estadoAccion);
+		menu_comic_aniadir.setDisable(estadoAccion);
+		menu_comic_eliminar.setDisable(estadoAccion);
+		menu_comic_modificar.setDisable(estadoAccion);
+		menu_comic_puntuar.setDisable(estadoAccion);
+		menu_comic_aleatoria.setDisable(estadoAccion);
+		botonIntroducir.setDisable(estadoAccion);
+		botonModificar.setDisable(estadoAccion);
+		botonEliminar.setDisable(estadoAccion);
+		botonAgregarPuntuacion.setDisable(estadoAccion);
+
 	}
 
 	public void guardarDatosCSV() {
@@ -1227,12 +1259,13 @@ public class MenuPrincipalController implements Initializable {
 		if (!ConectManager.conexionActiva()) {
 			return;
 		}
-
 		String frase = "Fichero CSV";
 		String formato = "*.csv";
 		FuncionesExcel funcionesExcel = new FuncionesExcel();
 
 		File fichero = Utilidades.tratarFichero(frase, formato).showOpenDialog(null);
+		
+		String mensajeValido = "Has importado correctamente la lista de comics en la base de datos";
 
 		if (fichero != null) {
 			Task<Boolean> lecturaTask = funcionesExcel.procesarArchivoCSVTask(fichero);
@@ -1246,7 +1279,17 @@ public class MenuPrincipalController implements Initializable {
 				AlarmaList.detenerAnimacionCarga(progresoCarga);
 			});
 
-			lecturaTask.setOnFailed(e -> procesarResultadoImportacion(lecturaTask.getValue()));
+			lecturaTask.setOnRunning(e -> cambiarEstadoMenuBar(true));
+
+			lecturaTask.setOnFailed(e -> {
+				procesarResultadoImportacion(lecturaTask.getValue());
+				cambiarEstadoMenuBar(false);
+			});
+
+			lecturaTask.setOnSucceeded(e -> {
+				cambiarEstadoMenuBar(false);
+				AlarmaList.mostrarMensajePront(mensajeValido, true, prontInfo);
+			});
 
 			// Iniciar la tarea principal de importación en un hilo separado
 			new Thread(lecturaTask).start();

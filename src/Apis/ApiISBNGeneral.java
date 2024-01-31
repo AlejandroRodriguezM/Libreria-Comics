@@ -55,6 +55,10 @@ public class ApiISBNGeneral {
 		String apiUrl = "https://openlibrary.org/api/books?bibkeys=ISBN:" + isbn + "&jscmd=details&format=json";
 		String apiKey = Utilidades.cargarApiComicVine();
 
+		if(isbn.length() != 13) {
+			return null;
+		}
+		
 		try {
 			String jsonResponse = sendHttpGetRequest(apiUrl);
 			JSONObject jsonObject = new JSONObject(jsonResponse);
