@@ -1454,13 +1454,9 @@ public class VentanaAccionController implements Initializable {
 						if (procesarComicPorCodigo(valorCodigo)) {
 							String mensaje = "Comic encontrado correctamente";
 							AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
-						}
-
-						if (isCancelled.get()) {
-							codigoComicTratar.setText(valorCodigo.trim());
-
 						} else {
-							ListaComicsDAO.comicsImportados.clear();
+							String mensaje = "La busqueda del comic ha salido mal. Revisa el codigo";
+							AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 						}
 
 						return null;
@@ -1470,13 +1466,13 @@ public class VentanaAccionController implements Initializable {
 				tarea.setOnRunning(ev -> {
 					borrar_datos_autorellenos();
 					desactivarBotones(true);
-//					borrarDatosGraficos();
 					cambiarEstadoBotones(true);
 					imagencomic.setImage(null);
 					imagencomic.setVisible(true);
 					botonCancelarSubida.setVisible(true);
 					AlarmaList.iniciarAnimacionCargaImagen(cargaImagen);
 					menu_Importar_Fichero_CodigoBarras.setDisable(true);
+
 				});
 
 				tarea.setOnSucceeded(ev -> {
@@ -1485,6 +1481,16 @@ public class VentanaAccionController implements Initializable {
 					menu_Importar_Fichero_CodigoBarras.setDisable(false);
 					cambiarEstadoBotones(false);
 					desactivarBotones(false);
+
+					if (ListaComicsDAO.comicsImportados.size() > 0) {
+						botonEliminarImportadoComic.setVisible(true);
+						botonGuardarCambioComic.setVisible(true);
+						botonGuardarComic.setVisible(true);
+					} else {
+						botonEliminarImportadoComic.setVisible(false);
+						botonGuardarCambioComic.setVisible(false);
+						botonGuardarComic.setVisible(false);
+					}
 
 				});
 
@@ -1498,9 +1504,9 @@ public class VentanaAccionController implements Initializable {
 				Thread thread = new Thread(tarea);
 
 				botonCancelarSubida.setOnAction(ev -> {
-					cambiarEstadoBotones(false);
+
 					desactivarBotones(false);
-					isCancelled.set(true); // Cambia el estado del AtomicBoolean a false
+					isCancelled.set(true);
 					tarea.cancel(true);
 					menu_Importar_Fichero_CodigoBarras.setDisable(false);
 				});
@@ -1719,9 +1725,8 @@ public class VentanaAccionController implements Initializable {
 
 	public void cambiarEstadoBotones(boolean esCancelado) {
 		if (esCancelado) {
-			botonCancelarSubida.setVisible(false);
-		} else {
 			botonCancelarSubida.setVisible(true);
+		} else {
 			botonEliminarImportadoComic.setVisible(true);
 			botonGuardarCambioComic.setVisible(true);
 			botonGuardarComic.setVisible(true);
