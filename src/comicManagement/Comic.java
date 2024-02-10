@@ -516,6 +516,41 @@ public class Comic {
 		this.numCaja = numCaja;
 	}
 
+	public static void limpiarCamposComic(Comic comic) {
+	    // Limpiar campo nombre
+	    comic.setNombre(limpiarCampo(comic.getNombre()));
+
+	    // Limpiar campo variante
+	    comic.setVariante(limpiarCampo(comic.getVariante()));
+
+	    // Limpiar campo firma
+	    comic.setFirma(limpiarCampo(comic.getFirma()));
+
+	    // Limpiar campo editorial
+	    comic.setEditorial(limpiarCampo(comic.getEditorial()));
+
+	    // Limpiar campo guionista
+	    comic.setGuionista(limpiarCampo(comic.getGuionista()));
+
+	    // Limpiar campo dibujante
+	    comic.setDibujante(limpiarCampo(comic.getDibujante()));
+
+	    // Limpiar campo estado
+	    comic.setEstado(limpiarCampo(comic.getEstado()));
+
+	    // Limpiar campo key_issue
+	    comic.setKey_issue(limpiarCampo(comic.getKey_issue()));
+
+	}
+
+	private static String limpiarCampo(String campo) {
+	    if (campo != null) {
+	        // Eliminar símbolos al final del campo (comas, guiones, y espacios)
+	        campo = campo.replaceAll("[,\\s-]+$", "");
+	    }
+	    return campo;
+	}
+	
 	/**
 	 * Genera una representación en forma de cadena de texto del cómic, incluyendo sus atributos no nulos.
 	 *

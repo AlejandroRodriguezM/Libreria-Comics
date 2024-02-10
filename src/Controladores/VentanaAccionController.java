@@ -32,13 +32,13 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.controlsfx.control.textfield.TextFields;
 import org.json.JSONException;
 
 import Apis.ApiISBNGeneral;
 import Apis.ApiMarvel;
 import Funcionamiento.FuncionesComboBox;
 import Funcionamiento.FuncionesTableView;
+import Funcionamiento.FuncionesTextField;
 import Funcionamiento.FuncionesTooltips;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
@@ -623,9 +623,9 @@ public class VentanaAccionController implements Initializable {
 		alarmaList.setAlarmaConexionInternet(alarmaConexionInternet);
 		alarmaList.iniciarThreadChecker(true);
 
-		Platform.runLater(() -> {
+		listas_autocompletado();
 
-			listas_autocompletado();
+		Platform.runLater(() -> {
 
 			rellenarCombosEstaticos();
 
@@ -641,17 +641,21 @@ public class VentanaAccionController implements Initializable {
 		controlarEventosInterfaz();
 
 		establecerDinamismoAnchor();
-
-		// Establecemos un evento para detectar cambios en el primer TextField
-		idComicTratar.textProperty().addListener((observable, oldValue, newValue) -> {
-			mostrarComic(idComicTratar.getText());
-		});
-
-		// Establecemos un evento para detectar cambios en el segundo TextField
-		idComicTratar_mod.textProperty().addListener((observable, oldValue, newValue) -> {
-			mostrarComic(idComicTratar_mod.getText());
-		});
 	}
+
+	public void listas_autocompletado() {
+		if (ConectManager.conexionActiva()) {
+			FuncionesTextField.asignarAutocompletado(nombreComic, ListaComicsDAO.listaNombre);
+			FuncionesTextField.asignarAutocompletado(varianteComic, ListaComicsDAO.listaVariante);
+			FuncionesTextField.asignarAutocompletado(firmaComic, ListaComicsDAO.listaFirma);
+			FuncionesTextField.asignarAutocompletado(editorialComic, ListaComicsDAO.listaEditorial);
+			FuncionesTextField.asignarAutocompletado(guionistaComic, ListaComicsDAO.listaGuionista);
+			FuncionesTextField.asignarAutocompletado(dibujanteComic, ListaComicsDAO.listaDibujante);
+			FuncionesTextField.asignarAutocompletado(numeroComic.getEditor(), ListaComicsDAO.listaNumeroComic);
+		}
+	}
+
+	
 
 	/**
 	 * Establece una lista de ComboBoxes para su uso en la clase
@@ -696,6 +700,16 @@ public class VentanaAccionController implements Initializable {
 			tablaBBDD.setFocusTraversable(false);
 			rootVBox.requestFocus();
 		});
+
+		// Establecemos un evento para detectar cambios en el primer TextField
+		idComicTratar.textProperty().addListener((observable, oldValue, newValue) -> {
+			mostrarComic(idComicTratar.getText());
+		});
+
+		// Establecemos un evento para detectar cambios en el segundo TextField
+		idComicTratar_mod.textProperty().addListener((observable, oldValue, newValue) -> {
+			mostrarComic(idComicTratar_mod.getText());
+		});
 	}
 
 	/**
@@ -711,20 +725,28 @@ public class VentanaAccionController implements Initializable {
 		numeroComic.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
 		numeroCajaComic.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
 		idComicTratar.setTextFormatter(FuncionesComboBox.validador_Nenteros());
+		idComicTratar_mod.setTextFormatter(FuncionesComboBox.validador_Nenteros());
 		precioComic.setTextFormatter(FuncionesComboBox.validador_Ndecimales());
 
-		FuncionesTableView.eliminarEspacioInicial(nombreComic);
-		FuncionesTableView.restringirSimbolos(editorialComic);
-		FuncionesTableView.restringirSimbolos(guionistaComic);
-		FuncionesTableView.restringirSimbolos(dibujanteComic);
-		FuncionesTableView.restringirSimbolos(varianteComic);
+		FuncionesTextField.eliminarEspacioInicial(nombreComic);
+		FuncionesTextField.restringirSimbolos(editorialComic);
+		FuncionesTextField.restringirSimbolos(guionistaComic);
+		FuncionesTextField.restringirSimbolos(dibujanteComic);
+		FuncionesTextField.restringirSimbolos(varianteComic);
 
-		FuncionesTableView.reemplazarEspaciosMultiples(nombreComic);
-		FuncionesTableView.reemplazarEspaciosMultiples(editorialComic);
-		FuncionesTableView.reemplazarEspaciosMultiples(guionistaComic);
-		FuncionesTableView.reemplazarEspaciosMultiples(dibujanteComic);
-		FuncionesTableView.reemplazarEspaciosMultiples(varianteComic);
-		FuncionesTableView.reemplazarEspacio(busquedaCodigo);
+		FuncionesTextField.reemplazarEspaciosMultiples(nombreComic);
+		FuncionesTextField.reemplazarEspaciosMultiples(editorialComic);
+		FuncionesTextField.reemplazarEspaciosMultiples(guionistaComic);
+		FuncionesTextField.reemplazarEspaciosMultiples(dibujanteComic);
+		FuncionesTextField.reemplazarEspaciosMultiples(varianteComic);
+		FuncionesTextField.reemplazarEspacio(busquedaCodigo);
+		
+		FuncionesTextField.permitirUnSimbolo(nombreComic);
+		FuncionesTextField.permitirUnSimbolo(editorialComic);
+		FuncionesTextField.permitirUnSimbolo(guionistaComic);
+		FuncionesTextField.permitirUnSimbolo(dibujanteComic);
+		FuncionesTextField.permitirUnSimbolo(varianteComic);
+		FuncionesTextField.permitirUnSimbolo(busquedaCodigo);
 
 		busquedaCodigo.setDisable(true); // Inicialmente deshabilitado
 
@@ -1092,23 +1114,6 @@ public class VentanaAccionController implements Initializable {
 
 			seleccionarComics();
 		}
-	}
-
-	/**
-	 * Asigna autocompletado a campos de texto en la interfaz.
-	 */
-	public void listas_autocompletado() {
-
-		if (ConectManager.conexionActiva()) {
-			TextFields.bindAutoCompletion(nombreComic, ListaComicsDAO.listaNombre);
-			TextFields.bindAutoCompletion(varianteComic, ListaComicsDAO.listaVariante);
-			TextFields.bindAutoCompletion(firmaComic, ListaComicsDAO.listaFirma);
-			TextFields.bindAutoCompletion(editorialComic, ListaComicsDAO.listaEditorial);
-			TextFields.bindAutoCompletion(guionistaComic, ListaComicsDAO.listaGuionista);
-			TextFields.bindAutoCompletion(dibujanteComic, ListaComicsDAO.listaDibujante);
-			TextFields.bindAutoCompletion(numeroComic.getEditor(), ListaComicsDAO.listaNumeroComic);
-		}
-
 	}
 
 	/**
@@ -1845,14 +1850,6 @@ public class VentanaAccionController implements Initializable {
 	}
 
 	/**
-	 * Funcion que permite cambiar de estado o eliminar un comic de la base de
-	 * datos.
-	 *
-	 * @param id
-	 * @param sentenciaSQL
-	 * @throws SQLException
-	 */
-	/**
 	 * Comprueba la existencia de un cómic en la base de datos y realiza acciones
 	 * dependiendo del resultado.
 	 *
@@ -2008,8 +2005,6 @@ public class VentanaAccionController implements Initializable {
 				funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 				funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
 				funcionesTabla.tablaBBDD(listaComics, tablaBBDD, columnList);
-				Image nuevaImagen = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
-				imagenFondo.setImage(nuevaImagen);
 
 				List<ComboBox<String>> comboboxes = getComboBoxes();
 
@@ -2054,9 +2049,6 @@ public class VentanaAccionController implements Initializable {
 				ComicManagerDAO.actualizarComicBBDD(comicActualizar, "vender");
 				libreria.reiniciarBBDD();
 
-				Image nuevaImagen = new Image(getClass().getResourceAsStream("/imagenes/accionComicDeseo.jpg"));
-				imagenFondo.setImage(nuevaImagen);
-
 				String mensaje = "Deseo concedido. Has puesto a la venta el comic";
 				AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 
@@ -2070,7 +2062,6 @@ public class VentanaAccionController implements Initializable {
 
 		}
 		AlarmaList.detenerAnimacionProntAccion(imagenFondo);
-		;
 	}
 
 	/**
@@ -2122,18 +2113,18 @@ public class VentanaAccionController implements Initializable {
 			Comic datosGuardados = Utilidades.buscarComicPorID(ListaComicsDAO.comicsImportados, id_comic);
 			// Initialize other String variables based on the properties of the 'datos'
 			// object.
-			String nombre = Utilidades.defaultIfNullOrEmpty(datos.getNombre(), "Vacio");
-			String numero = Utilidades.defaultIfNullOrEmpty(datos.getNumero(), "0");
-			String variante = Utilidades.defaultIfNullOrEmpty(datos.getVariante(), "Vacio");
-			String firma = Utilidades.defaultIfNullOrEmpty(datos.getFirma(), "");
-			String editorial = Utilidades.defaultIfNullOrEmpty(datos.getEditorial(), "Vacio");
-			String formato = Utilidades.defaultIfNullOrEmpty(datos.getFormato(), "Grapa (Issue individual)");
-			String procedencia = Utilidades.defaultIfNullOrEmpty(datos.getProcedencia(),
+			String nombre = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getNombre()), "Vacio");
+			String numero = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getNumero()), "0");
+			String variante = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getVariante()), "Vacio");
+			String firma = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getFirma()), "");
+			String editorial = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getEditorial()), "Vacio");
+			String formato = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getFormato()), "Grapa (Issue individual)");
+			String procedencia = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getProcedencia()),
 					"Estados Unidos (United States)");
 			String fecha_comic = datos.getFecha();
-			String guionista = Utilidades.defaultIfNullOrEmpty(datos.getGuionista(), "Vacio");
-			String dibujante = Utilidades.defaultIfNullOrEmpty(datos.getDibujante(), "Vacio");
-			String estado = Utilidades.defaultIfNullOrEmpty(datos.getEstado(), "Comprado");
+			String guionista = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getGuionista()), "Vacio");
+			String dibujante = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getDibujante()), "Vacio");
+			String estado = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getEstado()), "Comprado");
 			String numCaja = Utilidades.defaultIfNullOrEmpty(datos.getNumCaja(), "0");
 
 			String key_issue = "Vacio";
@@ -2164,6 +2155,8 @@ public class VentanaAccionController implements Initializable {
 			Comic comic = new Comic(id_comic, nombre, numCaja, numero, variante, firma, editorial, formato, procedencia,
 					fecha_comic.toString(), guionista, dibujante, estado, key_issue, "Sin puntuar", portada,
 					url_referencia, precio_comic, codigo_comic);
+			
+			Comic.limpiarCamposComic(comic);
 
 			for (Comic c : ListaComicsDAO.comicsImportados) {
 				if (c.getID().equals(id_comic)) {
@@ -2177,7 +2170,6 @@ public class VentanaAccionController implements Initializable {
 			funcionesTabla.tablaBBDD(ListaComicsDAO.comicsImportados, tablaBBDD, columnList); // Llamada a funcion
 			borrar_datos_autorellenos();
 		}
-
 	}
 
 	/**
@@ -2265,28 +2257,30 @@ public class VentanaAccionController implements Initializable {
 	 * @return
 	 */
 	public Comic camposComic() {
-		Utilidades utilidad = new Utilidades();
 		Comic comic = new Comic();
 
 		LocalDate fecha = fechaComic.getValue();
 		String fechaComic = (fecha != null) ? fecha.toString() : "";
 
-		comic.setNombre(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(nombreComic.getText()), ""));
-		comic.setNumero(Utilidades
-				.defaultIfNullOrEmpty(utilidad.comaPorGuion(FuncionesComboBox.numeroCombobox(numeroComic)), ""));
-		comic.setVariante(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(varianteComic.getText()), ""));
-		comic.setFirma(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(firmaComic.getText()), ""));
-		comic.setEditorial(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(editorialComic.getText()), ""));
+		comic.setNombre(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreComic.getText()), ""));
+		comic.setNumero(Utilidades.defaultIfNullOrEmpty(
+				Utilidades.comaYGuionPorEspaciado(FuncionesComboBox.numeroCombobox(numeroComic)), ""));
+		comic.setVariante(
+				Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(varianteComic.getText()), ""));
+		comic.setFirma(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(firmaComic.getText()), ""));
+		comic.setEditorial(
+				Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(editorialComic.getText()), ""));
 		comic.setFormato(Utilidades.defaultIfNullOrEmpty(FuncionesComboBox.formatoCombobox(formatoComic), ""));
 		comic.setProcedencia(
 				Utilidades.defaultIfNullOrEmpty(FuncionesComboBox.procedenciaCombobox(procedenciaComic), ""));
 		comic.setFecha(fechaComic);
-		comic.setGuionista(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(guionistaComic.getText()), ""));
-		comic.setDibujante(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(dibujanteComic.getText()), ""));
+		comic.setGuionista(
+				Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(guionistaComic.getText()), ""));
+		comic.setDibujante(
+				Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(dibujanteComic.getText()), ""));
 		comic.setImagen(Utilidades.defaultIfNullOrEmpty(direccionImagen.getText(), ""));
 		comic.setEstado(Utilidades.defaultIfNullOrEmpty(FuncionesComboBox.estadoCombobox(estadoComic), ""));
 		comic.setNumCaja(Utilidades.defaultIfNullOrEmpty(FuncionesComboBox.cajaCombobox(numeroCajaComic), ""));
-//		comic.setNumCaja(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(caja().equals("0") ? "" : caja()), ""));
 		comic.setKey_issue(Utilidades.defaultIfNullOrEmpty(nombreKeyIssue.getText().trim(), ""));
 		comic.setUrl_referencia((Utilidades.defaultIfNullOrEmpty(urlReferencia.getText().trim(), "")));
 		comic.setPrecio_comic((Utilidades.defaultIfNullOrEmpty(precioComic.getText().trim(), "")));
@@ -2372,8 +2366,6 @@ public class VentanaAccionController implements Initializable {
 			return;
 		}
 
-		utilidad = new Utilidades();
-
 		Utilidades.convertirNombresCarpetas(SOURCE_PATH);
 		AlarmaList.detenerAnimacionProntAccion(imagenFondo);
 		AlarmaList.iniciarAnimacionCambioImagen(imagenFondo);
@@ -2396,8 +2388,6 @@ public class VentanaAccionController implements Initializable {
 		if (!ConectManager.conexionActiva()) {
 			return;
 		}
-
-		libreria = new ListaComicsDAO();
 
 		String id_comic = idComicTratar_mod.getText();
 
@@ -2538,10 +2528,6 @@ public class VentanaAccionController implements Initializable {
 		File file = new File(comic.getImagen());
 		Image imagen = new Image(file.toURI().toString(), 250, 0, true, true);
 		imagencomic.setImage(imagen);
-
-//		if (Utilidades.isURL(comic.getImagen())) {
-//			Utilidades.borrarImagen(comic.getImagen());
-//		}
 
 		List<ComboBox<String>> comboboxes = getComboBoxes();
 
@@ -2700,8 +2686,6 @@ public class VentanaAccionController implements Initializable {
 		direccionImagen.setText("");
 		imagencomic.setImage(null);
 		codigoComicTratar.setText("");
-//		botonBusquedaAvanzada.setVisible(false);
-//		botonBusquedaAvanzada.setDisable(true);
 
 		validarCamposComic(true);
 	}

@@ -374,6 +374,8 @@ public class FuncionesComboBox {
 			}
 		}
 	}
+	
+
 
 	/**
 	 * Configura el Popup filtrado con las opciones proporcionadas.
@@ -399,7 +401,8 @@ public class FuncionesComboBox {
 			List<String> newFilteredItems = filteredItems.stream()
 					.filter(item -> item.toLowerCase().contains(newValue.toLowerCase())).collect(Collectors.toList());
 			listView.setItems(FXCollections.observableArrayList(newFilteredItems));
-		});
+		});		
+		
 		Bounds bounds = originalComboBox.localToScreen(originalComboBox.getBoundsInLocal());
 		popup = createCustomPopup(originalComboBox, filterTextField, listView);
 

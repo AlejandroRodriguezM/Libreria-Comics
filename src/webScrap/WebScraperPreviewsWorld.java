@@ -11,6 +11,11 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -29,18 +34,43 @@ import javafx.scene.control.TextArea;
 public class WebScraperPreviewsWorld {
 
 	public static int verificarCodigoRespuesta(String urlString) throws IOException, URISyntaxException {
-		URI uri = new URI(urlString);
-		HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
-		connection.setRequestMethod("GET");
+	    try {
+	        // Desactivar la validación del certificado SSL/TLS
+	        TrustManager[] trustAllCerts = new TrustManager[]{
+	            new X509TrustManager() {
+	                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+	                    return null;
+	                }
+	                public void checkClientTrusted(
+	                    java.security.cert.X509Certificate[] certs, String authType) {
+	                }
+	                public void checkServerTrusted(
+	                    java.security.cert.X509Certificate[] certs, String authType) {
+	                }
+	            }
+	        };
 
-		// Obtener el código de respuesta HTTP
-		int codigoRespuesta = connection.getResponseCode();
+	        SSLContext sc = SSLContext.getInstance("SSL");
+	        sc.init(null, trustAllCerts, new java.security.SecureRandom());
+	        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 
-		// Cerrar la conexión
-		connection.disconnect();
+	        URI uri = new URI(urlString);
+	        HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
+	        connection.setRequestMethod("GET");
 
-		return codigoRespuesta;
+	        // Obtener el código de respuesta HTTP
+	        int codigoRespuesta = connection.getResponseCode();
+
+	        // Cerrar la conexión
+	        connection.disconnect();
+
+	        return codigoRespuesta;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return -1;
+	    }
 	}
+
 
 	/**
 	 * Realiza scraping en una URL dada para extraer información sobre un cómic.

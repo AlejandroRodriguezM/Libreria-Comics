@@ -212,23 +212,27 @@ public class Utilidades {
 	}
 
 	/**
-	 * Funcion que cambia una ',' por un guion '-'
+	 * Funcion que cambia una ',' por un guion '-' y un guion '-' sin espacios delante o detrás por " - "
 	 *
-	 * @param campos
+	 * @param dato
 	 * @return
 	 */
-	public String comaPorGuion(String dato) {
-
-		String resultado = "";
-		if (dato != null) {
-			if (dato.contains(",")) {
-				dato = dato.replace(",", " - ");
-			}
-			resultado = eliminarEspacios(dato);
-		}
-
-		return resultado;
+	public static String comaYGuionPorEspaciado(String dato) {
+	    String resultado = "";
+	    if (dato != null) {
+	        // Reemplazar guion '-' sin espacios delante o detrás por " - "
+	        if (dato.contains("-") && !dato.contains(" - ")) {
+	            dato = dato.replace("-", " - ");
+	        }
+	        // Reemplazar coma ',' por " - "
+	        if (dato.contains(",")) {
+	            dato = dato.replace(",", " - ");
+	        }
+	        resultado = eliminarEspacios(dato);
+	    }
+	    return resultado;
 	}
+
 
 	/**
 	 * Funcion que elimina los espacios del principios y finales

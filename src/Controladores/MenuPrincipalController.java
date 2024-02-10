@@ -1407,23 +1407,22 @@ public class MenuPrincipalController implements Initializable {
 	 * @return
 	 */
 	public Comic camposComic() {
-		Utilidades utilidad = new Utilidades();
 		Comic comic = new Comic();
 		LocalDate fecha = fechaPublicacion.getValue();
 		String fechaComic = (fecha != null) ? fecha.toString() : "";
 
-		comic.setNombre(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(nombreComic.getValue()), ""));
+		comic.setNombre(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreComic.getValue()), ""));
 		comic.setNumero(Utilidades
-				.defaultIfNullOrEmpty(utilidad.comaPorGuion(FuncionesComboBox.numeroCombobox(numeroComic)), ""));
-		comic.setVariante(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(nombreVariante.getValue()), ""));
-		comic.setFirma(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(nombreFirma.getValue()), ""));
-		comic.setEditorial(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(nombreEditorial.getValue()), ""));
+				.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(FuncionesComboBox.numeroCombobox(numeroComic)), ""));
+		comic.setVariante(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreVariante.getValue()), ""));
+		comic.setFirma(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreFirma.getValue()), ""));
+		comic.setEditorial(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreEditorial.getValue()), ""));
 		comic.setFormato(Utilidades.defaultIfNullOrEmpty(FuncionesComboBox.formatoCombobox(nombreFormato), ""));
 		comic.setProcedencia(
 				Utilidades.defaultIfNullOrEmpty(FuncionesComboBox.procedenciaCombobox(nombreProcedencia), ""));
 		comic.setFecha(fechaComic);
-		comic.setGuionista(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(nombreGuionista.getValue()), ""));
-		comic.setDibujante(Utilidades.defaultIfNullOrEmpty(utilidad.comaPorGuion(nombreDibujante.getValue()), ""));
+		comic.setGuionista(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreGuionista.getValue()), ""));
+		comic.setDibujante(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreDibujante.getValue()), ""));
 		comic.setImagen("");
 		comic.setEstado("");
 		comic.setNumCaja(Utilidades.defaultIfNullOrEmpty(FuncionesComboBox.cajaCombobox(numeroCaja), ""));

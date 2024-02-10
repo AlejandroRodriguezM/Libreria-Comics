@@ -46,7 +46,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
@@ -71,6 +70,8 @@ public class FuncionesTableView {
 	 * Gestor de la base de datos de la librería.
 	 */
 	private static ListaComicsDAO libreria = null;
+
+
 
 	/**
 	 * Funcion que permite que los diferentes raw de los TableColumn se puedan
@@ -404,88 +405,7 @@ public class FuncionesTableView {
 		textArea.setPrefHeight(textHeight);
 	}
 
-	/**
-	 * Elimina un espacio en blanco al principio del texto en un TextField si
-	 * existe.
-	 *
-	 * @param textField El TextField al que se aplicará la eliminación del espacio
-	 *                  en blanco inicial.
-	 * @return El mismo TextField después de la modificación.
-	 */
-	public static TextField eliminarEspacioInicial(TextField textField) {
-		textField.textProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue != null && newValue.length() > 0 && Character.isWhitespace(newValue.charAt(0))) {
-				textField.setText(newValue.substring(1)); // Elimina el espacio en blanco inicial
-			}
 
-		});
-		return textField;
-	}
 
-	/**
-	 * Reemplaza múltiples espacios seguidos por un solo espacio en un TextField.
-	 *
-	 * @param textField El TextField al que se aplicará la eliminación de espacios
-	 *                  múltiples.
-	 */
-	public static void reemplazarEspaciosMultiples(TextField textField) {
-		textField.textProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue != null) {
-				// Reemplaza múltiples espacios seguidos por un solo espacio.
-				newValue = newValue.replaceAll("\\s+", " ");
 
-				textField.setText(newValue); // Actualiza el valor del TextField
-			}
-		});
-	}
-
-	/**
-	 * Elimina espacios de un TextField.
-	 *
-	 * @param textField El TextField al que se aplicará la eliminación de espacios
-	 *                  múltiples.
-	 */
-	public static void reemplazarEspacio(TextField textField) {
-		textField.textProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue != null) {
-				// Reemplaza múltiples espacios seguidos por un solo espacio.
-				newValue = newValue.replaceAll(" ", "");
-
-				textField.setText(newValue); // Actualiza el valor del TextField
-			}
-		});
-	}
-
-	/**
-	 * Restringe los símbolos no permitidos en el TextField y muestra un Tooltip
-	 * informativo.
-	 *
-	 * @param textField El TextField en el cual restringir los símbolos.
-	 */
-	public static void restringirSimbolos(TextField textField) {
-
-		final TextField finalTextField = eliminarEspacioInicial(textField);
-
-		finalTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-			String allowedPattern = "[\\p{L}\\p{N}\\s,.!-]*"; // Expresión regular para permitir letras, números,
-																// espacios, ",", "-" y "."
-
-			if (newValue != null) {
-
-				// Elimina espacios al principio de la cadena.
-				newValue = newValue.trim();
-
-				if (!newValue.matches(allowedPattern)) {
-					// Si el valor no coincide con el patrón permitido, restaura el valor anterior.
-					finalTextField.setText(oldValue);
-				} else {
-					String updatedValue = newValue.replaceAll("\\s*(?<![,-])(?=[,-])|(?<=[,-])\\s*", "");
-
-					if (!updatedValue.equals(newValue)) {
-						finalTextField.setText(updatedValue);
-					}
-				}
-			}
-		});
-	}
 }
