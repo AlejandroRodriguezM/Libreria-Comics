@@ -46,29 +46,36 @@ public class WebScraperMarvel {
 	 */
 	public static String displayComicInfo(String urlMarvel) throws URISyntaxException {
 
-		String codeComic = "";
+	    try {
+	        // Realizar la conexión y obtener el documento HTML de la página
+	        int codigoRespuesta = verificarCodigoRespuesta(urlMarvel);
 
-		try {
+	        if (codigoRespuesta != 404) {
+	            Document document = Jsoup.connect(urlMarvel).get();
 
-			// Realizar la conexión y obtener el documento HTML de la página
+	            // Extraer información adicional sobre el cómic
+	            String codeComic = scrapeCodigo(document);
+	            String numeroComic = extractNumeroFromTitle(document);
+	            String mainImageUrl = scrapeAndPrintMainImage(document);
+	            String releaseDate = scrapeAndPrintReleaseDate(document);
+	            String srp = scrapeAndPrintSRP(document);
+	            String publisher = scrapeAndPrintPublisher(document);
 
-			int codigoRespuesta = verificarCodigoRespuesta(urlMarvel);
+	            // Imprimir información adicional
+	            System.out.println("Número del cómic: " + numeroComic);
+	            System.out.println("URL de la imagen principal: " + mainImageUrl);
+	            System.out.println("Fecha de lanzamiento: " + releaseDate);
+	            System.out.println("Precio sugerido de venta (SRP): " + srp);
+	            System.out.println("Editor: " + publisher);
 
-			if (codigoRespuesta != 404) {
-				Document document = Jsoup.connect(urlMarvel).get();
+	            return codeComic;
+	        }
 
-				codeComic = scrapeCodigo(document);
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
 
-				System.out.println(codeComic);
-
-				return codeComic;
-			}
-
-		} catch (IOException e) {
-
-			e.printStackTrace();
-		}
-		return null;
+	    return null;
 	}
 
 	/**
@@ -293,4 +300,20 @@ public class WebScraperMarvel {
 
 		return result.toString();
 	}
+	
+    public static void main(String[] args) {
+        String urlMarvelComic = "https://www.marvel.com/comics/issue/102939/she-hulk_2022_10";
+        
+        try {
+            String comicCode = WebScraperMarvel.displayComicInfo(urlMarvelComic);
+            
+            if(comicCode != null) {
+                System.out.println("Código del cómic: " + comicCode);
+            } else {
+                System.out.println("No se pudo obtener el código del cómic.");
+            }
+        } catch (URISyntaxException e) {
+            System.err.println("Error en la sintaxis de la URL: " + e.getMessage());
+        }
+    }
 }

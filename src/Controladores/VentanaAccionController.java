@@ -77,6 +77,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import webScrap.WebScrapGoogle;
 import webScrap.WebScraperPreviewsWorld;
 
 /**
@@ -655,8 +656,6 @@ public class VentanaAccionController implements Initializable {
 		}
 	}
 
-	
-
 	/**
 	 * Establece una lista de ComboBoxes para su uso en la clase
 	 * VentanaAccionController.
@@ -740,7 +739,7 @@ public class VentanaAccionController implements Initializable {
 		FuncionesTextField.reemplazarEspaciosMultiples(dibujanteComic);
 		FuncionesTextField.reemplazarEspaciosMultiples(varianteComic);
 		FuncionesTextField.reemplazarEspacio(busquedaCodigo);
-		
+
 		FuncionesTextField.permitirUnSimbolo(nombreComic);
 		FuncionesTextField.permitirUnSimbolo(editorialComic);
 		FuncionesTextField.permitirUnSimbolo(guionistaComic);
@@ -1019,6 +1018,7 @@ public class VentanaAccionController implements Initializable {
 			return;
 		}
 
+		Comic.limpiarCamposComic(comicTemp);
 		setAtributosDesdeTabla(comicTemp);
 		validarCamposComic(false);
 		prontInfo.setOpacity(1);
@@ -1462,6 +1462,8 @@ public class VentanaAccionController implements Initializable {
 						} else {
 							String mensaje = "La busqueda del comic ha salido mal. Revisa el codigo";
 							AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+//							AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
+
 						}
 
 						return null;
@@ -1749,24 +1751,40 @@ public class VentanaAccionController implements Initializable {
 		botonBusquedaAvanzada.setDisable(fueIportado);
 	}
 
-	private Comic obtenerComicInfo(String finalValorCodigo) throws URISyntaxException, IOException, JSONException {
+	private Comic obtenerComicInfo(String finalValorCodigo) {
+		try {
+			// Verificar si hay una conexión activa
+			if (!ConectManager.conexionActiva()) {
+				return null;
+			}
 
-		if (ConectManager.conexionActiva()) {
-			ApiISBNGeneral isbnGeneral = new ApiISBNGeneral();
-			WebScraperPreviewsWorld previewsScraper = new WebScraperPreviewsWorld();
-
+			// Obtener información del cómic según la longitud del código
 			if (finalValorCodigo.length() == 9) {
-				return previewsScraper.displayComicInfo(finalValorCodigo.trim(), prontInfo);
-			} else {
-				Comic comicInfo = ApiMarvel.infoComicCode(finalValorCodigo.trim(), prontInfo);
 
+				return WebScraperPreviewsWorld.displayComicInfo(finalValorCodigo.trim(), prontInfo);
+			} else {
+				// Si no, intentar obtener la información del cómic de diferentes fuentes
+				Comic comicInfo = ApiMarvel.infoComicCode(finalValorCodigo.trim(), prontInfo);
 				if (comicInfo == null) {
+					comicInfo = WebScrapGoogle.obtenerDatosDiv(finalValorCodigo.trim());
+				}
+				if (comicInfo == null) {
+					ApiISBNGeneral isbnGeneral = new ApiISBNGeneral();
 					comicInfo = isbnGeneral.getBookInfo(finalValorCodigo.trim(), prontInfo);
 				}
+
+				if (comicInfo == null) {
+					return null;
+				}
+
+				Comic.limpiarCamposComic(comicInfo);
 				return comicInfo;
 			}
+		} catch (IOException | URISyntaxException | JSONException e) {
+			// Manejar excepciones
+			System.err.println("Error al obtener información del cómic: " + e.getMessage());
+			return null;
 		}
-		return null;
 	}
 
 	private void cerrarExecutorService(ExecutorService executorService) {
@@ -1783,7 +1801,6 @@ public class VentanaAccionController implements Initializable {
 		Platform.runLater(() -> {
 			String mensaje = "";
 			if (contadorErrores.get() > 0 && !carpetaDatabase.isEmpty()) {
-				System.out.println("Codigo: " + codigoFaltante);
 				Utilidades.imprimirEnArchivo(codigoFaltante.toString(), carpetaDatabase);
 			}
 
@@ -2113,18 +2130,25 @@ public class VentanaAccionController implements Initializable {
 			Comic datosGuardados = Utilidades.buscarComicPorID(ListaComicsDAO.comicsImportados, id_comic);
 			// Initialize other String variables based on the properties of the 'datos'
 			// object.
-			String nombre = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getNombre()), "Vacio");
+			String nombre = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getNombre()),
+					"Vacio");
 			String numero = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getNumero()), "0");
-			String variante = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getVariante()), "Vacio");
+			String variante = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getVariante()),
+					"Vacio");
 			String firma = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getFirma()), "");
-			String editorial = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getEditorial()), "Vacio");
-			String formato = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getFormato()), "Grapa (Issue individual)");
-			String procedencia = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getProcedencia()),
-					"Estados Unidos (United States)");
+			String editorial = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getEditorial()),
+					"Vacio");
+			String formato = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getFormato()),
+					"Grapa (Issue individual)");
+			String procedencia = Utilidades.defaultIfNullOrEmpty(
+					Utilidades.comaYGuionPorEspaciado(datos.getProcedencia()), "Estados Unidos (United States)");
 			String fecha_comic = datos.getFecha();
-			String guionista = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getGuionista()), "Vacio");
-			String dibujante = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getDibujante()), "Vacio");
-			String estado = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getEstado()), "Comprado");
+			String guionista = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getGuionista()),
+					"Vacio");
+			String dibujante = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getDibujante()),
+					"Vacio");
+			String estado = Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(datos.getEstado()),
+					"Comprado");
 			String numCaja = Utilidades.defaultIfNullOrEmpty(datos.getNumCaja(), "0");
 
 			String key_issue = "Vacio";
@@ -2155,7 +2179,7 @@ public class VentanaAccionController implements Initializable {
 			Comic comic = new Comic(id_comic, nombre, numCaja, numero, variante, firma, editorial, formato, procedencia,
 					fecha_comic.toString(), guionista, dibujante, estado, key_issue, "Sin puntuar", portada,
 					url_referencia, precio_comic, codigo_comic);
-			
+
 			Comic.limpiarCamposComic(comic);
 
 			for (Comic c : ListaComicsDAO.comicsImportados) {
@@ -2436,22 +2460,20 @@ public class VentanaAccionController implements Initializable {
 
 	private boolean procesarComicPorCodigo(String finalValorCodigo) {
 
-		try {
-			if (!ConectManager.conexionActiva()) {
-				return false;
-			}
-
-			Comic comicInfo = obtenerComicInfo(finalValorCodigo);
-
-			if (comprobarCodigo(comicInfo)) {
-				rellenarTablaImport(comicInfo, finalValorCodigo);
-				return true;
-			}
-		} catch (URISyntaxException | IOException | JSONException e) {
-			Utilidades.manejarExcepcion(e);
+		if (!ConectManager.conexionActiva()) {
+			return false;
 		}
 
-		return false;
+		Comic comicInfo = obtenerComicInfo(finalValorCodigo);
+
+		System.out.println(comicInfo != null);
+
+		if (comprobarCodigo(comicInfo)) {
+			rellenarTablaImport(comicInfo, finalValorCodigo);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**

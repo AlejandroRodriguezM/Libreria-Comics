@@ -1697,6 +1697,9 @@ public class Utilidades {
 	 * @return Cadena original o valor predeterminado.
 	 */
 	public static String defaultIfNullOrEmpty(String value, String defaultValue) {
+		
+		Comic.limpiarCampo(value);
+		
 		return (value == null || value.isEmpty()) ? defaultValue : value;
 	}
 
@@ -2176,7 +2179,6 @@ public class Utilidades {
 			String linea;
 			int contadorFaltas = 0;
 			ApiISBNGeneral isbnGeneral = new ApiISBNGeneral();
-			WebScraperPreviewsWorld previewsScraper = new WebScraperPreviewsWorld();
 			String codigosFaltantes = "";
 			Comic comicInfo = new Comic();
 			String sourcePath = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
@@ -2190,7 +2192,7 @@ public class Utilidades {
 
 					if (!finalValorCodigo.isEmpty()) {
 						if (finalValorCodigo.length() == 9) {
-							comicInfo = previewsScraper.displayComicInfo(finalValorCodigo.trim(), null);
+							comicInfo = WebScraperPreviewsWorld.displayComicInfo(finalValorCodigo.trim(), null);
 
 						} else {
 							comicInfo = ApiMarvel.infoComicCode(finalValorCodigo.trim(), null);
@@ -2228,11 +2230,10 @@ public class Utilidades {
 		try {
 			String finalValorCodigo = eliminarEspacios(valorCodigo).replace("-", "");
 			ApiISBNGeneral isbnGeneral = new ApiISBNGeneral();
-			WebScraperPreviewsWorld previewsScraper = new WebScraperPreviewsWorld();
 			Comic comicInfo = null;
 
 			if (finalValorCodigo.length() == 9) {
-				comicInfo = previewsScraper.displayComicInfo(finalValorCodigo.trim(), null);
+				comicInfo = WebScraperPreviewsWorld.displayComicInfo(finalValorCodigo.trim(), null);
 			} else {
 				comicInfo = ApiMarvel.infoComicCode(finalValorCodigo.trim(), null);
 

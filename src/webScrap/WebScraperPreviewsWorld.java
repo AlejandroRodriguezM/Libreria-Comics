@@ -80,7 +80,7 @@ public class WebScraperPreviewsWorld {
 	 *         vacío si ocurre un error.
 	 * @throws URISyntaxException
 	 */
-	public Comic displayComicInfo(String diamondCode, TextArea prontInfo) throws URISyntaxException {
+	public static Comic displayComicInfo(String diamondCode, TextArea prontInfo) throws URISyntaxException {
 
 		try {
 

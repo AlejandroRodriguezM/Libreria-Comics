@@ -543,10 +543,11 @@ public class Comic {
 
 	}
 
-	private static String limpiarCampo(String campo) {
+	public static String limpiarCampo(String campo) {
 	    if (campo != null) {
-	        // Eliminar símbolos al final del campo (comas, guiones, y espacios)
-	        campo = campo.replaceAll("[,\\s-]+$", "");
+	        // Eliminar comas repetidas y otros símbolos al final del campo (comas, guiones, y espacios), con o sin espacios entre ellos
+	        campo = campo.replaceAll(",\\s*,", ",");
+	        campo = campo.replaceAll("(?:[,\\s-])+(?=[,\\s-]*$)", "");
 	    }
 	    return campo;
 	}
