@@ -6,11 +6,6 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/mysql-connector-java-8.0.31.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/poi/lib/commons-codec-1.15.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/poi/lib/commons-collections4-4.4.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/poi/lib/commons-io-2.11.0.jar"/>
@@ -85,5 +80,10 @@
 	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/jcommander-1.82.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/poi/ooxml-lib/slf4j-api-2.0.9.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/zwingCore.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/mysql-connector-j-8.0.33.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -39,14 +39,41 @@ public class WebScrapGoogle {
 	}
 
 	public static String buscarURL(String searchTerm) throws URISyntaxException {
+		if (esURL(searchTerm)) {
+			return buscarURLValida(searchTerm);
+		} else {
+			return buscarEnGoogle(searchTerm);
+		}
+	}
+
+	public static String buscarURLValida(String urlString) throws URISyntaxException {
 		try {
-			searchTerm = agregarMasAMayusculas(searchTerm);
+			URI uri = new URI(urlString);
+			URL url = uri.toURL();
+			HttpURLConnection con = (HttpURLConnection) uri.toURL().openConnection();
+			con.setRequestMethod("GET");
+			con.setRequestProperty("User-Agent",
+					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36");
 
-			searchTerm = searchTerm.replace("(", "%28").replace(")", "%29").replace("#", "%23");
+			if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+				return url.toString(); // Devuelve la representación de cadena de la URL
+			} else {
+				System.out.println("La URL proporcionada no es válida.");
+				return null;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
-			// Realizar la búsqueda en un motor de búsqueda (por ejemplo, Google)
-			String urlString = "https://www.google.com/search?q=" + searchTerm + "+league+of+comic";
+	public static String buscarEnGoogle(String searchTerm) throws URISyntaxException {
+		searchTerm = agregarMasAMayusculas(searchTerm);
+		searchTerm = searchTerm.replace("(", "%28").replace(")", "%29").replace("#", "%23");
 
+		String urlString = "https://www.google.com/search?q=" + searchTerm + "+league+of+comic";
+
+		try {
 			URI uri = new URI(urlString);
 			URL url = uri.toURL();
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -63,8 +90,6 @@ public class WebScrapGoogle {
 			in.close();
 			con.disconnect();
 
-			// Analizar el HTML para encontrar la URL que comienza con
-			// "https://leagueofcomicgeeks.com/"
 			String html = content.toString();
 			int startIndex = html.indexOf("https://leagueofcomicgeeks.com/");
 			if (startIndex != -1) {
@@ -75,8 +100,23 @@ public class WebScrapGoogle {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+			return null;
 		}
-		return null;
+	}
+
+	public static boolean esURL(String urlString) {
+		try {
+			// Intenta crear una instancia de URI
+			URI uri = new URI(urlString);
+			// Verifica si la URI tiene un esquema (protocolo) válido
+			if (uri.getScheme() != null
+					&& (uri.getScheme().equalsIgnoreCase("http") || uri.getScheme().equalsIgnoreCase("https"))) {
+				return true; // Si la URI tiene un esquema válido, se considera una URL válida
+			}
+		} catch (URISyntaxException e) {
+			// La cadena no es una URI válida
+		}
+		return false; // Si hay una excepción o la URI no tiene un esquema válido, la URL no es válida
 	}
 
 	public static Comic obtenerDatosDiv(String url) throws URISyntaxException {
@@ -139,39 +179,39 @@ public class WebScrapGoogle {
 			boolean seEncontroCoverArtist = false;
 
 			for (Element divPadre : divPadres) {
-			    Element divComentadoAntes = divPadre.selectFirst("div.role.color-offset.copy-really-small");
-			    Element link = divPadre.selectFirst("a");
-			    if (divComentadoAntes != null && link != null) {
-			        String textoDiv = divComentadoAntes.text();
-			        String textoEnlace = link.text();
+				Element divComentadoAntes = divPadre.selectFirst("div.role.color-offset.copy-really-small");
+				Element link = divPadre.selectFirst("a");
+				if (divComentadoAntes != null && link != null) {
+					String textoDiv = divComentadoAntes.text();
+					String textoEnlace = link.text();
 
-			        // Solo agregar los datos para "Cover Artist", "Writer" y "Artist"
-			        if (textoDiv.equalsIgnoreCase("Cover Artist") || textoDiv.equalsIgnoreCase("Cover Penciller")) {
-			            if (!cover.isEmpty()) {
-			                cover += ", ";
-			            }
-			            cover += textoEnlace;
-			            seEncontroCoverArtist = true; // Marcamos que se encontró un "Cover Artist"
-			        } else if (textoDiv.equalsIgnoreCase("Writer")) {
-			            if (!guionista.isEmpty()) {
-			                guionista += ", ";
-			            }
-			            guionista += textoEnlace;
-			        } else if (!seEncontroCoverArtist && (textoDiv.equalsIgnoreCase("Artist") || textoDiv.equalsIgnoreCase("Artist, Colorist")
-			                || textoDiv.equalsIgnoreCase("Penciller"))) {
-			            if (!textoDiv.equalsIgnoreCase("Cover Artist") && !textoDiv.equalsIgnoreCase("Cover Penciller")) {
-			                if (!artistas.contains(textoEnlace)) {
-			                    if (!artistas.isEmpty()) {
-			                        artistas += ", ";
-			                    }
-			                    artistas += textoEnlace;
-			                }
-			            }
-			        }
-			    }
+					// Solo agregar los datos para "Cover Artist", "Writer" y "Artist"
+					if (textoDiv.equalsIgnoreCase("Cover Artist") || textoDiv.equalsIgnoreCase("Cover Penciller")) {
+						if (!cover.isEmpty()) {
+							cover += ", ";
+						}
+						cover += textoEnlace;
+						seEncontroCoverArtist = true; // Marcamos que se encontró un "Cover Artist"
+					} else if (textoDiv.equalsIgnoreCase("Writer")) {
+						if (!guionista.isEmpty()) {
+							guionista += ", ";
+						}
+						guionista += textoEnlace;
+					} else if (!seEncontroCoverArtist
+							&& (textoDiv.equalsIgnoreCase("Artist") || textoDiv.equalsIgnoreCase("Artist, Colorist")
+									|| textoDiv.equalsIgnoreCase("Penciller"))) {
+						if (!textoDiv.equalsIgnoreCase("Cover Artist")
+								&& !textoDiv.equalsIgnoreCase("Cover Penciller")) {
+							if (!artistas.contains(textoEnlace)) {
+								if (!artistas.isEmpty()) {
+									artistas += ", ";
+								}
+								artistas += textoEnlace;
+							}
+						}
+					}
+				}
 			}
-
-
 
 			Element divInfoComic = doc.selectFirst("div.col.copy-small.font-italic");
 			if (divInfoComic != null) {

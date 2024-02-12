@@ -26,6 +26,7 @@ import javafx.scene.control.TextFormatter;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import javafx.stage.Popup;
+import javafx.util.converter.DefaultStringConverter;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 
@@ -626,6 +627,13 @@ public class FuncionesComboBox {
 		});
 
 		return textFormatter;
+	}
+	
+	public static TextFormatter<String> desactivarValidadorNenteros() {
+	    // Crear un TextFormatter que permita cualquier tipo de entrada
+	    TextFormatter<String> textFormatter = new TextFormatter<>(new DefaultStringConverter());
+	    
+	    return textFormatter;
 	}
 
 	/**

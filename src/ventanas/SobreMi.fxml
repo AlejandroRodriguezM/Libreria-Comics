@@ -34,7 +34,7 @@
             <Image url="@../imagenes/icono%20github.png" />
          </image>
       </ImageView>
-      <Label fx:id="TextoInfo" alignment="TOP_LEFT" cache="true" layoutX="5.0" layoutY="30.0" prefHeight="189.0" prefWidth="719.0" stylesheets="@../style/sobremi_style.css" text="Programa creado por Alejandro Rodriguez. Es un proyecto personal para probar conocimientos adquiridos durante el primer curso de DAW y dandole una update de calidad de vida en el año 2023. Esta aplicacion solamente puede usarse con una tabla de una forma estructurada de una forma concreta. Esta aplicacion ha sido creada con la intencion de ser usada junto a una base de datos MySql. " wrapText="true" />
+      <Label fx:id="TextoInfo" alignment="TOP_LEFT" cache="true" layoutX="5.0" layoutY="30.0" prefHeight="100.0" prefWidth="719.0" stylesheets="@../style/sobremi_style.css" text="Programa creado por Alejandro Rodriguez. Este es un proyecto personal creado en 2022 hasta la fecha. Este programa sirve como portfolio de programación. No dudes en seguirme :)" wrapText="true" />
       <Button fx:id="botonCompra" layoutX="11.0" layoutY="228.0" mnemonicParsing="false" onAction="#comprarComic" prefHeight="43.0" prefWidth="185.0" stylesheets="@../style/sobremi_style.css" text="Webs recomendadas" wrapText="true" />
       <MenuBar fx:id="menu_navegacion" prefHeight="25.0" prefWidth="735.0">
          <menus>

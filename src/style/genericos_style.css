@@ -31,6 +31,15 @@
     -fx-border-radius: 4.0px;
 }
 
+.button:hover {
+    -fx-cursor: hand;
+-fx-opacity: 0.8;
+}
+
+.button:pressed {
+    -fx-opacity: 0.8;
+}
+
 #botonGuardarResultado {
     -fx-background-color: #00A8FF; /* Color azul */
 }
@@ -153,13 +162,11 @@
 }
 
 .button#botonModificarComic {
-    -fx-font-size: 10.0px;
     -fx-background-color: #d9534f;
     -fx-border-color: #d43f3a;
 }
 
 .button#botonModificarComic:hover {
-    -fx-font-size: 10.0px;
     -fx-background-color: #c9302c;
 }
 
@@ -210,15 +217,6 @@
     -fx-background-color: #4cae4c;
 }
 
-
-.button:hover {
-    -fx-cursor: hand;
-}
-
-.button:pressed {
-    -fx-opacity: 0.8;
-}
-
 .button#botonBorrarTodo {
     -fx-background-color: #702963;
     -fx-border-color: #702963;
@@ -253,12 +251,13 @@
 }
 
 .button#botonGuardarComic {
-    -fx-background-color: #E49B0F;
-    -fx-border-color: #E49B0F;
+    -fx-background-color: #4169E1;
+    -fx-border-color: #4169E1;
 }
 
 .button#botonGuardarComic:hover {
-    -fx-background-color: #E49B0F;
+    -fx-background-color: #483D8B;
+    -fx-border-color: #483D8B;
 }
 
 .button#botonIntroducirCodigo {
@@ -277,17 +276,25 @@
 }
 
 .button#botonGuardarCambioComic:hover {
-    -fx-background-color: #93C572;
+    -fx-background-color: #62854c;
 }
 
 .button#botonBusquedaAvanzada { 
     -fx-border-width: 5px;
--fx-font-size: 9.0px;
+    -fx-font-size: 9.0px;
     -fx-background-color: green;
 }
 
 .button#botonBusquedaAvanzada:hover {
-    -fx-background-color: green;
+    -fx-background-color: #006400;
+}
+
+.button#botonBusquedaCodigo {
+    -fx-background-color: ecb653;
+}
+
+.button#botonBusquedaCodigo:hover {
+    -fx-background-color: c49235;
 }
 
 .button#botonEliminarImportadoComic { 
@@ -296,7 +303,7 @@
 }
 
 .button#botonEliminarImportadoComic:hover {
-    -fx-background-color: #ec5353;
+    -fx-background-color: #702626;
 }
 
 .button#guardarDatosApi {

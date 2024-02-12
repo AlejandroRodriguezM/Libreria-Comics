@@ -66,7 +66,6 @@ import org.json.JSONException;
 
 import Apis.ApiISBNGeneral;
 import Apis.ApiMarvel;
-import Controladores.VentanaAccionController;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
 import dbmanager.ConectManager;
@@ -1773,7 +1772,6 @@ public class Utilidades {
 	public static Comic obtenerComicSeleccionado(String id_comic) throws SQLException {
 		Comic comic_temp;
 		if (!ListaComicsDAO.comicsImportados.isEmpty()) {
-			VentanaAccionController.id_comic_selecionado = id_comic;
 			comic_temp = Utilidades.devolverComic(id_comic);
 		} else {
 			comic_temp = SelectManager.comicDatos(id_comic);

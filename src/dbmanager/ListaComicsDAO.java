@@ -169,7 +169,7 @@ public class ListaComicsDAO {
 	 * Lista de nombres de dibujantes.
 	 */
 	public static List<String> listaImagenes = new ArrayList<>();
-	
+
 	/**
 	 * Lista de cómics limpios.
 	 */
@@ -179,7 +179,7 @@ public class ListaComicsDAO {
 	 * Lista de sugerencias de autocompletado de entrada limpia.
 	 */
 	public static List<String> listaLimpiaAutoCompletado = new ArrayList<>();
-	
+
 	public static List<Comic> comicsImportados = new ArrayList<Comic>();
 
 	/**
@@ -199,6 +199,26 @@ public class ListaComicsDAO {
 	 * Lista de comics guardados para poder ser impresos
 	 */
 	public static List<Comic> comicsGuardadosList = new ArrayList<>();
+
+	public static boolean verificarIDExistente(String id) {
+		for (Comic comic : comicsImportados) {
+
+			if (comic.getID().equalsIgnoreCase(id)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static Comic devolverComicLista(String id) {
+		for (Comic comic : comicsImportados) {
+
+			if (comic.getID().equalsIgnoreCase(id)) {
+				return comic;
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * Realiza llamadas para inicializar listas de autocompletado.
@@ -381,7 +401,7 @@ public class ListaComicsDAO {
 
 		return listaAutoCompletado;
 	}
-	
+
 	/**
 	 * Funcion que devuelve una lista en la que solamente se guardan aquellos datos
 	 * que no se repiten

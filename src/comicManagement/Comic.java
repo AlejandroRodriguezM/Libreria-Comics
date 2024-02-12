@@ -5,6 +5,8 @@
 package comicManagement;
 
 import Funcionamiento.Utilidades;
+import dbmanager.ComicManagerDAO;
+import dbmanager.ListaComicsDAO;
 
 /**
  * Esta clase objeto sirve para dar forma al comic que estara dentro de la base
@@ -550,6 +552,20 @@ public class Comic {
 	        campo = campo.replaceAll("(?:[,\\s-])+(?=[,\\s-]*$)", "");
 	    }
 	    return campo;
+	}
+	
+	public static Comic obtenerComic(String idComic) {
+	    boolean existeComic = ComicManagerDAO.comprobarIdentificadorComic(idComic);
+	    Comic comic_temp = null;
+	    if (!existeComic) {
+	        existeComic = ListaComicsDAO.verificarIDExistente(idComic);
+	        if (existeComic) {
+	            comic_temp = ListaComicsDAO.devolverComicLista(idComic);
+	        }
+	    } else {
+	        comic_temp = ComicManagerDAO.comicDatos(idComic);
+	    }
+	    return comic_temp;
 	}
 	
 	/**
