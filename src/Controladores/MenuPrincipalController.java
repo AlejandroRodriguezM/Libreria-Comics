@@ -23,21 +23,22 @@ import java.util.concurrent.TimeUnit;
 
 import Funcionamiento.FuncionesComboBox;
 import Funcionamiento.FuncionesExcel;
+import Funcionamiento.FuncionesManejoFront;
 import Funcionamiento.FuncionesTableView;
 import Funcionamiento.FuncionesTooltips;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
+import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
 import dbmanager.DBUtilidades.TipoBusqueda;
-import dbmanager.ComicManagerDAO;
 import dbmanager.ListaComicsDAO;
 import dbmanager.SelectManager;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -47,6 +48,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Control;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -422,8 +424,6 @@ public class MenuPrincipalController implements Initializable {
 
 	private Map<Node, String> tooltipsMap = new HashMap<>();
 
-	private static AlarmaList alarmaList = new AlarmaList();
-
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
 	 *
@@ -432,29 +432,41 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		AlarmaList alarmaList = new AlarmaList();
 
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
 		alarmaList.iniciarThreadChecker(true);
-		prontInfo.textProperty().addListener((observable, oldValue, newValue) -> {
+
+		Platform.runLater(() -> {
 			funcionesTabla.ajustarAnchoVBox(prontInfo, vboxContenido);
+			funcionesTabla.seleccionarRaw(tablaBBDD);
+			asignarTooltips();
+			funcionesTabla.modificarColumnas(tablaBBDD, columnList);
 		});
 
-		// Asegurarnos de que el VBox ajuste su tamaño correctamente al inicio
-		Platform.runLater(() -> funcionesTabla.ajustarAnchoVBox(prontInfo, vboxContenido));
+		controlarEventosInterfaz();
 
-		Platform.runLater(() -> funcionesTabla.seleccionarRaw(tablaBBDD));
+		formatearTextField();
 
-		Platform.runLater(() -> asignarTooltips());
+		cargarDatosDataBase();
 
-		Platform.runLater(() -> funcionesTabla.modificarColumnas(tablaBBDD, columnList));
+		establecerDinamismoAnchor();
+	}
+
+	/**
+	 * Controla los eventos de la interfaz, desactivando el enfoque en el VBox para
+	 * evitar eventos de teclado, y añadiendo filtros y controladores de eventos
+	 * para gestionar el enfoque entre el VBox y el TableView.
+	 */
+	private void controlarEventosInterfaz() {
 
 		List<TableColumn<Comic, String>> columnListCarga = Arrays.asList(nombre, caja, numero, variante, firma,
 				editorial, formato, procedencia, fecha, guionista, dibujante, referencia);
 		columnList = columnListCarga;
 
-		restringir_entrada_datos();
-
-		cargarDatosDataBase();
+		prontInfo.textProperty().addListener((observable, oldValue, newValue) -> {
+			funcionesTabla.ajustarAnchoVBox(prontInfo, vboxContenido);
+		});
 
 		// Desactivar el enfoque en el VBox para evitar que reciba eventos de teclado
 		rootVBox.setFocusTraversable(false);
@@ -474,8 +486,6 @@ public class MenuPrincipalController implements Initializable {
 		});
 
 		prontInfo.setEditable(false);
-
-		establecerDinamismoAnchor();
 	}
 
 	/**
@@ -538,71 +548,39 @@ public class MenuPrincipalController implements Initializable {
 	 * elementos como tamaños, anchos y máximos.
 	 */
 	public void establecerDinamismoAnchor() {
-		backgroundImage.fitWidthProperty().bind(rootAnchorPane.widthProperty());
-		backgroundImage.fitHeightProperty().bind(rootAnchorPane.heightProperty());
 
-		// Vinculación del ancho de la TableView al ancho del AnchorPane
-		tablaBBDD.prefWidthProperty().bind(rootAnchorPane.widthProperty());
+		ObservableList<ImageView> listaImagenes = FXCollections.observableArrayList(imagencomic);
+		@SuppressWarnings("rawtypes")
+		ObservableList<ComboBox> listaComboBoxes = FXCollections.observableArrayList(nombreComic, nombreDibujante,
+				nombreEditorial, nombreFirma, nombreFormato, nombreGuionista, nombreProcedencia, nombreVariante,
+				numeroCaja, numeroComic);
+		@SuppressWarnings("rawtypes")
+		ObservableList<TableColumn> listaColumnas = FXCollections.observableArrayList(ID, nombre, caja, numero,
+				variante, firma, editorial, formato, procedencia, fecha, guionista, dibujante, referencia);
+		ObservableList<Control> listaCamposTexto = FXCollections.observableArrayList(busquedaGeneral, fechaPublicacion);
+		ObservableList<Button> listaBotones = FXCollections.observableArrayList(botonLimpiar, botonMostrarParametro,
+				botonbbdd);
 
-		// Vinculación del ancho de las columnas al ancho de la TableView dividido por
-		// el número de columnas
-		double numColumns = 13; // El número de columnas en tu TableView
-		ID.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		nombre.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		caja.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		numero.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		variante.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		firma.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		editorial.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		formato.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		procedencia.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		fecha.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		guionista.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		dibujante.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		referencia.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
+		ObservableList<Node> listaElementosFondo = FXCollections.observableArrayList(backgroundImage, tablaBBDD,
+				menu_navegacion);
 
-		menu_navegacion.prefWidthProperty().bind(rootAnchorPane.widthProperty());
+		FuncionesManejoFront manejaFront = new FuncionesManejoFront();
 
-		double maxButtonWidth = 102.0; // Cambia esto al valor máximo deseado
+		manejaFront.setAnchorPane(rootAnchorPane);
+		manejaFront.setTableView(tablaBBDD);
 
-		// Establecer un tamaño máximo para los botones
-		botonLimpiar.maxWidthProperty().bind(Bindings.max(maxButtonWidth, botonLimpiar.widthProperty()));
-		botonMostrarParametro.maxWidthProperty()
-				.bind(Bindings.max(maxButtonWidth, botonMostrarParametro.widthProperty()));
-		botonbbdd.maxWidthProperty().bind(Bindings.max(maxButtonWidth, botonbbdd.widthProperty()));
+		FuncionesManejoFront.establecerFondoDinamico(listaElementosFondo);
 
-		double maxTextComboWidth = 162.0;
+		FuncionesManejoFront.establecerAnchoColumnas(listaColumnas, 13);
 
-		Platform.runLater(() -> {
-			// Ajustar el ancho de los campos de texto al ancho de la ventana principal
-			busquedaGeneral.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, busquedaGeneral.widthProperty()));
-		});
+		FuncionesManejoFront.establecerAnchoMaximoBotones(listaBotones, 102.0);
 
-		// Ajustar el DatePicker
-		fechaPublicacion.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, fechaPublicacion.widthProperty()));
+		FuncionesManejoFront.establecerAnchoMaximoCamposTexto(listaCamposTexto, 162.0);
 
-		// Establecer un ancho máximo para cada ComboBox
-		nombreComic.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, nombreComic.widthProperty()));
-		nombreDibujante.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, nombreDibujante.widthProperty()));
-		nombreEditorial.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, nombreEditorial.widthProperty()));
-		nombreFirma.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, nombreFirma.widthProperty()));
-		nombreFormato.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, nombreFormato.widthProperty()));
-		nombreGuionista.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, nombreGuionista.widthProperty()));
-		nombreProcedencia.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, nombreProcedencia.widthProperty()));
-		nombreVariante.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, nombreVariante.widthProperty()));
-		numeroCaja.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, numeroCaja.widthProperty()));
-		numeroComic.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, numeroComic.widthProperty()));
+		FuncionesManejoFront.establecerAnchoMaximoComboBoxes(listaComboBoxes, 162.0);
 
-		// Tamaño máximo predefinido para la imagen
-		double maxWidth = 252.0; // Cambia esto al valor deseado
-		double maxHeight = 337.0; // Cambia esto al valor deseado
+		FuncionesManejoFront.establecerTamanioMaximoImagen(listaImagenes, 252.0, 337.0);
 
-		// Ajustar el tamaño máximo de la imagen
-		imagencomic.fitWidthProperty().bind(Bindings.min(maxWidth, rootAnchorPane.widthProperty()));
-		imagencomic.fitHeightProperty().bind(Bindings.min(maxHeight, rootAnchorPane.heightProperty()));
-
-		// Asegúrate de que la relación de aspecto de la imagen se mantenga
-		imagencomic.setPreserveRatio(true);
 	}
 
 	/**
@@ -641,7 +619,7 @@ public class MenuPrincipalController implements Initializable {
 	 * Funcion que permite restringir entrada de datos de todo aquello que no sea un
 	 * numero entero en los comboBox numeroComic y caja_comic
 	 */
-	public void restringir_entrada_datos() {
+	public void formatearTextField() {
 		numeroComic.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
 		numeroCaja.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
 	}
@@ -1264,7 +1242,7 @@ public class MenuPrincipalController implements Initializable {
 		FuncionesExcel funcionesExcel = new FuncionesExcel();
 
 		File fichero = Utilidades.tratarFichero(frase, formato).showOpenDialog(null);
-		
+
 		String mensajeValido = "Has importado correctamente la lista de comics en la base de datos";
 
 		if (fichero != null) {
@@ -1412,17 +1390,21 @@ public class MenuPrincipalController implements Initializable {
 		String fechaComic = (fecha != null) ? fecha.toString() : "";
 
 		comic.setNombre(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreComic.getValue()), ""));
-		comic.setNumero(Utilidades
-				.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(FuncionesComboBox.numeroCombobox(numeroComic)), ""));
-		comic.setVariante(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreVariante.getValue()), ""));
+		comic.setNumero(Utilidades.defaultIfNullOrEmpty(
+				Utilidades.comaYGuionPorEspaciado(FuncionesComboBox.numeroCombobox(numeroComic)), ""));
+		comic.setVariante(
+				Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreVariante.getValue()), ""));
 		comic.setFirma(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreFirma.getValue()), ""));
-		comic.setEditorial(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreEditorial.getValue()), ""));
+		comic.setEditorial(
+				Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreEditorial.getValue()), ""));
 		comic.setFormato(Utilidades.defaultIfNullOrEmpty(FuncionesComboBox.formatoCombobox(nombreFormato), ""));
 		comic.setProcedencia(
 				Utilidades.defaultIfNullOrEmpty(FuncionesComboBox.procedenciaCombobox(nombreProcedencia), ""));
 		comic.setFecha(fechaComic);
-		comic.setGuionista(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreGuionista.getValue()), ""));
-		comic.setDibujante(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreDibujante.getValue()), ""));
+		comic.setGuionista(
+				Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreGuionista.getValue()), ""));
+		comic.setDibujante(
+				Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreDibujante.getValue()), ""));
 		comic.setImagen("");
 		comic.setEstado("");
 		comic.setNumCaja(Utilidades.defaultIfNullOrEmpty(FuncionesComboBox.cajaCombobox(numeroCaja), ""));

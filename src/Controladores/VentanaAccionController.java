@@ -36,8 +36,8 @@ import org.json.JSONException;
 import Apis.ApiISBNGeneral;
 import Apis.ApiMarvel;
 import Funcionamiento.FuncionesComboBox;
+import Funcionamiento.FuncionesManejoFront;
 import Funcionamiento.FuncionesTableView;
-import Funcionamiento.FuncionesTextField;
 import Funcionamiento.FuncionesTooltips;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
@@ -579,12 +579,8 @@ public class VentanaAccionController implements Initializable {
 	 */
 	private static Map<Node, String> tooltipsMap = new HashMap<>();
 
-//	public static String id_comic_selecionado = "";
-
 	public static String apiKey = Utilidades.cargarApiComicVine();
 	public static String clavesMarvel[] = Utilidades.clavesApiMarvel();
-
-	private static AlarmaList alarmaList = new AlarmaList();
 
 	/**
 	 * Inicializa la interfaz de usuario y configura el comportamiento de los
@@ -595,6 +591,7 @@ public class VentanaAccionController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		AlarmaList alarmaList = new AlarmaList();
 
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
 		alarmaList.setAlarmaConexionInternet(alarmaConexionInternet);
@@ -613,7 +610,7 @@ public class VentanaAccionController implements Initializable {
 
 		asignarTooltips();
 
-		formatearInterfaz();
+		formatearTextField();
 
 		controlarEventosInterfaz();
 
@@ -622,13 +619,13 @@ public class VentanaAccionController implements Initializable {
 
 	public void listas_autocompletado() {
 		if (ConectManager.conexionActiva()) {
-			FuncionesTextField.asignarAutocompletado(nombreComic, ListaComicsDAO.listaNombre);
-			FuncionesTextField.asignarAutocompletado(varianteComic, ListaComicsDAO.listaVariante);
-			FuncionesTextField.asignarAutocompletado(firmaComic, ListaComicsDAO.listaFirma);
-			FuncionesTextField.asignarAutocompletado(editorialComic, ListaComicsDAO.listaEditorial);
-			FuncionesTextField.asignarAutocompletado(guionistaComic, ListaComicsDAO.listaGuionista);
-			FuncionesTextField.asignarAutocompletado(dibujanteComic, ListaComicsDAO.listaDibujante);
-			FuncionesTextField.asignarAutocompletado(numeroComic.getEditor(), ListaComicsDAO.listaNumeroComic);
+			FuncionesManejoFront.asignarAutocompletado(nombreComic, ListaComicsDAO.listaNombre);
+			FuncionesManejoFront.asignarAutocompletado(varianteComic, ListaComicsDAO.listaVariante);
+			FuncionesManejoFront.asignarAutocompletado(firmaComic, ListaComicsDAO.listaFirma);
+			FuncionesManejoFront.asignarAutocompletado(editorialComic, ListaComicsDAO.listaEditorial);
+			FuncionesManejoFront.asignarAutocompletado(guionistaComic, ListaComicsDAO.listaGuionista);
+			FuncionesManejoFront.asignarAutocompletado(dibujanteComic, ListaComicsDAO.listaDibujante);
+			FuncionesManejoFront.asignarAutocompletado(numeroComic.getEditor(), ListaComicsDAO.listaNumeroComic);
 		}
 	}
 
@@ -659,6 +656,11 @@ public class VentanaAccionController implements Initializable {
 	 * para gestionar el enfoque entre el VBox y el TableView.
 	 */
 	private void controlarEventosInterfaz() {
+
+		List<TableColumn<Comic, String>> columnListCarga = Arrays.asList(nombre, numero, variante, editorial, guionista,
+				dibujante);
+		columnList = columnListCarga;
+
 		// Desactivar el enfoque en el VBox para evitar que reciba eventos de teclado
 		rootVBox.setFocusTraversable(false);
 
@@ -682,16 +684,28 @@ public class VentanaAccionController implements Initializable {
 		});
 	}
 
-	/**
-	 * Realiza la formateo específico de la interfaz, configurando validadores,
-	 * formateadores y restringiendo ciertos caracteres en campos específicos.
-	 */
-	private void formatearInterfaz() {
+	public void formatearTextField() {
+		FuncionesManejoFront.eliminarEspacioInicial(nombreComic);
+		FuncionesManejoFront.restringirSimbolos(editorialComic);
+		FuncionesManejoFront.restringirSimbolos(guionistaComic);
+		FuncionesManejoFront.restringirSimbolos(dibujanteComic);
+		FuncionesManejoFront.restringirSimbolos(varianteComic);
 
-		List<TableColumn<Comic, String>> columnListCarga = Arrays.asList(nombre, numero, variante, editorial, guionista,
-				dibujante);
-		columnList = columnListCarga;
+		FuncionesManejoFront.reemplazarEspaciosMultiples(nombreComic);
+		FuncionesManejoFront.reemplazarEspaciosMultiples(editorialComic);
+		FuncionesManejoFront.reemplazarEspaciosMultiples(guionistaComic);
+		FuncionesManejoFront.reemplazarEspaciosMultiples(dibujanteComic);
+		FuncionesManejoFront.reemplazarEspaciosMultiples(varianteComic);
+		FuncionesManejoFront.reemplazarEspacio(busquedaCodigo);
 
+		FuncionesManejoFront.permitirUnSimbolo(nombreComic);
+		FuncionesManejoFront.permitirUnSimbolo(editorialComic);
+		FuncionesManejoFront.permitirUnSimbolo(guionistaComic);
+		FuncionesManejoFront.permitirUnSimbolo(dibujanteComic);
+		FuncionesManejoFront.permitirUnSimbolo(varianteComic);
+		FuncionesManejoFront.permitirUnSimbolo(busquedaCodigo);
+
+		busquedaCodigo.setDisable(true); // Inicialmente deshabilitado
 		numeroComic.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
 		numeroCajaComic.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
 		idComicTratar_mod.setTextFormatter(FuncionesComboBox.validador_Nenteros());
@@ -700,33 +714,6 @@ public class VentanaAccionController implements Initializable {
 		if (TIPO_ACCION.equalsIgnoreCase("aniadir")) {
 			idComicTratar_mod.setTextFormatter(FuncionesComboBox.desactivarValidadorNenteros());
 		}
-
-		FuncionesTextField.eliminarEspacioInicial(nombreComic);
-		FuncionesTextField.restringirSimbolos(editorialComic);
-		FuncionesTextField.restringirSimbolos(guionistaComic);
-		FuncionesTextField.restringirSimbolos(dibujanteComic);
-		FuncionesTextField.restringirSimbolos(varianteComic);
-
-		FuncionesTextField.reemplazarEspaciosMultiples(nombreComic);
-		FuncionesTextField.reemplazarEspaciosMultiples(editorialComic);
-		FuncionesTextField.reemplazarEspaciosMultiples(guionistaComic);
-		FuncionesTextField.reemplazarEspaciosMultiples(dibujanteComic);
-		FuncionesTextField.reemplazarEspaciosMultiples(varianteComic);
-		FuncionesTextField.reemplazarEspacio(busquedaCodigo);
-
-		FuncionesTextField.permitirUnSimbolo(nombreComic);
-		FuncionesTextField.permitirUnSimbolo(editorialComic);
-		FuncionesTextField.permitirUnSimbolo(guionistaComic);
-		FuncionesTextField.permitirUnSimbolo(dibujanteComic);
-		FuncionesTextField.permitirUnSimbolo(varianteComic);
-		FuncionesTextField.permitirUnSimbolo(busquedaCodigo);
-
-		busquedaCodigo.setDisable(true); // Inicialmente deshabilitado
-
-		ObservableList<String> puntuaciones = FXCollections.observableArrayList("0/0", "0.5/5", "1/5", "1.5/5", "2/5",
-				"2.5/5", "3/5", "3.5/5", "4/5", "4.5/5", "5/5");
-		puntuacionMenu.setItems(puntuaciones);
-		puntuacionMenu.getSelectionModel().selectFirst();
 	}
 
 	/**
@@ -735,13 +722,11 @@ public class VentanaAccionController implements Initializable {
 	 */
 	public void establecerDinamismoAnchor() {
 
-		double numColumns = 13; // El número de columnas en tu TableView
-		nombre.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		numero.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		variante.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		editorial.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		guionista.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		dibujante.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
+		@SuppressWarnings("rawtypes")
+		ObservableList<TableColumn> listaColumnas = FXCollections.observableArrayList(nombre, numero, variante,
+				editorial, guionista, dibujante);
+
+		FuncionesManejoFront.establecerAnchoColumnas(listaColumnas, 13);
 
 	}
 
@@ -1087,7 +1072,9 @@ public class VentanaAccionController implements Initializable {
 	 * ComboBoxes con opciones estáticas predefinidas.
 	 */
 	public void rellenarCombosEstaticos() {
-		List<ComboBox<String>> comboboxesMod = Arrays.asList(formatoComic, procedenciaComic, estadoComic);
+
+		List<ComboBox<String>> comboboxesMod = Arrays.asList(formatoComic, procedenciaComic, estadoComic,
+				puntuacionMenu);
 		funcionesCombo.rellenarComboBoxEstaticos(comboboxesMod, TIPO_ACCION); // Llamada a la función para rellenar
 																				// ComboBoxes
 	}
@@ -1814,26 +1801,11 @@ public class VentanaAccionController implements Initializable {
 			return false;
 		}
 
-		// Instancia de ListaComicsDAO
-		libreria = new ListaComicsDAO();
-
 		// Si el cómic existe en la base de datos
 		if (ComicManagerDAO.comprobarIdentificadorComic(ID)) {
-			// Restaura el estilo del campo de ID
-			idComicTratar_mod.setStyle(null);
-			// Construye la sentencia SQL para una búsqueda completa
-//			String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
-			// Obtiene la lista de cómics de la base de datos
-//			List<Comic> listaComics = ComicManagerDAO.verLibreria(sentenciaSQL);
-			// Llama a funciones para actualizar la tabla de cómics
-//			funcionesTabla.nombreColumnas(columnList, tablaBBDD);
 			funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
-//			funcionesTabla.tablaBBDD(listaComics, tablaBBDD, columnList);
 			return true;
 		} else { // Si el cómic no existe en la base de datos
-			// Establece un estilo de fondo rojo para el campo de ID
-			idComicTratar_mod.setStyle("-fx-background-color: red");
-			// Muestra un mensaje de error
 			String mensaje = "ERROR. ID desconocido.";
 			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 			return false;

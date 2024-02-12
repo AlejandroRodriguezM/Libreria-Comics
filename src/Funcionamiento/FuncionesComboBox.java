@@ -375,8 +375,6 @@ public class FuncionesComboBox {
 			}
 		}
 	}
-	
-
 
 	/**
 	 * Configura el Popup filtrado con las opciones proporcionadas.
@@ -402,8 +400,8 @@ public class FuncionesComboBox {
 			List<String> newFilteredItems = filteredItems.stream()
 					.filter(item -> item.toLowerCase().contains(newValue.toLowerCase())).collect(Collectors.toList());
 			listView.setItems(FXCollections.observableArrayList(newFilteredItems));
-		});		
-		
+		});
+
 		Bounds bounds = originalComboBox.localToScreen(originalComboBox.getBoundsInLocal());
 		popup = createCustomPopup(originalComboBox, filterTextField, listView);
 
@@ -628,12 +626,12 @@ public class FuncionesComboBox {
 
 		return textFormatter;
 	}
-	
+
 	public static TextFormatter<String> desactivarValidadorNenteros() {
-	    // Crear un TextFormatter que permita cualquier tipo de entrada
-	    TextFormatter<String> textFormatter = new TextFormatter<>(new DefaultStringConverter());
-	    
-	    return textFormatter;
+		// Crear un TextFormatter que permita cualquier tipo de entrada
+		TextFormatter<String> textFormatter = new TextFormatter<>(new DefaultStringConverter());
+
+		return textFormatter;
 	}
 
 	/**
@@ -661,38 +659,31 @@ public class FuncionesComboBox {
 	 * @param comboboxes La lista de ComboBoxes a rellenar.
 	 */
 	public void rellenarComboBoxEstaticos(List<ComboBox<String>> comboboxes, String tipo_accion) {
-		String[] formatos = { "Grapa (Issue individual)", "Tapa blanda (Paperback)", "Cómic de bolsillo (Pocket)",
-				"Edicion de lujo (Deluxe Edition)", "Edicion omnibus(Omnibus)", "Edicion integral (Integral)",
-				"Tapa dura (Hardcover)", "eBook (libro electrónico)", "Comic digital (Digital Comic)",
-				"Manga digital (Digital Manga)", "Manga (Manga tome)", "PDF (Portable Document Format)",
-				"Revista (Magazine)", "Edicion de coleccionista (Collector's Edition)",
-				"Edicion especial (Special Edition)", "Edicion con extras (Bonus Edition)", "Libro (Book)" };
-
-		String[] procedenciaEstados = { "Estados Unidos (United States)", "Japón (Japan)", "Francia (France)",
-				"Italia (Italy)", "España (Spain)", "Reino Unido (United Kingdom)", "Alemania (Germany)",
-				"Brasil (Brazil)", "Corea del Sur (South Korea)", "México (Mexico)", "Canadá (Canada)", "China (China)",
-				"Australia (Australia)", "Argentina (Argentina)", "India (India)", "Bélgica (Belgium)",
-				"Países Bajos (Netherlands)", "Portugal (Portugal)", "Suecia (Sweden)", "Suiza (Switzerland)",
-				"Finlandia (Finland)", "Noruega (Norway)", "Dinamarca (Denmark)" };
-
-		String[] situacionEstados = { "En posesion", "Comprado", "En venta" };
-
-		String[] editorialBusquedas = { "Marvel ISBN", "Marvel UPC", "Otras editoriales", "Ninguno" };
+		String[][] valores = {
+				{ "Grapa (Issue individual)", "Tapa blanda (Paperback)", "Cómic de bolsillo (Pocket)",
+						"Edicion de lujo (Deluxe Edition)", "Edicion omnibus(Omnibus)", "Edicion integral (Integral)",
+						"Tapa dura (Hardcover)", "eBook (libro electrónico)", "Comic digital (Digital Comic)",
+						"Manga digital (Digital Manga)", "Manga (Manga tome)", "PDF (Portable Document Format)",
+						"Revista (Magazine)", "Edicion de coleccionista (Collector's Edition)",
+						"Edicion especial (Special Edition)", "Edicion con extras (Bonus Edition)", "Libro (Book)" },
+				{ "Estados Unidos (United States)", "Japón (Japan)", "Francia (France)", "Italia (Italy)",
+						"España (Spain)", "Reino Unido (United Kingdom)", "Alemania (Germany)", "Brasil (Brazil)",
+						"Corea del Sur (South Korea)", "México (Mexico)", "Canadá (Canada)", "China (China)",
+						"Australia (Australia)", "Argentina (Argentina)", "India (India)", "Bélgica (Belgium)",
+						"Países Bajos (Netherlands)", "Portugal (Portugal)", "Suecia (Sweden)", "Suiza (Switzerland)",
+						"Finlandia (Finland)", "Noruega (Norway)", "Dinamarca (Denmark)" },
+				{ "En posesion", "Comprado", "En venta" },
+				{ "0/0", "0.5/5", "1/5", "1.5/5", "2/5", "2.5/5", "3/5", "3.5/5", "4/5", "4.5/5", "5/5" } };
 
 		// Verificar que la lista de ComboBox tenga al menos el mismo tamaño que los
 		// arreglos
-		int tamaño = Math.min(comboboxes.size(), Math.min(formatos.length, procedenciaEstados.length));
+		int tamaño = Math.min(comboboxes.size(), valores.length);
 
 		for (int i = 0; i < tamaño; i++) {
 			comboboxes.get(i).getItems().clear(); // Limpiar elementos anteriores si los hay
-			comboboxes.get(i).getItems().addAll(
-					i == 0 ? formatos : i == 1 ? procedenciaEstados : i == 2 ? situacionEstados : editorialBusquedas);
+			comboboxes.get(i).getItems().addAll(valores[i]);
 
-			if (tipo_accion.equalsIgnoreCase("aniadir")) {
-				comboboxes.get(i).getSelectionModel().selectFirst();
-
-			}
-
+			comboboxes.get(i).getSelectionModel().selectFirst();
 		}
 	}
 
