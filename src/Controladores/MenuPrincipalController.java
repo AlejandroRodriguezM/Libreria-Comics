@@ -33,7 +33,6 @@ import comicManagement.Comic;
 import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
-import dbmanager.DBUtilidades.TipoBusqueda;
 import dbmanager.ListaComicsDAO;
 import dbmanager.SelectManager;
 import javafx.application.Platform;
@@ -402,10 +401,6 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	private static Ventanas nav = new Ventanas();
 
-	/**
-	 * Instancia de DBLibreriaManager para la gestión de la base de datos.
-	 */
-	private static ListaComicsDAO libreria = null;
 
 	/**
 	 * Instancia de FuncionesComboBox para funciones relacionadas con ComboBox.
@@ -413,14 +408,18 @@ public class MenuPrincipalController implements Initializable {
 	private static FuncionesComboBox funcionesCombo = new FuncionesComboBox();
 
 	/**
-	 * Instancia de FuncionesTableView para funciones relacionadas con TableView.
-	 */
-	private static FuncionesTableView funcionesTabla = new FuncionesTableView();
-
-	/**
 	 * Lista de columnas de la tabla de cómics.
 	 */
 	private List<TableColumn<Comic, String>> columnList;
+
+	ObservableList<ImageView> listaImagenes;
+
+	ObservableList<ComboBox<String>> listaComboBoxes;
+	@SuppressWarnings("rawtypes")
+	ObservableList<TableColumn> listaColumnas;
+	ObservableList<Control> listaCamposTexto;
+	ObservableList<Button> listaBotones;
+	ObservableList<Node> listaElementosFondo;
 
 	private Map<Node, String> tooltipsMap = new HashMap<>();
 
@@ -438,11 +437,13 @@ public class MenuPrincipalController implements Initializable {
 		alarmaList.iniciarThreadChecker(true);
 
 		Platform.runLater(() -> {
-			funcionesTabla.ajustarAnchoVBox(prontInfo, vboxContenido);
-			funcionesTabla.seleccionarRaw(tablaBBDD);
+			FuncionesTableView.ajustarAnchoVBox(prontInfo, vboxContenido);
+			FuncionesTableView.seleccionarRaw(tablaBBDD);
 			asignarTooltips();
-			funcionesTabla.modificarColumnas(tablaBBDD, columnList);
+			FuncionesTableView.modificarColumnas(tablaBBDD, columnList);
 		});
+
+		listaElementosVentana();
 
 		controlarEventosInterfaz();
 
@@ -451,6 +452,7 @@ public class MenuPrincipalController implements Initializable {
 		cargarDatosDataBase();
 
 		establecerDinamismoAnchor();
+
 	}
 
 	/**
@@ -465,7 +467,7 @@ public class MenuPrincipalController implements Initializable {
 		columnList = columnListCarga;
 
 		prontInfo.textProperty().addListener((observable, oldValue, newValue) -> {
-			funcionesTabla.ajustarAnchoVBox(prontInfo, vboxContenido);
+			FuncionesTableView.ajustarAnchoVBox(prontInfo, vboxContenido);
 		});
 
 		// Desactivar el enfoque en el VBox para evitar que reciba eventos de teclado
@@ -484,17 +486,6 @@ public class MenuPrincipalController implements Initializable {
 			tablaBBDD.setFocusTraversable(false);
 			rootVBox.requestFocus();
 		});
-
-		prontInfo.setEditable(false);
-	}
-
-	/**
-	 * Rellena los ComboBoxes estáticos con datos predefinidos. Los ComboBoxes se
-	 * pasan como una lista en el orden: formato, procedencia, editorial.
-	 */
-	public void rellenarCombosEstaticos() {
-		List<ComboBox<String>> comboboxesMod = Arrays.asList(nombreFormato, nombreProcedencia, nombreEditorial);
-		funcionesCombo.rellenarComboBoxEstaticos(comboboxesMod, ""); // Llamada a la función para rellenar ComboBoxes
 	}
 
 	/**
@@ -543,43 +534,44 @@ public class MenuPrincipalController implements Initializable {
 		}, 0, TimeUnit.SECONDS);
 	}
 
+	public void listaElementosVentana() {
+		listaImagenes = FXCollections.observableArrayList(imagencomic);
+		listaColumnas = FXCollections.observableArrayList(ID, nombre, caja, numero, variante, firma, editorial, formato,
+				procedencia, fecha, guionista, dibujante, referencia);
+		listaCamposTexto = FXCollections.observableArrayList(busquedaGeneral, fechaPublicacion);
+		listaBotones = FXCollections.observableArrayList(botonLimpiar, botonMostrarParametro, botonbbdd, botonImprimir,
+				botonGuardarResultado);
+
+		listaElementosFondo = FXCollections.observableArrayList(backgroundImage, menu_navegacion);
+	}
+
 	/**
 	 * Establece el dinamismo en la interfaz gráfica ajustando propiedades de
 	 * elementos como tamaños, anchos y máximos.
 	 */
 	public void establecerDinamismoAnchor() {
 
-		ObservableList<ImageView> listaImagenes = FXCollections.observableArrayList(imagencomic);
-		@SuppressWarnings("rawtypes")
-		ObservableList<ComboBox> listaComboBoxes = FXCollections.observableArrayList(nombreComic, nombreDibujante,
-				nombreEditorial, nombreFirma, nombreFormato, nombreGuionista, nombreProcedencia, nombreVariante,
-				numeroCaja, numeroComic);
-		@SuppressWarnings("rawtypes")
-		ObservableList<TableColumn> listaColumnas = FXCollections.observableArrayList(ID, nombre, caja, numero,
-				variante, firma, editorial, formato, procedencia, fecha, guionista, dibujante, referencia);
-		ObservableList<Control> listaCamposTexto = FXCollections.observableArrayList(busquedaGeneral, fechaPublicacion);
-		ObservableList<Button> listaBotones = FXCollections.observableArrayList(botonLimpiar, botonMostrarParametro,
-				botonbbdd);
+		FuncionesManejoFront manejoFront = new FuncionesManejoFront();
 
-		ObservableList<Node> listaElementosFondo = FXCollections.observableArrayList(backgroundImage, tablaBBDD,
-				menu_navegacion);
+		manejoFront.copiarListas(listaComboBoxes, columnList, listaCamposTexto, listaBotones, listaElementosFondo,
+				listaImagenes);
 
-		FuncionesManejoFront manejaFront = new FuncionesManejoFront();
+		manejoFront.copiarElementos(prontInfo, botonImprimir, botonGuardarResultado, busquedaGeneral, columnList);
 
-		manejaFront.setAnchorPane(rootAnchorPane);
-		manejaFront.setTableView(tablaBBDD);
+		FuncionesManejoFront.setAnchorPane(rootAnchorPane);
+		manejoFront.setTableView(tablaBBDD);
 
-		FuncionesManejoFront.establecerFondoDinamico(listaElementosFondo);
+		FuncionesManejoFront.establecerFondoDinamico();
 
-		FuncionesManejoFront.establecerAnchoColumnas(listaColumnas, 13);
+		FuncionesManejoFront.establecerAnchoColumnas(13);
 
-		FuncionesManejoFront.establecerAnchoMaximoBotones(listaBotones, 102.0);
+		FuncionesManejoFront.establecerAnchoMaximoBotones(102.0);
 
-		FuncionesManejoFront.establecerAnchoMaximoCamposTexto(listaCamposTexto, 162.0);
+		FuncionesManejoFront.establecerAnchoMaximoCamposTexto(162.0);
 
-		FuncionesManejoFront.establecerAnchoMaximoComboBoxes(listaComboBoxes, 162.0);
+		FuncionesManejoFront.establecerAnchoMaximoComboBoxes(162.0);
 
-		FuncionesManejoFront.establecerTamanioMaximoImagen(listaImagenes, 252.0, 337.0);
+		FuncionesManejoFront.establecerTamanioMaximoImagen(252.0, 337.0);
 
 	}
 
@@ -664,7 +656,16 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
-		verBasedeDatos(false);
+
+		FuncionesManejoFront manejoFront = new FuncionesManejoFront();
+		manejoFront.setTableView(tablaBBDD);
+		manejoFront.copiarElementos(prontInfo, botonImprimir, botonGuardarResultado, busquedaGeneral, columnList);
+
+		busquedaGeneral.setText("");
+
+		Comic comicBusqueda = camposComic();
+
+		FuncionesManejoFront.verBasedeDatos(false, false, comicBusqueda);
 	}
 
 	/**
@@ -676,50 +677,14 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
-		verBasedeDatos(true);
-	}
+		FuncionesManejoFront manejoFront = new FuncionesManejoFront();
 
-	public void verBasedeDatos(boolean completo) {
+		manejoFront.copiarElementos(prontInfo, botonImprimir, botonGuardarResultado, busquedaGeneral, columnList);
+		manejoFront.setTableView(tablaBBDD);
 
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
+		busquedaGeneral.setText("");
 
-		libreria = new ListaComicsDAO();
-		libreria.reiniciarBBDD();
-		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
-		tablaBBDD.refresh();
-		prontInfo.clear();
-		prontInfo.setOpacity(0);
-		imagencomic.setImage(null);
-
-		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
-
-		if (SelectManager.hayDatosEnLibreria("")) {
-			if (completo) {
-
-				String sentenciaSQL = DBUtilidades.construirSentenciaSQL(TipoBusqueda.COMPLETA);
-
-				List<Comic> listaComics = SelectManager.verLibreria(sentenciaSQL);
-
-				funcionesTabla.tablaBBDD(listaComics, tablaBBDD, columnList);
-				botonImprimir.setVisible(false);
-				botonGuardarResultado.setVisible(false);
-			} else {
-				funcionesTabla.tablaBBDD(listaPorParametro(), tablaBBDD, columnList); // Llamada a funcion
-
-				if (!listaPorParametro().isEmpty()) {
-					botonImprimir.setVisible(true);
-					botonGuardarResultado.setVisible(true);
-				}
-				busquedaGeneral.setText("");
-			}
-		} else {
-			String mensaje = "ERROR. No hay datos en la base de datos";
-
-			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
-		}
+		FuncionesManejoFront.verBasedeDatos(true, false, null);
 	}
 
 	/**
@@ -803,16 +768,15 @@ public class MenuPrincipalController implements Initializable {
 
 		limpiezaDeDatos();
 		limpiarComboBox();
-		libreria = new ListaComicsDAO(); // Crear una instancia del gestor de la base de datos
-		libreria.reiniciarBBDD(); // Reiniciar la base de datos si es necesario
-		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a la función para establecer nombres de
-		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList); // columnas
+		ListaComicsDAO.reiniciarListaComics(); // Reiniciar la base de datos si es necesario
+		FuncionesTableView.nombreColumnas(columnList, tablaBBDD); // Llamada a la función para establecer nombres de
+		FuncionesTableView.actualizarBusquedaRaw(tablaBBDD, columnList); // columnas
 
 		String sentenciaSQL = DBUtilidades.construirSentenciaSQL(tipoBusqueda);
 
 		List<Comic> listaComics = SelectManager.verLibreria(sentenciaSQL);
 
-		funcionesTabla.tablaBBDD(listaComics, tablaBBDD, columnList);
+		FuncionesTableView.tablaBBDD(listaComics, tablaBBDD, columnList);
 	}
 
 	////////////////////////////
@@ -929,7 +893,7 @@ public class MenuPrincipalController implements Initializable {
 			return;
 		}
 
-		if (ComicManagerDAO.countRows() < 1) {
+		if (ComicManagerDAO.countRows(SelectManager.TAMANIO_DATABASE) < 1) {
 			String mensaje = "ERROR. La base de datos ya se encuentra vacia";
 			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 			return;
@@ -967,7 +931,6 @@ public class MenuPrincipalController implements Initializable {
 		if (deleteResult) {
 			mensaje = "Base de datos borrada y reiniciada correctamente";
 			limpiezaDeDatos();
-//			limpiarComboBox();
 		} else {
 			mensaje = "ERROR. No se ha podido eliminar y reiniciar la base de datos";
 		}
@@ -987,10 +950,8 @@ public class MenuPrincipalController implements Initializable {
 			return;
 		}
 
-		AlarmaList alarmaList = new AlarmaList();
-		libreria = new ListaComicsDAO();
-		alarmaList.iniciarAnimacionEstadistica(prontInfo);
-		libreria.generar_fichero_estadisticas();
+		AlarmaList.iniciarAnimacionEstadistica(prontInfo);
+		ListaComicsDAO.generar_fichero_estadisticas();
 		AlarmaList.detenerAnimacionPront(prontInfo);
 		String mensaje = "Fichero creado correctamente";
 
@@ -1057,8 +1018,8 @@ public class MenuPrincipalController implements Initializable {
 
 			String mensaje = SelectManager.comicDatos(id_comic).toString().replace("[", "").replace("]", "");
 			AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
-			funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-			funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
+			FuncionesTableView.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
+			FuncionesTableView.actualizarBusquedaRaw(tablaBBDD, columnList);
 
 			String direccionImagen = SelectManager.obtenerDireccionPortada(id_comic);
 
@@ -1085,7 +1046,9 @@ public class MenuPrincipalController implements Initializable {
 			return;
 		}
 
-		List<Comic> listaComics = listaPorParametro();
+		Comic comic = camposComic();
+
+		List<Comic> listaComics = FuncionesManejoFront.listaPorParametro(comic, false);
 
 		String tipoBusqueda = "Parcial";
 		prontInfo.clear();
@@ -1097,7 +1060,6 @@ public class MenuPrincipalController implements Initializable {
 
 		} else {
 			cargaExportExcel(listaComics, tipoBusqueda);
-
 		}
 	}
 
@@ -1117,11 +1079,13 @@ public class MenuPrincipalController implements Initializable {
 			return;
 		}
 
-		List<Comic> listaComics = listaPorParametro();
+		Comic comic = camposComic();
+
+		List<Comic> listaComics = FuncionesManejoFront.listaPorParametro(comic, false);
 
 		String mensaje = "";
 
-		if (listaPorParametro().size() > 0 && listaPorParametro() != null) {
+		if (listaComics.size() > 0 && listaComics != null) {
 			ListaComicsDAO.agregarElementosUnicos(listaComics);
 
 			mensaje = "Hay un total de: " + ListaComicsDAO.comicsGuardadosList.size()
@@ -1229,7 +1193,6 @@ public class MenuPrincipalController implements Initializable {
 		botonModificar.setDisable(estadoAccion);
 		botonEliminar.setDisable(estadoAccion);
 		botonAgregarPuntuacion.setDisable(estadoAccion);
-
 	}
 
 	public void guardarDatosCSV() {
@@ -1299,8 +1262,6 @@ public class MenuPrincipalController implements Initializable {
 			return;
 		}
 
-		libreria = new ListaComicsDAO();
-
 		String frase = "Fichero SQL";
 
 		String formato = "*.sql";
@@ -1329,53 +1290,6 @@ public class MenuPrincipalController implements Initializable {
 
 			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 		}
-	}
-
-	/**
-	 * Funcion que comprueba segun los datos escritos en los textArea, que comic
-	 * estas buscando.
-	 * 
-	 * @throws SQLException
-	 */
-	public List<Comic> listaPorParametro() {
-
-		if (!ConectManager.conexionActiva()) {
-			return null;
-		}
-
-		libreria = new ListaComicsDAO();
-		Comic datos = camposComic();
-		prontInfo.setOpacity(1);
-		prontInfo.setText(funcionesTabla.resultadoBusquedaPront(datos).getText());
-		busquedaGeneral.setText("");
-
-		List<Comic> listComic = FXCollections
-				.observableArrayList(SelectManager.busquedaParametro(datos, busquedaGeneral.getText()));
-
-		return listComic;
-	}
-
-	/**
-	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
-	 * "En posesion"
-	 *
-	 * @return
-	 * @throws IOException
-	 * @throws SQLException
-	 */
-	public List<Comic> libreriaCompleta() throws IOException, SQLException {
-		if (!ConectManager.conexionActiva()) {
-			return null;
-		}
-		limpiezaDeDatos();
-
-		String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
-
-		List<Comic> listaComics = SelectManager.verLibreria(sentenciaSQL);
-
-		List<Comic> listComic = FXCollections.observableArrayList(listaComics);
-
-		return listComic;
 	}
 
 	/**

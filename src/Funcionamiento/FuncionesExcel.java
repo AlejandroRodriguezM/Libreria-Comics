@@ -38,6 +38,7 @@ import Controladores.CargaComicsController;
 import comicManagement.Comic;
 import comicManagement.ComicFichero;
 import dbmanager.DBUtilidades.TipoBusqueda;
+import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
 import dbmanager.InsertManager;
@@ -198,7 +199,7 @@ public class FuncionesExcel {
 		NUMERO_COMICS_LEIDOS = 0;
 		File directorioImagenes = carpetaPortadas();
 		File directorioFichero = carpetaExcelExportado();
-		NUMERO_LINEAS_FICHERO = SelectManager.countRows();
+		NUMERO_LINEAS_FICHERO = ComicManagerDAO.countRows(SelectManager.TAMANIO_DATABASE);
 		Task<Boolean> task = new Task<Boolean>() {
 			@Override
 			protected Boolean call() throws Exception {
@@ -322,7 +323,7 @@ public class FuncionesExcel {
 			File fichero = new File(carpetaLibreria, "BaseDatos.xlsx");
 			fichero.createNewFile();
 
-			NUMERO_LINEAS_FICHERO = SelectManager.countRows();
+			NUMERO_LINEAS_FICHERO = ComicManagerDAO.countRows(SelectManager.TAMANIO_DATABASE);
 
 			String sentenciaSQL = DBUtilidades.construirSentenciaSQL(TipoBusqueda.COMPLETA);
 

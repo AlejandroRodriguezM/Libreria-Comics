@@ -658,7 +658,7 @@ public class FuncionesComboBox {
 	 *
 	 * @param comboboxes La lista de ComboBoxes a rellenar.
 	 */
-	public void rellenarComboBoxEstaticos(List<ComboBox<String>> comboboxes, String tipo_accion) {
+	public static void rellenarComboBoxEstaticos(List<ComboBox<String>> comboboxes, String tipo_accion) {
 		String[][] valores = {
 				{ "Grapa (Issue individual)", "Tapa blanda (Paperback)", "Cómic de bolsillo (Pocket)",
 						"Edicion de lujo (Deluxe Edition)", "Edicion omnibus(Omnibus)", "Edicion integral (Integral)",

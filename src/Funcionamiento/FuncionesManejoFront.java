@@ -1,5 +1,6 @@
 package Funcionamiento;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -7,9 +8,17 @@ import java.util.List;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 
+import alarmas.AlarmaList;
 import comicManagement.Comic;
+import dbmanager.ComicManagerDAO;
+import dbmanager.ConectManager;
+import dbmanager.DBUtilidades;
+import dbmanager.DBUtilidades.TipoBusqueda;
+import dbmanager.ListaComicsDAO;
+import dbmanager.SelectManager;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -17,6 +26,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -34,43 +44,72 @@ public class FuncionesManejoFront {
 	 */
 	public static TableView<Comic> tablaBBDD;
 
+	private static TextArea prontInfo;
+
+	private static TextField busquedaGeneral;
+
+	private static Button botonImprimir;
+
+	private static Button botonGuardarResultado;
+
+	private static List<TableColumn<Comic, String>> columnList;
+
+	@SuppressWarnings("rawtypes")
+	static ObservableList<ComboBox> listaComboBoxes;
+	@SuppressWarnings("rawtypes")
+
+	static ObservableList<TableColumn> listaColumnas;
+	static ObservableList<Control> listaCamposTexto;
+	static ObservableList<Button> listaBotones;
+	static ObservableList<Node> listaElementosFondo;
+	static ObservableList<ImageView> listaImagenes;
+
 	public void setTableView(TableView<Comic> tablaComic) {
 		tablaBBDD = tablaComic;
 	}
 
-	public void setAnchorPane(AnchorPane anchorPane) {
+	public static void setAnchorPane(AnchorPane anchorPane) {
 		rootAnchorPane = anchorPane;
 	}
 
-	public void setImagenes(ObservableList<ImageView> imagenes) {
-		rootAnchorPane.getChildren().addAll(imagenes);
+	public void copiarListas(ObservableList<ComboBox<String>> listaComboBoxes2,
+			List<TableColumn<Comic, String>> columnList2, ObservableList<Control> textFieldList,
+			ObservableList<Button> buttonList, ObservableList<Node> nodeList, ObservableList<ImageView> imageViewList) {
+		listaComboBoxes = (listaComboBoxes2 != null) ? FXCollections.observableArrayList(listaComboBoxes2)
+				: FXCollections.observableArrayList();
+		listaColumnas = (columnList2 != null) ? FXCollections.observableArrayList(columnList2)
+				: FXCollections.observableArrayList();
+		listaCamposTexto = (textFieldList != null) ? FXCollections.observableArrayList(textFieldList)
+				: FXCollections.observableArrayList();
+		listaBotones = (buttonList != null) ? FXCollections.observableArrayList(buttonList)
+				: FXCollections.observableArrayList();
+		listaElementosFondo = (nodeList != null) ? FXCollections.observableArrayList(nodeList)
+				: FXCollections.observableArrayList();
+		listaImagenes = (imageViewList != null) ? FXCollections.observableArrayList(imageViewList)
+				: FXCollections.observableArrayList();
 	}
 
-	public void setComboBoxes(ObservableList<ComboBox<String>> comboBoxes) {
-		rootAnchorPane.getChildren().addAll(comboBoxes);
-	}
+	public void copiarElementos(TextArea prontInfoGeneral, Button botonImprimirGeneral,
+			Button botonGuardarResultadoGeneral, TextField busquedaGeneralGeneral,
+			List<TableColumn<Comic, String>> columnListGeneral) {
 
-	public void setCamposTexto(ObservableList<TextField> camposTexto) {
-		rootAnchorPane.getChildren().addAll(camposTexto);
-	}
+		prontInfo = prontInfoGeneral;
 
-	public void setBotones(ObservableList<Button> botones) {
-		rootAnchorPane.getChildren().addAll(botones);
-	}
+		busquedaGeneral = busquedaGeneralGeneral;
 
-	public void setColumnas(ObservableList<TableColumn<Comic, ?>> columnas) {
-		tablaBBDD.getColumns().addAll(columnas);
-	}
+		botonImprimir = botonImprimirGeneral;
 
-	public void setElementosFondo(ObservableList<Node> elementosFondo) {
-		rootAnchorPane.getChildren().addAll(elementosFondo);
+		botonGuardarResultado = botonGuardarResultadoGeneral;
+
+		columnList = columnListGeneral;
+
 	}
 
 	private static final List<Character> simbolos = Arrays.asList(',', '-', '!', '@', '#', '$', '%', '^', '&', '*', '(',
 			')', '[', ']', '{', '}', ';', ':', '|', '\\', '<', '>', '/', '?', '~', '`', '+', '=', '.');
 
-	public static void establecerFondoDinamico(ObservableList<Node> elementos) {
-		for (Node elemento : elementos) {
+	public static void establecerFondoDinamico() {
+		for (Node elemento : listaElementosFondo) {
 			if (elemento instanceof ImageView || elemento instanceof TableView || elemento instanceof AnchorPane) {
 				if (elemento instanceof ImageView) {
 					((ImageView) elemento).fitWidthProperty().bind(rootAnchorPane.widthProperty());
@@ -85,22 +124,20 @@ public class FuncionesManejoFront {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static void establecerAnchoColumnas(@SuppressWarnings("rawtypes") ObservableList<TableColumn> columnas,
-			double numColumns) {
-		for (TableColumn<Comic, ?> columna : columnas) {
+	public static void establecerAnchoColumnas(double numColumns) {
+		for (TableColumn<Comic, ?> columna : listaColumnas) {
 			columna.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
 		}
 	}
 
-	public static void establecerAnchoMaximoBotones(ObservableList<Button> botones, double maxButtonWidth) {
-		for (Button boton : botones) {
+	public static void establecerAnchoMaximoBotones(double maxButtonWidth) {
+		for (Button boton : listaBotones) {
 			boton.maxWidthProperty().bind(Bindings.max(maxButtonWidth, boton.widthProperty()));
 		}
 	}
 
-	public static void establecerAnchoMaximoCamposTexto(ObservableList<Control> camposTexto2,
-			double maxTextComboWidth) {
-		for (Control campo : camposTexto2) {
+	public static void establecerAnchoMaximoCamposTexto(double maxTextComboWidth) {
+		for (Control campo : listaCamposTexto) {
 			if (campo instanceof TextField) {
 				TextField campoTexto = (TextField) campo;
 				Platform.runLater(() -> campoTexto.maxWidthProperty()
@@ -109,16 +146,14 @@ public class FuncionesManejoFront {
 		}
 	}
 
-	public static void establecerAnchoMaximoComboBoxes(
-			@SuppressWarnings("rawtypes") ObservableList<ComboBox> comboBoxes, double maxTextComboWidth) {
-		for (ComboBox<?> comboBox : comboBoxes) {
+	public static void establecerAnchoMaximoComboBoxes(double maxTextComboWidth) {
+		for (ComboBox<?> comboBox : listaComboBoxes) {
 			comboBox.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, comboBox.widthProperty()));
 		}
 	}
 
-	public static void establecerTamanioMaximoImagen(ObservableList<ImageView> imagenes, double maxWidth,
-			double maxHeight) {
-		for (ImageView imagen : imagenes) {
+	public static void establecerTamanioMaximoImagen(double maxWidth, double maxHeight) {
+		for (ImageView imagen : listaImagenes) {
 			imagen.fitWidthProperty().bind(Bindings.min(maxWidth, rootAnchorPane.widthProperty()));
 			imagen.fitHeightProperty().bind(Bindings.min(maxHeight, rootAnchorPane.heightProperty()));
 			imagen.setPreserveRatio(true);
@@ -268,6 +303,90 @@ public class FuncionesManejoFront {
 				textField.setText(newValue); // Actualiza el valor del TextField
 			}
 		});
+	}
+
+	public static void verBasedeDatos(boolean completo, boolean esAccion, Comic comic) {
+
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+		
+		ListaComicsDAO.reiniciarListaComics();
+		FuncionesTableView.modificarColumnas(tablaBBDD, columnList);
+		tablaBBDD.refresh();
+		prontInfo.clear();
+		prontInfo.setOpacity(0);
+		listaImagenes.get(0).setImage(null);
+
+		FuncionesTableView.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
+		FuncionesTableView.actualizarBusquedaRaw(tablaBBDD, columnList);
+
+		if (ComicManagerDAO.countRows(SelectManager.TAMANIO_DATABASE) > 0) {
+			if (completo) {
+				String sentenciaSQL = DBUtilidades.construirSentenciaSQL(TipoBusqueda.COMPLETA);
+
+				List<Comic> listaComics = ComicManagerDAO.verLibreria(sentenciaSQL);
+				FuncionesTableView.tablaBBDD(listaComics, tablaBBDD, columnList);
+
+				if (!esAccion) {
+					botonImprimir.setVisible(false);
+					botonGuardarResultado.setVisible(false);
+				}
+
+			} else {
+
+				List<Comic> listaParametro = listaPorParametro(comic, esAccion);
+
+				FuncionesTableView.tablaBBDD(listaParametro, tablaBBDD, columnList); // Llamada a funcion
+
+				if (!esAccion) {
+					if (!listaParametro.isEmpty()) {
+						botonImprimir.setVisible(true);
+						botonGuardarResultado.setVisible(true);
+					}
+					busquedaGeneral.setText("");
+				}
+				
+
+			}
+		} else {
+			String mensaje = "ERROR. No hay datos en la base de datos";
+
+			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+		}
+	}
+
+	/**
+	 * Funcion que comprueba segun los datos escritos en los textArea, que comic
+	 * estas buscando.
+	 * 
+	 * @throws SQLException
+	 */
+	public static List<Comic> listaPorParametro(Comic datos, boolean esAccion) {
+
+		if (!ConectManager.conexionActiva()) {
+			return null;
+		}
+		String busquedaGeneralTextField = "";
+
+		if (!esAccion) {
+			busquedaGeneralTextField = busquedaGeneral.getText();
+		}
+
+		List<Comic> listComic = FXCollections
+				.observableArrayList(SelectManager.busquedaParametro(datos, busquedaGeneralTextField));
+
+		if (listComic.size() > 0) {
+			prontInfo.setOpacity(1);
+			prontInfo.setText(FuncionesTableView.resultadoBusquedaPront(datos).getText());
+		} else {
+			prontInfo.setOpacity(1);
+			// Show error message in red when no search fields are specified
+			prontInfo.setStyle("-fx-text-fill: red;");
+			prontInfo.setText("Error No existe comic con los datos: " + datos.toString() + "\n \n \n");
+		}
+
+		return listComic;
 	}
 
 }

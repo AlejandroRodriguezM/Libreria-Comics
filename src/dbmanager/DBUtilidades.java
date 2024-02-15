@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import Funcionamiento.Utilidades;
@@ -65,13 +64,43 @@ public class DBUtilidades {
 			throw new IllegalArgumentException("Tipo de búsqueda no válido");
 		}
 	}
-	
+
 	/**
-	 * Concatena los datos del objeto Comic para formar una consulta SQL SELECT.
-	 * 
-	 * @param comic El objeto Comic que contiene los datos de búsqueda.
-	 * @return Una cadena SQL SELECT con las condiciones de búsqueda.
+	 * Devuelve el número total de resultados de la búsqueda en varios campos.
+	 *
+	 * @param comic El dato de búsqueda introducido por el usuario
+	 * @return El número total de resultados que coinciden con los criterios de
+	 *         búsqueda
+	 * @throws SQLException Si ocurre un error en la base de datos
 	 */
+	public static int numeroTotalSelecionado(Comic comic) {
+		String connector = " WHERE ";
+		String sentenciaParametrosBusqueda = "SELECT * from comicsbbdd";
+
+		StringBuilder sql = new StringBuilder(sentenciaParametrosBusqueda);
+
+		connector = agregarCondicion(sql, connector, "ID", comic.getID());
+		connector = agregarCondicionLike(sql, connector, "nomComic", comic.getNombre());
+		connector = agregarCondicion(sql, connector, "caja_deposito", comic.getNumCaja());
+		connector = agregarCondicion(sql, connector, "numComic", comic.getNumero());
+		connector = agregarCondicionLike(sql, connector, "nomVariante", comic.getVariante());
+		connector = agregarCondicionLike(sql, connector, "firma", comic.getFirma());
+		connector = agregarCondicionLike(sql, connector, "nomEditorial", comic.getEditorial());
+		connector = agregarCondicionLike(sql, connector, "formato", comic.getFormato());
+		connector = agregarCondicionLike(sql, connector, "procedencia", comic.getProcedencia());
+		connector = agregarCondicionLike(sql, connector, "fecha_publicacion", comic.getFecha());
+		connector = agregarCondicionLike(sql, connector, "nomGuionista", comic.getGuionista());
+		connector = agregarCondicionLike(sql, connector, "nomDibujante", comic.getDibujante());
+
+		if (!Comic.validarComic(comic)) {
+			return 0;
+		}
+
+		int count = ComicManagerDAO.countRows(sql.toString());
+		return count; // Devolver la cadena SQL solo si se han agregado condiciones
+
+	}
+
 	public static String datosConcatenados(Comic comic) {
 		String connector = " WHERE ";
 		StringBuilder sql = new StringBuilder(SelectManager.SENTENCIA_BUSQUEDA_COMPLETA);
@@ -88,6 +117,12 @@ public class DBUtilidades {
 		connector = agregarCondicionLike(sql, connector, "fecha_publicacion", comic.getFecha());
 		connector = agregarCondicionLike(sql, connector, "nomGuionista", comic.getGuionista());
 		connector = agregarCondicionLike(sql, connector, "nomDibujante", comic.getDibujante());
+
+		System.out.println(Comic.validarComic(comic));
+		
+		if (!Comic.validarComic(comic)) {
+			return "";
+		}
 
 		return (connector.length() > 0) ? sql.toString() : "";
 	}
@@ -270,107 +305,6 @@ public class DBUtilidades {
 		String sentenciaSQL = "SELECT " + columna + " FROM comicsbbdd ORDER BY " + columna + " ASC";
 		ListaComicsDAO.listaComics.clear();
 		return ListaComicsDAO.guardarDatosAutoCompletado(sentenciaSQL, columna);
-	}
-
-	/**
-	 * Devuelve el número total de resultados de la búsqueda en varios campos.
-	 *
-	 * @param comic El dato de búsqueda introducido por el usuario
-	 * @return El número total de resultados que coinciden con los criterios de
-	 *         búsqueda
-	 * @throws SQLException Si ocurre un error en la base de datos
-	 */
-	public static int numeroTotalSelecionado(Comic comic) {
-		// Inicializar con una condición verdadera
-		String sentenciaSQL = "SELECT COUNT(*) FROM comicsbbdd WHERE 1=1";
-
-		// Lista de condiciones de búsqueda
-		List<String> condiciones = new ArrayList<>();
-
-		// Agregar condiciones según los campos no vacíos o no nulos en el objeto Comic
-		agregarCondicion(!comic.getVariante().isEmpty(), "nomVariante = ?", condiciones);
-		agregarCondicion(!comic.getNombre().isEmpty(), "nomComic = ?", condiciones);
-		agregarCondicion(!comic.getNumero().isEmpty(), "numComic = ?", condiciones);
-		agregarCondicion(!comic.getGuionista().isEmpty(), "nomGuionista = ?", condiciones);
-		agregarCondicion(!comic.getDibujante().isEmpty(), "nomDibujante = ?", condiciones);
-		agregarCondicion(!comic.getFirma().isEmpty(), "firma = ?", condiciones);
-		agregarCondicion(!comic.getEditorial().isEmpty(), "nomEditorial = ?", condiciones);
-		agregarCondicion(!comic.getNumCaja().isEmpty(), "caja_deposito = ?", condiciones);
-		agregarCondicion(!comic.getFormato().isEmpty(), "formato = ?", condiciones);
-		agregarCondicion(!comic.getFecha().isEmpty(), "fecha_publicacion = ?", condiciones);
-		agregarCondicion(!comic.getProcedencia().isEmpty(), "procedencia = ?", condiciones);
-
-		// Combinar las condiciones en la sentencia SQL
-		if (!condiciones.isEmpty()) {
-			sentenciaSQL += " AND " + String.join(" AND ", condiciones);
-		}
-
-		int count = 0;
-
-		try (Connection conn = ConectManager.conexion(); PreparedStatement ps = conn.prepareStatement(sentenciaSQL)) {
-			// Establecer parámetros según las condiciones
-			int paramIndex = 1;
-			for (String condicion : condiciones) {
-				if (condicion.endsWith("?")) {
-					ps.setString(paramIndex++, obtenerValorSeguro(extraerValorCondicion(condicion, comic)));
-				}
-			}
-
-			try (ResultSet resultado = ps.executeQuery()) {
-				if (resultado.next()) {
-					count = resultado.getInt(1);
-				}
-			}
-		} catch (SQLException ex) {
-			Utilidades.manejarExcepcion(ex);
-
-		}
-
-		return count;
-	}
-
-	// Método auxiliar para agregar condiciones a la lista
-	private static void agregarCondicion(boolean condicion, String sqlFragment, List<String> condiciones) {
-		if (condicion) {
-			condiciones.add(sqlFragment);
-		}
-	}
-
-	// Método auxiliar para extraer el valor de la condición (sin el operador LIKE)
-	private static String extraerValorCondicion(String condicion, Comic comic) {
-		// Suponemos que la condición siempre tiene el formato "campo LIKE ?"
-		String campo = condicion.split(" ")[0];
-		switch (campo) {
-		case "nomVariante":
-			return comic.getVariante();
-		case "nomComic":
-			return comic.getNombre();
-		case "numComic":
-			return comic.getNumero();
-		case "nomGuionista":
-			return comic.getGuionista();
-		case "nomDibujante":
-			return comic.getDibujante();
-		case "firma":
-			return comic.getFirma();
-		case "nomEditorial":
-			return comic.getEditorial();
-		case "caja_deposito":
-			return comic.getNumCaja();
-		case "formato":
-			return comic.getFormato();
-		case "fecha_publicacion":
-			return comic.getFecha();
-		case "procedencia":
-			return comic.getProcedencia();
-		default:
-			return "";
-		}
-	}
-
-	// Método auxiliar para obtener un valor seguro (no nulo)
-	private static String obtenerValorSeguro(String valor) {
-		return (valor != null) ? valor : "''";
 	}
 
 	/**

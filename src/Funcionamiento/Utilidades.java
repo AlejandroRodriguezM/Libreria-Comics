@@ -259,50 +259,51 @@ public class Utilidades {
 	 * @param file
 	 * @return
 	 */
-	public void nueva_imagen(String imagen, String nuevoNombreArchivo) {
-		try {
-			File file = new File(imagen);
-			InputStream input = null;
+	public static void nueva_imagen(String imagen, String nuevoNombreArchivo) {
+	    try {
+	        File file = new File(imagen);
+	        InputStream input = null;
 
-			if (!file.exists()) {
-				input = getClass().getResourceAsStream("sinPortada.jpg");
-				if (input == null) {
-					throw new FileNotFoundException("La imagen predeterminada no se encontró en el paquete");
-				}
-				file = File.createTempFile("tmp", ".jpg");
-				file.deleteOnExit();
-				try (OutputStream output = new FileOutputStream(file)) {
-					byte[] buffer = new byte[4096];
-					int bytesRead;
-					while ((bytesRead = input.read(buffer)) != -1) {
-						output.write(buffer, 0, bytesRead);
-					}
-				}
-			}
+	        if (!file.exists()) {
+	            input = Utilidades.class.getResourceAsStream("sinPortada.jpg");
+	            if (input == null) {
+	                throw new FileNotFoundException("La imagen predeterminada no se encontró en el paquete");
+	            }
+	            file = File.createTempFile("tmp", ".jpg");
+	            file.deleteOnExit();
+	            try (OutputStream output = new FileOutputStream(file)) {
+	                byte[] buffer = new byte[4096];
+	                int bytesRead;
+	                while ((bytesRead = input.read(buffer)) != -1) {
+	                    output.write(buffer, 0, bytesRead);
+	                }
+	            }
+	        }
 
-			String userDir = System.getProperty("user.home");
-			String documentsPath = userDir + File.separator + "Documents";
-			String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
-					+ ConectManager.DB_NAME + File.separator + "portadas";
+	        String userDir = System.getProperty("user.home");
+	        String documentsPath = userDir + File.separator + "Documents";
+	        String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
+	                + ConectManager.DB_NAME + File.separator + "portadas";
 
-			// Esto se modificara para hacerlo dinamico
-			String imagePath = defaultImagePath;
+	        // Esto se modificara para hacerlo dinamico
+	        String imagePath = defaultImagePath;
 
-			File portadasFolder = new File(imagePath);
+	        File portadasFolder = new File(imagePath);
 
-			if (!portadasFolder.exists()) {
-				if (!portadasFolder.mkdirs()) {
-					throw new IOException("No se pudo crear la carpeta 'portadas'");
-				}
-			}
+	        if (!portadasFolder.exists()) {
+	            if (!portadasFolder.mkdirs()) {
+	                throw new IOException("No se pudo crear la carpeta 'portadas'");
+	            }
+	        }
 
-			File newFile = new File(portadasFolder.getPath() + File.separator + nuevoNombreArchivo + ".jpg");
-			Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+	        File newFile = new File(portadasFolder.getPath() + File.separator + nuevoNombreArchivo + ".jpg");
+	        Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-		} catch (IOException e) {
-			manejarExcepcion(e);
-		}
+	    } catch (IOException e) {
+	        manejarExcepcion(e);
+	    }
 	}
+
 
 	/**
 	 * Copia un directorio y cuenta los archivos que no existen durante la copia.

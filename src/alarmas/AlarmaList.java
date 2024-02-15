@@ -785,7 +785,7 @@ public class AlarmaList {
 	/**
 	 * Metodo que permite crear una animacion
 	 */
-	public void iniciarAnimacionEstadistica(TextArea prontInfo) {
+	public static void iniciarAnimacionEstadistica(TextArea prontInfo) {
 		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
 

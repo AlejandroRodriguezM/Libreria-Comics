@@ -67,13 +67,6 @@ public class FuncionesTableView {
 	private static final Font TOOLTIP_FONT = Font.font("Comic Sans MS", FontWeight.NORMAL, FontPosture.REGULAR, 13);
 
 	/**
-	 * Gestor de la base de datos de la librería.
-	 */
-	private static ListaComicsDAO libreria = null;
-
-
-
-	/**
 	 * Funcion que permite que los diferentes raw de los TableColumn se puedan
 	 * pinchar. Al hacer, se abre una URL en tu navegador
 	 * 
@@ -141,7 +134,7 @@ public class FuncionesTableView {
 	 *
 	 * @param tablaBBDD La TableView en la que operar.
 	 */
-	public void seleccionarRaw(TableView<Comic> tablaBBDD) {
+	public static void seleccionarRaw(TableView<Comic> tablaBBDD) {
 		tablaBBDD.setRowFactory(tv -> {
 			TableRow<Comic> row = new TableRow<>();
 			Tooltip tooltip = new Tooltip();
@@ -196,7 +189,7 @@ public class FuncionesTableView {
 	 * 
 	 * @param columna
 	 */
-	public void actualizarBusquedaRaw(TableView<Comic> tablaBBDD, List<TableColumn<Comic, String>> columnList) {
+	public static void actualizarBusquedaRaw(TableView<Comic> tablaBBDD, List<TableColumn<Comic, String>> columnList) {
 		columnList.forEach(columna -> {
 			columna.setCellFactory(column -> {
 				return new TableCell<Comic, String>() {
@@ -264,18 +257,10 @@ public class FuncionesTableView {
 	 * @return Un TextArea con el resultado de búsqueda.
 	 * @throws SQLException Si ocurre un error de base de datos.
 	 */
-	public TextArea resultadoBusquedaPront(Comic comic) {
-		libreria = new ListaComicsDAO();
+	public static TextArea resultadoBusquedaPront(Comic comic) {
 		TextArea prontInfoTable = new TextArea(); // Crear un nuevo TextArea
 
-		prontInfoTable.setOpacity(1);
-
-		String datoSeleccionado = DBUtilidades.datosConcatenados(comic);
-		if (datoSeleccionado.isEmpty()) {
-			// Show error message in red when no search fields are specified
-			prontInfoTable.setStyle("-fx-text-fill: red;");
-			prontInfoTable.setText("Error: No existe comic con los datos: " + datoSeleccionado + "\n \n \n");
-		} else {
+		if (Comic.validarComic(comic)) {
 			int totalComics = DBUtilidades.numeroTotalSelecionado(comic);
 			prontInfoTable.setStyle("-fx-text-fill: black;"); // Reset the text color to black
 			prontInfoTable.setText("El número de cómics donde aparece la búsqueda es: " + totalComics + "\n \n \n");
@@ -290,7 +275,7 @@ public class FuncionesTableView {
 	 *
 	 * @param listaComic
 	 */
-	public void tablaBBDD(List<Comic> listaComic, TableView<Comic> tablaBBDD,
+	public static void tablaBBDD(List<Comic> listaComic, TableView<Comic> tablaBBDD,
 			List<TableColumn<Comic, String>> columnList) {
 		tablaBBDD.getColumns().setAll(columnList);
 		tablaBBDD.getItems().setAll(listaComic);
@@ -304,10 +289,9 @@ public class FuncionesTableView {
 	 * @param rawSelecionado El comic seleccionado en su forma cruda.
 	 * @throws SQLException Si ocurre un error de base de datos.
 	 */
-	public void columnaSeleccionada(TableView<Comic> tablaBBDD, List<TableColumn<Comic, String>> columnList,
+	public static void columnaSeleccionada(TableView<Comic> tablaBBDD, List<TableColumn<Comic, String>> columnList,
 			String rawSelecionado) throws SQLException {
-		libreria = new ListaComicsDAO();
-		libreria.reiniciarBBDD();
+		ListaComicsDAO.reiniciarListaComics();
 		nombreColumnas(columnList, tablaBBDD);
 		tablaBBDD(SelectManager.libreriaSeleccionado(rawSelecionado), tablaBBDD, columnList);
 	}
@@ -319,7 +303,7 @@ public class FuncionesTableView {
 	 * @param columnList La lista de TableColumn a configurar.
 	 * @param tablaBBDD  La TableView en la que se aplicarán las configuraciones.
 	 */
-	public void nombreColumnas(List<TableColumn<Comic, String>> columnList, TableView<Comic> tablaBBDD) {
+	public static void nombreColumnas(List<TableColumn<Comic, String>> columnList, TableView<Comic> tablaBBDD) {
 		for (TableColumn<Comic, String> column : columnList) {
 			String columnName = column.getText(); // Obtiene el nombre de la columna
 
@@ -353,7 +337,7 @@ public class FuncionesTableView {
 	 * @param columnList La lista de TableColumn correspondiente a las columnas de
 	 *                   la tabla.
 	 */
-	public void modificarColumnas(TableView<Comic> tablaBBDD, List<TableColumn<Comic, String>> columnList) {
+	public static void modificarColumnas(TableView<Comic> tablaBBDD, List<TableColumn<Comic, String>> columnList) {
 
 		for (TableColumn<Comic, String> column : columnList) {
 			column.prefWidthProperty().unbind(); // Desvincular cualquier propiedad prefWidth existente
@@ -393,7 +377,7 @@ public class FuncionesTableView {
 	 * @param textArea El TextArea del cual obtener el contenido.
 	 * @param vbox     El VBox al cual ajustar el alto.
 	 */
-	public void ajustarAnchoVBox(TextArea textArea, VBox vbox) {
+	public static void ajustarAnchoVBox(TextArea textArea, VBox vbox) {
 		// Crear un objeto Text con el contenido del TextArea
 		Text text = new Text(textArea.getText());
 
@@ -404,8 +388,5 @@ public class FuncionesTableView {
 
 		textArea.setPrefHeight(textHeight);
 	}
-
-
-
 
 }

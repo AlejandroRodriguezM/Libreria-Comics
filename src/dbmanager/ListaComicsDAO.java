@@ -280,7 +280,7 @@ public class ListaComicsDAO {
 	/**
 	 * Permite reiniciar la lista de cómics.
 	 */
-	public void reiniciarBBDD() {
+	public static void reiniciarListaComics() {
 		listaComics.clear(); // Limpia la lista de cómics
 	}
 
@@ -458,7 +458,7 @@ public class ListaComicsDAO {
 	 * análisis. Luego, se genera un archivo de texto con las estadísticas y se abre
 	 * con el programa asociado.
 	 */
-	public void generar_fichero_estadisticas() {
+	public static void generar_fichero_estadisticas() {
 		// Crear HashMaps para almacenar los datos de cada campo sin repetición y sus
 		// conteos
 		Map<String, Integer> nomComicEstadistica = new HashMap<>();

@@ -14,11 +14,12 @@ import comicManagement.Comic;
 
 public class SelectManager {
 
-	private final static String TAMANIO_DATABASE = "SELECT COUNT(*) FROM comicsbbdd";
+	public final static String TAMANIO_DATABASE = "SELECT COUNT(*) FROM comicsbbdd";
 	private final static String SENTENCIA_BUSQUEDA_INDIVIDUAL = "SELECT * FROM comicsbbdd WHERE ID = ?";
 	private final static String SENTENCIA_CONTAR_COMICS_POR_ID = "SELECT COUNT(*) FROM comicsbbdd WHERE ID = ?";
 	private final static String SENTENCIA_BUSCAR_PORTADA = "SELECT portada FROM comicsbbdd WHERE ID = ?";
 	public final static String SENTENCIA_BUSQUEDA_COMPLETA = "SELECT * from comicsbbdd";
+	public final static String SENTENCIA_TOTAL_BUSQUEDA = "SELECT COUNT(*) FROM comicsbbdd WHERE 1=1";
 
 	public final static String SENTENCIA_POSESION = "SELECT * FROM comicsbbdd WHERE estado = 'En posesion' ORDER BY nomComic, fecha_publicacion, numComic";
 	public final static String SENTENCIA_KEY_ISSUE = "SELECT * FROM comicsbbdd WHERE key_issue <> 'Vacio' ORDER BY nomComic, fecha_publicacion, numComic";
@@ -33,11 +34,11 @@ public class SelectManager {
 	 *
 	 * @return
 	 */
-	public static int countRows() {
+	public static int countRows(String sentenciaSQL) {
 
 		try (Connection conn = ConectManager.conexion();
 				Statement stmt = conn.createStatement();
-				ResultSet rs = stmt.executeQuery(TAMANIO_DATABASE)) {
+				ResultSet rs = stmt.executeQuery(sentenciaSQL)) {
 
 			if (rs.next()) {
 				return rs.getInt(1);
@@ -159,19 +160,15 @@ public class SelectManager {
 	 */
 	public static List<Comic> busquedaParametro(Comic comic, String busquedaGeneral) {
 
-		boolean existeBase = hayDatosEnLibreria(SENTENCIA_BUSQUEDA_COMPLETA);
-
 		List<Comic> listComic = new ArrayList<Comic>();
-		if (existeBase) {
-			if (busquedaGeneral.length() != 0) {
-				return listComic = DBUtilidades.verBusquedaGeneral(busquedaGeneral);
+		if (ComicManagerDAO.countRows(TAMANIO_DATABASE) > 0) {
+
+			if (!busquedaGeneral.isEmpty()) {
+				return DBUtilidades.verBusquedaGeneral(busquedaGeneral);
 			} else {
-				try {
-					return listComic = DBUtilidades.filtroBBDD(comic);
-				} catch (NullPointerException ex) {
-					Utilidades.manejarExcepcion(ex);
-				}
+				return DBUtilidades.filtroBBDD(comic);
 			}
+			
 		}
 		return listComic;
 	}
@@ -199,8 +196,6 @@ public class SelectManager {
 		}
 		return false;
 	}
-
-
 
 	/**
 	 * Devuelve una lista con todos los comics de la base de datos que se encuentran

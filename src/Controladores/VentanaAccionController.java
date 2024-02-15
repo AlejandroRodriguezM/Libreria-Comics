@@ -525,24 +525,9 @@ public class VentanaAccionController implements Initializable {
 	private static Ventanas nav = new Ventanas();
 
 	/**
-	 * Instancia de la clase DBLibreriaManager para gestionar la base de datos.
-	 */
-	private static ListaComicsDAO libreria = null;
-
-	/**
-	 * Instancia de la clase Utilidades para funciones generales.
-	 */
-	private static Utilidades utilidad = null;
-
-	/**
 	 * Instancia de la clase FuncionesComboBox para el manejo de ComboBox.
 	 */
 	private static FuncionesComboBox funcionesCombo = new FuncionesComboBox();
-
-	/**
-	 * Instancia de la clase FuncionesTableView para el manejo de TableView.
-	 */
-	private static FuncionesTableView funcionesTabla = new FuncionesTableView();
 
 	/**
 	 * Tipo de acción a realizar en la interfaz.
@@ -582,6 +567,18 @@ public class VentanaAccionController implements Initializable {
 	public static String apiKey = Utilidades.cargarApiComicVine();
 	public static String clavesMarvel[] = Utilidades.clavesApiMarvel();
 
+	ObservableList<ImageView> listaImagenes;
+
+	ObservableList<ComboBox<String>> listaComboBoxes;
+	@SuppressWarnings("rawtypes")
+	ObservableList<TableColumn> listaColumnas;
+	List<TableColumn<Comic, String>> columnListCarga;
+	ObservableList<Control> listaCamposTexto;
+	ObservableList<Button> listaBotones;
+	ObservableList<Node> listaElementosFondo;
+	ObservableList<TextField> listaTextField;
+	List<ComboBox<String>> comboboxesMod;
+
 	/**
 	 * Inicializa la interfaz de usuario y configura el comportamiento de los
 	 * elementos al cargar la vista.
@@ -597,9 +594,9 @@ public class VentanaAccionController implements Initializable {
 		alarmaList.setAlarmaConexionInternet(alarmaConexionInternet);
 		alarmaList.iniciarThreadChecker(true);
 
-		listas_autocompletado();
-
 		Platform.runLater(() -> {
+
+			listas_autocompletado();
 
 			rellenarCombosEstaticos();
 
@@ -614,7 +611,6 @@ public class VentanaAccionController implements Initializable {
 
 		controlarEventosInterfaz();
 
-		establecerDinamismoAnchor();
 	}
 
 	public void listas_autocompletado() {
@@ -657,9 +653,7 @@ public class VentanaAccionController implements Initializable {
 	 */
 	private void controlarEventosInterfaz() {
 
-		List<TableColumn<Comic, String>> columnListCarga = Arrays.asList(nombre, numero, variante, editorial, guionista,
-				dibujante);
-		columnList = columnListCarga;
+		listaElementosVentana();
 
 		// Desactivar el enfoque en el VBox para evitar que reciba eventos de teclado
 		rootVBox.setFocusTraversable(false);
@@ -684,7 +678,39 @@ public class VentanaAccionController implements Initializable {
 		});
 	}
 
+	public void listaElementosVentana() {
+		FuncionesManejoFront manejoFront = new FuncionesManejoFront();
+		manejoFront.setTableView(tablaBBDD);
+
+		listaImagenes = FXCollections.observableArrayList(imagencomic);
+		listaColumnas = FXCollections.observableArrayList(nombre, numero, variante, editorial, guionista, dibujante);
+		columnListCarga = Arrays.asList(nombre, variante, editorial, guionista, dibujante);
+		listaBotones = FXCollections.observableArrayList(botonLimpiar, botonbbdd, botonbbdd, botonParametroComic,
+				botonLimpiar, botonBusquedaAvanzada, botonBusquedaCodigo);
+		comboboxesMod = Arrays.asList(formatoComic, procedenciaComic, estadoComic, puntuacionMenu);
+
+		columnList = columnListCarga;
+
+		manejoFront.copiarListas(listaComboBoxes, columnList, listaCamposTexto, listaBotones, listaElementosFondo,
+				listaImagenes);
+
+		manejoFront.copiarElementos(prontInfo, null, null, null, columnList);
+	}
+
+	/**
+	 * Rellena los combos estáticos en la interfaz. Esta función llena los
+	 * ComboBoxes con opciones estáticas predefinidas.
+	 */
+	public void rellenarCombosEstaticos() {
+
+		FuncionesComboBox.rellenarComboBoxEstaticos(comboboxesMod, TIPO_ACCION); // Llamada a la función para rellenar
+																					// ComboBoxes
+	}
+
 	public void formatearTextField() {
+
+		listaTextField = FXCollections.observableArrayList(nombreComic, editorialComic, guionistaComic, dibujanteComic,
+				varianteComic);
 		FuncionesManejoFront.eliminarEspacioInicial(nombreComic);
 		FuncionesManejoFront.restringirSimbolos(editorialComic);
 		FuncionesManejoFront.restringirSimbolos(guionistaComic);
@@ -717,43 +743,6 @@ public class VentanaAccionController implements Initializable {
 	}
 
 	/**
-	 * Establece el dinamismo en la interfaz gráfica ajustando propiedades de
-	 * elementos como tamaños, anchos y máximos.
-	 */
-	public void establecerDinamismoAnchor() {
-
-		@SuppressWarnings("rawtypes")
-		ObservableList<TableColumn> listaColumnas = FXCollections.observableArrayList(nombre, numero, variante,
-				editorial, guionista, dibujante);
-
-		FuncionesManejoFront.establecerAnchoColumnas(listaColumnas, 13);
-
-	}
-
-	/**
-	 * Funcion que comprueba segun los datos escritos en los textArea, que comic
-	 * estas buscando.
-	 * 
-	 * @throws SQLException
-	 */
-	public List<Comic> listaPorParametro() {
-		libreria = new ListaComicsDAO();
-		libreria.reiniciarBBDD();
-		utilidad = new Utilidades();
-		Comic datos = camposComic();
-
-		rootVBox.setVisible(true);
-		rootVBox.setDisable(false);
-
-		prontInfo.setOpacity(1);
-		prontInfo.setText(funcionesTabla.resultadoBusquedaPront(datos).getText());
-
-		List<Comic> listComic = FXCollections.observableArrayList(ComicManagerDAO.busquedaParametro(datos, ""));
-
-		return listComic;
-	}
-
-	/**
 	 * Metodo que mostrara los comics o comic buscados por parametro
 	 *
 	 * @param event
@@ -761,7 +750,13 @@ public class VentanaAccionController implements Initializable {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
-		verBasedeDatos(false);
+
+//		limpiarAutorellenos();
+		borrarDatosGraficos();
+
+		Comic comic = camposComic();
+
+		FuncionesManejoFront.verBasedeDatos(false, true, comic);
 	}
 
 	/**
@@ -773,42 +768,11 @@ public class VentanaAccionController implements Initializable {
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
-		verBasedeDatos(true);
-	}
 
-	public void verBasedeDatos(boolean completo) {
-
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
-
-		libreria = new ListaComicsDAO();
-		libreria.reiniciarBBDD();
-		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
-		tablaBBDD.refresh();
-		borrar_datos_autorellenos();
+		limpiarAutorellenos();
 		borrarDatosGraficos();
-		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
 
-		if (ComicManagerDAO.hayDatosEnLibreria("")) {
-			if (completo) {
-				String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
-
-				List<Comic> listaComics = ComicManagerDAO.verLibreria(sentenciaSQL);
-				funcionesTabla.tablaBBDD(listaComics, tablaBBDD, columnList);
-
-			} else {
-				funcionesTabla.tablaBBDD(listaPorParametro(), tablaBBDD, columnList); // Llamada a funcion
-			}
-		} else {
-
-			String mensaje = "ERROR. No hay datos en la base de datos";
-
-			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
-
-		}
-
+		FuncionesManejoFront.verBasedeDatos(true, true, null);
 	}
 
 	/**
@@ -892,7 +856,8 @@ public class VentanaAccionController implements Initializable {
 				ListaComicsDAO.comicsImportados.removeIf(c -> c.getID().equals(id_comic));
 
 				tablaBBDD.getItems().clear();
-				funcionesTabla.tablaBBDD(ListaComicsDAO.comicsImportados, tablaBBDD, columnList); // Llamada a funcion
+				FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, tablaBBDD, columnList); // Llamada a
+																										// funcion
 
 				nombreComic.setText("");
 				varianteComic.setText("");
@@ -918,7 +883,7 @@ public class VentanaAccionController implements Initializable {
 				if (ListaComicsDAO.comicsImportados.size() < 1) {
 					cambiarEstadoBotones(false);
 				}
-				borrar_datos_autorellenos();
+				limpiarAutorellenos();
 			}
 		}
 	}
@@ -932,7 +897,7 @@ public class VentanaAccionController implements Initializable {
 	 * @throws SQLException Si se produce un error al acceder a la base de datos.
 	 */
 	private void seleccionarComics() {
-		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
+		FuncionesTableView.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
 		Utilidades.comprobacionListaComics();
 
 		Comic newSelection = tablaBBDD.getSelectionModel().getSelectedItem();
@@ -947,7 +912,7 @@ public class VentanaAccionController implements Initializable {
 
 	public void mostrarComic(String idComic) {
 		if (idComic == null || idComic.isEmpty()) {
-			borrar_datos_autorellenos();
+			limpiarAutorellenos();
 			borrarDatosGraficos();
 			return;
 		}
@@ -961,7 +926,7 @@ public class VentanaAccionController implements Initializable {
 		}
 
 		if (comicTemp == null) {
-			borrar_datos_autorellenos();
+			limpiarAutorellenos();
 			borrarDatosGraficos();
 			AlarmaList.mostrarMensajePront("No existe comic con dicho ID", false, prontInfo);
 			return;
@@ -1065,18 +1030,6 @@ public class VentanaAccionController implements Initializable {
 
 			seleccionarComics();
 		}
-	}
-
-	/**
-	 * Rellena los combos estáticos en la interfaz. Esta función llena los
-	 * ComboBoxes con opciones estáticas predefinidas.
-	 */
-	public void rellenarCombosEstaticos() {
-
-		List<ComboBox<String>> comboboxesMod = Arrays.asList(formatoComic, procedenciaComic, estadoComic,
-				puntuacionMenu);
-		funcionesCombo.rellenarComboBoxEstaticos(comboboxesMod, TIPO_ACCION); // Llamada a la función para rellenar
-																				// ComboBoxes
 	}
 
 	/**
@@ -1202,7 +1155,6 @@ public class VentanaAccionController implements Initializable {
 	private void accionPuntuar(boolean esAgregar) {
 
 		if (ConectManager.conexionActiva()) {
-			libreria = new ListaComicsDAO();
 			String id_comic = idComicTratar_mod.getText();
 			if (comprobarExistenciaComic(id_comic)) {
 				if (nav.alertaAccionGeneral()) {
@@ -1282,7 +1234,7 @@ public class VentanaAccionController implements Initializable {
 		if (Utilidades.verificarClavesAPI(clavesMarvel, apiKey)) {
 			if (Utilidades.isInternetAvailable()) {
 
-				borrar_datos_autorellenos();
+				limpiarAutorellenos();
 				borrarDatosGraficos();
 				String frase = "Fichero txt";
 
@@ -1393,7 +1345,7 @@ public class VentanaAccionController implements Initializable {
 				};
 
 				tarea.setOnRunning(ev -> {
-					borrar_datos_autorellenos();
+					limpiarAutorellenos();
 					desactivarBotones(true);
 					cambiarEstadoBotones(true);
 					imagencomic.setImage(null);
@@ -1525,7 +1477,7 @@ public class VentanaAccionController implements Initializable {
 		};
 
 		tarea.setOnRunning(ev -> {
-			borrar_datos_autorellenos();
+			limpiarAutorellenos();
 			cambiarEstadoBotones(true);
 			desactivarBotones(true);
 			imagencomic.setImage(null);
@@ -1651,8 +1603,8 @@ public class VentanaAccionController implements Initializable {
 
 			ListaComicsDAO.comicsImportados.add(comicImport);
 
-			funcionesTabla.nombreColumnas(columnList, tablaBBDD);
-			funcionesTabla.tablaBBDD(ListaComicsDAO.comicsImportados, tablaBBDD, columnList);
+			FuncionesTableView.nombreColumnas(columnList, tablaBBDD);
+			FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, tablaBBDD, columnList);
 		});
 	}
 
@@ -1757,7 +1709,6 @@ public class VentanaAccionController implements Initializable {
 			return;
 		}
 
-		libreria = new ListaComicsDAO();
 		String id_comic = idComicTratar_mod.getText();
 		idComicTratar_mod.setStyle("");
 		if (comprobarExistenciaComic(id_comic)) {
@@ -1767,11 +1718,11 @@ public class VentanaAccionController implements Initializable {
 				List<Comic> listaComics = ComicManagerDAO.verLibreria(sentenciaSQL);
 
 				ComicManagerDAO.borrarComic(id_comic);
-				libreria.reiniciarBBDD();
+				ListaComicsDAO.reiniciarListaComics();
 				ListaComicsDAO.listasAutoCompletado();
-				funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-				funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
-				funcionesTabla.tablaBBDD(listaComics, tablaBBDD, columnList);
+				FuncionesTableView.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
+				FuncionesTableView.actualizarBusquedaRaw(tablaBBDD, columnList);
+				FuncionesTableView.tablaBBDD(listaComics, tablaBBDD, columnList);
 
 				List<ComboBox<String>> comboboxes = getComboBoxes();
 
@@ -1803,7 +1754,7 @@ public class VentanaAccionController implements Initializable {
 
 		// Si el cómic existe en la base de datos
 		if (ComicManagerDAO.comprobarIdentificadorComic(ID)) {
-			funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
+			FuncionesTableView.actualizarBusquedaRaw(tablaBBDD, columnList);
 			return true;
 		} else { // Si el cómic no existe en la base de datos
 			String mensaje = "ERROR. ID desconocido.";
@@ -1865,6 +1816,7 @@ public class VentanaAccionController implements Initializable {
 		// Borrar cualquier mensaje de error presente
 		borrarErrores();
 		validarCamposComic(true);
+		borrarDatosGraficos();
 	}
 
 	/**
@@ -1896,7 +1848,6 @@ public class VentanaAccionController implements Initializable {
 		if (!ConectManager.conexionActiva()) {
 			return;
 		}
-		libreria = new ListaComicsDAO();
 		String id_comic = idComicTratar_mod.getText();
 		idComicTratar_mod.setStyle("");
 		if (comprobarExistenciaComic(id_comic)) {
@@ -1917,11 +1868,11 @@ public class VentanaAccionController implements Initializable {
 				List<Comic> listaComics = ComicManagerDAO.verLibreria(sentenciaSQL);
 
 				ComicManagerDAO.borrarComic(id_comic);
-				libreria.reiniciarBBDD();
+				ListaComicsDAO.reiniciarListaComics();
 				ListaComicsDAO.listasAutoCompletado();
-				funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-				funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
-				funcionesTabla.tablaBBDD(listaComics, tablaBBDD, columnList);
+				FuncionesTableView.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
+				FuncionesTableView.actualizarBusquedaRaw(tablaBBDD, columnList);
+				FuncionesTableView.tablaBBDD(listaComics, tablaBBDD, columnList);
 
 				List<ComboBox<String>> comboboxes = getComboBoxes();
 
@@ -1955,15 +1906,13 @@ public class VentanaAccionController implements Initializable {
 			return;
 		}
 
-		libreria = new ListaComicsDAO();
 		String id_comic = idComicTratar_mod.getText();
 		idComicTratar_mod.setStyle("");
 		Comic comicActualizar = ComicManagerDAO.comicDatos(id_comic);
 		if (comprobarExistenciaComic(id_comic)) {
 			if (nav.alertaAccionGeneral()) {
 				ComicManagerDAO.actualizarComicBBDD(comicActualizar, "vender");
-				libreria.reiniciarBBDD();
-
+				ListaComicsDAO.reiniciarListaComics();
 				String mensaje = ". Has puesto a la venta el comic";
 				AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 
@@ -2101,7 +2050,7 @@ public class VentanaAccionController implements Initializable {
 //		botonCancelarSubida.setVisible(false); // Oculta el botón de cancelar
 //
 ////		tablaBBDD.getItems().clear();
-//		borrar_datos_autorellenos();
+//		limpiarAutorellenos();
 //		funcionesTabla.tablaBBDD(ListaComicsDAO.comicsImportados, tablaBBDD, columnList); // Llamada a funcion
 //	}
 
@@ -2141,8 +2090,8 @@ public class VentanaAccionController implements Initializable {
 		cambiarEstadoBotones(false);
 		botonCancelarSubida.setVisible(false); // Oculta el botón de cancelar
 
-		borrar_datos_autorellenos();
-		funcionesTabla.tablaBBDD(ListaComicsDAO.comicsImportados, tablaBBDD, columnList); // Llamada a funcion
+		limpiarAutorellenos();
+		FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, tablaBBDD, columnList); // Llamada a funcion
 	}
 
 	/**
@@ -2162,9 +2111,6 @@ public class VentanaAccionController implements Initializable {
 
 		if (ListaComicsDAO.comicsImportados.size() > 0) {
 			if (nav.alertaInsertar()) {
-				libreria = new ListaComicsDAO();
-
-				utilidad = new Utilidades();
 
 				Collections.sort(ListaComicsDAO.comicsImportados, Comparator.comparing(Comic::getNombre));
 
@@ -2183,11 +2129,12 @@ public class VentanaAccionController implements Initializable {
 				ListaComicsDAO.comicsImportados.clear();
 				tablaBBDD.getItems().clear();
 				validarCamposComic(true);
-				funcionesTabla.tablaBBDD(ListaComicsDAO.comicsImportados, tablaBBDD, columnList); // Llamada a funcion
+				FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, tablaBBDD, columnList); // Llamada a
+																										// funcion
 
 				String mensajePront = "Has introducido los comics correctamente\n";
 				AlarmaList.mostrarMensajePront(mensajePront, true, prontInfo);
-				borrar_datos_autorellenos();
+				limpiarAutorellenos();
 			}
 		}
 	}
@@ -2444,8 +2391,6 @@ public class VentanaAccionController implements Initializable {
 			return;
 		}
 
-		libreria = new ListaComicsDAO();
-		utilidad = new Utilidades();
 		prontInfo.setOpacity(1);
 		if (!camposComicSonValidos()) {
 			String mensaje = "Error. Debes de introducir los datos correctos";
@@ -2455,7 +2400,7 @@ public class VentanaAccionController implements Initializable {
 
 		String codigo_imagen = Utilidades.generarCodigoUnico(SOURCE_PATH + File.separator);
 		String mensaje = "";
-		utilidad.nueva_imagen(comic.getImagen(), codigo_imagen);
+		Utilidades.nueva_imagen(comic.getImagen(), codigo_imagen);
 
 		comic.setImagen(SOURCE_PATH + File.separator + codigo_imagen + ".jpg");
 		if (esModificacion) {
@@ -2482,7 +2427,7 @@ public class VentanaAccionController implements Initializable {
 		final List<Comic> comicsFinal = listaComics; // Declarar otra variable final para listaComics
 
 		Platform.runLater(() -> {
-			funcionesTabla.tablaBBDD(comicsFinal, tablaBBDD, columnList);
+			FuncionesTableView.tablaBBDD(comicsFinal, tablaBBDD, columnList);
 		});
 
 		tablaBBDD.refresh();
@@ -2506,8 +2451,8 @@ public class VentanaAccionController implements Initializable {
 		List<ComboBox<String>> comboboxes = getComboBoxes();
 
 		ListaComicsDAO.listasAutoCompletado();
-		funcionesTabla.nombreColumnas(columnList, tablaBBDD);
-		funcionesTabla.actualizarBusquedaRaw(tablaBBDD, columnList);
+		FuncionesTableView.nombreColumnas(columnList, tablaBBDD);
+		FuncionesTableView.actualizarBusquedaRaw(tablaBBDD, columnList);
 		funcionesCombo.rellenarComboBox(comboboxes);
 	}
 
@@ -2532,7 +2477,7 @@ public class VentanaAccionController implements Initializable {
 				} else {
 					subidaComic();
 				}
-				borrar_datos_autorellenos();
+				limpiarAutorellenos();
 			} catch (Exception e) {
 				Utilidades.manejarExcepcion(e);
 
@@ -2551,11 +2496,11 @@ public class VentanaAccionController implements Initializable {
 		idComicTratar_mod.textProperty().addListener((observable, oldValue, newValue) -> {
 			if (!newValue.isEmpty()) {
 				if (!rellenarCampos(newValue)) {
-					borrar_datos_autorellenos();
+					limpiarAutorellenos();
 					borrarDatosGraficos();
 				}
 			} else {
-				borrar_datos_autorellenos();
+				limpiarAutorellenos();
 				borrarDatosGraficos();
 			}
 		});
@@ -2605,7 +2550,7 @@ public class VentanaAccionController implements Initializable {
 	/**
 	 * Borra los datos del cómic
 	 */
-	public void borrar_datos_autorellenos() {
+	public void limpiarAutorellenos() {
 		nombreComic.setText("");
 
 		numeroComic.setValue("");
