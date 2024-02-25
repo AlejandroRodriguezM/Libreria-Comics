@@ -72,10 +72,10 @@ public class FuncionesManejoFront {
 		rootAnchorPane = anchorPane;
 	}
 
-	public void copiarListas(ObservableList<ComboBox<String>> listaComboBoxes2,
+	public void copiarListas(List<ComboBox<String>> comboboxes,
 			List<TableColumn<Comic, String>> columnList2, ObservableList<Control> textFieldList,
 			ObservableList<Button> buttonList, ObservableList<Node> nodeList, ObservableList<ImageView> imageViewList) {
-		listaComboBoxes = (listaComboBoxes2 != null) ? FXCollections.observableArrayList(listaComboBoxes2)
+		listaComboBoxes = (comboboxes != null) ? FXCollections.observableArrayList(comboboxes)
 				: FXCollections.observableArrayList();
 		listaColumnas = (columnList2 != null) ? FXCollections.observableArrayList(columnList2)
 				: FXCollections.observableArrayList();

@@ -559,11 +559,6 @@ public class VentanaAccionController implements Initializable {
 	private final String SOURCE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
 			+ ConectManager.DB_NAME + File.separator + "portadas";
 
-	/**
-	 * Mapa que contiene elementos de la interfaz y sus tooltips correspondientes.
-	 */
-	private static Map<Node, String> tooltipsMap = new HashMap<>();
-
 	public static String apiKey = Utilidades.cargarApiComicVine();
 	public static String clavesMarvel[] = Utilidades.clavesApiMarvel();
 
@@ -578,6 +573,27 @@ public class VentanaAccionController implements Initializable {
 	ObservableList<Node> listaElementosFondo;
 	ObservableList<TextField> listaTextField;
 	List<ComboBox<String>> comboboxesMod;
+
+	/**
+	 * Establece una lista de ComboBoxes para su uso en la clase
+	 * VentanaAccionController.
+	 *
+	 * @param comboBoxes La lista de ComboBoxes que se desea establecer.
+	 */
+	public void setComboBoxes(List<ComboBox<String>> comboBoxes) {
+		comboboxes = comboBoxes;
+	}
+
+	/**
+	 * Obtiene la lista de ComboBoxes establecida previamente en la clase
+	 * VentanaAccionController.
+	 *
+	 * @return La lista de ComboBoxes configurada en la clase
+	 *         VentanaAccionController.
+	 */
+	public static List<ComboBox<String>> getComboBoxes() {
+		return comboboxes;
+	}
 
 	/**
 	 * Inicializa la interfaz de usuario y configura el comportamiento de los
@@ -605,12 +621,39 @@ public class VentanaAccionController implements Initializable {
 
 		ListaComicsDAO.comicsImportados.clear();
 
-		asignarTooltips();
+		establecerTooltips();
 
 		formatearTextField();
 
 		controlarEventosInterfaz();
 
+	}
+
+	/**
+	 * Asigna tooltips a varios elementos en la interfaz gráfica. Estos tooltips
+	 * proporcionan información adicional cuando el usuario pasa el ratón sobre los
+	 * elementos.
+	 */
+	public void establecerTooltips() {
+		Platform.runLater(() -> {
+			Map<Node, String> tooltipsMap = new HashMap<>();
+
+			tooltipsMap.put(nombreComic, "Nombre de los cómics / libros / mangas");
+			tooltipsMap.put(numeroComic, "Número del cómic / libro / manga");
+			tooltipsMap.put(varianteComic, "Nombre de la variante del cómic / libro / manga");
+			tooltipsMap.put(botonLimpiar, "Limpia la pantalla y reinicia todos los valores");
+			tooltipsMap.put(botonbbdd, "Botón para acceder a la base de datos");
+			tooltipsMap.put(botonSubidaPortada, "Botón para subir una portada");
+			tooltipsMap.put(botonEliminar, "Botón para eliminar un cómic");
+			tooltipsMap.put(botonVender, "Botón para vender un cómic");
+			tooltipsMap.put(botonParametroComic, "Botón para buscar un cómic mediante una lista de parámetros");
+			tooltipsMap.put(botonModificarComic, "Botón para modificar un cómic");
+			tooltipsMap.put(botonBorrarOpinion, "Botón para borrar una opinión");
+			tooltipsMap.put(botonAgregarPuntuacion, "Botón para agregar una puntuación");
+			tooltipsMap.put(puntuacionMenu, "Selecciona una puntuación en el menú");
+
+			FuncionesTooltips.assignTooltips(tooltipsMap);
+		});
 	}
 
 	public void listas_autocompletado() {
@@ -623,27 +666,6 @@ public class VentanaAccionController implements Initializable {
 			FuncionesManejoFront.asignarAutocompletado(dibujanteComic, ListaComicsDAO.listaDibujante);
 			FuncionesManejoFront.asignarAutocompletado(numeroComic.getEditor(), ListaComicsDAO.listaNumeroComic);
 		}
-	}
-
-	/**
-	 * Establece una lista de ComboBoxes para su uso en la clase
-	 * VentanaAccionController.
-	 *
-	 * @param comboBoxes La lista de ComboBoxes que se desea establecer.
-	 */
-	public void setComboBoxes(List<ComboBox<String>> comboBoxes) {
-		comboboxes = comboBoxes;
-	}
-
-	/**
-	 * Obtiene la lista de ComboBoxes establecida previamente en la clase
-	 * VentanaAccionController.
-	 *
-	 * @return La lista de ComboBoxes configurada en la clase
-	 *         VentanaAccionController.
-	 */
-	public static List<ComboBox<String>> getComboBoxes() {
-		return comboboxes;
 	}
 
 	/**
@@ -703,43 +725,61 @@ public class VentanaAccionController implements Initializable {
 	 */
 	public void rellenarCombosEstaticos() {
 
-		FuncionesComboBox.rellenarComboBoxEstaticos(comboboxesMod, TIPO_ACCION); // Llamada a la función para rellenar
-																					// ComboBoxes
+		FuncionesComboBox.rellenarComboBoxEstaticos(comboboxesMod, TIPO_ACCION); // Llamada a la función para rellenar																		// ComboBoxes
 	}
 
 	public void formatearTextField() {
+	    // Agrupar funciones relacionadas
+	    limpiarTextField();
+	    restringirSimbolos();
+	    reemplazarEspaciosMultiples();
+	    permitirUnSimbolo();
 
-		listaTextField = FXCollections.observableArrayList(nombreComic, editorialComic, guionistaComic, dibujanteComic,
-				varianteComic);
-		FuncionesManejoFront.eliminarEspacioInicial(nombreComic);
-		FuncionesManejoFront.restringirSimbolos(editorialComic);
-		FuncionesManejoFront.restringirSimbolos(guionistaComic);
-		FuncionesManejoFront.restringirSimbolos(dibujanteComic);
-		FuncionesManejoFront.restringirSimbolos(varianteComic);
+	    configurarValidadores();
 
-		FuncionesManejoFront.reemplazarEspaciosMultiples(nombreComic);
-		FuncionesManejoFront.reemplazarEspaciosMultiples(editorialComic);
-		FuncionesManejoFront.reemplazarEspaciosMultiples(guionistaComic);
-		FuncionesManejoFront.reemplazarEspaciosMultiples(dibujanteComic);
-		FuncionesManejoFront.reemplazarEspaciosMultiples(varianteComic);
-		FuncionesManejoFront.reemplazarEspacio(busquedaCodigo);
+	    desactivarValidadorIdSiEsAccionAniadir();
+	}
 
-		FuncionesManejoFront.permitirUnSimbolo(nombreComic);
-		FuncionesManejoFront.permitirUnSimbolo(editorialComic);
-		FuncionesManejoFront.permitirUnSimbolo(guionistaComic);
-		FuncionesManejoFront.permitirUnSimbolo(dibujanteComic);
-		FuncionesManejoFront.permitirUnSimbolo(varianteComic);
-		FuncionesManejoFront.permitirUnSimbolo(busquedaCodigo);
+	private void limpiarTextField() {
+	    listaTextField = FXCollections.observableArrayList(nombreComic, editorialComic, guionistaComic, dibujanteComic, varianteComic);
+	    FuncionesManejoFront.eliminarEspacioInicial(nombreComic);
+	}
 
-		busquedaCodigo.setDisable(true); // Inicialmente deshabilitado
-		numeroComic.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
-		numeroCajaComic.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
-		idComicTratar_mod.setTextFormatter(FuncionesComboBox.validador_Nenteros());
-		precioComic.setTextFormatter(FuncionesComboBox.validador_Ndecimales());
+	private void restringirSimbolos() {
+	    FuncionesManejoFront.restringirSimbolos(editorialComic);
+	    FuncionesManejoFront.restringirSimbolos(guionistaComic);
+	    FuncionesManejoFront.restringirSimbolos(dibujanteComic);
+	    FuncionesManejoFront.restringirSimbolos(varianteComic);
+	}
 
-		if (TIPO_ACCION.equalsIgnoreCase("aniadir")) {
-			idComicTratar_mod.setTextFormatter(FuncionesComboBox.desactivarValidadorNenteros());
-		}
+	private void reemplazarEspaciosMultiples() {
+	    FuncionesManejoFront.reemplazarEspaciosMultiples(nombreComic);
+	    FuncionesManejoFront.reemplazarEspaciosMultiples(editorialComic);
+	    FuncionesManejoFront.reemplazarEspaciosMultiples(guionistaComic);
+	    FuncionesManejoFront.reemplazarEspaciosMultiples(dibujanteComic);
+	    FuncionesManejoFront.reemplazarEspaciosMultiples(varianteComic);
+	}
+
+	private void permitirUnSimbolo() {
+	    FuncionesManejoFront.permitirUnSimbolo(nombreComic);
+	    FuncionesManejoFront.permitirUnSimbolo(editorialComic);
+	    FuncionesManejoFront.permitirUnSimbolo(guionistaComic);
+	    FuncionesManejoFront.permitirUnSimbolo(dibujanteComic);
+	    FuncionesManejoFront.permitirUnSimbolo(varianteComic);
+	    FuncionesManejoFront.permitirUnSimbolo(busquedaCodigo);
+	}
+
+	private void configurarValidadores() {
+	    numeroComic.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
+	    numeroCajaComic.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
+	    idComicTratar_mod.setTextFormatter(FuncionesComboBox.validador_Nenteros());
+	    precioComic.setTextFormatter(FuncionesComboBox.validador_Ndecimales());
+	}
+
+	private void desactivarValidadorIdSiEsAccionAniadir() {
+	    if (TIPO_ACCION.equalsIgnoreCase("aniadir")) {
+	        idComicTratar_mod.setTextFormatter(FuncionesComboBox.desactivarValidadorNenteros());
+	    }
 	}
 
 	/**
@@ -751,7 +791,6 @@ public class VentanaAccionController implements Initializable {
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
 
-//		limpiarAutorellenos();
 		borrarDatosGraficos();
 
 		Comic comic = camposComic();
@@ -775,75 +814,6 @@ public class VentanaAccionController implements Initializable {
 		FuncionesManejoFront.verBasedeDatos(true, true, null);
 	}
 
-	/**
-	 * Asigna tooltips a varios elementos en la interfaz gráfica. Estos tooltips
-	 * proporcionan información adicional cuando el usuario pasa el ratón sobre los
-	 * elementos.
-	 */
-	public void asignarTooltips() {
-		Platform.runLater(() -> {
-			// Configuración de tooltips comunes
-			configurarTooltipsComunes(tooltipsMap);
-
-			// Configuración de tooltips según el tipo de acción
-			if ("aniadir".equals(TIPO_ACCION)) {
-				configurarTooltipsAniadir(tooltipsMap);
-			} else if ("eliminar".equals(TIPO_ACCION)) {
-				configurarTooltipsEliminar(tooltipsMap);
-			} else if ("modificar".equals(TIPO_ACCION)) {
-				configurarTooltipsModificar(tooltipsMap);
-			} else if ("puntuar".equals(TIPO_ACCION)) {
-				configurarTooltipsPuntuar(tooltipsMap);
-			}
-
-			// Asignación de tooltips mediante la función externa
-			FuncionesTooltips.assignTooltips(tooltipsMap);
-		});
-	}
-
-	// Método para configurar tooltips comunes
-	private void configurarTooltipsComunes(Map<Node, String> tooltipsMap2) {
-		tooltipsMap2.put(nombreComic, "Nombre de los cómics / libros / mangas");
-		tooltipsMap2.put(numeroComic, "Número del cómic / libro / manga");
-		tooltipsMap2.put(varianteComic, "Nombre de la variante del cómic / libro / manga");
-		tooltipsMap2.put(botonbbdd, "Botón para acceder a la base de datos");
-		tooltipsMap2.put(botonLimpiar, "Limpia la pantalla y reinicia todos los valores");
-	}
-
-	// Método para configurar tooltips específicos al añadir
-	private void configurarTooltipsAniadir(Map<Node, String> tooltipsMap2) {
-		configurarTooltipsComunes(tooltipsMap2); // Hereda los tooltips comunes
-		tooltipsMap2.put(botonSubidaPortada, "Botón para subir una portada");
-	}
-
-	// Método para configurar tooltips específicos al eliminar
-	private void configurarTooltipsEliminar(Map<Node, String> tooltipsMap2) {
-		configurarTooltipsComunes(tooltipsMap2); // Hereda los tooltips comunes
-		tooltipsMap2.put(botonEliminar, "Botón para eliminar un cómic");
-		tooltipsMap2.put(botonVender, "Botón para vender un cómic");
-		tooltipsMap2.put(botonParametroComic, "Botón para buscar un cómic mediante una lista de parámetros");
-		// Agregar más tooltips específicos al eliminar según sea necesario...
-	}
-
-	// Método para configurar tooltips específicos al modificar
-	private void configurarTooltipsModificar(Map<Node, String> tooltipsMap2) {
-		configurarTooltipsComunes(tooltipsMap2); // Hereda los tooltips comunes
-		tooltipsMap2.put(botonSubidaPortada, "Botón para subir una portada");
-		tooltipsMap2.put(botonModificarComic, "Botón para modificar un cómic");
-		tooltipsMap2.put(botonParametroComic, "Botón para buscar un cómic mediante una lista de parámetros");
-		// Agregar más tooltips específicos al modificar según sea necesario...
-	}
-
-	// Método para configurar tooltips específicos al puntuar
-	private void configurarTooltipsPuntuar(Map<Node, String> tooltipsMap2) {
-		configurarTooltipsComunes(tooltipsMap2); // Hereda los tooltips comunes
-		tooltipsMap2.put(botonBorrarOpinion, "Botón para borrar una opinión");
-		tooltipsMap2.put(botonAgregarPuntuacion, "Botón para agregar una puntuación");
-		tooltipsMap2.put(puntuacionMenu, "Selecciona una puntuación en el menú");
-		tooltipsMap2.put(botonParametroComic, "Botón para buscar un cómic mediante una lista de parámetros");
-		// Agregar más tooltips específicos al puntuar según sea necesario...
-	}
-
 	@FXML
 	void eliminarComicSeleccionado(ActionEvent event) {
 		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
@@ -856,29 +826,7 @@ public class VentanaAccionController implements Initializable {
 				ListaComicsDAO.comicsImportados.removeIf(c -> c.getID().equals(id_comic));
 
 				tablaBBDD.getItems().clear();
-				FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, tablaBBDD, columnList); // Llamada a
-																										// funcion
-
-				nombreComic.setText("");
-				varianteComic.setText("");
-				firmaComic.setText("");
-				editorialComic.setText("");
-				fechaComic.setValue(null);
-				guionistaComic.setText("");
-				dibujanteComic.setText("");
-				prontInfo.setText(null);
-				prontInfo.setOpacity(0);
-				nombreKeyIssue.setText("");
-				numeroComic.getEditor().clear(); // Limpiar el texto en el ComboBox
-				formatoComic.getEditor().clear(); // Limpiar el texto en el ComboBox
-				procedenciaComic.getEditor().clear(); // Limpiar el texto en el ComboBox
-				estadoComic.getEditor().clear(); // Limpiar el texto en el ComboBox
-				urlReferencia.setText("");
-				precioComic.setText("");
-				direccionImagen.setText("");
-				imagencomic.setImage(null);
-				numeroCajaComic.getEditor().clear();
-				codigoComicTratar.setText("");
+				FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, tablaBBDD, columnList);
 
 				if (ListaComicsDAO.comicsImportados.size() < 1) {
 					cambiarEstadoBotones(false);
@@ -917,8 +865,8 @@ public class VentanaAccionController implements Initializable {
 			return;
 		}
 
-		prontInfo.setStyle("");
 		Comic comicTemp = null;
+		String mensaje = "";
 		if (!ListaComicsDAO.comicsImportados.isEmpty()) {
 			comicTemp = Utilidades.devolverComic(idComic);
 		} else {
@@ -937,7 +885,6 @@ public class VentanaAccionController implements Initializable {
 		validarCamposComic(false);
 		prontInfo.setOpacity(1);
 
-		String mensaje;
 		if (!ListaComicsDAO.comicsImportados.isEmpty() && ComicManagerDAO.comprobarIdentificadorComic(idComic)) {
 			mensaje = ComicManagerDAO.comicDatos(idComic).toString().replace("[", "").replace("]", "");
 		} else {
@@ -1032,13 +979,6 @@ public class VentanaAccionController implements Initializable {
 		}
 	}
 
-	/**
-	 * Muestra la opción correspondiente en la interfaz gráfica y habilita los
-	 * elementos relacionados según el tipo de opción especificado.
-	 *
-	 * @param opcion Tipo de opción a mostrar ("eliminar", "aniadir", "modificar" o
-	 *               "puntuar").
-	 */
 	public void mostrarOpcion(String opcion) {
 		ocultarCampos();
 
@@ -1046,44 +986,59 @@ public class VentanaAccionController implements Initializable {
 
 		switch (opcion.toLowerCase()) {
 		case "eliminar":
-			elementosAMostrarYHabilitar.addAll(Arrays.asList(label_id_mod, botonVender, botonEliminar, tablaBBDD,
-					botonbbdd, rootVBox, botonParametroComic, idComicTratar_mod));
-
-			rootVBox.toFront();
+			mostrarElementosEliminar(elementosAMostrarYHabilitar);
 			break;
 		case "aniadir":
-			elementosAMostrarYHabilitar.addAll(Arrays.asList(dibujanteComic, editorialComic, estadoComic, fechaComic,
-					firmaComic, formatoComic, guionistaComic, nombreKeyIssue, numeroCajaComic, procedenciaComic,
-					urlReferencia, botonBusquedaAvanzada, precioComic, direccionImagen, label_portada, label_precio,
-					label_caja, label_dibujante, label_editorial, label_estado, label_fecha, label_firma, label_formato,
-					label_guionista, label_key, label_procedencia, label_referencia, codigoComicTratar,
-					label_codigo_comic, tablaBBDD, rootVBox, botonSubidaPortada, idComicTratar_mod, label_id_mod,
-					botonGuardarCambioComic));
-
+			mostrarElementosAniadir(elementosAMostrarYHabilitar);
 			break;
 		case "modificar":
-			elementosAMostrarYHabilitar.addAll(Arrays.asList(dibujanteComic, editorialComic, estadoComic, fechaComic,
-					firmaComic, formatoComic, guionistaComic, nombreKeyIssue, numeroCajaComic, procedenciaComic,
-					urlReferencia, botonModificarComic, precioComic, direccionImagen, tablaBBDD, label_portada,
-					label_precio, label_caja, label_dibujante, label_editorial, label_estado, label_fecha, label_firma,
-					label_formato, label_guionista, label_key, label_procedencia, label_referencia, botonbbdd,
-					idComicTratar_mod, label_id_mod, botonParametroComic, codigoComicTratar, label_codigo_comic,
-					rootVBox, botonSubidaPortada));
-			rootVBox.toFront();
-
+			mostrarElementosModificar(elementosAMostrarYHabilitar);
 			break;
 		case "puntuar":
-			elementosAMostrarYHabilitar
-					.addAll(Arrays.asList(botonBorrarOpinion, puntuacionMenu, labelPuntuacion, botonAgregarPuntuacion,
-							label_id_mod, tablaBBDD, botonbbdd, rootVBox, botonParametroComic, idComicTratar_mod));
-			rootVBox.toFront();
-
+			mostrarElementosPuntuar(elementosAMostrarYHabilitar);
 			break;
 		default:
 			closeWindow();
 			return;
 		}
 
+		mostrarElementos(elementosAMostrarYHabilitar);
+	}
+
+	private void mostrarElementosEliminar(List<Node> elementosAMostrarYHabilitar) {
+		elementosAMostrarYHabilitar.addAll(Arrays.asList(label_id_mod, botonVender, botonEliminar, tablaBBDD, botonbbdd,
+				rootVBox, botonParametroComic, idComicTratar_mod));
+		rootVBox.toFront();
+	}
+
+	private void mostrarElementosAniadir(List<Node> elementosAMostrarYHabilitar) {
+		elementosAMostrarYHabilitar.addAll(Arrays.asList(dibujanteComic, editorialComic, estadoComic, fechaComic,
+				firmaComic, formatoComic, guionistaComic, nombreKeyIssue, numeroCajaComic, procedenciaComic,
+				urlReferencia, botonBusquedaAvanzada, precioComic, direccionImagen, label_portada, label_precio,
+				label_caja, label_dibujante, label_editorial, label_estado, label_fecha, label_firma, label_formato,
+				label_guionista, label_key, label_procedencia, label_referencia, codigoComicTratar, label_codigo_comic,
+				tablaBBDD, rootVBox, botonSubidaPortada, idComicTratar_mod, label_id_mod, botonGuardarCambioComic));
+	}
+
+	private void mostrarElementosModificar(List<Node> elementosAMostrarYHabilitar) {
+		elementosAMostrarYHabilitar.addAll(Arrays.asList(dibujanteComic, editorialComic, estadoComic, fechaComic,
+				firmaComic, formatoComic, guionistaComic, nombreKeyIssue, numeroCajaComic, procedenciaComic,
+				urlReferencia, botonModificarComic, precioComic, direccionImagen, tablaBBDD, label_portada,
+				label_precio, label_caja, label_dibujante, label_editorial, label_estado, label_fecha, label_firma,
+				label_formato, label_guionista, label_key, label_procedencia, label_referencia, botonbbdd,
+				idComicTratar_mod, label_id_mod, botonParametroComic, codigoComicTratar, label_codigo_comic, rootVBox,
+				botonSubidaPortada));
+		rootVBox.toFront();
+	}
+
+	private void mostrarElementosPuntuar(List<Node> elementosAMostrarYHabilitar) {
+		elementosAMostrarYHabilitar
+				.addAll(Arrays.asList(botonBorrarOpinion, puntuacionMenu, labelPuntuacion, botonAgregarPuntuacion,
+						label_id_mod, tablaBBDD, botonbbdd, rootVBox, botonParametroComic, idComicTratar_mod));
+		rootVBox.toFront();
+	}
+
+	private void mostrarElementos(List<Node> elementosAMostrarYHabilitar) {
 		for (Node elemento : elementosAMostrarYHabilitar) {
 			elemento.setVisible(true);
 			elemento.setDisable(false);
@@ -1097,11 +1052,10 @@ public class VentanaAccionController implements Initializable {
 			navegacion_cerrar.setDisable(true);
 			navegacion_cerrar.setVisible(false);
 
-			idComicTratar_mod.setLayoutX(56); // Nueva coordenada X para el TextField
-			idComicTratar_mod.setLayoutY(104); // Nueva coordenada Y para el TextField
-
-			label_id_mod.setLayoutX(3); // Nueva coordenada X para el Label
-			label_id_mod.setLayoutY(104); // Nueva coordenada Y para el Label
+			idComicTratar_mod.setLayoutX(56);
+			idComicTratar_mod.setLayoutY(104);
+			label_id_mod.setLayoutX(3);
+			label_id_mod.setLayoutY(104);
 		} else {
 			idComicTratar_mod.setEditable(false);
 		}
@@ -1191,35 +1145,12 @@ public class VentanaAccionController implements Initializable {
 	void busquedaAvanzada(ActionEvent event) {
 		// Verificar si las claves API están ausentes o vacías
 		if (!Utilidades.verificarClavesAPI(clavesMarvel, apiKey)) {
-			nav.alertaException("Revisa las APIS de MArvel y Vine, estan incorrectas o no funcionan");
+			nav.alertaException("Revisa las APIS de Marvel y Vine, estan incorrectas o no funcionan");
 			return;
 		} else {
 			// Continuar con la lógica cuando ambas claves están presente
-			cambiarVisibilidad();
+			cambiarVisibilidadAvanzada();
 		}
-	}
-
-	/**
-	 * Modifica la visibilidad y el estado de los elementos de búsqueda en la
-	 * interfaz de usuario.
-	 *
-	 * @param mostrar True para mostrar los elementos de búsqueda, False para
-	 *                ocultarlos.
-	 */
-	private void cambiarVisibilidad() {
-
-		if (botonBusquedaCodigo.isVisible()) {
-			botonBusquedaCodigo.setVisible(false);
-			botonBusquedaCodigo.setDisable(true);
-			busquedaCodigo.setVisible(false);
-			busquedaCodigo.setDisable(true);
-		} else {
-			botonBusquedaCodigo.setVisible(true);
-			botonBusquedaCodigo.setDisable(false);
-			busquedaCodigo.setVisible(true);
-			busquedaCodigo.setDisable(false);
-		}
-
 	}
 
 	/**
@@ -1252,16 +1183,57 @@ public class VentanaAccionController implements Initializable {
 		}
 	}
 
+	public void cambiarEstadoBotones(boolean esCancelado) {
+
+		List<Node> elementos = Arrays.asList(botonEliminarImportadoComic, botonSubidaPortada, botonGuardarComic);
+
+		botonCancelarSubida.setVisible(esCancelado);
+		botonLimpiar.setDisable(esCancelado);
+		botonBusquedaAvanzada.setDisable(esCancelado);
+		botonGuardarCambioComic.setDisable(esCancelado);
+		botonBusquedaCodigo.setVisible(false);
+		busquedaCodigo.setVisible(false);
+
+		cambiarVisibilidad(elementos, esCancelado);
+
+	}
+
+	/**
+	 * Modifica la visibilidad y el estado de los elementos de búsqueda en la
+	 * interfaz de usuario.
+	 *
+	 * @param mostrar True para mostrar los elementos de búsqueda, False para
+	 *                ocultarlos.
+	 */
+	private void cambiarVisibilidadAvanzada() {
+
+		List<Node> elementos = Arrays.asList(botonBusquedaCodigo, busquedaCodigo);
+
+		if (botonBusquedaCodigo.isVisible()) {
+			cambiarVisibilidad(elementos, true);
+		} else {
+			cambiarVisibilidad(elementos, false);
+		}
+
+	}
+
 	/**
 	 * Oculta y deshabilita varios campos y elementos en la interfaz gráfica.
 	 *
 	 * @param elementos Lista de elementos que deseas ocultar y deshabilitar.
 	 */
-	private void ocultarElementos(List<Node> elementos) {
+	private void cambiarVisibilidad(List<Node> elementos, boolean verElemento) {
 		// Itera a través de los elementos y oculta/deshabilita cada uno
 		for (Node elemento : elementos) {
-			elemento.setVisible(false);
-			elemento.setDisable(true);
+
+			if (verElemento) {
+				elemento.setVisible(false);
+				elemento.setDisable(true);
+			} else {
+				elemento.setVisible(true);
+				elemento.setDisable(false);
+			}
+
 		}
 	}
 
@@ -1277,7 +1249,7 @@ public class VentanaAccionController implements Initializable {
 				label_estado, label_fecha, label_firma, label_formato, label_guionista, label_key, label_procedencia,
 				label_referencia, codigoComicTratar, label_codigo_comic, botonSubidaPortada);
 
-		ocultarElementos(elementos);
+		cambiarVisibilidad(elementos, true);
 	}
 
 	/**
@@ -1288,7 +1260,7 @@ public class VentanaAccionController implements Initializable {
 				precioComic, direccionImagen, label_portada, label_precio, label_key, label_referencia,
 				botonModificarComic, codigoComicTratar, label_codigo_comic);
 
-		ocultarElementos(elementos);
+		cambiarVisibilidad(elementos, true);
 	}
 
 	/**
@@ -1319,13 +1291,15 @@ public class VentanaAccionController implements Initializable {
 
 				String valorCodigo = Utilidades.eliminarEspacios(busquedaCodigo.getText());
 
+				limpiarAutorellenos();
+				borrarDatosGraficos();
+
 				if (valorCodigo.isEmpty()) {
 					return;
 				}
 
 				AtomicBoolean isCancelled = new AtomicBoolean(true);
-				prontInfo.setText(null);
-				prontInfo.setVisible(false);
+
 				Task<Void> tarea = new Task<>() {
 					@Override
 					protected Void call() throws Exception {
@@ -1346,7 +1320,6 @@ public class VentanaAccionController implements Initializable {
 
 				tarea.setOnRunning(ev -> {
 					limpiarAutorellenos();
-					desactivarBotones(true);
 					cambiarEstadoBotones(true);
 					imagencomic.setImage(null);
 					imagencomic.setVisible(true);
@@ -1361,7 +1334,6 @@ public class VentanaAccionController implements Initializable {
 					AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
 					menu_Importar_Fichero_CodigoBarras.setDisable(false);
 					cambiarEstadoBotones(false);
-					desactivarBotones(false);
 
 					if (ListaComicsDAO.comicsImportados.size() > 0) {
 						botonEliminarImportadoComic.setVisible(true);
@@ -1386,7 +1358,6 @@ public class VentanaAccionController implements Initializable {
 
 				botonCancelarSubida.setOnAction(ev -> {
 
-					desactivarBotones(false);
 					isCancelled.set(true);
 					tarea.cancel(true);
 					menu_Importar_Fichero_CodigoBarras.setDisable(false);
@@ -1479,10 +1450,9 @@ public class VentanaAccionController implements Initializable {
 		tarea.setOnRunning(ev -> {
 			limpiarAutorellenos();
 			cambiarEstadoBotones(true);
-			desactivarBotones(true);
 			imagencomic.setImage(null);
 			imagencomic.setVisible(true);
-			botonCancelarSubida.setVisible(true);
+
 			AlarmaList.iniciarAnimacionCargaImagen(cargaImagen);
 			menu_Importar_Fichero_CodigoBarras.setDisable(true);
 		});
@@ -1490,8 +1460,6 @@ public class VentanaAccionController implements Initializable {
 		tarea.setOnSucceeded(ev -> {
 			AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
 			cambiarEstadoBotones(false);
-			desactivarBotones(false);
-			botonCancelarSubida.setVisible(false);
 
 			actualizarInterfaz(contadorErrores, codigoFaltante, CARPETA_RAIZ_PORTADAS, numLineas);
 
@@ -1502,10 +1470,8 @@ public class VentanaAccionController implements Initializable {
 		});
 
 		tarea.setOnCancelled(ev -> {
-			desactivarBotones(false);
 			cambiarEstadoBotones(false);
 			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
-			botonCancelarSubida.setVisible(false); // Oculta el botón de cancelar
 			AlarmaList.detenerAnimacionCargaImagen(cargaImagen); // Detiene la animación de carga
 		});
 
@@ -1514,7 +1480,7 @@ public class VentanaAccionController implements Initializable {
 		botonCancelarSubida.setOnAction(ev -> {
 			actualizarInterfaz(comicsProcesados, codigoFaltante, "", numLineas);
 			nav.cerrarCargaComics();
-			botonCancelarSubida.setVisible(false);
+			cambiarEstadoBotones(false);
 			tarea.cancel(true);
 			menu_Importar_Fichero_CodigoBarras.setDisable(false);
 
@@ -1606,26 +1572,6 @@ public class VentanaAccionController implements Initializable {
 			FuncionesTableView.nombreColumnas(columnList, tablaBBDD);
 			FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, tablaBBDD, columnList);
 		});
-	}
-
-	public void cambiarEstadoBotones(boolean esCancelado) {
-		if (esCancelado) {
-			botonCancelarSubida.setVisible(true);
-		} else {
-			botonEliminarImportadoComic.setVisible(true);
-			botonGuardarCambioComic.setVisible(true);
-			botonGuardarComic.setVisible(true);
-		}
-	}
-
-	public void desactivarBotones(boolean fueIportado) {
-		botonEliminarImportadoComic.setDisable(fueIportado);
-		botonGuardarCambioComic.setDisable(fueIportado);
-		botonGuardarComic.setDisable(fueIportado);
-		botonLimpiar.setDisable(fueIportado);
-		botonSubidaPortada.setDisable(fueIportado);
-		botonBusquedaCodigo.setDisable(fueIportado);
-		botonBusquedaAvanzada.setDisable(fueIportado);
 	}
 
 	private Comic obtenerComicInfo(String finalValorCodigo) {
@@ -2086,7 +2032,6 @@ public class VentanaAccionController implements Initializable {
 			}
 		}
 
-		desactivarBotones(false);
 		cambiarEstadoBotones(false);
 		botonCancelarSubida.setVisible(false); // Oculta el botón de cancelar
 
@@ -2570,6 +2515,7 @@ public class VentanaAccionController implements Initializable {
 		guionistaComic.setText("");
 		dibujanteComic.setText("");
 		nombreKeyIssue.setText("");
+		fechaComic.setValue(null);
 
 		precioComic.setText("");
 		codigoComicTratar.setText("");
@@ -2587,12 +2533,16 @@ public class VentanaAccionController implements Initializable {
 		procedenciaComic.getSelectionModel().selectFirst();
 		estadoComic.getSelectionModel().selectFirst();
 
+		prontInfo.setText(null);
+		prontInfo.setOpacity(0);
+		prontInfo.setStyle("");
 		validarCamposComic(true);
 	}
 
 	public void borrarDatosGraficos() {
 		prontInfo.setText(null);
 		prontInfo.setOpacity(0);
+		prontInfo.setStyle("");
 		tablaBBDD.getItems().clear();
 	}
 

@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -401,7 +400,6 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	private static Ventanas nav = new Ventanas();
 
-
 	/**
 	 * Instancia de FuncionesComboBox para funciones relacionadas con ComboBox.
 	 */
@@ -414,7 +412,7 @@ public class MenuPrincipalController implements Initializable {
 
 	ObservableList<ImageView> listaImagenes;
 
-	ObservableList<ComboBox<String>> listaComboBoxes;
+	List<ComboBox<String>> comboboxes;
 	@SuppressWarnings("rawtypes")
 	ObservableList<TableColumn> listaColumnas;
 	ObservableList<Control> listaCamposTexto;
@@ -498,8 +496,8 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	public void cargarDatosDataBase() {
 
-		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
-				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
+		comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia, nombreFormato,
+				nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
 
 		tablaBBDD.refresh();
 		prontInfo.setOpacity(0);
@@ -534,6 +532,7 @@ public class MenuPrincipalController implements Initializable {
 		}, 0, TimeUnit.SECONDS);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void listaElementosVentana() {
 		listaImagenes = FXCollections.observableArrayList(imagencomic);
 		listaColumnas = FXCollections.observableArrayList(ID, nombre, caja, numero, variante, firma, editorial, formato,
@@ -541,6 +540,9 @@ public class MenuPrincipalController implements Initializable {
 		listaCamposTexto = FXCollections.observableArrayList(busquedaGeneral, fechaPublicacion);
 		listaBotones = FXCollections.observableArrayList(botonLimpiar, botonMostrarParametro, botonbbdd, botonImprimir,
 				botonGuardarResultado);
+
+		comboboxes = FXCollections.observableArrayList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
+				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
 
 		listaElementosFondo = FXCollections.observableArrayList(backgroundImage, menu_navegacion);
 	}
@@ -553,7 +555,7 @@ public class MenuPrincipalController implements Initializable {
 
 		FuncionesManejoFront manejoFront = new FuncionesManejoFront();
 
-		manejoFront.copiarListas(listaComboBoxes, columnList, listaCamposTexto, listaBotones, listaElementosFondo,
+		manejoFront.copiarListas(comboboxes, columnList, listaCamposTexto, listaBotones, listaElementosFondo,
 				listaImagenes);
 
 		manejoFront.copiarElementos(prontInfo, botonImprimir, botonGuardarResultado, busquedaGeneral, columnList);
@@ -801,6 +803,7 @@ public class MenuPrincipalController implements Initializable {
 
 		limpiezaDeDatos();
 		limpiarComboBox();
+
 		guardarDatosCSV();
 
 		ListaComicsDAO.listasAutoCompletado();
@@ -1230,6 +1233,8 @@ public class MenuPrincipalController implements Initializable {
 			lecturaTask.setOnSucceeded(e -> {
 				cambiarEstadoMenuBar(false);
 				AlarmaList.mostrarMensajePront(mensajeValido, true, prontInfo);
+				
+				cargarDatosDataBase();
 			});
 
 			// Iniciar la tarea principal de importación en un hilo separado
@@ -1347,12 +1352,8 @@ public class MenuPrincipalController implements Initializable {
 
 	private void limpiarComboBox() {
 
-		List<ComboBox<String>> listaComboBox = new ArrayList<>(
-				List.of(nombreComic, numeroComic, nombreVariante, nombreProcedencia, nombreFormato, nombreDibujante,
-						nombreGuionista, nombreEditorial, nombreFirma, numeroCaja));
-
 		// Iterar sobre todos los ComboBox para realizar la limpieza
-		for (ComboBox<String> comboBox : listaComboBox) {
+		for (ComboBox<String> comboBox : comboboxes) {
 			// Limpiar el campo
 			comboBox.setValue("");
 			comboBox.getEditor().setText("");
