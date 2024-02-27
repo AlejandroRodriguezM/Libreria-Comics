@@ -171,7 +171,7 @@
       <Button fx:id="botonGuardarCambioComic" layoutX="248.0" layoutY="29.0" mnemonicParsing="false" onAction="#guardarDatos" prefHeight="35.0" prefWidth="81.0" stylesheets="@../style/genericos_style.css" text="Guardar Comic" visible="false" />
       <Button fx:id="botonEliminarImportadoComic" layoutX="640.0" layoutY="290.0" mnemonicParsing="false" onAction="#eliminarComicSeleccionado" prefHeight="42.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Eliminar Comic" visible="false" wrapText="true" />
       <ImageView fx:id="cargaImagen" fitHeight="326.0" fitWidth="207.0" layoutX="368.0" layoutY="34.0" pickOnBounds="true" preserveRatio="true" />
-      <ImageView fx:id="imagencomic" fitHeight="293.0" fitWidth="196.0" layoutX="373.0" layoutY="32.0" pickOnBounds="true" />
+      <ImageView fx:id="imagencomic" fitHeight="293.0" fitWidth="196.0" layoutX="373.0" layoutY="32.0" onMouseClicked="#ampliarImagen" pickOnBounds="true" />
       <Button fx:id="botonSubidaPortada" layoutX="185.0" layoutY="253.0" mnemonicParsing="false" onAction="#nuevaPortada" prefHeight="25.0" prefWidth="25.0" stylesheets="@../style/boton_subida_style.css" />
       <Label fx:id="alarmaConexionSql" layoutX="802.0" layoutY="28.0" prefHeight="30.0" prefWidth="29.0" style="-fx-background-radius: 50; -fx-background-color: red;" stylesheets="@../style/alarma_conexion_style.css" />
       <Label fx:id="alarmaConexionInternet" layoutX="767.0" layoutY="28.0" prefHeight="19.0" prefWidth="29.0" style="-fx-background-radius: 50; -fx-background-color: red;" stylesheets="@../style/alarma_conexion_style.css" />

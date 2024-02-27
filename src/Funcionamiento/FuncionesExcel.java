@@ -419,6 +419,9 @@ public class FuncionesExcel {
 			@Override
 			protected Boolean call() throws Exception {
 				try {
+
+					checkCSVColumns(fichero.getAbsolutePath().toString());
+
 					int numeroLineas = Utilidades.contarLineas(fichero);
 					actualizarNumLineas(numeroLineas);
 					procesarCSVInternamente(fichero);
@@ -454,14 +457,11 @@ public class FuncionesExcel {
 			CompletableFuture<Boolean> confirmacionFuture = nav.cancelar_subida_portadas();
 			boolean continuarSubida = confirmacionFuture.join();
 
-			System.out.println(continuarSubida);
-			
 			// Actualizar el directorio si se va a continuar la subida de portadas
 			if (continuarSubida) {
 				directorio = carpetaPortadasTask();
 				directorio = (directorio == null) ? new File(DEFAULT_PORTADA_IMAGE_PATH + File.separator) : directorio;
-				
-				
+
 			}
 
 			// Convertir nombres de carpetas en el directorio predeterminado y el directorio
@@ -479,7 +479,7 @@ public class FuncionesExcel {
 			// Copiar directorio al directorio predeterminado
 			Utilidades.copyDirectory(directorio.getAbsolutePath(), DEFAULT_PORTADA_IMAGE_PATH);
 			AtomicReference<File> directorioRef = new AtomicReference<>(directorio);
-			
+
 			// Procesar líneas restantes del archivo
 			lineReader.lines().forEach(lineText -> {
 				try {
@@ -501,8 +501,6 @@ public class FuncionesExcel {
 			Platform.runLater(
 					() -> Utilidades.abrirArchivoRegistro(DEFAULT_IMAGE_PATH_BASE + File.separator + LOG_FILE_NAME));
 
-			System.out.println(DEFAULT_IMAGE_PATH_BASE + File.separator + LOG_FILE_NAME);
-
 		} catch (IOException e) {
 			// Propagar la excepción al nivel superior
 			throw e;
@@ -517,11 +515,13 @@ public class FuncionesExcel {
 		if (esImportado) {
 			nombre_portada = Utilidades.obtenerDespuesPortadas(comicNuevo.getImagen());
 			nombre_modificado = Utilidades.convertirNombreArchivo(nombre_portada);
-			System.out.println(directorio.getAbsolutePath());
 			if (!Utilidades.existeArchivo(directorio.getAbsolutePath(), nombre_portada)) {
 				copiarPortadaPredeterminada(DEFAULT_PORTADA_IMAGE_PATH, nombre_modificado);
-				generarLogFaltaPortada(DEFAULT_IMAGE_PATH_BASE, LOG_FILE_NAME, nombre_portada);
-				System.err.println("No existe");
+				
+			   /////////////////////////////////////////////////////////////////////
+			   //////HAY QUE ARREGLARLO, AL CAMBIAR EL NOMBRE ESTO DA FALLO SIEMPRE//
+               //////////////////////////////////////////////////////////////////////
+//				generarLogFaltaPortada(DEFAULT_IMAGE_PATH_BASE, LOG_FILE_NAME, nombre_portada);
 			}
 		}
 
@@ -599,6 +599,32 @@ public class FuncionesExcel {
 			writer.newLine();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	private void checkCSVColumns(String filePath) throws IOException {
+		// Columnas esperadas
+		String[] expectedColumns = { "ID", "nomComic", "caja_deposito", "precio_comic", "codigo_comic", "numComic",
+				"nomVariante", "Firma", "nomEditorial", "Formato", "Procedencia", "fecha_publicacion", "nomGuionista",
+				"nomDibujante", "puntuacion", "portada", "key_issue", "url_referencia", "estado" };
+
+		try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+			String line;
+			if ((line = br.readLine()) != null) {
+				// Obtener las columnas de la primera línea del archivo CSV
+				String[] columns = line.split(";");
+				// Verificar si las columnas coinciden con las esperadas
+				if (columns.length != expectedColumns.length) {
+					throw new IOException("El número de columnas no coincide");
+				}
+				for (int i = 0; i < columns.length; i++) {
+					if (!columns[i].trim().equalsIgnoreCase(expectedColumns[i])) {
+						throw new IOException("El nombre de la columna en la posición " + i + " no coincide");
+					}
+				}
+			} else {
+				throw new IOException("El archivo CSV está vacío");
+			}
 		}
 	}
 }

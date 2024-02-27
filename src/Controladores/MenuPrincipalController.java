@@ -41,6 +41,7 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -450,7 +451,20 @@ public class MenuPrincipalController implements Initializable {
 		cargarDatosDataBase();
 
 		establecerDinamismoAnchor();
+	}
 
+	@FXML
+	void ampliarImagen(MouseEvent event) {
+
+		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
+
+		if (idRow != null) {
+			String direccionImagen = idRow.getImagen();
+
+			ImagenAmpliadaController.direccionImagen = direccionImagen;
+
+			nav.verVentanaImagen();
+		}
 	}
 
 	/**
@@ -483,6 +497,22 @@ public class MenuPrincipalController implements Initializable {
 		rootVBox.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
 			tablaBBDD.setFocusTraversable(false);
 			rootVBox.requestFocus();
+		});
+
+		imagencomic.imageProperty().addListener((observable, oldImage, newImage) -> {
+			if (newImage != null) {
+				// Cambiar la apariencia del cursor y la opacidad cuando la imagen se ha cargado
+				imagencomic.setOnMouseEntered(e -> {
+					imagencomic.setOpacity(0.7); // Cambiar la opacidad para indicar que es clickable
+					imagencomic.setCursor(Cursor.HAND);
+				});
+
+				// Restaurar el cursor y la opacidad al salir del ImageView
+				imagencomic.setOnMouseExited(e -> {
+					imagencomic.setOpacity(1.0); // Restaurar la opacidad
+					imagencomic.setCursor(Cursor.DEFAULT);
+				});
+			}
 		});
 	}
 
@@ -614,6 +644,7 @@ public class MenuPrincipalController implements Initializable {
 	 * numero entero en los comboBox numeroComic y caja_comic
 	 */
 	public void formatearTextField() {
+
 		numeroComic.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
 		numeroCaja.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
 	}
@@ -1196,6 +1227,22 @@ public class MenuPrincipalController implements Initializable {
 		botonModificar.setDisable(estadoAccion);
 		botonEliminar.setDisable(estadoAccion);
 		botonAgregarPuntuacion.setDisable(estadoAccion);
+		botonLimpiar.setDisable(estadoAccion);
+		botonMostrarParametro.setDisable(estadoAccion);
+		botonImprimir.setDisable(estadoAccion);
+		botonGuardarResultado.setDisable(estadoAccion);
+		botonbbdd.setDisable(estadoAccion);
+
+		nombreComic.setDisable(estadoAccion);
+		nombreDibujante.setDisable(estadoAccion);
+		nombreEditorial.setDisable(estadoAccion);
+		nombreFirma.setDisable(estadoAccion);
+		nombreFormato.setDisable(estadoAccion);
+		nombreGuionista.setDisable(estadoAccion);
+		nombreProcedencia.setDisable(estadoAccion);
+		nombreVariante.setDisable(estadoAccion);
+		numeroCaja.setDisable(estadoAccion);
+		numeroComic.setDisable(estadoAccion);
 	}
 
 	public void guardarDatosCSV() {
@@ -1233,7 +1280,7 @@ public class MenuPrincipalController implements Initializable {
 			lecturaTask.setOnSucceeded(e -> {
 				cambiarEstadoMenuBar(false);
 				AlarmaList.mostrarMensajePront(mensajeValido, true, prontInfo);
-				
+
 				cargarDatosDataBase();
 			});
 
@@ -1244,7 +1291,7 @@ public class MenuPrincipalController implements Initializable {
 
 	private void procesarResultadoImportacion(Boolean resultado) {
 		String mensaje = "";
-
+		prontInfo.clear();
 		if (resultado) {
 			mensaje = "Operacion realizada con exito";
 		} else {

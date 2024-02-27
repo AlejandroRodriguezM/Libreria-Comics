@@ -35,6 +35,7 @@ import Controladores.AccesoBBDDController;
 import Controladores.CargaComicsController;
 import Controladores.CrearBBDDController;
 import Controladores.EstadoConexionController;
+import Controladores.ImagenAmpliadaController;
 import Controladores.MenuLectorCodigoBarras;
 import Controladores.MenuPrincipalController;
 import Controladores.ModificarApiDatosController;
@@ -76,6 +77,8 @@ public class Ventanas {
 	private static Stage cargaComics = null;
 
 	private static Stage menuPrincipal = null;
+
+	private static Stage imagenAmpliada = null;
 
 	/**
 	 * Abre una ventana para el acceso a la base de datos. Carga la vista y muestra
@@ -262,6 +265,51 @@ public class Ventanas {
 	}
 
 	/**
+	 * Abre una ventana para realizar acciones en un cómic. Verifica si hay una
+	 * ventana abierta y la cierra si es necesario. Carga la vista de la ventana de
+	 * acciones del cómic y muestra la ventana correspondiente con su controlador.
+	 * Define el comportamiento de cierre de la ventana y actualiza la referencia a
+	 * la ventana actual.
+	 */
+	public void verVentanaImagen() {
+		try {
+			// Verifica si hay una ventana abierta y ciérrala si es necesario
+			ventanaAbierta(imagenAmpliada);
+
+			// Cargo la vista
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/ImagenAmpliadaComic.fxml"));
+
+			// Cargo el padre
+			Parent root = loader.load();
+
+			// Obtengo el controlador
+			ImagenAmpliadaController controlador = loader.getController();
+
+			// Creo la scene y el stage
+			Scene scene = new Scene(root);
+			imagenAmpliada = new Stage();
+			imagenAmpliada.setResizable(false);
+			imagenAmpliada.setTitle("Imagen ampliada"); // Titulo de la aplicación.
+
+			imagenAmpliada.getIcons().add(new Image("/Icono/icon2.png"));
+
+			// Asocio el stage con el scene
+			imagenAmpliada.setScene(scene);
+			imagenAmpliada.show();
+
+			// Indico que debe hacer al cerrar
+			imagenAmpliada.setOnCloseRequest(e -> {
+				controlador.closeWindow();
+				accionComic = null; // Establece la ventana actual a null cuando se cierra
+			});
+			ConectManager.resetConnection();
+		} catch (IOException ex) {
+			alertaException(ex.toString());
+			ex.printStackTrace();
+		}
+	}
+
+	/**
 	 * Abre la ventana de recomendaciones de cómics. Carga la vista de la ventana de
 	 * recomendaciones y muestra la ventana correspondiente con su controlador.
 	 * Define el tamaño de la ventana, la asocia con el comportamiento de cierre y
@@ -305,7 +353,6 @@ public class Ventanas {
 				} catch (IOException ex) {
 					alertaException(ex.toString());
 				}
-				ConectManager.resetConnection();
 			});
 		} catch (Exception e) {
 			alertaException(e.toString());
@@ -636,7 +683,7 @@ public class Ventanas {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Llama a una ventana de alarma para eliminar datos
 	 *

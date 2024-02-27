@@ -6,7 +6,7 @@ import Funcionamiento.FuncionesExcel;
 import Funcionamiento.Utilidades;
 
 public class ComicFichero extends Comic {
-	
+
 	public static Comic datosComicFichero(String lineText) {
 		String[] data = lineText.split(";");
 		String nombre = data[1];
@@ -27,6 +27,9 @@ public class ComicFichero extends Comic {
 		String nombre_portada = Utilidades.obtenerDespuesPortadas(direccion_portada);
 		String nombre_modificado = Utilidades.convertirNombreArchivo(nombre_portada);
 		String nombre_completo_portada = FuncionesExcel.DEFAULT_PORTADA_IMAGE_PATH + File.separator + nombre_modificado;
+		String nombreUnico = FuncionesExcel.DEFAULT_PORTADA_IMAGE_PATH + File.separator
+				+ Utilidades.copiarConNombreAleatorio(nombre_completo_portada);
+
 		String key_issue = data[16];
 		key_issue = key_issue.replaceAll("\\r|\\n", "");
 		String url_referencia = data[17];
@@ -36,13 +39,13 @@ public class ComicFichero extends Comic {
 		precio_comic = (precio_comic.isEmpty()) ? "0" : precio_comic;
 		codigo_comic = (codigo_comic.isEmpty()) ? "0" : codigo_comic;
 		url_referencia = (url_referencia.isEmpty()) ? "Sin referencia" : url_referencia;
-
+		
 		Comic comic = new Comic("", nombre, numCaja, numero, variante, firma, editorial, formato, procedencia, fecha,
-				guionista, dibujante, estado, key_issue, puntuacion, nombre_completo_portada, url_referencia,
-				precio_comic, codigo_comic);
+				guionista, dibujante, estado, key_issue, puntuacion, nombreUnico, url_referencia, precio_comic,
+				codigo_comic);
 		return comic;
 	}
-	
+
 	/**
 	 * Función que obtiene la procedencia según el país
 	 *

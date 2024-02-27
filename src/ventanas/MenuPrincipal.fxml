@@ -178,7 +178,7 @@
               <VBox fx:id="vboxContenido" layoutX="42.0" prefHeight="337.0" prefWidth="241.0">
                <children>
             		
-                                            <ImageView fx:id="imagencomic" fitHeight="336.0" fitWidth="245.0" pickOnBounds="true" preserveRatio="true" />
+                                            <ImageView fx:id="imagencomic" fitHeight="336.0" fitWidth="245.0" onMouseClicked="#ampliarImagen" pickOnBounds="true" preserveRatio="true" />
                </children>
               </VBox>
       		        <VBox fx:id="vboxImage" layoutX="297.0" layoutY="33.0" prefHeight="304.0" prefWidth="293.0">

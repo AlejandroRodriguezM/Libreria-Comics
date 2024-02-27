@@ -44,6 +44,7 @@ import dbmanager.SelectManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -55,6 +56,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 /**
@@ -199,6 +201,31 @@ public class RecomendacionesController implements Initializable {
 
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
 		alarmaList.iniciarThreadChecker(true);
+
+        imagencomic.imageProperty().addListener((observable, oldImage, newImage) -> {
+            if (newImage != null) {
+                // Cambiar la apariencia del cursor y la opacidad cuando la imagen se ha cargado
+                imagencomic.setOnMouseEntered(e -> {
+                    imagencomic.setOpacity(0.7); // Cambiar la opacidad para indicar que es clickable
+                    imagencomic.setCursor(Cursor.HAND);
+                });
+
+                // Restaurar el cursor y la opacidad al salir del ImageView
+                imagencomic.setOnMouseExited(e -> {
+                    imagencomic.setOpacity(1.0); // Restaurar la opacidad
+                    imagencomic.setCursor(Cursor.DEFAULT);
+                });
+            }
+        });
+	}
+
+	@FXML
+	void ampliarImagen(MouseEvent event) {
+
+		if (imagencomic.getImage() != null) {
+			nav.verVentanaImagen();
+		}
+
 	}
 
 	/**
@@ -246,6 +273,9 @@ public class RecomendacionesController implements Initializable {
 
 			imagencomic.setImage(imagenComic);
 			utilidad.deleteImage();
+
+			ImagenAmpliadaController.direccionImagen = direccionImagen;
+
 			return listaComics.get(n).toString(); // Devuelve un cómic de la
 													// lista
 			// de cómics

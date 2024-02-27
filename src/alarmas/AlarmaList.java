@@ -820,8 +820,6 @@ public class AlarmaList {
 	public static void mostrarMensajePront(String mensaje, boolean exito, TextArea prontInfo) {
 
 		detenerAnimacion();
-
-		prontInfo.clear();
 		prontInfo.setOpacity(1);
 		prontInfo.setVisible(true);
 		if (exito) {

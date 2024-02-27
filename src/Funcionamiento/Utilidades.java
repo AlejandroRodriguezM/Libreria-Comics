@@ -115,6 +115,13 @@ public class Utilidades {
 	private final static String DOCUMENTS_PATH = USER_DIR + File.separator + "Documents";
 
 	/**
+	 * Construimos la ruta al directorio "libreria_comics" dentro de "Documents" y
+	 * añadimos el nombre de la base de datos y la carpeta "portadas".
+	 */
+	public final static String SOURCE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+			+ ConectManager.DB_NAME + File.separator + "portadas";
+
+	/**
 	 * Verifica si el sistema operativo es Windows.
 	 *
 	 * @return true si el sistema operativo es Windows, false en caso contrario.
@@ -211,27 +218,27 @@ public class Utilidades {
 	}
 
 	/**
-	 * Funcion que cambia una ',' por un guion '-' y un guion '-' sin espacios delante o detrás por " - "
+	 * Funcion que cambia una ',' por un guion '-' y un guion '-' sin espacios
+	 * delante o detrás por " - "
 	 *
 	 * @param dato
 	 * @return
 	 */
 	public static String comaYGuionPorEspaciado(String dato) {
-	    String resultado = "";
-	    if (dato != null) {
-	        // Reemplazar guion '-' sin espacios delante o detrás por " - "
-	        if (dato.contains("-") && !dato.contains(" - ")) {
-	            dato = dato.replace("-", " - ");
-	        }
-	        // Reemplazar coma ',' por " - "
-	        if (dato.contains(",")) {
-	            dato = dato.replace(",", " - ");
-	        }
-	        resultado = eliminarEspacios(dato);
-	    }
-	    return resultado;
+		String resultado = "";
+		if (dato != null) {
+			// Reemplazar guion '-' sin espacios delante o detrás por " - "
+			if (dato.contains("-") && !dato.contains(" - ")) {
+				dato = dato.replace("-", " - ");
+			}
+			// Reemplazar coma ',' por " - "
+			if (dato.contains(",")) {
+				dato = dato.replace(",", " - ");
+			}
+			resultado = eliminarEspacios(dato);
+		}
+		return resultado;
 	}
-
 
 	/**
 	 * Funcion que elimina los espacios del principios y finales
@@ -260,50 +267,49 @@ public class Utilidades {
 	 * @return
 	 */
 	public static void nueva_imagen(String imagen, String nuevoNombreArchivo) {
-	    try {
-	        File file = new File(imagen);
-	        InputStream input = null;
+		try {
+			File file = new File(imagen);
+			InputStream input = null;
 
-	        if (!file.exists()) {
-	            input = Utilidades.class.getResourceAsStream("sinPortada.jpg");
-	            if (input == null) {
-	                throw new FileNotFoundException("La imagen predeterminada no se encontró en el paquete");
-	            }
-	            file = File.createTempFile("tmp", ".jpg");
-	            file.deleteOnExit();
-	            try (OutputStream output = new FileOutputStream(file)) {
-	                byte[] buffer = new byte[4096];
-	                int bytesRead;
-	                while ((bytesRead = input.read(buffer)) != -1) {
-	                    output.write(buffer, 0, bytesRead);
-	                }
-	            }
-	        }
+			if (!file.exists()) {
+				input = Utilidades.class.getResourceAsStream("sinPortada.jpg");
+				if (input == null) {
+					throw new FileNotFoundException("La imagen predeterminada no se encontró en el paquete");
+				}
+				file = File.createTempFile("tmp", ".jpg");
+				file.deleteOnExit();
+				try (OutputStream output = new FileOutputStream(file)) {
+					byte[] buffer = new byte[4096];
+					int bytesRead;
+					while ((bytesRead = input.read(buffer)) != -1) {
+						output.write(buffer, 0, bytesRead);
+					}
+				}
+			}
 
-	        String userDir = System.getProperty("user.home");
-	        String documentsPath = userDir + File.separator + "Documents";
-	        String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
-	                + ConectManager.DB_NAME + File.separator + "portadas";
+			String userDir = System.getProperty("user.home");
+			String documentsPath = userDir + File.separator + "Documents";
+			String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
+					+ ConectManager.DB_NAME + File.separator + "portadas";
 
-	        // Esto se modificara para hacerlo dinamico
-	        String imagePath = defaultImagePath;
+			// Esto se modificara para hacerlo dinamico
+			String imagePath = defaultImagePath;
 
-	        File portadasFolder = new File(imagePath);
+			File portadasFolder = new File(imagePath);
 
-	        if (!portadasFolder.exists()) {
-	            if (!portadasFolder.mkdirs()) {
-	                throw new IOException("No se pudo crear la carpeta 'portadas'");
-	            }
-	        }
+			if (!portadasFolder.exists()) {
+				if (!portadasFolder.mkdirs()) {
+					throw new IOException("No se pudo crear la carpeta 'portadas'");
+				}
+			}
 
-	        File newFile = new File(portadasFolder.getPath() + File.separator + nuevoNombreArchivo + ".jpg");
-	        Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			File newFile = new File(portadasFolder.getPath() + File.separator + nuevoNombreArchivo + ".jpg");
+			Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-	    } catch (IOException e) {
-	        manejarExcepcion(e);
-	    }
+		} catch (IOException e) {
+			manejarExcepcion(e);
+		}
 	}
-
 
 	/**
 	 * Copia un directorio y cuenta los archivos que no existen durante la copia.
@@ -1319,6 +1325,8 @@ public class Utilidades {
 	public static CompletableFuture<Boolean> descargarYConvertirImagenAsync(URI urlImagen, String carpetaDestino,
 			String nuevoNombre) {
 
+		System.out.println(nuevoNombre);
+
 		return CompletableFuture.supplyAsync(() -> {
 			try {
 				URL url = urlImagen.toURL();
@@ -1697,9 +1705,9 @@ public class Utilidades {
 	 * @return Cadena original o valor predeterminado.
 	 */
 	public static String defaultIfNullOrEmpty(String value, String defaultValue) {
-		
+
 		Comic.limpiarCampo(value);
-		
+
 		return (value == null || value.isEmpty()) ? defaultValue : value;
 	}
 
@@ -2714,6 +2722,40 @@ public class Utilidades {
 		Thread thread = new Thread(cargarImagenTask);
 		thread.setDaemon(true);
 		thread.start();
+	}
+
+	public static boolean existePortada(String direccionImagen) {
+
+		File direccionFichero = new File(direccionImagen);
+
+		return direccionFichero.exists();
+
+	}
+
+	public static String copiarConNombreAleatorio(String nombreCompletoPortadaOriginal) {
+		File archivoOriginal = new File(nombreCompletoPortadaOriginal);
+		String nombreCarpeta = archivoOriginal.getParent();
+		String extension = ".jpg"; // La extensión siempre será .jpg
+
+		String nombreAleatorio = Utilidades.generarCodigoUnico(SOURCE_PATH + File.separator);
+		String rutaDestino = nombreCarpeta + File.separator + nombreAleatorio + extension;
+		Path rutaDestinoPath = Path.of(rutaDestino);
+
+		try {
+
+			if (archivoOriginal.exists()) {
+				Files.copy(Path.of(nombreCompletoPortadaOriginal), rutaDestinoPath,
+						StandardCopyOption.REPLACE_EXISTING);
+
+				archivoOriginal.delete();
+			}
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return nombreAleatorio + extension;
 	}
 
 }

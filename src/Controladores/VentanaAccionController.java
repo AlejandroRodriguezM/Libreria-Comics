@@ -54,6 +54,7 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -556,7 +557,7 @@ public class VentanaAccionController implements Initializable {
 	 * Construimos la ruta al directorio "libreria_comics" dentro de "Documents" y
 	 * añadimos el nombre de la base de datos y la carpeta "portadas".
 	 */
-	private final String SOURCE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+	public final String SOURCE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
 			+ ConectManager.DB_NAME + File.separator + "portadas";
 
 	public static String apiKey = Utilidades.cargarApiComicVine();
@@ -628,6 +629,20 @@ public class VentanaAccionController implements Initializable {
 		controlarEventosInterfaz();
 
 	}
+	
+	@FXML
+	void ampliarImagen(MouseEvent event) {
+
+		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
+
+		if (idRow != null) {
+			String direccionImagen = idRow.getImagen();
+
+			ImagenAmpliadaController.direccionImagen = direccionImagen;
+
+			nav.verVentanaImagen();
+		}
+	}
 
 	/**
 	 * Asigna tooltips a varios elementos en la interfaz gráfica. Estos tooltips
@@ -698,6 +713,22 @@ public class VentanaAccionController implements Initializable {
 		idComicTratar_mod.textProperty().addListener((observable, oldValue, newValue) -> {
 			mostrarComic(idComicTratar_mod.getText());
 		});
+		
+        imagencomic.imageProperty().addListener((observable, oldImage, newImage) -> {
+            if (newImage != null) {
+                // Cambiar la apariencia del cursor y la opacidad cuando la imagen se ha cargado
+                imagencomic.setOnMouseEntered(e -> {
+                    imagencomic.setOpacity(0.7); // Cambiar la opacidad para indicar que es clickable
+                    imagencomic.setCursor(Cursor.HAND);
+                });
+
+                // Restaurar el cursor y la opacidad al salir del ImageView
+                imagencomic.setOnMouseExited(e -> {
+                    imagencomic.setOpacity(1.0); // Restaurar la opacidad
+                    imagencomic.setCursor(Cursor.DEFAULT);
+                });
+            }
+        });
 	}
 
 	public void listaElementosVentana() {
