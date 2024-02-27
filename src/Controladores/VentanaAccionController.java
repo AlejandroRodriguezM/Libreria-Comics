@@ -629,7 +629,7 @@ public class VentanaAccionController implements Initializable {
 		controlarEventosInterfaz();
 
 	}
-	
+
 	@FXML
 	void ampliarImagen(MouseEvent event) {
 
@@ -713,22 +713,22 @@ public class VentanaAccionController implements Initializable {
 		idComicTratar_mod.textProperty().addListener((observable, oldValue, newValue) -> {
 			mostrarComic(idComicTratar_mod.getText());
 		});
-		
-        imagencomic.imageProperty().addListener((observable, oldImage, newImage) -> {
-            if (newImage != null) {
-                // Cambiar la apariencia del cursor y la opacidad cuando la imagen se ha cargado
-                imagencomic.setOnMouseEntered(e -> {
-                    imagencomic.setOpacity(0.7); // Cambiar la opacidad para indicar que es clickable
-                    imagencomic.setCursor(Cursor.HAND);
-                });
 
-                // Restaurar el cursor y la opacidad al salir del ImageView
-                imagencomic.setOnMouseExited(e -> {
-                    imagencomic.setOpacity(1.0); // Restaurar la opacidad
-                    imagencomic.setCursor(Cursor.DEFAULT);
-                });
-            }
-        });
+		imagencomic.imageProperty().addListener((observable, oldImage, newImage) -> {
+			if (newImage != null) {
+				// Cambiar la apariencia del cursor y la opacidad cuando la imagen se ha cargado
+				imagencomic.setOnMouseEntered(e -> {
+					imagencomic.setOpacity(0.7); // Cambiar la opacidad para indicar que es clickable
+					imagencomic.setCursor(Cursor.HAND);
+				});
+
+				// Restaurar el cursor y la opacidad al salir del ImageView
+				imagencomic.setOnMouseExited(e -> {
+					imagencomic.setOpacity(1.0); // Restaurar la opacidad
+					imagencomic.setCursor(Cursor.DEFAULT);
+				});
+			}
+		});
 	}
 
 	public void listaElementosVentana() {
@@ -756,61 +756,63 @@ public class VentanaAccionController implements Initializable {
 	 */
 	public void rellenarCombosEstaticos() {
 
-		FuncionesComboBox.rellenarComboBoxEstaticos(comboboxesMod, TIPO_ACCION); // Llamada a la función para rellenar																		// ComboBoxes
+		FuncionesComboBox.rellenarComboBoxEstaticos(comboboxesMod, TIPO_ACCION); // Llamada a la función para rellenar
+																					// // ComboBoxes
 	}
 
 	public void formatearTextField() {
-	    // Agrupar funciones relacionadas
-	    limpiarTextField();
-	    restringirSimbolos();
-	    reemplazarEspaciosMultiples();
-	    permitirUnSimbolo();
+		// Agrupar funciones relacionadas
+		limpiarTextField();
+		restringirSimbolos();
+		reemplazarEspaciosMultiples();
+		permitirUnSimbolo();
 
-	    configurarValidadores();
+		configurarValidadores();
 
-	    desactivarValidadorIdSiEsAccionAniadir();
+		desactivarValidadorIdSiEsAccionAniadir();
 	}
 
 	private void limpiarTextField() {
-	    listaTextField = FXCollections.observableArrayList(nombreComic, editorialComic, guionistaComic, dibujanteComic, varianteComic);
-	    FuncionesManejoFront.eliminarEspacioInicial(nombreComic);
+		listaTextField = FXCollections.observableArrayList(nombreComic, editorialComic, guionistaComic, dibujanteComic,
+				varianteComic);
+		FuncionesManejoFront.eliminarEspacioInicial(nombreComic);
 	}
 
 	private void restringirSimbolos() {
-	    FuncionesManejoFront.restringirSimbolos(editorialComic);
-	    FuncionesManejoFront.restringirSimbolos(guionistaComic);
-	    FuncionesManejoFront.restringirSimbolos(dibujanteComic);
-	    FuncionesManejoFront.restringirSimbolos(varianteComic);
+		FuncionesManejoFront.restringirSimbolos(editorialComic);
+		FuncionesManejoFront.restringirSimbolos(guionistaComic);
+		FuncionesManejoFront.restringirSimbolos(dibujanteComic);
+		FuncionesManejoFront.restringirSimbolos(varianteComic);
 	}
 
 	private void reemplazarEspaciosMultiples() {
-	    FuncionesManejoFront.reemplazarEspaciosMultiples(nombreComic);
-	    FuncionesManejoFront.reemplazarEspaciosMultiples(editorialComic);
-	    FuncionesManejoFront.reemplazarEspaciosMultiples(guionistaComic);
-	    FuncionesManejoFront.reemplazarEspaciosMultiples(dibujanteComic);
-	    FuncionesManejoFront.reemplazarEspaciosMultiples(varianteComic);
+		FuncionesManejoFront.reemplazarEspaciosMultiples(nombreComic);
+		FuncionesManejoFront.reemplazarEspaciosMultiples(editorialComic);
+		FuncionesManejoFront.reemplazarEspaciosMultiples(guionistaComic);
+		FuncionesManejoFront.reemplazarEspaciosMultiples(dibujanteComic);
+		FuncionesManejoFront.reemplazarEspaciosMultiples(varianteComic);
 	}
 
 	private void permitirUnSimbolo() {
-	    FuncionesManejoFront.permitirUnSimbolo(nombreComic);
-	    FuncionesManejoFront.permitirUnSimbolo(editorialComic);
-	    FuncionesManejoFront.permitirUnSimbolo(guionistaComic);
-	    FuncionesManejoFront.permitirUnSimbolo(dibujanteComic);
-	    FuncionesManejoFront.permitirUnSimbolo(varianteComic);
-	    FuncionesManejoFront.permitirUnSimbolo(busquedaCodigo);
+		FuncionesManejoFront.permitirUnSimbolo(nombreComic);
+		FuncionesManejoFront.permitirUnSimbolo(editorialComic);
+		FuncionesManejoFront.permitirUnSimbolo(guionistaComic);
+		FuncionesManejoFront.permitirUnSimbolo(dibujanteComic);
+		FuncionesManejoFront.permitirUnSimbolo(varianteComic);
+		FuncionesManejoFront.permitirUnSimbolo(busquedaCodigo);
 	}
 
 	private void configurarValidadores() {
-	    numeroComic.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
-	    numeroCajaComic.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
-	    idComicTratar_mod.setTextFormatter(FuncionesComboBox.validador_Nenteros());
-	    precioComic.setTextFormatter(FuncionesComboBox.validador_Ndecimales());
+		numeroComic.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
+		numeroCajaComic.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
+		idComicTratar_mod.setTextFormatter(FuncionesComboBox.validador_Nenteros());
+		precioComic.setTextFormatter(FuncionesComboBox.validador_Ndecimales());
 	}
 
 	private void desactivarValidadorIdSiEsAccionAniadir() {
-	    if (TIPO_ACCION.equalsIgnoreCase("aniadir")) {
-	        idComicTratar_mod.setTextFormatter(FuncionesComboBox.desactivarValidadorNenteros());
-	    }
+		if (TIPO_ACCION.equalsIgnoreCase("aniadir")) {
+			idComicTratar_mod.setTextFormatter(FuncionesComboBox.desactivarValidadorNenteros());
+		}
 	}
 
 	/**
@@ -856,8 +858,8 @@ public class VentanaAccionController implements Initializable {
 				String id_comic = idRow.getID();
 				ListaComicsDAO.comicsImportados.removeIf(c -> c.getID().equals(id_comic));
 
-				tablaBBDD.getItems().clear();
 				FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, tablaBBDD, columnList);
+				tablaBBDD.refresh();
 
 				if (ListaComicsDAO.comicsImportados.size() < 1) {
 					cambiarEstadoBotones(false);
@@ -1218,12 +1220,15 @@ public class VentanaAccionController implements Initializable {
 
 		List<Node> elementos = Arrays.asList(botonEliminarImportadoComic, botonSubidaPortada, botonGuardarComic);
 
+		if (!TIPO_ACCION.equals("aniadir")) {
+			elementos.add(botonBusquedaCodigo);
+			elementos.add(busquedaCodigo);
+		}
+
 		botonCancelarSubida.setVisible(esCancelado);
 		botonLimpiar.setDisable(esCancelado);
 		botonBusquedaAvanzada.setDisable(esCancelado);
 		botonGuardarCambioComic.setDisable(esCancelado);
-		botonBusquedaCodigo.setVisible(false);
-		busquedaCodigo.setVisible(false);
 
 		cambiarVisibilidad(elementos, esCancelado);
 
@@ -1245,7 +1250,6 @@ public class VentanaAccionController implements Initializable {
 		} else {
 			cambiarVisibilidad(elementos, false);
 		}
-
 	}
 
 	/**
@@ -1355,15 +1359,16 @@ public class VentanaAccionController implements Initializable {
 					imagencomic.setImage(null);
 					imagencomic.setVisible(true);
 					botonCancelarSubida.setVisible(true);
+
 					AlarmaList.iniciarAnimacionCargaImagen(cargaImagen);
 					menu_Importar_Fichero_CodigoBarras.setDisable(true);
 
 				});
 
 				tarea.setOnSucceeded(ev -> {
-					botonCancelarSubida.setVisible(false);
 					AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
 					menu_Importar_Fichero_CodigoBarras.setDisable(false);
+					botonCancelarSubida.setVisible(false);
 					cambiarEstadoBotones(false);
 
 					if (ListaComicsDAO.comicsImportados.size() > 0) {

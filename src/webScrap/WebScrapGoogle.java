@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -23,19 +24,7 @@ import comicManagement.Comic;
 public class WebScrapGoogle {
 
 	public static String agregarMasAMayusculas(String cadena) {
-		StringBuilder resultado = new StringBuilder();
-		resultado.append(cadena.charAt(0)); // Incluimos la primera letra sin cambios
-
-		for (int i = 1; i < cadena.length(); i++) {
-			char caracterActual = cadena.charAt(i);
-			if (Character.isUpperCase(caracterActual)) {
-				resultado.append("+").append(caracterActual);
-			} else {
-				resultado.append(caracterActual);
-			}
-		}
-
-		return resultado.toString();
+	    return cadena.toUpperCase();
 	}
 
 	public static String buscarURL(String searchTerm) throws URISyntaxException {
@@ -68,41 +57,44 @@ public class WebScrapGoogle {
 	}
 
 	public static String buscarEnGoogle(String searchTerm) throws URISyntaxException {
-		searchTerm = agregarMasAMayusculas(searchTerm);
-		searchTerm = searchTerm.replace("(", "%28").replace(")", "%29").replace("#", "%23");
+	    searchTerm = agregarMasAMayusculas(searchTerm);
+	    searchTerm = searchTerm.replace("(", "%28").replace(")", "%29").replace("#", "%23");
 
-		String urlString = "https://www.google.com/search?q=" + searchTerm + "+league+of+comic";
+	    try {
+	    	
+	        String encodedSearchTerm = URLEncoder.encode(searchTerm, "UTF-8");
+	        String urlString = "https://www.google.com/search?q=" + encodedSearchTerm + "+league+of+comics";
 
-		try {
-			URI uri = new URI(urlString);
-			URL url = uri.toURL();
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			con.setRequestMethod("GET");
-			con.setRequestProperty("User-Agent",
-					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36");
+	        URI uri = new URI(urlString);
+	        URL url = uri.toURL();
+	        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+	        con.setRequestMethod("GET");
+	        con.setRequestProperty("User-Agent",
+	                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36");
 
-			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			String inputLine;
-			StringBuilder content = new StringBuilder();
-			while ((inputLine = in.readLine()) != null) {
-				content.append(inputLine);
-			}
-			in.close();
-			con.disconnect();
+	        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+	        String inputLine;
+	        StringBuilder content = new StringBuilder();
+	        while ((inputLine = in.readLine()) != null) {
+	            content.append(inputLine);
+	        }
+	        in.close();
+	        con.disconnect();
 
-			String html = content.toString();
-			int startIndex = html.indexOf("https://leagueofcomicgeeks.com/");
-			if (startIndex != -1) {
-				int endIndex = html.indexOf("\"", startIndex);
-				return html.substring(startIndex, endIndex);
-			} else {
-				return null;
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
+	        String html = content.toString();
+	        int startIndex = html.indexOf("https://leagueofcomicgeeks.com/");
+	        if (startIndex != -1) {
+	            int endIndex = html.indexOf("\"", startIndex);
+	            return html.substring(startIndex, endIndex);
+	        } else {
+	            return null;
+	        }
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	        return null;
+	    }
 	}
+
 
 	public static boolean esURL(String urlString) {
 		try {
@@ -123,7 +115,6 @@ public class WebScrapGoogle {
 
 		url = buscarURL(url);
 		if (url == null) {
-			System.out.println("No encontrada");
 			return null;
 		}
 
