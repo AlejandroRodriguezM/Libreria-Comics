@@ -4,61 +4,34 @@
 */
 package Controladores;
 
-/**
- * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
- * Las ventanas graficas se realizan con JavaFX.
- * El programa permite:
- *  - Conectarse a la base de datos.
- *  - Ver la base de datos completa o parcial segun parametros introducidos.
- *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
- *  - Copia de seguridad de la base de datos en formato .sql
- *  - Introducir comics a la base de datos.
- *  - Modificar comics de la base de datos.
- *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
- *  - Ver frases de personajes de comics
- *  - Opcion de escoger algo para leer de forma aleatoria.
- *  - Puntuar comics que se encuentren dentro de la base de datos.
- *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
- *
- *  Version 7.0.0.0
- *
- *  @author Alejandro Rodriguez
- *
- */
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
 import java.net.URL;
+import java.sql.SQLException;
+import java.util.Map;
 import java.util.ResourceBundle;
-import javafx.animation.Animation;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import com.gluonhq.charm.glisten.control.ProgressIndicator;
 
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
-import JDBC.DBManager;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import alarmas.AlarmaList;
+import dbmanager.ConectManager;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.control.Tooltip;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 /**
  * Esta clase sirve para acceder a la base de datos y poder realizar diferentes
@@ -190,30 +163,8 @@ public class AccesoBBDDController implements Initializable {
 	@FXML
 	private TextField passUsuarioTextField;
 
-	/**
-	 * Objeto para gestionar animaciones con una línea de tiempo.
-	 */
-	private Timeline timeline;
-
-	/**
-	 * Objeto para gestionar animaciones de la alarma.
-	 */
-	private Timeline animacionAlarmaTimeline;
-
-	/**
-	 * Objeto para gestionar animaciones de la alarma en línea.
-	 */
-	private Timeline animacionAlarmaOnlineTimeline;
-
-	/**
-	 * Objeto para gestionar animaciones de la alarma de conexión a Internet.
-	 */
-	private Timeline animacionAlarmaTimelineInternet;
-
-	/**
-	 * Objeto para gestionar animaciones de la alarma de conexión a MySQL.
-	 */
-	private Timeline animacionAlarmaTimelineMySql;
+	@FXML
+	private ProgressIndicator progresoCarga;
 
 	/**
 	 * Estado del botón de alternancia del ojo.
@@ -225,10 +176,9 @@ public class AccesoBBDDController implements Initializable {
 	 */
 	private static Ventanas nav = new Ventanas();
 
-	/**
-	 * Controlador para crear la base de datos.
-	 */
-	private static CrearBBDDController cbd = null;
+	private static AlarmaList alarmaList = new AlarmaList();
+
+	private static ExecutorService executorService;
 
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
@@ -243,211 +193,27 @@ public class AccesoBBDDController implements Initializable {
 		Utilidades.cargarTasasDeCambioDesdeArchivo();
 		Utilidades.guardarApiComicVine();
 
-		Thread checkerThread = new Thread(() -> {
-			try {
-				while (true) {
+		alarmaList.setAlarmaConexion(alarmaConexion);
+		alarmaList.setAlarmaConexionInternet(alarmaConexionInternet);
+		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
+		alarmaList.setAlarmaConexionPrincipal(prontEstadoConexion);
 
-					String port = Utilidades.obtenerDatoDespuesDeDosPuntos("Puerto");
-					String host = Utilidades.obtenerDatoDespuesDeDosPuntos("Hosting");
+		alarmaList.iniciarThreadChecker(false);
 
-					boolean estadoInternet = Utilidades.isInternetAvailable();
-					Platform.runLater(() -> {
-						if (estadoInternet) {
+		Utilidades.crearEstructura();
 
-							if (animacionAlarmaTimelineInternet != null) {
-								animacionAlarmaTimelineInternet.stop();
-							}
-							asignarTooltip(alarmaConexionInternet, "Tienes conexion a internet");
-							alarmaConexionInternet.setStyle("-fx-background-color: blue;");
-						} else {
-							asignarTooltip(alarmaConexionInternet, "No tienes conexion a internet");
+		Utilidades.comprobarApisComics();
 
-							iniciarAnimacionInternet();
-						}
-						if (isMySQLServiceRunning(host, port)) {
-							if (animacionAlarmaTimelineMySql != null
-									&& animacionAlarmaTimelineMySql.getStatus() == Animation.Status.RUNNING) {
-								animacionAlarmaTimelineMySql.stop();
-							}
-							asignarTooltip(alarmaConexionSql, "Servicio de MySql activado");
+		ConectManager.asignarValoresPorDefecto();
 
-							alarmaConexionSql.setStyle("-fx-background-color: green;");
-						} else {
-							asignarTooltip(alarmaConexionSql, "Servicio de MySql desactivado");
-
-							iniciarAnimacionSql();
-						}
-					});
-					Thread.sleep(15000); // Espera 15 segundos
+		Platform.runLater(() -> {
+			progresoCarga.getScene().getWindow().setOnHidden(e -> {
+				if (executorService != null && !executorService.isShutdown()) {
+					executorService.shutdownNow();
 				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			});
 		});
 
-		checkerThread.setDaemon(true); // Marcar el hilo como daemon
-		checkerThread.start();
-
-		asignarTooltip(alarmaConexion, "No estas conectado a la base de datos.");
-
-		crearEstructura();
-		detenerAnimacion();
-		if (!JDBC.DBManager.isConnected()) {
-			iniciarAnimacionEspera();
-
-			if (animacionAlarmaTimeline != null) {
-				animacionAlarmaTimeline.stop();
-			}
-			iniciarAnimacionAlarma();
-
-		} else {
-			alarmaConexion.setStyle("-fx-background-color: green;");
-
-		}
-
-		Image eyeOpenImage = new Image(getClass().getResourceAsStream("/imagenes/visible.png"), 20, 20, true, true);
-		Image eyeClosedImage = new Image(getClass().getResourceAsStream("/imagenes/hide.png"), 20, 20, true, true);
-
-		// Configurar el ImageView con la imagen de ojo abierto inicialmente
-		toggleEyeImageView.setImage(eyeOpenImage);
-
-		// Establecer el manejador de eventos para el ImageView
-		toggleEyeImageView.setOnMouseClicked(event -> {
-			if (toggleEyeImageView.getImage() == eyeOpenImage) {
-				passUsuarioTextField.setVisible(true);
-				passUsuarioTextField.setDisable(false);
-
-				passUsuarioText.setVisible(false);
-				passUsuarioText.setDisable(true);
-				passUsuarioText.setPromptText(passUsuarioText.getPromptText());
-				passUsuarioTextField.setText(passUsuarioText.getText());
-				toggleEyeImageView.setImage(eyeClosedImage); // Cambiar a la imagen de ojo cerrado
-				estadoOjo = true;
-			} else {
-				passUsuarioTextField.setVisible(false);
-				passUsuarioTextField.setDisable(true);
-				passUsuarioText.setVisible(true);
-				passUsuarioText.setDisable(false);
-
-				passUsuarioText.setText(passUsuarioTextField.getText());
-				passUsuarioText.setPromptText(passUsuarioText.getPromptText());
-				toggleEyeImageView.setImage(eyeOpenImage); // Cambiar a la imagen de ojo abierto
-				estadoOjo = false;
-			}
-		});
-
-		toogleButton.setOnAction(event -> {
-			boolean isSelected = toogleButton.isSelected();
-			toogleButton.setText(isSelected ? "Online" : "Local");
-
-			// Elementos relacionados con la conexión Online/Local
-//		    toggleEye.setVisible(isSelected);
-			nomUsuarioLabel.setVisible(isSelected);
-			nomUsuarioText.setVisible(isSelected);
-			passUsuarioLabel.setVisible(isSelected);
-			passUsuarioText.setVisible(isSelected);
-			checkRecordar.setVisible(isSelected);
-			botonAccesobbddOnline.setVisible(isSelected);
-			toggleEyeImageView.setVisible(isSelected);
-
-			// Elementos relacionados con la conexión Offline
-			botonEnviar.setVisible(!isSelected);
-			botonAccesobbdd.setVisible(!isSelected);
-
-			// Deshabilitar elementos
-			botonEnviar.setDisable(isSelected);
-			botonAccesobbdd.setDisable(isSelected);
-//		    toggleEye.setDisable(!isSelected);
-			toggleEyeImageView.setDisable(!isSelected);
-			nomUsuarioLabel.setDisable(!isSelected);
-			nomUsuarioText.setDisable(!isSelected);
-			passUsuarioLabel.setDisable(!isSelected);
-			passUsuarioText.setDisable(!isSelected);
-			checkRecordar.setDisable(!isSelected);
-			botonAccesobbddOnline.setDisable(!isSelected);
-
-			if (isSelected) {
-
-				if (animacionAlarmaOnlineTimeline != null) {
-					animacionAlarmaOnlineTimeline.stop();
-				}
-				formulario_online();
-				prontEstadoConexion.setStyle("-fx-background-color: #29B6CC");
-				detenerAnimacion();
-				alarmaConexion.setStyle("-fx-background-color: yellow;");
-				iniciarAnimacionAlarma();
-				iniciarAnimacionEspera();
-
-				if (DBManager.isConnected()) {
-					DBManager.close();
-				}
-
-			} else {
-				alarmaConexion.setStyle("-fx-background-color: yellow;");
-				iniciarAnimacionAlarma();
-				iniciarAnimacionEspera();
-			}
-		});
-
-		String apiKey = Utilidades.cargarApiComicVine();
-		String clavesMarvel[] = Utilidades.clavesApiMarvel();
-
-		if (!Utilidades.existeContenido(apiKey, clavesMarvel)) {
-
-			String excepcion = "";
-
-			if (apiKey == null || apiKey.isEmpty()) {
-				excepcion += "\n - Debes de conseguir una clave API de Comic Vine. La pagina es https://comicvine.gamespot.com/api/ es gratuito";
-			}
-
-			// Comprueba si claves es nulo o está vacío
-			if (clavesMarvel == null || clavesMarvel.length < 2 || clavesMarvel[0] == null || clavesMarvel[0].isEmpty()
-					|| clavesMarvel[1] == null || clavesMarvel[1].isEmpty()) {
-
-				excepcion += "\n - Debes de conseguir una clave API de Marvel. La pagina es https://developer.marvel.com/  es gratuito";
-			}
-
-			if (excepcion.length() > 0) {
-				
-				excepcion += "\n - Para poner las claves, debes de añadirlas dentro de sus respectivos ficheros en la carpeta 'AppData/Roaming/libreria' de su ordenador";
-				
-				nav.alertaNoApi(excepcion);
-			}
-
-		}
-
-	}
-
-	/**
-	 * Asigna un mensaje de tooltip a una etiqueta (Label).
-	 *
-	 * @param label   La etiqueta a la que se le asignará el tooltip.
-	 * @param mensaje El mensaje que se mostrará en el tooltip.
-	 */
-	private void asignarTooltip(Label label, String mensaje) {
-		Tooltip tooltip = new Tooltip(mensaje);
-		label.setTooltip(tooltip);
-	}
-
-	/**
-	 * Verifica si el servicio MySQL está en funcionamiento en la dirección y puerto
-	 * proporcionados.
-	 *
-	 * @param host       La dirección del host del servicio MySQL.
-	 * @param portString El número de puerto del servicio MySQL como cadena.
-	 * @return true si el servicio MySQL está en funcionamiento, false si no lo está
-	 *         o si ocurre un error.
-	 */
-	public static boolean isMySQLServiceRunning(String host, String portString) {
-		try {
-			int port = Integer.parseInt(portString); // Convertir la cadena a un entero
-			InetAddress address = InetAddress.getByName(host);
-			Socket socket = new Socket(address, port);
-			socket.close();
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
 	}
 
 	/**
@@ -471,28 +237,6 @@ public class AccesoBBDDController implements Initializable {
 				Utilidades.accesoWebMac(url1); // Llamada a funcion
 				Utilidades.accesoWebMac(url2); // Llamada a funcion
 			}
-		}
-	}
-
-	/**
-	 * Funcion que permite el acceso a la ventana de menuPrincipal
-	 *
-	 * @param event
-	 */
-	@FXML
-	void entrarMenu(ActionEvent event) {
-
-		if (JDBC.DBManager.isConnected()) { // Siempre que el metodo de la clase DBManager sea true, permitira acceder
-			DBManager.resetConnection();
-			// al menu principal
-			nav.verMenuPrincipal(); // Llamada a metodo de la clase NavegacionVentanas. Permite cargar y mostrar el
-									// menu principal
-			Stage myStage = (Stage) this.botonAccesobbdd.getScene().getWindow();
-			myStage.close();
-		} else { // En caso contrario mostrara el siguiente mensaje.
-			detenerAnimacion();
-			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
-			iniciarAnimacionConexion();
 		}
 	}
 
@@ -525,33 +269,45 @@ public class AccesoBBDDController implements Initializable {
 	 * de configuración.
 	 */
 	public void formulario_online() {
-		String userHome = System.getProperty("user.home");
-		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
-		String carpetaLibreria = ubicacion + File.separator + "libreria";
-		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion_usuario.conf";
 
-		boolean usuarioEncontrado = false;
-		boolean passwordEncontrado = false;
+		Map<String, String> datosConfiguracion = Utilidades.devolverDatosConfig();
 
-		try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				if (line.startsWith("Usuario: ")) {
-					String usuarioTexto = line.substring("Usuario: ".length());
-					nomUsuarioText.setText(usuarioTexto);
-					usuarioEncontrado = usuarioTexto.length() > 1;
-				} else if (line.startsWith("Password: ")) {
-					String passwordTexto = line.substring("Password: ".length());
-					passUsuarioText.setText(passwordTexto);
-					passwordEncontrado = passwordTexto.length() > 1;
-				}
-			}
+		String usuarioTexto = datosConfiguracion.get("Usuario");
+		String passwordTexto = datosConfiguracion.get("Password");
 
-			if (usuarioEncontrado && passwordEncontrado) {
-				checkRecordar.setSelected(true); // Marcar el CheckBox
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		nomUsuarioText.setText(usuarioTexto);
+
+		passUsuarioText.setText(passwordTexto);
+
+		checkRecordar.setSelected(true); // Marcar el CheckBox
+
+	}
+
+	/**
+	 * Funcion que permite el acceso a la ventana de menuPrincipal
+	 *
+	 * @param event
+	 */
+	@FXML
+	void entrarMenu(ActionEvent event) {
+
+		if (!Utilidades.isMySQLServiceRunning(ConectManager.DB_HOST, ConectManager.DB_PORT)) {
+			AlarmaList.detenerAnimacion();
+			AlarmaList.iniciarAnimacionConexion(prontEstadoConexion);
+			AlarmaList.iniciarAnimacionAlarma(alarmaConexion);
+			return;
+		}
+
+		if (ConectManager.estadoConexion) { // Siempre que el metodo de la clase DBManager sea true, permitira acceder
+			ConectManager.resetConnection();
+			// al menu principal
+			nav.verMenuPrincipal();
+			closeWindow();
+		} else { // En caso contrario mostrara el siguiente mensaje.
+			AlarmaList.detenerAnimacion();
+			ConectManager.asignarValoresPorDefecto();
+			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
+			AlarmaList.iniciarAnimacionConexion(prontEstadoConexion);
 		}
 	}
 
@@ -559,76 +315,85 @@ public class AccesoBBDDController implements Initializable {
 	 * Maneja el evento de enviar datos a la base de datos.
 	 *
 	 * @param event El evento de acción que desencadenó la función.
+	 * @throws SQLException
 	 */
 	@FXML
-	void enviarDatos(ActionEvent event) {
-		if (!JDBC.DBManager.loadDriver()) { // Llamada a método que permite comprobar que el driver de conexión a la
-											// base de datos
-			return;
-		}
+	void enviarDatos(ActionEvent event) throws SQLException {
 
-		envioDatosBBDD(); // Llamada a método que manda los datos de los textField de la ventana hacia la
-							// clase DBManager.
-		DBManager.conexion(); // Llamada a método que permite conectar con la base de datos.
-		cbd = new CrearBBDDController();
+		String[] datosFichero = Utilidades.datosEnvioFichero();
 
-		if (JDBC.DBManager.isConnected()) {
-			if (cbd.chechTables()) {
-				String userHome = System.getProperty("user.home");
-				String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
-				String carpetaLibreria = ubicacion + File.separator + "libreria";
-				String carpetaBackup = carpetaLibreria + File.separator + Utilidades.obtenerDatoDespuesDeDosPuntos("Database")
-						+ File.separator + "backups";
+		if (configurarConexion()) {
 
-				try {
-					File carpeta_backupsFile = new File(carpetaBackup);
-					Utilidades.crearCarpeta();
-					if (!carpeta_backupsFile.exists()) {
-						carpeta_backupsFile.mkdirs();
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				detenerAnimacion();
-				prontEstadoConexion.setStyle("-fx-background-color: #A0F52D");
-				iniciarAnimacionConectado();
+			ConectManager.datosBBDD(datosFichero);
+			if (ConectManager.isConnected()) {
+				AlarmaList.detenerAnimacion();
+				AlarmaList.iniciarAnimacionConectado(prontEstadoConexion);
+				AlarmaList.manejarConexionExitosa(datosFichero, prontEstadoConexion);
 
-				alarmaConexion.setStyle(null);
-				alarmaConexion.setStyle("-fx-background-color: blue;");
-				if (animacionAlarmaOnlineTimeline != null) {
-					animacionAlarmaOnlineTimeline.stop(); // Detener la animación anterior
-				}
-				asignarTooltip(alarmaConexion, "Estas conectado a la base de datos.");
-				iniciarAnimacionAlarmaOnline();
-				animacionAlarmaOnlineTimeline.play();
-
+			} else {
+				AlarmaList.manejarErrorConexion("No estás conectado a la base de datos.", prontEstadoConexion);
 			}
-		} else { // En caso contrario mostrará el siguiente mensaje
-			asignarTooltip(alarmaConexion, "No estas conectado a la base de datos.");
-			detenerAnimacion();
-			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
-			iniciarAnimacionError();
 		}
 	}
 
 	/**
-	 * Funcion que permite mandar los datos a la clase DBManager
-	 *
+	 * Configura la conexión a la base de datos.
+	 * 
+	 * @return true si la configuración es exitosa, false de lo contrario.
 	 */
-	public void envioDatosBBDD() {
-		detenerAnimacion();
-		cbd = new CrearBBDDController();
-		String datos[] = new String[5];
-		datos[0] = Utilidades.obtenerDatoDespuesDeDosPuntos("Puerto");
-		datos[1] = Utilidades.obtenerDatoDespuesDeDosPuntos("Database");
-		datos[2] = Utilidades.obtenerDatoDespuesDeDosPuntos("Usuario");
-		datos[3] = Utilidades.obtenerDatoDespuesDeDosPuntos("Password");
-		datos[4] = Utilidades.obtenerDatoDespuesDeDosPuntos("Hosting");
+	private boolean configurarConexion() {
 
-		DBManager.datosBBDD(datos);
+		if (!ConectManager.loadDriver()) {
+			return false;
+		}
+
+		return true;
 	}
 
+	public Scene miStageVentana() {
 
+		Scene scene = botonEnviar.getScene();
+		return scene;
+
+	}
+
+	@FXML
+	void reActivarConexion(ActionEvent event) {
+		Task<Boolean> iniciarXAMPPTask = new Task<Boolean>() {
+			@Override
+			protected Boolean call() throws Exception {
+				// Realizar las operaciones de inicio de XAMPP aquí
+				return Utilidades.iniciarXAMPP();
+			}
+		};
+
+		// Configurar eventos onRunning y onSucceeded
+		iniciarXAMPPTask.setOnRunning(e -> {
+			AlarmaList.iniciarAnimacionCarga(progresoCarga);
+		});
+
+		iniciarXAMPPTask.setOnSucceeded(e -> {
+			boolean exito = iniciarXAMPPTask.getValue();
+
+			Platform.runLater(() -> {
+				if (exito) {
+					AlarmaList.detenerAnimacionCarga(progresoCarga);
+				} else {
+					AlarmaList.detenerAnimacionCarga(progresoCarga);
+				}
+			});
+
+			// Cerrar el hilo después de completar la tarea
+			if (!executorService.isShutdown()) {
+				executorService.shutdown();
+			}
+
+		});
+
+		// Iniciar la tarea en un nuevo hilo utilizando un ExecutorService
+		executorService = Executors.newSingleThreadExecutor();
+		executorService.submit(iniciarXAMPPTask);
+	}
 
 	/**
 	 * Permite salir completamente del programa.
@@ -650,6 +415,7 @@ public class AccesoBBDDController implements Initializable {
 	 */
 	@FXML
 	void opcionesPrograma(ActionEvent event) {
+
 		nav.verOpciones();
 
 		Stage myStage = (Stage) this.botonOpciones.getScene().getWindow();
@@ -659,281 +425,9 @@ public class AccesoBBDDController implements Initializable {
 	/**
 	 * Cierra el programa a la fuerza correctamente.
 	 */
-	public void closeWindows() { // Metodo que permite cerrar completamente el programa en caso de cerrar a la //
+	public void closeWindow() { // Metodo que permite cerrar completamente el programa en caso de cerrar a la //
 		// fuerza.
 		Stage myStage = (Stage) this.botonEnviar.getScene().getWindow();
 		myStage.close();
-	}
-
-	/**
-	 * Método que crea la estructura de carpetas y archivos necesarios para la
-	 * librería.
-	 */
-	public void crearEstructura() {
-		String userHome = System.getProperty("user.home");
-		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
-		String carpetaLibreria = ubicacion + File.separator + "libreria";
-
-		// Verificar y crear la carpeta "libreria" si no existe
-		File carpetaLibreriaFile = new File(carpetaLibreria);
-		if (!carpetaLibreriaFile.exists()) {
-			carpetaLibreriaFile.mkdir();
-			carpetaLibreriaFile.setWritable(true);
-		}
-
-		// Verificar y crear los archivos de configuración si no existen
-		String archivoConfiguracionLocal = carpetaLibreria + File.separator + "configuracion_local.conf";
-		String archivoConfiguracionOnline = carpetaLibreria + File.separator + "configuracion_usuario.conf";
-
-		File archivoConfiguracionLocalFile = new File(archivoConfiguracionLocal);
-		File archivoConfiguracionOnlineFile = new File(archivoConfiguracionOnline);
-
-		if (!archivoConfiguracionLocalFile.exists()) {
-			try {
-				archivoConfiguracionLocalFile.createNewFile();
-
-				// Escribir líneas en el archivo de configuración local
-				FileWriter fileWriterLocal = new FileWriter(archivoConfiguracionLocalFile);
-				BufferedWriter bufferedWriterLocal = new BufferedWriter(fileWriterLocal);
-				bufferedWriterLocal.write("###############################");
-				bufferedWriterLocal.newLine();
-				bufferedWriterLocal.write("Fichero de configuracion local de la libreria");
-				bufferedWriterLocal.newLine();
-				bufferedWriterLocal.write("###############################");
-				bufferedWriterLocal.newLine();
-				bufferedWriterLocal.write("Usuario:");
-				bufferedWriterLocal.newLine();
-				bufferedWriterLocal.write("Password:");
-				bufferedWriterLocal.newLine();
-				bufferedWriterLocal.write("Puerto:");
-				bufferedWriterLocal.newLine();
-				bufferedWriterLocal.write("Database:");
-				bufferedWriterLocal.newLine();
-				bufferedWriterLocal.write("Hosting: Localhost");
-				bufferedWriterLocal.newLine();
-				bufferedWriterLocal.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		if (!archivoConfiguracionOnlineFile.exists()) {
-			try {
-				archivoConfiguracionOnlineFile.createNewFile();
-
-				// Escribir líneas en el archivo de configuración online
-				FileWriter fileWriterOnline = new FileWriter(archivoConfiguracionOnlineFile);
-				BufferedWriter bufferedWriterOnline = new BufferedWriter(fileWriterOnline);
-				bufferedWriterOnline.write("###############################");
-				bufferedWriterOnline.newLine();
-				bufferedWriterOnline.write("Usuario y contraseño del usuario");
-				bufferedWriterOnline.newLine();
-				bufferedWriterOnline.write("###############################");
-				bufferedWriterOnline.newLine();
-				bufferedWriterOnline.write("Usuario: ");
-				bufferedWriterOnline.newLine();
-				bufferedWriterOnline.write("Password: ");
-				bufferedWriterOnline.newLine();
-				bufferedWriterOnline.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	/**
-	 * Metodo que permite crear una animacion
-	 */
-	private void iniciarAnimacionEspera() {
-		timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
-
-		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarEsperando = new KeyFrame(Duration.ZERO,
-				new KeyValue(prontEstadoConexion.textProperty(), "Esperando"));
-		KeyFrame mostrarPunto = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(prontEstadoConexion.textProperty(), "Esperando."));
-		KeyFrame mostrarDosPuntos = new KeyFrame(Duration.seconds(1),
-				new KeyValue(prontEstadoConexion.textProperty(), "Esperando.."));
-		KeyFrame mostrarTresPuntos = new KeyFrame(Duration.seconds(1.5),
-				new KeyValue(prontEstadoConexion.textProperty(), "Esperando..."));
-		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(2), new KeyValue(prontEstadoConexion.textProperty(), ""));
-
-		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(mostrarEsperando, mostrarPunto, mostrarDosPuntos, mostrarTresPuntos,
-				ocultarTexto);
-
-		// Iniciar la animación
-		timeline.play();
-	}
-
-	/**
-	 * Inicia la animación de alarma, que cambia el color de fondo de la alarma
-	 * entre amarillo y transparente.
-	 */
-	private void iniciarAnimacionAlarma() {
-		animacionAlarmaTimeline = new Timeline();
-		animacionAlarmaTimeline.setCycleCount(Timeline.INDEFINITE);
-
-		KeyFrame mostrarAmarillo = new KeyFrame(Duration.ZERO,
-				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: yellow;"));
-		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.0),
-				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
-		KeyFrame mostrarTransparente = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: yellow;"));
-		KeyFrame mostrarAmarilloNuevamente = new KeyFrame(Duration.seconds(1.0),
-				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
-
-		animacionAlarmaTimeline.getKeyFrames().addAll(mostrarAmarillo, ocultarTexto, mostrarTransparente,
-				mostrarAmarilloNuevamente);
-
-		animacionAlarmaTimeline.play();
-	}
-
-	/**
-	 * Inicia la animación de alarma online, que cambia el color de fondo de la
-	 * alarma entre verde y transparente.
-	 */
-	private void iniciarAnimacionAlarmaOnline() {
-		animacionAlarmaOnlineTimeline = new Timeline();
-		animacionAlarmaOnlineTimeline.setCycleCount(Timeline.INDEFINITE);
-
-		KeyFrame mostrarVerde = new KeyFrame(Duration.ZERO,
-				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: green;"));
-		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.0),
-				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
-		KeyFrame mostrarTransparente = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: green;"));
-		KeyFrame mostrarVerdeNuevamente = new KeyFrame(Duration.seconds(1.0),
-				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: transparent;"));
-
-		animacionAlarmaOnlineTimeline.getKeyFrames().addAll(mostrarVerde, ocultarTexto, mostrarTransparente,
-				mostrarVerdeNuevamente);
-		animacionAlarmaOnlineTimeline.play();
-	}
-
-	/**
-	 * Inicia la animación de alarma para la conexión a internet, cambia el color de
-	 * fondo de la alarma entre naranja y rojo.
-	 */
-	private void iniciarAnimacionInternet() {
-		animacionAlarmaTimelineInternet = new Timeline();
-		animacionAlarmaTimelineInternet.setCycleCount(Timeline.INDEFINITE);
-
-		KeyFrame mostrarAmarillo1 = new KeyFrame(Duration.ZERO,
-				new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: orange;"));
-		KeyFrame mostrarRojo1 = new KeyFrame(Duration.seconds(0.0),
-				new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: red;"));
-		KeyFrame mostrarAmarillo2 = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: orange;"));
-		KeyFrame mostrarRojo2 = new KeyFrame(Duration.seconds(1.0),
-				new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: red;"));
-		KeyFrame mostrarAmarillo3 = new KeyFrame(Duration.seconds(1.5),
-				new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: orange;"));
-		KeyFrame mostrarRojo3 = new KeyFrame(Duration.seconds(2.0),
-				new KeyValue(alarmaConexionInternet.styleProperty(), "-fx-background-color: red;"));
-
-		animacionAlarmaTimelineInternet.getKeyFrames().addAll(mostrarAmarillo1, mostrarRojo1, mostrarAmarillo2,
-				mostrarRojo2, mostrarAmarillo3, mostrarRojo3);
-		animacionAlarmaTimelineInternet.play();
-	}
-
-	/**
-	 * Inicia la animación de alarma para la conexión a la base de datos MySQL,
-	 * cambia el color de fondo de la alarma entre naranja y amarillo.
-	 */
-	private void iniciarAnimacionSql() {
-		animacionAlarmaTimelineMySql = new Timeline();
-		animacionAlarmaTimelineMySql.setCycleCount(Timeline.INDEFINITE);
-
-		KeyFrame mostrarAmarillo1 = new KeyFrame(Duration.ZERO,
-				new KeyValue(alarmaConexionSql.styleProperty(), "-fx-background-color: orange;"));
-		KeyFrame mostrarAmarillo2 = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(alarmaConexionSql.styleProperty(), "-fx-background-color: orange;"));
-		KeyFrame mostrarAmarillo3 = new KeyFrame(Duration.seconds(1.5),
-				new KeyValue(alarmaConexionSql.styleProperty(), "-fx-background-color: orange;"));
-
-		KeyFrame mostrarAmarillo4 = new KeyFrame(Duration.seconds(2.0),
-				new KeyValue(alarmaConexionSql.styleProperty(), "-fx-background-color: orange;"));
-
-		animacionAlarmaTimelineMySql.getKeyFrames().addAll(mostrarAmarillo1, mostrarAmarillo2, mostrarAmarillo3,
-				mostrarAmarillo4);
-		animacionAlarmaTimelineMySql.play();
-	}
-
-	/**
-	 * Metodo que permite crear una animacion
-	 */
-	private void iniciarAnimacionConectado() {
-		timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
-
-		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarConectado = new KeyFrame(Duration.ZERO,
-				new KeyValue(prontEstadoConexion.textProperty(), "Conectado"));
-		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(prontEstadoConexion.textProperty(), ""));
-		KeyFrame mostrarConectado2 = new KeyFrame(Duration.seconds(1),
-				new KeyValue(prontEstadoConexion.textProperty(), "Conectado"));
-
-		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(mostrarConectado, ocultarTexto, mostrarConectado2);
-
-		// Iniciar la animación
-		timeline.play();
-	}
-
-	/**
-	 * Metodo que permite crear una animacion
-	 */
-	private void iniciarAnimacionError() {
-		timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
-
-		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarError = new KeyFrame(Duration.ZERO,
-				new KeyValue(prontEstadoConexion.textProperty(), "ERROR. Activa MySql"));
-		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(prontEstadoConexion.textProperty(), ""));
-		KeyFrame mostrarError2 = new KeyFrame(Duration.seconds(1),
-				new KeyValue(prontEstadoConexion.textProperty(), "ERROR. Activa MySql"));
-
-		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(mostrarError, ocultarTexto, mostrarError2);
-
-		// Iniciar la animación
-		timeline.play();
-	}
-
-	/**
-	 * Metodo que permite crear una animacion
-	 */
-	private void iniciarAnimacionConexion() {
-		timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
-
-		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarError = new KeyFrame(Duration.ZERO,
-				new KeyValue(prontEstadoConexion.textProperty(), "ERROR. Conectate primero"));
-		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(prontEstadoConexion.textProperty(), ""));
-		KeyFrame mostrarError2 = new KeyFrame(Duration.seconds(1),
-				new KeyValue(prontEstadoConexion.textProperty(), "ERROR. Conectate primero"));
-
-		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(mostrarError, ocultarTexto, mostrarError2);
-
-		// Iniciar la animación
-		timeline.play();
-	}
-
-	/**
-	 * Metodo que permite detener una animacion
-	 */
-	private void detenerAnimacion() {
-		if (timeline != null) {
-			timeline.stop();
-			timeline = null; // Destruir el objeto timeline
-		}
 	}
 }

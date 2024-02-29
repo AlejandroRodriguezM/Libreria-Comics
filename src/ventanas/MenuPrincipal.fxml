@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.gluonhq.charm.glisten.control.ProgressIndicator?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
@@ -8,6 +7,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
@@ -18,14 +18,14 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="rootAnchorPane" fx:id="rootAnchorPane" focusTraversable="true" maxHeight="Infinity" maxWidth="Infinity" minHeight="0.0" minWidth="0.0" prefHeight="750.0" prefWidth="1212.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.MenuPrincipalController">
+<AnchorPane id="rootAnchorPane" fx:id="rootAnchorPane" focusTraversable="true" maxHeight="Infinity" maxWidth="Infinity" minHeight="0.0" minWidth="0.0" prefHeight="750.0" prefWidth="1212.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.MenuPrincipalController">
     <children>
     <ImageView fx:id="backgroundImage" fitHeight="750.0" fitWidth="1212.0">
         <image>
             <Image url="@../imagenes/Fondo%20Menu%202.jpg" />
         </image>
     </ImageView>
-        <MenuBar fx:id="menu_navegacion" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="1212.0">
+        <MenuBar fx:id="menu_navegacion" maxWidth="1.7976931348623157E308" prefHeight="21.0" prefWidth="1212.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
 			<menus>
 				<Menu fx:id="navegacion_cerrar" mnemonicParsing="false" text="Archivo">
 					<items>
@@ -34,6 +34,13 @@
 						<MenuItem fx:id="menu_archivo_backupbbdd" mnemonicParsing="false" onAction="#exportarSQL" text="Exportar base de datos" />
 						<MenuItem fx:id="menu_archivo_delete" mnemonicParsing="false" onAction="#borrarContenidoTabla" text="Eliminar Base de datos" />
 						<MenuItem fx:id="menu_archivo_sobreMi" mnemonicParsing="false" onAction="#verSobreMi" text="Sobre mi" />
+                  <MenuItem fx:id="menu_archivo_conexion" mnemonicParsing="false" onAction="#verEstadoConexion" text="Comprobar Conexion" />
+                  <Menu mnemonicParsing="false" text="Comprobar Apis">
+                    <items>
+                      <MenuItem mnemonicParsing="false" onAction="#modificarApiMarvel" text="Comprobar Api Marvel" />
+                        <MenuItem mnemonicParsing="false" onAction="#modificarApiVine" text="Comprobar Api Vine" />
+                    </items>
+                  </Menu>
 						<MenuItem fx:id="menu_archivo_desconectar" mnemonicParsing="false" onAction="#volverMenu" text="Desconectar" />
 						<MenuItem fx:id="menu_archivo_cerrar" mnemonicParsing="false" onAction="#salirPrograma" text="Cerrar" />
 					</items>
@@ -131,11 +138,11 @@
 					<columns>
 						<TableColumn fx:id="ID" prefWidth="47.0" text="ID" visible="false" />
 						<TableColumn fx:id="nombre" editable="false" maxWidth="5500.0" prefWidth="102.0" text="Nombre" />
-						<TableColumn fx:id="caja" editable="false" maxWidth="2000.0" prefWidth="39.0" text="Caja" />
-						<TableColumn fx:id="numero" editable="false" maxWidth="2500.0" prefWidth="52.0" text="Nº" />
-						<TableColumn fx:id="variante" editable="false" prefWidth="98.0" text="Variante" />
-						<TableColumn fx:id="firma" editable="false" maxWidth="4000.0" minWidth="0.0" prefWidth="64.0" text="Firma" />
-						<TableColumn fx:id="editorial" editable="false" maxWidth="4500.0" minWidth="0.0" prefWidth="164.0" style="-fx-alignment: center;" text="Editorial" />
+						<TableColumn fx:id="caja" editable="false" maxWidth="2000.0" prefWidth="39.0" text="Caja" visible="false" />
+						<TableColumn fx:id="numero" editable="false" maxWidth="2500.0" prefWidth="43.0" text="Nº" />
+						<TableColumn fx:id="variante" editable="false" prefWidth="116.0" text="Variante" />
+						<TableColumn fx:id="firma" editable="false" maxWidth="4000.0" minWidth="0.0" prefWidth="148.0" text="Firma" />
+						<TableColumn fx:id="editorial" editable="false" maxWidth="4500.0" minWidth="0.0" prefWidth="97.0" style="-fx-alignment: center;" text="Editorial" />
 						<TableColumn fx:id="formato" editable="false" maxWidth="4100.0" prefWidth="59.0" text="Formato" />
 						<TableColumn fx:id="procedencia" editable="false" text="Origen" />
 						<TableColumn fx:id="fecha" editable="false" prefWidth="103.0" text="Fecha" />
@@ -166,22 +173,23 @@
 		<Button fx:id="botonLimpiar" layoutX="277.0" layoutY="31.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="35.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Limpiar/Reiniciar" />
 		<Button fx:id="botonbbdd" layoutX="277.0" layoutY="72.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="25.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Ver todo" />
 		<Button fx:id="botonMostrarParametro" alignment="CENTER" contentDisplay="BOTTOM" layoutX="277.0" layoutY="116.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="35.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Busqueda" />
+      <Label fx:id="alarmaConexionSql" layoutX="1187.0" prefHeight="25.0" prefWidth="23.0" stylesheets="@../style/alarma_conexion_style.css" AnchorPane.rightAnchor="2.0" />
       <AnchorPane fx:id="anchoPaneInfo" layoutX="610.0" layoutY="31.0" prefHeight="339.0" prefWidth="593.0" AnchorPane.rightAnchor="9.0">
          <children>
               <VBox fx:id="vboxContenido" layoutX="42.0" prefHeight="337.0" prefWidth="241.0">
                <children>
             		
-                                            <ImageView fx:id="imagencomic" fitHeight="336.0" fitWidth="245.0" pickOnBounds="true" preserveRatio="true" />
+                                            <ImageView fx:id="imagencomic" fitHeight="336.0" fitWidth="245.0" onMouseClicked="#ampliarImagen" pickOnBounds="true" preserveRatio="true" />
                </children>
               </VBox>
-      		        <VBox fx:id="vboxImage" layoutX="297.0" prefHeight="337.0" prefWidth="293.0">
+      		        <VBox fx:id="vboxImage" layoutX="297.0" layoutY="1.0" prefHeight="336.0" prefWidth="293.0">
                <children>
-                      <TextArea fx:id="prontInfo" editable="false" opacity="0.0" prefHeight="337.0" prefWidth="439.0" stylesheets="@../style/panel_info_style.css" wrapText="true" />
+                      <TextArea fx:id="prontInfo" editable="false" opacity="0.0" prefHeight="316.0" prefWidth="293.0" stylesheets="@../style/panel_info_style.css" wrapText="true" />
                </children>
               </VBox>
          </children>
       </AnchorPane>
-        <ProgressIndicator fx:id="progresoCarga" layoutX="1171.0" layoutY="343.0" prefHeight="66.0" prefWidth="70.0" progress="0.0" stylesheets="@../style/progreso_style.css" />
+        <ProgressIndicator fx:id="progresoCarga" layoutX="1154.0" layoutY="317.0" prefHeight="66.0" prefWidth="70.0" stylesheets="@../style/progreso_style.css" visible="false" />
       <Button fx:id="botonIntroducir" layoutX="407.0" layoutY="31.0" mnemonicParsing="false" onAction="#accionComic" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Añadir Comic" />
       <Button fx:id="botonModificar" layoutX="506.0" layoutY="31.0" mnemonicParsing="false" onAction="#accionComic" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Modificar Comic">
          <font>
@@ -189,8 +197,9 @@
          </font></Button>
       <Button fx:id="botonEliminar" layoutX="407.0" layoutY="72.0" mnemonicParsing="false" onAction="#accionComic" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Eliminar Comic" />
       <Button fx:id="botonAgregarPuntuacion" layoutX="506.0" layoutY="72.0" mnemonicParsing="false" onAction="#accionComic" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Puntuar Comic" />
-      <Button fx:id="botonImprimir" disable="true" layoutX="407.0" layoutY="331.0" mnemonicParsing="false" onAction="#imprimirResultado" prefHeight="35.0" prefWidth="116.0" stylesheets="@../style/genericos_style.css" text="Imprimir resultado" visible="false" />
-      <Button fx:id="botonGuardarResultado" disable="true" layoutX="277.0" layoutY="331.0" mnemonicParsing="false" onAction="#guardarResultado" prefHeight="35.0" prefWidth="116.0" stylesheets="@../style/genericos_style.css" text="Guardar resultado" visible="false" />
+      <Button fx:id="botonImprimir" layoutX="383.0" layoutY="331.0" mnemonicParsing="false" onAction="#imprimirResultado" prefHeight="35.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Imprimir resultado" visible="false" />
+      <Button fx:id="botonGuardarResultado" layoutX="277.0" layoutY="331.0" mnemonicParsing="false" onAction="#guardarResultado" prefHeight="35.0" prefWidth="96.0" stylesheets="@../style/genericos_style.css" text="Guardar resultado" visible="false" />
+      <Button fx:id="botonMostrarGuardados" alignment="CENTER" contentDisplay="BOTTOM" layoutX="277.0" layoutY="158.0" mnemonicParsing="false" onAction="#comicsGuardados" prefHeight="35.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Ver guardados" visible="false" />
 
     </children>
 </AnchorPane>

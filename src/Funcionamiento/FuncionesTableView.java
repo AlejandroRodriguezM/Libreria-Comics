@@ -20,7 +20,7 @@ package Funcionamiento;
  *  - Puntuar comics que se encuentren dentro de la base de datos.
  *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
  *
- *  Version 7.0.0.0
+ *  Version 8.0.0.0
  *
  *  @author Alejandro Rodriguez
  *
@@ -35,7 +35,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import JDBC.DBLibreriaManager;
+import comicManagement.Comic;
+import dbmanager.DBUtilidades;
+import dbmanager.ListaComicsDAO;
+import dbmanager.SelectManager;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
@@ -43,7 +46,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
@@ -63,11 +65,6 @@ public class FuncionesTableView {
 	 * Fuente utilizada para los tooltips en la interfaz gráfica.
 	 */
 	private static final Font TOOLTIP_FONT = Font.font("Comic Sans MS", FontWeight.NORMAL, FontPosture.REGULAR, 13);
-
-	/**
-	 * Gestor de la base de datos de la librería.
-	 */
-	private static DBLibreriaManager libreria = null;
 
 	/**
 	 * Funcion que permite que los diferentes raw de los TableColumn se puedan
@@ -137,7 +134,7 @@ public class FuncionesTableView {
 	 *
 	 * @param tablaBBDD La TableView en la que operar.
 	 */
-	public void seleccionarRaw(TableView<Comic> tablaBBDD) {
+	public static void seleccionarRaw(TableView<Comic> tablaBBDD) {
 		tablaBBDD.setRowFactory(tv -> {
 			TableRow<Comic> row = new TableRow<>();
 			Tooltip tooltip = new Tooltip();
@@ -152,7 +149,7 @@ public class FuncionesTableView {
 					if (comic != null && !tooltip.isShowing()) {
 						String mensaje = "Nombre: " + comic.getNombre() + "\nNúmero: " + comic.getNumero()
 								+ "\nVariante: " + comic.getVariante() + "\nPrecio: "
-								+ (!comic.precio_comic.isEmpty() ? comic.precio_comic + " $" : "");
+								+ (!comic.getPrecio_comic().isEmpty() ? comic.getPrecio_comic() + " $" : "");
 
 						if (!comic.getFirma().isEmpty()) {
 							mensaje += "\nFirma: " + comic.getFirma();
@@ -192,62 +189,64 @@ public class FuncionesTableView {
 	 * 
 	 * @param columna
 	 */
-	public void actualizarBusquedaRaw(TableColumn<Comic, String> columna, TableView<Comic> tablaBBDD,
-			List<TableColumn<Comic, String>> columnList) {
-		columna.setCellFactory(column -> {
-			return new TableCell<Comic, String>() {
-				private VBox vbox = new VBox();
-				private String lastItem = null;
+	public static void actualizarBusquedaRaw(TableView<Comic> tablaBBDD, List<TableColumn<Comic, String>> columnList) {
+		columnList.forEach(columna -> {
+			columna.setCellFactory(column -> {
+				return new TableCell<Comic, String>() {
+					private VBox vbox = new VBox();
+					private String lastItem = null;
 
-				@Override
-				protected void updateItem(String item, boolean empty) {
-					super.updateItem(item, empty);
+					@Override
+					protected void updateItem(String item, boolean empty) {
+						super.updateItem(item, empty);
 
-					if (empty || item == null) {
-						setGraphic(null);
-					} else {
-						if (!item.equals(lastItem)) { // Verificar si el contenido ha cambiado
-							lastItem = item;
-							String[] nombres = item.split(" - ");
-							vbox.getChildren().clear();
+						if (empty || item == null) {
+							setGraphic(null);
+						} else {
+							if (!item.equals(lastItem)) { // Verificar si el contenido ha cambiado
+								lastItem = item;
+								String[] nombres = item.split(" - ");
+								vbox.getChildren().clear();
 
-							for (String nombre : nombres) {
-								if (!nombre.isEmpty()) {
-									Label label;
-									if (columna.getText().equalsIgnoreCase("referencia")) {
-										label = new Label(nombre + "\n");
-										busquedaHyperLink(column);
-									} else if (columna.getText().equalsIgnoreCase("fecha")
-											|| columna.getText().equalsIgnoreCase("editorial")
-											|| columna.getText().equalsIgnoreCase("formato")
-											|| columna.getText().equalsIgnoreCase("variante")
-											|| columna.getText().equalsIgnoreCase("Nombre")
-											|| columna.getText().equalsIgnoreCase("Nº")
-											|| columna.getText().equalsIgnoreCase("Caja")
-											|| columna.getText().equalsIgnoreCase("Origen")
-											|| columna.getText().equalsIgnoreCase("firma")) {
-										label = new Label(nombre + "\n");
-									} else {
-										label = new Label("◉ " + nombre + "\n");
-									}
-									label.getStyleClass().add("hyperlink");
-									Hyperlink hyperlink = new Hyperlink();
-									hyperlink.setGraphic(label);
-									hyperlink.setOnAction(event -> {
-										try {
-											columnaSeleccionada(tablaBBDD, columnList, nombre);
-										} catch (SQLException e) {
-											e.printStackTrace();
+								for (String nombre : nombres) {
+									if (!nombre.isEmpty()) {
+										Label label;
+										if (columna.getText().equalsIgnoreCase("referencia")) {
+											label = new Label(nombre + "\n");
+											busquedaHyperLink(columna);
+										} else if (columna.getText().equalsIgnoreCase("fecha")
+												|| columna.getText().equalsIgnoreCase("editorial")
+												|| columna.getText().equalsIgnoreCase("formato")
+												|| columna.getText().equalsIgnoreCase("variante")
+												|| columna.getText().equalsIgnoreCase("Nombre")
+												|| columna.getText().equalsIgnoreCase("Nº")
+												|| columna.getText().equalsIgnoreCase("Caja")
+												|| columna.getText().equalsIgnoreCase("Origen")) {
+											label = new Label(nombre + "\n");
+										} else if (columna.getText().equalsIgnoreCase("firma")) {
+											label = new Label("◉ " + nombre + "\n");
+										} else {
+											label = new Label("◉ " + nombre + "\n");
 										}
-									});
-									vbox.getChildren().add(hyperlink);
+										label.getStyleClass().add("hyperlink");
+										Hyperlink hyperlink = new Hyperlink();
+										hyperlink.setGraphic(label);
+										hyperlink.setOnAction(event -> {
+											try {
+												columnaSeleccionada(tablaBBDD, columnList, nombre);
+											} catch (SQLException e) {
+												e.printStackTrace();
+											}
+										});
+										vbox.getChildren().add(hyperlink);
+									}
 								}
 							}
+							setGraphic(vbox);
 						}
-						setGraphic(vbox);
 					}
-				}
-			};
+				};
+			});
 		});
 	}
 
@@ -259,42 +258,13 @@ public class FuncionesTableView {
 	 * @return Un TextArea con el resultado de búsqueda.
 	 * @throws SQLException Si ocurre un error de base de datos.
 	 */
-	public TextArea resultadoBusquedaPront(Comic comic) throws SQLException {
-		libreria = new DBLibreriaManager();
-		StringBuilder datoSeleccionadoBuilder = new StringBuilder();
+	public static TextArea resultadoBusquedaPront(Comic comic) {
 		TextArea prontInfoTable = new TextArea(); // Crear un nuevo TextArea
 
-		if (comic != null) {
-			String[] campos = { comic.getNombre(), comic.getNumero(), comic.getVariante(), comic.getProcedencia(),
-					comic.getFormato(), comic.getEditorial(), comic.getFecha(), comic.getNumCaja(),
-					comic.getGuionista(), comic.getDibujante(), comic.getFirma() };
-
-			int nonEmptyFieldCount = 0;
-			for (String campo : campos) {
-				if (!campo.isEmpty()) {
-					nonEmptyFieldCount++;
-					if (nonEmptyFieldCount > 1) {
-						datoSeleccionadoBuilder.append(", ");
-					}
-					datoSeleccionadoBuilder.append(campo);
-				}
-			}
-		}
-		prontInfoTable.setOpacity(1);
-
-		String datoSeleccionado = datoSeleccionadoBuilder.toString();
-		if (!libreria.numeroResultados(comic) && !datoSeleccionado.isEmpty()) {
-			// Show error message in red when no search fields are specified
-			prontInfoTable.setStyle("-fx-text-fill: red;");
-			prontInfoTable.setText("Error: No existe comic con los datos: " + datoSeleccionado + "\n \n \n");
-		} else if (datoSeleccionado.isEmpty()) {
-			prontInfoTable.setStyle("-fx-text-fill: red;");
-			prontInfoTable.setText("Error: No has seleccionado ningun comic para filtrar.\n \n \n");
-		} else {
-			int totalComics = libreria.numeroTotalSelecionado(comic);
+		if (Comic.validarComic(comic)) {
+			int totalComics = DBUtilidades.numeroTotalSelecionado(comic);
 			prontInfoTable.setStyle("-fx-text-fill: black;"); // Reset the text color to black
-			prontInfoTable.setText(
-					"El número de cómics donde aparece la búsqueda: " + datoSeleccionado + " es: " + totalComics + "\n \n \n");
+			prontInfoTable.setText("El número de cómics donde aparece la búsqueda es: " + totalComics + "\n \n \n");
 		}
 
 		return prontInfoTable;
@@ -306,7 +276,7 @@ public class FuncionesTableView {
 	 *
 	 * @param listaComic
 	 */
-	public void tablaBBDD(List<Comic> listaComic, TableView<Comic> tablaBBDD,
+	public static void tablaBBDD(List<Comic> listaComic, TableView<Comic> tablaBBDD,
 			List<TableColumn<Comic, String>> columnList) {
 		tablaBBDD.getColumns().setAll(columnList);
 		tablaBBDD.getItems().setAll(listaComic);
@@ -320,12 +290,11 @@ public class FuncionesTableView {
 	 * @param rawSelecionado El comic seleccionado en su forma cruda.
 	 * @throws SQLException Si ocurre un error de base de datos.
 	 */
-	public void columnaSeleccionada(TableView<Comic> tablaBBDD, List<TableColumn<Comic, String>> columnList,
+	public static void columnaSeleccionada(TableView<Comic> tablaBBDD, List<TableColumn<Comic, String>> columnList,
 			String rawSelecionado) throws SQLException {
-		libreria = new DBLibreriaManager();
-		libreria.reiniciarBBDD();
+		ListaComicsDAO.reiniciarListaComics();
 		nombreColumnas(columnList, tablaBBDD);
-		tablaBBDD(libreria.libreriaSeleccionado(rawSelecionado), tablaBBDD, columnList);
+		tablaBBDD(SelectManager.libreriaSeleccionado(rawSelecionado), tablaBBDD, columnList);
 	}
 
 	/**
@@ -335,7 +304,7 @@ public class FuncionesTableView {
 	 * @param columnList La lista de TableColumn a configurar.
 	 * @param tablaBBDD  La TableView en la que se aplicarán las configuraciones.
 	 */
-	public void nombreColumnas(List<TableColumn<Comic, String>> columnList, TableView<Comic> tablaBBDD) {
+	public static void nombreColumnas(List<TableColumn<Comic, String>> columnList, TableView<Comic> tablaBBDD) {
 		for (TableColumn<Comic, String> column : columnList) {
 			String columnName = column.getText(); // Obtiene el nombre de la columna
 
@@ -357,9 +326,8 @@ public class FuncionesTableView {
 
 			PropertyValueFactory<Comic, String> valueFactory = new PropertyValueFactory<>(columnName);
 			column.setCellValueFactory(valueFactory);
-
-			actualizarBusquedaRaw(column, tablaBBDD, columnList);
 		}
+
 	}
 
 	/**
@@ -370,8 +338,12 @@ public class FuncionesTableView {
 	 * @param columnList La lista de TableColumn correspondiente a las columnas de
 	 *                   la tabla.
 	 */
+<<<<<<< HEAD
 	@SuppressWarnings("deprecation")
 	public void modificarColumnas(TableView<Comic> tablaBBDD, List<TableColumn<Comic, String>> columnList) {
+=======
+	public static void modificarColumnas(TableView<Comic> tablaBBDD, List<TableColumn<Comic, String>> columnList) {
+>>>>>>> refs/heads/V8.0
 
 		for (TableColumn<Comic, String> column : columnList) {
 			column.prefWidthProperty().unbind(); // Desvincular cualquier propiedad prefWidth existente
@@ -381,9 +353,9 @@ public class FuncionesTableView {
 		// columnList
 		Double[] columnWidths = { 140.0, // nombre
 				37.0, // caja
-				47.0, // numero
+				49.0, // numero
 				135.0, // variante
-				85.0, // firma
+				110.0, // firma
 				78.0, // editorial
 				92.0, // formato
 				75.0, // procedencia
@@ -411,7 +383,7 @@ public class FuncionesTableView {
 	 * @param textArea El TextArea del cual obtener el contenido.
 	 * @param vbox     El VBox al cual ajustar el alto.
 	 */
-	public void ajustarAnchoVBox(TextArea textArea, VBox vbox) {
+	public static void ajustarAnchoVBox(TextArea textArea, VBox vbox) {
 		// Crear un objeto Text con el contenido del TextArea
 		Text text = new Text(textArea.getText());
 
@@ -423,88 +395,4 @@ public class FuncionesTableView {
 		textArea.setPrefHeight(textHeight);
 	}
 
-	/**
-	 * Elimina un espacio en blanco al principio del texto en un TextField si
-	 * existe.
-	 *
-	 * @param textField El TextField al que se aplicará la eliminación del espacio
-	 *                  en blanco inicial.
-	 * @return El mismo TextField después de la modificación.
-	 */
-	public static TextField eliminarEspacioInicial(TextField textField) {
-		textField.textProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue != null && newValue.length() > 0 && Character.isWhitespace(newValue.charAt(0))) {
-				textField.setText(newValue.substring(1)); // Elimina el espacio en blanco inicial
-			}
-
-		});
-		return textField;
-	}
-
-	/**
-	 * Reemplaza múltiples espacios seguidos por un solo espacio en un TextField.
-	 *
-	 * @param textField El TextField al que se aplicará la eliminación de espacios
-	 *                  múltiples.
-	 */
-	public static void reemplazarEspaciosMultiples(TextField textField) {
-		textField.textProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue != null) {
-				// Reemplaza múltiples espacios seguidos por un solo espacio.
-				newValue = newValue.replaceAll("\\s+", " ");
-
-				textField.setText(newValue); // Actualiza el valor del TextField
-			}
-		});
-	}
-	
-	/**
-	 * Elimina espacios de un TextField.
-	 *
-	 * @param textField El TextField al que se aplicará la eliminación de espacios
-	 *                  múltiples.
-	 */
-	public static void reemplazarEspacio(TextField textField) {
-		textField.textProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue != null) {
-				// Reemplaza múltiples espacios seguidos por un solo espacio.
-				newValue = newValue.replaceAll(" ", "");
-
-				textField.setText(newValue); // Actualiza el valor del TextField
-			}
-		});
-	}
-
-	/**
-	 * Restringe los símbolos no permitidos en el TextField y muestra un Tooltip
-	 * informativo.
-	 *
-	 * @param textField El TextField en el cual restringir los símbolos.
-	 */
-	public static void restringirSimbolos(TextField textField) {
-
-		final TextField finalTextField = eliminarEspacioInicial(textField);
-
-		finalTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-			String allowedPattern = "[\\p{L}\\p{N}\\s,.!-]*"; // Expresión regular para permitir letras, números,
-																// espacios, ",", "-" y "."
-
-			if (newValue != null) {
-
-				// Elimina espacios al principio de la cadena.
-				newValue = newValue.trim();
-
-				if (!newValue.matches(allowedPattern)) {
-					// Si el valor no coincide con el patrón permitido, restaura el valor anterior.
-					finalTextField.setText(oldValue);
-				} else {
-					String updatedValue = newValue.replaceAll("\\s*(?<![,-])(?=[,-])|(?<=[,-])\\s*", "");
-
-					if (!updatedValue.equals(newValue)) {
-						finalTextField.setText(updatedValue);
-					}
-				}
-			}
-		});
-	}
 }

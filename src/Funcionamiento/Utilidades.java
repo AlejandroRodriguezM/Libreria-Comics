@@ -4,6 +4,7 @@
 */
 package Funcionamiento;
 
+import java.awt.Desktop;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -15,14 +16,18 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.ProcessBuilder.Redirect;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
+import java.nio.file.DirectoryStream;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -31,25 +36,55 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
 
-import JDBC.DBManager;
+import org.json.JSONException;
+
+import Apis.ApiISBNGeneral;
+import Apis.ApiMarvel;
+import alarmas.AlarmaList;
+import comicManagement.Comic;
+import dbmanager.ConectManager;
+import dbmanager.DBUtilidades;
+import dbmanager.ListaComicsDAO;
+import dbmanager.SelectManager;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Stage;
+import webScrap.WebScraperPreviewsWorld;
 
 /**
  * Esta clase sirve para realizar diferentes funciones realizanas con la
@@ -61,26 +96,6 @@ import javafx.stage.FileChooser.ExtensionFilter;
 public class Utilidades {
 
 	/**
-	 * Lista de cómics limpios.
-	 */
-	public static List<Comic> listaLimpia = new ArrayList<>();
-
-	/**
-	 * Lista de sugerencias de autocompletado de entrada limpia.
-	 */
-	public static List<String> listaLimpiaAutoCompletado = new ArrayList<>();
-
-	/**
-	 * Funciones para la manipulación de archivos Excel.
-	 */
-	private static FuncionesExcel excel = null;
-
-	/**
-	 * Ventanas de la aplicación.
-	 */
-	private static Ventanas nav = new Ventanas();
-
-	/**
 	 * Sistema operativo actual.
 	 */
 	public static String os = System.getProperty("os.name", "unknown").toLowerCase(Locale.ROOT);
@@ -89,6 +104,23 @@ public class Utilidades {
 	 * Mapa que almacena tasas de cambio.
 	 */
 	private static final Map<String, Double> tasasDeCambio = new HashMap<>();
+
+	/**
+	 * Obtenemos el directorio de inicio del usuario
+	 */
+	private final static String USER_DIR = System.getProperty("user.home");
+
+	/**
+	 * Construimos la ruta al directorio "Documents"
+	 */
+	private final static String DOCUMENTS_PATH = USER_DIR + File.separator + "Documents";
+
+	/**
+	 * Construimos la ruta al directorio "libreria_comics" dentro de "Documents" y
+	 * añadimos el nombre de la base de datos y la carpeta "portadas".
+	 */
+	public final static String SOURCE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+			+ ConectManager.DB_NAME + File.separator + "portadas";
 
 	/**
 	 * Verifica si el sistema operativo es Windows.
@@ -149,7 +181,7 @@ public class Utilidades {
 		try {
 			java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
 		} catch (IOException e) {
-			nav.alertaException("Error: No funciona el boton \n" + e.toString());
+			manejarExcepcion(e);
 		}
 	}
 
@@ -167,7 +199,7 @@ public class Utilidades {
 			rt.exec(new String[] { "sh", "-c", cmd.toString() }); // Ejecuta el bucle y permite abrir el navegador que
 			// tengas principal
 		} catch (IOException e) {
-			nav.alertaException("Error: No funciona el boton \n" + e.toString());
+			manejarExcepcion(e);
 		}
 	}
 
@@ -182,71 +214,31 @@ public class Utilidades {
 		try {
 			runtime.exec(args);
 		} catch (IOException e) {
-			nav.alertaException("Error: No funciona el boton \n" + e.toString());
+			manejarExcepcion(e);
 		}
 	}
 
 	/**
-	 * Funcion que devuelve una lista en la que solamente se guardan aquellos datos
-	 * que no se repiten
+	 * Funcion que cambia una ',' por un guion '-' y un guion '-' sin espacios
+	 * delante o detrás por " - "
 	 *
-	 * @param listaComics
+	 * @param dato
 	 * @return
 	 */
-	public static List<Comic> listaArreglada(List<Comic> listaComics) {
-
-		// Forma número 1 (Uso de Maps).
-		Map<String, Comic> mapComics = new HashMap<>(listaComics.size());
-
-		// Aquí está la magia
-		for (Comic c : listaComics) {
-			mapComics.put(c.getID(), c);
-		}
-
-		// Agrego cada elemento del map a una nueva lista y muestro cada elemento.
-
-		for (Entry<String, Comic> c : mapComics.entrySet()) {
-
-			listaLimpia.add(c.getValue());
-
-		}
-		return listaLimpia;
-	}
-
-	/**
-	 * Funcion que devuelve una lista en la que solamente se guardan aquellos datos
-	 * que no se repiten
-	 *
-	 * @param listaComics
-	 * @return
-	 */
-	public static List<String> listaArregladaAutoComplete(List<String> listaComics) {
-
-		ArrayList<String> newList = new ArrayList<>();
-		newList.clear();
-
-		for (String s : listaComics) {
-			if (!newList.contains(s)) {
-				newList.add(s);
+	public static String comaYGuionPorEspaciado(String dato) {
+		String resultado = "";
+		if (dato != null) {
+			// Reemplazar guion '-' sin espacios delante o detrás por " - "
+			if (dato.contains("-") && !dato.contains(" - ")) {
+				dato = dato.replace("-", " - ");
 			}
+			// Reemplazar coma ',' por " - "
+			if (dato.contains(",")) {
+				dato = dato.replace(",", " - ");
+			}
+			resultado = eliminarEspacios(dato);
 		}
-
-		return newList;
-	}
-
-	/**
-	 * Funcion que cambia una ',' por un guion '-'
-	 *
-	 * @param campos
-	 * @return
-	 */
-	public String comaPorGuion(String dato) {
-
-		if (dato.contains(",")) {
-			dato = dato.replace(",", " - ");
-		}
-		dato = eliminarEspacios(dato);
-		return dato;
+		return resultado;
 	}
 
 	/**
@@ -256,28 +248,16 @@ public class Utilidades {
 	 * @return
 	 */
 	public static String eliminarEspacios(String dato) {
-		// Elimina espacios adicionales al principio y al final.
-		dato = dato.trim();
 
-		// Reemplaza espacios múltiples entre palabras por un solo espacio.
-		dato = dato.replaceAll("\\s+", " ");
+		String resultado = "";
+		if (dato != null) {
+			// Elimina espacios adicionales al principio y al final.
+			dato = dato.trim();
 
-		return dato;
-	}
-
-	/**
-	 * Funcion que elimina la imagen temporal creada a la hora de subir imagenes
-	 * mediante importacion de csv, modificacion o introducir datos manualmente
-	 *
-	 * @param pathFichero
-	 */
-	public void deleteImage(String pathFichero) {
-
-		try {
-			Files.deleteIfExists(Paths.get(pathFichero));
-		} catch (IOException e) {
-			e.printStackTrace();
+			// Reemplaza espacios múltiples entre palabras por un solo espacio.
+			resultado = dato.replaceAll("\\s+", " ");
 		}
+		return resultado;
 	}
 
 	/**
@@ -287,13 +267,13 @@ public class Utilidades {
 	 * @param file
 	 * @return
 	 */
-	public void nueva_imagen(String imagen, String nuevoNombreArchivo) throws IOException {
+	public static void nueva_imagen(String imagen, String nuevoNombreArchivo) {
 		try {
 			File file = new File(imagen);
 			InputStream input = null;
 
 			if (!file.exists()) {
-				input = getClass().getResourceAsStream("sinPortada.jpg");
+				input = Utilidades.class.getResourceAsStream("sinPortada.jpg");
 				if (input == null) {
 					throw new FileNotFoundException("La imagen predeterminada no se encontró en el paquete");
 				}
@@ -311,7 +291,7 @@ public class Utilidades {
 			String userDir = System.getProperty("user.home");
 			String documentsPath = userDir + File.separator + "Documents";
 			String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
-					+ DBManager.DB_NAME + File.separator + "portadas";
+					+ ConectManager.DB_NAME + File.separator + "portadas";
 
 			// Esto se modificara para hacerlo dinamico
 			String imagePath = defaultImagePath;
@@ -328,7 +308,7 @@ public class Utilidades {
 			Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			manejarExcepcion(e);
 		}
 	}
 
@@ -372,7 +352,7 @@ public class Utilidades {
 				}
 			});
 		} catch (IOException e) {
-			System.err.println("Se produjo un error al copiar el directorio: " + e.getMessage());
+			manejarExcepcion(e);
 		}
 	}
 
@@ -386,7 +366,7 @@ public class Utilidades {
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
 		String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
-				+ DBManager.DB_NAME + File.separator + "portadas" + File.separator;
+				+ ConectManager.DB_NAME + File.separator + "portadas" + File.separator;
 		String nombre_comic = datos.getNombre().replace(" ", "_").replace(":", "_").replace("-", "_");
 		String numero_comic = datos.getNumero();
 		String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_").replace(":",
@@ -422,7 +402,7 @@ public class Utilidades {
 	 * @param rutaCompleta La ruta completa del archivo.
 	 * @return El nombre del archivo sin la ruta.
 	 */
-	public String obtenerNombreArchivo(String rutaCompleta) {
+	public static String obtenerNombreArchivo(String rutaCompleta) {
 		// Obtener el separador de ruta del archivo según el sistema operativo
 		String separadorRuta = File.separator;
 
@@ -436,53 +416,75 @@ public class Utilidades {
 		return nombreArchivo;
 	}
 
-	/**
-	 * Realiza una copia de seguridad de los archivos.
-	 * 
-	 * @throws SQLException
-	 */
-	public void copia_seguridad() throws SQLException {
-		// Realizar copia de seguridad
-
-		excel = new FuncionesExcel();
+	public static void copiaSeguridad() throws IOException, SQLException {
+		FuncionesExcel excel = new FuncionesExcel();
 
 		try {
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-			String nombre_carpeta = dateFormat.format(new Date());
+			String nombreCarpeta = dateFormat.format(new Date());
 
 			String userDir = System.getProperty("user.home");
 			String documentsPath = userDir + File.separator + "Documents";
-			String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + DBManager.DB_NAME
-					+ File.separator + "portadas";
+			String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator
+					+ ConectManager.DB_NAME + File.separator + "portadas";
 			File sourceFolder = new File(sourcePath);
 
 			String ubicacion = userDir + File.separator + "AppData" + File.separator + "Roaming";
-			String carpetaLibreria = ubicacion + File.separator + "libreria" + File.separator + DBManager.DB_NAME
-					+ File.separator + "backups" + File.separator + nombre_carpeta;
-//					File libreria_backup = new File(carpetaLibreria);
+			String carpetaLibreria = ubicacion + File.separator + "libreria" + File.separator + ConectManager.DB_NAME
+					+ File.separator + "backups" + File.separator + nombreCarpeta;
 
 			if (sourceFolder.exists()) {
-				// Create the backups folder if it doesn't exist
-				File backupsFolder = new File(carpetaLibreria);
-				if (!backupsFolder.exists()) {
-					if (!backupsFolder.mkdirs()) {
-						throw new IOException("Failed to create 'backups' folder.");
-					}
-				}
+				crearCarpetaBackups(carpetaLibreria);
+				crearArchivoZip(sourceFolder, carpetaLibreria, dateFormat);
 
-				// Crear archivo zip con fecha actual
-				String backupFileName = "portadas_" + dateFormat.format(new Date()) + ".zip";
-				String backupPath = carpetaLibreria + File.separator + backupFileName;
-				File backupFile = new File(backupPath);
-
-				// Comprimir carpeta en el archivo zip
-				try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(backupFile))) {
-					zipFile(sourceFolder, sourceFolder.getName(), zipOut);
-				}
-				excel.savedataExcel(nombre_carpeta);
+				// Guardar datos en Excel
+				excel.savedataExcel(nombreCarpeta);
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			manejarExcepcion(e);
+		}
+	}
+
+	private static void crearCarpetaBackups(String carpetaLibreria) throws IOException {
+		File backupsFolder = new File(carpetaLibreria);
+		if (!backupsFolder.exists() && !backupsFolder.mkdirs()) {
+			throw new IOException("Error al crear la carpeta 'backups'.");
+		}
+	}
+
+	private static void crearArchivoZip(File sourceFolder, String carpetaLibreria, SimpleDateFormat dateFormat)
+			throws IOException {
+		// Crear archivo ZIP con fecha actual
+		String backupFileName = "portadas_" + dateFormat.format(new Date()) + ".zip";
+		String backupPath = carpetaLibreria + File.separator + backupFileName;
+		File backupFile = new File(backupPath);
+
+		// Comprimir carpeta en el archivo ZIP
+		try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(backupFile))) {
+			zipFile(sourceFolder, sourceFolder.getName(), zipOut);
+		}
+	}
+
+	/**
+	 * Añade un archivo al archivo ZIP especificado con el nombre de entrada dado.
+	 *
+	 * @param file      El archivo que se va a agregar al ZIP.
+	 * @param entryName El nombre de entrada del archivo en el ZIP.
+	 * @param zipFile   El archivo ZIP al que se va a agregar el nuevo archivo.
+	 * @throws IOException Si ocurre un error de lectura o escritura durante la
+	 *                     operación.
+	 */
+	public static void addFileToZip(File file, String entryName, File zipFile) throws IOException {
+		try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile, true))) {
+			ZipEntry zipEntry = new ZipEntry(entryName);
+			zipOut.putNextEntry(zipEntry);
+			try (FileInputStream fileInputStream = new FileInputStream(file)) {
+				byte[] buffer = new byte[1024];
+				int length;
+				while ((length = fileInputStream.read(buffer)) > 0) {
+					zipOut.write(buffer, 0, length);
+				}
+			}
 		}
 	}
 
@@ -494,44 +496,43 @@ public class Utilidades {
 	 * @param zipOut    El flujo de salida del archivo zip.
 	 * @throws IOException Si ocurre un error de E/S durante la compresión.
 	 */
-	private void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut) throws IOException {
+	private static void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut) throws IOException {
 		if (fileToZip.isHidden()) {
 			return;
 		}
+
 		if (fileToZip.isDirectory()) {
-			if (fileName.endsWith("/")) {
-				zipOut.putNextEntry(new ZipEntry(fileName));
-				zipOut.closeEntry();
-			} else {
-				zipOut.putNextEntry(new ZipEntry(fileName + "/"));
-				zipOut.closeEntry();
-			}
-			File[] children = fileToZip.listFiles();
-			for (File childFile : children) {
-				zipFile(childFile, fileName + "/" + childFile.getName(), zipOut);
+			fileName = fileName.endsWith("/") ? fileName : fileName + "/";
+			zipOut.putNextEntry(new ZipEntry(fileName));
+
+			try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(fileToZip.toPath())) {
+				for (Path childPath : dirStream) {
+					zipFile(childPath.toFile(), fileName + childPath.getFileName(), zipOut);
+				}
 			}
 			return;
 		}
-		FileInputStream fis = new FileInputStream(fileToZip);
-		ZipEntry zipEntry = new ZipEntry(fileName);
-		zipOut.putNextEntry(zipEntry);
-		byte[] bytes = new byte[1024];
-		int length;
-		while ((length = fis.read(bytes)) >= 0) {
-			zipOut.write(bytes, 0, length);
-		}
 
-		fis.close();
+		try (FileInputStream fis = new FileInputStream(fileToZip)) {
+			ZipEntry zipEntry = new ZipEntry(fileName);
+			zipOut.putNextEntry(zipEntry);
+
+			byte[] bytes = new byte[4096];
+			int length;
+			while ((length = fis.read(bytes)) >= 0) {
+				zipOut.write(bytes, 0, length);
+			}
+		}
 	}
 
 	/**
 	 * Elimina todos los archivos en una carpeta específica.
 	 */
-	public void eliminarArchivosEnCarpeta() {
+	public static void eliminarArchivosEnCarpeta() {
 
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
-		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + DBManager.DB_NAME
+		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + ConectManager.DB_NAME
 				+ File.separator + "portadas";
 
 		File carpeta = new File(sourcePath);
@@ -556,7 +557,7 @@ public class Utilidades {
 			String userHome = System.getProperty("user.home");
 			String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
 			String carpeta_backups = ubicacion + File.separator + "libreria" + File.separator + "backups"
-					+ File.separator + DBManager.DB_NAME + File.separator;
+					+ File.separator + ConectManager.DB_NAME + File.separator;
 
 			String pathMySql = "C:\\Program Files\\MySQL";
 			String mysqlDump = pathMySql + "\\mysqldump.exe";
@@ -565,8 +566,8 @@ public class Utilidades {
 			File carpetaDestino = new File(carpeta_backups);
 			File archivoCopia = new File(carpetaDestino, nombreCopia);
 
-			String[] command = new String[] { mysqlDump, "-u" + DBManager.DB_USER, "-p" + DBManager.DB_PASS, "-B",
-					DBManager.DB_NAME, "--hex-blob", "--routines=true",
+			String[] command = new String[] { mysqlDump, "-u" + ConectManager.DB_USER, "-p" + ConectManager.DB_PASS,
+					"-B", ConectManager.DB_NAME, "--hex-blob", "--routines=true",
 					"--result-file=" + archivoCopia.getAbsolutePath() };
 
 			ProcessBuilder pb = new ProcessBuilder(command);
@@ -575,7 +576,7 @@ public class Utilidades {
 			pb.start();
 
 		} catch (Exception e) {
-			nav.alertaException(e.toString());
+			manejarExcepcion(e);
 		}
 	}
 
@@ -586,7 +587,7 @@ public class Utilidades {
 		try {
 			Files.deleteIfExists(Paths.get("tmp.jpg"));
 		} catch (IOException e) {
-			e.printStackTrace();
+			manejarExcepcion(e);
 		}
 	}
 
@@ -699,6 +700,7 @@ public class Utilidades {
 	public static String obtenerDespuesPortadas(String rutaArchivo) {
 		int indicePortadas = rutaArchivo.indexOf("portadas\\");
 		if (indicePortadas != -1) {
+			System.out.println(rutaArchivo.substring(indicePortadas + 9));
 			return rutaArchivo.substring(indicePortadas + 9);
 		} else {
 			return "";
@@ -812,7 +814,7 @@ public class Utilidades {
 
 				writer.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				manejarExcepcion(e);
 			}
 		}
 	}
@@ -822,13 +824,11 @@ public class Utilidades {
 	 *
 	 * @return Las claves de la API en el formato "Private Key: Public Key".
 	 */
-	public static String obtenerClaveApiArchivo() {
+	public static String obtenerClaveApiMarvel() {
 		String nombreArchivo = carpetaConfiguracion() + File.separator + "claves_marvel_api.conf";
 
 		File archivo = new File(nombreArchivo);
 		if (!archivo.exists()) {
-			System.out.println(
-					"El archivo " + nombreArchivo + " no existe. Creando archivo con claves predeterminadas...");
 			guardarDatosClavesMarvel();
 		}
 
@@ -850,13 +850,72 @@ public class Utilidades {
 			if (clavePublica != null && clavePrivada != null) {
 				return clavePrivada + ":" + clavePublica; // Retornar ambas claves en un formato deseado
 			} else {
-				System.err.println("No se encontraron ambas claves en el archivo " + nombreArchivo);
 				return ""; // Manejo de error: devuelve una cadena vacía en caso de que falte alguna clave
 			}
 		} catch (IOException e) {
-			System.err.println("Error al obtener las claves desde el archivo " + nombreArchivo);
-			e.printStackTrace();
+			manejarExcepcion(e);
 			return ""; // Manejo de error: devuelve una cadena vacía en caso de error
+		}
+	}
+
+	/**
+	 * Comprueba si el archivo de claves de API de Marvel tiene la estructura
+	 * esperada.
+	 * 
+	 * @return true si el archivo tiene la estructura correcta, false de lo
+	 *         contrario.
+	 */
+	public static boolean verificarEstructuraClavesMarvel() {
+		String nombreArchivo = carpetaConfiguracion() + File.separator + "claves_marvel_api.conf";
+
+		try (BufferedReader reader = new BufferedReader(new FileReader(nombreArchivo))) {
+			String linea;
+			int contador = 0;
+
+			while ((linea = reader.readLine()) != null) {
+				// Verificar la estructura esperada
+				if (contador == 0 && linea.contains("Public Key:")) {
+					contador++;
+				} else if (contador == 1 && linea.contains("Private Key:")) {
+					contador++;
+				}
+			}
+
+			// Verificar que haya dos líneas en total
+			return contador == 2;
+		} catch (IOException e) {
+			manejarExcepcion(e);
+			return false;
+		}
+	}
+
+	/**
+	 * Comprueba si el archivo de clave de API de Comic Vine tiene la estructura
+	 * esperada.
+	 * 
+	 * @return true si el archivo tiene la estructura correcta, false de lo
+	 *         contrario.
+	 */
+	public static boolean verificarEstructuraApiComicVine() {
+		String nombreArchivo = carpetaConfiguracion() + File.separator + "clave_comicVine_api.conf";
+
+		try (BufferedReader reader = new BufferedReader(new FileReader(nombreArchivo))) {
+			String linea;
+			int contador = 0;
+
+			while ((linea = reader.readLine()) != null) {
+				// Verificar la estructura esperada
+				if (contador == 0 && linea.contains("Clave Api Comic Vine:")) {
+					contador++;
+				}
+
+			}
+
+			// Verificar que haya al menos una línea
+			return contador == 1;
+		} catch (IOException e) {
+			manejarExcepcion(e);
+			return false;
 		}
 	}
 
@@ -885,7 +944,7 @@ public class Utilidades {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			manejarExcepcion(e);
 		}
 	}
 
@@ -909,11 +968,8 @@ public class Utilidades {
 			for (String valor : valoresPredeterminados) {
 				writer.println(valor);
 			}
-
-			System.out.println("Archivo " + nombreArchivo + " creado con valores predeterminados.");
 		} catch (IOException e) {
-			System.err.println("Error al crear el archivo " + nombreArchivo);
-			e.printStackTrace();
+			manejarExcepcion(e);
 		}
 	}
 
@@ -924,16 +980,22 @@ public class Utilidades {
 	 * @param cantidadMonedaLocal La cantidad de moneda local a convertir.
 	 * @return La cantidad equivalente en dólares.
 	 */
-	public static double convertirMonedaADolar(String pais, double cantidadMonedaLocal) {
-
+	public static double convertirMonedaADolar(String pais, String precio_comic) {
 		if (tasasDeCambio.containsKey(pais)) {
 			double tasaDeCambio = tasasDeCambio.get(pais);
-			if (cantidadMonedaLocal > 0) {
-				double resultado = cantidadMonedaLocal / tasaDeCambio;
-				return Math.round(resultado * 100.0) / 100.0;
+			try {
+				double cantidadMonedaLocal = Double.parseDouble(precio_comic);
+				if (cantidadMonedaLocal > 0) {
+					double resultado = cantidadMonedaLocal / tasaDeCambio;
+					return Math.round(resultado * 100.0) / 100.0;
+				}
+			} catch (NumberFormatException e) {
+				// Manejo de error si la conversión de la cadena a double falla
+				manejarExcepcion(e);
 			}
 		}
-		return cantidadMonedaLocal; // Devolver 0 si el país no está en la lista o si la cantidad es negativa
+		return 0.0; // Devolver 0 si el país no está en la lista, la cantidad no es un número o si
+					// es negativa
 	}
 
 	/**
@@ -958,28 +1020,34 @@ public class Utilidades {
 	 * @param pass    La contraseña del usuario.
 	 * @throws IOException Si ocurre un error al escribir en el archivo.
 	 */
-	public static void guardarUsuario(TextField usuario, String pass) throws IOException {
+	public static void guardarUsuario(TextField usuario, String pass) {
 
 		String userHome = System.getProperty("user.home");
 		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
 		String carpetaLibreria = ubicacion + File.separator + "libreria";
 		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion_usuario.conf";
 
-		FileWriter fileWriter = new FileWriter(archivoConfiguracion);
-		BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+		FileWriter fileWriter;
+		try {
+			fileWriter = new FileWriter(archivoConfiguracion);
+			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
-		bufferedWriter.write("###############################");
-		bufferedWriter.newLine();
-		bufferedWriter.write("Usuario y contraseño del usuario");
-		bufferedWriter.newLine();
-		bufferedWriter.write("###############################");
-		bufferedWriter.newLine();
-		bufferedWriter.write("Usuario: " + usuario.getText());
-		bufferedWriter.newLine();
-		bufferedWriter.write("Password: " + pass);
-		bufferedWriter.newLine();
+			bufferedWriter.write("###############################");
+			bufferedWriter.newLine();
+			bufferedWriter.write("Usuario y contraseño del usuario");
+			bufferedWriter.newLine();
+			bufferedWriter.write("###############################");
+			bufferedWriter.newLine();
+			bufferedWriter.write("Usuario: " + usuario.getText());
+			bufferedWriter.newLine();
+			bufferedWriter.write("Password: " + pass);
+			bufferedWriter.newLine();
 
-		bufferedWriter.close();
+			bufferedWriter.close();
+		} catch (IOException e) {
+			manejarExcepcion(e);
+		}
+
 	}
 
 	/**
@@ -1003,7 +1071,7 @@ public class Utilidades {
 
 				writer.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				manejarExcepcion(e);
 			}
 		}
 	}
@@ -1028,7 +1096,7 @@ public class Utilidades {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			manejarExcepcion(e);
 		}
 		return null;
 	}
@@ -1041,7 +1109,7 @@ public class Utilidades {
 	public static String[] clavesApiMarvel() {
 		String claves[] = new String[2]; // Crear un arreglo de dos elementos para almacenar las claves
 
-		String clavesDesdeArchivo = Utilidades.obtenerClaveApiArchivo(); // Obtener las claves desde el archivo
+		String clavesDesdeArchivo = Utilidades.obtenerClaveApiMarvel(); // Obtener las claves desde el archivo
 
 		if (!clavesDesdeArchivo.isEmpty()) {
 			String[] partes = clavesDesdeArchivo.split(":");
@@ -1058,28 +1126,40 @@ public class Utilidades {
 	}
 
 	/**
-	 * Verifica si hay contenido en las cadenas apiKey y claves.
+	 * Guarda las claves de API de Marvel en un archivo de configuración.
 	 *
-	 * @param apiKey La cadena que contiene la clave API de Comic Vine.
-	 * @param claves Un arreglo de cadenas que contiene las claves API de Marvel.
-	 * @return true si ambas cadenas contienen contenido válido, false en caso
-	 *         contrario.
+	 * @param publicKey  Clave pública de Marvel
+	 * @param privateKey Clave privada de Marvel
 	 */
-	public static boolean existeContenido(String apiKey, String[] clavesMarvel) {
-		// Comprueba si apiKey es nulo o está vacío
-		if (apiKey == null || apiKey.isEmpty()) {
-			return false;
-		}
+	public static void reescribirClavesMarvel(String publicKey, String privateKey) {
+		String nombreArchivo = carpetaConfiguracion() + File.separator + "claves_marvel_api.conf";
 
-		// Comprueba si claves es nulo o está vacío
-		if (clavesMarvel == null || clavesMarvel.length < 2 || clavesMarvel[0] == null || clavesMarvel[0].isEmpty()
-				|| clavesMarvel[1] == null || clavesMarvel[1].isEmpty()) {
-			return false;
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(nombreArchivo))) {
+			writer.write("Public Key: " + publicKey);
+			writer.newLine();
+			writer.write("Private Key: " + privateKey);
+		} catch (IOException e) {
+			manejarExcepcion(e);
 		}
+	}
 
-		// Si no se cumplen las condiciones anteriores, significa que hay contenido
-		// válido
-		return true;
+	/**
+	 * Guarda la clave de API de Comic Vine en un archivo de configuración.
+	 *
+	 * @param apiKey Clave de API de Comic Vine
+	 */
+	public static void reescribirClaveApiComicVine(String apiKey) {
+		String nombreArchivo = carpetaConfiguracion() + File.separator + "clave_comicVine_api.conf";
+
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(nombreArchivo))) {
+			writer.write("###############################");
+			writer.newLine();
+			writer.write("Clave Api Comic Vine: " + apiKey);
+			writer.newLine();
+			writer.write("###############################");
+		} catch (IOException e) {
+			manejarExcepcion(e);
+		}
 	}
 
 	/**
@@ -1089,9 +1169,6 @@ public class Utilidades {
 	 * @return true si la cadena es una URL válida, false en caso contrario.
 	 */
 	public static boolean isImageURL(String cadena) {
-		// Verificar si la cadena es una URL válida
-		System.out.println(cadena);
-		System.out.println("Valor: " + isURL(cadena));
 
 		if (isURL(cadena)) {
 			// Obtener la extensión del archivo desde la URL
@@ -1127,6 +1204,22 @@ public class Utilidades {
 	}
 
 	/**
+	 * Verifica si la cadena proporcionada representa una ruta de archivo local.
+	 * 
+	 * @param cadena La cadena que se va a verificar.
+	 * @return true si la cadena es una ruta de archivo local absoluta, false de lo
+	 *         contrario.
+	 */
+	public static boolean isRutaDeArchivo(String cadena) {
+		try {
+			Path path = Paths.get(cadena);
+			return path.isAbsolute(); // Verifica si es una ruta de archivo absoluta
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	/**
 	 * Obtiene la extensión del archivo desde una URL.
 	 *
 	 * @param url URL de la que se va a obtener la extensión.
@@ -1140,31 +1233,6 @@ public class Utilidades {
 		return "";
 	}
 
-//	public static String descargarImagen(String urlImagen, String carpetaDestino) throws IOException {
-//		URL url = new URL(urlImagen);
-//
-//		// Obtener el nombre de la imagen a partir de la URL
-//		String[] partesURL = urlImagen.split("/");
-//		String nombreImagen = partesURL[partesURL.length - 1];
-//
-//		// Crear la carpeta de destino si no existe
-//		File carpeta = new File(carpetaDestino);
-//		if (!carpeta.exists()) {
-//			carpeta.mkdirs();
-//		}
-//
-//		// Crear la ruta completa de destino
-//		String rutaDestino = carpetaDestino + File.separator + nombreImagen;
-//
-//		try (InputStream in = url.openStream()) {
-//			// Descargar la imagen y guardarla en la carpeta de destino
-//			Path destino = new File(rutaDestino).toPath();
-//			Files.copy(in, destino, StandardCopyOption.REPLACE_EXISTING);
-//		}
-//
-//		return rutaDestino;
-//	}
-
 	/**
 	 * Descarga una imagen desde una URL y la guarda en una carpeta de destino.
 	 * 
@@ -1173,52 +1241,38 @@ public class Utilidades {
 	 * @return Ruta de destino de la imagen descargada o null si hay un error.
 	 * @throws IOException Si ocurre un error de entrada/salida.
 	 */
-	public static String descargarImagen(String urlImagen, String carpetaDestino) throws IOException {
-		try {
-			URI uri = validarURL(urlImagen);
-			String nombreImagen = obtenerNombreImagen(urlImagen);
-			crearCarpetaSiNoExiste(carpetaDestino);
-			String rutaDestino = carpetaDestino + File.separator + nombreImagen;
+	public static CompletableFuture<String> descargarImagenAsync(String urlImagen, String carpetaDestino) {
+		Executor executor = Executors.newCachedThreadPool();
+		CompletableFuture<String> downloadTask = new CompletableFuture<>();
 
-			if (descargarYConvertirImagen(uri, carpetaDestino)) {
-				System.out.println("Imagen descargada y guardada como JPG correctamente");
-				return rutaDestino;
+		@SuppressWarnings("unused")
+		CompletableFuture<Void> asyncTask = CompletableFuture.runAsync(() -> {
+			try {
+
+				String nombreImagen = "";
+				nombreImagen = obtenerNombreImagen(urlImagen);
+
+				crearCarpetaSiNoExiste(carpetaDestino);
+				String rutaDestino = carpetaDestino + File.separator + nombreImagen;
+
+				downloadTask.complete(rutaDestino);
+			} catch (IllegalArgumentException e) {
+				System.err.println(e.getMessage());
+				downloadTask.completeExceptionally(e);
+			} catch (Exception e) {
+				System.err.println("No se pudo acceder a la URL: " + urlImagen);
+				e.printStackTrace();
+				downloadTask.completeExceptionally(e);
 			}
-		} catch (IllegalArgumentException e) {
-			System.err.println(e.getMessage());
-		} catch (Exception e) {
-			System.err.println("No se pudo acceder a la URL: " + urlImagen);
-			e.printStackTrace();
-		}
+		}, executor);
 
-		return null;
+		// Handle executor shutdown
+		downloadTask.whenComplete((result, throwable) -> {
+			((ExecutorService) executor).shutdown();
+		});
+
+		return downloadTask;
 	}
-
-//    public static Task<String> descargarImagenTask(String urlImagen, String carpetaDestino) {
-//        return new Task<String>() {
-//            @Override
-//            protected String call() throws Exception {
-//                try {
-//                    URI uri = validarURL(urlImagen);
-//                    String nombreImagen = obtenerNombreImagen(urlImagen);
-//                    crearCarpetaSiNoExiste(carpetaDestino);
-//                    String rutaDestino = carpetaDestino + File.separator + nombreImagen;
-//
-//                    if (descargarYConvertirImagen(uri, carpetaDestino)) {
-//                        System.out.println("Imagen descargada y guardada como JPG correctamente");
-//                        return rutaDestino;
-//                    }
-//                } catch (IllegalArgumentException e) {
-//                    System.err.println(e.getMessage());
-//                } catch (Exception e) {
-//                    System.err.println("No se pudo acceder a la URL: " + urlImagen);
-//                    e.printStackTrace();
-//                }
-//
-//                return null;
-//            }
-//        };
-//    }
 
 	/**
 	 * Valida una URL y la convierte en una URI.
@@ -1227,6 +1281,7 @@ public class Utilidades {
 	 * @return URI válida de la URL.
 	 * @throws IllegalArgumentException Si la URL no es válida.
 	 */
+	@SuppressWarnings("unused")
 	private static URI validarURL(String urlImagen) throws IllegalArgumentException {
 		try {
 			return new URI(urlImagen);
@@ -1241,7 +1296,7 @@ public class Utilidades {
 	 * @param urlImagen URL de la imagen.
 	 * @return Nombre de la imagen.
 	 */
-	private static String obtenerNombreImagen(String urlImagen) {
+	public static String obtenerNombreImagen(String urlImagen) {
 		String[] partesURL = urlImagen.split("/");
 		return partesURL[partesURL.length - 1];
 	}
@@ -1268,46 +1323,68 @@ public class Utilidades {
 	 * @return true si la descarga y conversión son exitosas, false en caso
 	 *         contrario.
 	 */
-	private static boolean descargarYConvertirImagen(URI urlImagen, String carpetaDestino) {
-		try {
-			URL url = urlImagen.toURL();
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("HEAD");
-			int responseCode = connection.getResponseCode();
+	public static CompletableFuture<Boolean> descargarYConvertirImagenAsync(URI urlImagen, String carpetaDestino,
+			String nuevoNombre) {
 
-			String nombreImagen = obtenerNombreImagen(urlImagen.toString());
-			String rutaDestino = carpetaDestino + File.separator + nombreImagen;
+		System.out.println(nuevoNombre);
 
-			if (responseCode != HttpURLConnection.HTTP_OK) {
-				System.err.println("La URL no apunta a una imagen válida o no se pudo acceder: " + url);
+		return CompletableFuture.supplyAsync(() -> {
+			try {
+				URL url = urlImagen.toURL();
+				URLConnection connection = url.openConnection();
+
+				if (connection instanceof HttpURLConnection) {
+					((HttpURLConnection) connection).setRequestMethod("HEAD");
+					int responseCode = ((HttpURLConnection) connection).getResponseCode();
+
+					if (responseCode != HttpURLConnection.HTTP_OK) {
+						if (responseCode == HttpURLConnection.HTTP_INTERNAL_ERROR) {
+							System.err.println("Error interno del servidor al acceder a la URL: " + url);
+							// Realiza acciones específicas para manejar el error interno del servidor
+							// Puede ser útil registrar o notificar sobre este tipo de errores
+						} else {
+							System.err.println("La URL no apunta a una imagen válida o no se pudo acceder: " + url);
+						}
+						return false;
+					}
+				}
+
+				String finalNuevoNombre = nuevoNombre; // Create a new effectively final variable
+
+				String extension = obtenerExtension(finalNuevoNombre);
+				if (!extension.equals("jpg")) {
+					BufferedImage image = ImageIO.read(url);
+
+					if (image == null) {
+						System.err.println("No se pudo cargar la imagen desde " + urlImagen);
+						return false;
+					}
+
+					finalNuevoNombre += ".jpg";
+					Path rutaDestino = Path.of(carpetaDestino, finalNuevoNombre);
+
+					ImageIO.write(image, "jpg", rutaDestino.toFile());
+				} else {
+					Path rutaDestino = Path.of(carpetaDestino, finalNuevoNombre);
+					try (InputStream in = url.openStream()) {
+						java.nio.file.Files.copy(in, rutaDestino, StandardCopyOption.REPLACE_EXISTING);
+					}
+				}
+
+				return true;
+			} catch (IOException e) {
+				manejarExcepcion(e);
 				return false;
 			}
+		});
+	}
 
-			try (InputStream in = url.openStream()) {
-				BufferedImage image = ImageIO.read(in);
-
-				if (image == null) {
-					System.err.println("No se pudo cargar la imagen desde " + urlImagen);
-					return false;
-				}
-
-				if (!nombreImagen.toLowerCase().endsWith(".jpg")) {
-					BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(),
-							BufferedImage.TYPE_INT_RGB);
-					newImage.createGraphics().drawImage(image, 0, 0, null);
-					nombreImagen = nombreImagen.substring(0, nombreImagen.lastIndexOf(".")) + ".jpg";
-					rutaDestino = carpetaDestino + File.separator + nombreImagen;
-				}
-
-				File output = new File(rutaDestino);
-				ImageIO.write(image, "jpg", output);
-				return true;
-			}
-		} catch (IOException e) {
-			System.err.println("Error al descargar o convertir la imagen desde " + urlImagen);
-			e.printStackTrace();
-			return false;
+	private static String obtenerExtension(String nombreArchivo) {
+		int ultimoPunto = nombreArchivo.lastIndexOf(".");
+		if (ultimoPunto == -1) {
+			return "";
 		}
+		return nombreArchivo.substring(ultimoPunto + 1).toLowerCase();
 	}
 
 	/**
@@ -1324,14 +1401,12 @@ public class Utilidades {
 		// Verificar si el archivo existe antes de intentar borrarlo
 		if (archivo.exists()) {
 			if (archivo.delete()) {
-				System.out.println("Imagen borrada: " + rutaImagen);
+				System.out.println("Borrado correctamente");
 				return true;
 			} else {
-				System.err.println("No se pudo borrar la imagen: " + rutaImagen);
 				return false;
 			}
 		} else {
-			System.err.println("El archivo no existe: " + rutaImagen + rutaImagen);
 			return false;
 		}
 	}
@@ -1395,11 +1470,11 @@ public class Utilidades {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			manejarExcepcion(e);
 		}
 		return "";
 	}
-	
+
 	/**
 	 * Funcion que abre una ventana que aceptara los formatos de archivos que le
 	 * demos como parametro.
@@ -1416,27 +1491,1292 @@ public class Utilidades {
 		return fileChooser; // Devuelve el FileChooser para que la interfaz gráfica lo utilice
 	}
 
+	/**
+	 * Imprime un mensaje de error en un archivo, junto con la fecha y hora actual.
+	 * Abre el archivo después de escribir en él.
+	 * 
+	 * @param mensajeError     Mensaje de error a imprimir.
+	 * @param ubicacionArchivo Ruta del directorio donde se guardará el archivo.
+	 */
+	public static void imprimirEnArchivo(String mensajeError, String ubicacionArchivo) {
+
+		// Obtener la fecha y hora actuales
+		LocalDateTime now = LocalDateTime.now();
+
+		// Formatear la fecha y hora
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH-mm");
+
+		// Mostrar la información
+		String fechaFormateada = now.format(formatter);
+
+		String direccionCompleta = ubicacionArchivo + File.separator + "CodigosFaltantes_" + fechaFormateada + ".txt";
+
+		try {
+			PrintWriter escritor = new PrintWriter(new FileWriter(direccionCompleta, true));
+			escritor.println(mensajeError);
+			escritor.close();
+			// Abrir el archivo
+			abrirArchivo(direccionCompleta);
+		} catch (IOException e) {
+			manejarExcepcion(e);
+		}
+	}
 
 	/**
-	 * Funcion que segun el string que se le de, le hace un encode para que pueda ser usado en una API
-	 * @param input
-	 * @return
+	 * Abre un archivo en el sistema por su ubicación.
+	 * 
+	 * @param ubicacionArchivo Ruta del archivo que se desea abrir.
 	 */
-//    private static String encodeURL(String input) {
-//        try {
-//            // Reemplaza espacios con %20 y codifica otros caracteres especiales
-//            return URLEncoder.encode(input, "UTF-8")
-//                    .replaceAll("\\+", "%20")
-//                    .replaceAll("%21", "!")
-//                    .replaceAll("%27", "'")
-//                    .replaceAll("%28", "(")
-//                    .replaceAll("%29", ")")
-//                    .replaceAll("%7E", "~")
-//                    .replaceAll(":", "%3A")
-//                    .replaceAll("\\.", "%2E");
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
+	private static void abrirArchivo(String ubicacionArchivo) {
+		try {
+			File archivo = new File(ubicacionArchivo);
+
+			if (!Desktop.isDesktopSupported()) {
+				return;
+			}
+			Desktop desktop = Desktop.getDesktop();
+
+			if (archivo.exists()) {
+				desktop.open(archivo);
+			}
+		} catch (IOException e) {
+			manejarExcepcion(e);
+		}
+	}
+
+	/**
+	 * Elimina archivos en un directorio común que no están presentes en la lista
+	 * proporcionada de URLs.
+	 * 
+	 * @param listaUrls Lista de URLs que representan los archivos a conservar.
+	 */
+	public static void borrarArchivosNoEnLista(List<String> listaUrls) {
+		String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+				+ ConectManager.DB_NAME + File.separator + "portadas" + File.separator;
+
+		List<String> nombresArchivosEnDirectorio = obtenerNombresArchivosEnDirectorio(directorioComun);
+
+		for (String nombreArchivo : nombresArchivosEnDirectorio) {
+			Path archivoAEliminarPath = Paths.get(nombreArchivo).normalize();
+
+			if (!listaUrls.stream().anyMatch(url -> url.equalsIgnoreCase(archivoAEliminarPath.toString()))) {
+				try {
+					if (archivoAEliminarPath.toFile().exists() && archivoAEliminarPath.toFile().isFile()) {
+						archivoAEliminarPath.toFile().delete();
+					}
+				} catch (SecurityException e) {
+					manejarExcepcion(e);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Obtiene la lista de nombres de archivos en un directorio especificado.
+	 * 
+	 * @param directorio La ruta del directorio.
+	 * @return Lista de nombres de archivos en el directorio.
+	 */
+	private static List<String> obtenerNombresArchivosEnDirectorio(String directorio) {
+		List<String> nombresArchivos = new ArrayList<>();
+
+		File directorioComun = new File(directorio);
+		File[] archivosEnDirectorio = directorioComun.listFiles();
+
+		if (archivosEnDirectorio != null) {
+			for (File archivo : archivosEnDirectorio) {
+				nombresArchivos.add(directorio + archivo.getName());
+			}
+		}
+
+		return nombresArchivos;
+	}
+
+	/**
+	 * Obtiene la lista de nombres de archivos con extensiones de una lista de URLs.
+	 * 
+	 * @param listaUrls Lista de URLs que representan archivos.
+	 * @return Lista de nombres de archivos con extensiones.
+	 */
+	public static List<String> obtenerNombresYExtensiones(List<String> listaUrls) {
+		List<String> nombresYExtensiones = new ArrayList<>();
+
+		for (String url : listaUrls) {
+			File archivo = new File(url);
+			String nombreArchivo = archivo.getName();
+			nombresYExtensiones.add(nombreArchivo);
+		}
+
+		return nombresYExtensiones;
+	}
+
+	/**
+	 * Parsea la cadena de fecha y devuelve la fecha correspondiente. Si la cadena
+	 * es nula o vacía, devuelve la fecha actual.
+	 *
+	 * @param fechaVenta Cadena de fecha a ser parseada.
+	 * @return Objeto LocalDate que representa la fecha parseada.
+	 */
+	public static LocalDate parseFecha(String fechaVenta) {
+		if (fechaVenta == null || fechaVenta.isEmpty()) {
+			return LocalDate.of(2000, 1, 1); // Obtener la fecha actual si la cadena de fecha no está presente
+		} else {
+			try {
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+				return LocalDate.parse(fechaVenta, formatter);
+			} catch (DateTimeParseException e) {
+				// Manejar la excepción de formato de fecha, imprimir o registrar según sea
+				// necesario
+				manejarExcepcion(e);
+				return LocalDate.of(2000, 1, 1); // Valor predeterminado en caso de error de formato
+			}
+		}
+	}
+
+	/**
+	 * Obtiene la dirección de la portada de un cómic.
+	 *
+	 * @param direccionPortada La dirección de la portada del cómic.
+	 * @return La dirección de la portada actualizada después de procesar la lógica.
+	 */
+	public static String obtenerPortada(String direccionPortada) {
+		String portada = "";
+		File file;
+
+		if (!direccionPortada.isEmpty() || direccionPortada == null) {
+			file = new File(direccionPortada);
+			if (Utilidades.isImageURL(direccionPortada)) {
+				// Es una URL en internet
+				CompletableFuture<String> futurePortada = descargarImagenAsync(direccionPortada, DOCUMENTS_PATH);
+				// Esperar a que el CompletableFuture se complete y obtener el resultado
+				portada = futurePortada.join();
+				file = new File(portada);
+			} else if (!file.exists()) {
+				portada = new File("Funcionamiento/sinPortada.jpg").toURI().toString();
+			} else {
+				portada = file.toURI().toString();
+			}
+		} else {
+			portada = new File("Funcionamiento/sinPortada.jpg").toURI().toString();
+		}
+
+		// Realizar cualquier operación adicional si es necesario
+
+		return portada;
+	}
+
+	/**
+	 * Busca un cómic por su ID en una lista de cómics.
+	 *
+	 * @param comics  La lista de cómics en la que se realizará la búsqueda.
+	 * @param idComic La ID del cómic que se está buscando.
+	 * @return El cómic encontrado por la ID, o null si no se encuentra ninguno.
+	 */
+	public static Comic buscarComicPorID(List<Comic> comics, String idComic) {
+		for (Comic c : comics) {
+			if (c.getID().equals(idComic)) {
+				return c; // Devuelve el cómic si encuentra la coincidencia por ID
+			}
+		}
+		return null; // Retorna null si no se encuentra ningún cómic con la ID especificada
+	}
+
+	/**
+	 * Agrega una etiqueta y un valor al constructor StringBuilder si el valor no
+	 * está vacío o nulo.
+	 *
+	 * @param builder El constructor StringBuilder al que se va a agregar la
+	 *                etiqueta y el valor.
+	 * @param label   La etiqueta que se va a agregar.
+	 * @param value   El valor que se va a agregar.
+	 */
+	public static void appendIfNotEmpty(StringBuilder builder, String label, String value) {
+		if (value != null && !value.isEmpty()) {
+			builder.append(label).append(": ").append(value).append("\n");
+		}
+	}
+
+	/**
+	 * Devuelve el valor predeterminado si la cadena dada es nula o vacía, de lo
+	 * contrario, devuelve la cadena original.
+	 *
+	 * @param value        Cadena a ser verificada.
+	 * @param defaultValue Valor predeterminado a ser devuelto si la cadena es nula
+	 *                     o vacía.
+	 * @return Cadena original o valor predeterminado.
+	 */
+	public static String defaultIfNullOrEmpty(String value, String defaultValue) {
+
+		Comic.limpiarCampo(value);
+
+		return (value == null || value.isEmpty()) ? defaultValue : value;
+	}
+
+	/**
+	 * Convierte una ruta de archivo a una URL válida.
+	 * 
+	 * @param rutaArchivo La ruta del archivo a convertir.
+	 * @return La URL generada a partir de la ruta del archivo.
+	 */
+	public static String convertirRutaAURL(String rutaArchivo) {
+		String rutaConBarrasInclinadas = "";
+
+		if (rutaArchivo == null || rutaArchivo.isEmpty()) {
+			return null;
+		} else {
+			rutaConBarrasInclinadas = "file:///" + rutaArchivo.replace("\\", "/");
+		}
+		return rutaConBarrasInclinadas;
+	}
+
+	/**
+	 * Devuelve un objeto Comic correspondiente al ID proporcionado.
+	 * 
+	 * @param id_comic El ID del cómic a buscar.
+	 * @return El objeto Comic correspondiente al ID proporcionado. Si no se
+	 *         encuentra, devuelve null.
+	 */
+	public static Comic devolverComic(String id_comic) {
+		for (Comic comic : ListaComicsDAO.comicsImportados) {
+			if (comic.getID().equals(id_comic)) {
+				return comic;
+			}
+		}
+		// Si no se encuentra el cómic con el ID proporcionado, devolver null
+		return null;
+	}
+
+	/**
+	 * Realiza la comprobación previa para determinar si la lista de cómics está
+	 * vacía. En caso afirmativo, se inicializa la librería.
+	 */
+	public static void comprobacionListaComics() {
+
+		if (ListaComicsDAO.listaComics.isEmpty()) {
+			return;
+		}
+
+		String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
+
+		SelectManager.verLibreria(sentenciaSQL);
+
+	}
+
+	/**
+	 * Obtiene el ID del cómic seleccionado desde la tabla.
+	 * 
+	 * @return El ID del cómic seleccionado o null si no hay selección.
+	 */
+	public static String obtenerIdComicSeleccionado(TableView<Comic> tablaBBDD) {
+		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
+		return (idRow != null) ? idRow.getID() : null;
+	}
+
+	/**
+	 * Obtiene el objeto Comic seleccionado según el ID proporcionado.
+	 * 
+	 * @param id_comic El ID del cómic a obtener.
+	 * @return El objeto Comic correspondiente al ID proporcionado.
+	 * @throws SQLException Si hay un error al acceder a la base de datos.
+	 */
+	public static Comic obtenerComicSeleccionado(String id_comic) throws SQLException {
+		Comic comic_temp;
+		if (!ListaComicsDAO.comicsImportados.isEmpty()) {
+			comic_temp = Utilidades.devolverComic(id_comic);
+		} else {
+			comic_temp = SelectManager.comicDatos(id_comic);
+		}
+
+		return comic_temp;
+	}
+
+	public static Map<String, String> devolverDatosConfig() {
+		Map<String, String> datosConfiguracion = new HashMap<>();
+
+		String userHome = System.getProperty("user.home");
+		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
+		String carpetaLibreria = ubicacion + File.separator + "libreria";
+		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion_local.conf";
+
+		try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				if (line.startsWith("Usuario: ")) {
+					datosConfiguracion.put("Usuario", defaultIfNullOrEmpty(line.substring("Usuario: ".length()), ""));
+				} else if (line.startsWith("Password: ")) {
+					datosConfiguracion.put("Password", defaultIfNullOrEmpty(line.substring("Password: ".length()), ""));
+				} else if (line.startsWith("Puerto: ")) {
+					datosConfiguracion.put("Puerto", defaultIfNullOrEmpty(line.substring("Puerto: ".length()), ""));
+				} else if (line.startsWith("Database: ")) {
+					datosConfiguracion.put("Database", defaultIfNullOrEmpty(line.substring("Database: ".length()), ""));
+				} else if (line.startsWith("Hosting: ")) {
+					datosConfiguracion.put("Hosting", defaultIfNullOrEmpty(line.substring("Hosting: ".length()), ""));
+				}
+			}
+		} catch (IOException e) {
+			manejarExcepcion(e);
+		}
+
+		return datosConfiguracion;
+	}
+
+	/**
+	 * Guarda los datos de configuración de la base de datos local en un archivo de
+	 * configuración.
+	 *
+	 * @throws SQLException Si ocurre un error de SQL.
+	 */
+	public static void guardarDatosBaseLocal(String[] datos, Label prontEstadoFichero, Label alarmaConexion)
+			throws SQLException {
+
+		String puertobbdd = datos[0];
+		String nombreBBDD = datos[1];
+		String usuario = datos[2];
+		String pass = datos[3];
+		String nombreHost = datos[4];
+
+		String userHome = System.getProperty("user.home");
+		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
+		String carpetaLibreria = ubicacion + File.separator + "libreria";
+		String carpetaBackup = carpetaLibreria + File.separator + nombreBBDD + File.separator + "backups";
+		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion_local.conf";
+		AlarmaList alarmaList = new AlarmaList();
+
+		try {
+			if (verificarDatos(datos, prontEstadoFichero)) {
+				Utilidades.crearEstructura();
+
+				// Utilizamos try-with-resources para asegurar el cierre de recursos
+				try (FileWriter fileWriter = new FileWriter(archivoConfiguracion);
+						BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+
+					bufferedWriter.write("###############################");
+					bufferedWriter.newLine();
+					bufferedWriter.write("Fichero de configuracion de la libreria");
+					bufferedWriter.newLine();
+					bufferedWriter.write("###############################");
+					bufferedWriter.newLine();
+					bufferedWriter.write("Usuario: " + usuario);
+					bufferedWriter.newLine();
+					bufferedWriter.write("Password: " + pass);
+					bufferedWriter.newLine();
+					bufferedWriter.write("Puerto: " + puertobbdd);
+					bufferedWriter.newLine();
+					bufferedWriter.write("Database: " + nombreBBDD);
+					bufferedWriter.newLine();
+					bufferedWriter.write("Hosting: " + nombreHost);
+					bufferedWriter.newLine();
+				}
+
+				// Crear carpeta de backups si no existe
+				File carpetaBackupsFile = new File(carpetaBackup);
+				if (!carpetaBackupsFile.exists()) {
+					carpetaBackupsFile.mkdirs(); // Usa mkdirs para crear directorios recursivamente
+				}
+
+				alarmaList.mensajeRespuestaGuardado(prontEstadoFichero, alarmaConexion);
+
+			} else {
+				alarmaList.mensajeRespuestaError(prontEstadoFichero, alarmaConexion);
+			}
+
+		} catch (IOException e) {
+			manejarExcepcion(e);
+		}
+	}
+
+	/**
+	 * Comprueba si los datos ingresados coinciden con los datos en la base de
+	 * datos.
+	 *
+	 * @return true si los datos coinciden, false si no coinciden o si hay un error
+	 *         en la conexión
+	 * @throws SQLException si hay un error al consultar la base de datos
+	 */
+	private static boolean verificarDatos(String[] datos, Label prontEstadoFichero) throws SQLException {
+
+		ConectManager.datosBBDD(datos);
+		AlarmaList alarmaList = new AlarmaList();
+		Connection connection = ConectManager.conexion();
+		if (connection == null) {
+			prontEstadoFichero.setStyle("-fx-background-color: #DD370F");
+			alarmaList.iniciarAnimacionBBDDError(prontEstadoFichero);
+			return false;
+		}
+
+		if (dbmanager.ConectManager.isConnected()) {
+			ConectManager.close();
+			return true;
+		} else {
+			prontEstadoFichero.setStyle("-fx-background-color: #DD370F");
+			alarmaList.iniciarAnimacionBBDDError(prontEstadoFichero);
+			return false;
+		}
+	}
+
+	/**
+	 * Verifica si el servicio MySQL está en ejecución en el host y puerto
+	 * proporcionados.
+	 *
+	 * @param host       El host del servicio MySQL.
+	 * @param portString El número de puerto del servicio MySQL.
+	 * @return true si el servicio está en ejecución, false si no lo está.
+	 */
+	public static boolean isMySQLServiceRunning(String host, String portString) {
+		try {
+			int port = Integer.parseInt(portString); // Convertir la cadena a un entero
+			InetAddress address = InetAddress.getByName(host);
+			Socket socket = new Socket(address, port);
+			socket.close();
+			return true;
+		} catch (Exception e) {
+//			e.printStackTrace();
+			return false;
+		}
+	}
+
+	/**
+	 * Crea las carpetas necesarias para realizar backups.
+	 */
+	public static void crearCarpetasBackup() {
+		String userHome = System.getProperty("user.home");
+		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
+		String carpetaLibreria = ubicacion + File.separator + "libreria";
+		String carpetaBackup = carpetaLibreria + File.separator + Utilidades.obtenerDatoDespuesDeDosPuntos("Database")
+				+ File.separator + "backups";
+
+		try {
+			File carpeta_backupsFile = new File(carpetaBackup);
+			Utilidades.crearCarpeta();
+			if (!carpeta_backupsFile.exists()) {
+				carpeta_backupsFile.mkdirs();
+			}
+		} catch (Exception e) {
+			manejarExcepcion(e);
+		}
+	}
+
+	/**
+	 * Método que crea la estructura de carpetas y archivos necesarios para la
+	 * librería.
+	 */
+	public static void crearEstructura() {
+		String userHome = System.getProperty("user.home");
+		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
+		String carpetaLibreria = ubicacion + File.separator + "libreria";
+
+		// Verificar y crear la carpeta "libreria" si no existe
+		File carpetaLibreriaFile = new File(carpetaLibreria);
+		if (!carpetaLibreriaFile.exists()) {
+			carpetaLibreriaFile.mkdir();
+			carpetaLibreriaFile.setWritable(true);
+		}
+
+		// Verificar y crear los archivos de configuración si no existen
+		String archivoConfiguracionLocal = carpetaLibreria + File.separator + "configuracion_local.conf";
+		String archivoConfiguracionOnline = carpetaLibreria + File.separator + "configuracion_usuario.conf";
+
+		File archivoConfiguracionLocalFile = new File(archivoConfiguracionLocal);
+		File archivoConfiguracionOnlineFile = new File(archivoConfiguracionOnline);
+
+		if (!archivoConfiguracionLocalFile.exists()) {
+			try {
+				archivoConfiguracionLocalFile.createNewFile();
+
+				// Escribir líneas en el archivo de configuración local
+				FileWriter fileWriterLocal = new FileWriter(archivoConfiguracionLocalFile);
+				BufferedWriter bufferedWriterLocal = new BufferedWriter(fileWriterLocal);
+				bufferedWriterLocal.write("###############################");
+				bufferedWriterLocal.newLine();
+				bufferedWriterLocal.write("Fichero de configuracion local de la libreria");
+				bufferedWriterLocal.newLine();
+				bufferedWriterLocal.write("###############################");
+				bufferedWriterLocal.newLine();
+				bufferedWriterLocal.write("Usuario:");
+				bufferedWriterLocal.newLine();
+				bufferedWriterLocal.write("Password:");
+				bufferedWriterLocal.newLine();
+				bufferedWriterLocal.write("Puerto:");
+				bufferedWriterLocal.newLine();
+				bufferedWriterLocal.write("Database:");
+				bufferedWriterLocal.newLine();
+				bufferedWriterLocal.write("Hosting: Localhost");
+				bufferedWriterLocal.newLine();
+				bufferedWriterLocal.close();
+			} catch (IOException e) {
+				manejarExcepcion(e);
+			}
+		}
+
+		if (!archivoConfiguracionOnlineFile.exists()) {
+			try {
+				archivoConfiguracionOnlineFile.createNewFile();
+
+				// Escribir líneas en el archivo de configuración online
+				FileWriter fileWriterOnline = new FileWriter(archivoConfiguracionOnlineFile);
+				BufferedWriter bufferedWriterOnline = new BufferedWriter(fileWriterOnline);
+				bufferedWriterOnline.write("###############################");
+				bufferedWriterOnline.newLine();
+				bufferedWriterOnline.write("Usuario y contraseño del usuario");
+				bufferedWriterOnline.newLine();
+				bufferedWriterOnline.write("###############################");
+				bufferedWriterOnline.newLine();
+				bufferedWriterOnline.write("Usuario: ");
+				bufferedWriterOnline.newLine();
+				bufferedWriterOnline.write("Password: ");
+				bufferedWriterOnline.newLine();
+				bufferedWriterOnline.close();
+			} catch (IOException e) {
+				manejarExcepcion(e);
+			}
+		}
+	}
+
+	/**
+	 * Valida los datos de conexión a la base de datos MySQL.
+	 *
+	 * @param usuario  El nombre de usuario para la conexión.
+	 * @param password La contraseña para la conexión.
+	 * @param puerto   El puerto para la conexión.
+	 * @param hosting  El host para la conexión.
+	 * @return true si la validación fue exitosa, false si no lo fue.
+	 */
+	public static boolean validarDatosConexion() {
+
+		String[] datosFichero = datosEnvioFichero();
+
+		String puerto = datosFichero[0];
+		String usuario = datosFichero[2];
+		String password = datosFichero[3];
+		String hosting = datosFichero[4];
+
+		String url = construirURL(hosting, puerto);
+		if (Utilidades.isMySQLServiceRunning(hosting, puerto)) {
+			try (Connection connection = DriverManager.getConnection(url, usuario, password)) {
+				return true; // La conexión se estableció correctamente
+			} catch (SQLException e) {
+				AlarmaList.manejarErrorConexion(
+						"ERROR. Revisa tu configuracion de XAMPP. Es posible que la contraseña u usuario sea incorrecto en la configuracion del fichero o de XAMPP",
+						null);
+
+			}
+		}
+
+		return false; // La conexión no se pudo establecer
+	}
+
+	private static String construirURL(String hosting, String puerto) {
+		return "jdbc:mysql://" + hosting + ":" + puerto + "/";
+	}
+
+	/**
+	 * Obtiene opciones para el ComboBox de nombreBBDD basado en la configuración.
+	 *
+	 * @param usuario  El nombre de usuario para la conexión.
+	 * @param password La contraseña para la conexión.
+	 * @param puerto   El puerto para la conexión.
+	 * @param hosting  El host para la conexión.
+	 * @return Lista de opciones para el ComboBox de nombreBBDD.
+	 */
+	public static List<String> obtenerOpcionesNombreBBDD(Map<String, String> datosConfiguracion) {
+		List<String> opciones = new ArrayList<>();
+
+		String usuario = datosConfiguracion.get("Usuario");
+		String password = datosConfiguracion.get("Password");
+		String puerto = datosConfiguracion.get("Puerto");
+		String hosting = datosConfiguracion.get("Hosting");
+
+		try (Connection connection = DriverManager.getConnection("jdbc:mysql://" + hosting + ":" + puerto + "/",
+				usuario, password);
+				Statement statement = connection.createStatement();
+				ResultSet resultSet = statement.executeQuery("SHOW DATABASES");) {
+
+			// Agregar los nombres de las bases de datos a la lista de opciones
+			while (resultSet.next()) {
+				String nombreBD = resultSet.getString(1);
+				String urlBD = "jdbc:mysql://" + hosting + ":" + puerto + "/" + nombreBD;
+				try (Connection dbConnection = DriverManager.getConnection(urlBD, usuario, password);
+						Statement dbStatement = dbConnection.createStatement();
+						ResultSet dbResultSet = dbStatement.executeQuery("SHOW TABLES LIKE 'comicsbbdd'");) {
+					if (dbResultSet.next()) {
+						opciones.add(nombreBD);
+					}
+				}
+			}
+		} catch (SQLException e) {
+			manejarExcepcion(e);
+		}
+		return opciones;
+	}
+
+	/**
+	 * Verifica si el código es válido, es decir, contiene solo números y letras y
+	 * tiene una longitud mayor a 0.
+	 *
+	 * @param codigo El código a validar.
+	 * @return true si el código es válido, false de lo contrario.
+	 */
+	public static boolean esCodigoValido(String codigo) {
+		return codigo.length() >= 8 && codigo.matches("^[a-zA-Z0-9]+$");
+	}
+
+	public static void saveImageFromDataBase(String direccionImagen, File directorio) {
+
+		try (Connection conn = ConectManager.conexion()) {
+			if (directorio != null) {
+				String nombreImagen = obtenerNombreArchivo(direccionImagen);
+				File imagenArchivo = new File(direccionImagen);
+
+				if (!imagenArchivo.exists()) {
+					copiarImagenPredeterminada(directorio, nombreImagen);
+				} else {
+					copiarImagenDesdeArchivo(imagenArchivo, directorio, nombreImagen);
+				}
+			}
+		} catch (IOException | SQLException e) {
+			manejarExcepcion(e);
+		}
+	}
+
+	// OJO CON ESTA FUNCION, EL ERROR FUE PONER STATIC EN VEZ DE getClass() DONDE
+	// UTILIDADES.CLASS
+
+	private static void copiarImagenPredeterminada(File directorio, String nombreImagen) throws IOException {
+		try (InputStream input = Utilidades.class.getResourceAsStream("sinPortada.jpg")) {
+			if (input == null) {
+				throw new FileNotFoundException("La imagen predeterminada no se encontró en el paquete");
+			}
+
+			File imagenArchivo = File.createTempFile("tmp", ".jpg");
+			imagenArchivo.deleteOnExit();
+
+			Path tempPath = imagenArchivo.toPath();
+			Files.copy(input, tempPath, StandardCopyOption.REPLACE_EXISTING);
+
+			Files.copy(tempPath, Paths.get(directorio.getAbsolutePath(), nombreImagen),
+					StandardCopyOption.REPLACE_EXISTING);
+		}
+	}
+
+	private static void copiarImagenDesdeArchivo(File imagenArchivo, File directorio, String nombreImagen)
+			throws IOException {
+		try (InputStream fileInputStream = new FileInputStream(imagenArchivo);
+				OutputStream fileOutputStream = new FileOutputStream(
+						Paths.get(directorio.getAbsolutePath(), nombreImagen).toFile())) {
+
+			byte[] buffer = new byte[4096];
+			int bytesRead;
+			while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+				fileOutputStream.write(buffer, 0, bytesRead);
+			}
+		}
+	}
+
+	public static void manejarExcepcion(Exception e) {
+
+		Ventanas nav = new Ventanas();
+
+		nav.alertaException(e.toString());
+		e.printStackTrace();
+	}
+
+	public static void procesarArchivo(File archivo) {
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+
+		executor.submit(() -> {
+			String linea;
+			int contadorFaltas = 0;
+			ApiISBNGeneral isbnGeneral = new ApiISBNGeneral();
+			String codigosFaltantes = "";
+			Comic comicInfo = new Comic();
+			String sourcePath = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+					+ ConectManager.DB_NAME;
+
+			try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
+				while ((linea = br.readLine()) != null) {
+					// Procesar cada línea según tus requisitos
+					String finalValorCodigo = linea.trim();
+					String valorCodigo = finalValorCodigo; // Asignar el valor adecuado
+
+					if (!finalValorCodigo.isEmpty()) {
+						if (finalValorCodigo.length() == 9) {
+							comicInfo = WebScraperPreviewsWorld.displayComicInfo(finalValorCodigo.trim(), null);
+
+						} else {
+							comicInfo = ApiMarvel.infoComicCode(finalValorCodigo.trim(), null);
+							contadorFaltas++;
+
+							if (comicInfo == null) {
+								comicInfo = isbnGeneral.getBookInfo(finalValorCodigo.trim(), null);
+
+								if (comicInfo == null) {
+									contadorFaltas++;
+								}
+
+							}
+						}
+
+						if (contadorFaltas > 1) {
+							codigosFaltantes += "Falta comic con codigo: " + valorCodigo;
+						}
+					}
+				}
+			} catch (IOException | URISyntaxException | JSONException e) {
+				e.printStackTrace();
+			}
+
+			// Verificar el contador de faltas al final y actualizar el resultado
+			if (contadorFaltas > 1) {
+				Utilidades.imprimirEnArchivo(codigosFaltantes, sourcePath);
+			}
+		});
+
+		executor.shutdown();
+	}
+
+	public static boolean codigoCorrectoImportado(String valorCodigo) {
+		try {
+			String finalValorCodigo = eliminarEspacios(valorCodigo).replace("-", "");
+			ApiISBNGeneral isbnGeneral = new ApiISBNGeneral();
+			Comic comicInfo = null;
+
+			if (finalValorCodigo.length() == 9) {
+				comicInfo = WebScraperPreviewsWorld.displayComicInfo(finalValorCodigo.trim(), null);
+			} else {
+				comicInfo = ApiMarvel.infoComicCode(finalValorCodigo.trim(), null);
+
+				if (comicInfo == null) {
+					comicInfo = isbnGeneral.getBookInfo(finalValorCodigo.trim(), null);
+				}
+			}
+
+			// Realiza cualquier lógica adicional aquí si es necesario.
+
+			return comicInfo != null; // Devuelve true si se encontró información del cómic.
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public static int contarLineas(File fichero) {
+		int contador = 0;
+
+		try (BufferedReader br = new BufferedReader(new FileReader(fichero))) {
+			// Lee el archivo línea por línea
+			while (br.readLine() != null) {
+				contador++;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return contador;
+	}
+
+	public static Image pasarImagenComic(String direccionComic) {
+		if (direccionComic != null && !direccionComic.isEmpty()) {
+			try {
+				Image imagen = new Image(new File(direccionComic).toURI().toString());
+				return new Image(imagen.getUrl(), 250, 0, true, true);
+			} catch (Exception e) {
+				Utilidades.manejarExcepcion(e);
+			}
+		}
+		return null;
+	}
+
+	public static String[] datosEnvioFichero() {
+		Map<String, String> datosConfiguracion = Utilidades.devolverDatosConfig();
+
+		String puertoTexto = datosConfiguracion.get("Puerto");
+		String databaseTexto = datosConfiguracion.get("Database");
+		String usuarioTexto = datosConfiguracion.get("Usuario");
+		String passwordTexto = datosConfiguracion.get("Password");
+		String hostingTexto = datosConfiguracion.get("Hosting");
+
+		String[] datosConfiguracionArray = { puertoTexto, databaseTexto, usuarioTexto, passwordTexto, hostingTexto };
+
+		return datosConfiguracionArray;
+	}
+
+	public static boolean comprobarYManejarConexion(Scene ventana) {
+		Ventanas nav = new Ventanas();
+
+		if (ventana != null) {
+			Stage stage = (Stage) ventana.getWindow();
+
+			if (!validarDatosConexion()) {
+				Platform.runLater(() -> {
+					ConectManager.asignarValoresPorDefecto();
+					ConectManager.close();
+
+					Ventanas.cerrarVentanaActual(stage);
+					nav.alertaException("Error. Servicio MySql apagado o desconectado de forma repentina.");
+				});
+
+				return false; // No está conectado
+			}
+		}
+
+		return true; // Está conectado
+	}
+
+	public static void comprobarApisComics() {
+		String apiKey = Utilidades.cargarApiComicVine();
+		String clavesMarvel[] = Utilidades.clavesApiMarvel();
+
+		if (!verificarClavesAPI(clavesMarvel, apiKey)) {
+			return; // Salir si hay errores en las claves API
+		}
+	}
+
+	/**
+	 * Verifica si las claves API están ausentes o vacías y muestra una alerta en
+	 * caso de error.
+	 *
+	 * @param clavesMarvel Claves API de Marvel.
+	 * @param apiKey       Clave API de Comic Vine.
+	 */
+	public static boolean verificarClavesAPI(String[] clavesMarvel, String apiKey) {
+		String exception = "";
+		Ventanas nav = new Ventanas();
+
+		if (clavesMarvel.length == 0) {
+			exception += "\nDebes obtener una clave API de Marvel. Visita https://developer.marvel.com/";
+		}
+
+		if (apiKey.isEmpty()) {
+			exception += "\nDebes obtener una clave API de Comic Vine. Visita https://comicvine.gamespot.com/api/ (gratuito)";
+		}
+
+		if (!exception.isEmpty()) {
+			nav.alertaNoApi(exception); // Mostrar alerta de error
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Devuelve el último segmento de una ruta dada.
+	 *
+	 * @param ruta La ruta de la cual se desea obtener el último segmento.
+	 * @return El último segmento de la ruta. Si la ruta es nula o vacía, se
+	 *         devuelve una cadena vacía.
+	 */
+	public static String obtenerUltimoSegmentoRuta(String ruta) {
+		if (ruta == null || ruta.isEmpty()) {
+			return "";
+		}
+
+		int indiceUltimoSeparador = ruta.lastIndexOf(File.separator);
+		if (indiceUltimoSeparador != -1 && indiceUltimoSeparador < ruta.length() - 1) {
+			return ruta.substring(indiceUltimoSeparador + 1);
+		} else {
+			// La ruta no contiene separador o es la última parte de la ruta
+			return ruta;
+		}
+	}
+
+	/**
+	 * Función que verifica si un archivo de portada existe
+	 *
+	 * @param defaultImagePath El directorio de las portadas
+	 * @param nombreModificado El nombre del archivo modificado
+	 * @return true si el archivo existe, false en caso contrario
+	 */
+	static boolean existeArchivo(String defaultImagePath, String nombreModificado) {
+		return Files.exists(Paths.get(defaultImagePath, nombreModificado));
+	}
+
+	/**
+	 * Abre un archivo en el registro a través del programa predeterminado del
+	 * sistema.
+	 *
+	 * @param filePath La ruta del archivo que se va a abrir.
+	 */
+	public static void abrirArchivoRegistro(String filePath) {
+		File file = new File(filePath);
+		Ventanas nav = new Ventanas();
+
+		if (file.exists()) {
+			try {
+				Desktop.getDesktop().open(file);
+			} catch (IOException e) {
+				nav.alertaException(e.toString());
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public static boolean isXAMPPRunning() {
+		try {
+			// Verificar si el proceso principal del "XAMPP Control Panel" está en ejecución
+			ProcessBuilder processBuilder = new ProcessBuilder("tasklist.exe", "/FI", "IMAGENAME eq xampp-control.exe");
+			Process process = processBuilder.start();
+
+			// Leer la salida del comando para verificar si el proceso está en la lista
+			String output = leerSalidaProceso(process);
+
+			// Cerrar el proceso
+			process.destroy();
+
+			// Si la salida contiene "xampp-control.exe", entonces el proceso está en
+			// ejecución
+			return output.contains("xampp-control.exe");
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	private static String leerSalidaProceso(Process process) throws IOException {
+		StringBuilder salida = new StringBuilder();
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				salida.append(line).append("\n");
+			}
+		}
+		return salida.toString();
+	}
+
+	public static boolean iniciarXAMPP() {
+		try {
+			String[] datosFichero = Utilidades.datosEnvioFichero();
+			String port = datosFichero[0];
+			String host = datosFichero[4];
+
+			if (!isMySQLServiceRunning(host, port)) {
+				iniciarConexionMySql();
+				return true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public static void iniciarConexionMySql() {
+		String rutaScriptControl = "C:\\xampp\\xampp-control.exe";
+
+		try {
+			if (verificarExistencia(rutaScriptControl)) {
+				if (!isXAMPPRunning()) {
+					abrirPrograma(rutaScriptControl);
+//					Thread.sleep(5000); // Espera para asegurarse de que XAMPP se haya iniciado completamente
+				}
+				String rutaScript = "C:\\xampp\\xampp_start.exe";
+				if (verificarExistencia(rutaScript)) {
+					System.out.println("Tal");
+					ejecutarComando(rutaScript);
+				} else {
+					System.err.println("El archivo xampp_start.exe no existe en la ruta especificada.");
+				}
+			} else {
+				System.err.println("El archivo xampp-control.exe no existe en la ruta especificada.");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Ejecuta un comando en un proceso y maneja la salida según el resultado.
+	 *
+	 * @param rutaScript   Ruta del script o comando a ejecutar.
+	 * @param mensajeExito Mensaje a imprimir en caso de éxito. (Opcional)
+	 * @param mensajeError Mensaje a imprimir en caso de error. (Opcional)
+	 * @throws IOException Si ocurre un error de E/S al ejecutar el comando.
+	 */
+	private static void ejecutarComando(String rutaScript) throws IOException {
+		try {
+
+			String mensajeExito = "XAMPP iniciado correctamente";
+			String mensajeError = "Error al iniciar XAMPP";
+
+			ProcessBuilder processBuilder = new ProcessBuilder(rutaScript);
+			Process process = processBuilder.start();
+
+			try {
+				int exitCode = process.waitFor();
+
+				System.out.println(exitCode);
+
+				if (exitCode == 0) {
+					if (mensajeExito != null && !mensajeExito.isEmpty()) {
+						System.out.println(mensajeExito);
+					} else {
+						System.out.println("El comando se ejecutó correctamente.");
+					}
+				} else {
+					if (mensajeError != null && !mensajeError.isEmpty()) {
+						System.out.println(mensajeError);
+					} else {
+						System.out.println("El comando falló con código de salida: " + exitCode);
+					}
+				}
+			} catch (InterruptedException e) {
+				System.err.println("El hilo fue interrumpido mientras esperaba el proceso.");
+				Thread.currentThread().interrupt();
+			} finally {
+				process.destroyForcibly();
+				System.out.println("El proceso fue destruido: " + !process.isAlive());
+			}
+		} catch (IOException e) {
+			throw new IOException("Error al ejecutar el comando: " + e.getMessage());
+		}
+	}
+
+	private static void abrirPrograma(String rutaPrograma) {
+		File file = new File(rutaPrograma);
+		if (!file.exists()) {
+			System.err.println("El archivo no existe en la ruta especificada.");
+			return;
+		}
+
+		try {
+			Desktop.getDesktop().open(file);
+			System.out.println("Programa abierto correctamente.");
+		} catch (IOException e) {
+			System.err.println("Error al abrir el programa: " + e.getMessage());
+		}
+	}
+
+//	// Función para detener XAMPP
+//	private static void detenerXAMPP() {
+//		try {
+//			// Ruta al script de control de XAMPP en Windows
+//			String rutaScript = "C:\\xampp\\xampp_stop.exe";
+//
+//			if (verificarExistencia(rutaScript)) {
+//				ejecutarComando(rutaScript, "XAMPP detenido correctamente", "Error al detener XAMPP");
+//			}
+//
+//			// Llamada a la función para ejecutar el comando
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
+
+	// Función para verificar la existencia de un archivo
+	private static boolean verificarExistencia(String rutaArchivo) {
+		File archivo = new File(rutaArchivo);
+		return archivo.exists();
+	}
+
+	/**
+	 * Funcion que crea una copia de seguridad de la base de datos siempre que el
+	 * sistema operativo sea Linux
+	 *
+	 * @param fichero
+	 */
+	public static void backupLinux(File fichero) {
+		try {
+			fichero.createNewFile();
+
+			// Crear una lista para los comandos
+			String[] command = { "mysqldump", "-u" + ConectManager.DB_USER, "-p" + ConectManager.DB_PASS, "-B",
+					ConectManager.DB_NAME, "--routines=true", "--result-file=" + fichero.getAbsolutePath() };
+
+			// Crear un ProcessBuilder y configurar los comandos
+			ProcessBuilder pb = new ProcessBuilder(command);
+
+			// Redirigir errores y salida estándar al sistema actual
+			pb.redirectErrorStream(true);
+			pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+
+			// Iniciar el proceso
+			Process process = pb.start();
+			int exitCode = process.waitFor();
+
+			// Verificar el código de salida para manejar errores
+			if (exitCode == 0) {
+				System.out.println("Copia de seguridad creada exitosamente.");
+			} else {
+				System.err.println("Error al crear la copia de seguridad. Código de salida: " + exitCode);
+			}
+
+		} catch (IOException | InterruptedException e) {
+			Utilidades.manejarExcepcion(e);
+		}
+	}
+
+	/**
+	 * Funcion que crea una copia de seguridad de la base de datos siempre que el
+	 * sistema operativo sea Windows
+	 *
+	 * @param fichero
+	 */
+	public static void backupWindows(File fichero) {
+		try {
+			fichero.createNewFile();
+
+			String pathMySql = "C:\\Program Files\\MySQL";
+
+			File path = new File(pathMySql);
+
+			FileChooser fileChooser = new FileChooser();
+			fileChooser.setInitialDirectory(path);
+			fileChooser.getExtensionFilters()
+					.addAll(new FileChooser.ExtensionFilter("MySqlDump only", "mysqldump.exe"));
+			File directorio = fileChooser.showOpenDialog(null);
+
+			String mysqlDump = directorio.getAbsolutePath();
+
+			String command[] = new String[] { mysqlDump, "-u" + ConectManager.DB_USER, "-p" + ConectManager.DB_PASS,
+					"-B", ConectManager.DB_NAME, "--hex-blob", "--routines=true", "--result-file=" + fichero };
+			ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
+			pb.redirectError(Redirect.INHERIT);
+			pb.redirectOutput(Redirect.to(fichero));
+			pb.start();
+
+		} catch (Exception e) {
+			Utilidades.manejarExcepcion(e);
+		}
+	}
+
+	/**
+	 * Obtiene la fecha y hora actual en el formato "yyyy_MM_dd_HH_mm".
+	 *
+	 * @return La fecha y hora actual formateada como una cadena de texto.
+	 */
+	public static String obtenerFechaActual() {
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm");
+		Date date = new Date();
+		return formatter.format(date);
+	}
+
+	/**
+	 * Abre un archivo en el programa asociado en el sistema operativo.
+	 *
+	 * @param rutaArchivo La ruta del archivo que se va a abrir.
+	 */
+	public static void abrirArchivoConProgramaAsociado(String rutaArchivo) {
+		try {
+			if (Desktop.isDesktopSupported()) {
+				Desktop.getDesktop().open(new File(rutaArchivo));
+			}
+		} catch (IOException e) {
+			Utilidades.manejarExcepcion(e);
+		}
+	}
+
+	/**
+	 * Carga una imagen de forma asíncrona desde una URL y la muestra en un
+	 * ImageView.
+	 *
+	 * @param urlImagen La URL de la imagen a cargar.
+	 * @param imageView El ImageView en el que se mostrará la imagen cargada.
+	 */
+	public static void cargarImagenAsync(String urlImagen, ImageView imageView) {
+		Task<Image> cargarImagenTask = new Task<Image>() {
+			@Override
+			protected Image call() throws Exception {
+				while (true) {
+					try {
+						File fichero = new File(urlImagen);
+
+						// Verificar si el archivo existe
+						if (!fichero.exists()) {
+							// Si el archivo no existe, cargar la imagen por defecto desde el proyecto
+							InputStream is = getClass().getResourceAsStream("/Funcionamiento/sinPortada.jpg");
+							if (is != null) {
+								// Intentar cargar la imagen desde el flujo de entrada
+								Image imagenCargada = new Image(is, 250, 0, true, true);
+								// Verificar si la imagen se ha cargado correctamente
+								if (imagenCargada.isError()) {
+									throw new IOException("Error al cargar la imagen por defecto.");
+								}
+								// Actualizar la interfaz de usuario en el hilo de JavaFX
+								Platform.runLater(() -> {
+									imageView.setImage(imagenCargada);
+								});
+								return imagenCargada;
+							}
+						}
+
+						// Si el archivo existe, cargar la imagen desde la ruta especificada
+						String imageUrl = fichero.toURI().toURL().toString();
+						Image imagenCargada = new Image(imageUrl, 250, 0, true, true);
+
+						// Verificar si la imagen se ha cargado correctamente
+						if (imagenCargada.isError()) {
+							throw new IOException("Error al cargar la imagen desde la URL local.");
+						}
+
+						// Actualizar la interfaz de usuario en el hilo de JavaFX
+						Platform.runLater(() -> {
+							imageView.setImage(imagenCargada);
+						});
+						return imagenCargada;
+					} catch (FileNotFoundException e) {
+						Thread.sleep(1500); // Puedes ajustar el tiempo de espera según sea necesario
+					} catch (Exception e) {
+						Thread.sleep(1500); // Puedes ajustar el tiempo de espera según sea necesario
+					}
+				}
+			}
+		};
+
+		Thread thread = new Thread(cargarImagenTask);
+		thread.setDaemon(true);
+		thread.start();
+	}
+
+	public static boolean existePortada(String direccionImagen) {
+
+		File direccionFichero = new File(direccionImagen);
+
+		return direccionFichero.exists();
+
+	}
+
+	public static String copiarConNombreAleatorio(String nombreCompletoPortadaOriginal) {
+		File archivoOriginal = new File(nombreCompletoPortadaOriginal);
+		String nombreCarpeta = archivoOriginal.getParent();
+		String extension = ".jpg"; // La extensión siempre será .jpg
+
+		String nombreAleatorio = Utilidades.generarCodigoUnico(SOURCE_PATH + File.separator);
+		String rutaDestino = nombreCarpeta + File.separator + nombreAleatorio + extension;
+		Path rutaDestinoPath = Path.of(rutaDestino);
+
+		try {
+
+			if (archivoOriginal.exists()) {
+				Files.copy(Path.of(nombreCompletoPortadaOriginal), rutaDestinoPath,
+						StandardCopyOption.REPLACE_EXISTING);
+
+				archivoOriginal.delete();
+			}
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return nombreAleatorio + extension;
+	}
+	
+	/**
+	 * Oculta y deshabilita varios campos y elementos en la interfaz gráfica.
+	 *
+	 * @param elementos Lista de elementos que deseas ocultar y deshabilitar.
+	 */
+	public static void cambiarVisibilidad(List<Node> elementos, boolean verElemento) {
+		// Itera a través de los elementos y oculta/deshabilita cada uno
+		for (Node elemento : elementos) {
+
+			if (verElemento) {
+				elemento.setVisible(false);
+				elemento.setDisable(true);
+			} else {
+				elemento.setVisible(true);
+				elemento.setDisable(false);
+			}
+
+		}
+	}
+
 }

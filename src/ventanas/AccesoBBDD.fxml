@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.gluonhq.charm.glisten.control.ProgressIndicator?>
+<?import java.net.URL?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
@@ -11,7 +13,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="507.0" prefWidth="271.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.AccesoBBDDController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="507.0" prefWidth="271.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.AccesoBBDDController">
    <children>
       <ToggleButton fx:id="toggleEye" layoutX="189.0" layoutY="229.0" mnemonicParsing="false" />
       <ImageView fitHeight="148.0" fitWidth="296.0" layoutY="359.0" pickOnBounds="true" preserveRatio="true">
@@ -66,5 +68,12 @@
       <Label fx:id="nomUsuarioLabel" disable="true" layoutX="60.0" layoutY="128.0" stylesheets="@../style/datos_ocultos.css" text="Nombre de usuario" visible="false" />
       <ImageView fx:id="toggleEyeImageView" disable="true" fitHeight="38.0" fitWidth="29.0" layoutX="184.0" layoutY="228.0" pickOnBounds="true" preserveRatio="true" visible="false" />
       <Label fx:id="alarmaConexionSql" layoutX="191.0" layoutY="3.0" prefHeight="30.0" prefWidth="29.0" style="-fx-background-radius: 50;" stylesheets="@../style/alarma_conexion_style.css" />
+      <Button fx:id="botonEncender" layoutX="18.0" layoutY="336.0" mnemonicParsing="false" onAction="#reActivarConexion" prefHeight="46.0" prefWidth="50.0" style="-fx-background-radius: 50;">
+         <stylesheets>
+            <URL value="@../style/boton_reestart_style.css" />
+            <URL value="@../style/acces_style.css" />
+         </stylesheets>
+      </Button>
+      <ProgressIndicator fx:id="progresoCarga" layoutX="120.0" layoutY="344.0" prefHeight="38.0" prefWidth="44.0" progress="0.0" />
    </children>
 </Pane>

@@ -4,36 +4,12 @@
 */
 package Controladores;
 
-import java.io.BufferedReader;
-
-/**
- * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
- * Las ventanas graficas se realizan con JavaFX.
- * El programa permite:
- *  - Conectarse a la base de datos.
- *  - Ver la base de datos completa o parcial segun parametros introducidos.
- *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
- *  - Copia de seguridad de la base de datos en formato .sql
- *  - Introducir comics a la base de datos.
- *  - Modificar comics de la base de datos.
- *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
- *  - Ver frases de personajes de comics
- *  - Opcion de escoger algo para leer de forma aleatoria.
- *  - Puntuar comics que se encuentren dentro de la base de datos.
- *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
- *
- *  Version 7.0.0.0
- *
- *  Por Alejandro Rodriguez
- *
- */
-
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -45,29 +21,37 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import Funcionamiento.Comic;
 import Funcionamiento.FuncionesComboBox;
 import Funcionamiento.FuncionesExcel;
+import Funcionamiento.FuncionesManejoFront;
 import Funcionamiento.FuncionesTableView;
 import Funcionamiento.FuncionesTooltips;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
-import JDBC.DBLibreriaManager;
-import JDBC.DBManager;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import alarmas.AlarmaList;
+import comicManagement.Comic;
+import dbmanager.ComicManagerDAO;
+import dbmanager.ConectManager;
+import dbmanager.DBUtilidades;
+import dbmanager.DBUtilidades.TipoBusqueda;
+import dbmanager.ListaComicsDAO;
+import dbmanager.SelectManager;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Control;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -79,11 +63,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 /**
  * Esta clase sirve viajar a las diferentes ventanas del programa, asi como
@@ -122,6 +106,9 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	private Button botonbbdd;
+
+	@FXML
+	private Button botonMostrarGuardados;
 
 	/**
 	 * Campo de texto para realizar una búsqueda general.
@@ -168,6 +155,9 @@ public class MenuPrincipalController implements Initializable {
 	private MenuItem menu_estadistica_comprados, menu_estadistica_estadistica, menu_estadistica_firmados,
 			menu_estadistica_key_issue, menu_estadistica_posesion, menu_estadistica_puntuados,
 			menu_estadistica_vendidos;
+
+	@FXML
+	private MenuItem menu_archivo_conexion;
 
 	/**
 	 * Barra de menús de navegación.
@@ -409,10 +399,8 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	private Button botonAgregarPuntuacion;
 
-	/**
-	 * Línea de tiempo para la animación.
-	 */
-	private Timeline timeline;
+	@FXML
+	private Label alarmaConexionSql;
 
 	/**
 	 * Instancia de la clase Ventanas para la navegación.
@@ -420,29 +408,23 @@ public class MenuPrincipalController implements Initializable {
 	private static Ventanas nav = new Ventanas();
 
 	/**
-	 * Instancia de DBLibreriaManager para la gestión de la base de datos.
-	 */
-	private static DBLibreriaManager libreria = null;
-
-	/**
-	 * Instancia de Utilidades para funciones de utilidad.
-	 */
-	private static Utilidades utilidad = null;
-
-	/**
 	 * Instancia de FuncionesComboBox para funciones relacionadas con ComboBox.
 	 */
 	private static FuncionesComboBox funcionesCombo = new FuncionesComboBox();
 
 	/**
-	 * Instancia de FuncionesTableView para funciones relacionadas con TableView.
-	 */
-	private static FuncionesTableView funcionesTabla = new FuncionesTableView();
-
-	/**
 	 * Lista de columnas de la tabla de cómics.
 	 */
 	private List<TableColumn<Comic, String>> columnList;
+
+	ObservableList<ImageView> listaImagenes;
+
+	List<ComboBox<String>> comboboxes;
+	@SuppressWarnings("rawtypes")
+	ObservableList<TableColumn> listaColumnas;
+	ObservableList<Control> listaCamposTexto;
+	ObservableList<Button> listaBotones;
+	ObservableList<Node> listaElementosFondo;
 
 	private Map<Node, String> tooltipsMap = new HashMap<>();
 
@@ -454,30 +436,57 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		AlarmaList alarmaList = new AlarmaList();
 
-		libreria = new DBLibreriaManager();
-		utilidad = new Utilidades();
+		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
+		alarmaList.iniciarThreadChecker(true);
 
-		prontInfo.textProperty().addListener((observable, oldValue, newValue) -> {
-			funcionesTabla.ajustarAnchoVBox(prontInfo, vboxContenido);
+		Platform.runLater(() -> {
+			FuncionesTableView.ajustarAnchoVBox(prontInfo, vboxContenido);
+			FuncionesTableView.seleccionarRaw(tablaBBDD);
+			asignarTooltips();
+			FuncionesTableView.modificarColumnas(tablaBBDD, columnList);
 		});
 
-		// Asegurarnos de que el VBox ajuste su tamaño correctamente al inicio
-		Platform.runLater(() -> funcionesTabla.ajustarAnchoVBox(prontInfo, vboxContenido));
+		listaElementosVentana();
 
-		Platform.runLater(() -> funcionesTabla.seleccionarRaw(tablaBBDD));
+		controlarEventosInterfaz();
 
-		Platform.runLater(() -> asignarTooltips());
+		formatearTextField();
 
-		Platform.runLater(() -> funcionesTabla.modificarColumnas(tablaBBDD, columnList));
+		cargarDatosDataBase();
+
+		establecerDinamismoAnchor();
+	}
+
+	@FXML
+	void ampliarImagen(MouseEvent event) {
+
+		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
+
+		if (idRow != null) {
+			String direccionImagen = idRow.getImagen();
+
+			ImagenAmpliadaController.direccionImagen = direccionImagen;
+
+			nav.verVentanaImagen();
+		}
+	}
+
+	/**
+	 * Controla los eventos de la interfaz, desactivando el enfoque en el VBox para
+	 * evitar eventos de teclado, y añadiendo filtros y controladores de eventos
+	 * para gestionar el enfoque entre el VBox y el TableView.
+	 */
+	private void controlarEventosInterfaz() {
 
 		List<TableColumn<Comic, String>> columnListCarga = Arrays.asList(nombre, caja, numero, variante, firma,
 				editorial, formato, procedencia, fecha, guionista, dibujante, referencia);
 		columnList = columnListCarga;
 
-		restringir_entrada_datos();
-
-		cargarDatosDataBase();
+		prontInfo.textProperty().addListener((observable, oldValue, newValue) -> {
+			FuncionesTableView.ajustarAnchoVBox(prontInfo, vboxContenido);
+		});
 
 		// Desactivar el enfoque en el VBox para evitar que reciba eventos de teclado
 		rootVBox.setFocusTraversable(false);
@@ -496,18 +505,34 @@ public class MenuPrincipalController implements Initializable {
 			rootVBox.requestFocus();
 		});
 
-		prontInfo.setEditable(false);
+		imagencomic.imageProperty().addListener((observable, oldImage, newImage) -> {
+			if (newImage != null) {
+				// Cambiar la apariencia del cursor y la opacidad cuando la imagen se ha cargado
+				imagencomic.setOnMouseEntered(e -> {
+					imagencomic.setOpacity(0.7); // Cambiar la opacidad para indicar que es clickable
+					imagencomic.setCursor(Cursor.HAND);
+				});
 
-		establecerDinamismoAnchor();
-	}
+				// Restaurar el cursor y la opacidad al salir del ImageView
+				imagencomic.setOnMouseExited(e -> {
+					imagencomic.setOpacity(1.0); // Restaurar la opacidad
+					imagencomic.setCursor(Cursor.DEFAULT);
+				});
+			} else {
+				// Restaurar el cursor y la opacidad al salir del ImageView
+				imagencomic.setOnMouseEntered(e -> {
+					imagencomic.setCursor(Cursor.DEFAULT);
+				});
+			}
+		});
 
-	/**
-	 * Rellena los ComboBoxes estáticos con datos predefinidos. Los ComboBoxes se
-	 * pasan como una lista en el orden: formato, procedencia, editorial.
-	 */
-	public void rellenarCombosEstaticos() {
-		List<ComboBox<String>> comboboxesMod = Arrays.asList(nombreFormato, nombreProcedencia, nombreEditorial);
-		funcionesCombo.rellenarComboBoxEstaticos(comboboxesMod, ""); // Llamada a la función para rellenar ComboBoxes
+		botonGuardarResultado.setOnMousePressed(event -> {
+			if (event.getButton() == MouseButton.PRIMARY) {
+				// Si la lista está vacía, oculta el botón
+				botonMostrarGuardados.setVisible(true);
+			}
+		});
+
 	}
 
 	/**
@@ -520,30 +545,26 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	public void cargarDatosDataBase() {
 
-		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
-				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
-
-		int totalComboboxes = comboboxes.size();
+		comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia, nombreFormato,
+				nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
 
 		tablaBBDD.refresh();
 		prontInfo.setOpacity(0);
 		imagencomic.setImage(null);
 
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
 		scheduler.schedule(() -> {
 
 			Platform.runLater(() -> {
-				try {
-					libreria.listasAutoCompletado();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+
+				ListaComicsDAO.listasAutoCompletado();
 
 				Task<Void> task = new Task<Void>() {
 					@Override
 					protected Void call() throws Exception {
 						funcionesCombo.rellenarComboBox(comboboxes);
-						funcionesCombo.lecturaComboBox(totalComboboxes, comboboxes);
+						funcionesCombo.lecturaComboBox(comboboxes);
 						return null;
 					}
 				};
@@ -560,76 +581,49 @@ public class MenuPrincipalController implements Initializable {
 		}, 0, TimeUnit.SECONDS);
 	}
 
+	@SuppressWarnings("unchecked")
+	public void listaElementosVentana() {
+		listaImagenes = FXCollections.observableArrayList(imagencomic);
+		listaColumnas = FXCollections.observableArrayList(ID, nombre, caja, numero, variante, firma, editorial, formato,
+				procedencia, fecha, guionista, dibujante, referencia);
+		listaCamposTexto = FXCollections.observableArrayList(busquedaGeneral, fechaPublicacion);
+		listaBotones = FXCollections.observableArrayList(botonLimpiar, botonMostrarParametro, botonbbdd, botonImprimir,
+				botonGuardarResultado);
+
+		comboboxes = FXCollections.observableArrayList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
+				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
+
+		listaElementosFondo = FXCollections.observableArrayList(backgroundImage, menu_navegacion);
+	}
+
 	/**
 	 * Establece el dinamismo en la interfaz gráfica ajustando propiedades de
 	 * elementos como tamaños, anchos y máximos.
 	 */
 	public void establecerDinamismoAnchor() {
-		backgroundImage.fitWidthProperty().bind(rootAnchorPane.widthProperty());
-		backgroundImage.fitHeightProperty().bind(rootAnchorPane.heightProperty());
 
-		// Vinculación del ancho de la TableView al ancho del AnchorPane
-		tablaBBDD.prefWidthProperty().bind(rootAnchorPane.widthProperty());
+		FuncionesManejoFront manejoFront = new FuncionesManejoFront();
 
-		// Vinculación del ancho de las columnas al ancho de la TableView dividido por
-		// el número de columnas
-		double numColumns = 13; // El número de columnas en tu TableView
-		ID.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		nombre.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		caja.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		numero.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		variante.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		firma.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		editorial.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		formato.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		procedencia.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		fecha.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		guionista.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		dibujante.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
-		referencia.prefWidthProperty().bind(tablaBBDD.widthProperty().divide(numColumns));
+		manejoFront.copiarListas(comboboxes, columnList, listaCamposTexto, listaBotones, listaElementosFondo,
+				listaImagenes);
 
-		menu_navegacion.prefWidthProperty().bind(rootAnchorPane.widthProperty());
+		manejoFront.copiarElementos(prontInfo, botonImprimir, botonGuardarResultado, busquedaGeneral, columnList);
 
-		double maxButtonWidth = 102.0; // Cambia esto al valor máximo deseado
+		FuncionesManejoFront.setAnchorPane(rootAnchorPane);
+		manejoFront.setTableView(tablaBBDD);
 
-		// Establecer un tamaño máximo para los botones
-		botonLimpiar.maxWidthProperty().bind(Bindings.max(maxButtonWidth, botonLimpiar.widthProperty()));
-		botonMostrarParametro.maxWidthProperty()
-				.bind(Bindings.max(maxButtonWidth, botonMostrarParametro.widthProperty()));
-		botonbbdd.maxWidthProperty().bind(Bindings.max(maxButtonWidth, botonbbdd.widthProperty()));
+		FuncionesManejoFront.establecerFondoDinamico();
 
-		double maxTextComboWidth = 162.0;
+		FuncionesManejoFront.establecerAnchoColumnas(13);
 
-		Platform.runLater(() -> {
-			// Ajustar el ancho de los campos de texto al ancho de la ventana principal
-			busquedaGeneral.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, busquedaGeneral.widthProperty()));
-		});
+		FuncionesManejoFront.establecerAnchoMaximoBotones(102.0);
 
-		// Ajustar el DatePicker
-		fechaPublicacion.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, fechaPublicacion.widthProperty()));
+		FuncionesManejoFront.establecerAnchoMaximoCamposTexto(162.0);
 
-		// Establecer un ancho máximo para cada ComboBox
-		nombreComic.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, nombreComic.widthProperty()));
-		nombreDibujante.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, nombreDibujante.widthProperty()));
-		nombreEditorial.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, nombreEditorial.widthProperty()));
-		nombreFirma.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, nombreFirma.widthProperty()));
-		nombreFormato.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, nombreFormato.widthProperty()));
-		nombreGuionista.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, nombreGuionista.widthProperty()));
-		nombreProcedencia.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, nombreProcedencia.widthProperty()));
-		nombreVariante.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, nombreVariante.widthProperty()));
-		numeroCaja.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, numeroCaja.widthProperty()));
-		numeroComic.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, numeroComic.widthProperty()));
+		FuncionesManejoFront.establecerAnchoMaximoComboBoxes(162.0);
 
-		// Tamaño máximo predefinido para la imagen
-		double maxWidth = 252.0; // Cambia esto al valor deseado
-		double maxHeight = 337.0; // Cambia esto al valor deseado
+		FuncionesManejoFront.establecerTamanioMaximoImagen(252.0, 337.0);
 
-		// Ajustar el tamaño máximo de la imagen
-		imagencomic.fitWidthProperty().bind(Bindings.min(maxWidth, rootAnchorPane.widthProperty()));
-		imagencomic.fitHeightProperty().bind(Bindings.min(maxHeight, rootAnchorPane.heightProperty()));
-
-		// Asegúrate de que la relación de aspecto de la imagen se mantenga
-		imagencomic.setPreserveRatio(true);
 	}
 
 	/**
@@ -668,169 +662,10 @@ public class MenuPrincipalController implements Initializable {
 	 * Funcion que permite restringir entrada de datos de todo aquello que no sea un
 	 * numero entero en los comboBox numeroComic y caja_comic
 	 */
-	public void restringir_entrada_datos() {
+	public void formatearTextField() {
+
 		numeroComic.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
 		numeroCaja.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
-	}
-
-	/**
-	 * Funcion que permite modificar el estado de un comic.
-	 *
-	 * @param ps
-	 * @return
-	 */
-	public String procedenciaActual() {
-
-		String procedenciaEstadoNuevo = "";
-		if (nombreProcedencia.getSelectionModel().getSelectedItem() != null) {
-			procedenciaEstadoNuevo = nombreProcedencia.getSelectionModel().getSelectedItem().toString();
-		}
-		return procedenciaEstadoNuevo;
-	}
-
-	/**
-	 * Funcion que permite seleccionar en el comboBox "nombreFormato" y lo devuelve,
-	 * para la busqueda de comic
-	 * 
-	 * @return
-	 */
-	public String formatoActual() {
-
-		String formatoEstado = "";
-		if (nombreFormato.getSelectionModel().getSelectedItem() != null) {
-			formatoEstado = nombreFormato.getSelectionModel().getSelectedItem().toString();
-		}
-		return formatoEstado;
-	}
-
-	/**
-	 * Funcion que permite seleccionar en el comboBox "nombreEditorial" y lo
-	 * devuelve, para la busqueda de comic
-	 * 
-	 * @return
-	 */
-	public String editorialActual() {
-
-		String editorialComic = "";
-
-		if (nombreEditorial.getSelectionModel().getSelectedItem() != null) {
-			editorialComic = nombreEditorial.getSelectionModel().getSelectedItem().toString();
-		}
-
-		return editorialComic;
-	}
-
-	/**
-	 * Funcion que permite seleccionar en el comboBox "nombreDibujante" y lo
-	 * devuelve, para la busqueda de comic
-	 * 
-	 * @return
-	 */
-	public String dibujanteActual() {
-		String dibujanteComic = "";
-
-		if (nombreDibujante.getSelectionModel().getSelectedItem() != null) {
-			dibujanteComic = nombreDibujante.getSelectionModel().getSelectedItem().toString();
-		}
-
-		return dibujanteComic;
-	}
-
-	/**
-	 * Funcion que permite seleccionar en el comboBox "nombreGuionista" y lo
-	 * devuelve, para la busqueda de comic
-	 * 
-	 * @return
-	 */
-	public String guionistaActual() {
-		String guionistaComic = "";
-
-		if (nombreGuionista.getSelectionModel().getSelectedItem() != null) {
-			guionistaComic = nombreGuionista.getSelectionModel().getSelectedItem().toString();
-		}
-
-		return guionistaComic;
-	}
-
-	/**
-	 * Funcion que permite seleccionar en el comboBox "nombreFirma" y lo devuelve,
-	 * para la busqueda de comic
-	 * 
-	 * @return
-	 */
-	public String firmaActual() {
-		String firmaComic = "";
-
-		if (nombreFirma.getSelectionModel().getSelectedItem() != null) {
-			firmaComic = nombreFirma.getSelectionModel().getSelectedItem().toString();
-		}
-
-		return firmaComic;
-	}
-
-	/**
-	 * Funcion que permite seleccionar en el comboBox "nombreComic" y lo devuelve,
-	 * para la busqueda de comic
-	 * 
-	 * @return
-	 */
-	public String nombreActual() {
-		String nombreComics = "";
-
-		if (nombreComic.getSelectionModel().getSelectedItem() != null) {
-			nombreComics = nombreComic.getSelectionModel().getSelectedItem().toString();
-		}
-
-		return nombreComics;
-	}
-
-	/**
-	 * Funcion que permite seleccionar en el comboBox "numeroComic" y lo devuelve,
-	 * para la busqueda de comic
-	 * 
-	 * @return
-	 */
-	public String numeroComicActual() {
-		String numComic = "";
-
-		if (numeroComic.getSelectionModel().getSelectedItem() != null) {
-			numComic = numeroComic.getSelectionModel().getSelectedItem().toString();
-		}
-
-		return numComic;
-	}
-
-	/**
-	 * Funcion que permite seleccionar en el comboBox "nombreVariante" y lo
-	 * devuelve, para la busqueda de comic
-	 * 
-	 * @return
-	 */
-	public String varianteActual() {
-		String varianteComics = "";
-
-		if (nombreVariante.getSelectionModel().getSelectedItem() != null) {
-			varianteComics = nombreVariante.getSelectionModel().getSelectedItem().toString();
-		}
-
-		return varianteComics;
-	}
-
-	/**
-	 * Funcion que permite seleccionar en el comboBox "caja_actual" y lo devuelve,
-	 * para la busqueda de comic
-	 * 
-	 * @return
-	 */
-	public String cajaActual() {
-
-		String cajaComics = "";
-
-		if (numeroCaja.getSelectionModel().getSelectedItem() != null) {
-			cajaComics = numeroCaja.getSelectionModel().getSelectedItem().toString();
-		}
-
-		return cajaComics;
 	}
 
 	/////////////////////////////////
@@ -844,9 +679,8 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void ventanaRecomendar(ActionEvent event) {
-
 		nav.verRecomendacion();
-		DBManager.resetConnection();
+		ConectManager.resetConnection();
 
 		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 		myStage.close();
@@ -859,9 +693,8 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void verSobreMi(ActionEvent event) {
-
 		nav.verSobreMi();
-		DBManager.resetConnection();
+		ConectManager.resetConnection();
 
 		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 		myStage.close();
@@ -876,25 +709,7 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
 
-		tablaBBDD.getItems().clear();
-
-		libreria = new DBLibreriaManager();
-		libreria.reiniciarBBDD();
-		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
-		prontInfo.setOpacity(0);
-		imagencomic.setImage(null);
-		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-
-		funcionesTabla.tablaBBDD(listaPorParametro(), tablaBBDD, columnList); // Llamada a funcion
-
-		if (listaPorParametro().size() > 0) {
-			botonImprimir.setVisible(true);
-			botonImprimir.setDisable(false);
-			botonGuardarResultado.setVisible(true);
-			botonGuardarResultado.setDisable(false);
-		}
-
-		busquedaGeneral.setText("");
+		mostrarComics(false);
 	}
 
 	/**
@@ -907,20 +722,29 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
 
-		libreria = new DBLibreriaManager();
-		libreria.reiniciarBBDD();
-		funcionesTabla.modificarColumnas(tablaBBDD, columnList);
-		tablaBBDD.refresh();
-		prontInfo.setOpacity(0);
-		imagencomic.setImage(null);
+		mostrarComics(true);
+	}
 
-		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-		funcionesTabla.tablaBBDD(libreria.libreriaCompleta(), tablaBBDD, columnList); // Llamada a funcion
+	private void mostrarComics(boolean esCompleto) {
 
-		botonImprimir.setVisible(false);
-		botonImprimir.setDisable(true);
-		botonGuardarResultado.setVisible(false);
-		botonGuardarResultado.setDisable(true);
+		FuncionesManejoFront manejoFront = new FuncionesManejoFront();
+		manejoFront.setTableView(tablaBBDD);
+		manejoFront.copiarElementos(prontInfo, botonImprimir, botonGuardarResultado, busquedaGeneral, columnList);
+
+		List<Node> elementos = Arrays.asList(botonImprimir, botonGuardarResultado);
+
+		Utilidades.cambiarVisibilidad(elementos, false);
+
+		busquedaGeneral.setText("");
+
+		if (esCompleto) {
+			FuncionesManejoFront.verBasedeDatos(true, false, null);
+		} else {
+			Comic comicBusqueda = camposComic();
+
+			FuncionesManejoFront.verBasedeDatos(false, false, comicBusqueda);
+		}
+
 	}
 
 	/**
@@ -932,14 +756,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsPuntuacion(ActionEvent event) throws SQLException {
-		prontInfo.setOpacity(0);
-		limpiezaDeDatos();
-		tablaBBDD.refresh();
-		libreria = new DBLibreriaManager();
-		libreria.reiniciarBBDD();
-		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-		funcionesTabla.tablaBBDD(libreria.libreriaPuntuacion(), tablaBBDD, columnList); // Llamada a funcion
-
+		imprimirComicsEstado(TipoBusqueda.PUNTUACION, false);
 	}
 
 	/**
@@ -951,12 +768,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsVendidos(ActionEvent event) throws SQLException {
-		prontInfo.setOpacity(0);
-		limpiezaDeDatos();
-		libreria = new DBLibreriaManager();
-		libreria.reiniciarBBDD();
-		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-		funcionesTabla.tablaBBDD(libreria.libreriaVendidos(), tablaBBDD, columnList); // Llamada a funcion
+		imprimirComicsEstado(TipoBusqueda.VENDIDOS, false);
 	}
 
 	/**
@@ -968,12 +780,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsFirmados(ActionEvent event) throws SQLException {
-		prontInfo.setOpacity(0);
-		limpiezaDeDatos();
-		libreria = new DBLibreriaManager();
-		libreria.reiniciarBBDD();
-		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-		funcionesTabla.tablaBBDD(libreria.libreriaFirmados(), tablaBBDD, columnList); // Llamada a funcion
+		imprimirComicsEstado(TipoBusqueda.FIRMADOS, false);
 	}
 
 	/**
@@ -985,12 +792,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsComprados(ActionEvent event) throws SQLException {
-		prontInfo.setOpacity(0);
-		limpiezaDeDatos();
-		libreria = new DBLibreriaManager();
-		libreria.reiniciarBBDD();
-		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-		funcionesTabla.tablaBBDD(libreria.libreriaComprados(), tablaBBDD, columnList); // Llamada a funcion
+		imprimirComicsEstado(TipoBusqueda.COMPRADOS, false);
 	}
 
 	/**
@@ -1002,12 +804,14 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsEnPosesion(ActionEvent event) throws SQLException {
-		prontInfo.setOpacity(0);
-		limpiezaDeDatos();
-		libreria = new DBLibreriaManager();
-		libreria.reiniciarBBDD();
-		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-		funcionesTabla.tablaBBDD(libreria.libreriaPosesion(), tablaBBDD, columnList); // Llamada a funcion
+		imprimirComicsEstado(TipoBusqueda.POSESION, false);
+
+	}
+
+	@FXML
+	void comicsGuardados(ActionEvent event) throws SQLException {
+		imprimirComicsEstado(null, true);
+
 	}
 
 	/**
@@ -1018,12 +822,31 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsKeyIssue(ActionEvent event) throws SQLException {
-		prontInfo.setOpacity(0); // Ocultar la información en pantalla
-		libreria = new DBLibreriaManager(); // Crear una instancia del gestor de la base de datos
-		libreria.reiniciarBBDD(); // Reiniciar la base de datos si es necesario
-		funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a la función para establecer nombres de
-																// columnas
-		funcionesTabla.tablaBBDD(libreria.libreriaKeyIssue(), tablaBBDD, columnList);
+		imprimirComicsEstado(TipoBusqueda.KEY_ISSUE, false);
+
+	}
+
+	private void imprimirComicsEstado(TipoBusqueda tipoBusqueda, boolean esGuardado) {
+
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
+		limpiezaDeDatos();
+		limpiarComboBox();
+		ListaComicsDAO.reiniciarListaComics(); // Reiniciar la base de datos si es necesario
+		FuncionesTableView.nombreColumnas(columnList, tablaBBDD); // Llamada a la función para establecer nombres de
+		FuncionesTableView.actualizarBusquedaRaw(tablaBBDD, columnList); // columnas
+		List<Comic> listaComics = new ArrayList<Comic>();
+		if (esGuardado) {
+			listaComics = ListaComicsDAO.comicsGuardadosList;
+		} else {
+			String sentenciaSQL = DBUtilidades.construirSentenciaSQL(tipoBusqueda);
+
+			listaComics = SelectManager.verLibreria(sentenciaSQL);
+		}
+
+		FuncionesTableView.tablaBBDD(listaComics, tablaBBDD, columnList);
 	}
 
 	////////////////////////////
@@ -1042,11 +865,21 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void importCSV(ActionEvent event) throws SQLException, InterruptedException, ExecutionException {
 
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
+		limpiezaDeDatos();
+		limpiarComboBox();
+
 		guardarDatosCSV();
 
-		libreria.listasAutoCompletado();
-		
-		DBLibreriaManager.limpiarListaGuardados();
+		ListaComicsDAO.listasAutoCompletado();
+
+		ListaComicsDAO.limpiarListaGuardados();
+
+		Utilidades.borrarArchivosNoEnLista(ListaComicsDAO.listaImagenes);
+
 	}
 
 	/**
@@ -1059,19 +892,22 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void exportCSV(ActionEvent event) throws SQLException {
 
-		prontInfo.setText(null);
-		prontInfo.setOpacity(0);
-		tablaBBDD.getItems().clear();
-		imagencomic.setImage(null);
-		prontInfo.setOpacity(0);
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
 
-		List<Comic> listaComics = libreria.libreriaCompleta();
-
+		limpiezaDeDatos();
+		limpiarComboBox();
 		String tipoBusqueda = "completa";
+		String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
+
+		List<Comic> listaComics = SelectManager.verLibreria(sentenciaSQL);
 
 		cargaExportExcel(listaComics, tipoBusqueda);
-		
-		DBLibreriaManager.limpiarListaGuardados();
+
+		ListaComicsDAO.limpiarListaGuardados();
+
+		Utilidades.borrarArchivosNoEnLista(ListaComicsDAO.listaImagenes);
 	}
 
 	/**
@@ -1082,9 +918,15 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void exportarSQL(ActionEvent event) {
 
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
 		makeSQL();
 
 		limpiezaDeDatos();
+		limpiarComboBox();
+		Utilidades.borrarArchivosNoEnLista(ListaComicsDAO.listaImagenes);
 
 	}
 
@@ -1096,176 +938,76 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void limpiarDatos(ActionEvent event) {
 		limpiezaDeDatos();
-
+		limpiarComboBox();
 		botonImprimir.setVisible(false);
 		botonImprimir.setDisable(true);
 		botonGuardarResultado.setVisible(false);
 		botonGuardarResultado.setDisable(true);
 
-		int tamanioListaGuardada = DBLibreriaManager.comicsGuardadosList.size();
-		
-		if (tamanioListaGuardada > 0) {
+		int tamanioListaGuardada = ListaComicsDAO.comicsGuardadosList.size();
 
-			if (nav.borrarListaGuardada()) {
-				DBLibreriaManager.limpiarListaGuardados();
+		if (tamanioListaGuardada > 0 && nav.borrarListaGuardada()) {
 
-				String mensaje = "Has eliminado el contenido de la lista guardada que contenia un total de: " + tamanioListaGuardada + " comics guardados.\n \n \n";
-				String estilo = "#A0F52D";
-				mostrarMensaje(mensaje, estilo);
+			ListaComicsDAO.limpiarListaGuardados();
 
-			}
+			String mensaje = "Has eliminado el contenido de la lista guardada que contenia un total de: "
+					+ tamanioListaGuardada + " comics guardados.\n \n \n";
 
+			AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
+
+			botonMostrarGuardados.setVisible(false);
 		}
-
 	}
 
-	/**
-	 * Método manejador del evento de clic en el botón "Borrar Contenido de la
-	 * Tabla". Este método borra el contenido de la tabla de la base de datos de
-	 * forma asíncrona, basándose en la confirmación del usuario.
-	 *
-	 * @param event El evento de ActionEvent generado por el clic en el botón.
-	 * @throws SQLException Si hay un error en la operación de la base de datos.
-	 */
 	@FXML
-	void borrarContenidoTabla(ActionEvent event) throws SQLException {
+	void borrarContenidoTabla(ActionEvent event) {
 
-		// Crear una tarea (Task) para realizar la operación de borrado de contenido de
-		// la tabla
-		Task<Boolean> task = new Task<Boolean>() {
-			@Override
-			protected Boolean call() throws Exception {
-				// Obtener la CompletableFuture<Boolean> del método borrarContenidoTabla de la
-				// clase nav
-				CompletableFuture<Boolean> futureResult = nav.borrarContenidoTabla();
-				// Obtener el resultado real (Boolean) de la CompletableFuture utilizando join()
-				boolean result = futureResult.join();
-				return result; // Devolver el resultado actual
-			}
-		};
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
 
-		// Configurar el comportamiento cuando la tarea está en ejecución
-		task.setOnRunning(e -> {
-			// Iniciar la animación
-			iniciarAnimacion();
-		});
+		if (ComicManagerDAO.countRows(SelectManager.TAMANIO_DATABASE) < 1) {
+			String mensaje = "ERROR. La base de datos ya se encuentra vacia";
+			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+			return;
+		}
 
-		// Configurar el comportamiento cuando la tarea se completa con éxito
-		task.setOnSucceeded(e -> {
-			// Obtener el resultado de la tarea
-			Boolean resultado = task.getValue();
-			/* Tu condición aquí basada en el resultado */
+		CompletableFuture.supplyAsync(this::deleteTableAsync).thenAccept(result -> handleDeleteResult(result));
+	}
 
-			if (resultado) {
-				prontInfo.clear();
-				prontInfo.setStyle(null);
-				Thread animationThread = new Thread(this::iniciarAnimacionBajada);
-				animationThread.start();
+	private boolean deleteTableAsync() {
+		try {
 
-				// Ejecutar el método deleteTable en su propio hilo
-				Task<Boolean> deleteTask = new Task<Boolean>() {
-					@Override
-					protected Boolean call() throws Exception {
-						// Verificar si la tabla tiene contenido
-						boolean result = false;
-						if (libreria.contenidoTabla()) {
-							// Si hay contenido, borrar el contenido de la tabla en un hilo separado
-							CompletableFuture<Boolean> futureResult = libreria.deleteTable();
-							result = futureResult.join(); // Esperar a que la tarea asíncrona se complete y obtener el
-															// resultado
-						} else {
-							// Si no hay contenido, mostrar un mensaje de error
-							prontInfo.clear();
-							detenerAnimacionPront();
-							prontInfo.setOpacity(1);
-							prontInfo.setStyle("-fx-background-color: #F53636");
-							prontInfo.setText("No hay contenido en la base de datos");
-							Platform.runLater(() -> nav.alertaException("Error. No hay contenido en la base de datos"));
-							detenerAnimacion();
+			Utilidades.borrarArchivosNoEnLista(ListaComicsDAO.listaImagenes);
 
-						}
-						return result; // Devolver el resultado actual
-					}
-				};
-
-				// Configurar el comportamiento cuando la tarea de borrado se completa con éxito
-				deleteTask.setOnSucceeded(ev -> {
-					// Obtener el resultado de la tarea de borrado
-					boolean result = deleteTask.getValue();
-					if (result) {
-						// Mostrar el mensaje de éxito y limpiar la tabla y la imagen
-						Platform.runLater(() -> {
-							limpiezaDeDatos();
-							detenerAnimacionPront();
-							prontInfo.setOpacity(1);
-							prontInfo.setStyle("-fx-background-color: #A0F52D");
-							prontInfo.setText("Has borrado correctamente el contenido de la base de datos.");
-							tablaBBDD.getItems().clear();
-							imagencomic.setImage(null);
-							detenerAnimacion();
-							cargarDatosDataBase();
-							DBLibreriaManager.limpiarListaGuardados();
-						});
-					}
-				});
-
-				// Configurar el comportamiento cuando la tarea de borrado falla
-				deleteTask.setOnFailed(ev -> {
-					// Detener la animación y mostrar el mensaje de error
-					detenerAnimacion();
-					Throwable exception = deleteTask.getException();
-					if (exception != null) {
-						prontInfo.clear();
-						detenerAnimacionPront();
-						exception.printStackTrace();
-						Platform.runLater(() -> nav.alertaException(
-								"Error al borrar el contenido de la base de datos: " + exception.getMessage()));
-					} else {
-						prontInfo.clear();
-						detenerAnimacionPront();
-						Platform.runLater(() -> nav
-								.alertaException("Error desconocido al borrar el contenido de la base de datos"));
-					}
-				});
-
-				// Iniciar la tarea de borrado en un hilo separado
-				Thread deleteThread = new Thread(deleteTask);
-				deleteThread.start();
+			CompletableFuture<Boolean> borradoTablaFuture = nav.borrarContenidoTabla();
+			boolean confirmacionBorrado = borradoTablaFuture.get(); // Espera a que el CompletableFuture se complete
+																	// y obtiene el resultado
+			if (confirmacionBorrado) {
+				CompletableFuture<Boolean> deleteResult = ComicManagerDAO.deleteTable();
+				return deleteResult.get(); // Espera a que el CompletableFuture se complete y obtiene el resultado
 			} else {
-				// Si el resultado es falso, mostrar el mensaje de cancelación
-				Platform.runLater(() -> {
-					prontInfo.clear();
-					detenerAnimacionPront();
-					prontInfo.setOpacity(1);
-					prontInfo.setStyle("-fx-background-color: #F53636");
-					prontInfo.setText("Has cancelado el borrado de la base de datos.");
-					detenerAnimacion();
-				});
+				String mensaje = "ERROR. Has cancelado el borrado de la base de datos";
+				AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+				return false;
 			}
-		});
 
-		// Configurar el comportamiento cuando la tarea falla
-		task.setOnFailed(e -> {
-			// Detener la animación y mostrar el mensaje de error
-			detenerAnimacion();
-			Throwable exception = task.getException();
-			if (exception != null) {
-				prontInfo.clear();
-				detenerAnimacionPront();
-				exception.printStackTrace();
-				Platform.runLater(
-						() -> nav.alertaException("Error al importar el fichero CSV: " + exception.getMessage()));
-			} else {
-				prontInfo.clear();
-				detenerAnimacionPront();
-				Platform.runLater(() -> nav.alertaException("Error desconocido al importar el fichero CSV."));
-			}
-		});
-		nav.ventanaAbierta();
+		} catch (Exception e) {
+			Utilidades.manejarExcepcion(e);
+			return false;
+		}
+	}
 
-		// Iniciar la tarea principal de borrado en un hilo separado
-		Thread thread = new Thread(task);
-		thread.start();
+	private void handleDeleteResult(boolean deleteResult) {
+
+		String mensaje = "";
+		if (deleteResult) {
+			mensaje = "Base de datos borrada y reiniciada correctamente";
+			limpiezaDeDatos();
+		} else {
+			mensaje = "ERROR. No se ha podido eliminar y reiniciar la base de datos";
+		}
+		AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 	}
 
 	/**
@@ -1276,98 +1018,17 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void verEstadistica(ActionEvent event) throws IOException {
-		prontInfo.setOpacity(0);
-		libreria = new DBLibreriaManager();
-		prontInfo.setOpacity(1);
-		iniciarAnimacionEstadistica();
-		libreria.generar_fichero_estadisticas();
-		detenerAnimacionPront();
-		prontInfo.setText("Fichero creado correctamente");
-	}
 
-	/**
-	 * Metodo que permite crear una animacion
-	 */
-	private void iniciarAnimacionEstadistica() {
-		timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
-
-		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarDescarga1 = new KeyFrame(Duration.ZERO,
-				new KeyValue(prontInfo.textProperty(), "Generando fichero de estadisticas ."));
-		KeyFrame mostrarDescarga2 = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(prontInfo.textProperty(), "Generando fichero de estadisticas .."));
-		KeyFrame mostrarDescarga3 = new KeyFrame(Duration.seconds(1),
-				new KeyValue(prontInfo.textProperty(), "Generando fichero de estadisticas ..."));
-		KeyFrame mostrarDescarga4 = new KeyFrame(Duration.seconds(1.5),
-				new KeyValue(prontInfo.textProperty(), "Generando fichero de estadisticas ...."));
-
-		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(mostrarDescarga1, mostrarDescarga2, mostrarDescarga3, mostrarDescarga4);
-
-		// Iniciar la animación
-		timeline.play();
-	}
-
-	/**
-	 * Metodo que permite detener una animacion
-	 */
-	private void detenerAnimacionPront() {
-		if (timeline != null) {
-			timeline.stop();
-			timeline = null; // Destruir el objeto timeline
-			prontInfo.setText("Fichero creado correctamente");
+		if (!ConectManager.conexionActiva()) {
+			return;
 		}
-	}
 
-	/**
-	 * Metodo que permite crear una animacion
-	 */
-	private void iniciarAnimacionSubida() {
-		prontInfo.setOpacity(1);
-		timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
+		AlarmaList.iniciarAnimacionEstadistica(prontInfo);
+		ListaComicsDAO.generar_fichero_estadisticas();
+		AlarmaList.detenerAnimacionPront(prontInfo);
+		String mensaje = "Fichero creado correctamente";
 
-		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarSubida1 = new KeyFrame(Duration.ZERO,
-				new KeyValue(prontInfo.textProperty(), "Subido datos a la " + DBManager.DB_NAME + " ."));
-		KeyFrame mostrarSubida2 = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(prontInfo.textProperty(), "Subido datos a la " + DBManager.DB_NAME + " .."));
-		KeyFrame mostrarSubida3 = new KeyFrame(Duration.seconds(1),
-				new KeyValue(prontInfo.textProperty(), "Subido datos a la " + DBManager.DB_NAME + " ..."));
-		KeyFrame mostrarSubida4 = new KeyFrame(Duration.seconds(1.5),
-				new KeyValue(prontInfo.textProperty(), "Subido datos a la " + DBManager.DB_NAME + " ...."));
-
-		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(mostrarSubida1, mostrarSubida2, mostrarSubida3, mostrarSubida4);
-
-		// Iniciar la animación
-		timeline.play();
-	}
-
-	/**
-	 * Metodo que permite crear una animacion
-	 */
-	private void iniciarAnimacionBajada() {
-		prontInfo.setOpacity(1);
-		timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
-
-		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarBajada1 = new KeyFrame(Duration.ZERO,
-				new KeyValue(prontInfo.textProperty(), "Eliminando base de datos ."));
-		KeyFrame mostrarBajada2 = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(prontInfo.textProperty(), "Eliminando base de datos .."));
-		KeyFrame mostrarBajada3 = new KeyFrame(Duration.seconds(1),
-				new KeyValue(prontInfo.textProperty(), "Eliminando base de datos ..."));
-		KeyFrame mostrarBajada4 = new KeyFrame(Duration.seconds(1.5),
-				new KeyValue(prontInfo.textProperty(), "Eliminando base de datos ...."));
-
-		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(mostrarBajada1, mostrarBajada2, mostrarBajada3, mostrarBajada4);
-
-		// Iniciar la animación
-		timeline.play();
+		AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
 	}
 
 	/////////////////////////////////
@@ -1385,19 +1046,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void clickRaton(MouseEvent event) throws IOException, SQLException {
-		libreria = new DBLibreriaManager();
-		libreria.libreriaCompleta();
-		utilidad = new Utilidades();
-
-		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
-
-		if (idRow != null) {
-			prontInfo.setOpacity(1);
-			prontInfo.setText(libreria.comicDatos(idRow.getID()).toString().replace("[", "").replace("]", ""));
-			funcionesTabla.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-			imagencomic.setImage(libreria.selectorImage(idRow.getID()));
-			utilidad.deleteImage();
-		}
+		seleccionarComics();
 	}
 
 	/**
@@ -1412,19 +1061,42 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void teclasDireccion(KeyEvent event) throws IOException, SQLException {
 		if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
-			libreria = new DBLibreriaManager();
-			libreria.libreriaCompleta();
-			utilidad = new Utilidades();
+			seleccionarComics();
+		}
+	}
 
-			Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
+	/**
+	 * Método para seleccionar y mostrar detalles de un cómic en la interfaz
+	 * gráfica. Si la lista de cómics importados no está vacía, utiliza la
+	 * información de la lista; de lo contrario, consulta la base de datos para
+	 * obtener la información del cómic.
+	 * 
+	 * @throws SQLException Si se produce un error al acceder a la base de datos.
+	 */
+	private void seleccionarComics() throws SQLException {
 
-			if (idRow != null) {
-				prontInfo.setOpacity(1);
-				prontInfo.setText(libreria.comicDatos(idRow.getID()).toString().replace("[", "").replace("]", ""));
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
 
-				imagencomic.setImage(libreria.selectorImage(idRow.getID()));
-				utilidad.deleteImage();
-			}
+		String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
+
+		SelectManager.verLibreria(sentenciaSQL);
+
+		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
+		// Verificar si idRow es nulo antes de intentar acceder a sus métodos
+		if (idRow != null) {
+			AlarmaList.detenerAnimacion();
+			String id_comic = idRow.getID();
+
+			String mensaje = SelectManager.comicDatos(id_comic).toString().replace("[", "").replace("]", "");
+			AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
+			FuncionesTableView.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
+			FuncionesTableView.actualizarBusquedaRaw(tablaBBDD, columnList);
+
+			String direccionImagen = SelectManager.obtenerDireccionPortada(id_comic);
+
+			Utilidades.cargarImagenAsync(direccionImagen, imagencomic);
 		}
 	}
 
@@ -1443,15 +1115,22 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void imprimirResultado(ActionEvent event) throws SQLException {
 
-		List<Comic> listaComics = listaPorParametro();
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
 
+		prontInfo.clear();
 		String tipoBusqueda = "Parcial";
 
-		if (DBLibreriaManager.comicsGuardadosList.size() > 0) {
-			cargaExportExcel(DBLibreriaManager.comicsGuardadosList, tipoBusqueda);
-		} else {
-			cargaExportExcel(listaComics, tipoBusqueda);
+		if (ListaComicsDAO.comicsGuardadosList.size() > 0) {
+			cargaExportExcel(ListaComicsDAO.comicsGuardadosList, tipoBusqueda);
 
+			String mensaje = "Lista guardada de forma correcta";
+			AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
+
+		} else {
+			String mensaje = "La lista esta vacia";
+			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 		}
 	}
 
@@ -1467,25 +1146,30 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void guardarResultado(ActionEvent event) throws SQLException {
 
-		List<Comic> listaComics = listaPorParametro();
-
-		String mensaje = "";
-		String estilo = "";
-
-		if (listaPorParametro().size() > 0) {
-			DBLibreriaManager.agregarElementosUnicos(listaComics);
-
-			mensaje = "Hay un total de: " + DBLibreriaManager.comicsGuardadosList.size()
-					+ ". Comics guardados a la espera de ser impresos \n \n \n";
-			estilo = "#A0F52D";
-
-		} else {
-			mensaje = "No se esta mostrando ningun comic, prueba a buscar por parametro \n \n \n";
-			estilo = "#FF2400";
+		if (!ConectManager.conexionActiva()) {
+			return;
 		}
 
-		limpiezaDeDatos();
-		mostrarMensaje(mensaje, estilo);
+		Comic comicRaw = tablaBBDD.getSelectionModel().getSelectedItem();
+		String mensaje = "";
+		if (comicRaw != null) {
+			boolean existeComic = ListaComicsDAO.verificarIDExistente(comicRaw.getID(), true);
+			if (existeComic) {
+				mensaje = "Este comic con dicha ID: " + comicRaw.getID() + " ya existe. No se ha guardado \n \n \n";
+				AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+				return;
+			}
+
+			ListaComicsDAO.agregarElementoUnico(comicRaw);
+
+			mensaje = "Hay un total de: " + ListaComicsDAO.comicsGuardadosList.size()
+					+ ". Comics guardados a la espera de ser impresos \n \n \n";
+			AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
+
+		} else {
+			mensaje = "Debes de clickar en el comic que quieras guardar \n \n \n";
+			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+		}
 
 	}
 
@@ -1497,7 +1181,21 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	private void cargaExportExcel(List<Comic> listaComics, String tipoBusqueda) {
 
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
 		FuncionesExcel excelFuntions = new FuncionesExcel();
+		AlarmaList alarmaList = new AlarmaList();
+		String mensajeErrorExportar = "ERROR. No se ha podido exportar correctamente.";
+		String mensajeCancelarExportar = "ERROR. Se ha cancelado la exportación.";
+		String mensajeValido = "Has exportado el fichero excel correctamente";
+
+		prontInfo.setText(null);
+		prontInfo.setOpacity(0);
+		tablaBBDD.getItems().clear();
+		imagencomic.setImage(null);
+		prontInfo.setOpacity(0);
 
 		// Configuración de la tarea para crear el archivo Excel
 		Task<Boolean> crearExcelTask = excelFuntions.crearExcelTask(listaComics, tipoBusqueda);
@@ -1506,7 +1204,7 @@ public class MenuPrincipalController implements Initializable {
 		// Configuración del comportamiento cuando la tarea está en ejecución
 		crearExcelTask.setOnRunning(e -> {
 			// Iniciar la animación
-			iniciarAnimacion();
+			AlarmaList.iniciarAnimacionCarga(progresoCarga);
 		});
 
 		// Configuración del comportamiento cuando la tarea tiene éxito
@@ -1514,237 +1212,132 @@ public class MenuPrincipalController implements Initializable {
 			boolean result = crearExcelTask.getValue();
 			if (result) {
 				// Tarea completada con éxito, muestra el mensaje de éxito.
-				mostrarMensaje("Fichero excel exportado de forma correcta", "#A0F52D");
+				procesarResultadoImportacion(crearExcelTask.getValue());
+
 			} else {
 				// La tarea no se completó correctamente, muestra un mensaje de error.
-				mostrarMensaje("ERROR. No se ha podido exportar correctamente.", "#F53636");
+
+				procesarResultadoImportacion(crearExcelTask.getValue());
+
 			}
-			detenerAnimacionPront();
-			detenerAnimacion();
+			AlarmaList.detenerAnimacionPront(prontInfo);
+			AlarmaList.detenerAnimacionCarga(progresoCarga);
 
 			// Detener el hilo de la tarea
 			excelThread.interrupt();
 		});
 
+		crearExcelTask.setOnRunning(event -> cambiarEstadoMenuBar(true));
+
+		crearExcelTask.setOnSucceeded(event -> {
+			cambiarEstadoMenuBar(false);
+			AlarmaList.mostrarMensajePront(mensajeValido, true, prontInfo);
+		});
+
 		// Configuración del comportamiento cuando la tarea falla
-		crearExcelTask.setOnFailed(event -> manejarFallo());
+		crearExcelTask.setOnFailed(event -> {
+			alarmaList.manejarFallo(mensajeErrorExportar, prontInfo);
+			cambiarEstadoMenuBar(false);
+		});
 
 		// Configuración del comportamiento cuando la tarea es cancelada
-		crearExcelTask.setOnCancelled(event -> manejarCancelacion());
+		crearExcelTask.setOnCancelled(event -> {
+			alarmaList.manejarFallo(mensajeCancelarExportar, prontInfo);
+			cambiarEstadoMenuBar(false);
+		});
 
 		// Iniciar la tarea principal de creación de Excel en un hilo separado
 		excelThread.start();
 	}
 
-	/**
-	 * Muestra un mensaje en la interfaz con el texto proporcionado y el estilo de
-	 * fondo especificado.
-	 *
-	 * @param mensaje El mensaje a mostrar.
-	 * @param estilo  El estilo de fondo del mensaje.
-	 */
-	private void mostrarMensaje(String mensaje, String estilo) {
-		prontInfo.setOpacity(1);
-		prontInfo.setStyle("-fx-background-color: " + estilo);
-		prontInfo.setText(mensaje);
+	public void cambiarEstadoMenuBar(boolean estadoAccion) {
+
+		menu_archivo_excel.setDisable(estadoAccion);
+		menu_archivo_importar.setDisable(estadoAccion);
+		menu_archivo_backupbbdd.setDisable(estadoAccion);
+		menu_archivo_delete.setDisable(estadoAccion);
+		menu_comic_aniadir.setDisable(estadoAccion);
+		menu_comic_eliminar.setDisable(estadoAccion);
+		menu_comic_modificar.setDisable(estadoAccion);
+		menu_comic_puntuar.setDisable(estadoAccion);
+		menu_comic_aleatoria.setDisable(estadoAccion);
+		botonIntroducir.setDisable(estadoAccion);
+		botonModificar.setDisable(estadoAccion);
+		botonEliminar.setDisable(estadoAccion);
+		botonAgregarPuntuacion.setDisable(estadoAccion);
+		botonLimpiar.setDisable(estadoAccion);
+		botonMostrarParametro.setDisable(estadoAccion);
+		botonImprimir.setDisable(estadoAccion);
+		botonGuardarResultado.setDisable(estadoAccion);
+		botonbbdd.setDisable(estadoAccion);
+
+		nombreComic.setDisable(estadoAccion);
+		nombreDibujante.setDisable(estadoAccion);
+		nombreEditorial.setDisable(estadoAccion);
+		nombreFirma.setDisable(estadoAccion);
+		nombreFormato.setDisable(estadoAccion);
+		nombreGuionista.setDisable(estadoAccion);
+		nombreProcedencia.setDisable(estadoAccion);
+		nombreVariante.setDisable(estadoAccion);
+		numeroCaja.setDisable(estadoAccion);
+		numeroComic.setDisable(estadoAccion);
 	}
 
-	/**
-	 * Maneja el fallo de la tarea, mostrando un mensaje de error y deteniendo las
-	 * animaciones.
-	 */
-	private void manejarFallo() {
-		mostrarMensaje("ERROR. No se ha podido exportar correctamente.", "#F53636");
-		detenerAnimacionPront();
-		detenerAnimacion();
-	}
-
-	/**
-	 * Maneja la cancelación de la tarea, mostrando un mensaje de error y deteniendo
-	 * las animaciones.
-	 */
-	private void manejarCancelacion() {
-		mostrarMensaje("ERROR. Se ha cancelado la exportación.", "#F53636");
-		detenerAnimacionPront();
-		detenerAnimacion();
-	}
-
-	/**
-	 * Importa un archivo CSV y guarda su contenido en una base de datos de forma
-	 * asíncrona.
-	 *
-	 * @param fichero El archivo CSV a importar.
-	 */
 	public void guardarDatosCSV() {
 
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
 		String frase = "Fichero CSV";
-
 		String formato = "*.csv";
+		FuncionesExcel funcionesExcel = new FuncionesExcel();
 
-		File fichero = Utilidades.tratarFichero(frase, formato).showOpenDialog(null); // Llamada a funcion
+		File fichero = Utilidades.tratarFichero(frase, formato).showOpenDialog(null);
 
-		FuncionesExcel excelFuntions = new FuncionesExcel(); // Crear una instancia de FuncionesExcel
-		// Crear una tarea (Task) para realizar la importación del archivo CSV
-		Task<Boolean> task = new Task<Boolean>() {
-			@Override
-			protected Boolean call() throws Exception {
-				try {
-					if (fichero != null) {
+		String mensajeValido = "Has importado correctamente la lista de comics en la base de datos";
 
-						return true;
-					}
-				} catch (Exception e) {
-					// Si ocurre un error desconocido al importar, mostrar un mensaje de error y
-					// detener la animación
-					e.printStackTrace();
-					Platform.runLater(() -> nav
-							.alertaException("Error desconocido al importar el fichero CSV: " + e.getMessage()));
-					detenerAnimacion();
+		if (fichero != null) {
+			Task<Boolean> lecturaTask = funcionesExcel.procesarArchivoCSVTask(fichero);
 
-				}
-				return false;
-			}
-		};
+			lecturaTask.setOnRunning(e -> AlarmaList.iniciarAnimacionCarga(progresoCarga));
 
-		// Configurar el comportamiento cuando la tarea está en ejecución
-		task.setOnRunning(e -> {
-			// Iniciar la animación
-			iniciarAnimacion();
+			lecturaTask.setOnSucceeded(e -> {
+				cargarDatosDataBase();
+				procesarResultadoImportacion(lecturaTask.getValue());
+				AlarmaList.detenerAnimacion();
+				AlarmaList.detenerAnimacionCarga(progresoCarga);
+			});
 
-		});
+			lecturaTask.setOnRunning(e -> cambiarEstadoMenuBar(true));
 
-		// Configurar el comportamiento cuando la tarea se completa con éxito
-		task.setOnSucceeded(e -> {
+			lecturaTask.setOnFailed(e -> {
+				procesarResultadoImportacion(lecturaTask.getValue());
+				cambiarEstadoMenuBar(false);
+			});
 
-			// Obtener el resultado de la tarea
-			Boolean resultado = task.getValue();
-			/* Tu condición aquí basada en el resultado */
+			lecturaTask.setOnSucceeded(e -> {
+				cambiarEstadoMenuBar(false);
+				AlarmaList.mostrarMensajePront(mensajeValido, true, prontInfo);
 
-			if (resultado) {
-				// Si la importación del CSV fue exitosa, continuar con la inserción en la base
-				// de datos
-				Platform.runLater(() -> {
-					prontInfo.setStyle(null);
-					prontInfo.clear();
+				cargarDatosDataBase();
+			});
 
-					prontInfo.setOpacity(1); // Ocultar el mensaje inicial antes de iniciar la lectura y guardado
-					Thread animationThread = new Thread(this::iniciarAnimacionSubida);
-					animationThread.start();
-					String sql = "INSERT INTO comicsbbdd(ID,nomComic,caja_deposito,precio_comic,codigo_comic,numComic,nomVariante,Firma,nomEditorial,Formato,Procedencia,fecha_publicacion,nomGuionista,nomDibujante,puntuacion,portada,key_issue,url_referencia,estado)"
-							+ " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-
-					try {
-						// Continuar con la conexión a la base de datos y el proceso de guardado
-						BufferedReader lineReader = new BufferedReader(new FileReader(fichero));
-						// Crear una nueva tarea (Task) para realizar la lectura y guardado en la base
-						// de datos
-						Task<Void> lecturaTask = excelFuntions.lecturaCSVTask(sql, lineReader);
-
-						// Configurar el comportamiento cuando la tarea de lectura y guardado se
-						// completa con éxito
-						lecturaTask.setOnSucceeded(event -> {
-							// La operación de inserción en la base de datos ha finalizado con éxito
-							// Mostrar el mensaje de éxito después de la lectura y guardado
-							prontInfo.clear();
-							detenerAnimacionPront();
-							prontInfo.setOpacity(1);
-							prontInfo.setStyle("-fx-background-color: #A0F52D");
-							prontInfo.setText("Fichero CSV importado de forma correcta");
-							detenerAnimacion();
-
-							cargarDatosDataBase();
-
-						});
-
-						// Configurar el comportamiento cuando la tarea de lectura y guardado falla
-						lecturaTask.setOnFailed(event -> {
-							// Ha ocurrido un error durante la operación de inserción en la base de datos
-							Throwable exception = lecturaTask.getException();
-							if (exception != null) {
-								exception.printStackTrace();
-								Platform.runLater(() -> nav.alertaException(
-										"Error al guardar datos en la base de datos: " + exception.getMessage()));
-							}
-							prontInfo.clear();
-							detenerAnimacionPront();
-							prontInfo.setOpacity(1);
-							prontInfo.setStyle("-fx-background-color: #F53636");
-							prontInfo.setText("ERROR. No se ha podido guardar correctamente en la base de datos.");
-							detenerAnimacion();
-
-						});
-
-						// Iniciar la tarea de lectura y guardado en un hilo separado
-						Thread thread = new Thread(lecturaTask);
-						thread.start();
-
-					} catch (IOException ex) {
-						// Si ocurre un error al importar, mostrar un mensaje de error y detener la
-						// animación
-						ex.printStackTrace();
-						Platform.runLater(
-								() -> nav.alertaException("Error al importar el fichero CSV: " + ex.getMessage()));
-						prontInfo.clear();
-						detenerAnimacionPront();
-						prontInfo.setOpacity(1);
-						prontInfo.setStyle("-fx-background-color: #F53636");
-						prontInfo.setText("ERROR. No se ha podido importar correctamente.");
-						detenerAnimacion();
-					}
-				});
-			} else {
-				// Si la importación del CSV falló, mostrar un mensaje de error
-				Platform.runLater(() -> {
-					prontInfo.clear();
-					detenerAnimacionPront();
-					prontInfo.setOpacity(1);
-					prontInfo.setStyle("-fx-background-color: #F53636");
-					prontInfo.setText("ERROR. No se ha podido importar correctamente.");
-					detenerAnimacion();
-				});
-			}
-		});
-
-		// Configurar el comportamiento cuando la tarea falla
-		task.setOnFailed(e -> {
-			// Detener la animación y mostrar un mensaje de error en caso de que la tarea
-			// falle
-			detenerAnimacion();
-			Throwable exception = task.getException();
-			if (exception != null) {
-				exception.printStackTrace();
-				prontInfo.clear();
-				detenerAnimacionPront();
-				Platform.runLater(
-						() -> nav.alertaException("Error al importar el fichero CSV: " + exception.getMessage()));
-				detenerAnimacion();
-			} else {
-				prontInfo.clear();
-				detenerAnimacionPront();
-				Platform.runLater(() -> nav.alertaException("Error desconocido al importar el fichero CSV."));
-				detenerAnimacion();
-			}
-		});
-
-		nav.ventanaAbierta();
-
-		// Iniciar la tarea principal de importación en un hilo separado
-		Thread thread = new Thread(task);
-		thread.start();
+			// Iniciar la tarea principal de importación en un hilo separado
+			new Thread(lecturaTask).start();
+		}
 	}
 
-	/**
-	 * Inicia la animación del progreso de carga.
-	 */
-	public void iniciarAnimacion() {
-		progresoCarga.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
-	}
+	private void procesarResultadoImportacion(Boolean resultado) {
+		String mensaje = "";
+		prontInfo.clear();
+		if (resultado) {
+			mensaje = "Operacion realizada con exito";
+		} else {
+			mensaje = "ERROR. No se ha podido completar la operacion";
+		}
 
-	/**
-	 * Detiene la animación del progreso de carga.
-	 */
-	public void detenerAnimacion() {
-		progresoCarga.setProgress(0); // Establece el progreso en 0 para detener la animación
+		AlarmaList.detenerAnimacion();
+		AlarmaList.mostrarMensajePront(mensaje, resultado, prontInfo);
 	}
 
 	/**
@@ -1755,80 +1348,38 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	public void makeSQL() {
 
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
 		String frase = "Fichero SQL";
 
 		String formato = "*.sql";
 
 		File fichero = Utilidades.tratarFichero(frase, formato).showSaveDialog(null); // Llamada a funcion
 
-		libreria = new DBLibreriaManager();
 		prontInfo.setOpacity(0);
 		if (fichero != null) {
 
 			if (Utilidades.isWindows()) {
-				libreria.backupWindows(fichero); // Llamada a funcion
-				prontInfo.setOpacity(1);
-				prontInfo.setStyle("-fx-background-color: #A0F52D");
-				prontInfo.setText("Base de datos exportada \ncorrectamente");
+				Utilidades.backupWindows(fichero); // Llamada a funcion
+				String mensaje = "Base de datos exportada \ncorrectamente";
+
+				AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
 
 			} else {
 				if (Utilidades.isUnix()) {
-					libreria.backupLinux(fichero); // Llamada a funcion
-					prontInfo.setOpacity(1);
-					prontInfo.setStyle("-fx-background-color: #A0F52D");
-					prontInfo.setText("Base de datos exportada \ncorrectamente");
+					Utilidades.backupLinux(fichero); // Llamada a funcion
+					String mensaje = "Base de datos exportada \ncorrectamente";
+
+					AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
 				}
 			}
 		} else {
-			prontInfo.setOpacity(1);
-			prontInfo.setStyle("-fx-background-color: #F53636");
-			prontInfo.setText("ERROR. Se ha cancelado la exportacion de la base de datos.");
+			String mensaje = "ERROR. Se ha cancelado la exportacion de la base de datos.";
+
+			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 		}
-	}
-
-	/**
-	 * Funcion que comprueba segun los datos escritos en los textArea, que comic
-	 * estas buscando.
-	 * 
-	 * @throws SQLException
-	 */
-	public List<Comic> listaPorParametro() throws SQLException {
-		libreria = new DBLibreriaManager();
-		utilidad = new Utilidades();
-		Comic comic = new Comic();
-		String datos[] = camposComic();
-		String fecha = datos[8];
-
-		if (datos[8].isEmpty()) {
-			fecha = "";
-		} else {
-			fecha = datos[8];
-		}
-
-		comic = new Comic("", datos[1], datos[11], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7], fecha,
-				datos[9], datos[10], "", "", "", "", "", "", "");
-//		tablaBBDD.getItems().clear();
-		prontInfo.setOpacity(1);
-		prontInfo.setText(funcionesTabla.resultadoBusquedaPront(comic).getText());
-		busquedaGeneral.setText("");
-
-		return libreria.busquedaParametro(comic, busquedaGeneral.getText());
-	}
-
-	/**
-	 * Devuelve una lista con todos los comics de la base de datos que se encuentran
-	 * "En posesion"
-	 *
-	 * @return
-	 * @throws IOException
-	 * @throws SQLException
-	 */
-	public List<Comic> libreriaCompleta() throws IOException, SQLException {
-		libreria = new DBLibreriaManager();
-		limpiezaDeDatos();
-		List<Comic> listComic = FXCollections.observableArrayList(libreria.libreriaCompleta());
-
-		return listComic;
 	}
 
 	/**
@@ -1837,97 +1388,61 @@ public class MenuPrincipalController implements Initializable {
 	 *
 	 * @return
 	 */
-	public String[] camposComic() {
-		String campos[] = new String[12];
-
-		if (nombreActual().isEmpty()) {
-			campos[1] = "";
-		} else {
-			campos[1] = nombreActual();
-		}
-
-		if (numeroComicActual().isEmpty()) {
-			campos[2] = "";
-		} else {
-			campos[2] = numeroComicActual();
-		}
-
-		if (varianteActual().isEmpty()) {
-			campos[3] = "";
-		} else {
-			campos[3] = varianteActual();
-		}
-
-		if (firmaActual().isEmpty()) {
-			campos[4] = "";
-		} else {
-			campos[4] = firmaActual();
-		}
-
-		if (editorialActual().isEmpty()) {
-			campos[5] = "";
-		} else {
-			campos[5] = editorialActual();
-		}
-
-		if (formatoActual().isEmpty()) {
-			campos[6] = "";
-		} else {
-			campos[6] = formatoActual();
-		}
-
-		if (procedenciaActual().isEmpty()) {
-			campos[7] = "";
-		} else {
-			campos[7] = procedenciaActual();
-
-		}
-
+	public Comic camposComic() {
+		Comic comic = new Comic();
 		LocalDate fecha = fechaPublicacion.getValue();
-		if (fecha != null) {
-			campos[8] = fecha.toString();
-		} else {
-			campos[8] = "";
-		}
+		String fechaComic = (fecha != null) ? fecha.toString() : "";
 
-		if (guionistaActual().isEmpty()) {
-			campos[9] = "";
-		} else {
-			campos[9] = guionistaActual();
-		}
+		comic.setNombre(Utilidades.defaultIfNullOrEmpty(nombreComic.getValue(), ""));
+		comic.setNumero(Utilidades.defaultIfNullOrEmpty(
+				Utilidades.comaYGuionPorEspaciado(FuncionesComboBox.numeroCombobox(numeroComic)), ""));
+		comic.setVariante(
+				Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreVariante.getValue()), ""));
+		comic.setFirma(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreFirma.getValue()), ""));
+		comic.setEditorial(
+				Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreEditorial.getValue()), ""));
+		comic.setFormato(Utilidades.defaultIfNullOrEmpty(FuncionesComboBox.formatoCombobox(nombreFormato), ""));
+		comic.setProcedencia(
+				Utilidades.defaultIfNullOrEmpty(FuncionesComboBox.procedenciaCombobox(nombreProcedencia), ""));
+		comic.setFecha(fechaComic);
+		comic.setGuionista(
+				Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreGuionista.getValue()), ""));
+		comic.setDibujante(
+				Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreDibujante.getValue()), ""));
+		comic.setImagen("");
+		comic.setEstado("");
+		comic.setNumCaja(Utilidades.defaultIfNullOrEmpty(FuncionesComboBox.cajaCombobox(numeroCaja), ""));
+		comic.setKey_issue("");
+		comic.setUrl_referencia("");
+		comic.setPrecio_comic("");
+		comic.setCodigo_comic("");
 
-		if (dibujanteActual().isEmpty()) {
-			campos[10] = "";
-		} else {
-			campos[10] = dibujanteActual();
-		}
-
-		if (cajaActual().isEmpty() || cajaActual().equals("0")) {
-			campos[11] = "";
-		} else {
-			campos[11] = cajaActual();
-		}
-
-		return campos;
+		return comic;
 	}
 
 	/**
 	 * Realiza la limpieza de datos en la interfaz gráfica.
 	 */
 	private void limpiezaDeDatos() {
-		// Limpiar todos los campos de ComboBox y sus valores
-		for (ComboBox<String> comboBox : Arrays.asList(nombreComic, numeroComic, nombreFirma, nombreGuionista,
-				nombreVariante, numeroCaja, nombreProcedencia, nombreFormato, nombreEditorial, nombreDibujante)) {
-			comboBox.setValue("");
-			comboBox.getEditor().setText("");
-		}
 
 		// Limpiar elementos adicionales de la interfaz
 		fechaPublicacion.setValue(null);
+		prontInfo.clear();
 		prontInfo.setText(null);
 		prontInfo.setOpacity(0);
 		tablaBBDD.getItems().clear();
 		imagencomic.setImage(null);
+		tablaBBDD.refresh();
+	}
+
+	private void limpiarComboBox() {
+
+		// Iterar sobre todos los ComboBox para realizar la limpieza
+		for (ComboBox<String> comboBox : comboboxes) {
+			// Limpiar el campo
+			comboBox.setValue("");
+			comboBox.getEditor().setText("");
+		}
 
 	}
 
@@ -1949,7 +1464,7 @@ public class MenuPrincipalController implements Initializable {
 				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
 
 		// Pasar la lista de ComboBoxes a VentanaAccionController
-		ventanaAccion.pasarComboBoxes(comboboxes);
+		ventanaAccion.setComboBoxes(comboboxes);
 
 		if (fuente instanceof Button) {
 			Button botonPresionado = (Button) fuente;
@@ -1980,9 +1495,61 @@ public class MenuPrincipalController implements Initializable {
 		nav.verAccionComic();
 	}
 
+	/**
+	 * Maneja la acción del usuario en relación a los cómics, como agregar,
+	 * modificar, eliminar o puntuar un cómic.
+	 *
+	 * @param event El evento de acción que desencadenó la llamada a esta función.
+	 */
+	@FXML
+	void modificarApiMarvel(ActionEvent event) {
+		tablaBBDD.getItems().clear();
+		ModificarApiDatosController.tipoAccion("Marvel");
+		nav.verModificarApis(true);
+	}
+
+	/**
+	 * Maneja la acción del usuario en relación a los cómics, como agregar,
+	 * modificar, eliminar o puntuar un cómic.
+	 *
+	 * @param event El evento de acción que desencadenó la llamada a esta función.
+	 */
+	@FXML
+	void modificarApiVine(ActionEvent event) {
+		tablaBBDD.getItems().clear();
+
+		ModificarApiDatosController.tipoAccion("Vine");
+
+		nav.verModificarApis(false);
+	}
+
+	@FXML
+	void verEstadoConexion(ActionEvent event) {
+		nav.verEstadoConexion();
+
+	}
+
 	/////////////////////////////
 	//// FUNCIONES PARA SALIR////
 	/////////////////////////////
+
+	public Scene miStageVentana() {
+		Node rootNode = menu_navegacion;
+		while (rootNode.getParent() != null) {
+			rootNode = rootNode.getParent();
+		}
+
+		if (rootNode instanceof Parent) {
+			Scene scene = ((Parent) rootNode).getScene();
+
+			ConectManager.activeScenes.add(scene);
+
+			return scene;
+		} else {
+			// Manejar el caso en el que no se pueda encontrar un nodo raíz adecuado
+			return null;
+		}
+	}
 
 	/**
 	 * Vuelve al menu inicial de conexion de la base de datos.
@@ -1991,7 +1558,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void volverMenu(ActionEvent event) throws IOException {
-		JDBC.DBManager.close();
+		ConectManager.close();
 		nav.verAccesoBBDD();
 
 		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
@@ -2006,6 +1573,7 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	public void salirPrograma(ActionEvent event) {
 		// Lógica para manejar la acción de "Salir"
+
 		if (nav.salirPrograma(event)) {
 			Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 			myStage.close();

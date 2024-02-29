@@ -1,4 +1,4 @@
-# Comic Database Manager - Versión 7.0.0.0
+# Comic Database Manager - Versión 8.0.0.0
 
 ## Descripción
 
@@ -27,6 +27,8 @@ Este programa se encuentra en su fase final y está diseñado para administrar u
 - Nueva función que permite autocompletar datos durante las búsquedas para facilitar la interacción.
 - Los ComboBox se actualizan dinámicamente según el contenido de los demás ComboBox en tiempo real, mejorando la usabilidad.
 - Usa la API Developer de Marvel.
+- Usa apis generales de busqueda fuera de marvel, para busquedas mas genericas.
+- Ahora se puede usar un lector de codigo o introduccion manual de codigos para importacion multiple
 
 ## Enlaces
 

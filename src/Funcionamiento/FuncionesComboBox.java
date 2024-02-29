@@ -9,7 +9,9 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import JDBC.DBLibreriaManager;
+import comicManagement.Comic;
+import dbmanager.DBUtilidades;
+import dbmanager.ListaComicsDAO;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -24,6 +26,7 @@ import javafx.scene.control.TextFormatter;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import javafx.stage.Popup;
+import javafx.util.converter.DefaultStringConverter;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 
@@ -32,8 +35,6 @@ import javafx.util.converter.IntegerStringConverter;
  * una interfaz gráfica.
  */
 public class FuncionesComboBox {
-
-	private static DBLibreriaManager libreria = null;
 
 	// Mapa que almacena los elementos originales de los ComboBox junto a los
 	// ComboBox correspondientes
@@ -55,10 +56,9 @@ public class FuncionesComboBox {
 	 *                        Comic.
 	 * @return Un objeto Comic con los valores seleccionados en los ComboBoxes.
 	 */
-	private Comic getComicFromComboBoxes(int totalComboboxes, List<ComboBox<String>> comboboxes) {
+	private Comic getComicFromComboBoxes(int cantidadDeComboBoxes, List<ComboBox<String>> comboboxes) {
 		Comic comic = new Comic();
-
-		for (int i = 0; i < totalComboboxes; i++) {
+		for (int i = 0; i < cantidadDeComboBoxes; i++) {
 			ComboBox<String> comboBox = comboboxes.get(i);
 			modificarPopup(comboBox);
 			String value = comboBox.getValue() != null ? comboBox.getValue() : "";
@@ -112,11 +112,11 @@ public class FuncionesComboBox {
 	 * @param totalComboboxes El número total de ComboBoxes.
 	 * @param comboboxes      La lista de ComboBoxes.
 	 */
-	public void lecturaComboBox(int totalComboboxes, List<ComboBox<String>> comboboxes) {
+	public void lecturaComboBox(List<ComboBox<String>> comboboxes) {
 		isUserInput = true; // Establecemos isUserInput en true inicialmente.
-
+		int cantidadDeComboBoxes = comboboxes.size();
 		// Configuración de los escuchadores para cada ComboBox mediante un bucle
-		for (int i = 0; i < totalComboboxes; i++) {
+		for (int i = 0; i < cantidadDeComboBoxes; i++) {
 
 			final int currentIndex = i; // Copia final de i para usar en expresiones lambda
 
@@ -134,9 +134,9 @@ public class FuncionesComboBox {
 					handleComboBoxEmptyChange(comboBox, comboboxes);
 				} else {
 					modificarPopup(comboBox);
-					Comic comic = getComicFromComboBoxes(totalComboboxes, comboboxes);
+					Comic comic = getComicFromComboBoxes(cantidadDeComboBoxes, comboboxes);
 					try {
-						actualizarComboBoxes(totalComboboxes, comboboxes, comic);
+						actualizarComboBoxes(cantidadDeComboBoxes, comboboxes, comic);
 					} catch (SQLException | InterruptedException | ExecutionException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -194,51 +194,82 @@ public class FuncionesComboBox {
 	 * @throws ExecutionException
 	 * @throws InterruptedException
 	 */
-	public void actualizarComboBoxes(int totalComboboxes, List<ComboBox<String>> comboboxes, Comic comic)
+	public void actualizarComboBoxes(int cantidadDeComboBoxes, List<ComboBox<String>> comboboxes, Comic comic)
 			throws SQLException, InterruptedException, ExecutionException {
-
-		libreria = new DBLibreriaManager();
 
 		Comic comicTemp = new Comic("", comic.getNombre(), comic.getNumCaja(), comic.getNumero(), comic.getVariante(),
 				comic.getFirma(), comic.getEditorial(), comic.getFormato(), comic.getProcedencia(), "",
 				comic.getGuionista(), comic.getDibujante(), "", "", "", "", "", "", "");
-		String sql = libreria.datosConcatenados(comicTemp);
+		String sql = DBUtilidades.datosConcatenados(comicTemp);
 
 		if (!sql.isEmpty()) {
 			isUserInput = false; // Disable user input during programmatic updates
 
-			DBLibreriaManager.nombreComicList = libreria.guardarDatosAutoCompletado(sql, "nomComic");
-			DBLibreriaManager.nombreGuionistaList = libreria.guardarDatosAutoCompletado(sql, "nomGuionista");
-			DBLibreriaManager.numeroComicList = convertirYOrdenarListaNumeros(
-					libreria.guardarDatosAutoCompletado(sql, "numComic"));
-			DBLibreriaManager.nombreVarianteList = libreria.guardarDatosAutoCompletado(sql, "nomVariante");
-			DBLibreriaManager.numeroCajaList = convertirYOrdenarListaNumeros(
-					libreria.guardarDatosAutoCompletado(sql, "caja_deposito"));
-			DBLibreriaManager.nombreProcedenciaList = libreria.guardarDatosAutoCompletado(sql, "procedencia");
-			DBLibreriaManager.nombreFormatoList = libreria.guardarDatosAutoCompletado(sql, "formato");
-			DBLibreriaManager.nombreEditorialList = libreria.guardarDatosAutoCompletado(sql, "nomEditorial");
-			DBLibreriaManager.nombreDibujanteList = libreria.guardarDatosAutoCompletado(sql, "nomDibujante");
-			DBLibreriaManager.nombreFirmaList = libreria.guardarDatosAutoCompletado(sql, "firma");
+			ListaComicsDAO.nombreComicList = ListaComicsDAO.guardarDatosAutoCompletado(sql, "nomComic");
+			ListaComicsDAO.nombreGuionistaList = ListaComicsDAO.guardarDatosAutoCompletado(sql, "nomGuionista");
+			ListaComicsDAO.numeroComicList = convertirYOrdenarListaNumeros(
+					ListaComicsDAO.guardarDatosAutoCompletado(sql, "numComic"));
+			ListaComicsDAO.nombreVarianteList = ListaComicsDAO.guardarDatosAutoCompletado(sql, "nomVariante");
+			ListaComicsDAO.numeroCajaList = convertirYOrdenarListaNumeros(
+					ListaComicsDAO.guardarDatosAutoCompletado(sql, "caja_deposito"));
+			ListaComicsDAO.nombreProcedenciaList = ListaComicsDAO.guardarDatosAutoCompletado(sql, "procedencia");
+			ListaComicsDAO.nombreFormatoList = ListaComicsDAO.guardarDatosAutoCompletado(sql, "formato");
+			ListaComicsDAO.nombreEditorialList = ListaComicsDAO.guardarDatosAutoCompletado(sql, "nomEditorial");
+			ListaComicsDAO.nombreDibujanteList = ListaComicsDAO.guardarDatosAutoCompletado(sql, "nomDibujante");
+			ListaComicsDAO.nombreFirmaList = ListaComicsDAO.guardarDatosAutoCompletado(sql, "firma");
 
-			DBLibreriaManager.listaOrdenada = Arrays.asList(DBLibreriaManager.nombreComicList,
-					DBLibreriaManager.numeroComicList, DBLibreriaManager.nombreVarianteList,
-					DBLibreriaManager.nombreProcedenciaList, DBLibreriaManager.nombreFormatoList,
-					DBLibreriaManager.nombreDibujanteList, DBLibreriaManager.nombreGuionistaList,
-					DBLibreriaManager.nombreEditorialList, DBLibreriaManager.nombreFirmaList,
-					DBLibreriaManager.numeroCajaList);
+			ListaComicsDAO.listaOrdenada = Arrays.asList(ListaComicsDAO.nombreComicList, ListaComicsDAO.numeroComicList,
+					ListaComicsDAO.nombreVarianteList, ListaComicsDAO.nombreProcedenciaList,
+					ListaComicsDAO.nombreFormatoList, ListaComicsDAO.nombreDibujanteList,
+					ListaComicsDAO.nombreGuionistaList, ListaComicsDAO.nombreEditorialList,
+					ListaComicsDAO.nombreFirmaList, ListaComicsDAO.numeroCajaList);
 
-			for (int i = 0; i < totalComboboxes; i++) {
-				comboboxes.get(i).hide();
-				List<String> itemsActuales = DBLibreriaManager.listaOrdenada.get(i);
-				if (itemsActuales != null && !itemsActuales.isEmpty()) {
-					ObservableList<String> itemsObservable = FXCollections.observableArrayList(itemsActuales);
-					comboboxes.get(i).setItems(itemsObservable);
+			if (sonListasSimilares(ListaComicsDAO.listaOrdenada, ListaComicsDAO.itemsList)) {
 
-					itemsActuales = FXCollections.observableArrayList(itemsActuales);
+				for (int i = 0; i < cantidadDeComboBoxes; i++) {
+					comboboxes.get(i).hide();
+					List<String> itemsActuales = ListaComicsDAO.listaOrdenada.get(i);
+					if (itemsActuales != null && !itemsActuales.isEmpty()) {
+						ObservableList<String> itemsObservable = FXCollections.observableArrayList(itemsActuales);
+						comboboxes.get(i).setItems(itemsObservable);
+
+						itemsActuales = FXCollections.observableArrayList(itemsActuales);
+					}
 				}
+
+			} else {
+				limpiezaDeDatos(comboboxes);
 			}
+
 			isUserInput = true; // Re-enable user input after programmatic updates
 		}
+	}
+
+	public static boolean sonListasSimilares(List<List<String>> lista1, List<List<String>> lista2) {
+
+		// Comparamos cada sublista
+		for (int i = 0; i < lista1.size(); i++) {
+			List<String> sublista1 = lista1.get(i);
+			List<String> sublista2 = lista2.get(i);
+
+			// Verificamos si hay al menos un elemento en común
+			if (tieneElementoComun(sublista1, sublista2)) {
+				return true;
+			}
+		}
+
+		// Si llegamos aquí, no hay coincidencias en ninguna sublista
+		return false;
+	}
+
+	private static boolean tieneElementoComun(List<String> lista1, List<String> lista2) {
+		// Verificamos si hay al menos un elemento en común entre las listas
+		for (String elemento : lista1) {
+			if (lista2.contains(elemento)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -268,15 +299,6 @@ public class FuncionesComboBox {
 
 		isUserInput = false; // Deshabilitar la entrada del usuario durante la limpieza
 
-		// Limpiar todos los campos de texto y valores de los ComboBoxes
-		for (ComboBox<String> comboBox : comboboxes) {
-			// Configurar el tamaño y apariencia del despliegue del ComboBox
-			modificarPopup(comboBox);
-
-			comboBox.setValue("");
-			comboBox.getEditor().setText("");
-		}
-
 		// Restaurar los elementos originales para cada ComboBox
 		for (ComboBox<String> comboBox : originalComboBoxItems.keySet()) {
 			ObservableList<String> originalItems = originalComboBoxItems.get(comboBox);
@@ -297,18 +319,14 @@ public class FuncionesComboBox {
 	 */
 	public void rellenarComboBox(List<ComboBox<String>> comboboxes) {
 
-		List<List<String>> itemsList = Arrays.asList(DBLibreriaManager.listaNombre, DBLibreriaManager.listaNumeroComic,
-				DBLibreriaManager.listaVariante, DBLibreriaManager.listaProcedencia, DBLibreriaManager.listaFormato,
-				DBLibreriaManager.listaDibujante, DBLibreriaManager.listaGuionista, DBLibreriaManager.listaEditorial,
-				DBLibreriaManager.listaFirma, DBLibreriaManager.listaCaja);
-
 		int i = 0;
 
 		for (ComboBox<String> comboBox : comboboxes) {
 			if (comboBox != null) {
 				modificarPopup(comboBox);
 
-				List<String> items = itemsList.get(i);
+//				List<String> items = Utilidades.listaArregladaAutoComplete(DBLibreriaManager.itemsList.get(i));
+				List<String> items = ListaComicsDAO.itemsList.get(i);
 				try {
 					final int currentIndex = i; // Copia final de i para usar en expresiones lambda
 
@@ -329,7 +347,7 @@ public class FuncionesComboBox {
 							if (atLeastOneNotEmpty) {
 								Comic comic = getComicFromComboBoxes(10, comboboxes);
 								setupFilteredPopup(comboboxes, comboBox,
-										DBLibreriaManager.listaOrdenada.get(currentIndex));
+										ListaComicsDAO.listaOrdenada.get(currentIndex));
 								try {
 									actualizarComboBoxes(10, comboboxes, comic);
 								} catch (SQLException | InterruptedException | ExecutionException e) {
@@ -348,6 +366,7 @@ public class FuncionesComboBox {
 							}
 						}
 					});
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -382,6 +401,7 @@ public class FuncionesComboBox {
 					.filter(item -> item.toLowerCase().contains(newValue.toLowerCase())).collect(Collectors.toList());
 			listView.setItems(FXCollections.observableArrayList(newFilteredItems));
 		});
+
 		Bounds bounds = originalComboBox.localToScreen(originalComboBox.getBoundsInLocal());
 		popup = createCustomPopup(originalComboBox, filterTextField, listView);
 
@@ -607,6 +627,13 @@ public class FuncionesComboBox {
 		return textFormatter;
 	}
 
+	public static TextFormatter<String> desactivarValidadorNenteros() {
+		// Crear un TextFormatter que permita cualquier tipo de entrada
+		TextFormatter<String> textFormatter = new TextFormatter<>(new DefaultStringConverter());
+
+		return textFormatter;
+	}
+
 	/**
 	 * Crea un TextFormatter para validar y permitir solo números decimales
 	 * (double).
@@ -631,40 +658,128 @@ public class FuncionesComboBox {
 	 *
 	 * @param comboboxes La lista de ComboBoxes a rellenar.
 	 */
-	public void rellenarComboBoxEstaticos(List<ComboBox<String>> comboboxes, String tipo_accion) {
-		String[] formatos = { "Grapa (Issue individual)", "Tapa blanda (Paperback)", "Cómic de bolsillo (Pocket)",
-				"Edición de lujo (Deluxe Edition)", "Edición omnibus (Omnibus)", "Edición integral (Integral)",
-				"Tapa dura (Hardcover)", "eBook (libro electrónico)", "Cómic digital (Digital Comic)",
-				"Manga digital (Digital Manga)", "Manga (Manga tome)", "PDF (Portable Document Format)",
-				"Revista (Magazine)", "Edición de coleccionista (Collector's Edition)",
-				"Edición especial (Special Edition)", "Edición con extras (Bonus Edition)", "Libro (Book)" };
-
-		String[] procedenciaEstados = { "Estados Unidos (United States)", "Japón (Japan)", "Francia (France)",
-				"Italia (Italy)", "España (Spain)", "Reino Unido (United Kingdom)", "Alemania (Germany)",
-				"Brasil (Brazil)", "Corea del Sur (South Korea)", "México (Mexico)", "Canadá (Canada)", "China (China)",
-				"Australia (Australia)", "Argentina (Argentina)", "India (India)", "Bélgica (Belgium)",
-				"Países Bajos (Netherlands)", "Portugal (Portugal)", "Suecia (Sweden)", "Suiza (Switzerland)",
-				"Finlandia (Finland)", "Noruega (Norway)", "Dinamarca (Denmark)" };
-
-		String[] situacionEstados = { "En posesion", "Comprado", "En venta" };
-
-		String[] editorialBusquedas = { "Marvel ISBN", "Marvel UPC", "Otras editoriales", "Ninguno" };
+	public static void rellenarComboBoxEstaticos(List<ComboBox<String>> comboboxes, String tipo_accion) {
+		String[][] valores = {
+				{ "Grapa (Issue individual)", "Tapa blanda (Paperback)", "Cómic de bolsillo (Pocket)",
+						"Edicion de lujo (Deluxe Edition)", "Edicion omnibus(Omnibus)", "Edicion integral (Integral)",
+						"Tapa dura (Hardcover)", "eBook (libro electrónico)", "Comic digital (Digital Comic)",
+						"Manga digital (Digital Manga)", "Manga (Manga tome)", "PDF (Portable Document Format)",
+						"Revista (Magazine)", "Edicion de coleccionista (Collector's Edition)",
+						"Edicion especial (Special Edition)", "Edicion con extras (Bonus Edition)", "Libro (Book)" },
+				{ "Estados Unidos (United States)", "Japón (Japan)", "Francia (France)", "Italia (Italy)",
+						"España (Spain)", "Reino Unido (United Kingdom)", "Alemania (Germany)", "Brasil (Brazil)",
+						"Corea del Sur (South Korea)", "México (Mexico)", "Canadá (Canada)", "China (China)",
+						"Australia (Australia)", "Argentina (Argentina)", "India (India)", "Bélgica (Belgium)",
+						"Países Bajos (Netherlands)", "Portugal (Portugal)", "Suecia (Sweden)", "Suiza (Switzerland)",
+						"Finlandia (Finland)", "Noruega (Norway)", "Dinamarca (Denmark)" },
+				{ "En posesion", "Comprado", "En venta" },
+				{ "0/0", "0.5/5", "1/5", "1.5/5", "2/5", "2.5/5", "3/5", "3.5/5", "4/5", "4.5/5", "5/5" } };
 
 		// Verificar que la lista de ComboBox tenga al menos el mismo tamaño que los
 		// arreglos
-		int tamaño = Math.min(comboboxes.size(), Math.min(formatos.length, procedenciaEstados.length));
+		int tamaño = Math.min(comboboxes.size(), valores.length);
 
 		for (int i = 0; i < tamaño; i++) {
 			comboboxes.get(i).getItems().clear(); // Limpiar elementos anteriores si los hay
-			comboboxes.get(i).getItems().addAll(
-					i == 0 ? formatos : i == 1 ? procedenciaEstados : i == 2 ? situacionEstados : editorialBusquedas);
+			comboboxes.get(i).getItems().addAll(valores[i]);
 
-			if (tipo_accion.equalsIgnoreCase("aniadir")) {
-				comboboxes.get(i).getSelectionModel().selectFirst();
-
-			}
-
+			comboboxes.get(i).getSelectionModel().selectFirst();
 		}
+	}
+
+	/**
+	 * Funcion que permite modificar la puntuacion de un comic, siempre y cuando el
+	 * ID exista en la base de datos
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public static String puntuacionCombobox(ComboBox<String> puntuacionMenu) {
+
+		String puntuacion = puntuacionMenu.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
+																								// "puntuacion"
+		return puntuacion;
+	}
+
+	/**
+	 * Funcion que permite seleccionar en el comboBox "numeroComic" y lo devuelve,
+	 * para la busqueda de comic
+	 * 
+	 * @return
+	 */
+	public static String numeroCombobox(ComboBox<String> numeroComic) {
+		String numComic = "";
+
+		if (numeroComic.getSelectionModel().getSelectedItem() != null) {
+			numComic = numeroComic.getSelectionModel().getSelectedItem().toString();
+		}
+
+		return numComic;
+	}
+
+	/**
+	 * Funcion que permite seleccionar en el comboBox "caja_actual" y lo devuelve,
+	 * para la busqueda de comic
+	 * 
+	 * @return
+	 */
+	public static String cajaCombobox(ComboBox<String> numeroCajaComic) {
+
+		String cajaComics = "";
+
+		if (numeroCajaComic.getSelectionModel().getSelectedItem() != null) {
+			cajaComics = numeroCajaComic.getSelectionModel().getSelectedItem().toString();
+		}
+
+		return cajaComics;
+	}
+
+	/**
+	 * Funcion que permite seleccionar en el comboBox "caja_actual" y lo devuelve,
+	 * para la busqueda de comic
+	 * 
+	 * @return
+	 */
+	public static String estadoCombobox(ComboBox<String> estadoComic) {
+
+		String estadoNuevo = "";
+
+		if (estadoComic.getSelectionModel().getSelectedItem() != null) {
+			estadoNuevo = estadoComic.getSelectionModel().getSelectedItem().toString();
+		}
+
+		return estadoNuevo;
+	}
+
+	/**
+	 * Funcion que permite seleccionar en el comboBox "nombreFormato" y lo devuelve,
+	 * para la busqueda de comic
+	 * 
+	 * @return
+	 */
+	public static String formatoCombobox(ComboBox<String> formatoComic) {
+
+		String formatoEstado = "";
+		if (formatoComic.getSelectionModel().getSelectedItem() != null) {
+			formatoEstado = formatoComic.getSelectionModel().getSelectedItem().toString();
+		}
+		return formatoEstado;
+	}
+
+	/**
+	 * Funcion que permite modificar el estado de un comic.
+	 *
+	 * @param ps
+	 * @return
+	 */
+	public static String procedenciaCombobox(ComboBox<String> procedenciaComic) {
+
+		String procedenciaEstadoNuevo = "";
+		if (procedenciaComic.getSelectionModel().getSelectedItem() != null) {
+			procedenciaEstadoNuevo = procedenciaComic.getSelectionModel().getSelectedItem().toString();
+		}
+
+		return procedenciaEstadoNuevo;
 	}
 
 }

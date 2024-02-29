@@ -20,53 +20,43 @@ package Controladores;
  *  - Puntuar comics que se encuentren dentro de la base de datos.
  *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
  *
- *  Version 7.0.0.0
+ *  Version 8.0.0.0
  *
  *  @author Alejandro Rodriguez
  *
  */
 
 import java.io.IOException;
+import java.net.URL;
 import java.sql.SQLException;
-
-/**
- * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
- * Las ventanas graficas se realizan con JavaFX.
- * El programa permite:
- *  - Conectarse a la base de datos.
- *  - Ver la base de datos completa o parcial segun parametros introducidos.
- *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
- *  - Copia de seguridad de la base de datos en formato .sql
- *  - Introducir comics a la base de datos.
- *  - Modificar comics de la base de datos.
- *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
- *  - Ver frases de personajes de comics
- *  - Opcion de escoger algo para leer de forma aleatoria.
- *
- *  Esta clase permite acceder a la ventana que permite mostrar una recomendacion de comics.
- *
- *  Version Final
- *
- *  Por Alejandro Rodriguez
- *
- *  Twitter: @silverAlox
- */
+import java.util.List;
 
 import java.util.Random;
+import java.util.ResourceBundle;
 
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
-import JDBC.DBLibreriaManager;
-import JDBC.DBManager;
-import javafx.application.Platform;
+import alarmas.AlarmaList;
+import comicManagement.Comic;
+import dbmanager.ConectManager;
+import dbmanager.DBUtilidades;
+import dbmanager.SelectManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 /**
@@ -75,7 +65,7 @@ import javafx.stage.Stage;
  *
  * @author Alejandro Rodriguez
  */
-public class RecomendacionesController {
+public class RecomendacionesController implements Initializable {
 
 	/**
 	 * Elemento del menú para desconectar.
@@ -191,15 +181,57 @@ public class RecomendacionesController {
 	private static Ventanas nav = new Ventanas();
 
 	/**
-	 * Instancia de DBLibreriaManager para la gestión de la base de datos.
-	 */
-	private static DBLibreriaManager libreria = null;
-
-	/**
 	 * Instancia de Utilidades para funciones auxiliares.
 	 */
 	private static Utilidades utilidad = null;
 
+	@FXML
+	private Label alarmaConexionSql;
+
+	private static AlarmaList alarmaList = new AlarmaList();
+
+	/**
+	 * Inicializa el controlador cuando se carga la vista.
+	 *
+	 * @param location  la ubicación del archivo FXML
+	 * @param resources los recursos utilizados por la vista
+	 */
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+
+		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
+		alarmaList.iniciarThreadChecker(true);
+
+		imagencomic.imageProperty().addListener((observable, oldImage, newImage) -> {
+			if (newImage != null) {
+				// Cambiar la apariencia del cursor y la opacidad cuando la imagen se ha cargado
+				imagencomic.setOnMouseEntered(e -> {
+					imagencomic.setOpacity(0.7); // Cambiar la opacidad para indicar que es clickable
+					imagencomic.setCursor(Cursor.HAND);
+				});
+
+				// Restaurar el cursor y la opacidad al salir del ImageView
+				imagencomic.setOnMouseExited(e -> {
+					imagencomic.setOpacity(1.0); // Restaurar la opacidad
+					imagencomic.setCursor(Cursor.DEFAULT);
+				});
+			} else {
+				// Restaurar el cursor y la opacidad al salir del ImageView
+				imagencomic.setOnMouseEntered(e -> {
+					imagencomic.setCursor(Cursor.DEFAULT);
+				});
+			}
+		});
+	}
+
+	@FXML
+	void ampliarImagen(MouseEvent event) {
+
+		if (imagencomic.getImage() != null) {
+			nav.verVentanaImagen();
+		}
+
+	}
 
 	/**
 	 * Llama a funcion que genera una lectura recomendada
@@ -225,22 +257,33 @@ public class RecomendacionesController {
 	 */
 	public String generarLectura() throws IOException, SQLException {
 
+		if (!ConectManager.conexionActiva()) {
+			return null;
+		}
+
 		Random r = new Random();
 		utilidad = new Utilidades();
-		libreria = new DBLibreriaManager();
-		String ID;
-
+		String id_comic;
+		String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
+		List<Comic> listaComics = SelectManager.verLibreria(sentenciaSQL);
 		limpiarPront(); // Llamada a función para limpiar la pantalla "TextArea"
 
-		if (libreria.libreriaCompleta().size() != 0) {
-			int n = r.nextInt(libreria.libreriaCompleta().size()); // Generar un número aleatorio dentro del rango
-																	// válido
+		if (listaComics.size() != 0) {
+			int n = r.nextInt(listaComics.size());
 
-			ID = libreria.libreriaCompleta().get(n).getID();
+			id_comic = listaComics.get(n).getID();
 
-			imagencomic.setImage(libreria.selectorImage(ID));
+			String direccionImagen = SelectManager.obtenerDireccionPortada(id_comic);
+			Image imagenComic = Utilidades.pasarImagenComic(direccionImagen);
+
+			imagencomic.setImage(imagenComic);
 			utilidad.deleteImage();
-			return libreria.libreriaCompleta().get(n).toString(); // Devuelve un cómic de la lista de cómics
+
+			ImagenAmpliadaController.direccionImagen = direccionImagen;
+
+			return listaComics.get(n).toString(); // Devuelve un cómic de la
+													// lista
+			// de cómics
 		} else {
 			printComicRecomendado.setText("ERROR. No hay ningún dato en la base de datos");
 			printComicRecomendado.setStyle("-fx-background-color: #F53636");
@@ -260,7 +303,8 @@ public class RecomendacionesController {
 	/////////////////////////////////
 
 	/**
-	 * Maneja la acción del usuario en relación a los cómics, como agregar, modificar, eliminar o puntuar un cómic.
+	 * Maneja la acción del usuario en relación a los cómics, como agregar,
+	 * modificar, eliminar o puntuar un cómic.
 	 *
 	 * @param event El evento de acción que desencadenó la llamada a esta función.
 	 */
@@ -311,11 +355,32 @@ public class RecomendacionesController {
 	 */
 	@FXML
 	public void desconectar(ActionEvent event) throws IOException {
+
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
 		nav.verAccesoBBDD();
-		DBManager.close();
+		ConectManager.close();
 
 		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 		myStage.close();
+	}
+
+	public Scene miStageVentana() {
+		Node rootNode = botonElegir;
+		while (rootNode.getParent() != null) {
+			rootNode = rootNode.getParent();
+		}
+
+		if (rootNode instanceof Parent) {
+			Scene scene = ((Parent) rootNode).getScene();
+			ConectManager.activeScenes.add(scene);
+			return scene;
+		} else {
+			// Manejar el caso en el que no se pueda encontrar un nodo raíz adecuado
+			return null;
+		}
 	}
 
 	/**
@@ -351,7 +416,9 @@ public class RecomendacionesController {
 	 */
 	public void closeWindows() {
 
-		Platform.exit();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
+		nav.verAccesoBBDD();
 
 	}
 

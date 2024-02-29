@@ -19,10 +19,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,12 +37,11 @@ import org.jsoup.nodes.Element;
 import Apis.ApiISBNGeneral;
 import Apis.ApiMarvel;
 import Controladores.VentanaAccionController;
-import Funcionamiento.Comic;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
-import JDBC.DBManager;
+import comicManagement.Comic;
+import dbmanager.ConectManager;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.stage.Stage;
@@ -142,7 +141,7 @@ public class Unit_Test extends Application {
 	 * añadimos el nombre de la base de datos y la carpeta "portadas".
 	 */
 	private static final String SOURCE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
-			+ DBManager.DB_NAME + File.separator + "portadas";
+			+ ConectManager.DB_NAME + File.separator + "portadas";
 
 	private static Scanner ent = new Scanner(System.in);
 
@@ -166,11 +165,11 @@ public class Unit_Test extends Application {
 
 //		pruebaSubidaComic();
 //		pruebaModificacionComic();
-//		getComicInfo("75960609999302511");
+		getComicInfo("9780785198260");
 //		pruebaDiamondCode_imagen("JUL220767");
 //		launch(args);
 //		verLibroGoogle("9788411505963");
-		System.out.println(capitalizeFirstLetter("ANIMAL POUND CVR A ASHCAN GROSS"));
+//		System.out.println(capitalizeFirstLetter("ANIMAL POUND CVR A ASHCAN GROSS"));
 
 //		System.out.println(getComicInfoUrl("A.X.E.: Judgment Day","Peach Momoko", "1"));
 
@@ -179,18 +178,22 @@ public class Unit_Test extends Application {
 //		comicModificarCodigoPrueba();
 //		comicModificarCodigoPruebaCompleta();
 
+//		nav.verMenuCodigosBarra();
+		
+//		nav.verEstadoConexion();
+
 	}
 
 	public void start(Stage primaryStage) {
-
-		VentanaAccionController ventanaAccion = new VentanaAccionController();
-
-		// Crear la lista de ComboBoxes
-		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
-				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
-
-		// Pasar la lista de ComboBoxes a VentanaAccionController
-		ventanaAccion.pasarComboBoxes(comboboxes);
+//
+//		VentanaAccionController ventanaAccion = new VentanaAccionController();
+//
+//		// Crear la lista de ComboBoxes
+//		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
+//				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
+//
+//		// Pasar la lista de ComboBoxes a VentanaAccionController
+//		ventanaAccion.pasarComboBoxes(comboboxes);
 
 //		Platform.runLater(() -> {
 //			accionComicPruebaAni();
@@ -208,9 +211,9 @@ public class Unit_Test extends Application {
 //			accionComicPruebaPuntuar();
 //		});
 
-		Platform.runLater(() -> {
-			entrarMenuPrueba();
-		});
+//		Platform.runLater(() -> {
+//			entrarMenuPrueba();
+//		});
 
 //		Platform.runLater(() -> {
 //			entrarInicioPrueba();
@@ -224,7 +227,7 @@ public class Unit_Test extends Application {
 		Document document = Jsoup.connect(previews_World_Url).get();
 
 		// Scraping de la etiqueta img con id "MainContentImage"
-		scrapeAndPrintMainImage(document);
+		scrapeAndPrintMainImageAsync(document);
 	}
 
 	/**
@@ -263,6 +266,7 @@ public class Unit_Test extends Application {
 			JSONArray resultsArray = jsonObject.getJSONObject("data").getJSONArray("results");
 
 			if (resultsArray.length() == 0) {
+				System.err.println("No esta vez");
 				return null;
 			} else {
 				System.out.println(apiUrl);
@@ -285,7 +289,7 @@ public class Unit_Test extends Application {
 	private static String[] clavesApi() {
 		String claves[] = new String[2]; // Crear un arreglo de dos elementos para almacenar las claves
 
-		String clavesDesdeArchivo = Utilidades.obtenerClaveApiArchivo(); // Obtener las claves desde el archivo
+		String clavesDesdeArchivo = Utilidades.obtenerClaveApiMarvel(); // Obtener las claves desde el archivo
 
 		if (!clavesDesdeArchivo.isEmpty()) {
 			String[] partes = clavesDesdeArchivo.split(":");
@@ -385,13 +389,23 @@ public class Unit_Test extends Application {
 	}
 
 	/**
-	 * Realiza una prueba de descarga de imagen desde una URL.
-	 * 
+	 * Realiza una prueba de descarga de imagen desde una URL de forma asíncrona.
+	 *
 	 * @throws IOException Si ocurre un error de entrada/salida.
 	 */
-	public static void testDescargaImagen() throws IOException {
+	public static void testDescargaImagenAsync() throws IOException {
 		String URLimagen = "https://covers.openlibrary.org/b/id/12705636-L.jpg";
-		Utilidades.descargarImagen(URLimagen, DOCUMENTS_PATH);
+
+		CompletableFuture<String> descargaImagenFuture = Utilidades.descargarImagenAsync(URLimagen, DOCUMENTS_PATH);
+
+		descargaImagenFuture.thenAccept(rutaImagen -> {
+			if (rutaImagen != null) {
+				System.out.println("Imagen descargada y guardada como JPG correctamente en: " + rutaImagen);
+			} else {
+				System.err.println("Error al descargar la imagen.");
+			}
+		}).join(); // Esperar a que la tarea asíncrona se complete (bloquea el hilo principal hasta
+					// que se complete)
 	}
 
 	/**
@@ -401,14 +415,24 @@ public class Unit_Test extends Application {
 	 * @return
 	 * @throws IOException
 	 */
-	private static void scrapeAndPrintMainImage(Document document) throws IOException {
+	private static void scrapeAndPrintMainImageAsync(Document document) throws IOException {
 		Element mainImageElement = document.selectFirst("#MainContentImage");
 		if (mainImageElement != null) {
 			String mainImageUrl = "https://www.previewsworld.com" + mainImageElement.attr("src");
 
 			System.out.println(mainImageUrl);
 
-			Utilidades.descargarImagen(mainImageUrl, DOCUMENTS_PATH);
+			CompletableFuture<String> descargaImagenFuture = Utilidades.descargarImagenAsync(mainImageUrl,
+					DOCUMENTS_PATH);
+
+			descargaImagenFuture.thenAccept(rutaImagen -> {
+				if (rutaImagen != null) {
+					System.out.println("Imagen descargada y guardada como JPG correctamente en: " + rutaImagen);
+				} else {
+					System.err.println("Error al descargar la imagen.");
+				}
+			}).join(); // Esperar a que la tarea asíncrona se complete (bloquea el hilo principal hasta
+						// que se complete)
 		}
 	}
 
@@ -420,14 +444,9 @@ public class Unit_Test extends Application {
 
 		String comicCode = "75960607918600111";
 
-		String datosMarvel[] = ApiMarvel.infoComicCode(comicCode, null);
-		if (datosMarvel.length == 0) {
-			System.err.println("No hay datos sobre el comic");
-		} else {
-			for (String string : datosMarvel) {
-				System.out.println(string);
-			}
-		}
+		Comic comic = ApiMarvel.infoComicCode(comicCode, null);
+
+		System.out.println(comic.toString());
 	}
 
 	/**
@@ -438,22 +457,16 @@ public class Unit_Test extends Application {
 	 * @throws URISyntaxException Si ocurre un error en la URI.
 	 */
 	public static void mostrarComicGeneral() throws IOException, JSONException, URISyntaxException {
+
+		ApiISBNGeneral isbnGeneral = new ApiISBNGeneral();
+
 		System.err.println("Datos de comics de búsqueda genérica: ");
 
 		String comicCode = "978-1684157648";
 
-		String datosGeneral[] = ApiISBNGeneral.getBookInfo(comicCode, null);
+		Comic comic = isbnGeneral.getBookInfo(comicCode, null);
 
-		if (datosGeneral.length == 0) {
-
-			System.err.println("No hay datos sobre el comic");
-
-		} else {
-
-			for (String dato : datosGeneral) {
-				System.out.println(dato);
-			}
-		}
+		System.out.println(comic.toString());
 	}
 
 	/**
@@ -695,7 +708,7 @@ public class Unit_Test extends Application {
 		}
 
 		String sentenciaSQL = "SELECT * FROM comicsbbdd WHERE ID = ?";
-		conn = DBManager.conexion();
+		conn = ConectManager.conexion();
 		ResultSet rs = null;
 		PreparedStatement preparedStatement = null;
 		boolean existe = false; // Variable para almacenar si el identificador existe en la base de datos
@@ -743,7 +756,7 @@ public class Unit_Test extends Application {
 
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
-		String imagePath = documentsPath + File.separator + "libreria_comics" + File.separator + DBManager.DB_NAME
+		String imagePath = documentsPath + File.separator + "libreria_comics" + File.separator + ConectManager.DB_NAME
 				+ File.separator + "portadas" + File.separator + nuevoNombreArchivo;
 
 		String sql = "UPDATE comicsbbdd SET portada = ? WHERE ID = ?";
@@ -771,7 +784,7 @@ public class Unit_Test extends Application {
 		datos[3] = "1234";
 		datos[4] = "localhost";
 
-		DBManager.datosBBDD(datos);
+		ConectManager.datosBBDD(datos);
 	}
 
 	/**
@@ -784,7 +797,7 @@ public class Unit_Test extends Application {
 	 * @throws SQLException
 	 */
 	public static void subirComicPrueba(String sentenciaSQL, Comic datos) throws IOException, SQLException {
-		conn = DBManager.conexion();
+		conn = ConectManager.conexion();
 		PreparedStatement statement = null;
 
 		try {
@@ -1100,7 +1113,7 @@ public class Unit_Test extends Application {
 		ResultSet rs = null;
 
 		try {
-			conn = DBManager.conexion();
+			conn = ConectManager.conexion();
 			statement = conn.prepareStatement(sentenciaSQL);
 			statement.setString(1, identificador);
 			rs = statement.executeQuery();
@@ -1263,7 +1276,7 @@ public class Unit_Test extends Application {
 		String consultaSQL = "SELECT ID FROM comicsbbdd"; // Completa esta consulta con tu tabla y condiciones
 															// necesarias
 		try {
-			conn = DBManager.conexion();
+			conn = ConectManager.conexion();
 			PreparedStatement stmt = conn.prepareStatement(consultaSQL);
 			ResultSet rs = stmt.executeQuery();
 

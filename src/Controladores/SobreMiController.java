@@ -20,13 +20,15 @@ package Controladores;
  *  - Puntuar comics que se encuentren dentro de la base de datos.
  *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
  *
- *  Version 7.0.0.0
+ *  Version 8.0.0.0
  *
  *  @author Alejandro Rodriguez
  *
  */
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
@@ -53,10 +55,11 @@ import java.io.IOException;
 
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
-import JDBC.DBManager;
-import javafx.application.Platform;
+import alarmas.AlarmaList;
+import dbmanager.ConectManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -70,7 +73,7 @@ import javafx.stage.Stage;
  *
  * @author Alejandro Rodriguez
  */
-public class SobreMiController {
+public class SobreMiController implements Initializable {
 
 	/**
 	 * Elemento del menú para desconectar.
@@ -203,6 +206,23 @@ public class SobreMiController {
 	 */
 	private static Ventanas nav = new Ventanas();
 
+	@FXML
+	private Label alarmaConexionSql;
+
+	private static AlarmaList alarmaList = new AlarmaList();
+
+	/**
+	 * Inicializa el controlador cuando se carga la vista.
+	 *
+	 * @param location  la ubicación del archivo FXML
+	 * @param resources los recursos utilizados por la vista
+	 */
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+
+		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
+		alarmaList.iniciarThreadChecker(true);
+	}
 
 	/**
 	 * Funcion que permite abrir un navegador con la url de GitHub
@@ -213,16 +233,7 @@ public class SobreMiController {
 	void accesoGitHub(ActionEvent event) {
 
 		String url = "https://github.com/AlejandroRodriguezM";
-		if (Utilidades.isWindows()) {
-			Utilidades.accesoWebWindows(url); // Llamada a funcion
-		} else {
-			if (Utilidades.isUnix()) {
-				Utilidades.accesoWebLinux(url); // Llamada a funcion
-			} else {
-				Utilidades.accesoWebMac(url);
-
-			}
-		}
+		abrirEnlace(url);
 	}
 
 	/**
@@ -234,16 +245,7 @@ public class SobreMiController {
 	void accesoLinkedin(ActionEvent event) {
 
 		String url = "https://www.linkedin.com/in/alejandro-rodriguez-mena-497a00179/";
-
-		if (Utilidades.isWindows()) {
-			Utilidades.accesoWebWindows(url); // Llamada a funcion
-		} else {
-			if (Utilidades.isUnix()) {
-				Utilidades.accesoWebLinux(url); // Llamada a funcion
-			} else {
-				Utilidades.accesoWebMac(url);
-			}
-		}
+		abrirEnlace(url);
 	}
 
 	/**
@@ -255,6 +257,11 @@ public class SobreMiController {
 	void accesoYoutube(ActionEvent event) {
 
 		String url = "https://www.youtube.com/playlist?list=PL7MV626sbFp6EY0vP8gEEgrVCryitFXCM";
+		abrirEnlace(url);
+
+	}
+
+	public void abrirEnlace(String url) {
 		if (Utilidades.isWindows()) {
 			Utilidades.accesoWebWindows(url); // Llamada a funcion
 		} else {
@@ -297,37 +304,20 @@ public class SobreMiController {
 		String url1 = "https://www.radarcomics.com/es/";
 		String url2 = "https://www.panini.es/shp_esp_es/comics.html";
 
-		if (Utilidades.isWindows()) {
-			Utilidades.accesoWebWindows(url1); // Llamada a funcion
-			Utilidades.accesoWebWindows(url2); // Llamada a funcion
-		} else {
-			if (Utilidades.isUnix()) {
-				Utilidades.accesoWebLinux(url1); // Llamada a funcion
-				Utilidades.accesoWebLinux(url2); // Llamada a funcion
-			} else {
-				Utilidades.accesoWebMac(url1);
-				Utilidades.accesoWebMac(url2);
-			}
-		}
+		abrirEnlace(url1);
+		abrirEnlace(url2);
 	}
 
 	/**
-	 * Abre un navegador web y carga la URL especificada en un proyecto externo relacionado con cómics.
-	 * La URL predeterminada es "https://www.comicweb.es".
-	 * Dependiendo del sistema operativo, se utiliza una función específica para abrir el navegador.
+	 * Abre un navegador web y carga la URL especificada en un proyecto externo
+	 * relacionado con cómics. La URL predeterminada es "https://www.comicweb.es".
+	 * Dependiendo del sistema operativo, se utiliza una función específica para
+	 * abrir el navegador.
 	 */
 	public void otroProyecto() {
 		String url = "https://github.com/AlejandroRodriguezM";
 
-		if (Utilidades.isWindows()) {
-			Utilidades.accesoWebWindows(url); // Llamada a funcion
-		} else {
-			if (Utilidades.isUnix()) {
-				Utilidades.accesoWebLinux(url); // Llamada a funcion
-			} else {
-				Utilidades.accesoWebMac(url);
-			}
-		}
+		abrirEnlace(url);
 	}
 
 	/////////////////////////////////
@@ -335,7 +325,8 @@ public class SobreMiController {
 	/////////////////////////////////
 
 	/**
-	 * Maneja la acción del usuario en relación a los cómics, como agregar, modificar, eliminar o puntuar un cómic.
+	 * Maneja la acción del usuario en relación a los cómics, como agregar,
+	 * modificar, eliminar o puntuar un cómic.
 	 *
 	 * @param event El evento de acción que desencadenó la llamada a esta función.
 	 */
@@ -402,7 +393,7 @@ public class SobreMiController {
 	@FXML
 	public void desconectar(ActionEvent event) throws IOException {
 		nav.verAccesoBBDD();
-		DBManager.close();
+		ConectManager.close();
 
 		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 		myStage.close();
@@ -441,7 +432,9 @@ public class SobreMiController {
 	 */
 	public void closeWindows() {
 
-		Platform.exit();
+		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		myStage.close();
+		nav.verAccesoBBDD();
 
 	}
 

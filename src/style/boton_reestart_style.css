@@ -1,0 +1,37 @@
+/* Clase CSS para el botón */
+.button#botonEncender {
+    -fx-padding: 8.0px 1.0px;
+    -fx-background-image: url('start.png');
+    -fx-background-size: contain; /* Ajusta la imagen al tamaño del botón sin distorsionarla */
+    -fx-background-repeat: no-repeat; /* Evita que la imagen se repita */
+    -fx-background-position: center center; /* Centra la imagen en el botón */
+    -fx-background-color: white; /* Fondo blanco */
+    -fx-min-width: 40px; /* Ancho mínimo del botón */
+    -fx-min-height: 20px; /* Altura mínima del botón */
+
+}
+
+.button#botonEncender:hover {
+-fx-border-radius: 50.0px;
+    -fx-background-color: grey; /* Fondo blanco */
+}
+
+/* Clase CSS para el botón */
+.button#botonCancelarSubida {
+    -fx-background-radius: 60.0px;
+    -fx-padding: 8.0px 1.0px;
+    -fx-background-image: url('stop.png');
+    -fx-background-size: contain; /* Ajusta la imagen al tamaño del botón sin distorsionarla */
+    -fx-background-repeat: no-repeat; /* Evita que la imagen se repita */
+    -fx-background-position: center center; /* Centra la imagen en el botón */
+    -fx-background-color: black; /* Fondo blanco */
+    -fx-min-width: 40px; /* Ancho mínimo del botón */
+    -fx-min-height: 30px; /* Altura mínima del botón */
+
+}
+
+.button#botonCancelarSubida:hover {
+    -fx-border-radius: 00.0px;
+    -fx-background-color: black; /* Fondo blanco */
+    -fx-background-radius: 50.0px;
+}

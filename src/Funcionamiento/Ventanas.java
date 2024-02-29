@@ -20,7 +20,7 @@ package Funcionamiento;
  *  - Puntuar comics que se encuentren dentro de la base de datos.
  *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
  *
- *  Version 7.0.0.0
+ *  Version 8.0.0.0
  *
  *  @author Alejandro Rodriguez
  *
@@ -29,15 +29,21 @@ package Funcionamiento;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 import Controladores.AccesoBBDDController;
+import Controladores.CargaComicsController;
 import Controladores.CrearBBDDController;
+import Controladores.EstadoConexionController;
+import Controladores.ImagenAmpliadaController;
+import Controladores.MenuLectorCodigoBarras;
 import Controladores.MenuPrincipalController;
+import Controladores.ModificarApiDatosController;
 import Controladores.OpcionesDatosController;
 import Controladores.RecomendacionesController;
 import Controladores.SobreMiController;
 import Controladores.VentanaAccionController;
-import JDBC.DBManager;
+import dbmanager.ConectManager;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -58,46 +64,156 @@ import javafx.stage.Stage;
  */
 public class Ventanas {
 
-	private Stage ventanaActual = null; // Variable para mantener la ventana actualmente abierta
+	private static Alert dialog = null;
+
+	private static Stage accesoBBDDStage = null;
+
+	private static Stage estadoConexionStage = null;
+
+	private static Stage menuCodigoBarras = null;
+
+	private static Stage accionComic = null;
+
+	private static Stage cargaComics = null;
+
+	private static Stage menuPrincipal = null;
+
+	private static Stage imagenAmpliada = null;
 
 	/**
 	 * Abre una ventana para el acceso a la base de datos. Carga la vista y muestra
 	 * una nueva ventana con el controlador correspondiente.
 	 */
+	/**
+	 * Muestra la ventana de acceso a la base de datos.
+	 */
 	public void verAccesoBBDD() {
+		Platform.runLater(() -> {
+			if (accesoBBDDStage == null || !accesoBBDDStage.isShowing()) {
+				try {
+					// Cargo la vista
+					FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/AccesoBBDD.fxml"));
 
-		try {
-			// Cargo la vista
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/AccesoBBDD.fxml"));
+					// Cargo el padre
+					Parent root = loader.load();
 
-			// Cargo el padre
-			Parent root = loader.load();
+					// Obtengo el controlador
+					AccesoBBDDController controlador = loader.getController();
 
-			// Obtengo el controlador
-			AccesoBBDDController controlador = loader.getController();
+					// Creo la scene y el stage
+					Scene scene = new Scene(root);
+					scene.getStylesheets().add(getClass().getResource("/style/acces_style.css").toExternalForm());
+					accesoBBDDStage = new Stage();
+					accesoBBDDStage.setResizable(false);
+					accesoBBDDStage.setTitle("Aplicacion bbdd comics");
 
-			// Creo la scene y el stage
-			Scene scene = new Scene(root);
-			scene.getStylesheets().add(getClass().getResource("/style/acces_style.css").toExternalForm());
-			Stage stage = new Stage();
-			stage.setResizable(false);
-			stage.setTitle("Aplicacion bbdd comics"); // Titulo de la aplicacion.
+					accesoBBDDStage.getIcons().add(new Image("/Icono/icon2.png"));
 
-			stage.getIcons().add(new Image("/Icono/icon2.png"));
+					// Asocio el stage con el scene
+					accesoBBDDStage.setScene(scene);
+					accesoBBDDStage.show();
 
-			// Asocio el stage con el scene
-			stage.setScene(scene);
-			stage.show();
+					// Indico que debe hacer al cerrar
+					accesoBBDDStage.setOnCloseRequest(e -> controlador.closeWindow());
 
-			// Indico que debe hacer al cerrar
-			stage.setOnCloseRequest(e -> controlador.closeWindows());
-
-		} catch (IOException ex) {
-			alertaException(ex.toString());
-		}
+				} catch (IOException ex) {
+					alertaException(ex.toString());
+				}
+			}
+		});
 	}
 
-	public void ventanaAbierta() {
+	/**
+	 * Muestra la ventana de estado de conexion a la base de datos.
+	 */
+	public void verEstadoConexion() {
+		Platform.runLater(() -> {
+			if (estadoConexionStage == null || !estadoConexionStage.isShowing()) {
+				try {
+					// Cargo la vista
+					FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/EstadoConexionVentana.fxml"));
+
+					// Cargo el padre
+					Parent root = loader.load();
+
+					// Obtengo el controlador
+					EstadoConexionController controlador = loader.getController();
+
+					// Creo la scene y el stage
+					Scene scene = new Scene(root);
+					scene.getStylesheets().add(getClass().getResource("/style/acces_style.css").toExternalForm());
+					estadoConexionStage = new Stage();
+					estadoConexionStage.setResizable(false);
+					estadoConexionStage.setTitle("Estado de conexion");
+
+					estadoConexionStage.getIcons().add(new Image("/Icono/icon2.png"));
+
+					// Asocio el stage con el scene
+					estadoConexionStage.setScene(scene);
+					estadoConexionStage.show();
+
+					// Indico que debe hacer al cerrar
+					estadoConexionStage.setOnCloseRequest(e -> controlador.closeWindow());
+
+				} catch (IOException ex) {
+					alertaException(ex.toString());
+				}
+			}
+		});
+	}
+
+	/**
+	 * Muestra la ventana de estado de conexion a la base de datos.
+	 */
+	public void verModificarApis(boolean esMarvel) {
+		Platform.runLater(() -> {
+			ventanaAbierta(estadoConexionStage);
+			if (estadoConexionStage == null || !estadoConexionStage.isShowing()) {
+				try {
+					// Verifica si hay una ventana abierta y ciérrala si es necesario
+
+					FXMLLoader loader;
+
+					if (esMarvel) {
+						loader = new FXMLLoader(getClass().getResource("/ventanas/EstablecerApiMarvel.fxml"));
+					} else {
+						loader = new FXMLLoader(getClass().getResource("/ventanas/EstablecerApiVine.fxml"));
+					}
+
+					// Cargo el padre
+					Parent root = loader.load();
+
+					// Obtengo el controlador
+					ModificarApiDatosController controlador = loader.getController();
+
+					// Creo la scene y el stage
+					Scene scene = new Scene(root);
+					scene.getStylesheets().add(getClass().getResource("/style/acces_style.css").toExternalForm());
+					estadoConexionStage = new Stage();
+					estadoConexionStage.setResizable(false);
+					estadoConexionStage.setTitle("Estado de conexion");
+
+					estadoConexionStage.getIcons().add(new Image("/Icono/icon2.png"));
+
+					// Asocio el stage con el scene
+					estadoConexionStage.setScene(scene);
+					estadoConexionStage.show();
+
+					// Indico que debe hacer al cerrar
+
+					estadoConexionStage.setOnCloseRequest(e -> {
+						controlador.closeWindow();
+						estadoConexionStage = null; // Establece la ventana actual a null cuando se cierra
+					});
+
+				} catch (IOException ex) {
+					alertaException(ex.toString());
+				}
+			}
+		});
+	}
+
+	public void ventanaAbierta(Stage ventanaActual) {
 		if (ventanaActual != null) {
 			ventanaActual.close();
 		}
@@ -113,7 +229,7 @@ public class Ventanas {
 	public void verAccionComic() {
 		try {
 			// Verifica si hay una ventana abierta y ciérrala si es necesario
-			ventanaAbierta();
+			ventanaAbierta(accionComic);
 
 			// Cargo la vista
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/PantallaAccionComic.fxml"));
@@ -126,28 +242,120 @@ public class Ventanas {
 
 			// Creo la scene y el stage
 			Scene scene = new Scene(root);
-			Stage stage = new Stage();
-			stage.setResizable(false);
-			stage.setTitle("Acciones comic"); // Titulo de la aplicación.
+			accionComic = new Stage();
+			accionComic.setResizable(false);
+			accionComic.setTitle("Acciones comic"); // Titulo de la aplicación.
 
-			stage.getIcons().add(new Image("/Icono/icon2.png"));
+			accionComic.getIcons().add(new Image("/Icono/icon2.png"));
 
 			// Asocio el stage con el scene
-			stage.setScene(scene);
-			stage.show();
+			accionComic.setScene(scene);
+			accionComic.show();
 
 			// Indico que debe hacer al cerrar
-			stage.setOnCloseRequest(e -> {
+			accionComic.setOnCloseRequest(e -> {
 				controlador.closeWindow();
-				ventanaActual = null; // Establece la ventana actual a null cuando se cierra
+				accionComic = null; // Establece la ventana actual a null cuando se cierra
 			});
-
-			// Actualizar el estado de la ventana abierta
-			ventanaActual = stage;
-
+			ConectManager.resetConnection();
 		} catch (IOException ex) {
 			alertaException(ex.toString());
 			ex.printStackTrace();
+		}
+	}
+
+	/**
+	 * Abre una ventana para realizar acciones en un cómic. Verifica si hay una
+	 * ventana abierta y la cierra si es necesario. Carga la vista de la ventana de
+	 * acciones del cómic y muestra la ventana correspondiente con su controlador.
+	 * Define el comportamiento de cierre de la ventana y actualiza la referencia a
+	 * la ventana actual.
+	 */
+	public void verVentanaImagen() {
+		try {
+			// Verifica si hay una ventana abierta y ciérrala si es necesario
+			ventanaAbierta(imagenAmpliada);
+
+			// Cargo la vista
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/ImagenAmpliadaComic.fxml"));
+
+			// Cargo el padre
+			Parent root = loader.load();
+
+			// Obtengo el controlador
+			ImagenAmpliadaController controlador = loader.getController();
+
+			// Creo la scene y el stage
+			Scene scene = new Scene(root);
+			imagenAmpliada = new Stage();
+			imagenAmpliada.setResizable(false);
+			imagenAmpliada.setTitle("Imagen ampliada"); // Titulo de la aplicación.
+
+			imagenAmpliada.getIcons().add(new Image("/Icono/icon2.png"));
+
+			// Asocio el stage con el scene
+			imagenAmpliada.setScene(scene);
+			imagenAmpliada.show();
+
+			// Indico que debe hacer al cerrar
+			imagenAmpliada.setOnCloseRequest(e -> {
+				controlador.closeWindow();
+				accionComic = null; // Establece la ventana actual a null cuando se cierra
+			});
+			ConectManager.resetConnection();
+		} catch (IOException ex) {
+			alertaException(ex.toString());
+			ex.printStackTrace();
+		}
+	}
+
+	/**
+	 * Abre la ventana de recomendaciones de cómics. Carga la vista de la ventana de
+	 * recomendaciones y muestra la ventana correspondiente con su controlador.
+	 * Define el tamaño de la ventana, la asocia con el comportamiento de cierre y
+	 * resetea la conexión a la base de datos.
+	 */
+	public void verMenuCodigosBarra() {
+		try {
+			Platform.runLater(() -> {
+				try {
+
+					// Verifica si hay una ventana abierta y ciérrala si es necesario
+					ventanaAbierta(menuCodigoBarras);
+
+					// Load the view
+					FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/ScannerComic.fxml"));
+
+					// Load the parent
+					Parent root = loader.load();
+
+					// Get the controller
+					MenuLectorCodigoBarras controlador = loader.getController();
+
+					// Create the scene and the stage
+					Scene scene = new Scene(root);
+
+					menuCodigoBarras = new Stage();
+					menuCodigoBarras.setResizable(false);
+					menuCodigoBarras.setTitle("Lector de barras"); // Application title.
+					menuCodigoBarras.getIcons().add(new Image("/Icono/icon2.png"));
+
+					// Associate the stage with the scene
+					menuCodigoBarras.setScene(scene);
+					menuCodigoBarras.show();
+
+					// Indico que debe hacer al cerrar
+					menuCodigoBarras.setOnCloseRequest(e -> {
+						controlador.closeWindow();
+						menuCodigoBarras = null; // Establece la ventana actual a null cuando se cierra
+					});
+
+				} catch (IOException ex) {
+					alertaException(ex.toString());
+				}
+			});
+		} catch (Exception e) {
+			alertaException(e.toString());
 		}
 	}
 
@@ -159,6 +367,9 @@ public class Ventanas {
 	 */
 	public void verMenuPrincipal() {
 		try {
+
+			ventanaAbierta(menuPrincipal);
+
 			// Cargo la vista
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuPrincipal.fxml"));
 
@@ -172,7 +383,7 @@ public class Ventanas {
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("/style/custom-combobox.css").toExternalForm());
 
-			Stage stage = new Stage();
+			menuPrincipal = new Stage();
 
 			// Determine the screen's dimensions
 			Screen screen = Screen.getPrimary();
@@ -182,29 +393,30 @@ public class Ventanas {
 			double minHeight = 607;
 
 			// Set the minimum size
-			stage.setMinWidth(minWidth);
-			stage.setMinHeight(minHeight);
+			menuPrincipal.setMinWidth(minWidth);
+			menuPrincipal.setMinHeight(minHeight);
 
 			// Verifica si la resolución es menor que las dimensiones mínimas
 			if (bounds.getWidth() <= minWidth || bounds.getHeight() <= minHeight) {
-				stage.setWidth(minWidth);
-				stage.setHeight(minHeight);
+				menuPrincipal.setWidth(minWidth);
+				menuPrincipal.setHeight(minHeight);
 			}
 
 			// Set the maximum size to the screen's size
-			stage.setMaxWidth(bounds.getWidth());
-			stage.setMaxHeight(bounds.getHeight());
+			menuPrincipal.setMaxWidth(bounds.getWidth());
+			menuPrincipal.setMaxHeight(bounds.getHeight());
 
-			stage.setTitle("Menu principal");
-			stage.getIcons().add(new Image("/Icono/icon2.png"));
+			menuPrincipal.setTitle("Menu principal");
+			menuPrincipal.getIcons().add(new Image("/Icono/icon2.png"));
 
 			// Asocio el stage con el scene
-			stage.setScene(scene);
-			stage.show();
+			menuPrincipal.setScene(scene);
+			menuPrincipal.show();
 
 			// Indico qué hacer al cerrar
-			stage.setOnCloseRequest(e -> {
+			menuPrincipal.setOnCloseRequest(e -> {
 				controlador.closeWindows();
+				menuPrincipal = null;
 			});
 
 		} catch (IOException ex) {
@@ -247,7 +459,7 @@ public class Ventanas {
 				controlador.closeWindows();
 			});
 
-			DBManager.resetConnection();
+			ConectManager.resetConnection();
 
 		} catch (IOException ex) {
 			alertaException(ex.toString());
@@ -305,7 +517,7 @@ public class Ventanas {
 
 		try {
 			// Cargo la vista
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/opcionesAcceso.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/OpcionesAcceso.fxml"));
 
 			// Cargo el padre
 			Parent root = loader.load();
@@ -368,12 +580,65 @@ public class Ventanas {
 			stage.setOnCloseRequest(e -> {
 				controlador.closeWindows();
 			});
-			DBManager.resetConnection();
 
 		} catch (IOException ex) {
 			alertaException(ex.toString());
 			ex.printStackTrace();
 		}
+	}
+
+	/**
+	 * Muestra una ventana de carga para la carga de cómics.
+	 */
+	public void verCargaComics(AtomicReference<CargaComicsController> cargaComicsControllerRef) {
+		Platform.runLater(() -> {
+			try {
+				FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/PantallaCargaComics.fxml"));
+//				loader.setController(this);  // Make sure this line is present
+				Parent root = loader.load();
+
+				CargaComicsController cargaComicsController = loader.getController();
+				cargaComicsControllerRef.set(cargaComicsController);
+
+				Scene scene = new Scene(root);
+				Stage stage = new Stage();
+				stage.setResizable(false);
+				stage.setTitle("Carga de comics"); // Titulo de la aplicacion.
+				stage.getIcons().add(new Image("/Icono/icon2.png"));
+
+				// Indico que debe hacer al cerrar
+				stage.setOnCloseRequest(e -> {
+					cargaComicsController.closeWindow();
+				});
+
+				cargaComics = stage;
+
+				// Asocio el stage con el scene
+				stage.setScene(scene);
+				stage.show();
+
+				// Now you can call methods on cargaComicsController
+//				cargaComicsController.cargarDatosEnCargaComics("", "", 0.0); // Call the data passing function
+
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		});
+	}
+
+	public void cerrarCargaComics() {
+		if (cargaComics != null) {
+
+			cargaComics.close();
+		} else {
+			System.out.println("ERROR en cerrar carga");
+		}
+	}
+
+	public static void cerrarVentanaActual(Stage nodoEscena) {
+		Stage stage = (Stage) nodoEscena.getScene().getWindow(); // Reemplaza tuNodoDeEscena con el nodo de tu
+																	// escena actual
+		stage.close();
 	}
 
 	/**
@@ -398,7 +663,7 @@ public class Ventanas {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Llama a una ventana de alarma para eliminar datos
 	 *
@@ -413,6 +678,26 @@ public class Ventanas {
 		alert.setTitle("Accion . . .");
 		alert.setHeaderText("Vas a realizar una accion.");
 		alert.setContentText("¿Estas seguro que quieres realizar la accion para el comic?");
+		if (alert.showAndWait().get() == ButtonType.OK) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Llama a una ventana de alarma para eliminar datos
+	 *
+	 * @return
+	 */
+	public boolean alertaBorradoLista() {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
+		stage.setResizable(false);
+		alert.setTitle("Accion . . .");
+		alert.setHeaderText("Vas a realizar un borrado de las listas importadas");
+		alert.setContentText("¿Estas seguro que quieres realizar el borrado de la lista temporal?");
 		if (alert.showAndWait().get() == ButtonType.OK) {
 			return true;
 		}
@@ -508,7 +793,7 @@ public class Ventanas {
 		stage.setResizable(false);
 		alert.setTitle("Insertando . . .");
 		alert.setHeaderText("Estas apunto de introducir datos.");
-		alert.setContentText(" Estas seguro que quieres introducir el comic?");
+		alert.setContentText(" Estas seguro que quieres introducir el comic/comics?");
 		if (alert.showAndWait().get() == ButtonType.OK) {
 			return true;
 		}
@@ -554,10 +839,30 @@ public class Ventanas {
 	}
 
 	/**
+	 * Llama a una ventana de alarma que avisa si se va reconstruir la base de datos
+	 *
+	 * @return
+	 */
+	public boolean alertaRestablecerApi() {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
+		stage.setResizable(false);
+		alert.setTitle("Tablas no encontradas");
+		alert.setHeaderText("Vas a reconstruir el fichero donde se encuentra el api..");
+		alert.setContentText("¿Quieres recontruir el fichero?");
+		if (alert.showAndWait().get() == ButtonType.OK) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Solicita confirmación al usuario antes de borrar el contenido de la tabla.
 	 *
-	 * @return Un objeto CompletableFuture que se completará con true si el usuario confirma la eliminación,
-	 *         o con false si el usuario cancela la operación.
+	 * @return Un objeto CompletableFuture que se completará con true si el usuario
+	 *         confirma la eliminación, o con false si el usuario cancela la
+	 *         operación.
 	 */
 	public CompletableFuture<Boolean> borrarContenidoTabla() {
 		CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
@@ -597,9 +902,11 @@ public class Ventanas {
 	}
 
 	/**
-	 * Solicita confirmación al usuario antes de borrar el contenido de la configuración.
+	 * Solicita confirmación al usuario antes de borrar el contenido de la
+	 * configuración.
 	 *
-	 * @return true si el usuario confirma la eliminación, o false si el usuario cancela la operación.
+	 * @return true si el usuario confirma la eliminación, o false si el usuario
+	 *         cancela la operación.
 	 */
 	public boolean borrarContenidoConfiguracion() {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -615,11 +922,13 @@ public class Ventanas {
 			return false;
 		}
 	}
-	
+
 	/**
-	 * Solicita confirmación al usuario antes de borrar el contenido de la lista de comics guardados.
+	 * Solicita confirmación al usuario antes de borrar el contenido de la lista de
+	 * comics guardados.
 	 *
-	 * @return true si el usuario confirma la eliminación, o false si el usuario cancela la operación.
+	 * @return true si el usuario confirma la eliminación, o false si el usuario
+	 *         cancela la operación.
 	 */
 	public boolean borrarListaGuardada() {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -639,8 +948,9 @@ public class Ventanas {
 	/**
 	 * Solicita confirmación al usuario antes de cancelar la subida de portadas.
 	 *
-	 * @return Un objeto CompletableFuture que se completará con true si el usuario confirma la cancelación,
-	 *         o con false si el usuario decide continuar la subida.
+	 * @return Un objeto CompletableFuture que se completará con true si el usuario
+	 *         confirma la cancelación, o con false si el usuario decide continuar
+	 *         la subida.
 	 */
 	public CompletableFuture<Boolean> cancelar_subida_portadas() {
 		CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
@@ -665,21 +975,22 @@ public class Ventanas {
 	}
 
 	/**
-	 * Llama a una ventana de alarma que avisa si hay una excepcion.
+	 * Llama a una ventana de alarma que avisa si hay una excepción.
 	 *
-	 * @param excepcion
+	 * @param excepcion La excepción que se mostrará en la ventana de alerta.
 	 */
 	public void alertaException(String excepcion) {
 		Platform.runLater(() -> {
-			Alert dialog = new Alert(AlertType.ERROR, excepcion, ButtonType.OK);
-			Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
-			stage.getIcons().add(new Image("/Icono/icon.png")); // Reemplaza "path/to/your/icon.png" con la ruta de tu
-																// icono
+			if (dialog == null || !dialog.isShowing()) {
+				dialog = new Alert(AlertType.ERROR, excepcion, ButtonType.OK);
+				Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+				stage.getIcons().add(new Image("/Icono/icon.png")); // Reemplaza con la ruta de tu icono
 
-			dialog.show();
+				dialog.showAndWait(); // Mostrar y esperar hasta que se cierre
+			}
 		});
 	}
-	
+
 	/**
 	 * Llama a una ventana de alarma que avisa si hay una excepcion.
 	 *
@@ -687,12 +998,12 @@ public class Ventanas {
 	 */
 	public void alertaNoApi(String excepcion) {
 		Platform.runLater(() -> {
-			Alert dialog = new Alert(AlertType.ERROR, excepcion, ButtonType.OK);
-			Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
-			stage.getIcons().add(new Image("/Icono/icon.png")); // Reemplaza "path/to/your/icon.png" con la ruta de tu
-																// icono
-
-			dialog.show();
+			if (dialog == null || !dialog.isShowing()) {
+				Alert dialog = new Alert(AlertType.ERROR, excepcion, ButtonType.OK);
+				Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+				stage.getIcons().add(new Image("/Icono/icon.png"));
+				dialog.showAndWait(); // Mostrar y esperar hasta que se cierre
+			}
 		});
 	}
 }

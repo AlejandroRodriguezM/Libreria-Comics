@@ -20,6 +20,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import Funcionamiento.Utilidades;
+import alarmas.AlarmaList;
+import comicManagement.Comic;
+import dbmanager.ListaComicsDAO;
 import javafx.scene.control.TextArea;
 
 /**
@@ -39,19 +42,50 @@ public class ApiMarvel {
 	 * @return Un array de cadenas con la información del cómic o null si no se
 	 *         encuentra.
 	 */
-	public static String[] infoComicCode(String comicCode, TextArea prontInfo) {
+	public static Comic infoComicCode(String comicCode, TextArea prontInfo) {
 
-		JSONObject comic = null;
+		JSONObject jsonComic = null;
 		String cleanedCode = comicCode.replaceAll("[^0-9]", "");
 		if (cleanedCode.length() == 13) {
 			String formattedIsbn = formatIsbn(cleanedCode);
-			comic = getComicInfo(formattedIsbn, "isbn", prontInfo);
+			jsonComic = getComicInfo(formattedIsbn, "isbn", prontInfo);
+		} else if (cleanedCode.length() == 17) {
+			jsonComic = getComicInfo(cleanedCode, "upc", prontInfo);
 		} else {
-			comic = getComicInfo(cleanedCode, "upc", prontInfo);
+			
+			return null;
+		}
+		if (jsonComic != null) {
+			return displayComicInfo(jsonComic, comicCode);
 		}
 
+<<<<<<< HEAD
 		contenidoJson(comic, 0);
 		return displayComicInfo(comic);
+=======
+		return null;
+	}
+
+	private static String[][] listaErrores() {
+
+		String[][] tablaErrores = {
+				{ "409", "Clave API Ausente", "Ocurre cuando el parámetro apikey no está incluido en una solicitud." },
+				{ "409", "Hash Ausente",
+						"Error 409: Ocurre cuando se incluye el parámetro apikey en una solicitud, se presenta un parámetro ts, pero no se envía un parámetro hash. Ocurre solo en aplicaciones del lado del servidor." },
+				{ "409", "Timestamp Ausente",
+						"Ocurre cuando se incluye el parámetro apikey en una solicitud, se presenta un parámetro hash, pero no se envía un parámetro ts. Ocurre solo en aplicaciones del lado del servidor." },
+				{ "401", "Referente Inválido",
+						"Ocurre cuando se envía un referente que no es válido para el parámetro apikey pasado." },
+				{ "401", "Hash Inválido",
+						"Ocurre cuando se envían los parámetros ts, hash y apikey, pero el hash no es válido según la regla de generación de hash anterior." },
+				{ "405", "Método No Permitido",
+						"Ocurre cuando se accede a un punto de conexión de la API utilizando un verbo HTTP que no está permitido para ese punto de conexión." },
+				{ "403", "Prohibido",
+						"Ocurre cuando un usuario con una solicitud autenticada intenta acceder a un punto de conexión al que no tiene acceso." } };
+
+		return tablaErrores;
+
+>>>>>>> refs/heads/V8.0
 	}
 
 	/**
@@ -110,6 +144,26 @@ public class ApiMarvel {
 		// Realiza la solicitud HTTP GET
 		String jsonResponse;
 		try {
+
+			int codigoRespuesta = codigoRespuesta(apiUrl);
+
+			int[] codigosError = { 401, 403, 405, 409 };
+
+			String[][] tablaErrores = listaErrores();
+
+			for (int i : codigosError) {
+				if (i == codigoRespuesta) {
+
+					for (String[] filaError : tablaErrores) {
+						if (filaError[0].equals(String.valueOf(codigoRespuesta))) {
+							String mensaje = filaError[1] + ": " + filaError[2];
+							AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+						}
+					}
+					return null;
+				}
+			}
+
 			jsonResponse = sendHttpGetRequest(apiUrl);
 
 			// Parsea la respuesta JSON y obtén el cómic
@@ -117,12 +171,18 @@ public class ApiMarvel {
 			JSONArray resultsArray = jsonObject.getJSONObject("data").getJSONArray("results");
 
 			if (resultsArray.length() == 0) {
-				prontInfo.setOpacity(1);
-				prontInfo.setText("No se encontró el cómic con codigo: " + claveComic);
+
+				String mensaje = "No se encontró el cómic con código: " + claveComic;
+				AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+
 				return null;
 			} else {
-				return resultsArray.getJSONObject(0); // Devuelve el primer cómic encontrado
+				if (resultsArray.length() > 0) {
+					// Obtener el primer elemento del JSONArray
+					return resultsArray.getJSONObject(0);
+				}
 			}
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (URISyntaxException e) {
@@ -132,7 +192,7 @@ public class ApiMarvel {
 		}
 		return null;
 	}
-	
+
 	@SuppressWarnings("unused")
 	private static JSONObject getComicInfoUrl(String claveComic, String url, TextArea prontInfo) {
 
@@ -158,7 +218,7 @@ public class ApiMarvel {
 			JSONObject jsonObject = new JSONObject(jsonResponse);
 			JSONArray resultsArray = jsonObject.getJSONObject("data").getJSONArray("results");
 
-			if (resultsArray.length() == 0) {
+			if (resultsArray.length() == 0 && ListaComicsDAO.comicsImportados.size() < 1) {
 				prontInfo.setOpacity(1);
 				prontInfo.setText("No se encontró el cómic con codigo: " + claveComic);
 				return null;
@@ -197,20 +257,35 @@ public class ApiMarvel {
 	 * @throws URISyntaxException Si la URL de la API es inválida.
 	 */
 	private static String sendHttpGetRequest(String apiUrl) throws IOException, URISyntaxException {
-		URI url = new URI(apiUrl); // Create a URI from the API URL
+		try {
+			URI url = new URI(apiUrl); // Create a URI from the API URL
+			HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
+			connection.setRequestMethod("GET");
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			StringBuilder response = new StringBuilder();
+			String line;
+
+			while ((line = reader.readLine()) != null) {
+				response.append(line);
+			}
+
+			reader.close();
+			return response.toString();
+		} catch (IOException e) {
+			System.err.println("Error de IO al realizar la solicitud HTTP: " + e.getMessage());
+			// Puedes lanzar la excepción nuevamente o manejarla según tus necesidades
+			throw new IOException("Error al realizar la solicitud HTTP", e);
+		}
+	}
+
+	private static int codigoRespuesta(String apiUrl) throws IOException, URISyntaxException {
+		URI url = new URI(apiUrl);
 		HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
 		connection.setRequestMethod("GET");
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-		StringBuilder response = new StringBuilder();
-		String line;
-
-		while ((line = reader.readLine()) != null) {
-			response.append(line);
-		}
-
-		reader.close();
-		return response.toString();
+		int responseCode = connection.getResponseCode();
+		return responseCode;
 	}
 
 	/**
@@ -230,6 +305,24 @@ public class ApiMarvel {
 	}
 
 
+<<<<<<< HEAD
+=======
+		String clavesDesdeArchivo = Utilidades.obtenerClaveApiMarvel(); // Obtener las claves desde el archivo
+
+		if (!clavesDesdeArchivo.isEmpty()) {
+			String[] partes = clavesDesdeArchivo.split(":");
+			if (partes.length == 2) {
+				String clavePublica = partes[0].trim();
+				String clavePrivada = partes[1].trim();
+
+				claves[0] = clavePublica; // Almacenar la clave pública en el primer elemento del arreglo
+				claves[1] = clavePrivada; // Almacenar la clave privada en el segundo elemento del arreglo
+			}
+		}
+
+		return claves;
+	}
+>>>>>>> refs/heads/V8.0
 
 	/**
 	 * Calcula el hash MD5 de una cadena de entrada utilizando Apache Commons Codec.
@@ -309,30 +402,29 @@ public class ApiMarvel {
 	 * @param comic El objeto JSON que contiene la información del cómic.
 	 * @return Un array de cadenas con la información detallada del cómic.
 	 */
-	public static String[] displayComicInfo(JSONObject comic) {
-		List<String> comicInfoList = new ArrayList<>();
+	public static Comic displayComicInfo(JSONObject jsonComic, String comicCode) {
 
 		try {
 			// Título
-			String title = comic.getString("title");
+			String title = jsonComic.getString("title");
 			title = title.replaceAll("\\([^\\)]*\\)", "");
 			title = title.replaceAll("#\\d+\\s", "");
 			title = title.replaceAll("#\\d+", "").trim();
 
 			String description = "";
 
-			if (comic.has("description") && comic.get("description") instanceof String) {
-				description = comic.getString("description");
+			if (jsonComic.has("description") && jsonComic.get("description") instanceof String) {
+				description = jsonComic.getString("description");
 
 			}
 
 			// Número de edición
-			int issueNumber = comic.getInt("issueNumber");
+			int issueNumber = jsonComic.getInt("issueNumber");
 
 			// Formato
-			String format = comic.getString("format");
-			String formato;
-			if (format.equalsIgnoreCase("Comic")) {
+			String format = jsonComic.getString("format");
+			String formato = "";
+			if (format.equalsIgnoreCase("jsonComic") || format.equalsIgnoreCase("Comic")) {
 				formato = "Grapa (Issue individual)";
 			} else if (format.equalsIgnoreCase("Hardcover")) {
 				formato = "Tapa dura (Hardcover)";
@@ -344,7 +436,7 @@ public class ApiMarvel {
 
 			float price = 0;
 			// Precio
-			JSONArray pricesArray = comic.getJSONArray("prices");
+			JSONArray pricesArray = jsonComic.getJSONArray("prices");
 			if (pricesArray.length() > 0) {
 				JSONObject priceObject = pricesArray.getJSONObject(0);
 				price = (float) priceObject.getDouble("price");
@@ -352,7 +444,7 @@ public class ApiMarvel {
 			}
 
 			// Creadores
-			JSONArray creatorsArray = comic.getJSONObject("creators").getJSONArray("items");
+			JSONArray creatorsArray = jsonComic.getJSONObject("creators").getJSONArray("items");
 			List<String> pencillers = new ArrayList<>();
 			List<String> writers = new ArrayList<>();
 			List<String> coverPencillers = new ArrayList<>();
@@ -366,13 +458,17 @@ public class ApiMarvel {
 					pencillers.add(creatorName);
 				} else if (creatorRole.equals("writer")) {
 					writers.add(creatorName);
-				} else if (creatorRole.equals("penciller (cover)") || creatorRole.equals("penciler (cover)")) {
+				}
+				if (creatorRole.equals("penciller (cover)") || creatorRole.equals("penciler (cover)")
+						|| creatorRole.equals("painter (cover)")) {
 					coverPencillers.add(creatorName);
+				} else {
+
 				}
 			}
 
 			// Fecha de venta
-			JSONArray datesArray = comic.getJSONArray("dates");
+			JSONArray datesArray = jsonComic.getJSONArray("dates");
 			String onsaleDate = "";
 
 			for (int i = 0; i < datesArray.length(); i++) {
@@ -392,7 +488,7 @@ public class ApiMarvel {
 			}
 
 			// URL de referencia
-			JSONArray urlsArray = comic.getJSONArray("urls");
+			JSONArray urlsArray = jsonComic.getJSONArray("urls");
 			String detailURL = "";
 
 			for (int i = 0; i < urlsArray.length(); i++) {
@@ -407,35 +503,35 @@ public class ApiMarvel {
 			}
 
 			// URL de la imagen representativa
-			JSONObject thumbnailObject = comic.getJSONObject("thumbnail");
+			JSONObject thumbnailObject = jsonComic.getJSONObject("thumbnail");
 			String path = thumbnailObject.getString("path");
 			String extension = thumbnailObject.getString("extension");
 			String thumbnailURL = path + "." + extension;
 
-			comicInfoList.add(title);
-			comicInfoList.add(description);
-			comicInfoList.add(Integer.toString(issueNumber));
-			comicInfoList.add(formato);
-			comicInfoList.add(Float.toString(price));
-			comicInfoList.add(String.join(", ", coverPencillers));
-			comicInfoList.add(String.join(", ", pencillers));
-			comicInfoList.add(String.join(", ", writers));
-			comicInfoList.add(onsaleDate);
-			comicInfoList.add(detailURL);
-			comicInfoList.add(thumbnailURL);
+			String nombre = title;
+			String issueKey = description;
+			String numero = Integer.toString(issueNumber);
+			String formatoComic = formato;
+			String precio = Float.toString(price);
+			String variant = String.join(", ", coverPencillers);
+			String artist = String.join(", ", pencillers);
+			String writer = String.join(", ", writers);
+			String fecha = onsaleDate;
+			String marvel_Url = detailURL;
+			String portadaImagen = thumbnailURL;
 			// Editorial (En este caso, siempre es "Marvel")
-			comicInfoList.add("Marvel");
+			String editorial = "Marvel";
 
-			// Convierte la lista en un array de cadenas
-			String[] comicInfoArray = new String[comicInfoList.size()];
-			comicInfoList.toArray(comicInfoArray);
+			Comic comic = new Comic("", nombre, "0", numero, variant, "", editorial, formatoComic,
+					"Estados Unidos (United States)", fecha, writer, artist, "En posesion", issueKey, "Sin puntuacion",
+					portadaImagen, marvel_Url, precio, comicCode);
 
-			return comicInfoArray;
+			return comic;
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 
-		return new String[0];
+		return null;
 	}
 
 }

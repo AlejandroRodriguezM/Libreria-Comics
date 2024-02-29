@@ -1,6 +1,6 @@
 /* Estilo para el ProgressIndicator */
 .progress-indicator {
-    -fx-progress-color: linear-gradient(to right, #4A90E2, #8F62E2); /* Gradiente de colores */
+	-fx-progress-color: #4A90E2; /* Use a single color here */
     -fx-pref-width: 60px; /* Ancho preferido */
     -fx-pref-height: 60px; /* Alto preferido */
 }

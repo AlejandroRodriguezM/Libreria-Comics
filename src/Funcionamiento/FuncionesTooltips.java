@@ -20,7 +20,7 @@ package Funcionamiento;
  *  - Puntuar comics que se encuentren dentro de la base de datos.
  *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
  *
- *  Version 7.0.0.0
+ *  Version 8.0.0.0
  *
  *  @author Alejandro Rodriguez
  *
@@ -44,23 +44,14 @@ public class FuncionesTooltips {
 	 */
 	private static final Font TOOLTIP_FONT = Font.font("Comic Sans MS", FontWeight.NORMAL, FontPosture.REGULAR, 13);
 
-	/**
-	 * Asigna un tooltip a un botón con el mensaje dado.
-	 *
-	 * @param boton   El botón al que se va a asignar el tooltip.
-	 * @param mensaje El mensaje que se mostrará en el tooltip.
-	 */
 	public static void assignTooltips(Map<Node, String> tooltipsMap) {
-		for (Node elemento : tooltipsMap.keySet()) {
-			String mensaje = tooltipsMap.get(elemento);
-			assignTooltip(elemento, mensaje);
-		}
+	    for (Node elemento : tooltipsMap.keySet()) {
+	        String mensaje = tooltipsMap.get(elemento);
+	        Tooltip tooltip = new Tooltip(mensaje);
+	        tooltip.setFont(TOOLTIP_FONT);
+	        Tooltip.install(elemento, tooltip);
+	    }
 	}
 
-	private static void assignTooltip(Node elemento, String mensaje) {
-		Tooltip tooltip = new Tooltip(mensaje);
-		tooltip.setFont(TOOLTIP_FONT);
-		Tooltip.install(elemento, tooltip);
-	}
 
 }
