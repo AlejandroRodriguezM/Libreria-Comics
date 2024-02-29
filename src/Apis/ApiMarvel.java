@@ -11,7 +11,6 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -59,10 +58,6 @@ public class ApiMarvel {
 			return displayComicInfo(jsonComic, comicCode);
 		}
 
-<<<<<<< HEAD
-		contenidoJson(comic, 0);
-		return displayComicInfo(comic);
-=======
 		return null;
 	}
 
@@ -85,7 +80,6 @@ public class ApiMarvel {
 
 		return tablaErrores;
 
->>>>>>> refs/heads/V8.0
 	}
 
 	/**
@@ -101,6 +95,7 @@ public class ApiMarvel {
 
 		for (int i = 0; i < isbn.length(); i++) {
 			char digit = isbn.charAt(i);
+			// 3-5-7-12
 			// Agregar guiones según el formato estándar del ISBN
 			if ((i == 3) || (i == 4) || (i == 7) || (i == 12)) {
 				formattedIsbn.append('-');
@@ -126,8 +121,8 @@ public class ApiMarvel {
 	private static JSONObject getComicInfo(String claveComic, String tipoUrl, TextArea prontInfo) {
 
 		long timestamp = System.currentTimeMillis() / 1000;
-		
-		String claves[] = Utilidades.clavesApiMarvel();
+
+		String claves[] = clavesApi();
 
 		String clave_publica = claves[1].trim();
 
@@ -295,7 +290,7 @@ public class ApiMarvel {
 	 * @return El hash MD5 calculado.
 	 */
 	private static String getHash(long timestamp) {
-		String claves[] = Utilidades.clavesApiMarvel();
+		String claves[] = clavesApi();
 
 		String clavePrivada = claves[0].trim();
 
@@ -304,9 +299,14 @@ public class ApiMarvel {
 		return md5(timestamp + clavePrivada + clavePublica);
 	}
 
+	/**
+	 * Obtiene las claves de la API de un archivo o fuente de datos.
+	 *
+	 * @return Un array de cadenas con las claves pública y privada de la API.
+	 */
+	private static String[] clavesApi() {
+		String claves[] = new String[2]; // Crear un arreglo de dos elementos para almacenar las claves
 
-<<<<<<< HEAD
-=======
 		String clavesDesdeArchivo = Utilidades.obtenerClaveApiMarvel(); // Obtener las claves desde el archivo
 
 		if (!clavesDesdeArchivo.isEmpty()) {
@@ -322,7 +322,6 @@ public class ApiMarvel {
 
 		return claves;
 	}
->>>>>>> refs/heads/V8.0
 
 	/**
 	 * Calcula el hash MD5 de una cadena de entrada utilizando Apache Commons Codec.
@@ -333,66 +332,6 @@ public class ApiMarvel {
 	private static String md5(String input) {
 		// Utiliza Apache Commons Codec para calcular el hash MD5
 		return DigestUtils.md5Hex(input);
-	}
-
-	/**
-	 * Obtiene información detallada sobre un cómic a partir de un objeto JSON y la
-	 * muestra
-	 *
-	 * @param comic El objeto JSON que contiene la información del cómic.
-	 */
-	public static void contenidoJson(JSONObject comic, int nivel) {
-		try {
-			@SuppressWarnings("unchecked")
-			Iterator<String> keys = comic.keys();
-
-			while (keys.hasNext()) {
-				String key = keys.next();
-				Object value = comic.get(key);
-
-				for (int i = 0; i < nivel; i++) {
-					System.out.print("\t");
-				}
-				System.out.print(key + ": ");
-
-				if (value instanceof JSONObject) {
-					// Si el valor es un objeto JSON, llama recursivamente a la función
-					System.out.println("{");
-					contenidoJson((JSONObject) value, nivel + 1);
-					for (int i = 0; i < nivel; i++) {
-						System.out.print("\t");
-					}
-					System.out.println("}");
-				} else if (value instanceof JSONArray) {
-					// Si el valor es una matriz JSON, itera a través de ella
-					JSONArray jsonArray = (JSONArray) value;
-					System.out.println();
-					for (int i = 0; i < jsonArray.length(); i++) {
-						Object arrayValue = jsonArray.get(i);
-						if (arrayValue instanceof JSONObject) {
-							// Si el elemento de la matriz es un objeto JSON, llama recursivamente a la
-							// función
-							contenidoJson((JSONObject) arrayValue, nivel + 1);
-							if (i < jsonArray.length() - 1) {
-								System.out.println();
-							}
-						} else {
-							// Si el elemento es de otro tipo, simplemente imprímelo
-							System.out.print(arrayValue);
-							if (i < jsonArray.length() - 1) {
-//	                            System.out.print(", ");
-							}
-						}
-					}
-					System.out.println();
-				} else {
-					// Si el valor es de otro tipo, simplemente imprímelo
-					System.out.println(value);
-				}
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
 	}
 
 	/**

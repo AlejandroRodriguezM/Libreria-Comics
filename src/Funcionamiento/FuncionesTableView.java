@@ -338,12 +338,7 @@ public class FuncionesTableView {
 	 * @param columnList La lista de TableColumn correspondiente a las columnas de
 	 *                   la tabla.
 	 */
-<<<<<<< HEAD
-	@SuppressWarnings("deprecation")
-	public void modificarColumnas(TableView<Comic> tablaBBDD, List<TableColumn<Comic, String>> columnList) {
-=======
 	public static void modificarColumnas(TableView<Comic> tablaBBDD, List<TableColumn<Comic, String>> columnList) {
->>>>>>> refs/heads/V8.0
 
 		for (TableColumn<Comic, String> column : columnList) {
 			column.prefWidthProperty().unbind(); // Desvincular cualquier propiedad prefWidth existente
