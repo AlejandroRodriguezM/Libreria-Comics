@@ -385,5 +385,4 @@ public class FuncionesManejoFront {
 
 		return listComic;
 	}
-
 }
