@@ -72,9 +72,9 @@ public class FuncionesManejoFront {
 		rootAnchorPane = anchorPane;
 	}
 
-	public void copiarListas(List<ComboBox<String>> comboboxes,
-			List<TableColumn<Comic, String>> columnList2, ObservableList<Control> textFieldList,
-			ObservableList<Button> buttonList, ObservableList<Node> nodeList, ObservableList<ImageView> imageViewList) {
+	public void copiarListas(List<ComboBox<String>> comboboxes, List<TableColumn<Comic, String>> columnList2,
+			ObservableList<Control> textFieldList, ObservableList<Button> buttonList, ObservableList<Node> nodeList,
+			ObservableList<ImageView> imageViewList) {
 		listaComboBoxes = (comboboxes != null) ? FXCollections.observableArrayList(comboboxes)
 				: FXCollections.observableArrayList();
 		listaColumnas = (columnList2 != null) ? FXCollections.observableArrayList(columnList2)
@@ -310,7 +310,7 @@ public class FuncionesManejoFront {
 		if (!ConectManager.conexionActiva()) {
 			return;
 		}
-		
+
 		ListaComicsDAO.reiniciarListaComics();
 		FuncionesTableView.modificarColumnas(tablaBBDD, columnList);
 		tablaBBDD.refresh();
@@ -328,11 +328,6 @@ public class FuncionesManejoFront {
 				List<Comic> listaComics = ComicManagerDAO.verLibreria(sentenciaSQL);
 				FuncionesTableView.tablaBBDD(listaComics, tablaBBDD, columnList);
 
-				if (!esAccion) {
-					botonImprimir.setVisible(false);
-					botonGuardarResultado.setVisible(false);
-				}
-
 			} else {
 
 				List<Comic> listaParametro = listaPorParametro(comic, esAccion);
@@ -343,10 +338,12 @@ public class FuncionesManejoFront {
 					if (!listaParametro.isEmpty()) {
 						botonImprimir.setVisible(true);
 						botonGuardarResultado.setVisible(true);
+					} else {
+						botonImprimir.setVisible(false);
+						botonGuardarResultado.setVisible(false);
 					}
 					busquedaGeneral.setText("");
 				}
-				
 
 			}
 		} else {

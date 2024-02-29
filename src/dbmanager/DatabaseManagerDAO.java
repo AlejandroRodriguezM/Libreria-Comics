@@ -42,7 +42,7 @@ public class DatabaseManagerDAO {
 			Utilidades.manejarExcepcion(ex);
 		}
 	}
-	
+
 	/**
 	 * Crea las tablas de la base de datos si no existen.
 	 */
@@ -168,7 +168,7 @@ public class DatabaseManagerDAO {
 			Utilidades.manejarExcepcion(e);
 		}
 	}
-	
+
 	/**
 	 * Comprueba si existe una base de datos con el nombre especificado para la
 	 * creación.
@@ -200,7 +200,6 @@ public class DatabaseManagerDAO {
 		return false;
 	}
 
-	
 	/**
 	 * Verifica la base de datos ejecutando una sentencia SQL y devuelve el
 	 * ResultSet correspondiente.
@@ -228,6 +227,61 @@ public class DatabaseManagerDAO {
 		}
 
 		return null;
+	}
+
+	private static void actualizarNombres(String columna) {
+		// Construir la consulta de actualización
+		String consultaUpdate = "UPDATE comicsbbdd SET " + columna + " = ?";
+		String url = "jdbc:mysql://" + ConectManager.DB_HOST + ":" + ConectManager.DB_PORT + "?serverTimezone=UTC";
+
+		try (Connection connection = DriverManager.getConnection(url, ConectManager.DB_USER, ConectManager.DB_PASS);
+				Statement stmt = connection.createStatement()) {
+			// Consulta SQL para seleccionar las filas que necesitan ser modificadas
+            String consultaSelect = "SELECT " + columna + " FROM " + ConectManager.DB_NAME + ".comicsbbdd";
+			ResultSet rs = stmt.executeQuery(consultaSelect);
+
+			while (rs.next()) {
+				String nombre = rs.getString(columna);
+				String nombreCorregido = corregirNombre(nombre);
+
+				try (PreparedStatement pstmt = connection.prepareStatement(consultaUpdate)) {
+					pstmt.setString(1, nombreCorregido);
+					pstmt.executeUpdate();
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	// Método para corregir los nombres según los patrones especificados
+	private static String corregirNombre(String nombre) {
+		// Normalizar mayúsculas y minúsculas
+		nombre = nombre.toLowerCase();
+		// Convertir primera letra de cada palabra a mayúscula
+		nombre = nombre.replaceAll("(^|[-,\\s])(\\p{L})", "$1$2".toUpperCase());
+
+		// Añadir las líneas adicionales
+		nombre = nombre.trim();
+		// Reemplazar ',' por '-'
+		nombre = nombre.replaceAll(",", "-");
+		// Reemplazar ',-' por '-'
+		nombre = nombre.replaceAll(",-", "-");
+		// Reemplazar '-,' por '-'
+		nombre = nombre.replaceAll("-,", "-");
+		// Remover espacios extra alrededor de '-'
+		nombre = nombre.replaceAll("\\s*-\\s*", "-");
+		// Remover ',' al final si existe
+		nombre = nombre.replaceAll(",$", "");
+		// Remover '-' al final si existe
+		nombre = nombre.replaceAll("-$", "");
+
+		// Si el nombre comienza con guion o coma, convertirlo en mayúscula
+		if (nombre.startsWith("-") || nombre.startsWith(",")) {
+			nombre = nombre.substring(0, 1).toUpperCase() + nombre.substring(1);
+		}
+
+		return nombre;
 	}
 
 }

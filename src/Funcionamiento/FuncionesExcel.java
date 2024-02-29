@@ -263,7 +263,7 @@ public class FuncionesExcel {
 							directorioFichero.mkdir();
 						}
 
-						if (tipoBusqueda.equalsIgnoreCase("Completa") && directorioFichero != null) {
+						if (tipoBusqueda.equalsIgnoreCase("Completa") || tipoBusqueda.equalsIgnoreCase("Parcial") && directorioFichero != null) {
 							Utilidades.saveImageFromDataBase(comic.getImagen(), directorioImagenes);
 
 						}

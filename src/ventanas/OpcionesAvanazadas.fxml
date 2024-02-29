@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="258.0" prefWidth="240.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.OpcionesAvanazadasController">
+   <children>
+      <ImageView fitHeight="258.0" fitWidth="240.0" pickOnBounds="true">
+         <image>
+            <Image url="@../imagenes/cargaCodigo.jpg" />
+         </image>
+      </ImageView>
+      <Label layoutX="7.0" layoutY="16.0" prefHeight="17.0" prefWidth="83.0" style="-fx-text-fill: white;" text="Descargar SQL" />
+      <Button fx:id="botonDescargarSQL" layoutX="161.0" layoutY="12.0" mnemonicParsing="false" onMouseClicked="#descargarSQL" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Descargar" />
+      <Label layoutX="7.0" layoutY="182.0" prefHeight="17.0" prefWidth="107.0" style="-fx-text-fill: white;" text="Comprobar versión" />
+      <Button fx:id="botonActualizarSoftware" layoutX="161.0" layoutY="176.0" mnemonicParsing="false" onMouseClicked="#comprobarVersion" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Comprobar" />
+      <Label layoutX="7.0" layoutY="135.0" prefHeight="38.0" prefWidth="107.0" style="-fx-text-fill: white;" text="Normalizar Base de Datos" wrapText="true" />
+      <Button fx:id="botonNormalizarDB" layoutX="161.0" layoutY="136.0" mnemonicParsing="false" onMouseClicked="#normalizarDataBase" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Normalizar" />
+      <Label layoutX="6.0" layoutY="98.0" prefHeight="25.0" prefWidth="107.0" style="-fx-text-fill: white;" text="Descargar Portadas" wrapText="true" />
+      <Button fx:id="botonDescargarPortadas" layoutX="161.0" layoutY="95.0" mnemonicParsing="false" onMouseClicked="#descargarPortadas" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Descargar" />
+      <Label layoutX="6.0" layoutY="55.0" prefHeight="25.0" prefWidth="107.0" style="-fx-text-fill: white;" text="Descargar Excel" wrapText="true" />
+      <Button fx:id="botonDescargarExcel" layoutX="161.0" layoutY="53.0" mnemonicParsing="false" onMouseClicked="#descargarExcel" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Descargar" />
+      <Label layoutX="145.0" layoutY="237.0" prefHeight="17.0" prefWidth="83.0" style="-fx-text-fill: white;" text="Versión" />
+      <Label fx:id="labelVersion" layoutX="190.0" layoutY="237.0" prefHeight="17.0" prefWidth="52.0" style="-fx-text-fill: white;" text="(Version)" />
+   </children>
+</AnchorPane>

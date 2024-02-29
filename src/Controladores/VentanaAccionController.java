@@ -727,6 +727,11 @@ public class VentanaAccionController implements Initializable {
 					imagencomic.setOpacity(1.0); // Restaurar la opacidad
 					imagencomic.setCursor(Cursor.DEFAULT);
 				});
+			} else {
+				// Restaurar el cursor y la opacidad al salir del ImageView
+				imagencomic.setOnMouseEntered(e -> {
+					imagencomic.setCursor(Cursor.DEFAULT);
+				});
 			}
 		});
 	}
@@ -857,6 +862,8 @@ public class VentanaAccionController implements Initializable {
 
 				String id_comic = idRow.getID();
 				ListaComicsDAO.comicsImportados.removeIf(c -> c.getID().equals(id_comic));
+				limpiarAutorellenos();
+				FuncionesTableView.nombreColumnas(columnList, tablaBBDD);
 
 				FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, tablaBBDD, columnList);
 				tablaBBDD.refresh();
@@ -864,7 +871,7 @@ public class VentanaAccionController implements Initializable {
 				if (ListaComicsDAO.comicsImportados.size() < 1) {
 					cambiarEstadoBotones(false);
 				}
-				limpiarAutorellenos();
+
 			}
 		}
 	}
@@ -1091,6 +1098,7 @@ public class VentanaAccionController implements Initializable {
 			label_id_mod.setLayoutY(104);
 		} else {
 			idComicTratar_mod.setEditable(false);
+			idComicTratar_mod.setOpacity(0.7);
 		}
 	}
 
@@ -1230,7 +1238,7 @@ public class VentanaAccionController implements Initializable {
 		botonBusquedaAvanzada.setDisable(esCancelado);
 		botonGuardarCambioComic.setDisable(esCancelado);
 
-		cambiarVisibilidad(elementos, esCancelado);
+		Utilidades.cambiarVisibilidad(elementos, esCancelado);
 
 	}
 
@@ -1246,29 +1254,9 @@ public class VentanaAccionController implements Initializable {
 		List<Node> elementos = Arrays.asList(botonBusquedaCodigo, busquedaCodigo);
 
 		if (botonBusquedaCodigo.isVisible()) {
-			cambiarVisibilidad(elementos, true);
+			Utilidades.cambiarVisibilidad(elementos, true);
 		} else {
-			cambiarVisibilidad(elementos, false);
-		}
-	}
-
-	/**
-	 * Oculta y deshabilita varios campos y elementos en la interfaz gráfica.
-	 *
-	 * @param elementos Lista de elementos que deseas ocultar y deshabilitar.
-	 */
-	private void cambiarVisibilidad(List<Node> elementos, boolean verElemento) {
-		// Itera a través de los elementos y oculta/deshabilita cada uno
-		for (Node elemento : elementos) {
-
-			if (verElemento) {
-				elemento.setVisible(false);
-				elemento.setDisable(true);
-			} else {
-				elemento.setVisible(true);
-				elemento.setDisable(false);
-			}
-
+			Utilidades.cambiarVisibilidad(elementos, false);
 		}
 	}
 
@@ -1284,7 +1272,7 @@ public class VentanaAccionController implements Initializable {
 				label_estado, label_fecha, label_firma, label_formato, label_guionista, label_key, label_procedencia,
 				label_referencia, codigoComicTratar, label_codigo_comic, botonSubidaPortada);
 
-		cambiarVisibilidad(elementos, true);
+		Utilidades.cambiarVisibilidad(elementos, true);
 	}
 
 	/**
@@ -1295,7 +1283,7 @@ public class VentanaAccionController implements Initializable {
 				precioComic, direccionImagen, label_portada, label_precio, label_key, label_referencia,
 				botonModificarComic, codigoComicTratar, label_codigo_comic);
 
-		cambiarVisibilidad(elementos, true);
+		Utilidades.cambiarVisibilidad(elementos, true);
 	}
 
 	/**
@@ -2112,7 +2100,6 @@ public class VentanaAccionController implements Initializable {
 				validarCamposComic(true);
 				FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, tablaBBDD, columnList); // Llamada a
 																										// funcion
-
 				String mensajePront = "Has introducido los comics correctamente\n";
 				AlarmaList.mostrarMensajePront(mensajePront, true, prontInfo);
 				limpiarAutorellenos();
@@ -2554,6 +2541,7 @@ public class VentanaAccionController implements Initializable {
 		fechaComic.setValue(null);
 
 		precioComic.setText("");
+		busquedaCodigo.setText("");
 		codigoComicTratar.setText("");
 		urlReferencia.setText("");
 		numeroCajaComic.setValue("");

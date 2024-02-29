@@ -557,7 +557,7 @@ public class Comic {
 		boolean existeComic = ComicManagerDAO.comprobarIdentificadorComic(idComic);
 		Comic comic_temp = null;
 		if (!existeComic) {
-			existeComic = ListaComicsDAO.verificarIDExistente(idComic);
+			existeComic = ListaComicsDAO.verificarIDExistente(idComic,false);
 			if (existeComic) {
 				comic_temp = ListaComicsDAO.devolverComicLista(idComic);
 			}

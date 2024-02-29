@@ -165,7 +165,7 @@ public class Unit_Test extends Application {
 
 //		pruebaSubidaComic();
 //		pruebaModificacionComic();
-//		getComicInfo("75960607826401511");
+		getComicInfo("9780785198260");
 //		pruebaDiamondCode_imagen("JUL220767");
 //		launch(args);
 //		verLibroGoogle("9788411505963");

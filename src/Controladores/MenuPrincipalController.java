@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +33,7 @@ import comicManagement.Comic;
 import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
+import dbmanager.DBUtilidades.TipoBusqueda;
 import dbmanager.ListaComicsDAO;
 import dbmanager.SelectManager;
 import javafx.application.Platform;
@@ -61,6 +63,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -103,6 +106,9 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	private Button botonbbdd;
+
+	@FXML
+	private Button botonMostrarGuardados;
 
 	/**
 	 * Campo de texto para realizar una búsqueda general.
@@ -512,8 +518,21 @@ public class MenuPrincipalController implements Initializable {
 					imagencomic.setOpacity(1.0); // Restaurar la opacidad
 					imagencomic.setCursor(Cursor.DEFAULT);
 				});
+			} else {
+				// Restaurar el cursor y la opacidad al salir del ImageView
+				imagencomic.setOnMouseEntered(e -> {
+					imagencomic.setCursor(Cursor.DEFAULT);
+				});
 			}
 		});
+
+		botonGuardarResultado.setOnMousePressed(event -> {
+			if (event.getButton() == MouseButton.PRIMARY) {
+				// Si la lista está vacía, oculta el botón
+				botonMostrarGuardados.setVisible(true);
+			}
+		});
+
 	}
 
 	/**
@@ -690,15 +709,7 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
 
-		FuncionesManejoFront manejoFront = new FuncionesManejoFront();
-		manejoFront.setTableView(tablaBBDD);
-		manejoFront.copiarElementos(prontInfo, botonImprimir, botonGuardarResultado, busquedaGeneral, columnList);
-
-		busquedaGeneral.setText("");
-
-		Comic comicBusqueda = camposComic();
-
-		FuncionesManejoFront.verBasedeDatos(false, false, comicBusqueda);
+		mostrarComics(false);
 	}
 
 	/**
@@ -710,14 +721,30 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
-		FuncionesManejoFront manejoFront = new FuncionesManejoFront();
 
-		manejoFront.copiarElementos(prontInfo, botonImprimir, botonGuardarResultado, busquedaGeneral, columnList);
+		mostrarComics(true);
+	}
+
+	private void mostrarComics(boolean esCompleto) {
+
+		FuncionesManejoFront manejoFront = new FuncionesManejoFront();
 		manejoFront.setTableView(tablaBBDD);
+		manejoFront.copiarElementos(prontInfo, botonImprimir, botonGuardarResultado, busquedaGeneral, columnList);
+
+		List<Node> elementos = Arrays.asList(botonImprimir, botonGuardarResultado);
+
+		Utilidades.cambiarVisibilidad(elementos, false);
 
 		busquedaGeneral.setText("");
 
-		FuncionesManejoFront.verBasedeDatos(true, false, null);
+		if (esCompleto) {
+			FuncionesManejoFront.verBasedeDatos(true, false, null);
+		} else {
+			Comic comicBusqueda = camposComic();
+
+			FuncionesManejoFront.verBasedeDatos(false, false, comicBusqueda);
+		}
+
 	}
 
 	/**
@@ -729,7 +756,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsPuntuacion(ActionEvent event) throws SQLException {
-		imprimirComicsEstado(DBUtilidades.TipoBusqueda.PUNTUACION);
+		imprimirComicsEstado(TipoBusqueda.PUNTUACION, false);
 	}
 
 	/**
@@ -741,7 +768,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsVendidos(ActionEvent event) throws SQLException {
-		imprimirComicsEstado(DBUtilidades.TipoBusqueda.VENDIDOS);
+		imprimirComicsEstado(TipoBusqueda.VENDIDOS, false);
 	}
 
 	/**
@@ -753,7 +780,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsFirmados(ActionEvent event) throws SQLException {
-		imprimirComicsEstado(DBUtilidades.TipoBusqueda.FIRMADOS);
+		imprimirComicsEstado(TipoBusqueda.FIRMADOS, false);
 	}
 
 	/**
@@ -765,7 +792,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsComprados(ActionEvent event) throws SQLException {
-		imprimirComicsEstado(DBUtilidades.TipoBusqueda.COMPRADOS);
+		imprimirComicsEstado(TipoBusqueda.COMPRADOS, false);
 	}
 
 	/**
@@ -777,7 +804,13 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsEnPosesion(ActionEvent event) throws SQLException {
-		imprimirComicsEstado(DBUtilidades.TipoBusqueda.POSESION);
+		imprimirComicsEstado(TipoBusqueda.POSESION, false);
+
+	}
+
+	@FXML
+	void comicsGuardados(ActionEvent event) throws SQLException {
+		imprimirComicsEstado(null, true);
 
 	}
 
@@ -789,11 +822,11 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void comicsKeyIssue(ActionEvent event) throws SQLException {
-		imprimirComicsEstado(DBUtilidades.TipoBusqueda.KEY_ISSUE);
+		imprimirComicsEstado(TipoBusqueda.KEY_ISSUE, false);
 
 	}
 
-	private void imprimirComicsEstado(DBUtilidades.TipoBusqueda tipoBusqueda) {
+	private void imprimirComicsEstado(TipoBusqueda tipoBusqueda, boolean esGuardado) {
 
 		if (!ConectManager.conexionActiva()) {
 			return;
@@ -804,10 +837,14 @@ public class MenuPrincipalController implements Initializable {
 		ListaComicsDAO.reiniciarListaComics(); // Reiniciar la base de datos si es necesario
 		FuncionesTableView.nombreColumnas(columnList, tablaBBDD); // Llamada a la función para establecer nombres de
 		FuncionesTableView.actualizarBusquedaRaw(tablaBBDD, columnList); // columnas
+		List<Comic> listaComics = new ArrayList<Comic>();
+		if (esGuardado) {
+			listaComics = ListaComicsDAO.comicsGuardadosList;
+		} else {
+			String sentenciaSQL = DBUtilidades.construirSentenciaSQL(tipoBusqueda);
 
-		String sentenciaSQL = DBUtilidades.construirSentenciaSQL(tipoBusqueda);
-
-		List<Comic> listaComics = SelectManager.verLibreria(sentenciaSQL);
+			listaComics = SelectManager.verLibreria(sentenciaSQL);
+		}
 
 		FuncionesTableView.tablaBBDD(listaComics, tablaBBDD, columnList);
 	}
@@ -917,6 +954,8 @@ public class MenuPrincipalController implements Initializable {
 					+ tamanioListaGuardada + " comics guardados.\n \n \n";
 
 			AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
+
+			botonMostrarGuardados.setVisible(false);
 		}
 	}
 
@@ -1080,12 +1119,9 @@ public class MenuPrincipalController implements Initializable {
 			return;
 		}
 
-		Comic comic = camposComic();
-
-		List<Comic> listaComics = FuncionesManejoFront.listaPorParametro(comic, false);
-
-		String tipoBusqueda = "Parcial";
 		prontInfo.clear();
+		String tipoBusqueda = "Parcial";
+
 		if (ListaComicsDAO.comicsGuardadosList.size() > 0) {
 			cargaExportExcel(ListaComicsDAO.comicsGuardadosList, tipoBusqueda);
 
@@ -1093,7 +1129,8 @@ public class MenuPrincipalController implements Initializable {
 			AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
 
 		} else {
-			cargaExportExcel(listaComics, tipoBusqueda);
+			String mensaje = "La lista esta vacia";
+			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 		}
 	}
 
@@ -1113,25 +1150,26 @@ public class MenuPrincipalController implements Initializable {
 			return;
 		}
 
-		Comic comic = camposComic();
-
-		List<Comic> listaComics = FuncionesManejoFront.listaPorParametro(comic, false);
-
+		Comic comicRaw = tablaBBDD.getSelectionModel().getSelectedItem();
 		String mensaje = "";
+		if (comicRaw != null) {
+			boolean existeComic = ListaComicsDAO.verificarIDExistente(comicRaw.getID(), true);
+			if (existeComic) {
+				mensaje = "Este comic con dicha ID: " + comicRaw.getID() + " ya existe. No se ha guardado \n \n \n";
+				AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+				return;
+			}
 
-		if (listaComics.size() > 0 && listaComics != null) {
-			ListaComicsDAO.agregarElementosUnicos(listaComics);
+			ListaComicsDAO.agregarElementoUnico(comicRaw);
 
 			mensaje = "Hay un total de: " + ListaComicsDAO.comicsGuardadosList.size()
 					+ ". Comics guardados a la espera de ser impresos \n \n \n";
 			AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
 
 		} else {
-			mensaje = "No se esta mostrando ningun comic, prueba a buscar por parametro \n \n \n";
+			mensaje = "Debes de clickar en el comic que quieras guardar \n \n \n";
 			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 		}
-
-		limpiezaDeDatos();
 
 	}
 
@@ -1355,7 +1393,7 @@ public class MenuPrincipalController implements Initializable {
 		LocalDate fecha = fechaPublicacion.getValue();
 		String fechaComic = (fecha != null) ? fecha.toString() : "";
 
-		comic.setNombre(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreComic.getValue()), ""));
+		comic.setNombre(Utilidades.defaultIfNullOrEmpty(nombreComic.getValue(), ""));
 		comic.setNumero(Utilidades.defaultIfNullOrEmpty(
 				Utilidades.comaYGuionPorEspaciado(FuncionesComboBox.numeroCombobox(numeroComic)), ""));
 		comic.setVariante(

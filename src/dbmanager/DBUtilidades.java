@@ -12,7 +12,7 @@ import comicManagement.Comic;
 public class DBUtilidades {
 
 	public enum TipoBusqueda {
-		POSESION, KEY_ISSUE, COMPLETA, VENDIDOS, COMPRADOS, PUNTUACION, FIRMADOS
+		POSESION, KEY_ISSUE, COMPLETA, VENDIDOS, COMPRADOS, PUNTUACION, FIRMADOS, GUARDADOS
 	}
 
 	public static void setParameters(PreparedStatement ps, Comic datos, boolean includeID) throws SQLException {

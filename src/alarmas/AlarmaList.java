@@ -819,17 +819,19 @@ public class AlarmaList {
 
 	public static void mostrarMensajePront(String mensaje, boolean exito, TextArea prontInfo) {
 
-		detenerAnimacion();
-		prontInfo.setOpacity(1);
-		prontInfo.setVisible(true);
-		if (exito) {
-			prontInfo.setStyle("-fx-border-color: green;");
-		} else {
-			prontInfo.setStyle("-fx-border-color: red;");
-		}
-		prontInfo.setText(mensaje);
+		if (prontInfo != null) {
+			detenerAnimacion();
+			prontInfo.setOpacity(1);
+			prontInfo.setVisible(true);
+			if (exito) {
+				prontInfo.setStyle("-fx-border-color: green;");
+			} else {
+				prontInfo.setStyle("-fx-border-color: red;");
+			}
+			prontInfo.setText(mensaje);
 
-		detenerAnimacion();
+			detenerAnimacion();
+		}
 	}
 
 	/**

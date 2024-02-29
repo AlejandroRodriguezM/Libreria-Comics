@@ -20,10 +20,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import Funcionamiento.Utilidades;
 import comicManagement.Comic;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  * Esta clase sirve para realizar diferentes operaciones que tengan que ver con
@@ -198,17 +199,33 @@ public class ListaComicsDAO {
 	/**
 	 * Lista de comics guardados para poder ser impresos
 	 */
-	public static List<Comic> comicsGuardadosList = new ArrayList<>();
+	public static ObservableList<Comic> comicsGuardadosList = FXCollections.observableArrayList();
 
-	public static boolean verificarIDExistente(String id) {
-		for (Comic comic : comicsImportados) {
-
-			if (comic.getID().equalsIgnoreCase(id)) {
-				return true;
-			}
-		}
-		return false;
+	public static boolean verificarIDExistente(String id, boolean esGuardado) {
+	    // Verificar que el id no sea nulo ni esté vacío
+	    if (id == null || id.isEmpty()) {
+	        return false;
+	    }
+	    
+	    // Buscar en comicsGuardadosList si es necesario
+	    if (esGuardado) {
+	        for (Comic comic : comicsGuardadosList) {
+	            if (id.equals(comic.getID())) {
+	                return true; // Si encuentra un comic con el mismo id, devuelve true
+	            }
+	        }
+	    }
+	    
+	    // Buscar en comicsImportados
+	    for (Comic comic : comicsImportados) {
+	        if (id.equalsIgnoreCase(comic.getID())) {
+	            return true; // Si encuentra un comic con el mismo id, devuelve true
+	        }
+	    }
+	    
+	    return false; // Si no encuentra ningún comic con el mismo id, devuelve false
 	}
+
 
 	public static Comic devolverComicLista(String id) {
 		for (Comic comic : comicsImportados) {
@@ -305,31 +322,23 @@ public class ListaComicsDAO {
 	}
 
 	/**
-	 * Agrega elementos únicos a la lista principal de cómics guardados,
+	 * Agrega un elemento único a la lista principal de cómics guardados,
 	 * ordenándolos por ID en orden descendente de longitud.
 	 *
-	 * @param listaAnadir Lista de cómics a añadir a la lista principal.
+	 * @param comicToAdd Comic a añadir a la lista principal.
 	 */
-	public static void agregarElementosUnicos(List<Comic> listaAnadir) {
+	public static void agregarElementoUnico(Comic comicToAdd) {
 		// Usamos un Set para mantener los elementos únicos
 		Set<String> idsUnicos = comicsGuardadosList.stream().map(Comic::getID).collect(Collectors.toSet());
 
-		// Filtramos la lista a añadir para obtener solo aquellos cuyas ID no estén
-		// repetidas
-		List<Comic> comicsNoRepetidos = listaAnadir.stream().filter(comic -> !idsUnicos.contains(comic.getID()))
-				.sorted(Comparator.comparing(Comic::getID, Comparator.comparingInt(String::length).reversed()))
-				.collect(Collectors.toList());
+		// Verificamos si la ID del cómic ya está en la lista principal
+		if (!idsUnicos.contains(comicToAdd.getID())) {
+			// Añadimos el cómic a la lista principal
+			comicsGuardadosList.add(comicToAdd);
 
-		// Añadimos los cómics no repetidos a la lista principal
-		comicsGuardadosList.addAll(comicsNoRepetidos);
-
-		// Verificamos que la lista esté ordenada
-		boolean estaOrdenada = IntStream.range(0, comicsGuardadosList.size() - 1).allMatch(
-				i -> comicsGuardadosList.get(i).getID().compareTo(comicsGuardadosList.get(i + 1).getID()) <= 0);
-
-		if (!estaOrdenada) {
-			// Si no está ordenada, ordenamos la lista
-			comicsGuardadosList.sort(Comparator.comparing(Comic::getID));
+			// Ordenamos la lista por ID en orden descendente de longitud
+			comicsGuardadosList
+					.sort(Comparator.comparing(Comic::getID, Comparator.comparingInt(String::length).reversed()));
 		}
 	}
 

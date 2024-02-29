@@ -74,6 +74,7 @@ import dbmanager.ListaComicsDAO;
 import dbmanager.SelectManager;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
@@ -2756,6 +2757,26 @@ public class Utilidades {
 		}
 
 		return nombreAleatorio + extension;
+	}
+	
+	/**
+	 * Oculta y deshabilita varios campos y elementos en la interfaz gráfica.
+	 *
+	 * @param elementos Lista de elementos que deseas ocultar y deshabilitar.
+	 */
+	public static void cambiarVisibilidad(List<Node> elementos, boolean verElemento) {
+		// Itera a través de los elementos y oculta/deshabilita cada uno
+		for (Node elemento : elementos) {
+
+			if (verElemento) {
+				elemento.setVisible(false);
+				elemento.setDisable(true);
+			} else {
+				elemento.setVisible(true);
+				elemento.setDisable(false);
+			}
+
+		}
 	}
 
 }

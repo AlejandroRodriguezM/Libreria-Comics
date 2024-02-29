@@ -202,21 +202,26 @@ public class RecomendacionesController implements Initializable {
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
 		alarmaList.iniciarThreadChecker(true);
 
-        imagencomic.imageProperty().addListener((observable, oldImage, newImage) -> {
-            if (newImage != null) {
-                // Cambiar la apariencia del cursor y la opacidad cuando la imagen se ha cargado
-                imagencomic.setOnMouseEntered(e -> {
-                    imagencomic.setOpacity(0.7); // Cambiar la opacidad para indicar que es clickable
-                    imagencomic.setCursor(Cursor.HAND);
-                });
+		imagencomic.imageProperty().addListener((observable, oldImage, newImage) -> {
+			if (newImage != null) {
+				// Cambiar la apariencia del cursor y la opacidad cuando la imagen se ha cargado
+				imagencomic.setOnMouseEntered(e -> {
+					imagencomic.setOpacity(0.7); // Cambiar la opacidad para indicar que es clickable
+					imagencomic.setCursor(Cursor.HAND);
+				});
 
-                // Restaurar el cursor y la opacidad al salir del ImageView
-                imagencomic.setOnMouseExited(e -> {
-                    imagencomic.setOpacity(1.0); // Restaurar la opacidad
-                    imagencomic.setCursor(Cursor.DEFAULT);
-                });
-            }
-        });
+				// Restaurar el cursor y la opacidad al salir del ImageView
+				imagencomic.setOnMouseExited(e -> {
+					imagencomic.setOpacity(1.0); // Restaurar la opacidad
+					imagencomic.setCursor(Cursor.DEFAULT);
+				});
+			} else {
+				// Restaurar el cursor y la opacidad al salir del ImageView
+				imagencomic.setOnMouseEntered(e -> {
+					imagencomic.setCursor(Cursor.DEFAULT);
+				});
+			}
+		});
 	}
 
 	@FXML

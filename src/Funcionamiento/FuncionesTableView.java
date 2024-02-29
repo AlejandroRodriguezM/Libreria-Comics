@@ -221,9 +221,10 @@ public class FuncionesTableView {
 												|| columna.getText().equalsIgnoreCase("Nombre")
 												|| columna.getText().equalsIgnoreCase("Nº")
 												|| columna.getText().equalsIgnoreCase("Caja")
-												|| columna.getText().equalsIgnoreCase("Origen")
-												|| columna.getText().equalsIgnoreCase("firma")) {
+												|| columna.getText().equalsIgnoreCase("Origen")) {
 											label = new Label(nombre + "\n");
+										} else if (columna.getText().equalsIgnoreCase("firma")) {
+											label = new Label("◉ " + nombre + "\n");
 										} else {
 											label = new Label("◉ " + nombre + "\n");
 										}
@@ -347,9 +348,9 @@ public class FuncionesTableView {
 		// columnList
 		Double[] columnWidths = { 140.0, // nombre
 				37.0, // caja
-				47.0, // numero
+				49.0, // numero
 				135.0, // variante
-				85.0, // firma
+				110.0, // firma
 				78.0, // editorial
 				92.0, // formato
 				75.0, // procedencia
