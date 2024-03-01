@@ -191,6 +191,20 @@ public class ConectManager {
 		}
 	}
 
+	/**
+	 * Método estático que restablece la conexión a la base de datos.
+	 */
+	public static void closeConnection() {
+		try {
+			if (conn != null && !conn.isClosed()) {
+				conn.close();
+			}
+		} catch (SQLException ex) {
+			nav.alertaException(
+					"No ha sido posible restablecer la conexion a la base de datos. Parece que esta desconectada");
+		}
+	}
+
 	public static boolean conexionActiva() {
 
 		boolean estadoConexion = Utilidades.isMySQLServiceRunning(DB_HOST, DB_PORT);

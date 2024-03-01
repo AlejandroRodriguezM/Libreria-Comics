@@ -39,6 +39,7 @@ import Controladores.ImagenAmpliadaController;
 import Controladores.MenuLectorCodigoBarras;
 import Controladores.MenuPrincipalController;
 import Controladores.ModificarApiDatosController;
+import Controladores.OpcionesAvanzadasController;
 import Controladores.OpcionesDatosController;
 import Controladores.RecomendacionesController;
 import Controladores.SobreMiController;
@@ -70,9 +71,13 @@ public class Ventanas {
 
 	private static Stage estadoConexionStage = null;
 
+	private static Stage estadoApiStage = null;
+
 	private static Stage menuCodigoBarras = null;
 
 	private static Stage accionComic = null;
+	
+	private static Stage opcionesAvanzadasStage = null;
 
 	private static Stage cargaComics = null;
 
@@ -128,6 +133,7 @@ public class Ventanas {
 	 */
 	public void verEstadoConexion() {
 		Platform.runLater(() -> {
+			ventanaAbierta(estadoConexionStage);
 			if (estadoConexionStage == null || !estadoConexionStage.isShowing()) {
 				try {
 					// Cargo la vista
@@ -167,8 +173,8 @@ public class Ventanas {
 	 */
 	public void verModificarApis(boolean esMarvel) {
 		Platform.runLater(() -> {
-			ventanaAbierta(estadoConexionStage);
-			if (estadoConexionStage == null || !estadoConexionStage.isShowing()) {
+			ventanaAbierta(estadoApiStage);
+			if (estadoApiStage == null || !estadoApiStage.isShowing()) {
 				try {
 					// Verifica si hay una ventana abierta y ciérrala si es necesario
 
@@ -189,21 +195,21 @@ public class Ventanas {
 					// Creo la scene y el stage
 					Scene scene = new Scene(root);
 					scene.getStylesheets().add(getClass().getResource("/style/acces_style.css").toExternalForm());
-					estadoConexionStage = new Stage();
-					estadoConexionStage.setResizable(false);
-					estadoConexionStage.setTitle("Estado de conexion");
+					estadoApiStage = new Stage();
+					estadoApiStage.setResizable(false);
+					estadoApiStage.setTitle("Estado de conexion");
 
-					estadoConexionStage.getIcons().add(new Image("/Icono/icon2.png"));
+					estadoApiStage.getIcons().add(new Image("/Icono/icon2.png"));
 
 					// Asocio el stage con el scene
-					estadoConexionStage.setScene(scene);
-					estadoConexionStage.show();
+					estadoApiStage.setScene(scene);
+					estadoApiStage.show();
 
 					// Indico que debe hacer al cerrar
 
-					estadoConexionStage.setOnCloseRequest(e -> {
+					estadoApiStage.setOnCloseRequest(e -> {
 						controlador.closeWindow();
-						estadoConexionStage = null; // Establece la ventana actual a null cuando se cierra
+						estadoApiStage = null; // Establece la ventana actual a null cuando se cierra
 					});
 
 				} catch (IOException ex) {
@@ -258,6 +264,50 @@ public class Ventanas {
 				accionComic = null; // Establece la ventana actual a null cuando se cierra
 			});
 			ConectManager.resetConnection();
+		} catch (IOException ex) {
+			alertaException(ex.toString());
+			ex.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Abre una ventana para realizar acciones en un cómic. Verifica si hay una
+	 * ventana abierta y la cierra si es necesario. Carga la vista de la ventana de
+	 * acciones del cómic y muestra la ventana correspondiente con su controlador.
+	 * Define el comportamiento de cierre de la ventana y actualiza la referencia a
+	 * la ventana actual.
+	 */
+	public void verOpcionesAvanzadas() {
+		try {
+			// Verifica si hay una ventana abierta y ciérrala si es necesario
+			ventanaAbierta(opcionesAvanzadasStage);
+
+			// Cargo la vista
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/OpcionesAvanzadas.fxml"));
+
+			// Cargo el padre
+			Parent root = loader.load();
+
+			// Obtengo el controlador
+			OpcionesAvanzadasController controlador = loader.getController();
+
+			// Creo la scene y el stage
+			Scene scene = new Scene(root);
+			opcionesAvanzadasStage = new Stage();
+			opcionesAvanzadasStage.setResizable(false);
+			opcionesAvanzadasStage.setTitle("Acciones comic"); // Titulo de la aplicación.
+
+			opcionesAvanzadasStage.getIcons().add(new Image("/Icono/icon2.png"));
+
+			// Asocio el stage con el scene
+			opcionesAvanzadasStage.setScene(scene);
+			opcionesAvanzadasStage.show();
+
+			// Indico que debe hacer al cerrar
+			opcionesAvanzadasStage.setOnCloseRequest(e -> {
+				controlador.closeWindow();
+				opcionesAvanzadasStage = null; // Establece la ventana actual a null cuando se cierra
+			});
 		} catch (IOException ex) {
 			alertaException(ex.toString());
 			ex.printStackTrace();

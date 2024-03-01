@@ -127,7 +127,7 @@ public class AlarmaList {
 	public void iniciarThreadChecker(boolean esComprobarConexion) {
 		Thread checkerThread = new Thread(() -> {
 			try {
-				iniciarAnimacionAlarma(alarmaConexion);
+				detenerAnimacionEspera();
 				while (true) {
 					boolean estadoInternet = Utilidades.isInternetAvailable();
 					Platform.runLater(() -> {
@@ -136,9 +136,15 @@ public class AlarmaList {
 
 						String port = datosConfiguracion.get("Puerto");
 						String host = datosConfiguracion.get("Hosting");
-						iniciarAnimacionEspera(iniciarAnimacionEspera);
+
+						if (ConectManager.comprobarDatosConexion()) {
+							iniciarAnimacionConectado(iniciarAnimacionEspera);
+						} else {
+							iniciarAnimacionEspera(iniciarAnimacionEspera);
+						}
+
 						if (estadoInternet) {
-							iniciarAnimacionConectado(iniciarAnimacionEsperaInternet);
+							iniciarAnimacionEspera(iniciarAnimacionEsperaInternet);
 							detenerAnimacion(animacionAlarmaTimelineInternet);
 							asignarTooltip(alarmaConexionInternet, "Tienes conexión a internet");
 							iniciarAnimacionAlarmaOnline(alarmaConexionInternet);
@@ -160,8 +166,16 @@ public class AlarmaList {
 								animacionAlarmaTimelineMySql.stop();
 							}
 
+							iniciarAnimacionAlarma(alarmaConexion);
+
 							if (esComprobarConexion) {
-								iniciarAnimacionConectado(iniciarAnimacionEspera);
+								if (ConectManager.estadoConexion) {
+									detenerAnimacionEspera();
+									iniciarAnimacionConectado(iniciarAnimacionEspera);
+									iniciarAnimacionConectado(alarmaConexion);
+								} else {
+									iniciarAnimacionEspera(iniciarAnimacionEspera);
+								}
 							}
 							asignarTooltip(alarmaConexionSql, "Servicio de MySQL activado");
 							iniciarAnimacionAlarmaOnline(alarmaConexionSql);
@@ -219,7 +233,10 @@ public class AlarmaList {
 	/**
 	 * Metodo que permite crear una animacion
 	 */
-	public void iniciarAnimacionEspera(Label prontEstadoConexion) {
+	public static void iniciarAnimacionEspera(Label prontEstadoConexion) {
+
+//		detenerAnimacionEspera();
+
 		timelineError = new Timeline();
 		timelineError.setCycleCount(Timeline.INDEFINITE);
 //		if (timelineError == null) {
@@ -243,6 +260,70 @@ public class AlarmaList {
 		// Iniciar la animación
 		timelineError.play();
 //		}
+	}
+	
+	/**
+	 * Metodo que permite crear una animacion
+	 */
+	public static void iniciarAnimacionAvanzado(Label prontEstadoConexion, String cadena) {
+
+		detenerAnimacionEspera();
+
+		timelineError = new Timeline();
+		timelineError.setCycleCount(Timeline.INDEFINITE);
+//		if (timelineError == null) {
+		prontEstadoConexion.setStyle("-fx-background-color: #29B6CC;");
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarEsperando = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontEstadoConexion.textProperty(), cadena));
+		KeyFrame mostrarPunto = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(prontEstadoConexion.textProperty(), ""));
+		KeyFrame mostrarDosPuntos = new KeyFrame(Duration.seconds(1),
+				new KeyValue(prontEstadoConexion.textProperty(), cadena));
+		KeyFrame mostrarTresPuntos = new KeyFrame(Duration.seconds(1.5),
+				new KeyValue(prontEstadoConexion.textProperty(), ""));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(2), new KeyValue(prontEstadoConexion.textProperty(), ""));
+
+		// Agregar los keyframes al timeline
+		timelineError.getKeyFrames().addAll(mostrarEsperando, mostrarPunto, mostrarDosPuntos, mostrarTresPuntos,
+				ocultarTexto);
+
+		// Iniciar la animación
+		timelineError.play();
+//		}
+	}
+
+	public static void iniciarAnimacionConectado(Label prontEstadoConexion) {
+		timelineError = new Timeline();
+		timelineError.setCycleCount(Timeline.INDEFINITE);
+//		if (timelineError == null) {
+		prontEstadoConexion.setStyle("-fx-background-color: green;");
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarEsperando = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontEstadoConexion.textProperty(), "Conectado"));
+		KeyFrame mostrarPunto = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(prontEstadoConexion.textProperty(), "Conectado."));
+		KeyFrame mostrarDosPuntos = new KeyFrame(Duration.seconds(1),
+				new KeyValue(prontEstadoConexion.textProperty(), "Conectado.."));
+		KeyFrame mostrarTresPuntos = new KeyFrame(Duration.seconds(1.5),
+				new KeyValue(prontEstadoConexion.textProperty(), "Conectado..."));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(2), new KeyValue(prontEstadoConexion.textProperty(), ""));
+
+		// Agregar los keyframes al timeline
+		timelineError.getKeyFrames().addAll(mostrarEsperando, mostrarPunto, mostrarDosPuntos, mostrarTresPuntos,
+				ocultarTexto);
+
+		// Iniciar la animación
+		timelineError.play();
+//		}
+	}
+
+	public static void detenerAnimacionEspera() {
+		if (timelineError != null) {
+			timelineError.stop();
+		}
 	}
 
 	/**
@@ -384,29 +465,6 @@ public class AlarmaList {
 		// Iniciar la animación
 		timelineError.play();
 //		}
-	}
-
-	/**
-	 * Metodo que permite crear una animacion
-	 */
-	public static void iniciarAnimacionConectado(Label prontEstadoConexion) {
-		timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
-		prontEstadoConexion.setStyle("-fx-background-color: #29B6CC; -fx-text-fill: black;");
-		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarConectado = new KeyFrame(Duration.ZERO, new KeyValue(prontEstadoConexion.textProperty(), ""));
-		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.0),
-				new KeyValue(prontEstadoConexion.textProperty(), "Conectado"));
-		KeyFrame mostrarConectado2 = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(prontEstadoConexion.textProperty(), ""));
-		KeyFrame ocultarTextoDeNuevo = new KeyFrame(Duration.seconds(1.0),
-				new KeyValue(prontEstadoConexion.textProperty(), "Conectado"));
-
-		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(mostrarConectado, ocultarTexto, mostrarConectado2, ocultarTextoDeNuevo);
-
-		// Iniciar la animación
-		timeline.play();
 	}
 
 	public static void iniciarAnimacionDesconectado(Label prontEstadoConexion) {

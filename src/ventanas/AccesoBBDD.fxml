@@ -39,8 +39,8 @@
          <font>
             <Font size="17.0" />
          </font></Button>
-      <Label fx:id="alarmaConexion" layoutX="4.0" layoutY="3.0" prefHeight="19.0" prefWidth="29.0" stylesheets="@../style/alarma_conexion_style.css" />
-      <Label fx:id="alarmaConexionInternet" layoutX="235.0" layoutY="3.0" prefHeight="19.0" prefWidth="29.0" style="-fx-background-radius: 50;" stylesheets="@../style/alarma_conexion_style.css" />
+      <Label fx:id="alarmaConexion" layoutX="4.0" layoutY="3.0" prefHeight="30.0" prefWidth="32.0" stylesheets="@../style/alarma_conexion_style.css" />
+      <Label fx:id="alarmaConexionInternet" layoutX="235.0" layoutY="3.0" prefHeight="30.0" prefWidth="29.0" style="-fx-background-radius: 50;" stylesheets="@../style/alarma_conexion_style.css" />
       <Button fx:id="botonOpciones" layoutX="7.0" layoutY="398.0" mnemonicParsing="false" onAction="#opcionesPrograma" prefHeight="33.0" prefWidth="116.0" stylesheets="@../style/acces_style.css" text="Opciones" />
       <Button fx:id="botonDescargaBBDD" layoutX="149.0" layoutY="398.0" mnemonicParsing="false" onAction="#accesoMySqlWorkbench" prefHeight="33.0" prefWidth="116.0" stylesheets="@../style/acces_style.css" text="Tutorial" wrapText="true" />
       <Button fx:id="botonSalir" layoutX="27.0" layoutY="455.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="38.0" prefWidth="216.0" stylesheets="@../style/acces_style.css" text="Salir" />
@@ -67,7 +67,7 @@
       <Label fx:id="passUsuarioLabel" disable="true" layoutX="49.0" layoutY="194.0" stylesheets="@../style/datos_ocultos.css" text="Contraseña de usuario" visible="false" />
       <Label fx:id="nomUsuarioLabel" disable="true" layoutX="60.0" layoutY="128.0" stylesheets="@../style/datos_ocultos.css" text="Nombre de usuario" visible="false" />
       <ImageView fx:id="toggleEyeImageView" disable="true" fitHeight="38.0" fitWidth="29.0" layoutX="184.0" layoutY="228.0" pickOnBounds="true" preserveRatio="true" visible="false" />
-      <Label fx:id="alarmaConexionSql" layoutX="191.0" layoutY="3.0" prefHeight="30.0" prefWidth="29.0" style="-fx-background-radius: 50;" stylesheets="@../style/alarma_conexion_style.css" />
+      <Label fx:id="alarmaConexionSql" layoutX="191.0" layoutY="3.0" prefHeight="30.0" prefWidth="29.0" stylesheets="@../style/alarma_conexion_style.css" />
       <Button fx:id="botonEncender" layoutX="18.0" layoutY="336.0" mnemonicParsing="false" onAction="#reActivarConexion" prefHeight="46.0" prefWidth="50.0" style="-fx-background-radius: 50;">
          <stylesheets>
             <URL value="@../style/boton_reestart_style.css" />

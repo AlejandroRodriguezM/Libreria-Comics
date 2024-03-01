@@ -3,6 +3,7 @@ package UNIT_TEST;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -26,6 +27,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.print.DocFlavor.URL;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,6 +42,7 @@ import Apis.ApiMarvel;
 import Controladores.VentanaAccionController;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
+import Funcionamiento.VersionService;
 import comicManagement.Comic;
 import dbmanager.ConectManager;
 import javafx.application.Application;
@@ -165,7 +169,7 @@ public class Unit_Test extends Application {
 
 //		pruebaSubidaComic();
 //		pruebaModificacionComic();
-		getComicInfo("9780785198260");
+//		getComicInfo("9780785198260");
 //		pruebaDiamondCode_imagen("JUL220767");
 //		launch(args);
 //		verLibroGoogle("9788411505963");
@@ -181,8 +185,42 @@ public class Unit_Test extends Application {
 //		nav.verMenuCodigosBarra();
 		
 //		nav.verEstadoConexion();
+		
+		System.out.println(leerVersionDelArchivo());
 
 	}
+	
+	public static String leerVersionDelArchivo() {
+	    StringBuilder version = new StringBuilder();
+	    
+	    try (InputStream is = VersionService.class.getResourceAsStream("/version.txt")) {
+	        if (is == null) {
+	            throw new IOException("No se pudo encontrar el archivo version.txt");
+	        }
+	        
+	        // Obtener la URL del recurso
+	        java.net.URL url = VersionService.class.getResource("version.txt");
+	        if (url != null) {
+	            System.out.println("Ruta del archivo version.txt: " + url.getPath());
+	        } else {
+	            System.out.println("No se pudo obtener la ruta del archivo version.txt");
+	        }
+	        
+	        try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+	            String linea;
+	            while ((linea = reader.readLine()) != null) {
+	                version.append(linea);
+	            }
+	        }
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	        return "Error al leer la versión";
+	    }
+	    
+	    return version.toString();
+	}
+
+
 
 	public void start(Stage primaryStage) {
 //

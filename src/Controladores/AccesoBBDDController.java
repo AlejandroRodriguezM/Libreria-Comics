@@ -198,6 +198,8 @@ public class AccesoBBDDController implements Initializable {
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
 		alarmaList.setAlarmaConexionPrincipal(prontEstadoConexion);
 
+		ConectManager.closeConnection();
+		
 		alarmaList.iniciarThreadChecker(false);
 
 		Utilidades.crearEstructura();
@@ -324,12 +326,13 @@ public class AccesoBBDDController implements Initializable {
 
 		if (configurarConexion()) {
 
+			
 			ConectManager.datosBBDD(datosFichero);
 			if (ConectManager.isConnected()) {
+				
 				AlarmaList.detenerAnimacion();
 				AlarmaList.iniciarAnimacionConectado(prontEstadoConexion);
 				AlarmaList.manejarConexionExitosa(datosFichero, prontEstadoConexion);
-
 			} else {
 				AlarmaList.manejarErrorConexion("No estás conectado a la base de datos.", prontEstadoConexion);
 			}

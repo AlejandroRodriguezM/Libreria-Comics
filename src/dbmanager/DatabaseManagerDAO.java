@@ -1,5 +1,6 @@
 package dbmanager;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -229,35 +230,66 @@ public class DatabaseManagerDAO {
 		return null;
 	}
 
-	private static void actualizarNombres(String columna) {
+	private static void actualizarNombres(String columna, int idColumna, String nombreCorregido) {
 		// Construir la consulta de actualización
-		String consultaUpdate = "UPDATE comicsbbdd SET " + columna + " = ?";
+		String consultaUpdate = "UPDATE " + ConectManager.DB_NAME + ".comicsbbdd SET " + columna + " = ? WHERE ID = "
+				+ idColumna;
 		String url = "jdbc:mysql://" + ConectManager.DB_HOST + ":" + ConectManager.DB_PORT + "?serverTimezone=UTC";
 
 		try (Connection connection = DriverManager.getConnection(url, ConectManager.DB_USER, ConectManager.DB_PASS);
 				Statement stmt = connection.createStatement()) {
-			// Consulta SQL para seleccionar las filas que necesitan ser modificadas
-            String consultaSelect = "SELECT " + columna + " FROM " + ConectManager.DB_NAME + ".comicsbbdd";
-			ResultSet rs = stmt.executeQuery(consultaSelect);
 
-			while (rs.next()) {
-				String nombre = rs.getString(columna);
-				String nombreCorregido = corregirNombre(nombre);
+			try (PreparedStatement pstmt = connection.prepareStatement(consultaUpdate)) {
+				pstmt.setString(1, nombreCorregido);
+				pstmt.executeUpdate();
 
-				try (PreparedStatement pstmt = connection.prepareStatement(consultaUpdate)) {
-					pstmt.setString(1, nombreCorregido);
-					pstmt.executeUpdate();
-				}
+				System.out.println("ID: " + idColumna + " nombre: " + nombreCorregido + " corregido");
+
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
+	public static void comprobarNormalizado(String columna, Label prontInfo) {
+		String url = "jdbc:mysql://" + ConectManager.DB_HOST + ":" + ConectManager.DB_PORT + "?serverTimezone=UTC";
+		int contador = 0;
+		String cadena = "";
+		// Construir la consulta para seleccionar los nombres de la columna
+		String consultaSelect = "SELECT ID, " + columna + " FROM " + ConectManager.DB_NAME + ".comicsbbdd";
+
+		try (Connection connection = DriverManager.getConnection(url, ConectManager.DB_USER, ConectManager.DB_PASS);
+				Statement stmt = connection.createStatement();
+				ResultSet rs = stmt.executeQuery(consultaSelect)) {
+
+			while (rs.next()) {
+				int id = rs.getInt("ID");
+				String nombre = rs.getString(columna);
+				String nombreCorregido = corregirNombre(nombre);
+
+				// Verificar si el nombre no está normalizado
+				if (!nombre.equals(nombreCorregido)) {
+					actualizarNombres(columna, id, nombreCorregido);
+					contador++;
+				}
+			}
+
+			if (contador == 0) {
+				cadena = "Todo normalizado";
+
+			} else {
+				cadena = contador + " sin normalizar";
+			}
+			AlarmaList.iniciarAnimacionAvanzado(prontInfo, cadena);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+	}
+
 	// Método para corregir los nombres según los patrones especificados
 	private static String corregirNombre(String nombre) {
-		// Normalizar mayúsculas y minúsculas
-		nombre = nombre.toLowerCase();
 		// Convertir primera letra de cada palabra a mayúscula
 		nombre = nombre.replaceAll("(^|[-,\\s])(\\p{L})", "$1$2".toUpperCase());
 
@@ -270,7 +302,7 @@ public class DatabaseManagerDAO {
 		// Reemplazar '-,' por '-'
 		nombre = nombre.replaceAll("-,", "-");
 		// Remover espacios extra alrededor de '-'
-		nombre = nombre.replaceAll("\\s*-\\s*", "-");
+		nombre = nombre.replaceAll("\\s*-\\s*", " - ");
 		// Remover ',' al final si existe
 		nombre = nombre.replaceAll(",$", "");
 		// Remover '-' al final si existe
@@ -281,7 +313,52 @@ public class DatabaseManagerDAO {
 			nombre = nombre.substring(0, 1).toUpperCase() + nombre.substring(1);
 		}
 
+		// Agregar la lógica para corregir los patrones específicos
+		// Reemplazar múltiples espacios entre palabras por un solo espacio
+		nombre = nombre.replaceAll("\\s{2,}", " ");
+		// Remover espacios alrededor de '-'
+		nombre = nombre.replaceAll("\\s*-\\s*", " - ");
+		// Remover espacios alrededor de ','
+		nombre = nombre.replaceAll("\\s*,\\s*", ", ");
+		// Remover espacios alrededor de '(' y ')'
+		nombre = nombre.replaceAll("\\s*\\(\\s*", "(");
+		nombre = nombre.replaceAll("\\s*\\)\\s*", ")");
+
 		return nombre;
+	}
+
+	/**
+	 * Funcion crea el fichero SQL segun el sistema operativo en el que te
+	 * encuentres.
+	 *
+	 * @param fichero
+	 */
+	public static void makeSQL(Label prontInfo) {
+
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
+		String frase = "Fichero SQL";
+
+		String formato = "*.sql";
+
+		File fichero = Utilidades.tratarFichero(frase, formato).showSaveDialog(null); // Llamada a funcion
+
+		if (fichero != null) {
+
+			if (Utilidades.isWindows()) {
+				Utilidades.backupWindows(fichero); // Llamada a funcion
+
+			} else {
+				if (Utilidades.isUnix()) {
+					Utilidades.backupLinux(fichero); // Llamada a funcion
+				}
+			}
+			String cadena = "FicheroSQL creado correctamente";
+			AlarmaList.iniciarAnimacionAvanzado(prontInfo, cadena);
+
+		}
 	}
 
 }

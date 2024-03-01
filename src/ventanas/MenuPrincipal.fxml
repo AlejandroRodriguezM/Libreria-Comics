@@ -31,10 +31,10 @@
 					<items>
 						<MenuItem fx:id="menu_archivo_excel" mnemonicParsing="false" onAction="#exportCSV" text="Exportar Excel" />
 						<MenuItem fx:id="menu_archivo_importar" mnemonicParsing="false" onAction="#importCSV" text="Importar CSV" />
-						<MenuItem fx:id="menu_archivo_backupbbdd" mnemonicParsing="false" onAction="#exportarSQL" text="Exportar base de datos" />
 						<MenuItem fx:id="menu_archivo_delete" mnemonicParsing="false" onAction="#borrarContenidoTabla" text="Eliminar Base de datos" />
 						<MenuItem fx:id="menu_archivo_sobreMi" mnemonicParsing="false" onAction="#verSobreMi" text="Sobre mi" />
                   <MenuItem fx:id="menu_archivo_conexion" mnemonicParsing="false" onAction="#verEstadoConexion" text="Comprobar Conexion" />
+                  <MenuItem fx:id="menu_archivo_avanzado" mnemonicParsing="false" onAction="#verOpcionesAvanzadas" text="Opciones Avanzadas" />
                   <Menu mnemonicParsing="false" text="Comprobar Apis">
                     <items>
                       <MenuItem mnemonicParsing="false" onAction="#modificarApiMarvel" text="Comprobar Api Marvel" />

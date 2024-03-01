@@ -138,7 +138,7 @@ public class MenuPrincipalController implements Initializable {
 	 * Menú de archivo con opciones relacionadas con la base de datos.
 	 */
 	@FXML
-	private MenuItem menu_archivo_backupbbdd, menu_archivo_cerrar, menu_archivo_delete, menu_archivo_desconectar,
+	private MenuItem menu_archivo_cerrar, menu_archivo_delete, menu_archivo_desconectar,
 			menu_archivo_excel, menu_archivo_importar, menu_archivo_sobreMi;
 
 	/**
@@ -155,6 +155,9 @@ public class MenuPrincipalController implements Initializable {
 	private MenuItem menu_estadistica_comprados, menu_estadistica_estadistica, menu_estadistica_firmados,
 			menu_estadistica_key_issue, menu_estadistica_posesion, menu_estadistica_puntuados,
 			menu_estadistica_vendidos;
+	
+    @FXML
+    private MenuItem menu_archivo_avanzado;
 
 	@FXML
 	private MenuItem menu_archivo_conexion;
@@ -805,7 +808,6 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void comicsEnPosesion(ActionEvent event) throws SQLException {
 		imprimirComicsEstado(TipoBusqueda.POSESION, false);
-
 	}
 
 	@FXML
@@ -813,7 +815,13 @@ public class MenuPrincipalController implements Initializable {
 		imprimirComicsEstado(null, true);
 
 	}
+	
+	@FXML
+	void verOpcionesAvanzadas(ActionEvent event) throws SQLException {
+		nav.verOpcionesAvanzadas();
 
+	}
+	
 	/**
 	 * Maneja la acción de mostrar los cómics considerados "Key Issue".
 	 *
@@ -823,7 +831,6 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void comicsKeyIssue(ActionEvent event) throws SQLException {
 		imprimirComicsEstado(TipoBusqueda.KEY_ISSUE, false);
-
 	}
 
 	private void imprimirComicsEstado(TipoBusqueda tipoBusqueda, boolean esGuardado) {
@@ -908,26 +915,6 @@ public class MenuPrincipalController implements Initializable {
 		ListaComicsDAO.limpiarListaGuardados();
 
 		Utilidades.borrarArchivosNoEnLista(ListaComicsDAO.listaImagenes);
-	}
-
-	/**
-	 * Exporta la base de datos en un fichero SQL
-	 *
-	 * @param event
-	 */
-	@FXML
-	void exportarSQL(ActionEvent event) {
-
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
-
-		makeSQL();
-
-		limpiezaDeDatos();
-		limpiarComboBox();
-		Utilidades.borrarArchivosNoEnLista(ListaComicsDAO.listaImagenes);
-
 	}
 
 	/**
@@ -1254,7 +1241,6 @@ public class MenuPrincipalController implements Initializable {
 
 		menu_archivo_excel.setDisable(estadoAccion);
 		menu_archivo_importar.setDisable(estadoAccion);
-		menu_archivo_backupbbdd.setDisable(estadoAccion);
 		menu_archivo_delete.setDisable(estadoAccion);
 		menu_comic_aniadir.setDisable(estadoAccion);
 		menu_comic_eliminar.setDisable(estadoAccion);
@@ -1340,47 +1326,7 @@ public class MenuPrincipalController implements Initializable {
 		AlarmaList.mostrarMensajePront(mensaje, resultado, prontInfo);
 	}
 
-	/**
-	 * Funcion crea el fichero SQL segun el sistema operativo en el que te
-	 * encuentres.
-	 *
-	 * @param fichero
-	 */
-	public void makeSQL() {
 
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
-
-		String frase = "Fichero SQL";
-
-		String formato = "*.sql";
-
-		File fichero = Utilidades.tratarFichero(frase, formato).showSaveDialog(null); // Llamada a funcion
-
-		prontInfo.setOpacity(0);
-		if (fichero != null) {
-
-			if (Utilidades.isWindows()) {
-				Utilidades.backupWindows(fichero); // Llamada a funcion
-				String mensaje = "Base de datos exportada \ncorrectamente";
-
-				AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
-
-			} else {
-				if (Utilidades.isUnix()) {
-					Utilidades.backupLinux(fichero); // Llamada a funcion
-					String mensaje = "Base de datos exportada \ncorrectamente";
-
-					AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
-				}
-			}
-		} else {
-			String mensaje = "ERROR. Se ha cancelado la exportacion de la base de datos.";
-
-			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
-		}
-	}
 
 	/**
 	 * Devuelve un array con los datos de los TextField correspondientes a la los
