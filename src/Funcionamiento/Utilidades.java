@@ -2758,7 +2758,7 @@ public class Utilidades {
 
 		return nombreAleatorio + extension;
 	}
-	
+
 	/**
 	 * Oculta y deshabilita varios campos y elementos en la interfaz gráfica.
 	 *
@@ -2777,6 +2777,39 @@ public class Utilidades {
 			}
 
 		}
+	}
+
+	public static void descargarYAbrirEjecutableDesdeGitHub(Stage primaryStage) {
+		Task<Void> task = new Task<Void>() {
+			@Override
+			protected Void call() throws Exception {
+				String urlDescarga = "https://github.com/AlejandroRodriguezM/Libreria-Comics/releases/latest/download/Libreria.exe";
+				URI uri = new URI(urlDescarga);
+
+				HttpURLConnection httpConn = (HttpURLConnection) uri.toURL().openConnection();
+				httpConn.setRequestMethod("GET");
+
+				int responseCode = httpConn.getResponseCode();
+				if (responseCode == HttpURLConnection.HTTP_OK) {
+					// Ejecutar el código del FileChooser en el hilo principal de JavaFX
+					Platform.runLater(() -> {
+						// Configurar el FileChooser de JavaFX
+						try {
+							Desktop.getDesktop().browse(uri);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					});
+				} else {
+					System.out.println("La descarga falló. Código de respuesta: " + responseCode);
+				}
+				httpConn.disconnect();
+				return null;
+			}
+		};
+
+		new Thread(task).start();
 	}
 
 }

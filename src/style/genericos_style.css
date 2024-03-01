@@ -37,7 +37,7 @@
 }
 
 .button:pressed {
-    -fx-opacity: 0.8;
+    -fx-opacity: 0.5;
 }
 
 #botonGuardarResultado {
@@ -58,12 +58,12 @@
     -fx-background-color: #009EE8; /* Color azul más oscuro en hover */
 }
 
-.button#botonDescargarSQL,.button#botonDescargarExcel,.button#botonDescargarPortadas,.button#botonNormalizarDB, .button#botonActualizarSoftware  {
+.button#botonDescargarSQL,.button#botonDescargarExcel,.button#botonDescargarPortadas,.button#botonNormalizarDB, .button#botonActualizarSoftware, .button#botonDescargarSW  {
     -fx-background-color: #5cb85c;
     -fx-border-color: #4cae4c;
 }
 
-.button#botonDescargarSQL:hover,.button#botonDescargarExcel:hover,.button#botonDescargarPortadas:hover,.button#botonNormalizarDB:hover, .button#botonActualizarSoftware:hover {
+.button#botonDescargarSQL:hover,.button#botonDescargarExcel:hover,.button#botonDescargarPortadas:hover,.button#botonNormalizarDB:hover, .button#botonActualizarSoftware:hover, .button#botonDescargarSW:hover {
     -fx-background-color: #4cae4c;
 }
 
