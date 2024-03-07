@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import Funcionamiento.FuncionesFicheros;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import javafx.scene.Scene;
@@ -140,9 +141,9 @@ public class ConectManager {
 			return null;
 		}
 
-		if (!Utilidades.validarDatosConexion()) {
+		if (!FuncionesFicheros.validarDatosConexion()) {
+			System.out.println(1);
 			nav.alertaException("La URL de conexión no es válida");
-			System.out.println("Error no conectado a mysql");
 			return null;
 		}
 
@@ -151,6 +152,7 @@ public class ConectManager {
 		// Validar la URL de conexión
 		if (!DB_URL.startsWith("jdbc:mysql://") || DB_URL.indexOf(':', 12) == -1 || DB_URL.indexOf('/', 12) == -1) {
 			nav.alertaException("La URL de conexión no es válida");
+
 			return null;
 		}
 
@@ -163,7 +165,7 @@ public class ConectManager {
 
 			estadoConexion = true;
 
-			if (!Utilidades.validarDatosConexion()) {
+			if (!FuncionesFicheros.validarDatosConexion()) {
 				estadoConexion = false;
 				nav.alertaException("Error. Servicio MySql apagado o desconectado de forma repentina.");
 				return null;

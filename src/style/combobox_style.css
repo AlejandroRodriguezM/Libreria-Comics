@@ -23,3 +23,11 @@
 .text-area:selected {
     -fx-background-color: #B3D9FF;
 }
+
+.combo-box .list-view {
+    -fx-background-color: transparent;
+    -fx-opacity: 0; /* Hace que el desplegable sea invisible */
+    -fx-pref-width: 0; /* Establece el ancho del desplegable a 0 para desactivarlo */
+    -fx-pref-height: 0; /* Establece la altura del desplegable a 0 para desactivarlo */
+}
+

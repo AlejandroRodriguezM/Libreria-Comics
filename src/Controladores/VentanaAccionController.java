@@ -35,6 +35,7 @@ import org.json.JSONException;
 
 import Apis.ApiISBNGeneral;
 import Apis.ApiMarvel;
+import Funcionamiento.FuncionesApis;
 import Funcionamiento.FuncionesComboBox;
 import Funcionamiento.FuncionesManejoFront;
 import Funcionamiento.FuncionesTableView;
@@ -560,8 +561,8 @@ public class VentanaAccionController implements Initializable {
 	public final String SOURCE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
 			+ ConectManager.DB_NAME + File.separator + "portadas";
 
-	public static String apiKey = Utilidades.cargarApiComicVine();
-	public static String clavesMarvel[] = Utilidades.clavesApiMarvel();
+	public static String apiKey = FuncionesApis.cargarApiComicVine();
+	public static String clavesMarvel[] = FuncionesApis.clavesApiMarvel();
 
 	ObservableList<ImageView> listaImagenes;
 
@@ -908,7 +909,7 @@ public class VentanaAccionController implements Initializable {
 		Comic comicTemp = null;
 		String mensaje = "";
 		if (!ListaComicsDAO.comicsImportados.isEmpty()) {
-			comicTemp = Utilidades.devolverComic(idComic);
+			comicTemp = ListaComicsDAO.buscarComicPorID(ListaComicsDAO.comicsImportados, idComic);
 		} else {
 			comicTemp = ComicManagerDAO.comicDatos(idComic);
 		}
@@ -1185,7 +1186,7 @@ public class VentanaAccionController implements Initializable {
 	@FXML
 	void busquedaAvanzada(ActionEvent event) {
 		// Verificar si las claves API están ausentes o vacías
-		if (!Utilidades.verificarClavesAPI(clavesMarvel, apiKey)) {
+		if (!FuncionesApis.verificarClavesAPI(clavesMarvel, apiKey)) {
 			nav.alertaException("Revisa las APIS de Marvel y Vine, estan incorrectas o no funcionan");
 			return;
 		} else {
@@ -1203,7 +1204,7 @@ public class VentanaAccionController implements Initializable {
 	@FXML
 	void importarFicheroCodigoBarras(ActionEvent evento) {
 
-		if (Utilidades.verificarClavesAPI(clavesMarvel, apiKey)) {
+		if (FuncionesApis.verificarClavesAPI(clavesMarvel, apiKey)) {
 			if (Utilidades.isInternetAvailable()) {
 
 				limpiarAutorellenos();
@@ -1305,7 +1306,7 @@ public class VentanaAccionController implements Initializable {
 					return;
 				}
 
-				if (!Utilidades.verificarClavesAPI(clavesMarvel, apiKey)) {
+				if (!FuncionesApis.verificarClavesAPI(clavesMarvel, apiKey)) {
 
 					prontInfo.setText("No estás conectado a internet. Revisa tu conexión");
 					return;
@@ -2043,7 +2044,7 @@ public class VentanaAccionController implements Initializable {
 		}
 		Comic datos = camposComic();
 		if (datos.getID() == null || datos.getID().isEmpty()) {
-			datos = Utilidades.buscarComicPorID(ListaComicsDAO.comicsImportados, datos.getID());
+			datos = ListaComicsDAO.buscarComicPorID(ListaComicsDAO.comicsImportados, datos.getID());
 		}
 
 		Comic.limpiarCamposComic(datos);

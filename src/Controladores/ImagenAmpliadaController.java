@@ -16,6 +16,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -76,19 +77,26 @@ public class ImagenAmpliadaController implements Initializable {
 
 	public void mostrarImagen() {
 
+		String direccionFinalImg = "";
+		
 		if (Utilidades.existePortada(direccionImagen)) {
-			Utilidades.cargarImagenAsync(direccionImagen, imagenAmpliada);
-
+			direccionFinalImg = direccionImagen;
 		} else {
 			String imagePath = "/Funcionamiento/sinPortada.jpg";
-			Utilidades.cargarImagenAsync(imagePath, imagenAmpliada);
+			direccionFinalImg = imagePath;
+
 		}
+		
+		Image imagen = new Image(new File(direccionFinalImg).toURI().toString(), true);
+        // Configura el ImageView con la imagen cargada
+        imagenAmpliada.setImage(imagen);
+        imagenAmpliada.setPreserveRatio(true); // Mantiene la relación de aspecto de la imagen
 	}
 
 	// Método para guardar la imagen
 	private void guardarImagen(String filePath) {
 
-		String nombreFichero = Utilidades.obtenerDespuesPortadas(filePath);
+		String nombreFichero = Utilidades.obtenerNombrePortada(false,filePath);
 
 		// Crear un FileChooser para permitir al usuario seleccionar la ubicación de
 		// guardado

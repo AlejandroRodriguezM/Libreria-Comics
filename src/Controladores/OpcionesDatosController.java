@@ -32,14 +32,17 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
 import Funcionamiento.FuncionesComboBox;
+import Funcionamiento.FuncionesFicheros;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -113,6 +116,12 @@ public class OpcionesDatosController implements Initializable {
 	 */
 	@FXML
 	private Button boton_restaurar;
+
+	/**
+	 * Botón para descargar la base de datos.
+	 */
+	@FXML
+	private Button botonDescargaBBDD;
 
 	/**
 	 * Etiqueta para mostrar el nombre del host.
@@ -220,13 +229,14 @@ public class OpcionesDatosController implements Initializable {
 
 		alarmaList.iniciarThreadChecker(false);
 
-		Utilidades.crearEstructura();
+		FuncionesFicheros.crearEstructura();
 		AlarmaList.configureEyeToggle(toggleEyeImageView, passUsuarioTextField, pass);
 		restringir_entrada_datos();
 
 		formulario_local();
+		actualizarDataBase();
 
-		alarmaList.iniciarAnimacionEspera(prontEstadoFichero);
+		AlarmaList.iniciarAnimacionEspera(prontEstadoFichero);
 		AlarmaList.iniciarAnimacionAlarma(alarmaConexion);
 	}
 
@@ -235,7 +245,7 @@ public class OpcionesDatosController implements Initializable {
 	 */
 	public void formulario_local() {
 
-		Map<String, String> datosConfiguracion = Utilidades.devolverDatosConfig();
+		Map<String, String> datosConfiguracion = FuncionesFicheros.devolverDatosConfig();
 
 		usuario.setText(datosConfiguracion.get("Usuario"));
 
@@ -248,26 +258,88 @@ public class OpcionesDatosController implements Initializable {
 		rellenarComboDB(datosConfiguracion);
 	}
 
+	private void actualizarDataBase() {
+		// Escuchador para el campo de texto "usuario"
+		usuario.textProperty().addListener((observable, oldValue, newValue) -> {
+			Platform.runLater(() -> {
+				actualizarComboBoxNombreBBDD();
+			});
+		});
+
+		// Escuchador para el campo de texto "password"
+		pass.textProperty().addListener((observable, oldValue, newValue) -> {
+			Platform.runLater(() -> {
+				actualizarComboBoxNombreBBDD();
+			});
+		});
+
+		// Escuchador para el campo de texto "password"
+		passUsuarioTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+			Platform.runLater(() -> {
+				actualizarComboBoxNombreBBDD();
+			});
+		});
+
+		// Escuchador para el campo de texto "puerto"
+		puertobbdd.textProperty().addListener((observable, oldValue, newValue) -> {
+			Platform.runLater(() -> {
+				actualizarComboBoxNombreBBDD();
+			});
+		});
+
+		// Escuchador para el campo de texto "nombreHost"
+		nombreHost.textProperty().addListener((observable, oldValue, newValue) -> {
+			Platform.runLater(() -> {
+				actualizarComboBoxNombreBBDD();
+			});
+		});
+	}
+
+	/**
+	 * Actualiza el ComboBox de nombreBBDD con opciones disponibles.
+	 */
+	private void actualizarComboBoxNombreBBDD() {
+		String usuario = this.usuario.getText();
+		String password = this.pass.getText();
+		String puerto = this.puertobbdd.getText();
+		String hosting = this.nombreHost.getText();
+
+		if (usuario.isEmpty() || password.isEmpty() || puerto.isEmpty() || hosting.isEmpty()) {
+			nombreBBDD.getSelectionModel().clearSelection();
+			nombreBBDD.setDisable(true);
+			nombreBBDD.setEditable(false);
+		} else {
+			nombreBBDD.getItems().clear();
+			nombreBBDD.setDisable(false);
+
+			Map<String, String> datosConfiguracion = new HashMap<>();
+			datosConfiguracion.put("Usuario", usuario);
+			datosConfiguracion.put("Puerto", puerto);
+			datosConfiguracion.put("Password", password);
+			datosConfiguracion.put("Database", "");
+			datosConfiguracion.put("Hosting", hosting);
+
+			rellenarComboDB(datosConfiguracion);
+		}
+	}
+
 	public void rellenarComboDB(Map<String, String> datosConfiguracion) {
 		AlarmaList alarmaList = new AlarmaList();
 
 		String puertoTexto = datosConfiguracion.get("Puerto");
 		String databaseTexto = datosConfiguracion.get("Database");
 		String hostingTexto = datosConfiguracion.get("Hosting");
-				
-		if (Utilidades.isMySQLServiceRunning(hostingTexto,puertoTexto)) {
 
-			List<String> opciones = Utilidades.obtenerOpcionesNombreBBDD(datosConfiguracion);
+		if (Utilidades.isMySQLServiceRunning(hostingTexto, puertoTexto)) {
+
+			List<String> opciones = FuncionesFicheros.obtenerOpcionesNombreBBDD(datosConfiguracion);
 			AlarmaList.detenerAnimacion();
-			prontEstadoFichero.setText(null);
+			prontEstadoFichero.setText("");
 			if (!opciones.isEmpty()) {
 
-				alarmaList.iniciarAnimacionEspera(prontEstadoFichero);
+				AlarmaList.iniciarAnimacionEspera(prontEstadoFichero);
 				nombreBBDD.getItems().addAll(opciones);
 				nombreBBDD.getSelectionModel().selectFirst();
-			} else {
-				alarmaList.iniciarAnimacionDatosError(prontEstadoFichero,puertoTexto);
-				opciones.add("");
 			}
 
 			devolverDB(opciones, databaseTexto);
@@ -360,14 +432,15 @@ public class OpcionesDatosController implements Initializable {
 	@FXML
 	void guardarDatos(ActionEvent event) throws SQLException {
 
-		String datos[] = new String[5];
+		String datos[] = new String[6];
 		datos[0] = puertobbdd.getText();
 		datos[1] = nombreBBDD.getSelectionModel().getSelectedItem();
 		datos[2] = usuario.getText();
 		datos[3] = pass.getText();
 		datos[4] = nombreHost.getText();
+		datos[5] = "";
 
-		Utilidades.guardarDatosBaseLocal(datos, prontEstadoFichero, alarmaConexion);
+		FuncionesFicheros.guardarDatosBaseLocal(datos, prontEstadoFichero, alarmaConexion);
 	}
 
 	/**
@@ -383,20 +456,14 @@ public class OpcionesDatosController implements Initializable {
 		if (nav.borrarContenidoConfiguracion()) {
 			String userHome = System.getProperty("user.home");
 			String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
-			String carpetaLibreria = ubicacion + File.separator + "libreria";
+			String ficheroLocal = ubicacion + File.separator + "libreria" + File.separator + "configuracion_local.conf";
 
 			// Verificar y eliminar los archivos dentro de la carpeta "libreria"
-			File carpetaLibreriaFile = new File(carpetaLibreria);
-			File[] archivos = carpetaLibreriaFile.listFiles();
-			if (archivos != null) {
-				for (File archivo : archivos) {
-					if (archivo.isFile()) {
-						archivo.delete();
-					}
-				}
-			}
+			File ficheroConfiguracionLocal = new File(ficheroLocal);
 
-			Utilidades.crearEstructura();
+			ficheroConfiguracionLocal.delete();
+
+			FuncionesFicheros.crearEstructura();
 
 			limpiar_datos();
 			AlarmaList.detenerAnimacion();
@@ -420,6 +487,30 @@ public class OpcionesDatosController implements Initializable {
 		puertobbdd.setText("");
 
 		nombreBBDD.getSelectionModel().clearSelection();
+	}
+
+	/**
+	 * Funcion para abrir el navegador y acceder a la URL
+	 *
+	 * @param event
+	 */
+	@FXML
+	void accesoMySqlWorkbench(ActionEvent event) {
+		String url1 = "https://dev.mysql.com/downloads/windows/installer/8.0.html";
+		String url2 = "https://www.youtube.com/watch?v=FvXQBKsp0OI&ab_channel=MisterioRojo";
+
+		if (Utilidades.isWindows()) {
+			Utilidades.accesoWebWindows(url1); // Llamada a funcion
+			Utilidades.accesoWebWindows(url2); // Llamada a funcion
+		} else {
+			if (Utilidades.isUnix()) {
+				Utilidades.accesoWebLinux(url1); // Llamada a funcion
+				Utilidades.accesoWebLinux(url2); // Llamada a funcion
+			} else {
+				Utilidades.accesoWebMac(url1); // Llamada a funcion
+				Utilidades.accesoWebMac(url2); // Llamada a funcion
+			}
+		}
 	}
 
 	/**

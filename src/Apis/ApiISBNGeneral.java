@@ -25,7 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import Funcionamiento.Utilidades;
+import Funcionamiento.FuncionesApis;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
 //import javafx.scene.control.TextArea;
@@ -53,7 +53,7 @@ public class ApiISBNGeneral {
 	 */
 	public Comic getBookInfo(String isbn, TextArea prontInfo) throws IOException, JSONException, URISyntaxException {
 		String apiUrl = "https://openlibrary.org/api/books?bibkeys=ISBN:" + isbn + "&jscmd=details&format=json";
-		String apiKey = Utilidades.cargarApiComicVine();
+		String apiKey = FuncionesApis.cargarApiComicVine();
 
 		if(isbn.length() != 13) {
 			return null;

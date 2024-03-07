@@ -31,20 +31,19 @@
             <Image url="@../imagenes/Fondo%20AccederBBDD.jpg" />
          </image>
       </ImageView>
-      <Button fx:id="botonAccesobbdd" layoutX="18.0" layoutY="247.0" mnemonicParsing="false" onAction="#entrarMenu" prefHeight="80.0" prefWidth="235.0" style="-fx-font-size: 20;" stylesheets="@../style/acces_style.css" text="Entrar al menu">
+      <Button fx:id="botonAccesobbdd" layoutX="18.0" layoutY="297.0" mnemonicParsing="false" onAction="#entrarMenu" prefHeight="80.0" prefWidth="235.0" style="-fx-font-size: 20;" stylesheets="@../style/acces_style.css" text="Entrar al menu">
          <font>
             <Font size="18.0" />
          </font></Button>
-      <Button fx:id="botonEnviar" layoutX="16.0" layoutY="159.0" mnemonicParsing="false" onAction="#enviarDatos" prefHeight="80.0" prefWidth="235.0" style="-fx-font-size: 20;" stylesheets="@../style/acces_style.css" text="Conectar bbdd">
+      <Button fx:id="botonEnviar" layoutX="16.0" layoutY="209.0" mnemonicParsing="false" onAction="#enviarDatos" prefHeight="80.0" prefWidth="235.0" style="-fx-font-size: 20;" stylesheets="@../style/acces_style.css" text="Conectar bbdd">
          <font>
             <Font size="17.0" />
          </font></Button>
       <Label fx:id="alarmaConexion" layoutX="4.0" layoutY="3.0" prefHeight="30.0" prefWidth="32.0" stylesheets="@../style/alarma_conexion_style.css" />
       <Label fx:id="alarmaConexionInternet" layoutX="235.0" layoutY="3.0" prefHeight="30.0" prefWidth="29.0" style="-fx-background-radius: 50;" stylesheets="@../style/alarma_conexion_style.css" />
       <Button fx:id="botonOpciones" layoutX="7.0" layoutY="398.0" mnemonicParsing="false" onAction="#opcionesPrograma" prefHeight="33.0" prefWidth="116.0" stylesheets="@../style/acces_style.css" text="Opciones" />
-      <Button fx:id="botonDescargaBBDD" layoutX="149.0" layoutY="398.0" mnemonicParsing="false" onAction="#accesoMySqlWorkbench" prefHeight="33.0" prefWidth="116.0" stylesheets="@../style/acces_style.css" text="Tutorial" wrapText="true" />
       <Button fx:id="botonSalir" layoutX="27.0" layoutY="455.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="38.0" prefWidth="216.0" stylesheets="@../style/acces_style.css" text="Salir" />
-      <Label fx:id="prontEstadoConexion" alignment="CENTER" contentDisplay="TOP" layoutX="4.0" layoutY="36.0" mouseTransparent="true" prefHeight="90.0" prefWidth="262.0" style="-fx-background-color: #29B6CC;" stylesheets="@../style/acces_style.css" wrapText="true">
+      <Label fx:id="prontEstadoConexion" alignment="CENTER" contentDisplay="TOP" layoutX="4.0" layoutY="36.0" mouseTransparent="true" prefHeight="148.0" prefWidth="262.0" style="-fx-background-color: #29B6CC;" stylesheets="@../style/acces_style.css" wrapText="true">
          <font>
             <Font name="Comic Sans MS" size="18.0" />
          </font>
@@ -68,7 +67,7 @@
       <Label fx:id="nomUsuarioLabel" disable="true" layoutX="60.0" layoutY="128.0" stylesheets="@../style/datos_ocultos.css" text="Nombre de usuario" visible="false" />
       <ImageView fx:id="toggleEyeImageView" disable="true" fitHeight="38.0" fitWidth="29.0" layoutX="184.0" layoutY="228.0" pickOnBounds="true" preserveRatio="true" visible="false" />
       <Label fx:id="alarmaConexionSql" layoutX="191.0" layoutY="3.0" prefHeight="30.0" prefWidth="29.0" stylesheets="@../style/alarma_conexion_style.css" />
-      <Button fx:id="botonEncender" layoutX="18.0" layoutY="336.0" mnemonicParsing="false" onAction="#reActivarConexion" prefHeight="46.0" prefWidth="50.0" style="-fx-background-radius: 50;">
+      <Button fx:id="botonEncender" layoutX="199.0" layoutY="394.0" mnemonicParsing="false" onAction="#reActivarConexion" prefHeight="46.0" prefWidth="50.0" style="-fx-background-radius: 50;">
          <stylesheets>
             <URL value="@../style/boton_reestart_style.css" />
             <URL value="@../style/acces_style.css" />

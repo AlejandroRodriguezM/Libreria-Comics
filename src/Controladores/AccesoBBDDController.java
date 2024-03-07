@@ -14,6 +14,8 @@ import java.util.concurrent.Executors;
 
 import com.gluonhq.charm.glisten.control.ProgressIndicator;
 
+import Funcionamiento.FuncionesApis;
+import Funcionamiento.FuncionesFicheros;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
@@ -71,12 +73,6 @@ public class AccesoBBDDController implements Initializable {
 	 */
 	@FXML
 	private Button botonAccesobbddOnline;
-
-	/**
-	 * Botón para descargar la base de datos.
-	 */
-	@FXML
-	private Button botonDescargaBBDD;
 
 	/**
 	 * Botón para enviar datos.
@@ -189,22 +185,28 @@ public class AccesoBBDDController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		Utilidades.guardarDatosClavesMarvel();
-		Utilidades.cargarTasasDeCambioDesdeArchivo();
-		Utilidades.guardarApiComicVine();
+		FuncionesApis.guardarDatosClavesMarvel();
 
+		if (Utilidades.isInternetAvailable()) {
+			Utilidades.cargarTasasDeCambioDesdeArchivo();
+
+		}
+
+		FuncionesApis.guardarApiComicVine();
+		ConectManager.closeConnection();
+		
 		alarmaList.setAlarmaConexion(alarmaConexion);
 		alarmaList.setAlarmaConexionInternet(alarmaConexionInternet);
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
 		alarmaList.setAlarmaConexionPrincipal(prontEstadoConexion);
 
-		ConectManager.closeConnection();
 		
+
 		alarmaList.iniciarThreadChecker(false);
 
-		Utilidades.crearEstructura();
+		FuncionesFicheros.crearEstructura();
 
-		Utilidades.comprobarApisComics();
+		FuncionesApis.comprobarApisComics();
 
 		ConectManager.asignarValoresPorDefecto();
 
@@ -216,30 +218,6 @@ public class AccesoBBDDController implements Initializable {
 			});
 		});
 
-	}
-
-	/**
-	 * Funcion para abrir el navegador y acceder a la URL
-	 *
-	 * @param event
-	 */
-	@FXML
-	void accesoMySqlWorkbench(ActionEvent event) {
-		String url1 = "https://dev.mysql.com/downloads/windows/installer/8.0.html";
-		String url2 = "https://www.youtube.com/watch?v=FvXQBKsp0OI&ab_channel=MisterioRojo";
-
-		if (Utilidades.isWindows()) {
-			Utilidades.accesoWebWindows(url1); // Llamada a funcion
-			Utilidades.accesoWebWindows(url2); // Llamada a funcion
-		} else {
-			if (Utilidades.isUnix()) {
-				Utilidades.accesoWebLinux(url1); // Llamada a funcion
-				Utilidades.accesoWebLinux(url2); // Llamada a funcion
-			} else {
-				Utilidades.accesoWebMac(url1); // Llamada a funcion
-				Utilidades.accesoWebMac(url2); // Llamada a funcion
-			}
-		}
 	}
 
 	/**
@@ -272,7 +250,7 @@ public class AccesoBBDDController implements Initializable {
 	 */
 	public void formulario_online() {
 
-		Map<String, String> datosConfiguracion = Utilidades.devolverDatosConfig();
+		Map<String, String> datosConfiguracion = FuncionesFicheros.devolverDatosConfig();
 
 		String usuarioTexto = datosConfiguracion.get("Usuario");
 		String passwordTexto = datosConfiguracion.get("Password");
@@ -322,14 +300,12 @@ public class AccesoBBDDController implements Initializable {
 	@FXML
 	void enviarDatos(ActionEvent event) throws SQLException {
 
-		String[] datosFichero = Utilidades.datosEnvioFichero();
+		String[] datosFichero = FuncionesFicheros.datosEnvioFichero();
 
 		if (configurarConexion()) {
-
-			
 			ConectManager.datosBBDD(datosFichero);
 			if (ConectManager.isConnected()) {
-				
+
 				AlarmaList.detenerAnimacion();
 				AlarmaList.iniciarAnimacionConectado(prontEstadoConexion);
 				AlarmaList.manejarConexionExitosa(datosFichero, prontEstadoConexion);
@@ -365,6 +341,7 @@ public class AccesoBBDDController implements Initializable {
 		Task<Boolean> iniciarXAMPPTask = new Task<Boolean>() {
 			@Override
 			protected Boolean call() throws Exception {
+
 				// Realizar las operaciones de inicio de XAMPP aquí
 				return Utilidades.iniciarXAMPP();
 			}

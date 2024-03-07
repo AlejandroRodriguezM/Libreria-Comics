@@ -5,13 +5,11 @@
 package Funcionamiento;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -37,10 +35,10 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import Controladores.CargaComicsController;
 import comicManagement.Comic;
 import comicManagement.ComicFichero;
-import dbmanager.DBUtilidades.TipoBusqueda;
 import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
+import dbmanager.DBUtilidades.TipoBusqueda;
 import dbmanager.InsertManager;
 import dbmanager.SelectManager;
 import javafx.application.Platform;
@@ -137,7 +135,7 @@ public class FuncionesExcel {
 			workbook.close();
 
 		} catch (Exception e) {
-			nav.alertaException(e.toString());
+			Utilidades.manejarExcepcion(e);
 		}
 	}
 
@@ -180,7 +178,7 @@ public class FuncionesExcel {
 		try {
 			latch.await(); // Esperar hasta que se complete la selección del directorio
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			Utilidades.manejarExcepcion(e);
 		}
 
 		return directorio[0];
@@ -263,7 +261,8 @@ public class FuncionesExcel {
 							directorioFichero.mkdir();
 						}
 
-						if (tipoBusqueda.equalsIgnoreCase("Completa") || tipoBusqueda.equalsIgnoreCase("Parcial") && directorioFichero != null) {
+						if (tipoBusqueda.equalsIgnoreCase("Completa")
+								|| tipoBusqueda.equalsIgnoreCase("Parcial") && directorioFichero != null) {
 							Utilidades.saveImageFromDataBase(comic.getImagen(), directorioImagenes);
 
 						}
@@ -281,10 +280,10 @@ public class FuncionesExcel {
 
 					return true;
 				} catch (FileNotFoundException ex) {
-					ex.printStackTrace();
+					Utilidades.manejarExcepcion(ex);
 					return false;
 				} catch (IOException ex) {
-					ex.printStackTrace();
+					Utilidades.manejarExcepcion(ex);
 					return false;
 				}
 			}
@@ -410,7 +409,7 @@ public class FuncionesExcel {
 		} catch (
 
 		IOException e) {
-			nav.alertaException(e.toString());
+			Utilidades.manejarExcepcion(e);
 		}
 	}
 
@@ -484,7 +483,7 @@ public class FuncionesExcel {
 			lineReader.lines().forEach(lineText -> {
 				try {
 					Comic comicNuevo = ComicFichero.datosComicFichero(lineText);
-					
+
 					InsertManager.insertarDatos(comicNuevo, true);
 					cargaComics(comicNuevo, cargaComicsControllerRef, directorioRef.get(), true);
 
@@ -499,7 +498,7 @@ public class FuncionesExcel {
 
 			// Abrir el archivo de registro
 			Platform.runLater(
-					() -> Utilidades.abrirArchivoRegistro(DEFAULT_IMAGE_PATH_BASE + File.separator + LOG_FILE_NAME));
+					() -> Utilidades.abrirArchivo(DEFAULT_IMAGE_PATH_BASE + File.separator + LOG_FILE_NAME));
 
 		} catch (IOException e) {
 			// Propagar la excepción al nivel superior
@@ -513,14 +512,14 @@ public class FuncionesExcel {
 		String nombre_modificado = "";
 
 		if (esImportado) {
-			nombre_portada = Utilidades.obtenerDespuesPortadas(comicNuevo.getImagen());
+			nombre_portada = Utilidades.obtenerNombrePortada(true, comicNuevo.getImagen());
 			nombre_modificado = Utilidades.convertirNombreArchivo(nombre_portada);
 			if (!Utilidades.existeArchivo(directorio.getAbsolutePath(), nombre_portada)) {
 				copiarPortadaPredeterminada(DEFAULT_PORTADA_IMAGE_PATH, nombre_modificado);
-				
-			   /////////////////////////////////////////////////////////////////////
-			   //////HAY QUE ARREGLARLO, AL CAMBIAR EL NOMBRE ESTO DA FALLO SIEMPRE//
-               //////////////////////////////////////////////////////////////////////
+
+				/////////////////////////////////////////////////////////////////////
+				////// HAY QUE ARREGLARLO, AL CAMBIAR EL NOMBRE ESTO DA FALLO SIEMPRE//
+				//////////////////////////////////////////////////////////////////////
 //				generarLogFaltaPortada(DEFAULT_IMAGE_PATH_BASE, LOG_FILE_NAME, nombre_portada);
 			}
 		}
@@ -580,27 +579,27 @@ public class FuncionesExcel {
 				Files.copy(sourceFile.toPath(), destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			}
 		} catch (IOException e) {
-			e.printStackTrace(); // O manejar la excepción de manera adecuada
+			Utilidades.manejarExcepcion(e);
 		}
 	}
 
-	/**
-	 * Función que genera el log cuando falta una portada
-	 *
-	 * @param defaultImagePathBase El directorio base de las portadas
-	 * @param logFileName          El nombre del archivo de log
-	 * @param nombreModificado     El nombre del archivo modificado
-	 * @throws IOException
-	 */
-	private void generarLogFaltaPortada(String defaultImagePathBase, String logFileName, String nombreModificado) {
-		String logFilePath = defaultImagePathBase + File.separator + logFileName;
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(logFilePath, true))) {
-			writer.write("Falta portada: " + nombreModificado);
-			writer.newLine();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+//	/**
+//	 * Función que genera el log cuando falta una portada
+//	 *
+//	 * @param defaultImagePathBase El directorio base de las portadas
+//	 * @param logFileName          El nombre del archivo de log
+//	 * @param nombreModificado     El nombre del archivo modificado
+//	 * @throws IOException
+//	 */
+//	private void generarLogFaltaPortada(String defaultImagePathBase, String logFileName, String nombreModificado) {
+//		String logFilePath = defaultImagePathBase + File.separator + logFileName;
+//		try (BufferedWriter writer = new BufferedWriter(new FileWriter(logFilePath, true))) {
+//			writer.write("Falta portada: " + nombreModificado);
+//			writer.newLine();
+//		} catch (IOException e) {
+//			Utilidades.manejarExcepcion(e);
+//		}
+//	}
 
 	private void checkCSVColumns(String filePath) throws IOException {
 		// Columnas esperadas

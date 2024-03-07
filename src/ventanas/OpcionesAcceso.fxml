@@ -11,9 +11,9 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="507.0" prefWidth="271.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.OpcionesDatosController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="507.0" prefWidth="271.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.OpcionesDatosController">
    <children>
-      <ToggleButton fx:id="toggleEye" layoutX="244.0" layoutY="242.0" mnemonicParsing="false" />
+      <ToggleButton fx:id="toggleEye" layoutX="244.0" layoutY="208.0" mnemonicParsing="false" />
       <ImageView fitHeight="148.0" fitWidth="296.0" layoutY="359.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagenes/azul.jpg" />
@@ -29,9 +29,9 @@
             <Image url="@../imagenes/Fondo%20AccederBBDD.jpg" />
          </image>
       </ImageView>
-      <TextField fx:id="passUsuarioTextField" layoutX="149.0" layoutY="242.0" prefHeight="25.0" prefWidth="114.0" />
-      <TextField fx:id="puertobbdd" layoutX="149.0" layoutY="180.0" prefHeight="25.0" prefWidth="114.0" />
-      <TextField fx:id="usuario" layoutX="149.0" layoutY="212.0" prefHeight="25.0" prefWidth="114.0" />
+      <TextField fx:id="passUsuarioTextField" layoutX="149.0" layoutY="208.0" prefHeight="25.0" prefWidth="114.0" />
+      <TextField fx:id="puertobbdd" layoutX="149.0" layoutY="236.0" prefHeight="25.0" prefWidth="114.0" />
+      <TextField fx:id="usuario" layoutX="149.0" layoutY="178.0" prefHeight="25.0" prefWidth="114.0" />
       <Button fx:id="boton_guardar" layoutX="6.0" layoutY="340.0" mnemonicParsing="false" onAction="#guardarDatos" prefHeight="33.0" prefWidth="114.0" stylesheets="@../style/opciones_style.css" text="Guardar" />
       <Button fx:id="botonSalir" layoutX="186.0" layoutY="457.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="39.0" prefWidth="78.0" stylesheets="@../style/opciones_style.css" text="Salir" />
       <Button fx:id="botonCrearBBDD" layoutX="141.0" layoutY="382.0" mnemonicParsing="false" onAction="#crearBBDD" prefHeight="59.0" prefWidth="123.0" stylesheets="@../style/opciones_style.css" text="Crear base de datos" wrapText="true" />
@@ -40,15 +40,15 @@
          <font>
             <Font name="Comic Sans MS" size="11.0" />
          </font></Label>
-      <Label fx:id="puerto_label" layoutX="5.0" layoutY="181.0" style="-fx-background-color: grey;" stylesheets="@../style/opciones_style.css" text="Puerto de la base de datos">
+      <Label fx:id="puerto_label" layoutX="5.0" layoutY="239.0" style="-fx-background-color: grey;" stylesheets="@../style/opciones_style.css" text="Puerto de la base de datos">
          <font>
             <Font name="Comic Sans MS" size="12.0" />
          </font></Label>
-      <Label fx:id="usuario_label" layoutX="5.0" layoutY="213.0" style="-fx-background-color: grey;" stylesheets="@../style/opciones_style.css" text="Nombre de usuario">
+      <Label fx:id="usuario_label" layoutX="5.0" layoutY="179.0" style="-fx-background-color: grey;" stylesheets="@../style/opciones_style.css" text="Nombre de usuario">
          <font>
             <Font name="Comic Sans MS" size="12.0" />
          </font></Label>
-      <Label fx:id="password_label" layoutX="5.0" layoutY="244.0" style="-fx-background-color: grey;" stylesheets="@../style/opciones_style.css" text="Contraseña de usuario">
+      <Label fx:id="password_label" layoutX="5.0" layoutY="209.0" style="-fx-background-color: grey;" stylesheets="@../style/opciones_style.css" text="Contraseña de usuario">
          <font>
             <Font name="Comic Sans MS" size="12.0" />
          </font></Label>
@@ -58,14 +58,15 @@
             <Font name="Comic Sans MS" size="18.0" />
          </font>
       </Label>
-      <Label fx:id="etiquetaHost" layoutX="5.0" layoutY="274.0" prefHeight="23.0" prefWidth="89.0" style="-fx-background-color: grey;" stylesheets="@../style/opciones_style.css" text="Nombre del host:" />
+      <Label fx:id="etiquetaHost" layoutX="5.0" layoutY="269.0" prefHeight="23.0" prefWidth="89.0" style="-fx-background-color: grey;" stylesheets="@../style/opciones_style.css" text="Nombre del host:" />
       <Button fx:id="botonVolver" layoutX="6.0" layoutY="457.0" mnemonicParsing="false" onAction="#volverPrograma" prefHeight="39.0" prefWidth="78.0" stylesheets="@../style/opciones_style.css" text="Volver" />
-      <TextField fx:id="nombreHost" editable="false" layoutX="149.0" layoutY="272.0" prefHeight="25.0" prefWidth="114.0" />
+      <TextField fx:id="nombreHost" editable="false" layoutX="149.0" layoutY="267.0" prefHeight="25.0" prefWidth="114.0" />
       <ComboBox fx:id="nombreBBDD" layoutX="149.0" layoutY="148.0" prefHeight="25.0" prefWidth="114.0" />
-      <Label fx:id="alarmaConexion" layoutX="4.0" layoutY="3.0" prefHeight="19.0" prefWidth="29.0" stylesheets="@../style/alarma_conexion_style.css" />
-      <Label fx:id="alarmaConexionInternet" layoutX="235.0" layoutY="3.0" prefHeight="19.0" prefWidth="29.0" style="-fx-background-radius: 50;" stylesheets="@../style/alarma_conexion_style.css" />
-      <PasswordField fx:id="pass" layoutX="149.0" layoutY="242.0" prefHeight="25.0" prefWidth="114.0" />
-      <ImageView fx:id="toggleEyeImageView" fitHeight="25.0" fitWidth="29.0" layoutX="234.0" layoutY="243.0" pickOnBounds="true" preserveRatio="true" />
+      <Label fx:id="alarmaConexion" layoutX="4.0" layoutY="3.0" prefHeight="30.0" prefWidth="29.0" stylesheets="@../style/alarma_conexion_style.css" />
+      <Label fx:id="alarmaConexionInternet" layoutX="235.0" layoutY="3.0" prefHeight="30.0" prefWidth="29.0" style="-fx-background-radius: 50;" stylesheets="@../style/alarma_conexion_style.css" />
+      <PasswordField fx:id="pass" layoutX="149.0" layoutY="207.0" prefHeight="25.0" prefWidth="114.0" />
+      <ImageView fx:id="toggleEyeImageView" fitHeight="25.0" fitWidth="29.0" layoutX="234.0" layoutY="208.0" pickOnBounds="true" preserveRatio="true" />
       <Label fx:id="alarmaConexionSql" layoutX="191.0" layoutY="3.0" prefHeight="30.0" prefWidth="29.0" style="-fx-background-radius: 50;" stylesheets="@../style/alarma_conexion_style.css" />
+      <Button fx:id="botonDescargaBBDD" layoutX="5.0" layoutY="295.0" mnemonicParsing="false" onAction="#accesoMySqlWorkbench" prefHeight="38.0" prefWidth="114.0" stylesheets="@../style/acces_style.css" text="Tutorial" wrapText="true" />
    </children>
 </Pane>

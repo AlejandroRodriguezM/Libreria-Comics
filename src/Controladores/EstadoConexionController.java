@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 
 import com.gluonhq.charm.glisten.control.ProgressIndicator;
 
+import Funcionamiento.FuncionesFicheros;
 import Funcionamiento.Utilidades;
 import alarmas.AlarmaList;
 import javafx.application.Platform;
@@ -78,7 +79,7 @@ public class EstadoConexionController implements Initializable {
 
 	@FXML
 	void reActivarConexion(ActionEvent event) {
-		Map<String, String> datosConfiguracion = Utilidades.devolverDatosConfig();
+		Map<String, String> datosConfiguracion = FuncionesFicheros.devolverDatosConfig();
 		String port = datosConfiguracion.get("Puerto");
 		String host = datosConfiguracion.get("Hosting");
 

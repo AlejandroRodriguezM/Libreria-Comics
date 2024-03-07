@@ -168,7 +168,7 @@ public class SelectManager {
 			} else {
 				return DBUtilidades.filtroBBDD(comic);
 			}
-			
+
 		}
 		return listComic;
 	}
@@ -179,7 +179,7 @@ public class SelectManager {
 			sentenciaSQL = SENTENCIA_BUSQUEDA_COMPLETA;
 		}
 
-		if (!Utilidades.validarDatosConexion()) {
+		if (!ConectManager.conexionActiva()) {
 			return false;
 		}
 
@@ -211,7 +211,7 @@ public class SelectManager {
 				+ "%' OR nomComic LIKE '%" + datoSeleccionado + "%' OR nomEditorial LIKE '%" + datoSeleccionado
 				+ "%' OR caja_deposito LIKE '%" + datoSeleccionado + "%' OR formato LIKE '%" + datoSeleccionado
 				+ "%' OR fecha_publicacion LIKE '%" + datoSeleccionado + "%' OR procedencia LIKE '%" + datoSeleccionado
-				+ "%' ORDER BY nomComic, fecha_publicacion, numComic ASC";
+				+ "%' ORDER BY nomComic, numComic ASC, fecha_publicacion";
 
 		return verLibreria(sentenciaSQL);
 	}

@@ -27,8 +27,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.print.DocFlavor.URL;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,6 +38,7 @@ import org.jsoup.nodes.Element;
 import Apis.ApiISBNGeneral;
 import Apis.ApiMarvel;
 import Controladores.VentanaAccionController;
+import Funcionamiento.FuncionesApis;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import Funcionamiento.VersionService;
@@ -327,7 +326,7 @@ public class Unit_Test extends Application {
 	private static String[] clavesApi() {
 		String claves[] = new String[2]; // Crear un arreglo de dos elementos para almacenar las claves
 
-		String clavesDesdeArchivo = Utilidades.obtenerClaveApiMarvel(); // Obtener las claves desde el archivo
+		String clavesDesdeArchivo = FuncionesApis.obtenerClaveApiMarvel(); // Obtener las claves desde el archivo
 
 		if (!clavesDesdeArchivo.isEmpty()) {
 			String[] partes = clavesDesdeArchivo.split(":");

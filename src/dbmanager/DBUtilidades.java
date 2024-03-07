@@ -106,7 +106,7 @@ public class DBUtilidades {
 		StringBuilder sql = new StringBuilder(SelectManager.SENTENCIA_BUSQUEDA_COMPLETA);
 
 		connector = agregarCondicion(sql, connector, "ID", comic.getID());
-		connector = agregarCondicionLike(sql, connector, "nomComic", comic.getNombre());
+		connector = agregarCondicion(sql, connector, "nomComic", comic.getNombre());
 		connector = agregarCondicion(sql, connector, "caja_deposito", comic.getNumCaja());
 		connector = agregarCondicion(sql, connector, "numComic", comic.getNumero());
 		connector = agregarCondicionLike(sql, connector, "nomVariante", comic.getVariante());
@@ -117,13 +117,11 @@ public class DBUtilidades {
 		connector = agregarCondicionLike(sql, connector, "fecha_publicacion", comic.getFecha());
 		connector = agregarCondicionLike(sql, connector, "nomGuionista", comic.getGuionista());
 		connector = agregarCondicionLike(sql, connector, "nomDibujante", comic.getDibujante());
-
-		System.out.println(Comic.validarComic(comic));
+//		
+//		if (!Comic.validarComic(comic)) {
+//			return "";
+//		}
 		
-		if (!Comic.validarComic(comic)) {
-			return "";
-		}
-
 		return (connector.length() > 0) ? sql.toString() : "";
 	}
 

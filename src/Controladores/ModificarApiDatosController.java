@@ -5,7 +5,7 @@ import java.util.ResourceBundle;
 
 import com.gluonhq.charm.glisten.control.ProgressIndicator;
 
-import Funcionamiento.Utilidades;
+import Funcionamiento.FuncionesApis;
 import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
 import javafx.event.ActionEvent;
@@ -70,8 +70,8 @@ public class ModificarApiDatosController implements Initializable {
 		alarmaList.setAlarmaConexionInternet(alarmaConexionInternet);
 		alarmaList.iniciarThreadChecker(true);
 
-		alarmaList.iniciarAnimacionEspera(printInfo);
-		
+		AlarmaList.iniciarAnimacionEspera(printInfo);
+
 		if (TIPO_ACCION.equalsIgnoreCase("Marvel")) {
 			textFieldPublica.setDisable(false);
 			textFieldPublica.setVisible(true);
@@ -82,15 +82,14 @@ public class ModificarApiDatosController implements Initializable {
 	}
 
 	public void claveMarvel() {
-		
-		// Verificar si hay al menos dos partes
-		if (Utilidades.verificarEstructuraClavesMarvel()) {
 
-			String[] partes = Utilidades.clavesApiMarvel();
+		// Verificar si hay al menos dos partes
+		if (FuncionesApis.verificarEstructuraClavesMarvel()) {
+
+			String[] partes = FuncionesApis.clavesApiMarvel();
 
 			String passPrivada = partes[0];
 			String passPublica = partes[1];
-			
 
 			textFieldPublica.setText(passPublica);
 			textFieldPrivada.setText(passPrivada);
@@ -98,21 +97,21 @@ public class ModificarApiDatosController implements Initializable {
 		} else {
 			// La cadena original no tiene el formato esperado
 			System.out.println("La cadena no tiene el formato esperado");
-			Utilidades.guardarDatosClavesMarvel();
+			FuncionesApis.guardarDatosClavesMarvel();
 		}
 	}
 
 	public void claveVineComic() {
 		// Verificar si hay al menos dos partes
-		if (Utilidades.verificarEstructuraApiComicVine()) {
-			String claveVine = Utilidades.cargarApiComicVine();
+		if (FuncionesApis.verificarEstructuraApiComicVine()) {
+			String claveVine = FuncionesApis.cargarApiComicVine();
 
 			textFieldPrivada.setText(claveVine);
 
 		} else {
 			// La cadena original no tiene el formato esperado
 			System.out.println("La cadena no tiene el formato esperado");
-			Utilidades.guardarApiComicVine();
+			FuncionesApis.guardarApiComicVine();
 		}
 	}
 
@@ -129,22 +128,23 @@ public class ModificarApiDatosController implements Initializable {
 	@FXML
 	void guardarDatos(ActionEvent event) {
 		String clavePrivada = textFieldPrivada.getText();
-		
-	    boolean esMarvel = TIPO_ACCION.equalsIgnoreCase("Marvel");
-	    boolean esVine = TIPO_ACCION.equalsIgnoreCase("Vine");
 
-	    if ((esMarvel && Utilidades.verificarEstructuraClavesMarvel()) || (esVine && Utilidades.verificarEstructuraApiComicVine())) {
-	        if (esMarvel) {
-	            String clavePublica = textFieldPublica.getText();
-	            Utilidades.reescribirClavesMarvel(clavePublica, clavePrivada);
-	        } else if (esVine) {
-	            Utilidades.reescribirClaveApiComicVine(clavePrivada);
-	        }
+		boolean esMarvel = TIPO_ACCION.equalsIgnoreCase("Marvel");
+		boolean esVine = TIPO_ACCION.equalsIgnoreCase("Vine");
 
-	        AlarmaList.iniciarAnimacionGuardado(printInfo);
-	    } else {
-	        AlarmaList.iniciarAnimacionError(printInfo);
-	    }
+		if ((esMarvel && FuncionesApis.verificarEstructuraClavesMarvel())
+				|| (esVine && FuncionesApis.verificarEstructuraApiComicVine())) {
+			if (esMarvel) {
+				String clavePublica = textFieldPublica.getText();
+				FuncionesApis.reescribirClavesMarvel(clavePublica, clavePrivada);
+			} else if (esVine) {
+				FuncionesApis.reescribirClaveApiComicVine(clavePrivada);
+			}
+
+			AlarmaList.iniciarAnimacionGuardado(printInfo);
+		} else {
+			AlarmaList.iniciarAnimacionError(printInfo);
+		}
 	}
 
 	@FXML
@@ -155,7 +155,7 @@ public class ModificarApiDatosController implements Initializable {
 		}
 		textFieldPrivada.setText("");
 		AlarmaList.detenerAnimacion();
-		alarmaList.iniciarAnimacionEspera(printInfo);
+		AlarmaList.iniciarAnimacionEspera(printInfo);
 	}
 
 	@FXML
@@ -163,9 +163,9 @@ public class ModificarApiDatosController implements Initializable {
 
 		if (nav.alertaRestablecerApi()) {
 			if (TIPO_ACCION.equalsIgnoreCase("Marvel")) {
-				Utilidades.guardarDatosClavesMarvel();
+				FuncionesApis.guardarDatosClavesMarvel();
 			} else {
-				Utilidades.guardarApiComicVine();
+				FuncionesApis.guardarApiComicVine();
 			}
 			AlarmaList.iniciarAnimacionReEstablecido(printInfo);
 		}

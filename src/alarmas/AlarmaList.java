@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import Funcionamiento.FuncionesFicheros;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import dbmanager.ConectManager;
@@ -132,7 +133,7 @@ public class AlarmaList {
 					boolean estadoInternet = Utilidades.isInternetAvailable();
 					Platform.runLater(() -> {
 
-						Map<String, String> datosConfiguracion = Utilidades.devolverDatosConfig();
+						Map<String, String> datosConfiguracion = FuncionesFicheros.devolverDatosConfig();
 
 						String port = datosConfiguracion.get("Puerto");
 						String host = datosConfiguracion.get("Hosting");
@@ -156,7 +157,6 @@ public class AlarmaList {
 							if (esComprobarConexion) {
 								iniciarAnimacionDesconectado(alarmaConexionInternet);
 							}
-
 						}
 
 						if (Utilidades.isMySQLServiceRunning(host, port)) {
@@ -185,7 +185,7 @@ public class AlarmaList {
 							if (esComprobarConexion) {
 								iniciarAnimacionDesconectado(iniciarAnimacionEspera);
 							} else {
-								iniciarAnimacionErrorMySql(iniciarAnimacionEspera);
+								iniciarAnimacionErrorMySql(alarmaConexionSql);
 							}
 
 							asignarTooltip(alarmaConexionSql, "Servicio de MySQL desactivado");
@@ -199,14 +199,13 @@ public class AlarmaList {
 					Thread.sleep(5000); // Espera 15 segundos
 				}
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				Utilidades.manejarExcepcion(e);
 			}
 		});
 
 		checkerThread.setDaemon(true); // Marcar el hilo como daemon
 		checkerThread.start();
 
-		Utilidades.crearEstructura();
 		detenerAnimacion();
 
 	}
@@ -235,11 +234,8 @@ public class AlarmaList {
 	 */
 	public static void iniciarAnimacionEspera(Label prontEstadoConexion) {
 
-//		detenerAnimacionEspera();
-
 		timelineError = new Timeline();
 		timelineError.setCycleCount(Timeline.INDEFINITE);
-//		if (timelineError == null) {
 		prontEstadoConexion.setStyle("-fx-background-color: #29B6CC;");
 
 		// Agregar los keyframes para cambiar el texto
@@ -257,11 +253,9 @@ public class AlarmaList {
 		timelineError.getKeyFrames().addAll(mostrarEsperando, mostrarPunto, mostrarDosPuntos, mostrarTresPuntos,
 				ocultarTexto);
 
-		// Iniciar la animación
 		timelineError.play();
-//		}
 	}
-	
+
 	/**
 	 * Metodo que permite crear una animacion
 	 */
@@ -398,24 +392,28 @@ public class AlarmaList {
 	 * Inicia la animación de restauración con error en la interfaz.
 	 */
 	public void iniciarAnimacionDatosError(Label prontEstadoConexion, String puerto) {
-		timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
 
-		prontEstadoFichero.setStyle("-fx-background-color: red;");
+		if (prontEstadoConexion != null) {
 
-		// Agregar los keyframes para cambiar el texto
-		KeyFrame mostrarError = new KeyFrame(Duration.ZERO,
-				new KeyValue(prontEstadoFichero.textProperty(), "Los datos recibidos estan incorrectos."));
-		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(prontEstadoFichero.textProperty(), ""));
-		KeyFrame mostrarError2 = new KeyFrame(Duration.seconds(1),
-				new KeyValue(prontEstadoFichero.textProperty(), "ERROR"));
+			timeline = new Timeline();
+			timeline.setCycleCount(Timeline.INDEFINITE);
 
-		// Agregar los keyframes al timeline
-		timeline.getKeyFrames().addAll(mostrarError, ocultarTexto, mostrarError2);
+			prontEstadoFichero.setStyle("-fx-background-color: red;");
 
-		// Iniciar la animación
-		timeline.play();
+			// Agregar los keyframes para cambiar el texto
+			KeyFrame mostrarError = new KeyFrame(Duration.ZERO,
+					new KeyValue(prontEstadoFichero.textProperty(), "Los datos recibidos estan incorrectos."));
+			KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
+					new KeyValue(prontEstadoFichero.textProperty(), ""));
+			KeyFrame mostrarError2 = new KeyFrame(Duration.seconds(1),
+					new KeyValue(prontEstadoFichero.textProperty(), "ERROR"));
+
+			// Agregar los keyframes al timeline
+			timeline.getKeyFrames().addAll(mostrarError, ocultarTexto, mostrarError2);
+
+			// Iniciar la animación
+			timeline.play();
+		}
 	}
 
 	public static void iniciarAnimacionErrorMySql(Label prontEstadoConexion) {

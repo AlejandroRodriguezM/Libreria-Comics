@@ -37,10 +37,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -64,9 +61,9 @@ import javax.imageio.ImageIO;
 
 import org.json.JSONException;
 
+import Apis.ApiCambioDivisas;
 import Apis.ApiISBNGeneral;
 import Apis.ApiMarvel;
-import alarmas.AlarmaList;
 import comicManagement.Comic;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
@@ -76,7 +73,6 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -674,37 +670,23 @@ public class Utilidades {
 		return true;
 	}
 
-	/**
-	 * Funcion que devuelve la direccion de una url sin tener en cuenta el fichero y
-	 * extension
-	 * 
-	 * @param rutaArchivo
-	 * @return
-	 */
-	public static String eliminarDespuesUltimoPortadas(String rutaArchivo) {
-		int indiceUltimoPortadas = rutaArchivo.lastIndexOf("portadas\\");
-		if (indiceUltimoPortadas != -1) {
-			return rutaArchivo.substring(0, indiceUltimoPortadas + 9);
-		} else {
-			return rutaArchivo;
-		}
-	}
+	public static String obtenerNombrePortada(boolean eliminarAntesPortadas, String rutaArchivo) {
 
-	/**
-	 * Funcion que solamente deuvelve el nombre del fichero y la extension dada una
-	 * direccion
-	 * 
-	 * @param rutaArchivo
-	 * @return
-	 */
-	public static String obtenerDespuesPortadas(String rutaArchivo) {
-		int indicePortadas = rutaArchivo.indexOf("portadas\\");
-		if (indicePortadas != -1) {
-			System.out.println(rutaArchivo.substring(indicePortadas + 9));
-			return rutaArchivo.substring(indicePortadas + 9);
+		int indicePortada = 0;
+
+		if (eliminarAntesPortadas) {
+			indicePortada = rutaArchivo.lastIndexOf("portadas\\");
 		} else {
-			return "";
+			indicePortada = rutaArchivo.indexOf("portadas\\");
 		}
+		if (indicePortada != -1) {
+			if (eliminarAntesPortadas) {
+				return rutaArchivo.substring(0, indicePortada + 9);
+			} else {
+				return rutaArchivo.substring(indicePortada + 9);
+			}
+		}
+		return "";
 	}
 
 	/**
@@ -785,7 +767,7 @@ public class Utilidades {
 	 *
 	 * @return La ruta de la carpeta de configuración.
 	 */
-	private static String carpetaConfiguracion() {
+	public static String obtenerCarpetaConfiguracion() {
 		String userDir = System.getProperty("user.home");
 		String ubicacion = userDir + File.separator + "AppData" + File.separator + "Roaming";
 		String direccion = ubicacion + File.separator + "libreria";
@@ -799,132 +781,11 @@ public class Utilidades {
 	}
 
 	/**
-	 * Guarda datos de claves de API de Marvel en un archivo de configuración.
-	 */
-	public static void guardarDatosClavesMarvel() {
-		String nombreArchivo = carpetaConfiguracion() + File.separator + "claves_marvel_api.conf";
-
-		File archivo = new File(nombreArchivo);
-
-		if (!archivo.exists()) {
-			try (BufferedWriter writer = new BufferedWriter(new FileWriter(archivo))) {
-				writer.write("Public Key: ");
-				writer.newLine();
-				writer.write("Private Key: ");
-
-				writer.close();
-			} catch (IOException e) {
-				manejarExcepcion(e);
-			}
-		}
-	}
-
-	/**
-	 * Obtiene las claves de la API de Marvel desde un archivo de configuración.
-	 *
-	 * @return Las claves de la API en el formato "Private Key: Public Key".
-	 */
-	public static String obtenerClaveApiMarvel() {
-		String nombreArchivo = carpetaConfiguracion() + File.separator + "claves_marvel_api.conf";
-
-		File archivo = new File(nombreArchivo);
-		if (!archivo.exists()) {
-			guardarDatosClavesMarvel();
-		}
-
-		try (BufferedReader reader = new BufferedReader(new FileReader(nombreArchivo))) {
-			String linea;
-			String clavePublica = null;
-			String clavePrivada = null;
-
-			while ((linea = reader.readLine()) != null) {
-				if (linea.startsWith("Public Key: ")) {
-					clavePublica = linea.substring("Public Key: ".length()).trim();
-
-				} else if (linea.startsWith("Private Key: ")) {
-					clavePrivada = linea.substring("Private Key: ".length()).trim();
-				}
-			}
-
-			// Verificar que ambas claves se hayan encontrado en el archivo
-			if (clavePublica != null && clavePrivada != null) {
-				return clavePrivada + ":" + clavePublica; // Retornar ambas claves en un formato deseado
-			} else {
-				return ""; // Manejo de error: devuelve una cadena vacía en caso de que falte alguna clave
-			}
-		} catch (IOException e) {
-			manejarExcepcion(e);
-			return ""; // Manejo de error: devuelve una cadena vacía en caso de error
-		}
-	}
-
-	/**
-	 * Comprueba si el archivo de claves de API de Marvel tiene la estructura
-	 * esperada.
-	 * 
-	 * @return true si el archivo tiene la estructura correcta, false de lo
-	 *         contrario.
-	 */
-	public static boolean verificarEstructuraClavesMarvel() {
-		String nombreArchivo = carpetaConfiguracion() + File.separator + "claves_marvel_api.conf";
-
-		try (BufferedReader reader = new BufferedReader(new FileReader(nombreArchivo))) {
-			String linea;
-			int contador = 0;
-
-			while ((linea = reader.readLine()) != null) {
-				// Verificar la estructura esperada
-				if (contador == 0 && linea.contains("Public Key:")) {
-					contador++;
-				} else if (contador == 1 && linea.contains("Private Key:")) {
-					contador++;
-				}
-			}
-
-			// Verificar que haya dos líneas en total
-			return contador == 2;
-		} catch (IOException e) {
-			manejarExcepcion(e);
-			return false;
-		}
-	}
-
-	/**
-	 * Comprueba si el archivo de clave de API de Comic Vine tiene la estructura
-	 * esperada.
-	 * 
-	 * @return true si el archivo tiene la estructura correcta, false de lo
-	 *         contrario.
-	 */
-	public static boolean verificarEstructuraApiComicVine() {
-		String nombreArchivo = carpetaConfiguracion() + File.separator + "clave_comicVine_api.conf";
-
-		try (BufferedReader reader = new BufferedReader(new FileReader(nombreArchivo))) {
-			String linea;
-			int contador = 0;
-
-			while ((linea = reader.readLine()) != null) {
-				// Verificar la estructura esperada
-				if (contador == 0 && linea.contains("Clave Api Comic Vine:")) {
-					contador++;
-				}
-
-			}
-
-			// Verificar que haya al menos una línea
-			return contador == 1;
-		} catch (IOException e) {
-			manejarExcepcion(e);
-			return false;
-		}
-	}
-
-	/**
 	 * Carga tasas de cambio desde un archivo de configuración y las almacena en un
 	 * mapa.
 	 */
 	public static void cargarTasasDeCambioDesdeArchivo() {
-		String nombreArchivo = carpetaConfiguracion() + File.separator + "tasas_de_cambio.conf";
+		String nombreArchivo = obtenerCarpetaConfiguracion() + File.separator + "tasas_de_cambio.conf";
 
 		// Verificar si el archivo existe y, si no, crearlo con los valores
 		// predeterminados
@@ -932,20 +793,11 @@ public class Utilidades {
 		if (!archivo.exists()) {
 			crearArchivoConValoresPredeterminados(nombreArchivo);
 		}
-
-		try (BufferedReader reader = new BufferedReader(new FileReader(nombreArchivo))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				String[] parts = line.split(": ");
-				if (parts.length == 2) {
-					String pais = parts[0];
-					double tasa = Double.parseDouble(parts[1]);
-					tasasDeCambio.put(pais, tasa);
-				}
-			}
-		} catch (IOException e) {
-			manejarExcepcion(e);
-		}
+		
+//        Thread imprimirDivisasThread = new Thread(() -> ApiCambioDivisas.imprimirDivisas(nombreArchivo));
+//        imprimirDivisasThread.start();
+		
+		ApiCambioDivisas.imprimirDivisas(nombreArchivo);
 	}
 
 	/**
@@ -1048,118 +900,6 @@ public class Utilidades {
 			manejarExcepcion(e);
 		}
 
-	}
-
-	/**
-	 * Esta función guarda una clave de API para Comic Vine en un archivo de
-	 * configuración. La clave de API se almacena en un archivo en la ubicación de
-	 * la librería del usuario. Si el archivo ya existe, se sobrescribe.
-	 *
-	 */
-	public static void guardarApiComicVine() {
-		String nombreArchivo = carpetaConfiguracion() + File.separator + "clave_comicVine_api.conf";
-
-		File archivo = new File(nombreArchivo);
-
-		if (!archivo.exists()) {
-			try (BufferedWriter writer = new BufferedWriter(new FileWriter(archivo))) {
-				writer.write("###############################");
-				writer.newLine();
-				writer.write("Clave Api Comic Vine: ");
-				writer.newLine();
-				writer.write("###############################");
-
-				writer.close();
-			} catch (IOException e) {
-				manejarExcepcion(e);
-			}
-		}
-	}
-
-	public static String cargarApiComicVine() {
-		String nombreArchivo = carpetaConfiguracion() + File.separator + "clave_comicVine_api.conf";
-
-		// Verificar si el archivo existe y, si no, crearlo con los valores
-		// predeterminados
-		File archivo = new File(nombreArchivo);
-		if (!archivo.exists()) {
-			guardarApiComicVine();
-		}
-
-		try (BufferedReader reader = new BufferedReader(new FileReader(nombreArchivo))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				String[] parts = line.split(": ");
-				if (parts.length == 2) {
-					String clave_api = parts[1];
-					return clave_api;
-				}
-			}
-		} catch (IOException e) {
-			manejarExcepcion(e);
-		}
-		return null;
-	}
-
-	/**
-	 * Obtiene las claves de la API de Marvel de un archivo o fuente de datos.
-	 *
-	 * @return Un array de cadenas con las claves pública y privada de la API.
-	 */
-	public static String[] clavesApiMarvel() {
-		String claves[] = new String[2]; // Crear un arreglo de dos elementos para almacenar las claves
-
-		String clavesDesdeArchivo = Utilidades.obtenerClaveApiMarvel(); // Obtener las claves desde el archivo
-
-		if (!clavesDesdeArchivo.isEmpty()) {
-			String[] partes = clavesDesdeArchivo.split(":");
-			if (partes.length == 2) {
-				String clavePublica = partes[0].trim();
-				String clavePrivada = partes[1].trim();
-
-				claves[0] = clavePublica; // Almacenar la clave pública en el primer elemento del arreglo
-				claves[1] = clavePrivada; // Almacenar la clave privada en el segundo elemento del arreglo
-			}
-		}
-
-		return claves;
-	}
-
-	/**
-	 * Guarda las claves de API de Marvel en un archivo de configuración.
-	 *
-	 * @param publicKey  Clave pública de Marvel
-	 * @param privateKey Clave privada de Marvel
-	 */
-	public static void reescribirClavesMarvel(String publicKey, String privateKey) {
-		String nombreArchivo = carpetaConfiguracion() + File.separator + "claves_marvel_api.conf";
-
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(nombreArchivo))) {
-			writer.write("Public Key: " + publicKey);
-			writer.newLine();
-			writer.write("Private Key: " + privateKey);
-		} catch (IOException e) {
-			manejarExcepcion(e);
-		}
-	}
-
-	/**
-	 * Guarda la clave de API de Comic Vine en un archivo de configuración.
-	 *
-	 * @param apiKey Clave de API de Comic Vine
-	 */
-	public static void reescribirClaveApiComicVine(String apiKey) {
-		String nombreArchivo = carpetaConfiguracion() + File.separator + "clave_comicVine_api.conf";
-
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(nombreArchivo))) {
-			writer.write("###############################");
-			writer.newLine();
-			writer.write("Clave Api Comic Vine: " + apiKey);
-			writer.newLine();
-			writer.write("###############################");
-		} catch (IOException e) {
-			manejarExcepcion(e);
-		}
 	}
 
 	/**
@@ -1340,8 +1080,6 @@ public class Utilidades {
 					if (responseCode != HttpURLConnection.HTTP_OK) {
 						if (responseCode == HttpURLConnection.HTTP_INTERNAL_ERROR) {
 							System.err.println("Error interno del servidor al acceder a la URL: " + url);
-							// Realiza acciones específicas para manejar el error interno del servidor
-							// Puede ser útil registrar o notificar sobre este tipo de errores
 						} else {
 							System.err.println("La URL no apunta a una imagen válida o no se pudo acceder: " + url);
 						}
@@ -1401,14 +1139,10 @@ public class Utilidades {
 		// Verificar si el archivo existe antes de intentar borrarlo
 		if (archivo.exists()) {
 			if (archivo.delete()) {
-				System.out.println("Borrado correctamente");
 				return true;
-			} else {
-				return false;
 			}
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 	/**
@@ -1527,7 +1261,7 @@ public class Utilidades {
 	 * 
 	 * @param ubicacionArchivo Ruta del archivo que se desea abrir.
 	 */
-	private static void abrirArchivo(String ubicacionArchivo) {
+	public static void abrirArchivo(String ubicacionArchivo) {
 		try {
 			File archivo = new File(ubicacionArchivo);
 
@@ -1625,8 +1359,6 @@ public class Utilidades {
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 				return LocalDate.parse(fechaVenta, formatter);
 			} catch (DateTimeParseException e) {
-				// Manejar la excepción de formato de fecha, imprimir o registrar según sea
-				// necesario
 				manejarExcepcion(e);
 				return LocalDate.of(2000, 1, 1); // Valor predeterminado en caso de error de formato
 			}
@@ -1640,45 +1372,26 @@ public class Utilidades {
 	 * @return La dirección de la portada actualizada después de procesar la lógica.
 	 */
 	public static String obtenerPortada(String direccionPortada) {
-		String portada = "";
-		File file;
 
-		if (!direccionPortada.isEmpty() || direccionPortada == null) {
-			file = new File(direccionPortada);
+		if (direccionPortada != null && !direccionPortada.isEmpty()) {
+			File file = new File(direccionPortada);
+
 			if (Utilidades.isImageURL(direccionPortada)) {
 				// Es una URL en internet
 				CompletableFuture<String> futurePortada = descargarImagenAsync(direccionPortada, DOCUMENTS_PATH);
 				// Esperar a que el CompletableFuture se complete y obtener el resultado
-				portada = futurePortada.join();
-				file = new File(portada);
-			} else if (!file.exists()) {
-				portada = new File("Funcionamiento/sinPortada.jpg").toURI().toString();
-			} else {
-				portada = file.toURI().toString();
+				return futurePortada.join();
+			} else if (file.exists()) {
+				// Si no existe el archivo, asignar la portada por defecto
+				return file.toURI().toString();
 			}
-		} else {
-			portada = new File("Funcionamiento/sinPortada.jpg").toURI().toString();
 		}
 
-		// Realizar cualquier operación adicional si es necesario
-
-		return portada;
+		return obtenerRutaSinPortada();
 	}
 
-	/**
-	 * Busca un cómic por su ID en una lista de cómics.
-	 *
-	 * @param comics  La lista de cómics en la que se realizará la búsqueda.
-	 * @param idComic La ID del cómic que se está buscando.
-	 * @return El cómic encontrado por la ID, o null si no se encuentra ninguno.
-	 */
-	public static Comic buscarComicPorID(List<Comic> comics, String idComic) {
-		for (Comic c : comics) {
-			if (c.getID().equals(idComic)) {
-				return c; // Devuelve el cómic si encuentra la coincidencia por ID
-			}
-		}
-		return null; // Retorna null si no se encuentra ningún cómic con la ID especificada
+	private static String obtenerRutaSinPortada() {
+		return new File("Funcionamiento/sinPortada.jpg").toURI().toString();
 	}
 
 	/**
@@ -1697,22 +1410,6 @@ public class Utilidades {
 	}
 
 	/**
-	 * Devuelve el valor predeterminado si la cadena dada es nula o vacía, de lo
-	 * contrario, devuelve la cadena original.
-	 *
-	 * @param value        Cadena a ser verificada.
-	 * @param defaultValue Valor predeterminado a ser devuelto si la cadena es nula
-	 *                     o vacía.
-	 * @return Cadena original o valor predeterminado.
-	 */
-	public static String defaultIfNullOrEmpty(String value, String defaultValue) {
-
-		Comic.limpiarCampo(value);
-
-		return (value == null || value.isEmpty()) ? defaultValue : value;
-	}
-
-	/**
 	 * Convierte una ruta de archivo a una URL válida.
 	 * 
 	 * @param rutaArchivo La ruta del archivo a convertir.
@@ -1727,23 +1424,6 @@ public class Utilidades {
 			rutaConBarrasInclinadas = "file:///" + rutaArchivo.replace("\\", "/");
 		}
 		return rutaConBarrasInclinadas;
-	}
-
-	/**
-	 * Devuelve un objeto Comic correspondiente al ID proporcionado.
-	 * 
-	 * @param id_comic El ID del cómic a buscar.
-	 * @return El objeto Comic correspondiente al ID proporcionado. Si no se
-	 *         encuentra, devuelve null.
-	 */
-	public static Comic devolverComic(String id_comic) {
-		for (Comic comic : ListaComicsDAO.comicsImportados) {
-			if (comic.getID().equals(id_comic)) {
-				return comic;
-			}
-		}
-		// Si no se encuentra el cómic con el ID proporcionado, devolver null
-		return null;
 	}
 
 	/**
@@ -1782,136 +1462,12 @@ public class Utilidades {
 	public static Comic obtenerComicSeleccionado(String id_comic) throws SQLException {
 		Comic comic_temp;
 		if (!ListaComicsDAO.comicsImportados.isEmpty()) {
-			comic_temp = Utilidades.devolverComic(id_comic);
+			comic_temp = ListaComicsDAO.buscarComicPorID(ListaComicsDAO.comicsImportados, id_comic);
 		} else {
 			comic_temp = SelectManager.comicDatos(id_comic);
 		}
 
 		return comic_temp;
-	}
-
-	public static Map<String, String> devolverDatosConfig() {
-		Map<String, String> datosConfiguracion = new HashMap<>();
-
-		String userHome = System.getProperty("user.home");
-		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
-		String carpetaLibreria = ubicacion + File.separator + "libreria";
-		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion_local.conf";
-
-		try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				if (line.startsWith("Usuario: ")) {
-					datosConfiguracion.put("Usuario", defaultIfNullOrEmpty(line.substring("Usuario: ".length()), ""));
-				} else if (line.startsWith("Password: ")) {
-					datosConfiguracion.put("Password", defaultIfNullOrEmpty(line.substring("Password: ".length()), ""));
-				} else if (line.startsWith("Puerto: ")) {
-					datosConfiguracion.put("Puerto", defaultIfNullOrEmpty(line.substring("Puerto: ".length()), ""));
-				} else if (line.startsWith("Database: ")) {
-					datosConfiguracion.put("Database", defaultIfNullOrEmpty(line.substring("Database: ".length()), ""));
-				} else if (line.startsWith("Hosting: ")) {
-					datosConfiguracion.put("Hosting", defaultIfNullOrEmpty(line.substring("Hosting: ".length()), ""));
-				}
-			}
-		} catch (IOException e) {
-			manejarExcepcion(e);
-		}
-
-		return datosConfiguracion;
-	}
-
-	/**
-	 * Guarda los datos de configuración de la base de datos local en un archivo de
-	 * configuración.
-	 *
-	 * @throws SQLException Si ocurre un error de SQL.
-	 */
-	public static void guardarDatosBaseLocal(String[] datos, Label prontEstadoFichero, Label alarmaConexion)
-			throws SQLException {
-
-		String puertobbdd = datos[0];
-		String nombreBBDD = datos[1];
-		String usuario = datos[2];
-		String pass = datos[3];
-		String nombreHost = datos[4];
-
-		String userHome = System.getProperty("user.home");
-		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
-		String carpetaLibreria = ubicacion + File.separator + "libreria";
-		String carpetaBackup = carpetaLibreria + File.separator + nombreBBDD + File.separator + "backups";
-		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion_local.conf";
-		AlarmaList alarmaList = new AlarmaList();
-
-		try {
-			if (verificarDatos(datos, prontEstadoFichero)) {
-				Utilidades.crearEstructura();
-
-				// Utilizamos try-with-resources para asegurar el cierre de recursos
-				try (FileWriter fileWriter = new FileWriter(archivoConfiguracion);
-						BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
-
-					bufferedWriter.write("###############################");
-					bufferedWriter.newLine();
-					bufferedWriter.write("Fichero de configuracion de la libreria");
-					bufferedWriter.newLine();
-					bufferedWriter.write("###############################");
-					bufferedWriter.newLine();
-					bufferedWriter.write("Usuario: " + usuario);
-					bufferedWriter.newLine();
-					bufferedWriter.write("Password: " + pass);
-					bufferedWriter.newLine();
-					bufferedWriter.write("Puerto: " + puertobbdd);
-					bufferedWriter.newLine();
-					bufferedWriter.write("Database: " + nombreBBDD);
-					bufferedWriter.newLine();
-					bufferedWriter.write("Hosting: " + nombreHost);
-					bufferedWriter.newLine();
-				}
-
-				// Crear carpeta de backups si no existe
-				File carpetaBackupsFile = new File(carpetaBackup);
-				if (!carpetaBackupsFile.exists()) {
-					carpetaBackupsFile.mkdirs(); // Usa mkdirs para crear directorios recursivamente
-				}
-
-				alarmaList.mensajeRespuestaGuardado(prontEstadoFichero, alarmaConexion);
-
-			} else {
-				alarmaList.mensajeRespuestaError(prontEstadoFichero, alarmaConexion);
-			}
-
-		} catch (IOException e) {
-			manejarExcepcion(e);
-		}
-	}
-
-	/**
-	 * Comprueba si los datos ingresados coinciden con los datos en la base de
-	 * datos.
-	 *
-	 * @return true si los datos coinciden, false si no coinciden o si hay un error
-	 *         en la conexión
-	 * @throws SQLException si hay un error al consultar la base de datos
-	 */
-	private static boolean verificarDatos(String[] datos, Label prontEstadoFichero) throws SQLException {
-
-		ConectManager.datosBBDD(datos);
-		AlarmaList alarmaList = new AlarmaList();
-		Connection connection = ConectManager.conexion();
-		if (connection == null) {
-			prontEstadoFichero.setStyle("-fx-background-color: #DD370F");
-			alarmaList.iniciarAnimacionBBDDError(prontEstadoFichero);
-			return false;
-		}
-
-		if (dbmanager.ConectManager.isConnected()) {
-			ConectManager.close();
-			return true;
-		} else {
-			prontEstadoFichero.setStyle("-fx-background-color: #DD370F");
-			alarmaList.iniciarAnimacionBBDDError(prontEstadoFichero);
-			return false;
-		}
 	}
 
 	/**
@@ -1954,159 +1510,6 @@ public class Utilidades {
 		} catch (Exception e) {
 			manejarExcepcion(e);
 		}
-	}
-
-	/**
-	 * Método que crea la estructura de carpetas y archivos necesarios para la
-	 * librería.
-	 */
-	public static void crearEstructura() {
-		String userHome = System.getProperty("user.home");
-		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
-		String carpetaLibreria = ubicacion + File.separator + "libreria";
-
-		// Verificar y crear la carpeta "libreria" si no existe
-		File carpetaLibreriaFile = new File(carpetaLibreria);
-		if (!carpetaLibreriaFile.exists()) {
-			carpetaLibreriaFile.mkdir();
-			carpetaLibreriaFile.setWritable(true);
-		}
-
-		// Verificar y crear los archivos de configuración si no existen
-		String archivoConfiguracionLocal = carpetaLibreria + File.separator + "configuracion_local.conf";
-		String archivoConfiguracionOnline = carpetaLibreria + File.separator + "configuracion_usuario.conf";
-
-		File archivoConfiguracionLocalFile = new File(archivoConfiguracionLocal);
-		File archivoConfiguracionOnlineFile = new File(archivoConfiguracionOnline);
-
-		if (!archivoConfiguracionLocalFile.exists()) {
-			try {
-				archivoConfiguracionLocalFile.createNewFile();
-
-				// Escribir líneas en el archivo de configuración local
-				FileWriter fileWriterLocal = new FileWriter(archivoConfiguracionLocalFile);
-				BufferedWriter bufferedWriterLocal = new BufferedWriter(fileWriterLocal);
-				bufferedWriterLocal.write("###############################");
-				bufferedWriterLocal.newLine();
-				bufferedWriterLocal.write("Fichero de configuracion local de la libreria");
-				bufferedWriterLocal.newLine();
-				bufferedWriterLocal.write("###############################");
-				bufferedWriterLocal.newLine();
-				bufferedWriterLocal.write("Usuario:");
-				bufferedWriterLocal.newLine();
-				bufferedWriterLocal.write("Password:");
-				bufferedWriterLocal.newLine();
-				bufferedWriterLocal.write("Puerto:");
-				bufferedWriterLocal.newLine();
-				bufferedWriterLocal.write("Database:");
-				bufferedWriterLocal.newLine();
-				bufferedWriterLocal.write("Hosting: Localhost");
-				bufferedWriterLocal.newLine();
-				bufferedWriterLocal.close();
-			} catch (IOException e) {
-				manejarExcepcion(e);
-			}
-		}
-
-		if (!archivoConfiguracionOnlineFile.exists()) {
-			try {
-				archivoConfiguracionOnlineFile.createNewFile();
-
-				// Escribir líneas en el archivo de configuración online
-				FileWriter fileWriterOnline = new FileWriter(archivoConfiguracionOnlineFile);
-				BufferedWriter bufferedWriterOnline = new BufferedWriter(fileWriterOnline);
-				bufferedWriterOnline.write("###############################");
-				bufferedWriterOnline.newLine();
-				bufferedWriterOnline.write("Usuario y contraseño del usuario");
-				bufferedWriterOnline.newLine();
-				bufferedWriterOnline.write("###############################");
-				bufferedWriterOnline.newLine();
-				bufferedWriterOnline.write("Usuario: ");
-				bufferedWriterOnline.newLine();
-				bufferedWriterOnline.write("Password: ");
-				bufferedWriterOnline.newLine();
-				bufferedWriterOnline.close();
-			} catch (IOException e) {
-				manejarExcepcion(e);
-			}
-		}
-	}
-
-	/**
-	 * Valida los datos de conexión a la base de datos MySQL.
-	 *
-	 * @param usuario  El nombre de usuario para la conexión.
-	 * @param password La contraseña para la conexión.
-	 * @param puerto   El puerto para la conexión.
-	 * @param hosting  El host para la conexión.
-	 * @return true si la validación fue exitosa, false si no lo fue.
-	 */
-	public static boolean validarDatosConexion() {
-
-		String[] datosFichero = datosEnvioFichero();
-
-		String puerto = datosFichero[0];
-		String usuario = datosFichero[2];
-		String password = datosFichero[3];
-		String hosting = datosFichero[4];
-
-		String url = construirURL(hosting, puerto);
-		if (Utilidades.isMySQLServiceRunning(hosting, puerto)) {
-			try (Connection connection = DriverManager.getConnection(url, usuario, password)) {
-				return true; // La conexión se estableció correctamente
-			} catch (SQLException e) {
-				AlarmaList.manejarErrorConexion(
-						"ERROR. Revisa tu configuracion de XAMPP. Es posible que la contraseña u usuario sea incorrecto en la configuracion del fichero o de XAMPP",
-						null);
-
-			}
-		}
-
-		return false; // La conexión no se pudo establecer
-	}
-
-	private static String construirURL(String hosting, String puerto) {
-		return "jdbc:mysql://" + hosting + ":" + puerto + "/";
-	}
-
-	/**
-	 * Obtiene opciones para el ComboBox de nombreBBDD basado en la configuración.
-	 *
-	 * @param usuario  El nombre de usuario para la conexión.
-	 * @param password La contraseña para la conexión.
-	 * @param puerto   El puerto para la conexión.
-	 * @param hosting  El host para la conexión.
-	 * @return Lista de opciones para el ComboBox de nombreBBDD.
-	 */
-	public static List<String> obtenerOpcionesNombreBBDD(Map<String, String> datosConfiguracion) {
-		List<String> opciones = new ArrayList<>();
-
-		String usuario = datosConfiguracion.get("Usuario");
-		String password = datosConfiguracion.get("Password");
-		String puerto = datosConfiguracion.get("Puerto");
-		String hosting = datosConfiguracion.get("Hosting");
-
-		try (Connection connection = DriverManager.getConnection("jdbc:mysql://" + hosting + ":" + puerto + "/",
-				usuario, password);
-				Statement statement = connection.createStatement();
-				ResultSet resultSet = statement.executeQuery("SHOW DATABASES");) {
-
-			// Agregar los nombres de las bases de datos a la lista de opciones
-			while (resultSet.next()) {
-				String nombreBD = resultSet.getString(1);
-				String urlBD = "jdbc:mysql://" + hosting + ":" + puerto + "/" + nombreBD;
-				try (Connection dbConnection = DriverManager.getConnection(urlBD, usuario, password);
-						Statement dbStatement = dbConnection.createStatement();
-						ResultSet dbResultSet = dbStatement.executeQuery("SHOW TABLES LIKE 'comicsbbdd'");) {
-					if (dbResultSet.next()) {
-						opciones.add(nombreBD);
-					}
-				}
-			}
-		} catch (SQLException e) {
-			manejarExcepcion(e);
-		}
-		return opciones;
 	}
 
 	/**
@@ -2222,7 +1625,7 @@ public class Utilidades {
 					}
 				}
 			} catch (IOException | URISyntaxException | JSONException e) {
-				e.printStackTrace();
+				manejarExcepcion(e);
 			}
 
 			// Verificar el contador de faltas al final y actualizar el resultado
@@ -2254,7 +1657,7 @@ public class Utilidades {
 
 			return comicInfo != null; // Devuelve true si se encontró información del cómic.
 		} catch (Exception e) {
-			e.printStackTrace();
+			manejarExcepcion(e);
 			return false;
 		}
 	}
@@ -2286,27 +1689,13 @@ public class Utilidades {
 		return null;
 	}
 
-	public static String[] datosEnvioFichero() {
-		Map<String, String> datosConfiguracion = Utilidades.devolverDatosConfig();
-
-		String puertoTexto = datosConfiguracion.get("Puerto");
-		String databaseTexto = datosConfiguracion.get("Database");
-		String usuarioTexto = datosConfiguracion.get("Usuario");
-		String passwordTexto = datosConfiguracion.get("Password");
-		String hostingTexto = datosConfiguracion.get("Hosting");
-
-		String[] datosConfiguracionArray = { puertoTexto, databaseTexto, usuarioTexto, passwordTexto, hostingTexto };
-
-		return datosConfiguracionArray;
-	}
-
 	public static boolean comprobarYManejarConexion(Scene ventana) {
 		Ventanas nav = new Ventanas();
 
 		if (ventana != null) {
 			Stage stage = (Stage) ventana.getWindow();
 
-			if (!validarDatosConexion()) {
+			if (!ConectManager.conexionActiva()) {
 				Platform.runLater(() -> {
 					ConectManager.asignarValoresPorDefecto();
 					ConectManager.close();
@@ -2320,41 +1709,6 @@ public class Utilidades {
 		}
 
 		return true; // Está conectado
-	}
-
-	public static void comprobarApisComics() {
-		String apiKey = Utilidades.cargarApiComicVine();
-		String clavesMarvel[] = Utilidades.clavesApiMarvel();
-
-		if (!verificarClavesAPI(clavesMarvel, apiKey)) {
-			return; // Salir si hay errores en las claves API
-		}
-	}
-
-	/**
-	 * Verifica si las claves API están ausentes o vacías y muestra una alerta en
-	 * caso de error.
-	 *
-	 * @param clavesMarvel Claves API de Marvel.
-	 * @param apiKey       Clave API de Comic Vine.
-	 */
-	public static boolean verificarClavesAPI(String[] clavesMarvel, String apiKey) {
-		String exception = "";
-		Ventanas nav = new Ventanas();
-
-		if (clavesMarvel.length == 0) {
-			exception += "\nDebes obtener una clave API de Marvel. Visita https://developer.marvel.com/";
-		}
-
-		if (apiKey.isEmpty()) {
-			exception += "\nDebes obtener una clave API de Comic Vine. Visita https://comicvine.gamespot.com/api/ (gratuito)";
-		}
-
-		if (!exception.isEmpty()) {
-			nav.alertaNoApi(exception); // Mostrar alerta de error
-			return false;
-		}
-		return true;
 	}
 
 	/**
@@ -2389,26 +1743,6 @@ public class Utilidades {
 		return Files.exists(Paths.get(defaultImagePath, nombreModificado));
 	}
 
-	/**
-	 * Abre un archivo en el registro a través del programa predeterminado del
-	 * sistema.
-	 *
-	 * @param filePath La ruta del archivo que se va a abrir.
-	 */
-	public static void abrirArchivoRegistro(String filePath) {
-		File file = new File(filePath);
-		Ventanas nav = new Ventanas();
-
-		if (file.exists()) {
-			try {
-				Desktop.getDesktop().open(file);
-			} catch (IOException e) {
-				nav.alertaException(e.toString());
-				e.printStackTrace();
-			}
-		}
-	}
-
 	public static boolean isXAMPPRunning() {
 		try {
 			// Verificar si el proceso principal del "XAMPP Control Panel" está en ejecución
@@ -2425,7 +1759,7 @@ public class Utilidades {
 			// ejecución
 			return output.contains("xampp-control.exe");
 		} catch (IOException e) {
-			e.printStackTrace();
+			manejarExcepcion(e);
 			return false;
 		}
 	}
@@ -2441,43 +1775,70 @@ public class Utilidades {
 		return salida.toString();
 	}
 
+	/**
+	 * Devuelve el valor predeterminado si la cadena dada es nula o vacía, de lo
+	 * contrario, devuelve la cadena original.
+	 *
+	 * @param value        Cadena a ser verificada.
+	 * @param defaultValue Valor predeterminado a ser devuelto si la cadena es nula
+	 *                     o vacía.
+	 * @return Cadena original o valor predeterminado.
+	 */
+	public static String defaultIfNullOrEmpty(String value, String defaultValue) {
+
+		Comic.limpiarCampo(value);
+
+		return (value == null || value.isEmpty()) ? defaultValue : value;
+	}
+
 	public static boolean iniciarXAMPP() {
 		try {
-			String[] datosFichero = Utilidades.datosEnvioFichero();
+			String[] datosFichero = FuncionesFicheros.datosEnvioFichero();
 			String port = datosFichero[0];
 			String host = datosFichero[4];
+			String xamppRuta = datosFichero[5];
+			FuncionesFicheros.verificarYReemplazarRutaXampp(xamppRuta);
 
 			if (!isMySQLServiceRunning(host, port)) {
-				iniciarConexionMySql();
+				iniciarConexionMySql(xamppRuta);
 				return true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			manejarExcepcion(e);
 		}
 		return false;
 	}
 
-	public static void iniciarConexionMySql() {
-		String rutaScriptControl = "C:\\xampp\\xampp-control.exe";
+	public static String buscarProgramasEnDirectorio(String nombreDirectorio, String nomAplicacion) {
+
+		File direccionAplicacion = new File(nombreDirectorio);
+
+		if (direccionAplicacion.exists()) {
+
+			System.out.println(nombreDirectorio + File.separator + nomAplicacion);
+
+			return nombreDirectorio + File.separator + nomAplicacion;
+
+		}
+		return "";
+	}
+
+	public static void iniciarConexionMySql(String directorio) {
+		String rutaScriptControl = buscarProgramasEnDirectorio(directorio, "xampp-control.exe");
+		String rutaXamppStart = buscarProgramasEnDirectorio(directorio, "xampp_start.exe");
 
 		try {
-			if (verificarExistencia(rutaScriptControl)) {
+			if (rutaScriptControl != null && verificarExistencia(rutaScriptControl)) {
 				if (!isXAMPPRunning()) {
 					abrirPrograma(rutaScriptControl);
-//					Thread.sleep(5000); // Espera para asegurarse de que XAMPP se haya iniciado completamente
 				}
-				String rutaScript = "C:\\xampp\\xampp_start.exe";
-				if (verificarExistencia(rutaScript)) {
-					System.out.println("Tal");
-					ejecutarComando(rutaScript);
-				} else {
-					System.err.println("El archivo xampp_start.exe no existe en la ruta especificada.");
-				}
-			} else {
-				System.err.println("El archivo xampp-control.exe no existe en la ruta especificada.");
+			}
+
+			if (rutaXamppStart != null) {
+				ejecutarComando(rutaXamppStart);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			manejarExcepcion(e);
 		}
 	}
 
@@ -2500,8 +1861,6 @@ public class Utilidades {
 
 			try {
 				int exitCode = process.waitFor();
-
-				System.out.println(exitCode);
 
 				if (exitCode == 0) {
 					if (mensajeExito != null && !mensajeExito.isEmpty()) {
@@ -2649,21 +2008,6 @@ public class Utilidades {
 	}
 
 	/**
-	 * Abre un archivo en el programa asociado en el sistema operativo.
-	 *
-	 * @param rutaArchivo La ruta del archivo que se va a abrir.
-	 */
-	public static void abrirArchivoConProgramaAsociado(String rutaArchivo) {
-		try {
-			if (Desktop.isDesktopSupported()) {
-				Desktop.getDesktop().open(new File(rutaArchivo));
-			}
-		} catch (IOException e) {
-			Utilidades.manejarExcepcion(e);
-		}
-	}
-
-	/**
 	 * Carga una imagen de forma asíncrona desde una URL y la muestra en un
 	 * ImageView.
 	 *
@@ -2752,7 +2096,6 @@ public class Utilidades {
 			}
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -2801,8 +2144,6 @@ public class Utilidades {
 							e.printStackTrace();
 						}
 					});
-				} else {
-					System.out.println("La descarga falló. Código de respuesta: " + responseCode);
 				}
 				httpConn.disconnect();
 				return null;

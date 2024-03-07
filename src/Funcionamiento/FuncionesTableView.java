@@ -208,22 +208,26 @@ public class FuncionesTableView {
 								String[] nombres = item.split(" - ");
 								vbox.getChildren().clear();
 
+
+								
 								for (String nombre : nombres) {
 									if (!nombre.isEmpty()) {
 										Label label;
+
 										if (columna.getText().equalsIgnoreCase("referencia")) {
 											label = new Label(nombre + "\n");
 											busquedaHyperLink(columna);
+											
 										} else if (columna.getText().equalsIgnoreCase("fecha")
 												|| columna.getText().equalsIgnoreCase("editorial")
 												|| columna.getText().equalsIgnoreCase("formato")
-												|| columna.getText().equalsIgnoreCase("variante")
 												|| columna.getText().equalsIgnoreCase("Nombre")
 												|| columna.getText().equalsIgnoreCase("Nº")
 												|| columna.getText().equalsIgnoreCase("Caja")
 												|| columna.getText().equalsIgnoreCase("Origen")) {
 											label = new Label(nombre + "\n");
-										} else if (columna.getText().equalsIgnoreCase("firma")) {
+										} else if (columna.getText().equalsIgnoreCase("variante")
+												|| columna.getText().equalsIgnoreCase("firma")) {
 											label = new Label("◉ " + nombre + "\n");
 										} else {
 											label = new Label("◉ " + nombre + "\n");
@@ -294,7 +298,11 @@ public class FuncionesTableView {
 			String rawSelecionado) throws SQLException {
 		ListaComicsDAO.reiniciarListaComics();
 		nombreColumnas(columnList, tablaBBDD);
+		
 		tablaBBDD(SelectManager.libreriaSeleccionado(rawSelecionado), tablaBBDD, columnList);
+		
+	    // Deseleccionar la fila seleccionada
+	    tablaBBDD.getSelectionModel().clearSelection();
 	}
 
 	/**

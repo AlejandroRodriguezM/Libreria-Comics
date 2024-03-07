@@ -1,6 +1,7 @@
 package Funcionamiento;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
@@ -24,8 +26,10 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Popup;
+import javafx.stage.Screen;
 import javafx.util.converter.DefaultStringConverter;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
@@ -103,51 +107,6 @@ public class FuncionesComboBox {
 	}
 
 	/**
-	 * Realiza la lectura y configuración de los ComboBoxes de la interfaz gráfica.
-	 * Asigna escuchadores para detectar cambios en los ComboBoxes y en sus campos
-	 * de texto. Actualiza los ComboBoxes según los cambios realizados por el
-	 * usuario. Además, comprueba si solo un ComboBox está lleno y llama a la
-	 * función rellenarComboBox().
-	 *
-	 * @param totalComboboxes El número total de ComboBoxes.
-	 * @param comboboxes      La lista de ComboBoxes.
-	 */
-	public void lecturaComboBox(List<ComboBox<String>> comboboxes) {
-		isUserInput = true; // Establecemos isUserInput en true inicialmente.
-		int cantidadDeComboBoxes = comboboxes.size();
-		// Configuración de los escuchadores para cada ComboBox mediante un bucle
-		for (int i = 0; i < cantidadDeComboBoxes; i++) {
-
-			final int currentIndex = i; // Copia final de i para usar en expresiones lambda
-
-			ComboBox<String> comboBox = comboboxes.get(i);
-
-			originalComboBoxItems.put(comboBox, FXCollections.observableArrayList(comboBox.getItems()));
-
-			comboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-				comboBox.hide();
-				if (!isUserInput || updatingComboBoxes) {
-					return; // Ignorar cambios programáticos o cuando updatingComboBoxes es verdadero
-				}
-				if (newValue == null || newValue.isEmpty()) {
-					modificarPopup(comboBox);
-					handleComboBoxEmptyChange(comboBox, comboboxes);
-				} else {
-					modificarPopup(comboBox);
-					Comic comic = getComicFromComboBoxes(cantidadDeComboBoxes, comboboxes);
-					try {
-						actualizarComboBoxes(cantidadDeComboBoxes, comboboxes, comic);
-					} catch (SQLException | InterruptedException | ExecutionException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					updateOtherComboBoxes(comboboxes, currentIndex, newValue); // Call the new method here
-				}
-			});
-		}
-	}
-
-	/**
 	 * Maneja los cambios en el ComboBox cuando su texto está vacío. Restablece el
 	 * valor del ComboBox a null y verifica si todos los campos de texto de los
 	 * ComboBoxes están vacíos. Si todos están vacíos, llama a la función
@@ -194,18 +153,19 @@ public class FuncionesComboBox {
 	 * @throws ExecutionException
 	 * @throws InterruptedException
 	 */
-	public void actualizarComboBoxes(int cantidadDeComboBoxes, List<ComboBox<String>> comboboxes, Comic comic)
-			throws SQLException, InterruptedException, ExecutionException {
-
+	public void actualizarComboBoxes(int cantidadDeComboBoxes, List<ComboBox<String>> comboboxes, Comic comic) {
 		Comic comicTemp = new Comic("", comic.getNombre(), comic.getNumCaja(), comic.getNumero(), comic.getVariante(),
 				comic.getFirma(), comic.getEditorial(), comic.getFormato(), comic.getProcedencia(), "",
 				comic.getGuionista(), comic.getDibujante(), "", "", "", "", "", "", "");
 		String sql = DBUtilidades.datosConcatenados(comicTemp);
 
+		System.out.println(sql);
+
 		if (!sql.isEmpty()) {
 			isUserInput = false; // Disable user input during programmatic updates
 
 			ListaComicsDAO.nombreComicList = ListaComicsDAO.guardarDatosAutoCompletado(sql, "nomComic");
+
 			ListaComicsDAO.nombreGuionistaList = ListaComicsDAO.guardarDatosAutoCompletado(sql, "nomGuionista");
 			ListaComicsDAO.numeroComicList = convertirYOrdenarListaNumeros(
 					ListaComicsDAO.guardarDatosAutoCompletado(sql, "numComic"));
@@ -230,6 +190,7 @@ public class FuncionesComboBox {
 					comboboxes.get(i).hide();
 					List<String> itemsActuales = ListaComicsDAO.listaOrdenada.get(i);
 					if (itemsActuales != null && !itemsActuales.isEmpty()) {
+
 						ObservableList<String> itemsObservable = FXCollections.observableArrayList(itemsActuales);
 						comboboxes.get(i).setItems(itemsObservable);
 
@@ -311,69 +272,68 @@ public class FuncionesComboBox {
 		rellenarComboBox(comboboxes); // Rellenar los ComboBoxes con nuevos datos
 	}
 
-	/**
-	 * Rellena los ComboBoxes con los elementos proporcionados en la lista de
-	 * elementos.
-	 *
-	 * @param comboboxes La lista de ComboBoxes a rellenar.
-	 */
-	public void rellenarComboBox(List<ComboBox<String>> comboboxes) {
+	public void lecturaComboBox(List<ComboBox<String>> comboboxes) {
+		isUserInput = true; // Establecemos isUserInput en true inicialmente.
+		int cantidadDeComboBoxes = comboboxes.size();
 
-		int i = 0;
-
+		// Configuración de los escuchadores para cada ComboBox mediante un bucle
 		for (ComboBox<String> comboBox : comboboxes) {
-			if (comboBox != null) {
-				modificarPopup(comboBox);
+			originalComboBoxItems.put(comboBox, FXCollections.observableArrayList(comboBox.getItems()));
 
-//				List<String> items = Utilidades.listaArregladaAutoComplete(DBLibreriaManager.itemsList.get(i));
-				List<String> items = ListaComicsDAO.itemsList.get(i);
-				try {
-					final int currentIndex = i; // Copia final de i para usar en expresiones lambda
-
-					if (items != null && !items.isEmpty()) {
-						ObservableList<String> itemsCopy = FXCollections.observableArrayList(items);
-						comboBox.setItems(itemsCopy);
-					}
-
-					// Configurar el tamaño y apariencia del despliegue del ComboBox
-					modificarPopup(comboBox);
-
-					comboBox.setOnMousePressed(event -> {
-						comboBox.hide();
-						if (!comboBox.isShowing()) {
-							boolean atLeastOneNotEmpty = comboboxes.stream()
-									.anyMatch(cb -> cb.getValue() != null && !cb.getValue().isEmpty());
-
-							if (atLeastOneNotEmpty) {
-								Comic comic = getComicFromComboBoxes(10, comboboxes);
-								setupFilteredPopup(comboboxes, comboBox,
-										ListaComicsDAO.listaOrdenada.get(currentIndex));
-								try {
-									actualizarComboBoxes(10, comboboxes, comic);
-								} catch (SQLException | InterruptedException | ExecutionException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-							} else {
-								Comic comic = getComicFromComboBoxes(10, comboboxes);
-								setupFilteredPopup(comboboxes, comboBox, items);
-								try {
-									actualizarComboBoxes(10, comboboxes, comic);
-								} catch (SQLException | InterruptedException | ExecutionException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-							}
-						}
-					});
-
-				} catch (Exception e) {
-					e.printStackTrace();
+			comboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+				if (!isUserInput || updatingComboBoxes) {
+					return; // Ignorar cambios programáticos o cuando updatingComboBoxes es verdadero
 				}
 
-				i++;
-			}
+				if (newValue == null || newValue.isEmpty()) {
+					modificarPopup(comboBox);
+					handleComboBoxEmptyChange(comboBox, comboboxes);
+				} else {
+					modificarPopup(comboBox);
+					Comic comic = getComicFromComboBoxes(cantidadDeComboBoxes, comboboxes);
+					actualizarComboBoxes(cantidadDeComboBoxes, comboboxes, comic);
+				}
+			});
 		}
+	}
+
+	public void rellenarComboBox(List<ComboBox<String>> comboboxes) {
+
+		for (int i = 0; i < comboboxes.size(); i++) {
+			ComboBox<String> comboBox = comboboxes.get(i);
+			if (comboBox == null) {
+				continue; // Evitar operaciones en ComboBox nulos
+			}
+
+			List<String> items = ListaComicsDAO.itemsList.get(i);
+			if (items != null && !items.isEmpty() && !comboBox.getItems().equals(items)) {
+				comboBox.setItems(FXCollections.observableArrayList(items));
+			}
+
+			// Configurar el evento de clic del mouse fuera del bucle
+			setupComboBoxMouseClickEvent(comboboxes, comboBox, i);
+		}
+	}
+
+	private void setupComboBoxMouseClickEvent(List<ComboBox<String>> comboboxes, ComboBox<String> comboBox, int index) {
+		comboBox.setOnMousePressed(event -> {
+//	        handleComboBoxEvent(comboboxes, comboBox, index);
+		});
+
+		comboBox.setOnMouseClicked(event -> {
+			handleComboBoxEvent(comboboxes, comboBox, index);
+		});
+	}
+
+	private void handleComboBoxEvent(List<ComboBox<String>> comboboxes, ComboBox<String> comboBox, int index) {
+		boolean atLeastOneNotEmpty = comboboxes.stream()
+				.anyMatch(cb -> cb.getValue() != null && !cb.getValue().isEmpty());
+
+		List<String> currentItems = ListaComicsDAO.listaOrdenada.get(index);
+
+		setupFilteredPopup(comboboxes, comboBox,
+				atLeastOneNotEmpty ? currentItems : ListaComicsDAO.itemsList.get(index));
+
 	}
 
 	/**
@@ -388,118 +348,142 @@ public class FuncionesComboBox {
 		modificarPopup(originalComboBox);
 
 		ListView<String> listView = new ListView<>(FXCollections.observableArrayList(filteredItems));
-
 		TextField filterTextField = new TextField();
 		filterTextField.setPromptText("Filtro...");
-
 		StringProperty filteredText = new SimpleStringProperty();
 		filterTextField.textProperty().bindBidirectional(filteredText);
 
-		// Listener para el cambio de texto en el TextField de filtro
-		filterTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-			List<String> newFilteredItems = filteredItems.stream()
-					.filter(item -> item.toLowerCase().contains(newValue.toLowerCase())).collect(Collectors.toList());
-			listView.setItems(FXCollections.observableArrayList(newFilteredItems));
-		});
-
 		Bounds bounds = originalComboBox.localToScreen(originalComboBox.getBoundsInLocal());
-		popup = createCustomPopup(originalComboBox, filterTextField, listView);
+		Popup popup = createCustomPopup(originalComboBox, filterTextField, listView);
+
+		Map<ComboBox<String>, Popup> comboBoxPopupMap = new HashMap<>();
+		comboBoxPopupMap.put(originalComboBox, popup);
 
 		int currentIndex = comboboxes.indexOf(originalComboBox);
+		Map<ComboBox<String>, List<String>> comboBoxFilteredItemsMap = new HashMap<>();
+		for (ComboBox<String> comboBox : comboboxes) {
+			comboBoxFilteredItemsMap.put(comboBox, new ArrayList<>(filteredItems));
+		}
 
-		// Evento para manejar la tecla Enter en la lista
-		listView.setOnKeyPressed(event -> {
+		filterTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+			List<String> currentFilteredItems = comboBoxFilteredItemsMap.get(originalComboBox);
+			if (newValue != null && !newValue.isEmpty()) {
+				List<String> newFilteredItems = ListaComicsDAO.listaOrdenada.get(comboboxes.indexOf(originalComboBox))
+						.stream().filter(item -> item.toLowerCase().contains(newValue.toLowerCase()))
+						.collect(Collectors.toList());
+				currentFilteredItems.clear();
+				currentFilteredItems.addAll(newFilteredItems);
+			} else {
+				originalComboBox.setValue("");
+				filterTextField.setText("");
+				Comic comic = getComicFromComboBoxes(10, comboboxes);
+				actualizarComboBoxes(10, comboboxes, comic);
+				List<String> allFilteredItems = new ArrayList<>(
+						ListaComicsDAO.listaOrdenada.get(comboboxes.indexOf(originalComboBox)));
+				currentFilteredItems.clear();
+				currentFilteredItems.addAll(allFilteredItems);
+			}
+			listView.setItems(FXCollections.observableArrayList(currentFilteredItems));
+		});
+
+		originalComboBox.valueProperty().addListener((obs, oldValue, newValue) -> {
+			if (newValue != null && !newValue.isEmpty()) {
+				filterTextField.setText(newValue);
+			}
+		});
+
+		EventHandler<KeyEvent> enterEventHandler = event -> {
 			modificarPopup(originalComboBox);
-
 			if (event.getCode() == KeyCode.ENTER) {
 				String selectedItem = listView.getSelectionModel().getSelectedItem();
 				if (selectedItem != null) {
 					originalComboBox.setValue(selectedItem);
 					originalComboBox.hide();
-
 					updateOtherComboBoxes(comboboxes, currentIndex, selectedItem);
-					filterTextField.setText(selectedItem); // Establecer el valor en el TextField
-					popup.hide();
+					filterTextField.setText(selectedItem);
+					comboBoxPopupMap.get(originalComboBox).hide();
 				}
 			}
-		});
+		};
+		listView.setOnKeyPressed(enterEventHandler);
+		listView.setOnMouseClicked(event -> enterEventHandler
+				.handle(new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.ENTER, false, false, false, false)));
 
-		// Evento para manejar el clic en un elemento de la lista
-		listView.setOnMouseClicked(event -> {
-			modificarPopup(originalComboBox);
+		if (!popup.isShowing()) {
+			showFilteredPopup(popup, originalComboBox, filterTextField, filteredText, bounds);
+		} else {
+			originalComboBox.hide();
+			popup.hide();
+		}
+		if (!listView.getItems().isEmpty()) {
 
-			String selectedItem = listView.getSelectionModel().getSelectedItem();
-			if (selectedItem != null) {
-				originalComboBox.setValue(selectedItem);
-				originalComboBox.hide();
+		}
 
-				updateOtherComboBoxes(comboboxes, currentIndex, selectedItem);
-				filterTextField.setText(selectedItem); // Establecer el valor en el TextField
-				popup.hide();
-			}
-		});
-
-		// Evento para manejar el clic en el ComboBox original
-		originalComboBox.setOnMouseClicked(event -> {
-			modificarPopup(originalComboBox);
-			Popup customPopup = new Popup();
-
-			if (!popup.isShowing()) {
-				customPopup = createCustomPopup(originalComboBox, filterTextField, listView);
-				showFilteredPopup(customPopup, originalComboBox, filterTextField, filteredText, bounds);
-			} else {
-				originalComboBox.hide();
-				popup.hide();
-			}
-
-			if (!listView.getItems().isEmpty()) {
-				listView.requestFocus(); // Solicitar el enfoque en la lista
-				listView.getSelectionModel().selectFirst();
-			}
-		});
-
-		// Evento para manejar las teclas presionadas en el TextField de filtro
 		filterTextField.setOnKeyPressed(event -> {
-			KeyCode code = event.getCode();
-			if (code == KeyCode.BACK_SPACE || code == KeyCode.DELETE) {
-				modificarPopup(originalComboBox);
-				originalComboBox.setValue("");
-				originalComboBox.hide();
-				boolean atLeastOneNotEmpty = comboboxes.stream()
-						.anyMatch(cb -> cb.getValue() != null && !cb.getValue().isEmpty());
-
-				if (atLeastOneNotEmpty) {
+			modificarPopup(originalComboBox);
+			if (event.getCode() == KeyCode.BACK_SPACE || event.getCode() == KeyCode.DELETE) {
+				if (filterTextField.getText().isEmpty()) {
 					Comic comic = getComicFromComboBoxes(10, comboboxes);
-					try {
-						actualizarComboBoxes(10, comboboxes, comic);
-					} catch (SQLException | InterruptedException | ExecutionException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					actualizarComboBoxes(10, comboboxes, comic);
 				}
-				originalComboBox.hide();
-				popup.hide();
 			}
 		});
 
 		popup.setOnHidden(event -> {
 			listView.getSelectionModel().clearSelection();
 			listView.scrollTo(0);
-
 			String selectedItem = listView.getSelectionModel().getSelectedItem();
 			if (selectedItem != null) {
 				originalComboBox.setValue(selectedItem);
 				originalComboBox.hide();
 
+				listView.setOnMouseClicked(e -> {
+					Comic comic = getComicFromComboBoxes(10, comboboxes);
+					actualizarComboBoxes(10, comboboxes, comic);
+				});
+
 				updateOtherComboBoxes(comboboxes, currentIndex, selectedItem);
-				filterTextField.setText(originalComboBox.getValue()); // Establecer el valor en el TextField
+				filterTextField.setText(originalComboBox.getValue());
 				popup.hide();
 			}
 		});
 
-		originalComboBox.valueProperty().addListener((obs, oldValue, newValue) -> {
-			if (newValue != null && !newValue.isEmpty()) {
-				filterTextField.setText(newValue);
+		// Después de crear el ListView
+		listView.setCellFactory(list -> new ListCell<String>() {
+			@Override
+			protected void updateItem(String item, boolean empty) {
+				super.updateItem(item, empty);
+
+				if (empty || item == null) {
+					setText(null);
+					setStyle(null);
+				} else {
+					setText(item);
+
+					setOnMouseEntered(event -> {
+						setStyle("-fx-control-inner-background: #008ECC;");
+					});
+					setOnMouseExited(event -> {
+						setStyle("-fx-control-inner-background: white;");
+					});
+
+				}
+			}
+		});
+
+		listView.setOnKeyPressed(event -> {
+			if (event.getCode() == KeyCode.DOWN) {
+				int selectedIndex = listView.getSelectionModel().getSelectedIndex();
+				if (selectedIndex < listView.getItems().size() - 1) {
+					listView.getSelectionModel().select(selectedIndex + 1);
+					listView.scrollTo(selectedIndex + 1);
+				}
+			} else if (event.getCode() == KeyCode.UP) {
+				int selectedIndex = listView.getSelectionModel().getSelectedIndex();
+				if (selectedIndex > 0) {
+					listView.getSelectionModel().select(selectedIndex - 1);
+					listView.scrollTo(selectedIndex - 1);
+				}
 			}
 		});
 	}
@@ -544,13 +528,20 @@ public class FuncionesComboBox {
 		Bounds comboBoxBounds = originalComboBox.getBoundsInLocal();
 		Bounds screenBounds = originalComboBox.localToScreen(comboBoxBounds);
 
-		double defaultX = screenBounds.getMinX() + comboBoxBounds.getMinX();
-		double defaultY = screenBounds.getMaxY();
+// Configurar las coordenadas para mostrar el Popup en el ComboBox que se hace clic
+		double x = screenBounds.getMinX() + comboBoxBounds.getMinX();
+		double y = screenBounds.getMaxY();
 
-		popup.show(originalComboBox, defaultX, defaultY);
+// Ajustar la posición del Popup si se sale de la pantalla en el eje Y
+		if (screenBounds.getMaxY() + popup.getHeight() > Screen.getPrimary().getBounds().getMaxY()) {
+			y = screenBounds.getMinY() - popup.getHeight();
+		}
 
-		// filterTextField.requestFocus(); // Solicitar el enfoque en el campo de texto
-		filterTextField.setText(filteredText.get()); // Configurar el texto filtrado
+		popup.show(originalComboBox, x, y);
+
+// Configurar el texto filtrado y solicitar el enfoque en el campo de texto
+		filterTextField.setText(filteredText.get());
+		filterTextField.requestFocus();
 	}
 
 	/**

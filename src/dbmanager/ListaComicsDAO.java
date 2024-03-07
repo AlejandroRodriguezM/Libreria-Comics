@@ -460,6 +460,22 @@ public class ListaComicsDAO {
 
 		return result;
 	}
+	
+	/**
+	 * Busca un cómic por su ID en una lista de cómics.
+	 *
+	 * @param comics  La lista de cómics en la que se realizará la búsqueda.
+	 * @param idComic La ID del cómic que se está buscando.
+	 * @return El cómic encontrado por la ID, o null si no se encuentra ninguno.
+	 */
+	public static Comic buscarComicPorID(List<Comic> comics, String idComic) {
+		for (Comic c : comics) {
+			if (c.getID().equals(idComic)) {
+				return c; // Devuelve el cómic si encuentra la coincidencia por ID
+			}
+		}
+		return null; // Retorna null si no se encuentra ningún cómic con la ID especificada
+	}
 
 	/**
 	 * Genera un archivo de estadísticas basado en los datos de la base de datos de
@@ -726,7 +742,7 @@ public class ListaComicsDAO {
 			writer.print(estadisticaStr);
 
 			// Abrir el archivo con el programa asociado en el sistema
-			Utilidades.abrirArchivoConProgramaAsociado(rutaCompleta);
+			Utilidades.abrirArchivo(rutaCompleta);
 
 		} catch (IOException e) {
 			Utilidades.manejarExcepcion(e);

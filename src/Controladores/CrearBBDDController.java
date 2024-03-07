@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import Funcionamiento.FuncionesFicheros;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
@@ -165,7 +166,7 @@ public class CrearBBDDController implements Initializable {
 	 */
 	public void formulario_local() {
 
-		Map<String, String> datosConfiguracion = Utilidades.devolverDatosConfig();
+		Map<String, String> datosConfiguracion = FuncionesFicheros.devolverDatosConfig();
 
 		userBBDD.setText(datosConfiguracion.get("Usuario"));
 
@@ -268,7 +269,7 @@ public class CrearBBDDController implements Initializable {
 				Utilidades.crearCarpeta();
 
 				AlarmaList.iniciarAnimacionBaseCreada(prontInformativo, DB_NAME);
-				Utilidades.guardarDatosBaseLocal(datosBBDD(), prontInformativo, null);
+				FuncionesFicheros.guardarDatosBaseLocal(datosBBDD(), prontInformativo, null);
 			} else {
 				AlarmaList.manejarErrorConexion("El servicio MySQL no esta activado. Activalo para crear la base de datos", prontInformativo);
 			}

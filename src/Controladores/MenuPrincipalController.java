@@ -138,8 +138,8 @@ public class MenuPrincipalController implements Initializable {
 	 * Menú de archivo con opciones relacionadas con la base de datos.
 	 */
 	@FXML
-	private MenuItem menu_archivo_cerrar, menu_archivo_delete, menu_archivo_desconectar,
-			menu_archivo_excel, menu_archivo_importar, menu_archivo_sobreMi;
+	private MenuItem menu_archivo_cerrar, menu_archivo_delete, menu_archivo_desconectar, menu_archivo_excel,
+			menu_archivo_importar, menu_archivo_sobreMi;
 
 	/**
 	 * Menú relacionado con operaciones de cómic.
@@ -155,9 +155,9 @@ public class MenuPrincipalController implements Initializable {
 	private MenuItem menu_estadistica_comprados, menu_estadistica_estadistica, menu_estadistica_firmados,
 			menu_estadistica_key_issue, menu_estadistica_posesion, menu_estadistica_puntuados,
 			menu_estadistica_vendidos;
-	
-    @FXML
-    private MenuItem menu_archivo_avanzado;
+
+	@FXML
+	private MenuItem menu_archivo_avanzado;
 
 	@FXML
 	private MenuItem menu_archivo_conexion;
@@ -739,7 +739,7 @@ public class MenuPrincipalController implements Initializable {
 		Utilidades.cambiarVisibilidad(elementos, false);
 
 		busquedaGeneral.setText("");
-
+		imagencomic.setVisible(true);
 		if (esCompleto) {
 			FuncionesManejoFront.verBasedeDatos(true, false, null);
 		} else {
@@ -815,13 +815,13 @@ public class MenuPrincipalController implements Initializable {
 		imprimirComicsEstado(null, true);
 
 	}
-	
+
 	@FXML
 	void verOpcionesAvanzadas(ActionEvent event) throws SQLException {
 		nav.verOpcionesAvanzadas();
 
 	}
-	
+
 	/**
 	 * Maneja la acción de mostrar los cómics considerados "Key Issue".
 	 *
@@ -1066,13 +1066,14 @@ public class MenuPrincipalController implements Initializable {
 			return;
 		}
 
-		String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
-
-		SelectManager.verLibreria(sentenciaSQL);
+//		String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
+//
+//		SelectManager.verLibreria(sentenciaSQL);
 
 		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 		// Verificar si idRow es nulo antes de intentar acceder a sus métodos
 		if (idRow != null) {
+			imagencomic.setVisible(true);
 			AlarmaList.detenerAnimacion();
 			String id_comic = idRow.getID();
 
@@ -1326,8 +1327,6 @@ public class MenuPrincipalController implements Initializable {
 		AlarmaList.mostrarMensajePront(mensaje, resultado, prontInfo);
 	}
 
-
-
 	/**
 	 * Devuelve un array con los datos de los TextField correspondientes a la los
 	 * comics que se encuentran en la bbdd
@@ -1438,6 +1437,9 @@ public class MenuPrincipalController implements Initializable {
 			}
 		}
 
+		imagencomic.setVisible(false);
+		imagencomic.setImage(null);
+		prontInfo.setOpacity(0);
 		nav.verAccionComic();
 	}
 
