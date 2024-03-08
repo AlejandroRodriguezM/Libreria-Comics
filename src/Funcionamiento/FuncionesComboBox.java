@@ -333,6 +333,9 @@ public class FuncionesComboBox {
 
 		setupFilteredPopup(comboboxes, comboBox,
 				atLeastOneNotEmpty ? currentItems : ListaComicsDAO.itemsList.get(index));
+		
+		Comic comic = getComicFromComboBoxes(10, comboboxes);
+		actualizarComboBoxes(10, comboboxes, comic);
 
 	}
 
@@ -415,9 +418,7 @@ public class FuncionesComboBox {
 			originalComboBox.hide();
 			popup.hide();
 		}
-		if (!listView.getItems().isEmpty()) {
 
-		}
 
 		filterTextField.setOnKeyPressed(event -> {
 			modificarPopup(originalComboBox);
@@ -467,22 +468,6 @@ public class FuncionesComboBox {
 						setStyle("-fx-control-inner-background: white;");
 					});
 
-				}
-			}
-		});
-
-		listView.setOnKeyPressed(event -> {
-			if (event.getCode() == KeyCode.DOWN) {
-				int selectedIndex = listView.getSelectionModel().getSelectedIndex();
-				if (selectedIndex < listView.getItems().size() - 1) {
-					listView.getSelectionModel().select(selectedIndex + 1);
-					listView.scrollTo(selectedIndex + 1);
-				}
-			} else if (event.getCode() == KeyCode.UP) {
-				int selectedIndex = listView.getSelectionModel().getSelectedIndex();
-				if (selectedIndex > 0) {
-					listView.getSelectionModel().select(selectedIndex - 1);
-					listView.scrollTo(selectedIndex - 1);
 				}
 			}
 		});

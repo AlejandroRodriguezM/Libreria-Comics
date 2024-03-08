@@ -2355,7 +2355,7 @@ public class VentanaAccionController implements Initializable {
 	 */
 	public void procesarComic(Comic comic, boolean esModificacion) throws Exception {
 		final List<Comic> listaComics; // Declarar listaComics como final
-
+		final List<Comic> comicsFinal;
 		if (!ConectManager.conexionActiva()) {
 			return;
 		}
@@ -2364,6 +2364,11 @@ public class VentanaAccionController implements Initializable {
 		if (!camposComicSonValidos()) {
 			String mensaje = "Error. Debes de introducir los datos correctos";
 			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+			comicsFinal = listaComics = ListaComicsDAO.comicsImportados;
+			Platform.runLater(() -> {
+				FuncionesTableView.tablaBBDD(comicsFinal, tablaBBDD, columnList);
+			});
+			
 			return; // Agregar return para salir del método en este punto
 		}
 
@@ -2393,7 +2398,7 @@ public class VentanaAccionController implements Initializable {
 			}
 		}
 
-		final List<Comic> comicsFinal = listaComics; // Declarar otra variable final para listaComics
+		comicsFinal = listaComics; // Declarar otra variable final para listaComics
 
 		Platform.runLater(() -> {
 			FuncionesTableView.tablaBBDD(comicsFinal, tablaBBDD, columnList);

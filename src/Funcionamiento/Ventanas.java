@@ -112,7 +112,7 @@ public class Ventanas {
 					accesoBBDDStage.setResizable(false);
 					accesoBBDDStage.setTitle("Aplicacion bbdd comics");
 
-					accesoBBDDStage.getIcons().add(new Image("/Icono/icon2.png"));
+					accesoBBDDStage.getIcons().add(new Image("/Icono/icon.png"));
 
 					// Asocio el stage con el scene
 					accesoBBDDStage.setScene(scene);
@@ -152,7 +152,7 @@ public class Ventanas {
 					estadoConexionStage.setResizable(false);
 					estadoConexionStage.setTitle("Estado de conexion");
 
-					estadoConexionStage.getIcons().add(new Image("/Icono/icon2.png"));
+					estadoConexionStage.getIcons().add(new Image("/Icono/icon.png"));
 
 					// Asocio el stage con el scene
 					estadoConexionStage.setScene(scene);
@@ -199,7 +199,7 @@ public class Ventanas {
 					estadoApiStage.setResizable(false);
 					estadoApiStage.setTitle("Estado de conexion");
 
-					estadoApiStage.getIcons().add(new Image("/Icono/icon2.png"));
+					estadoApiStage.getIcons().add(new Image("/Icono/icon.png"));
 
 					// Asocio el stage con el scene
 					estadoApiStage.setScene(scene);
@@ -252,7 +252,7 @@ public class Ventanas {
 			accionComic.setResizable(false);
 			accionComic.setTitle("Acciones comic"); // Titulo de la aplicación.
 
-			accionComic.getIcons().add(new Image("/Icono/icon2.png"));
+			accionComic.getIcons().add(new Image("/Icono/icon.png"));
 
 			// Asocio el stage con el scene
 			accionComic.setScene(scene);
@@ -297,7 +297,7 @@ public class Ventanas {
 			opcionesAvanzadasStage.setResizable(false);
 			opcionesAvanzadasStage.setTitle("Acciones comic"); // Titulo de la aplicación.
 
-			opcionesAvanzadasStage.getIcons().add(new Image("/Icono/icon2.png"));
+			opcionesAvanzadasStage.getIcons().add(new Image("/Icono/icon.png"));
 
 			// Asocio el stage con el scene
 			opcionesAvanzadasStage.setScene(scene);
@@ -341,7 +341,7 @@ public class Ventanas {
 			imagenAmpliada.setResizable(false);
 			imagenAmpliada.setTitle("Imagen ampliada"); // Titulo de la aplicación.
 
-			imagenAmpliada.getIcons().add(new Image("/Icono/icon2.png"));
+			imagenAmpliada.getIcons().add(new Image("/Icono/icon.png"));
 
 			// Asocio el stage con el scene
 			imagenAmpliada.setScene(scene);
@@ -388,7 +388,7 @@ public class Ventanas {
 					menuCodigoBarras = new Stage();
 					menuCodigoBarras.setResizable(false);
 					menuCodigoBarras.setTitle("Lector de barras"); // Application title.
-					menuCodigoBarras.getIcons().add(new Image("/Icono/icon2.png"));
+					menuCodigoBarras.getIcons().add(new Image("/Icono/icon.png"));
 
 					// Associate the stage with the scene
 					menuCodigoBarras.setScene(scene);
@@ -434,7 +434,6 @@ public class Ventanas {
 			scene.getStylesheets().add(getClass().getResource("/style/custom-combobox.css").toExternalForm());
 
 			menuPrincipal = new Stage();
-
 			// Determine the screen's dimensions
 			Screen screen = Screen.getPrimary();
 			Rectangle2D bounds = screen.getVisualBounds();
@@ -457,7 +456,7 @@ public class Ventanas {
 			menuPrincipal.setMaxHeight(bounds.getHeight());
 
 			menuPrincipal.setTitle("Menu principal");
-			menuPrincipal.getIcons().add(new Image("/Icono/icon2.png"));
+			menuPrincipal.getIcons().add(new Image("/Icono/icon.png"));
 
 			// Asocio el stage con el scene
 			menuPrincipal.setScene(scene);
@@ -499,7 +498,7 @@ public class Ventanas {
 			Stage stage = new Stage();
 			stage.setResizable(false);
 			stage.setTitle("Recomendaciones"); // Titulo de la aplicacion.
-			stage.getIcons().add(new Image("/Icono/icon2.png"));
+			stage.getIcons().add(new Image("/Icono/icon.png"));
 
 			// Asocio el stage con el scene
 			stage.setScene(scene);
@@ -541,7 +540,7 @@ public class Ventanas {
 			Stage stage = new Stage();
 			stage.setResizable(false);
 			stage.setTitle("Menu de creacion"); // Titulo de la aplicacion.
-			stage.getIcons().add(new Image("/Icono/icon2.png"));
+			stage.getIcons().add(new Image("/Icono/icon.png"));
 
 			// Asocio el stage con el scene
 			stage.setScene(scene);
@@ -583,7 +582,7 @@ public class Ventanas {
 			Stage stage = new Stage();
 			stage.setResizable(false);
 			stage.setTitle("Opciones"); // Titulo de la aplicacion.
-			stage.getIcons().add(new Image("/Icono/icon2.png"));
+			stage.getIcons().add(new Image("/Icono/icon.png"));
 
 			// Asocio el stage con el scene
 			stage.setScene(scene);
@@ -621,7 +620,7 @@ public class Ventanas {
 			Stage stage = new Stage();
 			stage.setResizable(false);
 			stage.setTitle("Sobre mi"); // Titulo de la aplicacion.
-			stage.getIcons().add(new Image("/Icono/icon2.png"));
+			stage.getIcons().add(new Image("/Icono/icon.png"));
 
 			// Asocio el stage con el scene
 			stage.setScene(scene);
@@ -654,7 +653,7 @@ public class Ventanas {
 				Stage stage = new Stage();
 				stage.setResizable(false);
 				stage.setTitle("Carga de comics"); // Titulo de la aplicacion.
-				stage.getIcons().add(new Image("/Icono/icon2.png"));
+				stage.getIcons().add(new Image("/Icono/icon.png"));
 
 				// Indico que debe hacer al cerrar
 				stage.setOnCloseRequest(e -> {

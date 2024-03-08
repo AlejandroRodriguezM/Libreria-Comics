@@ -187,37 +187,31 @@ public class AccesoBBDDController implements Initializable {
 
 		FuncionesApis.guardarDatosClavesMarvel();
 
-		if (Utilidades.isInternetAvailable()) {
-			Utilidades.cargarTasasDeCambioDesdeArchivo();
-
-		}
-
 		FuncionesApis.guardarApiComicVine();
-		ConectManager.closeConnection();
-		
+
 		alarmaList.setAlarmaConexion(alarmaConexion);
 		alarmaList.setAlarmaConexionInternet(alarmaConexionInternet);
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
 		alarmaList.setAlarmaConexionPrincipal(prontEstadoConexion);
-
-		
-
-		alarmaList.iniciarThreadChecker(false);
-
-		FuncionesFicheros.crearEstructura();
 
 		FuncionesApis.comprobarApisComics();
 
 		ConectManager.asignarValoresPorDefecto();
 
 		Platform.runLater(() -> {
+			alarmaList.iniciarThreadChecker(false);
+			if (Utilidades.isInternetAvailable()) {
+				Utilidades.cargarTasasDeCambioDesdeArchivo();
+			}
+
+			FuncionesFicheros.crearEstructura();
+			ConectManager.closeConnection();
 			progresoCarga.getScene().getWindow().setOnHidden(e -> {
 				if (executorService != null && !executorService.isShutdown()) {
 					executorService.shutdownNow();
 				}
 			});
 		});
-
 	}
 
 	/**

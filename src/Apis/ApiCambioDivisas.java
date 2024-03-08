@@ -41,14 +41,14 @@ public class ApiCambioDivisas {
 			threads[i].start();
 		}
 
-		// Esperar a que todos los hilos terminen
-		for (Thread thread : threads) {
-			try {
-				thread.join();
-			} catch (InterruptedException e) {
-				Utilidades.manejarExcepcion(e);
-			}
-		}
+//		// Esperar a que todos los hilos terminen
+//		for (Thread thread : threads) {
+//			try {
+//				thread.join();
+//			} catch (InterruptedException e) {
+//				Utilidades.manejarExcepcion(e);
+//			}
+//		}
 
 		// Escribir los resultados en el archivo
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(direccionFichero))) {
