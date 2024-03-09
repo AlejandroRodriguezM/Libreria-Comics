@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -202,30 +203,29 @@ public class ListaComicsDAO {
 	public static ObservableList<Comic> comicsGuardadosList = FXCollections.observableArrayList();
 
 	public static boolean verificarIDExistente(String id, boolean esGuardado) {
-	    // Verificar que el id no sea nulo ni esté vacío
-	    if (id == null || id.isEmpty()) {
-	        return false;
-	    }
-	    
-	    // Buscar en comicsGuardadosList si es necesario
-	    if (esGuardado) {
-	        for (Comic comic : comicsGuardadosList) {
-	            if (id.equals(comic.getID())) {
-	                return true; // Si encuentra un comic con el mismo id, devuelve true
-	            }
-	        }
-	    }
-	    
-	    // Buscar en comicsImportados
-	    for (Comic comic : comicsImportados) {
-	        if (id.equalsIgnoreCase(comic.getID())) {
-	            return true; // Si encuentra un comic con el mismo id, devuelve true
-	        }
-	    }
-	    
-	    return false; // Si no encuentra ningún comic con el mismo id, devuelve false
-	}
+		// Verificar que el id no sea nulo ni esté vacío
+		if (id == null || id.isEmpty()) {
+			return false;
+		}
 
+		// Buscar en comicsGuardadosList si es necesario
+		if (esGuardado) {
+			for (Comic comic : comicsGuardadosList) {
+				if (id.equals(comic.getID())) {
+					return true; // Si encuentra un comic con el mismo id, devuelve true
+				}
+			}
+		}
+
+		// Buscar en comicsImportados
+		for (Comic comic : comicsImportados) {
+			if (id.equalsIgnoreCase(comic.getID())) {
+				return true; // Si encuentra un comic con el mismo id, devuelve true
+			}
+		}
+
+		return false; // Si no encuentra ningún comic con el mismo id, devuelve false
+	}
 
 	public static Comic devolverComicLista(String id) {
 		for (Comic comic : comicsImportados) {
@@ -255,8 +255,125 @@ public class ListaComicsDAO {
 		listaCaja = DBUtilidades.obtenerValoresColumna("caja_deposito");
 		listaImagenes = DBUtilidades.obtenerValoresColumna("portada");
 
+		// Ordenar listaNumeroComic como enteros
+		List<Integer> numerosComic = listaNumeroComic.stream().map(Integer::parseInt).collect(Collectors.toList());
+		Collections.sort(numerosComic);
+		listaNumeroComic = numerosComic.stream().map(String::valueOf).collect(Collectors.toList());
+
 		itemsList = Arrays.asList(listaNombre, listaNumeroComic, listaVariante, listaProcedencia, listaFormato,
 				listaDibujante, listaGuionista, listaEditorial, listaFirma, listaCaja);
+
+	}
+
+	public static void actualizarDatosAutoCompletado(String sentenciaSQL) {
+		List<List<String>> listaOrdenada = new ArrayList<>(); // Cambia el tipo aquí
+		try (Connection conn = ConectManager.conexion();
+				PreparedStatement stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE,
+						ResultSet.CONCUR_UPDATABLE);
+				ResultSet rs = stmt.executeQuery()) {
+
+			if (rs != null && rs.first()) {
+				List<String> nombreComicSet = new ArrayList<>(); // Cambia el tipo aquí
+				List<String> nombreGuionistaSet = new ArrayList<>(); // Cambia el tipo aquí
+				List<Integer> numeroComicSet = new ArrayList<>(); // Cambia el tipo aquí
+				List<String> nombreVarianteSet = new ArrayList<>(); // Cambia el tipo aquí
+				List<String> numeroCajaSet = new ArrayList<>(); // Cambia el tipo aquí
+				List<String> nombreProcedenciaSet = new ArrayList<>(); // Cambia el tipo aquí
+				List<String> nombreFormatoSet = new ArrayList<>(); // Cambia el tipo aquí
+				List<String> nombreEditorialSet = new ArrayList<>(); // Cambia el tipo aquí
+				List<String> nombreDibujanteSet = new ArrayList<>(); // Cambia el tipo aquí
+				List<String> nombreFirmaSet = new ArrayList<>(); // Cambia el tipo aquí
+
+				do {
+					String nomComic = rs.getString("nomComic").trim();
+					nombreComicSet.add(nomComic);
+
+					String nomGuionista = rs.getString("nomGuionista").trim();
+					nombreGuionistaSet.add(nomGuionista);
+
+					int numComic = rs.getInt("numComic"); // Convertir a entero
+					numeroComicSet.add(numComic);
+
+					String nomVariante = rs.getString("nomVariante").trim();
+					nombreVarianteSet.add(nomVariante);
+
+					String cajaDeposito = rs.getString("caja_deposito").trim();
+					numeroCajaSet.add(cajaDeposito);
+
+					String procedencia = rs.getString("procedencia").trim();
+					nombreProcedenciaSet.add(procedencia);
+
+					String formato = rs.getString("formato").trim();
+					nombreFormatoSet.add(formato);
+
+					String nomEditorial = rs.getString("nomEditorial").trim();
+					nombreEditorialSet.add(nomEditorial);
+
+					String nomDibujante = rs.getString("nomDibujante").trim();
+					nombreDibujanteSet.add(nomDibujante);
+
+					String firma = rs.getString("firma").trim();
+					nombreFirmaSet.add(firma);
+
+				} while (rs.next());
+
+	            procesarDatosAutocompletado(nombreGuionistaSet);
+	            procesarDatosAutocompletado(nombreVarianteSet);
+	            procesarDatosAutocompletado(nombreEditorialSet);
+	            procesarDatosAutocompletado(nombreDibujanteSet);
+	            procesarDatosAutocompletado(nombreFirmaSet);
+				
+				// Eliminar elementos repetidos
+				nombreComicSet = listaArregladaAutoComplete(nombreComicSet);
+				numeroComicSet = listaArregladaAutoComplete(numeroComicSet);
+				nombreGuionistaSet = listaArregladaAutoComplete(nombreGuionistaSet);
+				nombreVarianteSet = listaArregladaAutoComplete(nombreVarianteSet);
+				numeroCajaSet = listaArregladaAutoComplete(numeroCajaSet);
+				nombreProcedenciaSet = listaArregladaAutoComplete(nombreProcedenciaSet);
+				nombreFormatoSet = listaArregladaAutoComplete(nombreFormatoSet);
+				nombreEditorialSet = listaArregladaAutoComplete(nombreEditorialSet);
+				nombreDibujanteSet = listaArregladaAutoComplete(nombreDibujanteSet);
+				nombreFirmaSet = listaArregladaAutoComplete(nombreFirmaSet);
+
+				// Ordenar lista de números de comic
+				Collections.sort(numeroComicSet, new Comparator<Integer>() {
+					@Override
+					public int compare(Integer o1, Integer o2) {
+						return o1.compareTo(o2);
+					}
+				});
+				
+				listaOrdenada.add(nombreComicSet);
+				listaOrdenada.add(numeroComicSet.stream().map(String::valueOf).collect(Collectors.toList()));
+				listaOrdenada.add(nombreVarianteSet);
+				listaOrdenada.add(nombreProcedenciaSet);
+				listaOrdenada.add(nombreFormatoSet);
+				listaOrdenada.add(nombreDibujanteSet);
+				listaOrdenada.add(nombreGuionistaSet);
+				listaOrdenada.add(nombreEditorialSet);
+				listaOrdenada.add(nombreFirmaSet);
+				listaOrdenada.add(numeroCajaSet);
+
+				ListaComicsDAO.listaOrdenada = listaOrdenada;
+			}
+		} catch (SQLException e) {
+			Utilidades.manejarExcepcion(e);
+		}
+	}
+	
+	public static void procesarDatosAutocompletado(List<String> lista) {
+	    List<String> nombresProcesados = new ArrayList<>();
+	    for (String cadena : lista) {
+	        String[] nombres = cadena.split("-");
+	        for (String nombre : nombres) {
+	            nombre = nombre.trim();
+	            if (!nombre.isEmpty()) {
+	                nombresProcesados.add(nombre);
+	            }
+	        }
+	    }
+	    lista.clear(); // Limpiar la lista original
+	    lista.addAll(nombresProcesados); // Agregar los nombres procesados a la lista original
 	}
 
 	/**
@@ -438,29 +555,29 @@ public class ListaComicsDAO {
 		return listaLimpia;
 	}
 
-	/**
-	 * Funcion que devuelve una lista en la que solamente se guardan aquellos datos
-	 * que no se repiten
-	 *
-	 * @param listaComics
-	 * @return
-	 */
-	public static List<String> listaArregladaAutoComplete(List<String> listaComics) {
-		Set<String> uniqueSet = new HashSet<>();
-		List<String> result = new ArrayList<>();
+    /**
+     * Funcion que devuelve una lista en la que solamente se guardan aquellos datos
+     * que no se repiten
+     *
+     * @param listaComics
+     * @return
+     */
+    public static <T extends Comparable<? super T>> List<T> listaArregladaAutoComplete(List<T> listaComics) {
+        Set<T> uniqueSet = new HashSet<>();
+        List<T> result = new ArrayList<>();
 
-		for (String s : listaComics) {
-			if (uniqueSet.add(s)) {
-				result.add(s);
-			}
-		}
+        for (T item : listaComics) {
+            if (uniqueSet.add(item)) {
+                result.add(item);
+            }
+        }
 
-		// Ordenar la lista resultante de forma ascendente
-		result.sort(String::compareTo);
+        // Ordenar la lista resultante de forma ascendente
+        Collections.sort(result);
 
-		return result;
-	}
-	
+        return result;
+    }
+
 	/**
 	 * Busca un cómic por su ID en una lista de cómics.
 	 *

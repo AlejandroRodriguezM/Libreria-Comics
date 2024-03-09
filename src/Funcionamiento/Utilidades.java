@@ -793,10 +793,10 @@ public class Utilidades {
 		if (!archivo.exists()) {
 			crearArchivoConValoresPredeterminados(nombreArchivo);
 		}
-		
+
 //        Thread imprimirDivisasThread = new Thread(() -> ApiCambioDivisas.imprimirDivisas(nombreArchivo));
 //        imprimirDivisasThread.start();
-		
+
 		ApiCambioDivisas.imprimirDivisas(nombreArchivo);
 	}
 
@@ -1406,6 +1406,8 @@ public class Utilidades {
 	public static void appendIfNotEmpty(StringBuilder builder, String label, String value) {
 		if (value != null && !value.isEmpty()) {
 			builder.append(label).append(": ").append(value).append("\n");
+		} else if (builder != null && !builder.isEmpty()) {
+			builder.append(label).append("\n");
 		}
 	}
 

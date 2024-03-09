@@ -48,6 +48,7 @@ import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
 import dbmanager.ListaComicsDAO;
+import dbmanager.SelectManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -630,16 +631,15 @@ public class VentanaAccionController implements Initializable {
 		controlarEventosInterfaz();
 
 	}
-
+	
 	@FXML
 	void ampliarImagen(MouseEvent event) {
 
 		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 
 		if (idRow != null) {
-			String direccionImagen = idRow.getImagen();
 
-			ImagenAmpliadaController.direccionImagen = direccionImagen;
+			ImagenAmpliadaController.comicInfo = SelectManager.comicDatos(idRow.getID());
 
 			nav.verVentanaImagen();
 		}
@@ -2100,10 +2100,10 @@ public class VentanaAccionController implements Initializable {
 				tablaBBDD.getItems().clear();
 				validarCamposComic(true);
 				FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, tablaBBDD, columnList); // Llamada a
-																										// funcion
+				limpiarAutorellenos();
+
 				String mensajePront = "Has introducido los comics correctamente\n";
 				AlarmaList.mostrarMensajePront(mensajePront, true, prontInfo);
-				limpiarAutorellenos();
 			}
 		}
 	}
@@ -2368,7 +2368,7 @@ public class VentanaAccionController implements Initializable {
 			Platform.runLater(() -> {
 				FuncionesTableView.tablaBBDD(comicsFinal, tablaBBDD, columnList);
 			});
-			
+
 			return; // Agregar return para salir del método en este punto
 		}
 

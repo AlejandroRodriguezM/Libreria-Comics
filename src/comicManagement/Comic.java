@@ -618,11 +618,54 @@ public class Comic {
 		Utilidades.appendIfNotEmpty(contenidoComic, "Fecha", fecha);
 		Utilidades.appendIfNotEmpty(contenidoComic, "Guionista", guionista);
 		Utilidades.appendIfNotEmpty(contenidoComic, "Dibujante", dibujante);
-		Utilidades.appendIfNotEmpty(contenidoComic, "Key issue", key_issue);
 		Utilidades.appendIfNotEmpty(contenidoComic, "Puntuacion", puntuacion);
 		Utilidades.appendIfNotEmpty(contenidoComic, "Estado", estado);
 		Utilidades.appendIfNotEmpty(contenidoComic, "Url referencia", url_referencia);
 		Utilidades.appendIfNotEmpty(contenidoComic, "Caja", numCaja);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Key issue", key_issue);
+
+		return contenidoComic.toString();
+	}
+	
+	/**
+	 * Genera una representación en forma de cadena de texto del cómic, incluyendo
+	 * sus atributos no nulos.
+	 *
+	 * @return Una cadena de texto que representa el cómic.
+	 */
+	public String devolverKeyIssue() {
+		StringBuilder contenidoComic = new StringBuilder();
+		Utilidades.appendIfNotEmpty(contenidoComic, "Key issue", key_issue);
+
+		return contenidoComic.toString();
+	}
+	
+	/**
+	 * Genera una representación en forma de cadena de texto del cómic, incluyendo
+	 * sus atributos no nulos.
+	 *
+	 * @return Una cadena de texto que representa el cómic.
+	 */
+	public String infoComic() {
+		StringBuilder contenidoComic = new StringBuilder();
+
+		Utilidades.appendIfNotEmpty(contenidoComic, "Nombre", nombre);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Variante", variante);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Numero", numero);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Precio", !precio_comic.isEmpty() ? precio_comic + " $" : "");
+		Utilidades.appendIfNotEmpty(contenidoComic, "Codigo", codigo_comic);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Firma", firma);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Editorial", editorial);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Formato", formato);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Procedencia", procedencia);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Fecha", fecha);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Guionista", guionista);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Dibujante", dibujante);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Puntuacion", puntuacion);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Estado", estado);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Url", url_referencia);
+		Utilidades.appendIfNotEmpty(contenidoComic, "", "");
+		Utilidades.appendIfNotEmpty(contenidoComic, "Descripcion", key_issue);
 
 		return contenidoComic.toString();
 	}

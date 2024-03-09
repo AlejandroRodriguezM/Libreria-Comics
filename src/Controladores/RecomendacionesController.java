@@ -279,7 +279,7 @@ public class RecomendacionesController implements Initializable {
 			imagencomic.setImage(imagenComic);
 			utilidad.deleteImage();
 
-			ImagenAmpliadaController.direccionImagen = direccionImagen;
+			ImagenAmpliadaController.comicInfo = SelectManager.comicDatos(id_comic);
 
 			return listaComics.get(n).toString(); // Devuelve un cómic de la
 													// lista

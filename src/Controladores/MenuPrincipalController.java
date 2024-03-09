@@ -468,9 +468,8 @@ public class MenuPrincipalController implements Initializable {
 		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 
 		if (idRow != null) {
-			String direccionImagen = idRow.getImagen();
 
-			ImagenAmpliadaController.direccionImagen = direccionImagen;
+			ImagenAmpliadaController.comicInfo = SelectManager.comicDatos(idRow.getID());
 
 			nav.verVentanaImagen();
 		}

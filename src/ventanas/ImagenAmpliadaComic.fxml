@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
 
-
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="714.0" prefWidth="488.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.ImagenAmpliadaController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="714.0" prefWidth="844.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.ImagenAmpliadaController">
    <children>
-      <ImageView fx:id="imagenAmpliada" fitHeight="686.0" fitWidth="460.0" layoutX="15.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="imagenAmpliada" fitHeight="686.0" fitWidth="460.0" layoutX="15.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../../../../../Documents/libreria_comics/comics/portadas/0bXSE47IZC.jpg" />
+         </image></ImageView>
+      <TextArea fx:id="infoComic" editable="false" layoutX="481.0" layoutY="13.0" prefHeight="478.0" prefWidth="354.0" wrapText="true" />
    </children>
 </Pane>

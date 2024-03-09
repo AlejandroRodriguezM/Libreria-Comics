@@ -2,7 +2,6 @@ package Funcionamiento;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -158,48 +157,18 @@ public class FuncionesComboBox {
 				comic.getFirma(), comic.getEditorial(), comic.getFormato(), comic.getProcedencia(), "",
 				comic.getGuionista(), comic.getDibujante(), "", "", "", "", "", "", "");
 		String sql = DBUtilidades.datosConcatenados(comicTemp);
-
-		System.out.println(sql);
-
 		if (!sql.isEmpty()) {
 			isUserInput = false; // Disable user input during programmatic updates
 
-			ListaComicsDAO.nombreComicList = ListaComicsDAO.guardarDatosAutoCompletado(sql, "nomComic");
+			ListaComicsDAO.actualizarDatosAutoCompletado(sql);
 
-			ListaComicsDAO.nombreGuionistaList = ListaComicsDAO.guardarDatosAutoCompletado(sql, "nomGuionista");
-			ListaComicsDAO.numeroComicList = convertirYOrdenarListaNumeros(
-					ListaComicsDAO.guardarDatosAutoCompletado(sql, "numComic"));
-			ListaComicsDAO.nombreVarianteList = ListaComicsDAO.guardarDatosAutoCompletado(sql, "nomVariante");
-			ListaComicsDAO.numeroCajaList = convertirYOrdenarListaNumeros(
-					ListaComicsDAO.guardarDatosAutoCompletado(sql, "caja_deposito"));
-			ListaComicsDAO.nombreProcedenciaList = ListaComicsDAO.guardarDatosAutoCompletado(sql, "procedencia");
-			ListaComicsDAO.nombreFormatoList = ListaComicsDAO.guardarDatosAutoCompletado(sql, "formato");
-			ListaComicsDAO.nombreEditorialList = ListaComicsDAO.guardarDatosAutoCompletado(sql, "nomEditorial");
-			ListaComicsDAO.nombreDibujanteList = ListaComicsDAO.guardarDatosAutoCompletado(sql, "nomDibujante");
-			ListaComicsDAO.nombreFirmaList = ListaComicsDAO.guardarDatosAutoCompletado(sql, "firma");
-
-			ListaComicsDAO.listaOrdenada = Arrays.asList(ListaComicsDAO.nombreComicList, ListaComicsDAO.numeroComicList,
-					ListaComicsDAO.nombreVarianteList, ListaComicsDAO.nombreProcedenciaList,
-					ListaComicsDAO.nombreFormatoList, ListaComicsDAO.nombreDibujanteList,
-					ListaComicsDAO.nombreGuionistaList, ListaComicsDAO.nombreEditorialList,
-					ListaComicsDAO.nombreFirmaList, ListaComicsDAO.numeroCajaList);
-
-			if (sonListasSimilares(ListaComicsDAO.listaOrdenada, ListaComicsDAO.itemsList)) {
-
-				for (int i = 0; i < cantidadDeComboBoxes; i++) {
-					comboboxes.get(i).hide();
-					List<String> itemsActuales = ListaComicsDAO.listaOrdenada.get(i);
-					if (itemsActuales != null && !itemsActuales.isEmpty()) {
-
-						ObservableList<String> itemsObservable = FXCollections.observableArrayList(itemsActuales);
-						comboboxes.get(i).setItems(itemsObservable);
-
-						itemsActuales = FXCollections.observableArrayList(itemsActuales);
-					}
+			for (int i = 0; i < cantidadDeComboBoxes; i++) {
+				comboboxes.get(i).hide();
+				List<String> itemsActuales = ListaComicsDAO.listaOrdenada.get(i);
+				if (itemsActuales != null && !itemsActuales.isEmpty()) {
+					ObservableList<String> itemsObservable = FXCollections.observableArrayList(itemsActuales);
+					comboboxes.get(i).setItems(itemsObservable);
 				}
-
-			} else {
-				limpiezaDeDatos(comboboxes);
 			}
 
 			isUserInput = true; // Re-enable user input after programmatic updates
@@ -333,7 +302,7 @@ public class FuncionesComboBox {
 
 		setupFilteredPopup(comboboxes, comboBox,
 				atLeastOneNotEmpty ? currentItems : ListaComicsDAO.itemsList.get(index));
-		
+
 		Comic comic = getComicFromComboBoxes(10, comboboxes);
 		actualizarComboBoxes(10, comboboxes, comic);
 
@@ -371,22 +340,23 @@ public class FuncionesComboBox {
 		filterTextField.textProperty().addListener((observable, oldValue, newValue) -> {
 			List<String> currentFilteredItems = comboBoxFilteredItemsMap.get(originalComboBox);
 			if (newValue != null && !newValue.isEmpty()) {
+
 				List<String> newFilteredItems = ListaComicsDAO.listaOrdenada.get(comboboxes.indexOf(originalComboBox))
 						.stream().filter(item -> item.toLowerCase().contains(newValue.toLowerCase()))
 						.collect(Collectors.toList());
 				currentFilteredItems.clear();
 				currentFilteredItems.addAll(newFilteredItems);
+				listView.setItems(FXCollections.observableArrayList(currentFilteredItems));
 			} else {
 				originalComboBox.setValue("");
-				filterTextField.setText("");
 				Comic comic = getComicFromComboBoxes(10, comboboxes);
 				actualizarComboBoxes(10, comboboxes, comic);
 				List<String> allFilteredItems = new ArrayList<>(
 						ListaComicsDAO.listaOrdenada.get(comboboxes.indexOf(originalComboBox)));
 				currentFilteredItems.clear();
 				currentFilteredItems.addAll(allFilteredItems);
+				listView.setItems(FXCollections.observableArrayList(currentFilteredItems));
 			}
-			listView.setItems(FXCollections.observableArrayList(currentFilteredItems));
 		});
 
 		originalComboBox.valueProperty().addListener((obs, oldValue, newValue) -> {
@@ -418,36 +388,6 @@ public class FuncionesComboBox {
 			originalComboBox.hide();
 			popup.hide();
 		}
-
-
-		filterTextField.setOnKeyPressed(event -> {
-			modificarPopup(originalComboBox);
-			if (event.getCode() == KeyCode.BACK_SPACE || event.getCode() == KeyCode.DELETE) {
-				if (filterTextField.getText().isEmpty()) {
-					Comic comic = getComicFromComboBoxes(10, comboboxes);
-					actualizarComboBoxes(10, comboboxes, comic);
-				}
-			}
-		});
-
-		popup.setOnHidden(event -> {
-			listView.getSelectionModel().clearSelection();
-			listView.scrollTo(0);
-			String selectedItem = listView.getSelectionModel().getSelectedItem();
-			if (selectedItem != null) {
-				originalComboBox.setValue(selectedItem);
-				originalComboBox.hide();
-
-				listView.setOnMouseClicked(e -> {
-					Comic comic = getComicFromComboBoxes(10, comboboxes);
-					actualizarComboBoxes(10, comboboxes, comic);
-				});
-
-				updateOtherComboBoxes(comboboxes, currentIndex, selectedItem);
-				filterTextField.setText(originalComboBox.getValue());
-				popup.hide();
-			}
-		});
 
 		// Después de crear el ListView
 		listView.setCellFactory(list -> new ListCell<String>() {

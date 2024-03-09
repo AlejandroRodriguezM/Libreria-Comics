@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
 import Funcionamiento.Utilidades;
+import comicManagement.Comic;
 import dbmanager.ConectManager;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -16,10 +17,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -30,10 +34,13 @@ public class ImagenAmpliadaController implements Initializable {
 	 */
 	private Stage stage;
 
-	public static String direccionImagen;
+	public static Comic comicInfo;
 
 	@FXML
 	private ImageView imagenAmpliada;
+	
+    @FXML
+    private TextArea infoComic;
 
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
@@ -48,7 +55,7 @@ public class ImagenAmpliadaController implements Initializable {
 		// Crear el menú contextual
 		ContextMenu contextMenu = new ContextMenu();
 		MenuItem guardarItem = new MenuItem("Guardar imagen");
-		guardarItem.setOnAction(event -> guardarImagen(direccionImagen));
+		guardarItem.setOnAction(event -> guardarImagen(comicInfo.getImagen()));
 		contextMenu.getItems().add(guardarItem);
 
 		// Manejar el evento de clic derecho para mostrar el menú contextual
@@ -57,6 +64,29 @@ public class ImagenAmpliadaController implements Initializable {
 				contextMenu.show(imagenAmpliada, event.getScreenX(), event.getScreenY());
 			}
 		});
+		infoComic.setText(comicInfo.infoComic());
+		
+        // Obtener el ancho del TextArea desde el FXML
+        double textAreaWidth = infoComic.getPrefWidth();
+        double textAreaHeight = infoComic.getPrefHeight();
+
+        infoComic.setPrefHeight(computeTextHeight(comicInfo.infoComic(), infoComic.getFont(), textAreaWidth, textAreaHeight));
+
+	}
+	
+	// Método para calcular la altura del texto de manera dinámica
+	private double computeTextHeight(String text, Font font, double textAreaWidth, double textAreaHeight) {
+	    // Crear un nodo Text para medir el tamaño real del texto
+	    Text textNode = new Text(text);
+	    textNode.setFont(font);
+
+	    // Establecer el ancho del nodo Text para envolver el texto correctamente
+	    textNode.setWrappingWidth(textAreaWidth);
+
+	    // Calcular la altura necesaria para mostrar todo el texto
+	    double totalHeight = textNode.getLayoutBounds().getHeight();
+
+	    return totalHeight * 1.1;
 	}
 
 	public Scene miStageVentana() {
@@ -79,8 +109,8 @@ public class ImagenAmpliadaController implements Initializable {
 
 		String direccionFinalImg = "";
 		
-		if (Utilidades.existePortada(direccionImagen)) {
-			direccionFinalImg = direccionImagen;
+		if (Utilidades.existePortada(comicInfo.getImagen())) {
+			direccionFinalImg = comicInfo.getImagen();
 		} else {
 			String imagePath = "/Funcionamiento/sinPortada.jpg";
 			direccionFinalImg = imagePath;
