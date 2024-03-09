@@ -67,6 +67,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 /**
@@ -405,6 +406,9 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	private Label alarmaConexionSql;
 
+	@FXML
+	private Rectangle barraCambioAltura;
+
 	/**
 	 * Instancia de la clase Ventanas para la navegación.
 	 */
@@ -419,6 +423,8 @@ public class MenuPrincipalController implements Initializable {
 	 * Lista de columnas de la tabla de cómics.
 	 */
 	private List<TableColumn<Comic, String>> columnList;
+
+	double y = 0;
 
 	ObservableList<ImageView> listaImagenes;
 
@@ -439,16 +445,19 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+
 		AlarmaList alarmaList = new AlarmaList();
 
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
 		alarmaList.iniciarThreadChecker(true);
 
 		Platform.runLater(() -> {
+			cambiarTamanioTable();
 			FuncionesTableView.ajustarAnchoVBox(prontInfo, vboxContenido);
 			FuncionesTableView.seleccionarRaw(tablaBBDD);
 			asignarTooltips();
 			FuncionesTableView.modificarColumnas(tablaBBDD, columnList);
+
 		});
 
 		listaElementosVentana();
@@ -473,6 +482,57 @@ public class MenuPrincipalController implements Initializable {
 
 			nav.verVentanaImagen();
 		}
+	}
+
+	@FXML
+	public void cambiarTamanioTable() {
+		// Vincular el ancho de barraCambioAltura con el ancho de rootVBox
+		barraCambioAltura.widthProperty().bind(rootVBox.widthProperty());
+
+		// Configurar eventos del ratón para redimensionar el rootVBox desde la parte
+		// superior
+		barraCambioAltura.setOnMousePressed(event -> {
+			y = event.getScreenY();
+		});
+
+		barraCambioAltura.setOnMouseDragged(event -> {
+			double deltaY = event.getScreenY() - y;
+			double newHeight = rootVBox.getPrefHeight() - deltaY;
+			double max_height = calcularMaxHeight(); // Calcula el máximo altura permitido
+			double min_height = 300; // Límite mínimo de altura
+
+			if (newHeight > min_height && newHeight <= max_height) { // Verificar si la nueva altura está dentro del
+																		// límite
+				rootVBox.setPrefHeight(newHeight);
+				rootVBox.setLayoutY(tablaBBDD.getLayoutY() + deltaY);
+				tablaBBDD.setPrefHeight(newHeight);
+				tablaBBDD.setLayoutY(tablaBBDD.getLayoutY() + deltaY);
+
+				y = event.getScreenY();
+			}
+		});
+
+		// Cambiar el cursor cuando se pasa sobre la barra de redimensionamiento
+		barraCambioAltura.setOnMouseMoved(event -> {
+			if (event.getY() <= 5) {
+				barraCambioAltura.setCursor(Cursor.N_RESIZE);
+			} else {
+				barraCambioAltura.setCursor(Cursor.DEFAULT);
+			}
+		});
+	}
+
+	// Método para calcular el máximo altura permitido
+	private double calcularMaxHeight() {
+		// Obtener el tamaño actual de la ventana
+		Stage stage = (Stage) rootVBox.getScene().getWindow();
+		double windowHeight = stage.getHeight();
+
+		// Ajustar el máximo altura permitido según la posición del AnchorPane
+		// numeroCaja
+		double max_height = windowHeight - numeroCaja.getLayoutY() - 80; // 80 es un valor arbitrario para dejar un
+																			// pequeño espacio
+		return max_height;
 	}
 
 	/**

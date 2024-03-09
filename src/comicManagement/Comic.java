@@ -557,7 +557,7 @@ public class Comic {
 		boolean existeComic = ComicManagerDAO.comprobarIdentificadorComic(idComic);
 		Comic comic_temp = null;
 		if (!existeComic) {
-			existeComic = ListaComicsDAO.verificarIDExistente(idComic,false);
+			existeComic = ListaComicsDAO.verificarIDExistente(idComic, false);
 			if (existeComic) {
 				comic_temp = ListaComicsDAO.devolverComicLista(idComic);
 			}
@@ -626,7 +626,7 @@ public class Comic {
 
 		return contenidoComic.toString();
 	}
-	
+
 	/**
 	 * Genera una representación en forma de cadena de texto del cómic, incluyendo
 	 * sus atributos no nulos.
@@ -635,11 +635,15 @@ public class Comic {
 	 */
 	public String devolverKeyIssue() {
 		StringBuilder contenidoComic = new StringBuilder();
-		Utilidades.appendIfNotEmpty(contenidoComic, "Key issue", key_issue);
 
-		return contenidoComic.toString();
+		if (!key_issue.equalsIgnoreCase("Vacio")) {
+			Utilidades.appendIfNotEmpty(contenidoComic, "Key issue", key_issue);
+			return contenidoComic.toString();
+		}
+		return "";
+
 	}
-	
+
 	/**
 	 * Genera una representación en forma de cadena de texto del cómic, incluyendo
 	 * sus atributos no nulos.
@@ -665,7 +669,7 @@ public class Comic {
 		Utilidades.appendIfNotEmpty(contenidoComic, "Estado", estado);
 		Utilidades.appendIfNotEmpty(contenidoComic, "Url", url_referencia);
 		Utilidades.appendIfNotEmpty(contenidoComic, "", "");
-		Utilidades.appendIfNotEmpty(contenidoComic, "Descripcion", key_issue);
+//		Utilidades.appendIfNotEmpty(contenidoComic, "Descripcion", key_issue);
 
 		return contenidoComic.toString();
 	}

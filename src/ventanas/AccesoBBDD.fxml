@@ -73,6 +73,6 @@
             <URL value="@../style/acces_style.css" />
          </stylesheets>
       </Button>
-      <ProgressIndicator fx:id="progresoCarga" layoutX="120.0" layoutY="344.0" prefHeight="38.0" prefWidth="44.0" progress="0.0" />
+      <ProgressIndicator fx:id="progresoCarga" layoutX="159.0" layoutY="401.0" prefHeight="38.0" prefWidth="44.0" progress="0.0" />
    </children>
 </Pane>

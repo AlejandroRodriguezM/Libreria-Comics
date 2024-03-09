@@ -2,30 +2,49 @@ package UNIT_TEST;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Hyperlink;
+import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class HyperlinkInLabelExample extends Application {
-    @Override
-    public void start(Stage primaryStage) {
-        // Crear un Hyperlink
-        Hyperlink hyperlink = new Hyperlink("Haz clic aquí para ir a mi página web");
+	
+    double y = 0;
 
-        // Establecer el evento de acción al hacer clic en el Hyperlink
-        hyperlink.setOnAction(e -> {
-            // Aquí puedes definir la acción que deseas realizar al hacer clic en el enlace
-            System.out.println("Abriendo la página web...");
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        // Crear TableView
+        TableView<Object> tableView = new TableView<>();
+        tableView.setPrefHeight(200); // Altura inicial
+
+        // Configurar eventos del ratón para redimensionar el TableView
+        tableView.setOnMousePressed(event -> {
+            y = event.getSceneY();
         });
 
-        // Agregar el Hyperlink a un contenedor
-        VBox root = new VBox();
-        root.getChildren().add(hyperlink);
+        tableView.setOnMouseDragged(event -> {
+            double deltaY = event.getSceneY() - y;
+            double newHeight = tableView.getPrefHeight() + deltaY;
+            if (newHeight > 0) {
+                tableView.setPrefHeight(newHeight);
+                y = event.getSceneY();
+            }
+        });
 
-        // Crear la escena y mostrarla
-        Scene scene = new Scene(root, 300, 200);
+        // Cambiar el cursor cuando se pasa sobre el borde inferior del TableView
+        tableView.setOnMouseMoved(event -> {
+            if (event.getY() >= tableView.getHeight() - 5) {
+                tableView.setCursor(javafx.scene.Cursor.S_RESIZE);
+            } else {
+                tableView.setCursor(javafx.scene.Cursor.DEFAULT);
+            }
+        });
+
+        // Configurar el diseño de la interfaz
+        VBox root = new VBox(tableView);
+        Scene scene = new Scene(root, 400, 400);
+
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Ejemplo de Hyperlink en JavaFX");
+        primaryStage.setTitle("Adjust TableView Height with Mouse");
         primaryStage.show();
     }
 

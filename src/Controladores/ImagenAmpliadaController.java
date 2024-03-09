@@ -38,9 +38,9 @@ public class ImagenAmpliadaController implements Initializable {
 
 	@FXML
 	private ImageView imagenAmpliada;
-	
-    @FXML
-    private TextArea infoComic;
+
+	@FXML
+	private TextArea infoComic;
 
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
@@ -51,7 +51,7 @@ public class ImagenAmpliadaController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		mostrarImagen();
-
+		String infoComicString = "";
 		// Crear el menú contextual
 		ContextMenu contextMenu = new ContextMenu();
 		MenuItem guardarItem = new MenuItem("Guardar imagen");
@@ -64,29 +64,38 @@ public class ImagenAmpliadaController implements Initializable {
 				contextMenu.show(imagenAmpliada, event.getScreenX(), event.getScreenY());
 			}
 		});
-		infoComic.setText(comicInfo.infoComic());
-		
-        // Obtener el ancho del TextArea desde el FXML
-        double textAreaWidth = infoComic.getPrefWidth();
-        double textAreaHeight = infoComic.getPrefHeight();
 
-        infoComic.setPrefHeight(computeTextHeight(comicInfo.infoComic(), infoComic.getFont(), textAreaWidth, textAreaHeight));
+		if (!comicInfo.devolverKeyIssue().isEmpty()) {
+			infoComicString = comicInfo.infoComic() + "\n" + comicInfo.devolverKeyIssue();
+
+		} else {
+			infoComicString = comicInfo.infoComic();
+
+		}
+
+		infoComic.setText(infoComicString);
+
+		// Obtener el ancho del TextArea desde el FXML
+		double textAreaWidth = infoComic.getPrefWidth();
+		double textAreaHeight = infoComic.getPrefHeight();
+
+		infoComic.setPrefHeight(computeTextHeight(infoComicString, infoComic.getFont(), textAreaWidth, textAreaHeight));
 
 	}
-	
+
 	// Método para calcular la altura del texto de manera dinámica
 	private double computeTextHeight(String text, Font font, double textAreaWidth, double textAreaHeight) {
-	    // Crear un nodo Text para medir el tamaño real del texto
-	    Text textNode = new Text(text);
-	    textNode.setFont(font);
+		// Crear un nodo Text para medir el tamaño real del texto
+		Text textNode = new Text(text);
+		textNode.setFont(font);
 
-	    // Establecer el ancho del nodo Text para envolver el texto correctamente
-	    textNode.setWrappingWidth(textAreaWidth);
+		// Establecer el ancho del nodo Text para envolver el texto correctamente
+		textNode.setWrappingWidth(textAreaWidth);
 
-	    // Calcular la altura necesaria para mostrar todo el texto
-	    double totalHeight = textNode.getLayoutBounds().getHeight();
+		// Calcular la altura necesaria para mostrar todo el texto
+		double totalHeight = textNode.getLayoutBounds().getHeight();
 
-	    return totalHeight * 1.1;
+		return totalHeight * 1.1;
 	}
 
 	public Scene miStageVentana() {
@@ -108,7 +117,7 @@ public class ImagenAmpliadaController implements Initializable {
 	public void mostrarImagen() {
 
 		String direccionFinalImg = "";
-		
+
 		if (Utilidades.existePortada(comicInfo.getImagen())) {
 			direccionFinalImg = comicInfo.getImagen();
 		} else {
@@ -116,17 +125,17 @@ public class ImagenAmpliadaController implements Initializable {
 			direccionFinalImg = imagePath;
 
 		}
-		
+
 		Image imagen = new Image(new File(direccionFinalImg).toURI().toString(), true);
-        // Configura el ImageView con la imagen cargada
-        imagenAmpliada.setImage(imagen);
-        imagenAmpliada.setPreserveRatio(true); // Mantiene la relación de aspecto de la imagen
+		// Configura el ImageView con la imagen cargada
+		imagenAmpliada.setImage(imagen);
+		imagenAmpliada.setPreserveRatio(true); // Mantiene la relación de aspecto de la imagen
 	}
 
 	// Método para guardar la imagen
 	private void guardarImagen(String filePath) {
 
-		String nombreFichero = Utilidades.obtenerNombrePortada(false,filePath);
+		String nombreFichero = Utilidades.obtenerNombrePortada(false, filePath);
 
 		// Crear un FileChooser para permitir al usuario seleccionar la ubicación de
 		// guardado

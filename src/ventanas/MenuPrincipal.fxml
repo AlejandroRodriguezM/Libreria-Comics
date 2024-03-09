@@ -16,6 +16,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane id="rootAnchorPane" fx:id="rootAnchorPane" focusTraversable="true" maxHeight="Infinity" maxWidth="Infinity" minHeight="0.0" minWidth="0.0" prefHeight="750.0" prefWidth="1212.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.MenuPrincipalController">
@@ -67,7 +68,7 @@
 				</Menu>
 			</menus>
 		</MenuBar>
-                <VBox layoutX="4.0" layoutY="30.0" prefHeight="345.0" prefWidth="338.0" spacing="7">
+                <VBox layoutX="4.0" layoutY="30.0" prefHeight="345.0" prefWidth="271.0" spacing="7">
             <children>
 
 		<Label layoutX="16.0" layoutY="33.0" prefHeight="25.0" prefWidth="96.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Busqueda general" wrapText="true">
@@ -132,9 +133,10 @@
 		</Label>
 		            </children>
         </VBox>
-        <VBox fx:id="rootVBox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="375.0">
+        <VBox fx:id="rootVBox" layoutY="377.0" onMouseClicked="#cambiarTamanioTable" prefHeight="373.0" prefWidth="1212.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
 			<children>
-                <TableView fx:id="tablaBBDD" onKeyPressed="#teclasDireccion" onMouseClicked="#clickRaton" prefHeight="382.0" prefWidth="1218.0" stylesheets="@../style/tablas_style.css" tableMenuButtonVisible="true" VBox.vgrow="ALWAYS">
+            <Rectangle fx:id="barraCambioAltura" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="5.0" stroke="BLACK" strokeType="INSIDE" width="1214.0" />
+                <TableView fx:id="tablaBBDD" onKeyPressed="#teclasDireccion" onMouseClicked="#clickRaton" prefHeight="359.0" prefWidth="1212.0" stylesheets="@../style/tablas_style.css" tableMenuButtonVisible="true" VBox.vgrow="ALWAYS">
 					<columns>
 						<TableColumn fx:id="ID" prefWidth="47.0" text="ID" visible="false" />
 						<TableColumn fx:id="nombre" editable="false" maxWidth="5500.0" prefWidth="102.0" text="Nombre" />
@@ -176,15 +178,15 @@
       <Label fx:id="alarmaConexionSql" layoutX="1187.0" prefHeight="25.0" prefWidth="23.0" stylesheets="@../style/alarma_conexion_style.css" AnchorPane.rightAnchor="2.0" />
       <AnchorPane fx:id="anchoPaneInfo" layoutX="610.0" layoutY="31.0" prefHeight="339.0" prefWidth="593.0" AnchorPane.rightAnchor="9.0">
          <children>
-              <VBox fx:id="vboxContenido" layoutX="42.0" prefHeight="337.0" prefWidth="241.0">
+              <VBox fx:id="vboxContenido" layoutX="6.0" layoutY="1.0" prefHeight="337.0" prefWidth="241.0">
                <children>
             		
-                                            <ImageView fx:id="imagencomic" fitHeight="336.0" fitWidth="245.0" onMouseClicked="#ampliarImagen" pickOnBounds="true" preserveRatio="true" />
+                                            <ImageView fx:id="imagencomic" fitHeight="337.0" fitWidth="244.0" onMouseClicked="#ampliarImagen" pickOnBounds="true" preserveRatio="true" />
                </children>
               </VBox>
-      		        <VBox fx:id="vboxImage" layoutX="297.0" layoutY="1.0" prefHeight="336.0" prefWidth="293.0">
+      		        <VBox fx:id="vboxImage" layoutX="297.0" layoutY="1.0" prefHeight="337.0" prefWidth="293.0">
                <children>
-                      <TextArea fx:id="prontInfo" editable="false" opacity="0.0" prefHeight="316.0" prefWidth="293.0" stylesheets="@../style/panel_info_style.css" wrapText="true" />
+                      <TextArea fx:id="prontInfo" editable="false" opacity="0.0" prefHeight="351.0" prefWidth="293.0" stylesheets="@../style/panel_info_style.css" wrapText="true" />
                </children>
               </VBox>
          </children>
@@ -197,8 +199,8 @@
          </font></Button>
       <Button fx:id="botonEliminar" layoutX="407.0" layoutY="72.0" mnemonicParsing="false" onAction="#accionComic" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Eliminar Comic" />
       <Button fx:id="botonAgregarPuntuacion" layoutX="506.0" layoutY="72.0" mnemonicParsing="false" onAction="#accionComic" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Puntuar Comic" />
-      <Button fx:id="botonImprimir" layoutX="383.0" layoutY="331.0" mnemonicParsing="false" onAction="#imprimirResultado" prefHeight="35.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Imprimir resultado" visible="false" />
-      <Button fx:id="botonGuardarResultado" layoutX="277.0" layoutY="331.0" mnemonicParsing="false" onAction="#guardarResultado" prefHeight="35.0" prefWidth="96.0" stylesheets="@../style/genericos_style.css" text="Guardar resultado" visible="false" />
+      <Button fx:id="botonImprimir" layoutX="372.0" layoutY="333.0" mnemonicParsing="false" onAction="#imprimirResultado" prefHeight="35.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Imprimir resultado" visible="false" />
+      <Button fx:id="botonGuardarResultado" layoutX="269.0" layoutY="333.0" mnemonicParsing="false" onAction="#guardarResultado" prefHeight="35.0" prefWidth="96.0" stylesheets="@../style/genericos_style.css" text="Guardar resultado" visible="false" />
       <Button fx:id="botonMostrarGuardados" alignment="CENTER" contentDisplay="BOTTOM" layoutX="277.0" layoutY="158.0" mnemonicParsing="false" onAction="#comicsGuardados" prefHeight="35.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Ver guardados" visible="false" />
 
     </children>
