@@ -48,7 +48,6 @@ import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
 import dbmanager.ListaComicsDAO;
-import dbmanager.SelectManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -639,7 +638,7 @@ public class VentanaAccionController implements Initializable {
 
 		if (idRow != null) {
 
-			ImagenAmpliadaController.comicInfo = SelectManager.comicDatos(idRow.getID());
+			ImagenAmpliadaController.comicInfo = idRow;
 
 			nav.verVentanaImagen();
 		}
@@ -1415,7 +1414,7 @@ public class VentanaAccionController implements Initializable {
 		AtomicInteger contadorErrores = new AtomicInteger(0);
 		AtomicInteger comicsProcesados = new AtomicInteger(0);
 		AtomicInteger numLineas = new AtomicInteger(0); // Declarar como AtomicInteger
-		numLineas.set(Utilidades.contarLineas(fichero)); // Asignar el valor aquí
+		numLineas.set(Utilidades.contarLineasFichero(fichero)); // Asignar el valor aquí
 		AtomicReference<CargaComicsController> cargaComicsControllerRef = new AtomicReference<>();
 		String mensaje = "ERROR. Has cancelado la subida de comics";
 		nav.verCargaComics(cargaComicsControllerRef);
@@ -1585,7 +1584,7 @@ public class VentanaAccionController implements Initializable {
 			String urlFinal = SOURCE_PATH + File.separator + codigo_imagen + ".jpg";
 			String codigo_comic = Utilidades.defaultIfNullOrEmpty(comic.getCodigo_comic(), "0");
 			// Descarga y conversión asíncrona de la imagen
-			Utilidades.descargarYConvertirImagenAsync(uri, SOURCE_PATH, codigo_imagen);
+			Utilidades.descargarYConvertirImagenAsync(uri, SOURCE_PATH, codigo_imagen + ".jpg");
 
 			// Creación del objeto Comic importado y actualización de la tabla
 			Comic comicImport = new Comic(id, titulo, "0", numero, variante, "", editorial, formato, procedencia,
@@ -1607,7 +1606,7 @@ public class VentanaAccionController implements Initializable {
 			}
 
 			// Obtener información del cómic según la longitud del código
-			if (finalValorCodigo.length() == 9) {
+			if (finalValorCodigo.matches("[A-Z]{3}\\d{6}")) {
 
 				return WebScraperPreviewsWorld.displayComicInfo(finalValorCodigo.trim(), prontInfo);
 			} else {
@@ -2374,7 +2373,7 @@ public class VentanaAccionController implements Initializable {
 
 		String codigo_imagen = Utilidades.generarCodigoUnico(SOURCE_PATH + File.separator);
 		String mensaje = "";
-		Utilidades.nueva_imagen(comic.getImagen(), codigo_imagen);
+		Utilidades.redimensionarYGuardarImagen(comic.getImagen(), codigo_imagen);
 
 		comic.setImagen(SOURCE_PATH + File.separator + codigo_imagen + ".jpg");
 		if (esModificacion) {
@@ -2517,7 +2516,7 @@ public class VentanaAccionController implements Initializable {
 		prontInfo.clear();
 		prontInfo.setOpacity(1);
 
-		Image imagenComic = Utilidades.pasarImagenComic(comic.getImagen());
+		Image imagenComic = Utilidades.devolverImagenComic(comic.getImagen());
 		imagencomic.setImage(imagenComic);
 	}
 

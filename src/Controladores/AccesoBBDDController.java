@@ -203,8 +203,9 @@ public class AccesoBBDDController implements Initializable {
 			if (Utilidades.isInternetAvailable()) {
 				Utilidades.cargarTasasDeCambioDesdeArchivo();
 			}
-
+			// Crear estructura si no existe
 			FuncionesFicheros.crearEstructura();
+			Utilidades.crearCarpeta();
 			ConectManager.closeConnection();
 			progresoCarga.getScene().getWindow().setOnHidden(e -> {
 				if (executorService != null && !executorService.isShutdown()) {

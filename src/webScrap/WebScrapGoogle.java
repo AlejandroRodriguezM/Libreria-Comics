@@ -56,44 +56,67 @@ public class WebScrapGoogle {
 		}
 	}
 
-	public static String buscarEnGoogle(String searchTerm) throws URISyntaxException {
-	    searchTerm = agregarMasAMayusculas(searchTerm);
-	    searchTerm = searchTerm.replace("(", "%28").replace(")", "%29").replace("#", "%23");
+    public static String buscarEnGoogle(String searchTerm) throws URISyntaxException {
+        searchTerm = agregarMasAMayusculas(searchTerm);
+        searchTerm = searchTerm.replace("(", "%28").replace(")", "%29").replace("#", "%23");
 
-	    try {
-	    	
-	        String encodedSearchTerm = URLEncoder.encode(searchTerm, "UTF-8");
-	        String urlString = "https://www.google.com/search?q=" + encodedSearchTerm + "+league+of+comics";
+        try {
+            String encodedSearchTerm = URLEncoder.encode(searchTerm, "UTF-8");
+            String urlString = "https://www.google.com/search?q=" + encodedSearchTerm + "+league+of+comics";
 
-	        URI uri = new URI(urlString);
-	        URL url = uri.toURL();
-	        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-	        con.setRequestMethod("GET");
-	        con.setRequestProperty("User-Agent",
-	                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36");
+            URI uri = new URI(urlString);
+            URL url = uri.toURL();
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            con.setRequestProperty("User-Agent",
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36");
 
-	        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-	        String inputLine;
-	        StringBuilder content = new StringBuilder();
-	        while ((inputLine = in.readLine()) != null) {
-	            content.append(inputLine);
-	        }
-	        in.close();
-	        con.disconnect();
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            StringBuilder content = new StringBuilder();
+            while ((inputLine = in.readLine()) != null) {
+                content.append(inputLine);
+            }
+            in.close();
+            con.disconnect();
 
-	        String html = content.toString();
-	        int startIndex = html.indexOf("https://leagueofcomicgeeks.com/");
-	        if (startIndex != -1) {
-	            int endIndex = html.indexOf("\"", startIndex);
-	            return html.substring(startIndex, endIndex);
-	        } else {
-	            return null;
-	        }
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	        return null;
-	    }
-	}
+            String html = content.toString();
+            int startIndex = html.indexOf("https://leagueofcomicgeeks.com/");
+            if (startIndex != -1) {
+                int endIndex = html.indexOf("\"", startIndex);
+                String[] urls = html.substring(startIndex, endIndex).split("\"");
+                return encontrarURLRelevante(urls, searchTerm);
+            } else {
+                return null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static String encontrarURLRelevante(String[] urls, String searchTerm) {
+        String urlElegida = null;
+        int maxCoincidencia = 0;
+        for (String url : urls) {
+            int coincidencia = contarCoincidencias(url.toLowerCase(), searchTerm.toLowerCase());
+            if (coincidencia > maxCoincidencia) {
+                maxCoincidencia = coincidencia;
+                urlElegida = url;
+            }
+        }
+        return urlElegida;
+    }
+
+    public static int contarCoincidencias(String url, String searchTerm) {
+        int coincidencia = 0;
+        for (String word : searchTerm.split("\\s+")) {
+            if (url.contains(word)) {
+                coincidencia += word.length();
+            }
+        }
+        return coincidencia;
+    }
 
 
 	public static boolean esURL(String urlString) {

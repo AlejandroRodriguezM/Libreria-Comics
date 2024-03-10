@@ -962,18 +962,29 @@ public class MenuPrincipalController implements Initializable {
 			return;
 		}
 
-		limpiezaDeDatos();
-		limpiarComboBox();
-		String tipoBusqueda = "completa";
-		String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
+		boolean estaVacia = false;
+		String mensaje = "";
+		if (!ListaComicsDAO.listaComics.isEmpty()) {
+			limpiezaDeDatos();
+			limpiarComboBox();
+			String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
 
-		List<Comic> listaComics = SelectManager.verLibreria(sentenciaSQL);
+			List<Comic> listaComics = SelectManager.verLibreria(sentenciaSQL);
 
-		cargaExportExcel(listaComics, tipoBusqueda);
+			cargaExportExcel(listaComics, DBUtilidades.TipoBusqueda.COMPLETA.toString());
 
-		ListaComicsDAO.limpiarListaGuardados();
+			ListaComicsDAO.limpiarListaGuardados();
 
-		Utilidades.borrarArchivosNoEnLista(ListaComicsDAO.listaImagenes);
+			Utilidades.borrarArchivosNoEnLista(ListaComicsDAO.listaImagenes);
+
+			mensaje = "Base de datos exportada correctamente";
+			AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
+		} else {
+			estaVacia = true;
+			mensaje = "La base de datos esta vacia. No hay nada que exportar";
+		}
+		AlarmaList.mostrarMensajePront(mensaje, estaVacia, prontInfo);
+
 	}
 
 	/**
@@ -1053,7 +1064,7 @@ public class MenuPrincipalController implements Initializable {
 		} else {
 			mensaje = "ERROR. No se ha podido eliminar y reiniciar la base de datos";
 		}
-		AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+		AlarmaList.mostrarMensajePront(mensaje, deleteResult, prontInfo);
 	}
 
 	/**
@@ -1124,10 +1135,6 @@ public class MenuPrincipalController implements Initializable {
 		if (!ConectManager.conexionActiva()) {
 			return;
 		}
-
-//		String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
-//
-//		SelectManager.verLibreria(sentenciaSQL);
 
 		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 		// Verificar si idRow es nulo antes de intentar acceder a sus métodos

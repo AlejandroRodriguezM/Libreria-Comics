@@ -434,7 +434,7 @@ public class OpcionesDatosController implements Initializable {
 
 		String datos[] = new String[6];
 		datos[0] = puertobbdd.getText();
-		datos[1] = nombreBBDD.getSelectionModel().getSelectedItem();
+		datos[1] = nombreBBDD.getValue();
 		datos[2] = usuario.getText();
 		datos[3] = pass.getText();
 		datos[4] = nombreHost.getText();

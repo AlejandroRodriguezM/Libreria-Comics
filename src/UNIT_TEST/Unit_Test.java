@@ -583,7 +583,7 @@ public class Unit_Test extends Application {
 
 		String codigo_imagen = Utilidades.generarCodigoUnico(SOURCE_PATH + File.separator);
 
-		utilidad.nueva_imagen(portada, codigo_imagen);
+		Utilidades.redimensionarYGuardarImagen(portada, codigo_imagen);
 		comic.setImagen(SOURCE_PATH + File.separator + codigo_imagen + ".jpg");
 		insertarDatosPrueba(comic);
 
@@ -681,7 +681,7 @@ public class Unit_Test extends Application {
 
 		String codigo_imagen = Utilidades.generarCodigoUnico(SOURCE_PATH + File.separator);
 
-		utilidad.nueva_imagen(portada, codigo_imagen);
+		Utilidades.redimensionarYGuardarImagen(portada, codigo_imagen);
 		comic.setImagen(SOURCE_PATH + File.separator + codigo_imagen + ".jpg");
 
 		String sql = "		String sentenciaSQL = \"UPDATE comicsbbdd SET nomComic = ?, caja_deposito = ?, numComic = ?,codigo_comic = ?, nomVariante = ?, \"\r\n"

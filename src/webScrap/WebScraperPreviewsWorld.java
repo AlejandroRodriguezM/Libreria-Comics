@@ -83,7 +83,7 @@ public class WebScraperPreviewsWorld {
 	public static Comic displayComicInfo(String diamondCode, TextArea prontInfo) throws URISyntaxException {
 
 		try {
-
+			diamondCode = diamondCode.trim();
 			String previews_World_Url = "https://www.previewsworld.com/Catalog/" + diamondCode;
 			// Realizar la conexión y obtener el documento HTML de la página
 

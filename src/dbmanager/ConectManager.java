@@ -142,7 +142,6 @@ public class ConectManager {
 		}
 
 		if (!FuncionesFicheros.validarDatosConexion()) {
-			System.out.println(1);
 			nav.alertaException("La URL de conexión no es válida");
 			return null;
 		}

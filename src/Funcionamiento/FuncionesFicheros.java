@@ -28,32 +28,6 @@ public class FuncionesFicheros {
 	static String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
 	static String carpetaLibreria = ubicacion + File.separator + "libreria";
 
-//	/**
-//	 * Comprueba si los datos ingresados coinciden con los datos en la base de
-//	 * datos.
-//	 *
-//	 * @return true si los datos coinciden, false si no coinciden o si hay un error
-//	 *         en la conexión
-//	 * @throws SQLException si hay un error al consultar la base de datos
-//	 */
-//	private static boolean verificarDatos(String[] datos, Label estadoFicheroLabel) {
-////		ConectManager.datosBBDD(datos);
-//
-//		try (Connection connection = ConectManager.conexion()) {
-//			if (connection != null && ConectManager.isConnected()) {
-//				ConectManager.close();
-//				return true;
-//			} else {
-//				throw new SQLException("Connection to database failed.");
-//			}
-//		} catch (SQLException e) {
-//			estadoFicheroLabel.setStyle("-fx-background-color: #DD370F");
-//			AlarmaList alarmaList = new AlarmaList();
-//			alarmaList.iniciarAnimacionBBDDError(estadoFicheroLabel);
-//			return false;
-//		}
-//	}
-
 	public static Map<String, String> devolverDatosConfig() {
 		Map<String, String> datosConfiguracion = new HashMap<>();
 
@@ -108,8 +82,7 @@ public class FuncionesFicheros {
 		AlarmaList alarmaList = new AlarmaList();
 
 		try {
-//	        if (verificarDatos(datos, prontEstadoFichero)) {
-			crearEstructura();
+
 
 			// Leer el archivo de configuración existente
 			File configFile = new File(archivoConfiguracion);
@@ -129,6 +102,8 @@ public class FuncionesFicheros {
 			configContent = actualizarClave(configContent, "Database", nombreBBDD);
 			configContent = actualizarClave(configContent, "Hosting", nombreHost);
 
+			System.out.println("Contenido actualizado del archivo: " + configContent.toString());
+
 			if (!direccionXampp.isEmpty()) {
 				configContent = actualizarClave(configContent, "Xampp", direccionXampp);
 			}
@@ -136,19 +111,24 @@ public class FuncionesFicheros {
 			// Escribir el contenido actualizado al archivo de configuración
 			try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(configFile))) {
 				bufferedWriter.write(configContent.toString());
+				bufferedWriter.flush(); // Asegurar que los datos sean escritos en el archivo
+				System.out.println("Archivo de configuración actualizado exitosamente.");
 			}
 
 			// Crear carpeta de backups si no existe
 			File carpetaBackupsFile = new File(carpetaBackup);
 			if (!carpetaBackupsFile.exists()) {
-				carpetaBackupsFile.mkdirs(); // Usa mkdirs para crear directorios recursivamente
+				if (carpetaBackupsFile.mkdirs()) {
+					System.out.println("Carpeta de backups creada exitosamente.");
+				} else {
+					System.err.println("No se pudo crear la carpeta de backups.");
+				}
 			}
 
-			alarmaList.mensajeRespuestaGuardado(prontEstadoFichero, alarmaConexion);
-
-//	        } else {
-//	            alarmaList.mensajeRespuestaError(prontEstadoFichero, alarmaConexion);
-//	        }
+			// Mostrar mensaje de respuesta guardado
+			if (prontEstadoFichero != null && alarmaConexion != null) {
+				alarmaList.mensajeRespuestaGuardado(prontEstadoFichero, alarmaConexion);
+			}
 		} catch (IOException e) {
 			// Manejar errores de entrada/salida
 			e.printStackTrace();

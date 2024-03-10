@@ -22,6 +22,7 @@ import java.io.PrintWriter;
 import java.lang.ProcessBuilder.Redirect;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -50,6 +51,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -118,6 +120,9 @@ public class Utilidades {
 	public final static String SOURCE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
 			+ ConectManager.DB_NAME + File.separator + "portadas";
 
+	private static final String CARACTERES = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	private static final Random RANDOM = new Random();
+
 	/**
 	 * Verifica si el sistema operativo es Windows.
 	 *
@@ -175,7 +180,7 @@ public class Utilidades {
 	 */
 	public static void accesoWebWindows(String url) {
 		try {
-			java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
+			Desktop.getDesktop().browse(java.net.URI.create(url));
 		} catch (IOException e) {
 			manejarExcepcion(e);
 		}
@@ -257,55 +262,57 @@ public class Utilidades {
 	}
 
 	/**
-	 * Funcion que permite la redimension de una imagen. Guarda la imagen y es
-	 * cargada por otras funciones.
+	 * Redimensiona una imagen y la guarda en una ubicación específica para su uso
+	 * posterior.
 	 *
-	 * @param file
-	 * @return
+	 * @param imagen             La ruta de la imagen a redimensionar y guardar.
+	 * @param nuevoNombreArchivo El nombre del archivo para la imagen
+	 *                           redimensionada.
+	 * @throws IOException
 	 */
-	public static void nueva_imagen(String imagen, String nuevoNombreArchivo) {
-		try {
-			File file = new File(imagen);
-			InputStream input = null;
+	public static void redimensionarYGuardarImagen(String imagen, String nuevoNombreArchivo) throws IOException {
+		File file = new File(imagen);
+		InputStream input = null;
 
-			if (!file.exists()) {
-				input = Utilidades.class.getResourceAsStream("sinPortada.jpg");
-				if (input == null) {
-					throw new FileNotFoundException("La imagen predeterminada no se encontró en el paquete");
-				}
+		if (!file.exists()) {
+			input = Utilidades.class.getResourceAsStream("sinPortada.jpg");
+			if (input == null) {
+				throw new FileNotFoundException("La imagen predeterminada no se encontró en el paquete");
+			}
+			try {
 				file = File.createTempFile("tmp", ".jpg");
-				file.deleteOnExit();
-				try (OutputStream output = new FileOutputStream(file)) {
-					byte[] buffer = new byte[4096];
-					int bytesRead;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			file.deleteOnExit();
+			try (OutputStream output = new FileOutputStream(file)) {
+				byte[] buffer = new byte[4096];
+				int bytesRead;
+				try {
 					while ((bytesRead = input.read(buffer)) != -1) {
 						output.write(buffer, 0, bytesRead);
 					}
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
 			}
-
-			String userDir = System.getProperty("user.home");
-			String documentsPath = userDir + File.separator + "Documents";
-			String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
-					+ ConectManager.DB_NAME + File.separator + "portadas";
-
-			// Esto se modificara para hacerlo dinamico
-			String imagePath = defaultImagePath;
-
-			File portadasFolder = new File(imagePath);
-
-			if (!portadasFolder.exists()) {
-				if (!portadasFolder.mkdirs()) {
-					throw new IOException("No se pudo crear la carpeta 'portadas'");
-				}
-			}
-
-			File newFile = new File(portadasFolder.getPath() + File.separator + nuevoNombreArchivo + ".jpg");
-			Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-		} catch (IOException e) {
-			manejarExcepcion(e);
 		}
+
+		String userDir = System.getProperty("user.home");
+		String documentsPath = userDir + File.separator + "Documents";
+		String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
+				+ ConectManager.DB_NAME + File.separator + "portadas";
+
+		// Esto se modificara para hacerlo dinamico
+		String imagePath = defaultImagePath;
+
+		Path portadasFolderPath = Paths.get(imagePath);
+		Files.createDirectories(portadasFolderPath);
+
+		File newFile = new File(portadasFolderPath.resolve(nuevoNombreArchivo + ".jpg").toString());
+		Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 	}
 
 	/**
@@ -363,14 +370,7 @@ public class Utilidades {
 		String documentsPath = userDir + File.separator + "Documents";
 		String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
 				+ ConectManager.DB_NAME + File.separator + "portadas" + File.separator;
-		String nombre_comic = datos.getNombre().replace(" ", "_").replace(":", "_").replace("-", "_");
-		String numero_comic = datos.getNumero();
-		String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_").replace(":",
-				"_");
-		String fecha_comic = datos.getFecha();
-		String nombre_completo = nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic;
-		String extension = ".jpg";
-		String nuevoNombreArchivo = defaultImagePath + nombre_completo + extension;
+		String nuevoNombreArchivo = defaultImagePath + crearNuevoNombre(datos);
 		return nuevoNombreArchivo;
 	}
 
@@ -521,59 +521,80 @@ public class Utilidades {
 		}
 	}
 
-	/**
-	 * Elimina todos los archivos en una carpeta específica.
-	 */
 	public static void eliminarArchivosEnCarpeta() {
-
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
 		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + ConectManager.DB_NAME
 				+ File.separator + "portadas";
 
-		File carpeta = new File(sourcePath);
-		if (carpeta.exists() && carpeta.isDirectory()) {
-			File[] archivos = carpeta.listFiles();
-			if (archivos != null) {
-				for (File archivo : archivos) {
-					if (archivo.isFile()) {
-						archivo.delete();
+		try {
+			Path carpetaPath = Paths.get(sourcePath);
+			if (Files.exists(carpetaPath) && Files.isDirectory(carpetaPath)) {
+				Files.walk(carpetaPath).filter(Files::isRegularFile).forEach(file -> {
+					try {
+						Files.delete(file);
+					} catch (IOException e) {
+						System.err.println("Error al eliminar el archivo: " + file.toString());
+						e.printStackTrace();
 					}
-				}
+				});
 			}
+		} catch (IOException e) {
+			System.err.println("Error al acceder a la carpeta: " + sourcePath);
+			e.printStackTrace();
 		}
 	}
 
-	/**
-	 * Crea una copia de seguridad de la base de datos.
-	 */
 	public void crearCopiaBaseDatos() {
 		try {
-
+			// Carpeta de destino para la copia de seguridad
 			String userHome = System.getProperty("user.home");
 			String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
 			String carpeta_backups = ubicacion + File.separator + "libreria" + File.separator + "backups"
 					+ File.separator + ConectManager.DB_NAME + File.separator;
 
-			String pathMySql = "C:\\Program Files\\MySQL";
-			String mysqlDump = pathMySql + "\\mysqldump.exe";
+			// Archivo mysqldump.exe
+			String mysqlDump = findMysqlDump();
 
+			// Nombre del archivo de copia de seguridad
 			String nombreCopia = "copia_base_datos.sql";
 			File carpetaDestino = new File(carpeta_backups);
 			File archivoCopia = new File(carpetaDestino, nombreCopia);
 
+			// Comando para crear la copia de seguridad
 			String[] command = new String[] { mysqlDump, "-u" + ConectManager.DB_USER, "-p" + ConectManager.DB_PASS,
 					"-B", ConectManager.DB_NAME, "--hex-blob", "--routines=true",
 					"--result-file=" + archivoCopia.getAbsolutePath() };
 
+			// Ejecutar el comando
 			ProcessBuilder pb = new ProcessBuilder(command);
 			pb.redirectError(Redirect.INHERIT);
 			pb.redirectOutput(Redirect.to(archivoCopia));
 			pb.start();
-
+		} catch (IOException e) {
+			// Manejar errores de E/S
+			manejarExcepcion(e);
 		} catch (Exception e) {
+			// Manejar otras excepciones
 			manejarExcepcion(e);
 		}
+	}
+
+	// Método para encontrar la ruta de mysqldump.exe
+	private String findMysqlDump() throws IOException {
+		// Intenta encontrar mysqldump.exe en el directorio de instalación de MySQL
+		String pathMySql = "C:\\Program Files\\MySQL";
+		String mysqlDump = pathMySql + "\\mysqldump.exe";
+		if (!Files.exists(Paths.get(mysqlDump))) {
+			// Si no se encuentra en el directorio de instalación predeterminado, busca en
+			// la variable PATH del sistema
+			mysqlDump = "mysqldump";
+			if (!Files.exists(Paths.get(mysqlDump))) {
+				// Si no se puede encontrar, lanza una excepción
+				throw new FileNotFoundException("mysqldump.exe no se encuentra en el sistema");
+			}
+		}
+		return mysqlDump;
 	}
 
 	/**
@@ -712,16 +733,27 @@ public class Utilidades {
 	 */
 	public static void renombrarArchivo(String carpeta, String nombreArchivoBuscado, String nuevoNombreArchivo) {
 		File directorio = new File(carpeta);
+
+		// Manejo de excepciones si el directorio no existe o no se puede acceder
+		if (!directorio.exists() || !directorio.isDirectory()) {
+			System.err.println("El directorio no existe o no se puede acceder.");
+			return;
+		}
+
 		File[] archivos = directorio.listFiles();
 
+		// Usar try-with-resources para cerrar los recursos automáticamente
 		if (archivos != null) {
 			for (File archivo : archivos) {
-				if (archivo.isFile() && !archivo.getName().equals(nombreArchivoBuscado)) {
+				// Si el archivo es el que buscamos, lo renombramos y salimos del bucle
+				if (archivo.isFile() && archivo.getName().equals(nombreArchivoBuscado)) {
 					File nuevoArchivo = new File(directorio, nuevoNombreArchivo);
 					archivo.renameTo(nuevoArchivo);
-
+					break;
 				}
 			}
+		} else {
+			System.err.println("No se pueden listar los archivos en el directorio.");
 		}
 	}
 
@@ -735,28 +767,27 @@ public class Utilidades {
 	public static String generarCodigoUnico(String carpeta) {
 		String codigo;
 		File directorio = new File(carpeta);
-		File archivo = null;
+
+		// Manejo de excepciones si el directorio no existe o no se puede acceder
+		if (!directorio.exists() || !directorio.isDirectory()) {
+			System.err.println("El directorio no existe o no se puede acceder.");
+			return null;
+		}
+
+		// Genera un nuevo código único y verifica su existencia
 		do {
-			codigo = generarCodigo(); // Genera un nuevo código único
-			String nombreArchivo = codigo + ".jpg";
-			archivo = new File(directorio, nombreArchivo);
-		} while (archivo.exists());
+			codigo = generarCodigo();
+		} while (new File(directorio, codigo + ".jpg").exists());
 
 		return codigo;
 	}
 
-	/**
-	 * Genera un codigo de forma aleatoria
-	 * 
-	 * @return
-	 */
 	private static String generarCodigo() {
-		String caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-		StringBuilder codigo = new StringBuilder();
+		StringBuilder codigo = new StringBuilder(10); // Predefinimos el tamaño del StringBuilder
 
 		for (int i = 0; i < 10; i++) {
-			int indice = (int) (Math.random() * caracteres.length());
-			codigo.append(caracteres.charAt(indice));
+			int indice = RANDOM.nextInt(CARACTERES.length());
+			codigo.append(CARACTERES.charAt(indice));
 		}
 
 		return codigo.toString();
@@ -899,7 +930,6 @@ public class Utilidades {
 		} catch (IOException e) {
 			manejarExcepcion(e);
 		}
-
 	}
 
 	/**
@@ -912,7 +942,7 @@ public class Utilidades {
 
 		if (isURL(cadena)) {
 			// Obtener la extensión del archivo desde la URL
-			String extension = getFileExtensionFromURL(cadena);
+			String extension = obtenerExtension(cadena);
 
 			// Lista de extensiones de imagen comunes
 			String[] imageExtensions = { "jpg", "jpeg", "png", "gif", "bmp" };
@@ -959,18 +989,64 @@ public class Utilidades {
 		}
 	}
 
-	/**
-	 * Obtiene la extensión del archivo desde una URL.
-	 *
-	 * @param url URL de la que se va a obtener la extensión.
-	 * @return La extensión del archivo o una cadena vacía si no se encuentra.
-	 */
-	public static String getFileExtensionFromURL(String url) {
-		int lastDotIndex = url.lastIndexOf('.');
-		if (lastDotIndex > 0) {
-			return url.substring(lastDotIndex + 1).toLowerCase();
+	public static String obtenerExtension(String entrada) {
+		int ultimoPunto;
+		if (entrada.contains("/")) {
+			// Si la entrada contiene "/", se asume que es una URL
+			int ultimoSlash = entrada.lastIndexOf("/");
+			String nombreArchivo = entrada.substring(ultimoSlash + 1);
+			ultimoPunto = nombreArchivo.lastIndexOf(".");
+		} else {
+			// Si no contiene "/", se asume que es solo el nombre del archivo
+			ultimoPunto = entrada.lastIndexOf(".");
 		}
-		return "";
+
+		if (ultimoPunto == -1) {
+			return "";
+		}
+
+		return entrada.substring(ultimoPunto + 1).toLowerCase();
+	}
+
+	/**
+	 * Devuelve el último segmento de una ruta dada.
+	 *
+	 * @param ruta La ruta de la cual se desea obtener el último segmento.
+	 * @return El último segmento de la ruta. Si la ruta es nula o vacía, se
+	 *         devuelve una cadena vacía.
+	 */
+	public static String obtenerUltimoSegmentoRuta(String ruta) {
+		if (ruta == null || ruta.isEmpty()) {
+			return "";
+		}
+
+		int indiceUltimoSeparador = ruta.lastIndexOf(File.separator);
+		if (indiceUltimoSeparador != -1 && indiceUltimoSeparador < ruta.length() - 1) {
+			return ruta.substring(indiceUltimoSeparador + 1);
+		} else {
+			// La ruta no contiene separador o es la última parte de la ruta
+			return ruta;
+		}
+	}
+
+	/**
+	 * Borra un archivo de imagen dada su ruta.
+	 *
+	 * @param rutaImagen Ruta del archivo de imagen que se va a borrar.
+	 * @return true si se borra con éxito, false si no se puede borrar o el archivo
+	 *         no existe.
+	 */
+	public static boolean borrarImagen(String rutaImagen) {
+
+		File archivo = new File(rutaImagen);
+
+		// Verificar si el archivo existe antes de intentar borrarlo
+		if (archivo.exists()) {
+			if (archivo.delete()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -985,16 +1061,11 @@ public class Utilidades {
 		Executor executor = Executors.newCachedThreadPool();
 		CompletableFuture<String> downloadTask = new CompletableFuture<>();
 
-		@SuppressWarnings("unused")
-		CompletableFuture<Void> asyncTask = CompletableFuture.runAsync(() -> {
+		CompletableFuture.runAsync(() -> {
 			try {
-
-				String nombreImagen = "";
-				nombreImagen = obtenerNombreImagen(urlImagen);
-
+				String nombreImagen = obtenerNombreImagen(urlImagen);
 				crearCarpetaSiNoExiste(carpetaDestino);
 				String rutaDestino = carpetaDestino + File.separator + nombreImagen;
-
 				downloadTask.complete(rutaDestino);
 			} catch (IllegalArgumentException e) {
 				System.err.println(e.getMessage());
@@ -1003,31 +1074,12 @@ public class Utilidades {
 				System.err.println("No se pudo acceder a la URL: " + urlImagen);
 				e.printStackTrace();
 				downloadTask.completeExceptionally(e);
+			} finally {
+				((ExecutorService) executor).shutdown();
 			}
 		}, executor);
 
-		// Handle executor shutdown
-		downloadTask.whenComplete((result, throwable) -> {
-			((ExecutorService) executor).shutdown();
-		});
-
 		return downloadTask;
-	}
-
-	/**
-	 * Valida una URL y la convierte en una URI.
-	 * 
-	 * @param urlImagen URL de la imagen a validar.
-	 * @return URI válida de la URL.
-	 * @throws IllegalArgumentException Si la URL no es válida.
-	 */
-	@SuppressWarnings("unused")
-	private static URI validarURL(String urlImagen) throws IllegalArgumentException {
-		try {
-			return new URI(urlImagen);
-		} catch (URISyntaxException e) {
-			throw new IllegalArgumentException("URL de imagen no válida: " + urlImagen, e);
-		}
 	}
 
 	/**
@@ -1065,9 +1117,6 @@ public class Utilidades {
 	 */
 	public static CompletableFuture<Boolean> descargarYConvertirImagenAsync(URI urlImagen, String carpetaDestino,
 			String nuevoNombre) {
-
-		System.out.println(nuevoNombre);
-
 		return CompletableFuture.supplyAsync(() -> {
 			try {
 				URL url = urlImagen.toURL();
@@ -1087,25 +1136,21 @@ public class Utilidades {
 					}
 				}
 
-				String finalNuevoNombre = nuevoNombre; // Create a new effectively final variable
+				String extension = obtenerExtension(nuevoNombre);
+				Path rutaDestino = Path.of(carpetaDestino, nuevoNombre);
 
-				String extension = obtenerExtension(finalNuevoNombre);
 				if (!extension.equals("jpg")) {
-					BufferedImage image = ImageIO.read(url);
-
-					if (image == null) {
-						System.err.println("No se pudo cargar la imagen desde " + urlImagen);
-						return false;
-					}
-
-					finalNuevoNombre += ".jpg";
-					Path rutaDestino = Path.of(carpetaDestino, finalNuevoNombre);
-
-					ImageIO.write(image, "jpg", rutaDestino.toFile());
-				} else {
-					Path rutaDestino = Path.of(carpetaDestino, finalNuevoNombre);
 					try (InputStream in = url.openStream()) {
-						java.nio.file.Files.copy(in, rutaDestino, StandardCopyOption.REPLACE_EXISTING);
+						BufferedImage image = ImageIO.read(in);
+						if (image == null) {
+							System.err.println("No se pudo cargar la imagen desde " + urlImagen);
+							return false;
+						}
+						ImageIO.write(image, "jpg", rutaDestino.toFile());
+					}
+				} else {
+					try (InputStream in = url.openStream()) {
+						Files.copy(in, rutaDestino, StandardCopyOption.REPLACE_EXISTING);
 					}
 				}
 
@@ -1115,34 +1160,6 @@ public class Utilidades {
 				return false;
 			}
 		});
-	}
-
-	private static String obtenerExtension(String nombreArchivo) {
-		int ultimoPunto = nombreArchivo.lastIndexOf(".");
-		if (ultimoPunto == -1) {
-			return "";
-		}
-		return nombreArchivo.substring(ultimoPunto + 1).toLowerCase();
-	}
-
-	/**
-	 * Borra un archivo de imagen dada su ruta.
-	 *
-	 * @param rutaImagen Ruta del archivo de imagen que se va a borrar.
-	 * @return true si se borra con éxito, false si no se puede borrar o el archivo
-	 *         no existe.
-	 */
-	public static boolean borrarImagen(String rutaImagen) {
-
-		File archivo = new File(rutaImagen);
-
-		// Verificar si el archivo existe antes de intentar borrarlo
-		if (archivo.exists()) {
-			if (archivo.delete()) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/**
@@ -1167,16 +1184,20 @@ public class Utilidades {
 	 * 
 	 * @throws IOException Si ocurre un error al crear la carpeta.
 	 */
-	public static void crearCarpeta() throws IOException {
+	public static void crearCarpeta() {
+		Ventanas nav = new Ventanas();
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
 		String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
 				+ obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas";
+		
+		System.out.println(obtenerDatoDespuesDeDosPuntos("Database"));
+		
 		File portadasFolder = new File(defaultImagePath);
 
 		if (!portadasFolder.exists()) {
 			if (!portadasFolder.mkdirs()) {
-				throw new IOException("No se pudo crear la carpeta 'portadas'");
+				nav.alertaException("No se puede crear la carpeta donde van las portadas descargadas/copiadas");
 			}
 		}
 	}
@@ -1471,22 +1492,27 @@ public class Utilidades {
 	}
 
 	/**
-	 * Verifica si el servicio MySQL está en ejecución en el host y puerto
-	 * proporcionados.
+	 * Verifies if the MySQL service is running on the provided host and port.
 	 *
-	 * @param host       El host del servicio MySQL.
-	 * @param portString El número de puerto del servicio MySQL.
-	 * @return true si el servicio está en ejecución, false si no lo está.
+	 * @param host       The host of the MySQL service.
+	 * @param portString The port number of the MySQL service.
+	 * @return true if the service is running, false otherwise.
 	 */
 	public static boolean isMySQLServiceRunning(String host, String portString) {
+		int port;
 		try {
-			int port = Integer.parseInt(portString); // Convertir la cadena a un entero
-			InetAddress address = InetAddress.getByName(host);
-			Socket socket = new Socket(address, port);
-			socket.close();
+			port = Integer.parseInt(portString);
+			if (port < 1 || port > 65535) {
+				throw new IllegalArgumentException("Port is out of valid range.");
+			}
+		} catch (IllegalArgumentException e) {
+			return false;
+		}
+
+		try (Socket socket = new Socket()) {
+			socket.connect(new InetSocketAddress(InetAddress.getByName(host), port), 1000); // Timeout set to 1 second
 			return true;
 		} catch (Exception e) {
-//			e.printStackTrace();
 			return false;
 		}
 	}
@@ -1615,7 +1641,6 @@ public class Utilidades {
 								if (comicInfo == null) {
 									contadorFaltas++;
 								}
-
 							}
 						}
 
@@ -1626,11 +1651,10 @@ public class Utilidades {
 				}
 			} catch (IOException | URISyntaxException | JSONException e) {
 				manejarExcepcion(e);
-			}
-
-			// Verificar el contador de faltas al final y actualizar el resultado
-			if (contadorFaltas > 1) {
-				Utilidades.imprimirEnArchivo(codigosFaltantes, sourcePath);
+			} finally {
+				if (contadorFaltas > 1) {
+					Utilidades.imprimirEnArchivo(codigosFaltantes, sourcePath);
+				}
 			}
 		});
 
@@ -1652,9 +1676,6 @@ public class Utilidades {
 					comicInfo = isbnGeneral.getBookInfo(finalValorCodigo.trim(), null);
 				}
 			}
-
-			// Realiza cualquier lógica adicional aquí si es necesario.
-
 			return comicInfo != null; // Devuelve true si se encontró información del cómic.
 		} catch (Exception e) {
 			manejarExcepcion(e);
@@ -1662,7 +1683,7 @@ public class Utilidades {
 		}
 	}
 
-	public static int contarLineas(File fichero) {
+	public static int contarLineasFichero(File fichero) {
 		int contador = 0;
 
 		try (BufferedReader br = new BufferedReader(new FileReader(fichero))) {
@@ -1677,7 +1698,7 @@ public class Utilidades {
 		return contador;
 	}
 
-	public static Image pasarImagenComic(String direccionComic) {
+	public static Image devolverImagenComic(String direccionComic) {
 		if (direccionComic != null && !direccionComic.isEmpty()) {
 			try {
 				Image imagen = new Image(new File(direccionComic).toURI().toString());
@@ -1691,45 +1712,28 @@ public class Utilidades {
 
 	public static boolean comprobarYManejarConexion(Scene ventana) {
 		Ventanas nav = new Ventanas();
-
+		String mensajeError = "Error. Servicio MySql apagado o desconectado de forma repentina.";
 		if (ventana != null) {
 			Stage stage = (Stage) ventana.getWindow();
 
-			if (!ConectManager.conexionActiva()) {
-				Platform.runLater(() -> {
-					ConectManager.asignarValoresPorDefecto();
-					ConectManager.close();
+			try {
+				if (!ConectManager.conexionActiva()) {
+					Platform.runLater(() -> {
+						ConectManager.asignarValoresPorDefecto();
+						Ventanas.cerrarVentanaActual(stage);
+						nav.alertaException(mensajeError);
+					});
 
-					Ventanas.cerrarVentanaActual(stage);
-					nav.alertaException("Error. Servicio MySql apagado o desconectado de forma repentina.");
-				});
-
-				return false; // No está conectado
+					return false; // No está conectado
+				}
+			} catch (Exception e) {
+				// Manejar la excepción adecuadamente, si es necesario
+				e.printStackTrace();
+				return false;
 			}
 		}
 
 		return true; // Está conectado
-	}
-
-	/**
-	 * Devuelve el último segmento de una ruta dada.
-	 *
-	 * @param ruta La ruta de la cual se desea obtener el último segmento.
-	 * @return El último segmento de la ruta. Si la ruta es nula o vacía, se
-	 *         devuelve una cadena vacía.
-	 */
-	public static String obtenerUltimoSegmentoRuta(String ruta) {
-		if (ruta == null || ruta.isEmpty()) {
-			return "";
-		}
-
-		int indiceUltimoSeparador = ruta.lastIndexOf(File.separator);
-		if (indiceUltimoSeparador != -1 && indiceUltimoSeparador < ruta.length() - 1) {
-			return ruta.substring(indiceUltimoSeparador + 1);
-		} else {
-			// La ruta no contiene separador o es la última parte de la ruta
-			return ruta;
-		}
 	}
 
 	/**
@@ -1828,7 +1832,7 @@ public class Utilidades {
 		String rutaXamppStart = buscarProgramasEnDirectorio(directorio, "xampp_start.exe");
 
 		try {
-			if (rutaScriptControl != null && verificarExistencia(rutaScriptControl)) {
+			if (rutaScriptControl != null && verificarExistenciaFichero(rutaScriptControl)) {
 				if (!isXAMPPRunning()) {
 					abrirPrograma(rutaScriptControl);
 				}
@@ -1896,31 +1900,13 @@ public class Utilidades {
 
 		try {
 			Desktop.getDesktop().open(file);
-			System.out.println("Programa abierto correctamente.");
 		} catch (IOException e) {
-			System.err.println("Error al abrir el programa: " + e.getMessage());
+			manejarExcepcion(e);
 		}
 	}
 
-//	// Función para detener XAMPP
-//	private static void detenerXAMPP() {
-//		try {
-//			// Ruta al script de control de XAMPP en Windows
-//			String rutaScript = "C:\\xampp\\xampp_stop.exe";
-//
-//			if (verificarExistencia(rutaScript)) {
-//				ejecutarComando(rutaScript, "XAMPP detenido correctamente", "Error al detener XAMPP");
-//			}
-//
-//			// Llamada a la función para ejecutar el comando
-//
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
-
 	// Función para verificar la existencia de un archivo
-	private static boolean verificarExistencia(String rutaArchivo) {
+	private static boolean verificarExistenciaFichero(String rutaArchivo) {
 		File archivo = new File(rutaArchivo);
 		return archivo.exists();
 	}
@@ -2118,7 +2104,6 @@ public class Utilidades {
 				elemento.setVisible(true);
 				elemento.setDisable(false);
 			}
-
 		}
 	}
 
@@ -2140,7 +2125,6 @@ public class Utilidades {
 						try {
 							Desktop.getDesktop().browse(uri);
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					});

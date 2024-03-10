@@ -623,6 +623,7 @@ public class Comic {
 		Utilidades.appendIfNotEmpty(contenidoComic, "Url referencia", url_referencia);
 		Utilidades.appendIfNotEmpty(contenidoComic, "Caja", numCaja);
 		Utilidades.appendIfNotEmpty(contenidoComic, "Key issue", key_issue);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Portada", imagen);
 
 		return contenidoComic.toString();
 	}

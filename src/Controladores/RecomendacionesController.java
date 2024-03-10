@@ -274,7 +274,7 @@ public class RecomendacionesController implements Initializable {
 			id_comic = listaComics.get(n).getID();
 
 			String direccionImagen = SelectManager.obtenerDireccionPortada(id_comic);
-			Image imagenComic = Utilidades.pasarImagenComic(direccionImagen);
+			Image imagenComic = Utilidades.devolverImagenComic(direccionImagen);
 
 			imagencomic.setImage(imagenComic);
 			utilidad.deleteImage();

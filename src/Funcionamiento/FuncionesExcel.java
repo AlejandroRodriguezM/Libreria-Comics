@@ -384,7 +384,8 @@ public class FuncionesExcel {
 
 						libro.write(outputStream);
 						libro.close();
-
+						createCSV(fichero);
+						
 						String zipPath = carpetaLibreria.getAbsolutePath() + File.separator + "excel_" + nombre_carpeta
 								+ ".zip";
 						File zipFile = new File(zipPath);
@@ -414,6 +415,7 @@ public class FuncionesExcel {
 	}
 
 	public Task<Boolean> procesarArchivoCSVTask(File fichero) {
+		
 		Task<Boolean> task = new Task<Boolean>() {
 			@Override
 			protected Boolean call() throws Exception {
@@ -421,7 +423,7 @@ public class FuncionesExcel {
 
 					checkCSVColumns(fichero.getAbsolutePath().toString());
 
-					int numeroLineas = Utilidades.contarLineas(fichero);
+					int numeroLineas = Utilidades.contarLineasFichero(fichero);
 					actualizarNumLineas(numeroLineas);
 					procesarCSVInternamente(fichero);
 					return true; // Indicar que la operación fue exitosa
