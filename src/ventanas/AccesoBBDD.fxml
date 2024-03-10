@@ -35,7 +35,7 @@
          <font>
             <Font size="18.0" />
          </font></Button>
-      <Button fx:id="botonEnviar" layoutX="16.0" layoutY="209.0" mnemonicParsing="false" onAction="#enviarDatos" prefHeight="80.0" prefWidth="235.0" style="-fx-font-size: 20;" stylesheets="@../style/acces_style.css" text="Conectar bbdd">
+      <Button fx:id="botonEnviar" layoutX="17.0" layoutY="209.0" mnemonicParsing="false" onAction="#enviarDatos" prefHeight="80.0" prefWidth="235.0" style="-fx-font-size: 20;" stylesheets="@../style/acces_style.css" text="Conectar bbdd">
          <font>
             <Font size="17.0" />
          </font></Button>

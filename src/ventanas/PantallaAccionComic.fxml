@@ -172,7 +172,7 @@
       <Button fx:id="botonEliminarImportadoComic" layoutX="640.0" layoutY="290.0" mnemonicParsing="false" onAction="#eliminarComicSeleccionado" prefHeight="42.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Eliminar Comic" visible="false" wrapText="true" />
       <ImageView fx:id="cargaImagen" fitHeight="326.0" fitWidth="207.0" layoutX="368.0" layoutY="34.0" pickOnBounds="true" preserveRatio="true" />
       <ImageView fx:id="imagencomic" fitHeight="308.0" fitWidth="199.0" layoutX="370.0" layoutY="31.0" onMouseClicked="#ampliarImagen" pickOnBounds="true" />
-      <Button fx:id="botonSubidaPortada" layoutX="185.0" layoutY="253.0" mnemonicParsing="false" onAction="#nuevaPortada" prefHeight="25.0" prefWidth="25.0" stylesheets="@../style/boton_subida_style.css" />
+      <Button fx:id="botonSubidaPortada" layoutX="186.0" layoutY="253.0" mnemonicParsing="false" onAction="#nuevaPortada" prefHeight="25.0" prefWidth="25.0" stylesheets="@../style/boton_subida_style.css" />
       <Label fx:id="alarmaConexionSql" layoutX="813.0" prefHeight="25.0" prefWidth="23.0" stylesheets="@../style/alarma_conexion_style.css" />
       <Label fx:id="alarmaConexionInternet" layoutX="786.0" prefHeight="25.0" prefWidth="23.0" stylesheets="@../style/alarma_conexion_style.css" />
       <Button fx:id="botonCancelarSubida" layoutX="775.0" layoutY="286.0" mnemonicParsing="false" prefHeight="54.0" prefWidth="57.0" style="-fx-border-color: none; -fx-background-color: none;" visible="false">

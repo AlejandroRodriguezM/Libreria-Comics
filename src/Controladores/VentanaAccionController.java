@@ -630,7 +630,7 @@ public class VentanaAccionController implements Initializable {
 		controlarEventosInterfaz();
 
 	}
-	
+
 	@FXML
 	void ampliarImagen(MouseEvent event) {
 
@@ -1749,6 +1749,17 @@ public class VentanaAccionController implements Initializable {
 	 */
 	public void limpiarDatosPantalla() {
 		// Restablecer los campos de datos
+
+		if (ListaComicsDAO.comicsImportados.size() > 0) {
+			if (nav.alertaBorradoLista()) {
+				botonGuardarComic.setVisible(false);
+				botonEliminarImportadoComic.setVisible(false);
+
+				ListaComicsDAO.comicsImportados.clear();
+				tablaBBDD.getItems().clear();
+			}
+		}
+
 		nombreComic.setText("");
 		varianteComic.setText("");
 		firmaComic.setText("");
@@ -1769,17 +1780,7 @@ public class VentanaAccionController implements Initializable {
 		imagencomic.setImage(null);
 		numeroCajaComic.getEditor().clear();
 		codigoComicTratar.setText("");
-
-		if (ListaComicsDAO.comicsImportados.size() > 0) {
-			if (nav.alertaBorradoLista()) {
-				botonGuardarComic.setVisible(false);
-				botonEliminarImportadoComic.setVisible(false);
-
-				ListaComicsDAO.comicsImportados.clear();
-				tablaBBDD.getItems().clear();
-			}
-		}
-
+		idComicTratar_mod.setText("");
 		if ("modificar".equals(TIPO_ACCION)) {
 			mostrarOpcion(TIPO_ACCION);
 		}
@@ -2557,6 +2558,13 @@ public class VentanaAccionController implements Initializable {
 		imagencomic.setImage(null);
 		codigoComicTratar.setText("");
 		idComicTratar_mod.setText("");
+
+		if ("aniadir".equals(TIPO_ACCION)) {
+			idComicTratar_mod.setDisable(false);
+			idComicTratar_mod.setText("");
+			idComicTratar_mod.setDisable(true);
+
+		}
 
 		formatoComic.getSelectionModel().selectFirst();
 		procedenciaComic.getSelectionModel().selectFirst();
