@@ -25,8 +25,11 @@ public class ComicFichero extends Comic {
 		String puntuacion = obtenerPuntuacion(data[13], data[14]);
 		String direccion_portada = data[15];
 		String nombre_portada = Utilidades.obtenerNombrePortada(false,direccion_portada);
+		
 		String nombre_modificado = Utilidades.convertirNombreArchivo(nombre_portada);
+		
 		String nombre_completo_portada = FuncionesExcel.DEFAULT_PORTADA_IMAGE_PATH + File.separator + nombre_modificado;
+		
 		String nombreUnico = FuncionesExcel.DEFAULT_PORTADA_IMAGE_PATH + File.separator
 				+ Utilidades.copiarConNombreAleatorio(nombre_completo_portada);
 

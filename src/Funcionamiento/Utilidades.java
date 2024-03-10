@@ -663,7 +663,7 @@ public class Utilidades {
 				nombreConvertido.append(caracterActual);
 			}
 		}
-
+		
 		return nombreConvertido.toString();
 	}
 
@@ -704,6 +704,7 @@ public class Utilidades {
 			if (eliminarAntesPortadas) {
 				return rutaArchivo.substring(0, indicePortada + 9);
 			} else {
+				
 				return rutaArchivo.substring(indicePortada + 9);
 			}
 		}
@@ -767,7 +768,7 @@ public class Utilidades {
 	public static String generarCodigoUnico(String carpeta) {
 		String codigo;
 		File directorio = new File(carpeta);
-
+		
 		// Manejo de excepciones si el directorio no existe o no se puede acceder
 		if (!directorio.exists() || !directorio.isDirectory()) {
 			System.err.println("El directorio no existe o no se puede acceder.");
@@ -1744,6 +1745,7 @@ public class Utilidades {
 	 * @return true si el archivo existe, false en caso contrario
 	 */
 	static boolean existeArchivo(String defaultImagePath, String nombreModificado) {
+		
 		return Files.exists(Paths.get(defaultImagePath, nombreModificado));
 	}
 
@@ -1818,8 +1820,6 @@ public class Utilidades {
 		File direccionAplicacion = new File(nombreDirectorio);
 
 		if (direccionAplicacion.exists()) {
-
-			System.out.println(nombreDirectorio + File.separator + nomAplicacion);
 
 			return nombreDirectorio + File.separator + nomAplicacion;
 
@@ -2067,9 +2067,14 @@ public class Utilidades {
 		File archivoOriginal = new File(nombreCompletoPortadaOriginal);
 		String nombreCarpeta = archivoOriginal.getParent();
 		String extension = ".jpg"; // La extensión siempre será .jpg
-
-		String nombreAleatorio = Utilidades.generarCodigoUnico(SOURCE_PATH + File.separator);
+		
+		String carpetaPortada =  DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+				+ ConectManager.DB_NAME + File.separator + "portadas";
+		
+		String nombreAleatorio = Utilidades.generarCodigoUnico(carpetaPortada);
 		String rutaDestino = nombreCarpeta + File.separator + nombreAleatorio + extension;
+		
+		
 		Path rutaDestinoPath = Path.of(rutaDestino);
 
 		try {
@@ -2077,7 +2082,6 @@ public class Utilidades {
 			if (archivoOriginal.exists()) {
 				Files.copy(Path.of(nombreCompletoPortadaOriginal), rutaDestinoPath,
 						StandardCopyOption.REPLACE_EXISTING);
-
 				archivoOriginal.delete();
 			}
 

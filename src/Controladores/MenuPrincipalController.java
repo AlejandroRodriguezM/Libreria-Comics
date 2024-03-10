@@ -445,7 +445,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
+		
 		AlarmaList alarmaList = new AlarmaList();
 
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
@@ -643,19 +643,22 @@ public class MenuPrincipalController implements Initializable {
 		}, 0, TimeUnit.SECONDS);
 	}
 
-	@SuppressWarnings("unchecked")
+
 	public void listaElementosVentana() {
-		listaImagenes = FXCollections.observableArrayList(imagencomic);
-		listaColumnas = FXCollections.observableArrayList(ID, nombre, caja, numero, variante, firma, editorial, formato,
-				procedencia, fecha, guionista, dibujante, referencia);
-		listaCamposTexto = FXCollections.observableArrayList(busquedaGeneral, fechaPublicacion);
-		listaBotones = FXCollections.observableArrayList(botonLimpiar, botonMostrarParametro, botonbbdd, botonImprimir,
-				botonGuardarResultado);
+	    listaImagenes = FXCollections.observableArrayList(imagencomic);
+	    listaColumnas = FXCollections.observableArrayList(ID, nombre, caja, numero, variante, firma, editorial, formato,
+	            procedencia, fecha, guionista, dibujante, referencia);
+	    listaCamposTexto = FXCollections.observableArrayList(busquedaGeneral, fechaPublicacion);
+	    listaBotones = FXCollections.observableArrayList(botonLimpiar, botonMostrarParametro, botonbbdd, botonImprimir,
+	            botonGuardarResultado);
 
-		comboboxes = FXCollections.observableArrayList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
-				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
+	    // Corregir el uso de varargs
+	    comboboxes = FXCollections.observableArrayList(
+	            Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia, nombreFormato,
+	                    nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja)
+	    );
 
-		listaElementosFondo = FXCollections.observableArrayList(backgroundImage, menu_navegacion);
+	    listaElementosFondo = FXCollections.observableArrayList(backgroundImage, menu_navegacion);
 	}
 
 	/**
@@ -964,7 +967,7 @@ public class MenuPrincipalController implements Initializable {
 
 		boolean estaVacia = false;
 		String mensaje = "";
-		if (!ListaComicsDAO.listaComics.isEmpty()) {
+		if (!ListaComicsDAO.listaNombre.isEmpty()) {
 			limpiezaDeDatos();
 			limpiarComboBox();
 			String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
@@ -1356,9 +1359,12 @@ public class MenuPrincipalController implements Initializable {
 
 			lecturaTask.setOnSucceeded(e -> {
 				cargarDatosDataBase();
-				procesarResultadoImportacion(lecturaTask.getValue());
+//				procesarResultadoImportacion(lecturaTask.getValue());
 				AlarmaList.detenerAnimacion();
 				AlarmaList.detenerAnimacionCarga(progresoCarga);
+				
+				cambiarEstadoMenuBar(false);
+				AlarmaList.mostrarMensajePront(mensajeValido, true, prontInfo);
 			});
 
 			lecturaTask.setOnRunning(e -> cambiarEstadoMenuBar(true));
@@ -1366,13 +1372,6 @@ public class MenuPrincipalController implements Initializable {
 			lecturaTask.setOnFailed(e -> {
 				procesarResultadoImportacion(lecturaTask.getValue());
 				cambiarEstadoMenuBar(false);
-			});
-
-			lecturaTask.setOnSucceeded(e -> {
-				cambiarEstadoMenuBar(false);
-				AlarmaList.mostrarMensajePront(mensajeValido, true, prontInfo);
-
-				cargarDatosDataBase();
 			});
 
 			// Iniciar la tarea principal de importación en un hilo separado
