@@ -1917,7 +1917,15 @@ public class VentanaAccionController implements Initializable {
 	public void subirPortada() {
 		File file = tratarFichero().showOpenDialog(null); // Llamada a funcion
 		if (file != null) {
-			direccionImagen.setText(file.getAbsolutePath().toString());
+			String nuevoNombreArchivo = Utilidades.generarCodigoUnico(CARPETA_RAIZ_PORTADAS);
+
+			try {
+				Utilidades.redimensionarYGuardarImagen(file.getAbsolutePath().toString(), nuevoNombreArchivo);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			direccionImagen.setText(CARPETA_RAIZ_PORTADAS + "portadas" + File.separator + nuevoNombreArchivo  + ".jpg");
 
 			String mensaje = "Portada subida correctamente.";
 
@@ -2050,7 +2058,6 @@ public class VentanaAccionController implements Initializable {
 		Comic.limpiarCamposComic(datos);
 
 		for (Comic c : ListaComicsDAO.comicsImportados) {
-			System.out.println(c.getID().equals(datos.getID()));
 			if (c.getID().equals(datos.getID())) {
 				ListaComicsDAO.comicsImportados.set(ListaComicsDAO.comicsImportados.indexOf(c), datos);
 				break;
