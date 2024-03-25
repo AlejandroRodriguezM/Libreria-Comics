@@ -663,7 +663,7 @@ public class Utilidades {
 				nombreConvertido.append(caracterActual);
 			}
 		}
-		
+
 		return nombreConvertido.toString();
 	}
 
@@ -704,7 +704,7 @@ public class Utilidades {
 			if (eliminarAntesPortadas) {
 				return rutaArchivo.substring(0, indicePortada + 9);
 			} else {
-				
+
 				return rutaArchivo.substring(indicePortada + 9);
 			}
 		}
@@ -768,7 +768,7 @@ public class Utilidades {
 	public static String generarCodigoUnico(String carpeta) {
 		String codigo;
 		File directorio = new File(carpeta);
-		
+
 		// Manejo de excepciones si el directorio no existe o no se puede acceder
 		if (!directorio.exists() || !directorio.isDirectory()) {
 			System.err.println("El directorio no existe o no se puede acceder.");
@@ -905,11 +905,7 @@ public class Utilidades {
 	 * @throws IOException Si ocurre un error al escribir en el archivo.
 	 */
 	public static void guardarUsuario(TextField usuario, String pass) {
-
-		String userHome = System.getProperty("user.home");
-		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
-		String carpetaLibreria = ubicacion + File.separator + "libreria";
-		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion_usuario.conf";
+		String archivoConfiguracion = obtenerCarpetaConfiguracion() + File.separator + "configuracion_usuario.conf";
 
 		FileWriter fileWriter;
 		try {
@@ -1069,10 +1065,8 @@ public class Utilidades {
 				String rutaDestino = carpetaDestino + File.separator + nombreImagen;
 				downloadTask.complete(rutaDestino);
 			} catch (IllegalArgumentException e) {
-				System.err.println(e.getMessage());
 				downloadTask.completeExceptionally(e);
 			} catch (Exception e) {
-				System.err.println("No se pudo acceder a la URL: " + urlImagen);
 				e.printStackTrace();
 				downloadTask.completeExceptionally(e);
 			} finally {
@@ -1191,9 +1185,9 @@ public class Utilidades {
 		String documentsPath = userDir + File.separator + "Documents";
 		String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
 				+ obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas";
-		
+
 		System.out.println(obtenerDatoDespuesDeDosPuntos("Database"));
-		
+
 		File portadasFolder = new File(defaultImagePath);
 
 		if (!portadasFolder.exists()) {
@@ -1211,12 +1205,7 @@ public class Utilidades {
 	 * @return el dato encontrado o una cadena vacía si no se encuentra
 	 */
 	public static String obtenerDatoDespuesDeDosPuntos(String linea) {
-		String userHome = System.getProperty("user.home");
-		String ubicacion = userHome + "\\AppData\\Roaming";
-		String carpetaLibreria = ubicacion + "\\libreria";
-		String archivoConfiguracion;
-
-		archivoConfiguracion = carpetaLibreria + "\\configuracion_local.conf";
+		String archivoConfiguracion = obtenerCarpetaConfiguracion() + File.separator + "configuracion_local.conf";
 
 		try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
 			String line;
@@ -1522,10 +1511,7 @@ public class Utilidades {
 	 * Crea las carpetas necesarias para realizar backups.
 	 */
 	public static void crearCarpetasBackup() {
-		String userHome = System.getProperty("user.home");
-		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
-		String carpetaLibreria = ubicacion + File.separator + "libreria";
-		String carpetaBackup = carpetaLibreria + File.separator + Utilidades.obtenerDatoDespuesDeDosPuntos("Database")
+		String carpetaBackup = obtenerCarpetaConfiguracion() + File.separator + Utilidades.obtenerDatoDespuesDeDosPuntos("Database")
 				+ File.separator + "backups";
 
 		try {
@@ -1745,7 +1731,7 @@ public class Utilidades {
 	 * @return true si el archivo existe, false en caso contrario
 	 */
 	static boolean existeArchivo(String defaultImagePath, String nombreModificado) {
-		
+
 		return Files.exists(Paths.get(defaultImagePath, nombreModificado));
 	}
 
@@ -2067,14 +2053,13 @@ public class Utilidades {
 		File archivoOriginal = new File(nombreCompletoPortadaOriginal);
 		String nombreCarpeta = archivoOriginal.getParent();
 		String extension = ".jpg"; // La extensión siempre será .jpg
-		
-		String carpetaPortada =  DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+
+		String carpetaPortada = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
 				+ ConectManager.DB_NAME + File.separator + "portadas";
-		
+
 		String nombreAleatorio = Utilidades.generarCodigoUnico(carpetaPortada);
 		String rutaDestino = nombreCarpeta + File.separator + nombreAleatorio + extension;
-		
-		
+
 		Path rutaDestinoPath = Path.of(rutaDestino);
 
 		try {

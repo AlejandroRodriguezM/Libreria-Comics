@@ -2,6 +2,7 @@ package Controladores;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -117,18 +118,17 @@ public class ImagenAmpliadaController implements Initializable {
 	public void mostrarImagen() {
 
 		String direccionFinalImg = "";
-
+		Image imagenCargada = null;
 		if (Utilidades.existePortada(comicInfo.getImagen())) {
 			direccionFinalImg = comicInfo.getImagen();
+			imagenCargada = new Image(new File(direccionFinalImg).toURI().toString(), true);
 		} else {
-			String imagePath = "/Funcionamiento/sinPortada.jpg";
-			direccionFinalImg = imagePath;
-
+			InputStream is = getClass().getResourceAsStream("/imagenes/sinPortada.jpg");
+			imagenCargada = new Image(is, 250, 0, true, true);
 		}
 
-		Image imagen = new Image(new File(direccionFinalImg).toURI().toString(), true);
 		// Configura el ImageView con la imagen cargada
-		imagenAmpliada.setImage(imagen);
+		imagenAmpliada.setImage(imagenCargada);
 		imagenAmpliada.setPreserveRatio(true); // Mantiene la relación de aspecto de la imagen
 	}
 
