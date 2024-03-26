@@ -138,9 +138,7 @@ public class AlarmaList {
 						String port = datosConfiguracion.get("Puerto");
 						String host = datosConfiguracion.get("Hosting");
 
-						if (ConectManager.comprobarDatosConexion()) {
-							iniciarAnimacionConectado(iniciarAnimacionEspera);
-						} else {
+						if (!ConectManager.comprobarDatosConexion()) {
 							iniciarAnimacionEspera(iniciarAnimacionEspera);
 						}
 

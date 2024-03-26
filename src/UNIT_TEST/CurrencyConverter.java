@@ -3,8 +3,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.concurrent.TimeUnit;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class CurrencyConverter {
     public static void main(String[] args) {
@@ -51,8 +51,9 @@ public class CurrencyConverter {
     private static double getConversionRate(String fromCurrency, String toCurrency) {
         try {
             String urlStr = "https://api.exchangerate-api.com/v4/latest/" + fromCurrency;
-            URL url = new URL(urlStr);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            URI uri = new URI(urlStr);
+
+            HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
             connection.setRequestMethod("GET");
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -73,7 +74,7 @@ public class CurrencyConverter {
 
             // Obtener la tasa de conversión
             return Double.parseDouble(rateValue.trim());
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             return -1; // Manejo de errores: en una aplicación real, deberías manejar estos casos de error de manera adecuada
         }

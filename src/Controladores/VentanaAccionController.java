@@ -1315,7 +1315,7 @@ public class VentanaAccionController implements Initializable {
 				String valorCodigo = Utilidades.eliminarEspacios(busquedaCodigo.getText());
 
 				limpiarAutorellenos();
-				borrarDatosGraficos();
+//				borrarDatosGraficos();
 
 				if (valorCodigo.isEmpty()) {
 					return;
@@ -1334,9 +1334,7 @@ public class VentanaAccionController implements Initializable {
 							String mensaje = "La busqueda del comic ha salido mal. Revisa el codigo";
 							AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 							AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
-
 						}
-
 						return null;
 					}
 				};
@@ -1925,7 +1923,7 @@ public class VentanaAccionController implements Initializable {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			direccionImagen.setText(CARPETA_RAIZ_PORTADAS + "portadas" + File.separator + nuevoNombreArchivo  + ".jpg");
+			direccionImagen.setText(CARPETA_RAIZ_PORTADAS + "portadas" + File.separator + nuevoNombreArchivo + ".jpg");
 
 			String mensaje = "Portada subida correctamente.";
 

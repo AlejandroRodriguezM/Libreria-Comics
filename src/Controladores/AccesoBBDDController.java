@@ -297,9 +297,10 @@ public class AccesoBBDDController implements Initializable {
 
 		String[] datosFichero = FuncionesFicheros.datosEnvioFichero();
 
-		if (configurarConexion()) {
+		if (ConectManager.loadDriver()) {
+
 			ConectManager.datosBBDD(datosFichero);
-			if (ConectManager.isConnected()) {
+			if (ConectManager.conexionActiva()) {
 
 				AlarmaList.detenerAnimacion();
 				AlarmaList.iniciarAnimacionConectado(prontEstadoConexion);
@@ -308,20 +309,6 @@ public class AccesoBBDDController implements Initializable {
 				AlarmaList.manejarErrorConexion("No estás conectado a la base de datos.", prontEstadoConexion);
 			}
 		}
-	}
-
-	/**
-	 * Configura la conexión a la base de datos.
-	 * 
-	 * @return true si la configuración es exitosa, false de lo contrario.
-	 */
-	private boolean configurarConexion() {
-
-		if (!ConectManager.loadDriver()) {
-			return false;
-		}
-
-		return true;
 	}
 
 	public Scene miStageVentana() {
