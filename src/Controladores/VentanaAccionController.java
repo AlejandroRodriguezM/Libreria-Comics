@@ -101,40 +101,82 @@ public class VentanaAccionController implements Initializable {
 	private TextField direccionImagen;
 
 	/**
-	 * Columna de la tabla para mostrar el nombre del cómic.
+	 * Columna de la tabla para el ID.
 	 */
 	@FXML
-	private TableColumn<Comic, String> nombre;
+	private TableColumn<Comic, String> ID;
 
 	/**
-	 * Columna de la tabla para mostrar el número del cómic.
+	 * Columna de la tabla para la caja.
 	 */
 	@FXML
-	private TableColumn<Comic, String> numero;
+	private TableColumn<Comic, String> caja;
 
 	/**
-	 * Columna de la tabla para mostrar la variante del cómic.
+	 * Columna de la tabla para el dibujante.
 	 */
 	@FXML
-	private TableColumn<Comic, String> variante;
+	private TableColumn<Comic, String> dibujante;
 
 	/**
-	 * Columna de la tabla para mostrar la editorial del cómic.
+	 * Columna de la tabla para la editorial.
 	 */
 	@FXML
 	private TableColumn<Comic, String> editorial;
 
 	/**
-	 * Columna de la tabla para mostrar el guionista del cómic.
+	 * Columna de la tabla para la fecha.
+	 */
+	@FXML
+	private TableColumn<Comic, String> fecha;
+
+	/**
+	 * Columna de la tabla para la firma.
+	 */
+	@FXML
+	private TableColumn<Comic, String> firma;
+
+	/**
+	 * Columna de la tabla para el formato.
+	 */
+	@FXML
+	private TableColumn<Comic, String> formato;
+
+	/**
+	 * Columna de la tabla para el guionista.
 	 */
 	@FXML
 	private TableColumn<Comic, String> guionista;
 
 	/**
-	 * Columna de la tabla para mostrar el dibujante del cómic.
+	 * Columna de la tabla para el nombre.
 	 */
 	@FXML
-	private TableColumn<Comic, String> dibujante;
+	private TableColumn<Comic, String> nombre;
+
+	/**
+	 * Columna de la tabla para el número.
+	 */
+	@FXML
+	private TableColumn<Comic, String> numero;
+
+	/**
+	 * Columna de la tabla para la procedencia.
+	 */
+	@FXML
+	private TableColumn<Comic, String> procedencia;
+
+	/**
+	 * Columna de la tabla para la referencia.
+	 */
+	@FXML
+	private TableColumn<Comic, String> referencia;
+
+	/**
+	 * Columna de la tabla para la variante.
+	 */
+	@FXML
+	private TableColumn<Comic, String> variante;
 
 	/**
 	 * Botón para cancelar la subida de imagenes.
