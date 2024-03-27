@@ -38,6 +38,7 @@ import org.jsoup.nodes.Element;
 import Apis.ApiISBNGeneral;
 import Apis.ApiMarvel;
 import Controladores.VentanaAccionController;
+import Controladores.managment.AccionFuncionesComunes;
 import Funcionamiento.FuncionesApis;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
@@ -1339,28 +1340,28 @@ public class Unit_Test extends Application {
 
 	public static void accionComicPruebaAni() {
 
-		VentanaAccionController.tipoAccion("aniadir");
+		AccionFuncionesComunes.tipoAccion("aniadir");
 
 		nav.verAccionComic();
 	}
 
 	public static void accionComicPruebaMod() {
 
-		VentanaAccionController.tipoAccion("modificar");
+		AccionFuncionesComunes.tipoAccion("modificar");
 
 		nav.verAccionComic();
 	}
 
 	public static void accionComicPruebaDelete() {
 
-		VentanaAccionController.tipoAccion("eliminar");
+		AccionFuncionesComunes.tipoAccion("eliminar");
 
 		nav.verAccionComic();
 	}
 
 	public static void accionComicPruebaPuntuar() {
 
-		VentanaAccionController.tipoAccion("puntuar");
+		AccionFuncionesComunes.tipoAccion("puntuar");
 
 		nav.verAccionComic();
 	}

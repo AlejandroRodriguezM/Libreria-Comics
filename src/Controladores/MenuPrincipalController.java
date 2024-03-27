@@ -21,6 +21,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import Controladores.managment.AccionFuncionesComunes;
 import Funcionamiento.FuncionesComboBox;
 import Funcionamiento.FuncionesExcel;
 import Funcionamiento.FuncionesManejoFront;
@@ -1480,25 +1481,25 @@ public class MenuPrincipalController implements Initializable {
 			Button botonPresionado = (Button) fuente;
 
 			if (botonPresionado == botonIntroducir) {
-				VentanaAccionController.tipoAccion("aniadir");
+				AccionFuncionesComunes.tipoAccion("aniadir");
 			} else if (botonPresionado == botonModificar) {
-				VentanaAccionController.tipoAccion("modificar");
+				AccionFuncionesComunes.tipoAccion("modificar");
 			} else if (botonPresionado == botonEliminar) {
-				VentanaAccionController.tipoAccion("eliminar");
+				AccionFuncionesComunes.tipoAccion("eliminar");
 			} else if (botonPresionado == botonAgregarPuntuacion) {
-				VentanaAccionController.tipoAccion("puntuar");
+				AccionFuncionesComunes.tipoAccion("puntuar");
 			}
 		} else if (fuente instanceof MenuItem) {
 			MenuItem menuItemPresionado = (MenuItem) fuente;
 
 			if (menuItemPresionado == menu_comic_aniadir) {
-				VentanaAccionController.tipoAccion("aniadir");
+				AccionFuncionesComunes.tipoAccion("aniadir");
 			} else if (menuItemPresionado == menu_comic_modificar) {
-				VentanaAccionController.tipoAccion("modificar");
+				AccionFuncionesComunes.tipoAccion("modificar");
 			} else if (menuItemPresionado == menu_comic_eliminar) {
-				VentanaAccionController.tipoAccion("eliminar");
+				AccionFuncionesComunes.tipoAccion("eliminar");
 			} else if (menuItemPresionado == menu_comic_puntuar) {
-				VentanaAccionController.tipoAccion("puntuar");
+				AccionFuncionesComunes.tipoAccion("puntuar");
 			}
 		}
 

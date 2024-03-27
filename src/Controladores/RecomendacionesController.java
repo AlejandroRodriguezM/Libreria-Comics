@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
 
+import Controladores.managment.AccionFuncionesComunes;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
@@ -317,13 +318,13 @@ public class RecomendacionesController implements Initializable {
 			MenuItem menuItemPresionado = (MenuItem) fuente;
 
 			if (menuItemPresionado == menu_comic_aniadir) {
-				VentanaAccionController.tipoAccion("aniadir");
+				AccionFuncionesComunes.tipoAccion("aniadir");
 			} else if (menuItemPresionado == menu_comic_modificar) {
-				VentanaAccionController.tipoAccion("modificar");
+				AccionFuncionesComunes.tipoAccion("modificar");
 			} else if (menuItemPresionado == menu_comic_eliminar) {
-				VentanaAccionController.tipoAccion("eliminar");
+				AccionFuncionesComunes.tipoAccion("eliminar");
 			} else if (menuItemPresionado == menu_comic_puntuar) {
-				VentanaAccionController.tipoAccion("puntuar");
+				AccionFuncionesComunes.tipoAccion("puntuar");
 			}
 		}
 

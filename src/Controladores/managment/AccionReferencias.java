@@ -1,7 +1,6 @@
 package Controladores.managment;
 
 import comicManagement.Comic;
-import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -9,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -23,478 +23,1469 @@ public class AccionReferencias {
 	/**
 	 * Columna de la tabla para la procedencia.
 	 */
-	@FXML
 	private TableColumn<Comic, String> procedencia;
 
 	/**
 	 * Columna de la tabla para la referencia.
 	 */
-	@FXML
 	private TableColumn<Comic, String> referencia;
 
 	/**
 	 * Columna de la tabla para la variante.
 	 */
-	@FXML
 	private TableColumn<Comic, String> variante;
 
 	/**
 	 * Tabla que muestra información sobre cómics.
 	 */
-	@FXML
 	public TableView<Comic> tablaBBDD;
 
 	/**
 	 * Contenedor de la interfaz gráfica.
 	 */
-	@FXML
 	private VBox rootVBox;
 
 	/**
 	 * Contenedor del contenido.
 	 */
-	@FXML
 	private VBox vboxContenido;
 
 	/**
 	 * Imagen de fondo.
 	 */
-	@FXML
 	private ImageView backgroundImage;
 
 	/**
 	 * Panel de anclaje principal.
 	 */
-	@FXML
 	private AnchorPane rootAnchorPane;
 
 	/**
 	 * Contenedor de imágenes.
 	 */
-	@FXML
 	private VBox vboxImage;
 
 	/**
 	 * Panel de anclaje para información.
 	 */
-	@FXML
 	private AnchorPane anchoPaneInfo;
 
 	/**
 	 * Botón para modificar información.
 	 */
-	@FXML
 	private Button botonModificar;
 
 	/**
 	 * Botón para introducir información.
 	 */
-	@FXML
 	private Button botonIntroducir;
 
 	/**
 	 * Botón para eliminar información.
 	 */
-	@FXML
 	private Button botonEliminar;
 
 	/**
 	 * Botón para agregar una puntuación.
 	 */
-	@FXML
 	private Button botonAgregarPuntuacion;
 
-	@FXML
 	private Rectangle barraCambioAltura;
 
-	@FXML
 	private Label alarmaConexionInternet;
 
 	/**
 	 * Campo de texto para la dirección de la imagen.
 	 */
-	@FXML
 	private TextField direccionImagen;
+
+	/**
+	 * Columna de la tabla para el ID.
+	 */
+	private TableColumn<Comic, String> ID;
+
+	/**
+	 * Columna de la tabla para la caja.
+	 */
+	private TableColumn<Comic, String> caja;
+
+	/**
+	 * Columna de la tabla para la fecha.
+	 */
+	private TableColumn<Comic, String> fecha;
+
+	/**
+	 * Columna de la tabla para la firma.
+	 */
+	private TableColumn<Comic, String> firma;
+
+	/**
+	 * Columna de la tabla para el formato.
+	 */
+	private TableColumn<Comic, String> formato;
 
 	/**
 	 * Columna de la tabla para mostrar el nombre del cómic.
 	 */
-	@FXML
 	private TableColumn<Comic, String> nombre;
 
 	/**
 	 * Columna de la tabla para mostrar el número del cómic.
 	 */
-	@FXML
 	private TableColumn<Comic, String> numero;
 
 	/**
 	 * Columna de la tabla para mostrar la editorial del cómic.
 	 */
-	@FXML
 	private TableColumn<Comic, String> editorial;
 
 	/**
 	 * Columna de la tabla para mostrar el guionista del cómic.
 	 */
-	@FXML
 	private TableColumn<Comic, String> guionista;
 
 	/**
 	 * Columna de la tabla para mostrar el dibujante del cómic.
 	 */
-	@FXML
 	private TableColumn<Comic, String> dibujante;
 
 	/**
 	 * Botón para cancelar la subida de imagenes.
 	 */
-	@FXML
 	private Button botonCancelarSubida;
 
 	/**
 	 * Botón para borrar una opinión.
 	 */
-	@FXML
 	private Button botonBorrarOpinion;
 
 	/**
 	 * Botón para realizar una búsqueda por código.
 	 */
-	@FXML
 	private Button botonBusquedaCodigo;
 
 	/**
 	 * Botón para realizar una búsqueda avanzada.
 	 */
-	@FXML
 	private Button botonBusquedaAvanzada;
 
 	/**
 	 * Botón para limpiar campos.
 	 */
-	@FXML
 	private Button botonLimpiar;
 
 	/**
 	 * Botón para modificar un cómic.
 	 */
-	@FXML
 	private Button botonModificarComic;
 
 	/**
 	 * Botón para buscar mediante parametro un cómic.
 	 */
-	@FXML
 	private Button botonParametroComic;
 
 	/**
 	 * Botón para vender un cómic.
 	 */
-	@FXML
 	private Button botonVender;
 
 	/**
 	 * Botón para acceder a la base de datos.
 	 */
-	@FXML
 	private Button botonbbdd;
 
 	/**
 	 * Botón para guardar un comic correctamente para el importado de comics
 	 * mediante fichero.
 	 */
-	@FXML
 	private Button botonGuardarComic;
 
 	/**
 	 * Boton que guarda un cambio en un comic especifico de los importados
 	 */
-	@FXML
 	private Button botonGuardarCambioComic;
 
 	/**
 	 * Boton que elimina un comic seleccionado de los comics importados mediante
 	 * fichero
 	 */
-	@FXML
 	private Button botonEliminarImportadoComic;
 
 	/**
 	 * Boton que sirve para subir una imagen a un comic que escojamos
 	 */
-	@FXML
 	private Button botonSubidaPortada;
 
 	// Campos de texto (TextField)
 	/**
 	 * Campo de texto para la búsqueda por código.
 	 */
-	@FXML
 	private TextField busquedaCodigo;
 
 	/**
 	 * Campo de texto para el dibujante del cómic.
 	 */
-	@FXML
 	private TextField dibujanteComic;
 
 	/**
 	 * Campo de texto para la editorial del cómic.
 	 */
-	@FXML
 	private TextField editorialComic;
 
 	/**
 	 * Campo de texto para la firma del cómic.
 	 */
-	@FXML
 	private TextField firmaComic;
 
 	/**
 	 * Campo de texto para el guionista del cómic.
 	 */
-	@FXML
 	private TextField guionistaComic;
 
 	/**
 	 * Campo de texto para el ID del cómic a tratar en modificacion.
 	 */
-	@FXML
 	private TextField idComicTratar_mod;
 
 	/**
 	 * Campo de texto para el codigo del cómic a tratar en modificacion o para
 	 * añadir.
 	 */
-	@FXML
 	private TextField codigoComicTratar;
 
 	/**
 	 * Campo de texto para el nombre del cómic.
 	 */
-	@FXML
 	private TextField nombreComic;
 
 	/**
 	 * Campo de texto para el nombre del Key Issue del cómic.
 	 */
-	@FXML
 	private TextField nombreKeyIssue;
 
 	/**
 	 * Campo de texto para el precio del cómic.
 	 */
-	@FXML
 	private TextField precioComic;
 
 	/**
 	 * Campo de texto para la URL de referencia del cómic.
 	 */
-	@FXML
 	private TextField urlReferencia;
 
 	/**
 	 * Campo de texto para la variante del cómic.
 	 */
-	@FXML
 	private TextField varianteComic;
 
 	// Etiquetas (Label)
 	/**
 	 * Etiqueta para mostrar la puntuación.
 	 */
-	@FXML
 	private Label labelPuntuacion;
 
 	/**
 	 * Etiqueta para mostrar la caja.
 	 */
-	@FXML
 	private Label label_caja;
 
 	/**
 	 * Etiqueta para mostrar el dibujante.
 	 */
-	@FXML
 	private Label label_dibujante;
 
 	/**
 	 * Etiqueta para mostrar la editorial.
 	 */
-	@FXML
 	private Label label_editorial;
 
 	/**
 	 * Etiqueta para mostrar el estado.
 	 */
-	@FXML
 	private Label label_estado;
 
 	/**
 	 * Etiqueta para mostrar la fecha.
 	 */
-	@FXML
 	private Label label_fecha;
 
 	/**
 	 * Etiqueta para mostrar la firma.
 	 */
-	@FXML
 	private Label label_firma;
 
 	/**
 	 * Etiqueta para mostrar el formato.
 	 */
-	@FXML
 	private Label label_formato;
 
 	/**
 	 * Etiqueta para mostrar el guionista.
 	 */
-	@FXML
 	private Label label_guionista;
 
 	/**
 	 * Etiqueta para mostrar el ID en modificacion.
 	 */
-	@FXML
 	private Label label_id_mod;
 
 	/**
 	 * Etiqueta para mostrar el codigo en modificacion o aniadir.
 	 */
-	@FXML
 	private Label label_codigo_comic;
 
 	/**
 	 * Etiqueta para mostrar el Key Issue.
 	 */
-	@FXML
 	private Label label_key;
 
 	/**
 	 * Etiqueta para mostrar la portada.
 	 */
-	@FXML
 	private Label label_portada;
 
 	/**
 	 * Etiqueta para mostrar el precio.
 	 */
-	@FXML
 	private Label label_precio;
 
 	/**
 	 * Etiqueta para mostrar la procedencia.
 	 */
-	@FXML
 	private Label label_procedencia;
 
 	/**
 	 * Etiqueta para mostrar la referencia.
 	 */
-	@FXML
 	private Label label_referencia;
 
 	// Otros controles (ComboBox, DatePicker, TableView, etc.)
 	/**
 	 * ComboBox para seleccionar el estado del cómic.
 	 */
-	@FXML
 	private ComboBox<String> estadoComic;
 
 	/**
 	 * DatePicker para seleccionar la fecha de publicación del cómic.
 	 */
-	@FXML
 	private DatePicker fechaComic;
 
 	/**
 	 * ComboBox para seleccionar el formato del cómic.
 	 */
-	@FXML
 	private ComboBox<String> formatoComic;
 
 	/**
 	 * ComboBox para seleccionar el número de caja del cómic.
 	 */
-	@FXML
 	private ComboBox<String> numeroCajaComic;
 
 	/**
 	 * ComboBox para seleccionar el número del cómic.
 	 */
-	@FXML
 	private ComboBox<String> numeroComic;
 
 	/**
 	 * ComboBox para seleccionar la procedencia del cómic.
 	 */
-	@FXML
 	private ComboBox<String> procedenciaComic;
 
 	/**
 	 * ComboBox para seleccionar la puntuación en el menú.
 	 */
-	@FXML
 	private ComboBox<String> puntuacionMenu;
 
 	/**
 	 * ImageView para mostrar la imagen del cómic.
 	 */
-	@FXML
 	private ImageView imagencomic;
 
 	/**
 	 * ImageView para mostrar la carga de imagen del comic.
 	 */
-	@FXML
 	private ImageView cargaImagen;
 
 	/**
 	 * TextArea para mostrar información de texto.
 	 */
-	@FXML
 	private TextArea prontInfo;
 
-	@FXML
 	private MenuItem menu_Importar_Fichero_CodigoBarras;
 
-	@FXML
 	private MenuItem menu_archivo_conexion;
 
-	@FXML
 	private MenuItem menu_leer_CodigoBarras;
 
-	@FXML
 	private MenuItem menu_comic_aleatoria;
 
-	@FXML
 	private MenuItem menu_comic_aniadir;
 
-	@FXML
 	private MenuItem menu_comic_eliminar;
 
-	@FXML
 	private MenuItem menu_comic_modificar;
 
-	@FXML
 	private MenuItem menu_comic_puntuar;
 
-	@FXML
 	private MenuItem menu_estadistica_estadistica;
 
-	@FXML
 	private MenuBar menu_navegacion;
 
-	@FXML
 	private Menu navegacion_cerrar;
 
-	@FXML
 	private Menu navegacion_comic;
 
-	@FXML
 	private Menu navegacion_estadistica;
+
+	private Label alarmaConexionSql;
+
+	/**
+	 * Botón para mostrar un parámetro.
+	 */
+
+	private Button botonMostrarParametro;
+
+	/**
+	 * Botón que permite imprimir el resultado de una busqueda por parametro
+	 */
+
+	private Button botonImprimir;
+
+	/**
+	 * Botón que permite guardar el resultado de una busqueda por parametro
+	 */
+
+	private Button botonGuardarResultado;
+
+	private Button botonMostrarGuardados;
+
+	/**
+	 * Campo de texto para realizar una búsqueda general.
+	 */
+
+	private TextField busquedaGeneral;
+
+	/**
+	 * Selector de fecha de publicación.
+	 */
+
+	private DatePicker fechaPublicacion;
+
+	/**
+	 * Menú de archivo con opciones relacionadas con la base de datos.
+	 */
+
+	private MenuItem menu_archivo_cerrar, menu_archivo_delete, menu_archivo_desconectar, menu_archivo_excel,
+			menu_archivo_importar, menu_archivo_sobreMi;
+
+	/**
+	 * Menú relacionado con estadísticas de cómics.
+	 */
+
+	private MenuItem menu_estadistica_comprados, menu_estadistica_firmados, menu_estadistica_key_issue,
+			menu_estadistica_posesion, menu_estadistica_puntuados, menu_estadistica_vendidos;
+
+	private MenuItem menu_archivo_avanzado;
+
+	/**
+	 * Selector para el nombre del dibujante.
+	 */
+	private ComboBox<String> nombreDibujante;
+
+	/**
+	 * Selector para el nombre de la editorial.
+	 */
+	private ComboBox<String> nombreEditorial;
+
+	/**
+	 * Selector para el nombre de la firma.
+	 */
+	private ComboBox<String> nombreFirma;
+
+	/**
+	 * Selector para el nombre del formato.
+	 */
+	private ComboBox<String> nombreFormato;
+
+	/**
+	 * Selector para el nombre del guionista.
+	 */
+	private ComboBox<String> nombreGuionista;
+
+	/**
+	 * Selector para el nombre de la procedencia.
+	 */
+	private ComboBox<String> nombreProcedencia;
+
+	/**
+	 * Selector para el nombre de la variante.
+	 */
+	private ComboBox<String> nombreVariante;
+
+	/**
+	 * Selector para el número de caja.
+	 */
+	private ComboBox<String> numeroCaja;
+
+	private ProgressIndicator progresoCarga;
+
+	public TableColumn<Comic, String> getProcedencia() {
+		return procedencia;
+	}
+
+	public TableColumn<Comic, String> getReferencia() {
+		return referencia;
+	}
+
+	public TableColumn<Comic, String> getVariante() {
+		return variante;
+	}
+
+	public TableView<Comic> getTablaBBDD() {
+		return tablaBBDD;
+	}
+
+	public VBox getRootVBox() {
+		return rootVBox;
+	}
+
+	public VBox getVboxContenido() {
+		return vboxContenido;
+	}
+
+	public ImageView getBackgroundImage() {
+		return backgroundImage;
+	}
+
+	public AnchorPane getRootAnchorPane() {
+		return rootAnchorPane;
+	}
+
+	public VBox getVboxImage() {
+		return vboxImage;
+	}
+
+	public AnchorPane getAnchoPaneInfo() {
+		return anchoPaneInfo;
+	}
+
+	public Button getBotonModificar() {
+		return botonModificar;
+	}
+
+	public Button getBotonIntroducir() {
+		return botonIntroducir;
+	}
+
+	public Button getBotonEliminar() {
+		return botonEliminar;
+	}
+
+	public Button getBotonAgregarPuntuacion() {
+		return botonAgregarPuntuacion;
+	}
+
+	public Rectangle getBarraCambioAltura() {
+		return barraCambioAltura;
+	}
+
+	public Label getAlarmaConexionInternet() {
+		return alarmaConexionInternet;
+	}
+
+	public TextField getDireccionImagen() {
+		return direccionImagen;
+	}
+
+	public TableColumn<Comic, String> getID() {
+		return ID;
+	}
+
+	public TableColumn<Comic, String> getCaja() {
+		return caja;
+	}
+
+	public TableColumn<Comic, String> getFecha() {
+		return fecha;
+	}
+
+	public TableColumn<Comic, String> getFirma() {
+		return firma;
+	}
+
+	public TableColumn<Comic, String> getFormato() {
+		return formato;
+	}
+
+	public TableColumn<Comic, String> getNombre() {
+		return nombre;
+	}
+
+	public TableColumn<Comic, String> getNumero() {
+		return numero;
+	}
+
+	public TableColumn<Comic, String> getEditorial() {
+		return editorial;
+	}
+
+	public TableColumn<Comic, String> getGuionista() {
+		return guionista;
+	}
+
+	public TableColumn<Comic, String> getDibujante() {
+		return dibujante;
+	}
+
+	public Button getBotonCancelarSubida() {
+		return botonCancelarSubida;
+	}
+
+	public Button getBotonBorrarOpinion() {
+		return botonBorrarOpinion;
+	}
+
+	public Button getBotonBusquedaCodigo() {
+		return botonBusquedaCodigo;
+	}
+
+	public Button getBotonBusquedaAvanzada() {
+		return botonBusquedaAvanzada;
+	}
+
+	public Button getBotonLimpiar() {
+		return botonLimpiar;
+	}
+
+	public Button getBotonModificarComic() {
+		return botonModificarComic;
+	}
+
+	public Button getBotonParametroComic() {
+		return botonParametroComic;
+	}
+
+	public Button getBotonVender() {
+		return botonVender;
+	}
+
+	public Button getBotonbbdd() {
+		return botonbbdd;
+	}
+
+	public Button getBotonGuardarComic() {
+		return botonGuardarComic;
+	}
+
+	public Button getBotonGuardarCambioComic() {
+		return botonGuardarCambioComic;
+	}
+
+	public Button getBotonEliminarImportadoComic() {
+		return botonEliminarImportadoComic;
+	}
+
+	public Button getBotonSubidaPortada() {
+		return botonSubidaPortada;
+	}
+
+	public TextField getBusquedaCodigo() {
+		return busquedaCodigo;
+	}
+
+	public TextField getDibujanteComic() {
+		return dibujanteComic;
+	}
+
+	public TextField getEditorialComic() {
+		return editorialComic;
+	}
+
+	public TextField getFirmaComic() {
+		return firmaComic;
+	}
+
+	public TextField getGuionistaComic() {
+		return guionistaComic;
+	}
+
+	public TextField getIdComicTratar_mod() {
+		return idComicTratar_mod;
+	}
+
+	public TextField getCodigoComicTratar() {
+		return codigoComicTratar;
+	}
+
+	public TextField getNombreComic() {
+		return nombreComic;
+	}
+
+	public TextField getNombreKeyIssue() {
+		return nombreKeyIssue;
+	}
+
+	public TextField getPrecioComic() {
+		return precioComic;
+	}
+
+	public TextField getUrlReferencia() {
+		return urlReferencia;
+	}
+
+	public TextField getVarianteComic() {
+		return varianteComic;
+	}
+
+	public Label getLabelPuntuacion() {
+		return labelPuntuacion;
+	}
+
+	public Label getLabel_caja() {
+		return label_caja;
+	}
+
+	public Label getLabel_dibujante() {
+		return label_dibujante;
+	}
+
+	public Label getLabel_editorial() {
+		return label_editorial;
+	}
+
+	public Label getLabel_estado() {
+		return label_estado;
+	}
+
+	public Label getLabel_fecha() {
+		return label_fecha;
+	}
+
+	public Label getLabel_firma() {
+		return label_firma;
+	}
+
+	public Label getLabel_formato() {
+		return label_formato;
+	}
+
+	public Label getLabel_guionista() {
+		return label_guionista;
+	}
+
+	public Label getLabel_id_mod() {
+		return label_id_mod;
+	}
+
+	public Label getLabel_codigo_comic() {
+		return label_codigo_comic;
+	}
+
+	public Label getLabel_key() {
+		return label_key;
+	}
+
+	public Label getLabel_portada() {
+		return label_portada;
+	}
+
+	public Label getLabel_precio() {
+		return label_precio;
+	}
+
+	public Label getLabel_procedencia() {
+		return label_procedencia;
+	}
+
+	public Label getLabel_referencia() {
+		return label_referencia;
+	}
+
+	public ComboBox<String> getEstadoComic() {
+		return estadoComic;
+	}
+
+	public DatePicker getFechaComic() {
+		return fechaComic;
+	}
+
+	public ComboBox<String> getFormatoComic() {
+		return formatoComic;
+	}
+
+	public ComboBox<String> getNumeroCajaComic() {
+		return numeroCajaComic;
+	}
+
+	public ComboBox<String> getNumeroComic() {
+		return numeroComic;
+	}
+
+	public ComboBox<String> getProcedenciaComic() {
+		return procedenciaComic;
+	}
+
+	public ComboBox<String> getPuntuacionMenu() {
+		return puntuacionMenu;
+	}
+
+	public ImageView getImagencomic() {
+		return imagencomic;
+	}
+
+	public ImageView getCargaImagen() {
+		return cargaImagen;
+	}
+
+	public TextArea getProntInfo() {
+		return prontInfo;
+	}
+
+	public MenuItem getMenu_Importar_Fichero_CodigoBarras() {
+		return menu_Importar_Fichero_CodigoBarras;
+	}
+
+	public MenuItem getMenu_archivo_conexion() {
+		return menu_archivo_conexion;
+	}
+
+	public MenuItem getMenu_leer_CodigoBarras() {
+		return menu_leer_CodigoBarras;
+	}
+
+	public MenuItem getMenu_comic_aleatoria() {
+		return menu_comic_aleatoria;
+	}
+
+	public MenuItem getMenu_comic_aniadir() {
+		return menu_comic_aniadir;
+	}
+
+	public MenuItem getMenu_comic_eliminar() {
+		return menu_comic_eliminar;
+	}
+
+	public MenuItem getMenu_comic_modificar() {
+		return menu_comic_modificar;
+	}
+
+	public MenuItem getMenu_comic_puntuar() {
+		return menu_comic_puntuar;
+	}
+
+	public MenuItem getMenu_estadistica_estadistica() {
+		return menu_estadistica_estadistica;
+	}
+
+	public MenuBar getMenu_navegacion() {
+		return menu_navegacion;
+	}
+
+	public Menu getNavegacion_cerrar() {
+		return navegacion_cerrar;
+	}
+
+	public Menu getNavegacion_comic() {
+		return navegacion_comic;
+	}
+
+	public Menu getNavegacion_estadistica() {
+		return navegacion_estadistica;
+	}
+
+	public Label getAlarmaConexionSql() {
+		return alarmaConexionSql;
+	}
+
+	public Button getBotonMostrarParametro() {
+		return botonMostrarParametro;
+	}
+
+	public Button getBotonImprimir() {
+		return botonImprimir;
+	}
+
+	public Button getBotonGuardarResultado() {
+		return botonGuardarResultado;
+	}
+
+	public Button getBotonMostrarGuardados() {
+		return botonMostrarGuardados;
+	}
+
+	public TextField getBusquedaGeneral() {
+		return busquedaGeneral;
+	}
+
+	public DatePicker getFechaPublicacion() {
+		return fechaPublicacion;
+	}
+
+	public MenuItem getMenu_archivo_cerrar() {
+		return menu_archivo_cerrar;
+	}
+
+	public MenuItem getMenu_archivo_delete() {
+		return menu_archivo_delete;
+	}
+
+	public MenuItem getMenu_archivo_desconectar() {
+		return menu_archivo_desconectar;
+	}
+
+	public MenuItem getMenu_archivo_excel() {
+		return menu_archivo_excel;
+	}
+
+	public MenuItem getMenu_archivo_importar() {
+		return menu_archivo_importar;
+	}
+
+	public MenuItem getMenu_archivo_sobreMi() {
+		return menu_archivo_sobreMi;
+	}
+
+	public MenuItem getMenu_estadistica_comprados() {
+		return menu_estadistica_comprados;
+	}
+
+	public MenuItem getMenu_estadistica_firmados() {
+		return menu_estadistica_firmados;
+	}
+
+	public MenuItem getMenu_estadistica_key_issue() {
+		return menu_estadistica_key_issue;
+	}
+
+	public MenuItem getMenu_estadistica_posesion() {
+		return menu_estadistica_posesion;
+	}
+
+	public MenuItem getMenu_estadistica_puntuados() {
+		return menu_estadistica_puntuados;
+	}
+
+	public MenuItem getMenu_estadistica_vendidos() {
+		return menu_estadistica_vendidos;
+	}
+
+	public MenuItem getMenu_archivo_avanzado() {
+		return menu_archivo_avanzado;
+	}
+
+	public ComboBox<String> getNombreDibujante() {
+		return nombreDibujante;
+	}
+
+	public ComboBox<String> getNombreEditorial() {
+		return nombreEditorial;
+	}
+
+	public ComboBox<String> getNombreFirma() {
+		return nombreFirma;
+	}
+
+	public ComboBox<String> getNombreFormato() {
+		return nombreFormato;
+	}
+
+	public ComboBox<String> getNombreGuionista() {
+		return nombreGuionista;
+	}
+
+	public ComboBox<String> getNombreProcedencia() {
+		return nombreProcedencia;
+	}
+
+	public ComboBox<String> getNombreVariante() {
+		return nombreVariante;
+	}
+
+	public ComboBox<String> getNumeroCaja() {
+		return numeroCaja;
+	}
+
+	public ProgressIndicator getProgresoCarga() {
+		return progresoCarga;
+	}
+
+	public void setProcedencia(TableColumn<Comic, String> procedencia) {
+		this.procedencia = procedencia;
+	}
+
+	public void setReferencia(TableColumn<Comic, String> referencia) {
+		this.referencia = referencia;
+	}
+
+	public void setVariante(TableColumn<Comic, String> variante) {
+		this.variante = variante;
+	}
+
+	public void setTablaBBDD(TableView<Comic> tablaBBDD) {
+		this.tablaBBDD = tablaBBDD;
+	}
+
+	public void setRootVBox(VBox rootVBox) {
+		this.rootVBox = rootVBox;
+	}
+
+	public void setVboxContenido(VBox vboxContenido) {
+		this.vboxContenido = vboxContenido;
+	}
+
+	public void setBackgroundImage(ImageView backgroundImage) {
+		this.backgroundImage = backgroundImage;
+	}
+
+	public void setRootAnchorPane(AnchorPane rootAnchorPane) {
+		this.rootAnchorPane = rootAnchorPane;
+	}
+
+	public void setVboxImage(VBox vboxImage) {
+		this.vboxImage = vboxImage;
+	}
+
+	public void setAnchoPaneInfo(AnchorPane anchoPaneInfo) {
+		this.anchoPaneInfo = anchoPaneInfo;
+	}
+
+	public void setBotonModificar(Button botonModificar) {
+		this.botonModificar = botonModificar;
+	}
+
+	public void setBotonIntroducir(Button botonIntroducir) {
+		this.botonIntroducir = botonIntroducir;
+	}
+
+	public void setBotonEliminar(Button botonEliminar) {
+		this.botonEliminar = botonEliminar;
+	}
+
+	public void setBotonAgregarPuntuacion(Button botonAgregarPuntuacion) {
+		this.botonAgregarPuntuacion = botonAgregarPuntuacion;
+	}
+
+	public void setBarraCambioAltura(Rectangle barraCambioAltura) {
+		this.barraCambioAltura = barraCambioAltura;
+	}
+
+	public void setAlarmaConexionInternet(Label alarmaConexionInternet) {
+		this.alarmaConexionInternet = alarmaConexionInternet;
+	}
+
+	public void setDireccionImagen(TextField direccionImagen) {
+		this.direccionImagen = direccionImagen;
+	}
+
+	public void setID(TableColumn<Comic, String> iD) {
+		ID = iD;
+	}
+
+	public void setCaja(TableColumn<Comic, String> caja) {
+		this.caja = caja;
+	}
+
+	public void setFecha(TableColumn<Comic, String> fecha) {
+		this.fecha = fecha;
+	}
+
+	public void setFirma(TableColumn<Comic, String> firma) {
+		this.firma = firma;
+	}
+
+	public void setFormato(TableColumn<Comic, String> formato) {
+		this.formato = formato;
+	}
+
+	public void setNombre(TableColumn<Comic, String> nombre) {
+		this.nombre = nombre;
+	}
+
+	public void setNumero(TableColumn<Comic, String> numero) {
+		this.numero = numero;
+	}
+
+	public void setEditorial(TableColumn<Comic, String> editorial) {
+		this.editorial = editorial;
+	}
+
+	public void setGuionista(TableColumn<Comic, String> guionista) {
+		this.guionista = guionista;
+	}
+
+	public void setDibujante(TableColumn<Comic, String> dibujante) {
+		this.dibujante = dibujante;
+	}
+
+	public void setBotonCancelarSubida(Button botonCancelarSubida) {
+		this.botonCancelarSubida = botonCancelarSubida;
+	}
+
+	public void setBotonBorrarOpinion(Button botonBorrarOpinion) {
+		this.botonBorrarOpinion = botonBorrarOpinion;
+	}
+
+	public void setBotonBusquedaCodigo(Button botonBusquedaCodigo) {
+		this.botonBusquedaCodigo = botonBusquedaCodigo;
+	}
+
+	public void setBotonBusquedaAvanzada(Button botonBusquedaAvanzada) {
+		this.botonBusquedaAvanzada = botonBusquedaAvanzada;
+	}
+
+	public void setBotonLimpiar(Button botonLimpiar) {
+		this.botonLimpiar = botonLimpiar;
+	}
+
+	public void setBotonModificarComic(Button botonModificarComic) {
+		this.botonModificarComic = botonModificarComic;
+	}
+
+	public void setBotonParametroComic(Button botonParametroComic) {
+		this.botonParametroComic = botonParametroComic;
+	}
+
+	public void setBotonVender(Button botonVender) {
+		this.botonVender = botonVender;
+	}
+
+	public void setBotonbbdd(Button botonbbdd) {
+		this.botonbbdd = botonbbdd;
+	}
+
+	public void setBotonGuardarComic(Button botonGuardarComic) {
+		this.botonGuardarComic = botonGuardarComic;
+	}
+
+	public void setBotonGuardarCambioComic(Button botonGuardarCambioComic) {
+		this.botonGuardarCambioComic = botonGuardarCambioComic;
+	}
+
+	public void setBotonEliminarImportadoComic(Button botonEliminarImportadoComic) {
+		this.botonEliminarImportadoComic = botonEliminarImportadoComic;
+	}
+
+	public void setBotonSubidaPortada(Button botonSubidaPortada) {
+		this.botonSubidaPortada = botonSubidaPortada;
+	}
+
+	public void setBusquedaCodigo(TextField busquedaCodigo) {
+		this.busquedaCodigo = busquedaCodigo;
+	}
+
+	public void setDibujanteComic(TextField dibujanteComic) {
+		this.dibujanteComic = dibujanteComic;
+	}
+
+	public void setEditorialComic(TextField editorialComic) {
+		this.editorialComic = editorialComic;
+	}
+
+	public void setFirmaComic(TextField firmaComic) {
+		this.firmaComic = firmaComic;
+	}
+
+	public void setGuionistaComic(TextField guionistaComic) {
+		this.guionistaComic = guionistaComic;
+	}
+
+	public void setIdComicTratar_mod(TextField idComicTratar_mod) {
+		this.idComicTratar_mod = idComicTratar_mod;
+	}
+
+	public void setCodigoComicTratar(TextField codigoComicTratar) {
+		this.codigoComicTratar = codigoComicTratar;
+	}
+
+	public void setNombreComic(TextField nombreComic) {
+		this.nombreComic = nombreComic;
+	}
+
+	public void setNombreKeyIssue(TextField nombreKeyIssue) {
+		this.nombreKeyIssue = nombreKeyIssue;
+	}
+
+	public void setPrecioComic(TextField precioComic) {
+		this.precioComic = precioComic;
+	}
+
+	public void setUrlReferencia(TextField urlReferencia) {
+		this.urlReferencia = urlReferencia;
+	}
+
+	public void setVarianteComic(TextField varianteComic) {
+		this.varianteComic = varianteComic;
+	}
+
+	public void setLabelPuntuacion(Label labelPuntuacion) {
+		this.labelPuntuacion = labelPuntuacion;
+	}
+
+	public void setLabel_caja(Label label_caja) {
+		this.label_caja = label_caja;
+	}
+
+	public void setLabel_dibujante(Label label_dibujante) {
+		this.label_dibujante = label_dibujante;
+	}
+
+	public void setLabel_editorial(Label label_editorial) {
+		this.label_editorial = label_editorial;
+	}
+
+	public void setLabel_estado(Label label_estado) {
+		this.label_estado = label_estado;
+	}
+
+	public void setLabel_fecha(Label label_fecha) {
+		this.label_fecha = label_fecha;
+	}
+
+	public void setLabel_firma(Label label_firma) {
+		this.label_firma = label_firma;
+	}
+
+	public void setLabel_formato(Label label_formato) {
+		this.label_formato = label_formato;
+	}
+
+	public void setLabel_guionista(Label label_guionista) {
+		this.label_guionista = label_guionista;
+	}
+
+	public void setLabel_id_mod(Label label_id_mod) {
+		this.label_id_mod = label_id_mod;
+	}
+
+	public void setLabel_codigo_comic(Label label_codigo_comic) {
+		this.label_codigo_comic = label_codigo_comic;
+	}
+
+	public void setLabel_key(Label label_key) {
+		this.label_key = label_key;
+	}
+
+	public void setLabel_portada(Label label_portada) {
+		this.label_portada = label_portada;
+	}
+
+	public void setLabel_precio(Label label_precio) {
+		this.label_precio = label_precio;
+	}
+
+	public void setLabel_procedencia(Label label_procedencia) {
+		this.label_procedencia = label_procedencia;
+	}
+
+	public void setLabel_referencia(Label label_referencia) {
+		this.label_referencia = label_referencia;
+	}
+
+	public void setEstadoComic(ComboBox<String> estadoComic) {
+		this.estadoComic = estadoComic;
+	}
+
+	public void setFechaComic(DatePicker fechaComic) {
+		this.fechaComic = fechaComic;
+	}
+
+	public void setFormatoComic(ComboBox<String> formatoComic) {
+		this.formatoComic = formatoComic;
+	}
+
+	public void setNumeroCajaComic(ComboBox<String> numeroCajaComic) {
+		this.numeroCajaComic = numeroCajaComic;
+	}
+
+	public void setNumeroComic(ComboBox<String> numeroComic) {
+		this.numeroComic = numeroComic;
+	}
+
+	public void setProcedenciaComic(ComboBox<String> procedenciaComic) {
+		this.procedenciaComic = procedenciaComic;
+	}
+
+	public void setPuntuacionMenu(ComboBox<String> puntuacionMenu) {
+		this.puntuacionMenu = puntuacionMenu;
+	}
+
+	public void setImagencomic(ImageView imagencomic) {
+		this.imagencomic = imagencomic;
+	}
+
+	public void setCargaImagen(ImageView cargaImagen) {
+		this.cargaImagen = cargaImagen;
+	}
+
+	public void setProntInfo(TextArea prontInfo) {
+		this.prontInfo = prontInfo;
+	}
+
+	public void setMenu_Importar_Fichero_CodigoBarras(MenuItem menu_Importar_Fichero_CodigoBarras) {
+		this.menu_Importar_Fichero_CodigoBarras = menu_Importar_Fichero_CodigoBarras;
+	}
+
+	public void setMenu_archivo_conexion(MenuItem menu_archivo_conexion) {
+		this.menu_archivo_conexion = menu_archivo_conexion;
+	}
+
+	public void setMenu_leer_CodigoBarras(MenuItem menu_leer_CodigoBarras) {
+		this.menu_leer_CodigoBarras = menu_leer_CodigoBarras;
+	}
+
+	public void setMenu_comic_aleatoria(MenuItem menu_comic_aleatoria) {
+		this.menu_comic_aleatoria = menu_comic_aleatoria;
+	}
+
+	public void setMenu_comic_aniadir(MenuItem menu_comic_aniadir) {
+		this.menu_comic_aniadir = menu_comic_aniadir;
+	}
+
+	public void setMenu_comic_eliminar(MenuItem menu_comic_eliminar) {
+		this.menu_comic_eliminar = menu_comic_eliminar;
+	}
+
+	public void setMenu_comic_modificar(MenuItem menu_comic_modificar) {
+		this.menu_comic_modificar = menu_comic_modificar;
+	}
+
+	public void setMenu_comic_puntuar(MenuItem menu_comic_puntuar) {
+		this.menu_comic_puntuar = menu_comic_puntuar;
+	}
+
+	public void setMenu_estadistica_estadistica(MenuItem menu_estadistica_estadistica) {
+		this.menu_estadistica_estadistica = menu_estadistica_estadistica;
+	}
+
+	public void setMenu_navegacion(MenuBar menu_navegacion) {
+		this.menu_navegacion = menu_navegacion;
+	}
+
+	public void setNavegacion_cerrar(Menu navegacion_cerrar) {
+		this.navegacion_cerrar = navegacion_cerrar;
+	}
+
+	public void setNavegacion_comic(Menu navegacion_comic) {
+		this.navegacion_comic = navegacion_comic;
+	}
+
+	public void setNavegacion_estadistica(Menu navegacion_estadistica) {
+		this.navegacion_estadistica = navegacion_estadistica;
+	}
+
+	public void setAlarmaConexionSql(Label alarmaConexionSql) {
+		this.alarmaConexionSql = alarmaConexionSql;
+	}
+
+	public void setBotonMostrarParametro(Button botonMostrarParametro) {
+		this.botonMostrarParametro = botonMostrarParametro;
+	}
+
+	public void setBotonImprimir(Button botonImprimir) {
+		this.botonImprimir = botonImprimir;
+	}
+
+	public void setBotonGuardarResultado(Button botonGuardarResultado) {
+		this.botonGuardarResultado = botonGuardarResultado;
+	}
+
+	public void setBotonMostrarGuardados(Button botonMostrarGuardados) {
+		this.botonMostrarGuardados = botonMostrarGuardados;
+	}
+
+	public void setBusquedaGeneral(TextField busquedaGeneral) {
+		this.busquedaGeneral = busquedaGeneral;
+	}
+
+	public void setFechaPublicacion(DatePicker fechaPublicacion) {
+		this.fechaPublicacion = fechaPublicacion;
+	}
+
+	public void setMenu_archivo_cerrar(MenuItem menu_archivo_cerrar) {
+		this.menu_archivo_cerrar = menu_archivo_cerrar;
+	}
+
+	public void setMenu_archivo_delete(MenuItem menu_archivo_delete) {
+		this.menu_archivo_delete = menu_archivo_delete;
+	}
+
+	public void setMenu_archivo_desconectar(MenuItem menu_archivo_desconectar) {
+		this.menu_archivo_desconectar = menu_archivo_desconectar;
+	}
+
+	public void setMenu_archivo_excel(MenuItem menu_archivo_excel) {
+		this.menu_archivo_excel = menu_archivo_excel;
+	}
+
+	public void setMenu_archivo_importar(MenuItem menu_archivo_importar) {
+		this.menu_archivo_importar = menu_archivo_importar;
+	}
+
+	public void setMenu_archivo_sobreMi(MenuItem menu_archivo_sobreMi) {
+		this.menu_archivo_sobreMi = menu_archivo_sobreMi;
+	}
+
+	public void setMenu_estadistica_comprados(MenuItem menu_estadistica_comprados) {
+		this.menu_estadistica_comprados = menu_estadistica_comprados;
+	}
+
+	public void setMenu_estadistica_firmados(MenuItem menu_estadistica_firmados) {
+		this.menu_estadistica_firmados = menu_estadistica_firmados;
+	}
+
+	public void setMenu_estadistica_key_issue(MenuItem menu_estadistica_key_issue) {
+		this.menu_estadistica_key_issue = menu_estadistica_key_issue;
+	}
+
+	public void setMenu_estadistica_posesion(MenuItem menu_estadistica_posesion) {
+		this.menu_estadistica_posesion = menu_estadistica_posesion;
+	}
+
+	public void setMenu_estadistica_puntuados(MenuItem menu_estadistica_puntuados) {
+		this.menu_estadistica_puntuados = menu_estadistica_puntuados;
+	}
+
+	public void setMenu_estadistica_vendidos(MenuItem menu_estadistica_vendidos) {
+		this.menu_estadistica_vendidos = menu_estadistica_vendidos;
+	}
+
+	public void setMenu_archivo_avanzado(MenuItem menu_archivo_avanzado) {
+		this.menu_archivo_avanzado = menu_archivo_avanzado;
+	}
+
+	public void setNombreDibujante(ComboBox<String> nombreDibujante) {
+		this.nombreDibujante = nombreDibujante;
+	}
+
+	public void setNombreEditorial(ComboBox<String> nombreEditorial) {
+		this.nombreEditorial = nombreEditorial;
+	}
+
+	public void setNombreFirma(ComboBox<String> nombreFirma) {
+		this.nombreFirma = nombreFirma;
+	}
+
+	public void setNombreFormato(ComboBox<String> nombreFormato) {
+		this.nombreFormato = nombreFormato;
+	}
+
+	public void setNombreGuionista(ComboBox<String> nombreGuionista) {
+		this.nombreGuionista = nombreGuionista;
+	}
+
+	public void setNombreProcedencia(ComboBox<String> nombreProcedencia) {
+		this.nombreProcedencia = nombreProcedencia;
+	}
+
+	public void setNombreVariante(ComboBox<String> nombreVariante) {
+		this.nombreVariante = nombreVariante;
+	}
+
+	public void setNumeroCaja(ComboBox<String> numeroCaja) {
+		this.numeroCaja = numeroCaja;
+	}
+
+	public void setProgresoCarga(ProgressIndicator progresoCarga) {
+		this.progresoCarga = progresoCarga;
+	}
 
 }

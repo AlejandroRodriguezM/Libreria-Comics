@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import Controladores.managment.AccionFuncionesComunes;
+
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  * Las ventanas graficas se realizan con JavaFX.
@@ -339,13 +341,13 @@ public class SobreMiController implements Initializable {
 			MenuItem menuItemPresionado = (MenuItem) fuente;
 
 			if (menuItemPresionado == menu_comic_aniadir) {
-				VentanaAccionController.tipoAccion("aniadir");
+				AccionFuncionesComunes.tipoAccion("aniadir");
 			} else if (menuItemPresionado == menu_comic_modificar) {
-				VentanaAccionController.tipoAccion("modificar");
+				AccionFuncionesComunes.tipoAccion("modificar");
 			} else if (menuItemPresionado == menu_comic_eliminar) {
-				VentanaAccionController.tipoAccion("eliminar");
+				AccionFuncionesComunes.tipoAccion("eliminar");
 			} else if (menuItemPresionado == menu_comic_puntuar) {
-				VentanaAccionController.tipoAccion("puntuar");
+				AccionFuncionesComunes.tipoAccion("puntuar");
 			}
 		}
 

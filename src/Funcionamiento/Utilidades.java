@@ -1511,8 +1511,8 @@ public class Utilidades {
 	 * Crea las carpetas necesarias para realizar backups.
 	 */
 	public static void crearCarpetasBackup() {
-		String carpetaBackup = obtenerCarpetaConfiguracion() + File.separator + Utilidades.obtenerDatoDespuesDeDosPuntos("Database")
-				+ File.separator + "backups";
+		String carpetaBackup = obtenerCarpetaConfiguracion() + File.separator
+				+ Utilidades.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "backups";
 
 		try {
 			File carpeta_backupsFile = new File(carpetaBackup);
@@ -2124,6 +2124,18 @@ public class Utilidades {
 		};
 
 		new Thread(task).start();
+	}
+
+	/**
+	 * Permite abir una ventana para abrir ficheros de un determinado formato.
+	 *
+	 * @return
+	 */
+	public static FileChooser tratarFichero() {
+		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg"));
+
+		return fileChooser;
 	}
 
 }
