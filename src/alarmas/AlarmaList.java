@@ -183,7 +183,7 @@ public class AlarmaList {
 							if (esComprobarConexion) {
 								iniciarAnimacionDesconectado(iniciarAnimacionEspera);
 							} else {
-								iniciarAnimacionErrorMySql(alarmaConexionSql);
+								iniciarAnimacionErrorMySql(iniciarAnimacionEspera);
 							}
 
 							asignarTooltip(alarmaConexionSql, "Servicio de MySQL desactivado");

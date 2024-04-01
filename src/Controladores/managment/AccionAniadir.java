@@ -1,23 +1,39 @@
 package Controladores.managment;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
-import Controladores.VentanaAccionController;
+import Funcionamiento.FuncionesComboBox;
+import Funcionamiento.FuncionesTableView;
 import Funcionamiento.Utilidades;
+import Funcionamiento.Ventanas;
+import alarmas.AlarmaList;
 import comicManagement.Comic;
+import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
+import dbmanager.ListaComicsDAO;
 import javafx.scene.Node;
+import javafx.scene.control.ComboBox;
 
 public class AccionAniadir {
 
 	private static AccionFuncionesComunes accionFuncionesComunes = new AccionFuncionesComunes();
 
-	private static VentanaAccionController accionController = new VentanaAccionController();
-
 	public static AccionReferencias referenciaVentana = new AccionReferencias();
 
 	private static AccionControlUI accionRellenoDatos = new AccionControlUI();
+
+	/**
+	 * Instancia de la clase Ventanas para la navegación.
+	 */
+	private static Ventanas nav = new Ventanas();
+
+	/**
+	 * Instancia de la clase FuncionesComboBox para el manejo de ComboBox.
+	 */
+	private static FuncionesComboBox funcionesCombo = new FuncionesComboBox();
 
 	/**
 	 * Permite introducir un comic en la base de datos de forma manual
@@ -30,15 +46,44 @@ public class AccionAniadir {
 			return;
 		}
 
-		Utilidades.convertirNombresCarpetas(accionFuncionesComunes.SOURCE_PATH);
+		Utilidades.convertirNombresCarpetas(AccionFuncionesComunes.SOURCE_PATH);
 
-		Comic comic = accionController.camposComic();
+		Comic comic = AccionControlUI.camposComic();
 		accionRellenoDatos.actualizarCamposUnicos(comic);
 
 		referenciaVentana.getProntInfo().setOpacity(1);
 
 		accionFuncionesComunes.procesarComic(comic, false);
 	}
+	
+
+
+	public static void guardarContenidoLista() {
+		if (ListaComicsDAO.comicsImportados.size() > 0 && nav.alertaInsertar()) {
+			Collections.sort(ListaComicsDAO.comicsImportados, Comparator.comparing(Comic::getNombre));
+
+			for (Comic c : ListaComicsDAO.comicsImportados) {
+				AccionControlUI.comprobarListaValidacion(c);
+				ComicManagerDAO.insertarDatos(c, true);
+			}
+
+			ListaComicsDAO.listasAutoCompletado();
+			List<ComboBox<String>> comboboxes = AccionReferencias.getComboboxes();
+			funcionesCombo.rellenarComboBox(comboboxes);
+
+			ListaComicsDAO.comicsImportados.clear();
+			referenciaVentana.getTablaBBDD().getItems().clear();
+			AccionControlUI.validarCamposClave(true);
+			FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, referenciaVentana.getTablaBBDD()); // Llamada a
+			AccionControlUI.limpiarAutorellenos();
+
+			String mensajePront = "Has introducido los comics correctamente\n";
+			AlarmaList.mostrarMensajePront(mensajePront, true, referenciaVentana.getProntInfo());
+		}
+
+	}
+	
+
 
 	public void mostrarElementosAniadir(List<Node> elementosAMostrarYHabilitar) {
 		elementosAMostrarYHabilitar.addAll(Arrays.asList(referenciaVentana.getDibujanteComic(),

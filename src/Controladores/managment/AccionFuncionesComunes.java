@@ -22,7 +22,6 @@ import org.json.JSONException;
 import Apis.ApiISBNGeneral;
 import Apis.ApiMarvel;
 import Controladores.CargaComicsController;
-import Controladores.VentanaAccionController;
 import Funcionamiento.FuncionesComboBox;
 import Funcionamiento.FuncionesTableView;
 import Funcionamiento.Utilidades;
@@ -46,21 +45,21 @@ public class AccionFuncionesComunes {
 	/**
 	 * Obtenemos el directorio de inicio del usuario
 	 */
-	private final String USER_DIR = System.getProperty("user.home");
+	private final static String USER_DIR = System.getProperty("user.home");
 
 	/**
 	 * Construimos la ruta al directorio "Documents"
 	 */
-	private final String DOCUMENTS_PATH = USER_DIR + File.separator + "Documents";
+	private final static String DOCUMENTS_PATH = USER_DIR + File.separator + "Documents";
 
-	private final String CARPETA_RAIZ_PORTADAS = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+	private final static String CARPETA_RAIZ_PORTADAS = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
 			+ ConectManager.DB_NAME + File.separator;
 
 	/**
 	 * Construimos la ruta al directorio "libreria_comics" dentro de "Documents" y
 	 * añadimos el nombre de la base de datos y la carpeta "portadas".
 	 */
-	public final String SOURCE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+	public final static String SOURCE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
 			+ ConectManager.DB_NAME + File.separator + "portadas";
 
 	/**
@@ -79,16 +78,6 @@ public class AccionFuncionesComunes {
 	public static String TIPO_ACCION;
 
 	public static AccionReferencias referenciaVentana = new AccionReferencias();
-
-	private static VentanaAccionController accionController = new VentanaAccionController();
-
-	private static AccionAniadir accionAniadir = new AccionAniadir();
-
-	private static AccionEliminar accionEliminar = new AccionEliminar();
-
-	private static AccionSeleccionar accionSeleccionar = new AccionSeleccionar();
-
-	private static AccionModificar accionModificar = new AccionModificar();
 
 	private static AccionControlUI accionRellenoDatos = new AccionControlUI();
 
@@ -114,8 +103,7 @@ public class AccionFuncionesComunes {
 			AlarmaList.mostrarMensajePront(mensaje, false, referenciaVentana.getProntInfo());
 			comicsFinal = listaComics = ListaComicsDAO.comicsImportados;
 			Platform.runLater(() -> {
-				FuncionesTableView.tablaBBDD(comicsFinal, referenciaVentana.getTablaBBDD(),
-						VentanaAccionController.columnList);
+				FuncionesTableView.tablaBBDD(comicsFinal, referenciaVentana.getTablaBBDD());
 			});
 
 			return; // Agregar return para salir del método en este punto
@@ -150,48 +138,12 @@ public class AccionFuncionesComunes {
 		comicsFinal = listaComics; // Declarar otra variable final para listaComics
 
 		Platform.runLater(() -> {
-			FuncionesTableView.tablaBBDD(comicsFinal, referenciaVentana.getTablaBBDD(),
-					VentanaAccionController.columnList);
+			FuncionesTableView.tablaBBDD(comicsFinal, referenciaVentana.getTablaBBDD());
 		});
 
 		referenciaVentana.getTablaBBDD().refresh();
 		AlarmaList.mostrarMensajePront(mensaje, esModificacion, referenciaVentana.getProntInfo());
 		procesarBloqueComun(comic);
-	}
-
-	/**
-	 * Realiza la acción asociada a la gestión de cómics de forma asíncrona.
-	 *
-	 * @param esModificacion Indica si la acción es una modificación de cómic.
-	 */
-	public void accionComicAsync(boolean esModificacion) {
-
-		// Crear un nuevo hilo para la ejecución asíncrona
-		Thread updateThread = new Thread(() -> {
-			try {
-
-				if (!ConectManager.conexionActiva()) {
-					return;
-				}
-
-				// Iniciar la animación de cambio de imagen
-				if (esModificacion) {
-					AccionModificar.modificacionComic();
-				} else {
-					accionAniadir.subidaComic();
-				}
-				accionRellenoDatos.limpiarAutorellenos();
-			} catch (Exception e) {
-				Utilidades.manejarExcepcion(e);
-
-			}
-		});
-
-		// Configurar el hilo como daemon (hilo en segundo plano)
-		updateThread.setDaemon(true);
-
-		// Iniciar el hilo
-		updateThread.start();
 	}
 
 	/**
@@ -208,15 +160,15 @@ public class AccionFuncionesComunes {
 		referenciaVentana.getImagencomic().setImage(imagen);
 		referenciaVentana.getImagencomic().setImage(imagen);
 
-		List<ComboBox<String>> comboboxes = VentanaAccionController.getComboBoxes();
+		List<ComboBox<String>> comboboxes = AccionReferencias.getComboboxes();
 
 		ListaComicsDAO.listasAutoCompletado();
-		FuncionesTableView.nombreColumnas(VentanaAccionController.columnList, referenciaVentana.getTablaBBDD());
-		FuncionesTableView.actualizarBusquedaRaw(referenciaVentana.getTablaBBDD(), VentanaAccionController.columnList);
+		FuncionesTableView.nombreColumnas(referenciaVentana.getTablaBBDD());
+		FuncionesTableView.actualizarBusquedaRaw(referenciaVentana.getTablaBBDD());
 		funcionesCombo.rellenarComboBox(comboboxes);
 	}
 
-	public boolean procesarComicPorCodigo(String finalValorCodigo) {
+	public static boolean procesarComicPorCodigo(String finalValorCodigo) {
 
 		if (!ConectManager.conexionActiva()) {
 			return false;
@@ -302,12 +254,12 @@ public class AccionFuncionesComunes {
 		referenciaVentana.getCodigoComicTratar().setText("");
 		referenciaVentana.getIdComicTratar_mod().setText("");
 		if ("modificar".equals(TIPO_ACCION)) {
-			accionRellenoDatos.mostrarOpcion(TIPO_ACCION);
+			AccionControlUI.mostrarOpcion(TIPO_ACCION);
 		}
 		// Borrar cualquier mensaje de error presente
 		borrarErrores();
-		accionRellenoDatos.validarCamposComic(true);
-		accionRellenoDatos.borrarDatosGraficos();
+		AccionControlUI.validarCamposClave(true);
+		AccionControlUI.borrarDatosGraficos();
 	}
 
 	/**
@@ -328,8 +280,7 @@ public class AccionFuncionesComunes {
 
 		// Si el cómic existe en la base de datos
 		if (ComicManagerDAO.comprobarIdentificadorComic(ID)) {
-			FuncionesTableView.actualizarBusquedaRaw(referenciaVentana.getTablaBBDD(),
-					VentanaAccionController.columnList);
+			FuncionesTableView.actualizarBusquedaRaw(referenciaVentana.getTablaBBDD());
 			return true;
 		} else { // Si el cómic no existe en la base de datos
 			String mensaje = "ERROR. ID desconocido.";
@@ -344,7 +295,7 @@ public class AccionFuncionesComunes {
 	 * @param comicInfo Un objeto Comic con la información del cómic.
 	 * @return True si la información es válida y existe; de lo contrario, False.
 	 */
-	private boolean comprobarCodigo(Comic comicInfo) {
+	private static boolean comprobarCodigo(Comic comicInfo) {
 		return comicInfo != null;
 	}
 
@@ -355,7 +306,7 @@ public class AccionFuncionesComunes {
 	 * @param comicInfo Un arreglo de strings con información del cómic.
 	 * @throws IOException
 	 */
-	private void rellenarTablaImport(Comic comic) {
+	private static void rellenarTablaImport(Comic comic) {
 		Platform.runLater(() -> {
 
 			if (!ConectManager.conexionActiva()) {
@@ -383,7 +334,7 @@ public class AccionFuncionesComunes {
 			// Manejo de la ruta de la imagen
 			if (comic.getImagen() == null || comic.getImagen().isEmpty()) {
 				String rutaImagen = "/Funcionamiento/sinPortada.jpg";
-				URL url = getClass().getResource(rutaImagen);
+				URL url = Utilidades.class.getClass().getResource(rutaImagen);
 				if (url != null) {
 					urlImagen = url.toExternalForm();
 				}
@@ -417,13 +368,12 @@ public class AccionFuncionesComunes {
 
 			ListaComicsDAO.comicsImportados.add(comicImport);
 
-			FuncionesTableView.nombreColumnas(VentanaAccionController.columnList, referenciaVentana.getTablaBBDD());
-			FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, referenciaVentana.getTablaBBDD(),
-					VentanaAccionController.columnList);
+			FuncionesTableView.nombreColumnas(referenciaVentana.getTablaBBDD());
+			FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, referenciaVentana.getTablaBBDD());
 		});
 	}
 
-	private Comic obtenerComicInfo(String finalValorCodigo) {
+	private static Comic obtenerComicInfo(String finalValorCodigo) {
 		try {
 			// Verificar si hay una conexión activa
 			if (!ConectManager.conexionActiva()) {
@@ -460,7 +410,7 @@ public class AccionFuncionesComunes {
 		}
 	}
 
-	private void cerrarExecutorService(ExecutorService executorService) {
+	private static void cerrarExecutorService(ExecutorService executorService) {
 		executorService.shutdown();
 		try {
 			executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
@@ -469,7 +419,7 @@ public class AccionFuncionesComunes {
 		}
 	}
 
-	private void actualizarInterfaz(AtomicInteger contadorErrores, StringBuilder codigoFaltante, String carpetaDatabase,
+	private static void actualizarInterfaz(AtomicInteger contadorErrores, StringBuilder codigoFaltante, String carpetaDatabase,
 			AtomicInteger contadorTotal) {
 		Platform.runLater(() -> {
 			String mensaje = "";
@@ -495,7 +445,7 @@ public class AccionFuncionesComunes {
 	 *
 	 * @param fichero El archivo que contiene los códigos de importación a buscar.
 	 */
-	public void busquedaPorCodigoImportacion(File fichero) {
+	public static void busquedaPorCodigoImportacion(File fichero) {
 
 		if (!ConectManager.conexionActiva() && !Utilidades.isInternetAvailable()) {
 			return;
@@ -562,7 +512,7 @@ public class AccionFuncionesComunes {
 		};
 
 		tarea.setOnRunning(ev -> {
-			accionRellenoDatos.limpiarAutorellenos();
+			AccionControlUI.limpiarAutorellenos();
 			cambiarEstadoBotones(true);
 			referenciaVentana.getImagencomic().setImage(null);
 			referenciaVentana.getImagencomic().setVisible(true);
@@ -636,7 +586,7 @@ public class AccionFuncionesComunes {
 		}
 	}
 
-	public void cambiarEstadoBotones(boolean esCancelado) {
+	public static void cambiarEstadoBotones(boolean esCancelado) {
 
 		List<Node> elementos = Arrays.asList(referenciaVentana.getBotonEliminarImportadoComic(),
 				referenciaVentana.getBotonSubidaPortada(), referenciaVentana.getBotonGuardarComic());

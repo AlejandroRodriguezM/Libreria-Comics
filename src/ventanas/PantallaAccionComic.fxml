@@ -173,12 +173,11 @@
             </Menu>
          </menus>
       </MenuBar>
-      <TextArea fx:id="prontInfo" editable="false" layoutX="599.0" layoutY="31.0" opacity="0.0" prefHeight="252.0" prefWidth="232.0" stylesheets="@../style/panel_info_style.css" wrapText="true" />
       <Button fx:id="botonGuardarComic" alignment="CENTER" layoutX="739.0" layoutY="290.0" mnemonicParsing="false" onAction="#guardarListaImportados" prefHeight="42.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Añadir comics" textAlignment="CENTER" visible="false" wrapText="true" />
       <Button fx:id="botonGuardarCambioComic" layoutX="248.0" layoutY="29.0" mnemonicParsing="false" onAction="#guardarDatos" prefHeight="35.0" prefWidth="81.0" stylesheets="@../style/genericos_style.css" text="Guardar Comic" visible="false" />
       <Button fx:id="botonEliminarImportadoComic" layoutX="640.0" layoutY="290.0" mnemonicParsing="false" onAction="#eliminarComicSeleccionado" prefHeight="42.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Eliminar Comic" visible="false" wrapText="true" />
       <ImageView fx:id="cargaImagen" fitHeight="308.0" fitWidth="207.0" layoutX="368.0" layoutY="34.0" pickOnBounds="true" preserveRatio="true" />
-      <ImageView fx:id="imagencomic" fitHeight="308.0" fitWidth="199.0" layoutX="370.0" layoutY="31.0" onMouseClicked="#ampliarImagen" pickOnBounds="true" />
+      <ImageView fx:id="imagencomic" fitHeight="308.0" fitWidth="199.0" layoutX="373.0" layoutY="31.0" onMouseClicked="#ampliarImagen" pickOnBounds="true" />
       <Button fx:id="botonSubidaPortada" layoutX="186.0" layoutY="253.0" mnemonicParsing="false" onAction="#nuevaPortada" prefHeight="25.0" prefWidth="25.0" stylesheets="@../style/boton_subida_style.css" />
       <Label fx:id="alarmaConexionSql" layoutX="813.0" prefHeight="25.0" prefWidth="23.0" stylesheets="@../style/alarma_conexion_style.css" />
       <Label fx:id="alarmaConexionInternet" layoutX="786.0" prefHeight="25.0" prefWidth="23.0" stylesheets="@../style/alarma_conexion_style.css" />
@@ -187,5 +186,10 @@
             <URL value="@../style/genericos_style.css" />
             <URL value="@../style/boton_reestart_style.css" />
          </stylesheets></Button>
+      <VBox fx:id="vboxImage" layoutX="599.0" layoutY="33.0" prefHeight="296.0" prefWidth="229.0">
+         <children>
+            <TextArea fx:id="prontInfo" editable="false" opacity="0.0" prefHeight="296.0" prefWidth="214.0" stylesheets="@../style/panel_info_style.css" wrapText="true" />
+         </children>
+      </VBox>
    </children>
 </Pane>

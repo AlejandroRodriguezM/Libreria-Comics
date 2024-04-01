@@ -38,7 +38,7 @@ public class ComicManagerDAO {
 		return DeleteManager.deleteAndRestartDatabaseAsync();
 	}
 
-	public static void borrarComic(String idComic) throws SQLException {
+	public static void borrarComic(String idComic) {
 		DeleteManager.borrarComic(idComic);
 	}
 

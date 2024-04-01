@@ -45,13 +45,16 @@ public class FuncionesTooltips {
 	private static final Font TOOLTIP_FONT = Font.font("Comic Sans MS", FontWeight.NORMAL, FontPosture.REGULAR, 13);
 
 	public static void assignTooltips(Map<Node, String> tooltipsMap) {
-	    for (Node elemento : tooltipsMap.keySet()) {
-	        String mensaje = tooltipsMap.get(elemento);
-	        Tooltip tooltip = new Tooltip(mensaje);
-	        tooltip.setFont(TOOLTIP_FONT);
-	        Tooltip.install(elemento, tooltip);
-	    }
-	}
+		for (Node elemento : tooltipsMap.keySet()) {
 
+			if (elemento != null) {
+
+				String mensaje = tooltipsMap.get(elemento);
+				Tooltip tooltip = new Tooltip(mensaje);
+				tooltip.setFont(TOOLTIP_FONT);
+				Tooltip.install(elemento, tooltip);
+			}
+		}
+	}
 
 }

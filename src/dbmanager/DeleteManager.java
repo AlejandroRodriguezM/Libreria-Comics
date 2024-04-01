@@ -59,7 +59,7 @@ public class DeleteManager {
 	 * @param puntuacion   La puntuación a insertar
 	 * @throws SQLException Si ocurre un error en la base de datos
 	 */
-	public static void borrarComic(String idComic) throws SQLException {
+	public static void borrarComic(String idComic) {
 		ListaComicsDAO.listaComics.clear();
 
 		try (Connection conn = ConectManager.conexion();

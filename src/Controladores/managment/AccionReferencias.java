@@ -1,8 +1,13 @@
 package Controladores.managment;
 
+import java.util.List;
+
 import comicManagement.Comic;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Control;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -373,6 +378,11 @@ public class AccionReferencias {
 	/**
 	 * ComboBox para seleccionar el formato del cómic.
 	 */
+	private ComboBox<String> tituloComic;
+
+	/**
+	 * ComboBox para seleccionar el formato del cómic.
+	 */
 	private ComboBox<String> formatoComic;
 
 	/**
@@ -525,6 +535,17 @@ public class AccionReferencias {
 	 * Selector para el número de caja.
 	 */
 	private ComboBox<String> numeroCaja;
+
+	/**
+	 * Declaramos una lista de ComboBox de tipo String
+	 */
+	private static List<ComboBox<String>> comboboxes;
+
+	private static ObservableList<Control> listaCamposTexto;
+	private static ObservableList<Button> listaBotones;
+	private static ObservableList<Node> listaElementosFondo;
+
+	private static List<TableColumn<Comic, String>> columnasTabla;
 
 	private ProgressIndicator progresoCarga;
 
@@ -1008,6 +1029,54 @@ public class AccionReferencias {
 		return progresoCarga;
 	}
 
+	public ComboBox<String> getTituloComic() {
+		return tituloComic;
+	}
+
+	public static List<ComboBox<String>> getComboboxes() {
+		return comboboxes;
+	}
+
+	public static ObservableList<Control> getListaCamposTexto() {
+		return listaCamposTexto;
+	}
+
+	public static ObservableList<Button> getListaBotones() {
+		return listaBotones;
+	}
+
+	public ObservableList<Node> getListaElementosFondo() {
+		return listaElementosFondo;
+	}
+
+	public List<TableColumn<Comic, String>> getColumnasTabla() {
+		return columnasTabla;
+	}
+
+	public static void setColumnasTabla(List<TableColumn<Comic, String>> columnasTabla) {
+		AccionReferencias.columnasTabla = columnasTabla;
+	}
+
+	public static void setComboboxes(List<ComboBox<String>> comboboxes) {
+		AccionReferencias.comboboxes = comboboxes;
+	}
+
+	public static void setListaCamposTexto(ObservableList<Control> listaCamposTexto) {
+		AccionReferencias.listaCamposTexto = listaCamposTexto;
+	}
+
+	public static void setListaBotones(ObservableList<Button> listaBotones) {
+		AccionReferencias.listaBotones = listaBotones;
+	}
+
+	public static void setListaElementosFondo(ObservableList<Node> listaElementosFondo) {
+		AccionReferencias.listaElementosFondo = listaElementosFondo;
+	}
+
+	public void setComboBoxes(List<ComboBox<String>> comboBoxes) {
+		comboboxes = comboBoxes;
+	}
+
 	public void setProcedencia(TableColumn<Comic, String> procedencia) {
 		this.procedencia = procedencia;
 	}
@@ -1450,6 +1519,10 @@ public class AccionReferencias {
 
 	public void setMenu_archivo_avanzado(MenuItem menu_archivo_avanzado) {
 		this.menu_archivo_avanzado = menu_archivo_avanzado;
+	}
+
+	public void setTituloComic(ComboBox<String> tituloComic) {
+		this.tituloComic = tituloComic;
 	}
 
 	public void setNombreDibujante(ComboBox<String> nombreDibujante) {

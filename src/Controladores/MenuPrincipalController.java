@@ -11,9 +11,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -21,12 +19,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import Controladores.managment.AccionControlUI;
 import Controladores.managment.AccionFuncionesComunes;
+import Controladores.managment.AccionReferencias;
+import Controladores.managment.AccionSeleccionar;
 import Funcionamiento.FuncionesComboBox;
 import Funcionamiento.FuncionesExcel;
 import Funcionamiento.FuncionesManejoFront;
 import Funcionamiento.FuncionesTableView;
-import Funcionamiento.FuncionesTooltips;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
@@ -39,7 +39,6 @@ import dbmanager.ListaComicsDAO;
 import dbmanager.SelectManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -50,7 +49,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Control;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -64,7 +62,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -420,23 +417,115 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	private static FuncionesComboBox funcionesCombo = new FuncionesComboBox();
 
-	/**
-	 * Lista de columnas de la tabla de cómics.
-	 */
-	private List<TableColumn<Comic, String>> columnList;
+	public static AccionReferencias referenciaVentana = new AccionReferencias();
 
 	double y = 0;
 
-	ObservableList<ImageView> listaImagenes;
+	public AccionReferencias guardarReferencia() {
+		AccionReferencias referenciaVentana = new AccionReferencias();
+		referenciaVentana.setAlarmaConexionSql(alarmaConexionSql);
+		referenciaVentana.setID(ID);
+		referenciaVentana.setCaja(caja);
+		referenciaVentana.setDibujante(dibujante);
+		referenciaVentana.setEditorial(editorial);
+		referenciaVentana.setFecha(fecha);
+		referenciaVentana.setFirma(firma);
+		referenciaVentana.setFormato(formato);
+		referenciaVentana.setGuionista(guionista);
+		referenciaVentana.setNombre(nombre);
+		referenciaVentana.setNumero(numero);
+		referenciaVentana.setProcedencia(procedencia);
+		referenciaVentana.setReferencia(referencia);
+		referenciaVentana.setVariante(variante);
+		referenciaVentana.setBotonAgregarPuntuacion(botonAgregarPuntuacion);
+		referenciaVentana.setBotonEliminar(botonEliminar);
+		referenciaVentana.setBotonLimpiar(botonLimpiar);
+		referenciaVentana.setBotonbbdd(botonbbdd);
+		referenciaVentana.setBotonMostrarParametro(botonMostrarParametro);
+		referenciaVentana.setBotonImprimir(botonImprimir);
+		referenciaVentana.setBotonGuardarResultado(botonGuardarResultado);
+		referenciaVentana.setBotonMostrarGuardados(botonMostrarGuardados);
+		referenciaVentana.setBusquedaCodigo(busquedaCodigo);
+		referenciaVentana.setBusquedaGeneral(busquedaGeneral);
+		referenciaVentana.setFechaPublicacion(fechaPublicacion);
+		referenciaVentana.setImagencomic(imagencomic);
+		referenciaVentana.setMenu_archivo_cerrar(menu_archivo_cerrar);
+		referenciaVentana.setMenu_archivo_delete(menu_archivo_delete);
+		referenciaVentana.setMenu_archivo_desconectar(menu_archivo_desconectar);
+		referenciaVentana.setMenu_archivo_excel(menu_archivo_excel);
+		referenciaVentana.setMenu_archivo_importar(menu_archivo_importar);
+		referenciaVentana.setMenu_archivo_sobreMi(menu_archivo_sobreMi);
+		referenciaVentana.setMenu_comic_aleatoria(menu_comic_aleatoria);
+		referenciaVentana.setMenu_comic_aniadir(menu_comic_aniadir);
+		referenciaVentana.setMenu_comic_eliminar(menu_comic_eliminar);
+		referenciaVentana.setMenu_comic_modificar(menu_comic_modificar);
+		referenciaVentana.setMenu_comic_puntuar(menu_comic_puntuar);
+		referenciaVentana.setMenu_estadistica_comprados(menu_estadistica_comprados);
+		referenciaVentana.setMenu_estadistica_estadistica(menu_estadistica_estadistica);
+		referenciaVentana.setMenu_estadistica_firmados(menu_estadistica_firmados);
+		referenciaVentana.setMenu_estadistica_key_issue(menu_estadistica_key_issue);
+		referenciaVentana.setMenu_estadistica_posesion(menu_estadistica_posesion);
+		referenciaVentana.setMenu_estadistica_puntuados(menu_estadistica_puntuados);
+		referenciaVentana.setMenu_estadistica_vendidos(menu_estadistica_vendidos);
+		referenciaVentana.setMenu_archivo_avanzado(menu_archivo_avanzado);
+		referenciaVentana.setMenu_archivo_conexion(menu_archivo_conexion);
+		referenciaVentana.setMenu_navegacion(menu_navegacion);
+		referenciaVentana.setNavegacion_cerrar(navegacion_cerrar);
+		referenciaVentana.setNavegacion_comic(navegacion_comic);
+		referenciaVentana.setNavegacion_estadistica(navegacion_estadistica);
+		referenciaVentana.setTituloComic(nombreComic);
+		referenciaVentana.setNombreDibujante(nombreDibujante);
+		referenciaVentana.setNombreEditorial(nombreEditorial);
+		referenciaVentana.setNombreFirma(nombreFirma);
+		referenciaVentana.setNombreFormato(nombreFormato);
+		referenciaVentana.setNombreGuionista(nombreGuionista);
+		referenciaVentana.setNombreProcedencia(nombreProcedencia);
+		referenciaVentana.setNombreVariante(nombreVariante);
+		referenciaVentana.setNumeroCaja(numeroCaja);
+		referenciaVentana.setNumeroComic(numeroComic);
+		referenciaVentana.setProntInfo(prontInfo);
+		referenciaVentana.setProgresoCarga(progresoCarga);
+		referenciaVentana.setID(ID);
+		referenciaVentana.setCaja(caja);
+		referenciaVentana.setDibujante(dibujante);
+		referenciaVentana.setEditorial(editorial);
+		referenciaVentana.setFecha(fecha);
+		referenciaVentana.setFirma(firma);
+		referenciaVentana.setFormato(formato);
+		referenciaVentana.setGuionista(guionista);
+		referenciaVentana.setNombre(nombre);
+		referenciaVentana.setNumero(numero);
+		referenciaVentana.setProcedencia(procedencia);
+		referenciaVentana.setReferencia(referencia);
+		referenciaVentana.setVariante(variante);
+		referenciaVentana.setTablaBBDD(tablaBBDD);
+		referenciaVentana.setRootVBox(rootVBox);
+		referenciaVentana.setVboxContenido(vboxContenido);
+		referenciaVentana.setBackgroundImage(backgroundImage);
+		referenciaVentana.setRootAnchorPane(rootAnchorPane);
+		referenciaVentana.setVboxImage(vboxImage);
+		referenciaVentana.setAnchoPaneInfo(anchoPaneInfo);
+		referenciaVentana.setBotonModificar(botonModificar);
+		referenciaVentana.setBotonIntroducir(botonIntroducir);
+		referenciaVentana.setBotonEliminar(botonEliminar);
+		referenciaVentana.setBotonAgregarPuntuacion(botonAgregarPuntuacion);
+		referenciaVentana.setAlarmaConexionSql(alarmaConexionSql);
 
-	List<ComboBox<String>> comboboxes;
-	@SuppressWarnings("rawtypes")
-	ObservableList<TableColumn> listaColumnas;
-	ObservableList<Control> listaCamposTexto;
-	ObservableList<Button> listaBotones;
-	ObservableList<Node> listaElementosFondo;
+		referenciaVentana.setComboBoxes(Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
+				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja));
 
-	private Map<Node, String> tooltipsMap = new HashMap<>();
+		AccionReferencias.setListaElementosFondo(FXCollections.observableArrayList(backgroundImage, menu_navegacion));
+
+		AccionReferencias.setListaCamposTexto(FXCollections.observableArrayList(busquedaGeneral, fechaPublicacion));
+
+		AccionReferencias.setListaBotones(FXCollections.observableArrayList(botonLimpiar, botonMostrarParametro,
+				botonbbdd, botonImprimir, botonGuardarResultado));
+
+		AccionReferencias.setColumnasTabla(Arrays.asList(nombre, caja, numero, variante, firma, editorial, formato,
+				procedencia, fecha, guionista, dibujante, referencia));
+
+		return referenciaVentana;
+	}
 
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
@@ -446,30 +535,46 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		
+
 		AlarmaList alarmaList = new AlarmaList();
 
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
 		alarmaList.iniciarThreadChecker(true);
 
 		Platform.runLater(() -> {
+
+			enviarReferencias();
+
+			establecerDinamismoAnchor();
+
 			cambiarTamanioTable();
+
 			FuncionesTableView.ajustarAnchoVBox(prontInfo, vboxContenido);
 			FuncionesTableView.seleccionarRaw(tablaBBDD);
-			asignarTooltips();
-			FuncionesTableView.modificarColumnas(tablaBBDD, columnList);
 
+			FuncionesTableView.modificarColumnas(tablaBBDD);
+			AccionControlUI.controlarEventosInterfazPrincipal();
 		});
 
-		listaElementosVentana();
-
-		controlarEventosInterfaz();
+		AccionControlUI.establecerTooltips();
 
 		formatearTextField();
 
 		cargarDatosDataBase();
 
-		establecerDinamismoAnchor();
+	}
+
+	public void enviarReferencias() {
+
+		AccionControlUI.referenciaVentana = guardarReferencia();
+
+		AccionFuncionesComunes.referenciaVentana = guardarReferencia();
+
+		FuncionesTableView.referenciaVentana = guardarReferencia();
+
+		FuncionesManejoFront.referenciaVentana = guardarReferencia();
+
+		AccionSeleccionar.referenciaVentana = guardarReferencia();
 	}
 
 	@FXML
@@ -537,68 +642,6 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Controla los eventos de la interfaz, desactivando el enfoque en el VBox para
-	 * evitar eventos de teclado, y añadiendo filtros y controladores de eventos
-	 * para gestionar el enfoque entre el VBox y el TableView.
-	 */
-	private void controlarEventosInterfaz() {
-
-		List<TableColumn<Comic, String>> columnListCarga = Arrays.asList(nombre, caja, numero, variante, firma,
-				editorial, formato, procedencia, fecha, guionista, dibujante, referencia);
-		columnList = columnListCarga;
-
-		prontInfo.textProperty().addListener((observable, oldValue, newValue) -> {
-			FuncionesTableView.ajustarAnchoVBox(prontInfo, vboxContenido);
-		});
-
-		// Desactivar el enfoque en el VBox para evitar que reciba eventos de teclado
-		rootVBox.setFocusTraversable(false);
-
-		// Agregar un filtro de eventos para capturar el enfoque en el TableView y
-		// desactivar el enfoque en el VBox
-		tablaBBDD.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
-			rootVBox.setFocusTraversable(false);
-			tablaBBDD.requestFocus();
-		});
-
-		// Agregar un filtro de eventos para capturar el enfoque en el VBox y desactivar
-		// el enfoque en el TableView
-		rootVBox.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
-			tablaBBDD.setFocusTraversable(false);
-			rootVBox.requestFocus();
-		});
-
-		imagencomic.imageProperty().addListener((observable, oldImage, newImage) -> {
-			if (newImage != null) {
-				// Cambiar la apariencia del cursor y la opacidad cuando la imagen se ha cargado
-				imagencomic.setOnMouseEntered(e -> {
-					imagencomic.setOpacity(0.7); // Cambiar la opacidad para indicar que es clickable
-					imagencomic.setCursor(Cursor.HAND);
-				});
-
-				// Restaurar el cursor y la opacidad al salir del ImageView
-				imagencomic.setOnMouseExited(e -> {
-					imagencomic.setOpacity(1.0); // Restaurar la opacidad
-					imagencomic.setCursor(Cursor.DEFAULT);
-				});
-			} else {
-				// Restaurar el cursor y la opacidad al salir del ImageView
-				imagencomic.setOnMouseEntered(e -> {
-					imagencomic.setCursor(Cursor.DEFAULT);
-				});
-			}
-		});
-
-		botonGuardarResultado.setOnMousePressed(event -> {
-			if (event.getButton() == MouseButton.PRIMARY) {
-				// Si la lista está vacía, oculta el botón
-				botonMostrarGuardados.setVisible(true);
-			}
-		});
-
-	}
-
-	/**
 	 * Carga los datos de la base de datos en los ComboBox proporcionados después de
 	 * un segundo de retraso. Esta función utiliza un ScheduledExecutorService para
 	 * programar la tarea.
@@ -607,9 +650,6 @@ public class MenuPrincipalController implements Initializable {
 	 *                   la base de datos.
 	 */
 	public void cargarDatosDataBase() {
-
-		comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia, nombreFormato,
-				nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
 
 		tablaBBDD.refresh();
 		prontInfo.setOpacity(0);
@@ -626,8 +666,8 @@ public class MenuPrincipalController implements Initializable {
 				Task<Void> task = new Task<Void>() {
 					@Override
 					protected Void call() throws Exception {
-						funcionesCombo.rellenarComboBox(comboboxes);
-						funcionesCombo.lecturaComboBox(comboboxes);
+						funcionesCombo.rellenarComboBox(AccionReferencias.getComboboxes());
+						funcionesCombo.lecturaComboBox(AccionReferencias.getComboboxes());
 						return null;
 					}
 				};
@@ -644,39 +684,11 @@ public class MenuPrincipalController implements Initializable {
 		}, 0, TimeUnit.SECONDS);
 	}
 
-
-	public void listaElementosVentana() {
-	    listaImagenes = FXCollections.observableArrayList(imagencomic);
-	    listaColumnas = FXCollections.observableArrayList(ID, nombre, caja, numero, variante, firma, editorial, formato,
-	            procedencia, fecha, guionista, dibujante, referencia);
-	    listaCamposTexto = FXCollections.observableArrayList(busquedaGeneral, fechaPublicacion);
-	    listaBotones = FXCollections.observableArrayList(botonLimpiar, botonMostrarParametro, botonbbdd, botonImprimir,
-	            botonGuardarResultado);
-
-	    // Corregir el uso de varargs
-	    comboboxes = FXCollections.observableArrayList(
-	            Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia, nombreFormato,
-	                    nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja)
-	    );
-
-	    listaElementosFondo = FXCollections.observableArrayList(backgroundImage, menu_navegacion);
-	}
-
 	/**
 	 * Establece el dinamismo en la interfaz gráfica ajustando propiedades de
 	 * elementos como tamaños, anchos y máximos.
 	 */
 	public void establecerDinamismoAnchor() {
-
-		FuncionesManejoFront manejoFront = new FuncionesManejoFront();
-
-		manejoFront.copiarListas(comboboxes, columnList, listaCamposTexto, listaBotones, listaElementosFondo,
-				listaImagenes);
-
-		manejoFront.copiarElementos(prontInfo, botonImprimir, botonGuardarResultado, busquedaGeneral, columnList);
-
-		FuncionesManejoFront.setAnchorPane(rootAnchorPane);
-		manejoFront.setTableView(tablaBBDD);
 
 		FuncionesManejoFront.establecerFondoDinamico();
 
@@ -689,38 +701,6 @@ public class MenuPrincipalController implements Initializable {
 		FuncionesManejoFront.establecerAnchoMaximoComboBoxes(162.0);
 
 		FuncionesManejoFront.establecerTamanioMaximoImagen(252.0, 337.0);
-
-	}
-
-	/**
-	 * Asigna tooltips a varios elementos en la interfaz gráfica. Estos tooltips
-	 * proporcionan información adicional cuando el usuario pasa el ratón sobre los
-	 * elementos.
-	 */
-	public void asignarTooltips() {
-		tooltipsMap.put(botonbbdd, "Muestra toda la base de datos");
-		tooltipsMap.put(botonLimpiar, "Limpia la pantalla y reinicia todos los valores");
-		tooltipsMap.put(nombreComic, "Nombre de los cómics / libros / mangas");
-		tooltipsMap.put(numeroComic, "Número del cómic / libro / manga");
-		tooltipsMap.put(nombreFirma, "Nombre de la firma del cómic / libro / manga");
-		tooltipsMap.put(nombreGuionista, "Nombre del guionista del cómic / libro / manga");
-		tooltipsMap.put(nombreVariante, "Nombre de la variante del cómic / libro / manga");
-		tooltipsMap.put(numeroCaja, "Número de la caja donde se guarda el cómic / libro / manga");
-		tooltipsMap.put(nombreProcedencia, "Nombre de la procedencia del cómic / libro / manga");
-		tooltipsMap.put(nombreFormato, "Nombre del formato del cómic / libro / manga");
-		tooltipsMap.put(nombreEditorial, "Nombre de la editorial del cómic / libro / manga");
-		tooltipsMap.put(nombreDibujante, "Nombre del dibujante del cómic / libro / manga");
-		tooltipsMap.put(fechaPublicacion, "Fecha del cómic / libro / manga");
-		tooltipsMap.put(numeroCaja, "Caja donde guardas el cómic / libro / manga");
-		tooltipsMap.put(busquedaGeneral,
-				"Puedes buscar de forma general los cómic / libro / manga / artistas / guionistas");
-		tooltipsMap.put(botonIntroducir, "Realizar una acción de introducción del cómic / libro / manga");
-		tooltipsMap.put(botonModificar, "Realizar una acción de modificación del cómic / libro / manga");
-		tooltipsMap.put(botonEliminar, "Realizar una acción de eliminación del cómic / libro / manga");
-		tooltipsMap.put(botonAgregarPuntuacion, "Abrir una ventana para agregar puntuación del cómic / libro / manga");
-		tooltipsMap.put(botonMostrarParametro, "Buscar por parámetros según los datos rellenados");
-
-		FuncionesTooltips.assignTooltips(tooltipsMap);
 
 	}
 
@@ -774,7 +754,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
-
+		enviarReferencias();
 		mostrarComics(false);
 	}
 
@@ -787,28 +767,20 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
-
+		enviarReferencias();
 		mostrarComics(true);
 	}
 
 	private void mostrarComics(boolean esCompleto) {
 
-		FuncionesManejoFront manejoFront = new FuncionesManejoFront();
-		manejoFront.setTableView(tablaBBDD);
-		manejoFront.copiarElementos(prontInfo, botonImprimir, botonGuardarResultado, busquedaGeneral, columnList);
-
-		List<Node> elementos = Arrays.asList(botonImprimir, botonGuardarResultado);
-
-		Utilidades.cambiarVisibilidad(elementos, false);
-
 		busquedaGeneral.setText("");
 		imagencomic.setVisible(true);
 		if (esCompleto) {
-			FuncionesManejoFront.verBasedeDatos(true, false, null);
+			AccionSeleccionar.verBasedeDatos(esCompleto, false, null);
 		} else {
 			Comic comicBusqueda = camposComic();
 
-			FuncionesManejoFront.verBasedeDatos(false, false, comicBusqueda);
+			AccionSeleccionar.verBasedeDatos(esCompleto, false, comicBusqueda);
 		}
 
 	}
@@ -905,8 +877,9 @@ public class MenuPrincipalController implements Initializable {
 		limpiezaDeDatos();
 		limpiarComboBox();
 		ListaComicsDAO.reiniciarListaComics(); // Reiniciar la base de datos si es necesario
-		FuncionesTableView.nombreColumnas(columnList, tablaBBDD); // Llamada a la función para establecer nombres de
-		FuncionesTableView.actualizarBusquedaRaw(tablaBBDD, columnList); // columnas
+		FuncionesTableView.nombreColumnas(tablaBBDD); // Llamada a la función para
+														// establecer nombres de
+		FuncionesTableView.actualizarBusquedaRaw(tablaBBDD); // columnas
 		List<Comic> listaComics = new ArrayList<Comic>();
 		if (esGuardado) {
 			listaComics = ListaComicsDAO.comicsGuardadosList;
@@ -916,7 +889,7 @@ public class MenuPrincipalController implements Initializable {
 			listaComics = SelectManager.verLibreria(sentenciaSQL);
 		}
 
-		FuncionesTableView.tablaBBDD(listaComics, tablaBBDD, columnList);
+		FuncionesTableView.tablaBBDD(listaComics, tablaBBDD);
 	}
 
 	////////////////////////////
@@ -980,11 +953,9 @@ public class MenuPrincipalController implements Initializable {
 			ListaComicsDAO.limpiarListaGuardados();
 
 			Utilidades.borrarArchivosNoEnLista(ListaComicsDAO.listaImagenes);
-
-			mensaje = "Base de datos exportada correctamente";
-			AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
-		} else {
 			estaVacia = true;
+			mensaje = "Base de datos exportada correctamente";
+		} else {
 			mensaje = "La base de datos esta vacia. No hay nada que exportar";
 		}
 		AlarmaList.mostrarMensajePront(mensaje, estaVacia, prontInfo);
@@ -998,6 +969,8 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void limpiarDatos(ActionEvent event) {
+
+		enviarReferencias();
 		limpiezaDeDatos();
 		limpiarComboBox();
 		botonImprimir.setVisible(false);
@@ -1097,64 +1070,32 @@ public class MenuPrincipalController implements Initializable {
 	/////////////////////////////////
 
 	/**
-	 * Maneja el evento de clic del ratón en un elemento específico dentro del RAW y
-	 * permite ver los datos de este mediante el TextArea, imagen incluida
+	 * Funcion que permite mostrar la imagen de portada cuando clickeas en una
+	 * tabla.
 	 *
-	 * @param event El evento del ratón desencadenado por el clic.
-	 * @throws IOException  Si ocurre una excepción de entrada o salida al trabajar
-	 *                      con archivos.
-	 * @throws SQLException Si ocurre un error al acceder a la base de datos.
+	 * @param event
+	 * @throws IOException
+	 * @throws SQLException
 	 */
 	@FXML
 	void clickRaton(MouseEvent event) throws IOException, SQLException {
-		seleccionarComics();
+		enviarReferencias();
+		AccionSeleccionar.seleccionarComics(true);
 	}
 
 	/**
-	 * Maneja el evento de teclas direccionales (arriba/abajo) presionadas dentro
-	 * del RAW y permite ver los datos de este mediante el TextArea, imagen incluida
+	 * Funcion que permite mostrar la imagen de portada cuando usas las teclas de
+	 * direccion en una tabla.
 	 *
-	 * @param event El evento de teclado desencadenado por la pulsación de teclas.
-	 * @throws IOException  Si ocurre una excepción de entrada o salida al trabajar
-	 *                      con archivos.
-	 * @throws SQLException Si ocurre un error al acceder a la base de datos.
+	 * @param event
+	 * @throws IOException
+	 * @throws SQLException
 	 */
 	@FXML
 	void teclasDireccion(KeyEvent event) throws IOException, SQLException {
 		if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
-			seleccionarComics();
-		}
-	}
-
-	/**
-	 * Método para seleccionar y mostrar detalles de un cómic en la interfaz
-	 * gráfica. Si la lista de cómics importados no está vacía, utiliza la
-	 * información de la lista; de lo contrario, consulta la base de datos para
-	 * obtener la información del cómic.
-	 * 
-	 * @throws SQLException Si se produce un error al acceder a la base de datos.
-	 */
-	private void seleccionarComics() throws SQLException {
-
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
-
-		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
-		// Verificar si idRow es nulo antes de intentar acceder a sus métodos
-		if (idRow != null) {
-			imagencomic.setVisible(true);
-			AlarmaList.detenerAnimacion();
-			String id_comic = idRow.getID();
-
-			String mensaje = SelectManager.comicDatos(id_comic).toString().replace("[", "").replace("]", "");
-			AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
-			FuncionesTableView.nombreColumnas(columnList, tablaBBDD); // Llamada a funcion
-			FuncionesTableView.actualizarBusquedaRaw(tablaBBDD, columnList);
-
-			String direccionImagen = SelectManager.obtenerDireccionPortada(id_comic);
-
-			Utilidades.cargarImagenAsync(direccionImagen, imagencomic);
+			enviarReferencias();
+			AccionSeleccionar.seleccionarComics(true);
 		}
 	}
 
@@ -1363,7 +1304,7 @@ public class MenuPrincipalController implements Initializable {
 //				procesarResultadoImportacion(lecturaTask.getValue());
 				AlarmaList.detenerAnimacion();
 				AlarmaList.detenerAnimacionCarga(progresoCarga);
-				
+
 				cambiarEstadoMenuBar(false);
 				AlarmaList.mostrarMensajePront(mensajeValido, true, prontInfo);
 			});
@@ -1449,7 +1390,7 @@ public class MenuPrincipalController implements Initializable {
 	private void limpiarComboBox() {
 
 		// Iterar sobre todos los ComboBox para realizar la limpieza
-		for (ComboBox<String> comboBox : comboboxes) {
+		for (ComboBox<String> comboBox : AccionReferencias.getComboboxes()) {
 			// Limpiar el campo
 			comboBox.setValue("");
 			comboBox.getEditor().setText("");
@@ -1468,14 +1409,8 @@ public class MenuPrincipalController implements Initializable {
 		Object fuente = event.getSource();
 		tablaBBDD.getItems().clear();
 
-		VentanaAccionController ventanaAccion = new VentanaAccionController();
-
-		// Crear la lista de ComboBoxes
-		List<ComboBox<String>> comboboxes = Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
-				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja);
-
 		// Pasar la lista de ComboBoxes a VentanaAccionController
-		ventanaAccion.setComboBoxes(comboboxes);
+		referenciaVentana.setComboBoxes(AccionReferencias.getComboboxes());
 
 		if (fuente instanceof Button) {
 			Button botonPresionado = (Button) fuente;

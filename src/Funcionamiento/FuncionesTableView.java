@@ -35,10 +35,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import Controladores.managment.AccionReferencias;
 import comicManagement.Comic;
 import dbmanager.DBUtilidades;
 import dbmanager.ListaComicsDAO;
 import dbmanager.SelectManager;
+import javafx.scene.Scene;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
@@ -65,6 +67,8 @@ public class FuncionesTableView {
 	 * Fuente utilizada para los tooltips en la interfaz gráfica.
 	 */
 	private static final Font TOOLTIP_FONT = Font.font("Comic Sans MS", FontWeight.NORMAL, FontPosture.REGULAR, 13);
+
+	public static AccionReferencias referenciaVentana = new AccionReferencias();
 
 	/**
 	 * Funcion que permite que los diferentes raw de los TableColumn se puedan
@@ -175,10 +179,12 @@ public class FuncionesTableView {
 		// Deshabilitar el enfoque en el TableView
 		tablaBBDD.setFocusTraversable(false);
 
-		// Enfocar el VBox para evitar movimientos inesperados
-		VBox root = (VBox) tablaBBDD.getScene().lookup("#rootVBox");
-		if (root != null) {
-			root.requestFocus();
+		Scene scene = tablaBBDD.getScene();
+		if (scene != null) {
+			VBox root = (VBox) scene.lookup("#rootVBox");
+			if (root != null) {
+				root.requestFocus();
+			}
 		}
 	}
 
@@ -189,8 +195,8 @@ public class FuncionesTableView {
 	 * 
 	 * @param columna
 	 */
-	public static void actualizarBusquedaRaw(TableView<Comic> tablaBBDD, List<TableColumn<Comic, String>> columnList) {
-		columnList.forEach(columna -> {
+	public static void actualizarBusquedaRaw(TableView<Comic> tablaBBDD) {
+		referenciaVentana.getColumnasTabla().forEach(columna -> {
 			columna.setCellFactory(column -> {
 				return new TableCell<Comic, String>() {
 					private VBox vbox = new VBox();
@@ -208,8 +214,6 @@ public class FuncionesTableView {
 								String[] nombres = item.split(" - ");
 								vbox.getChildren().clear();
 
-
-								
 								for (String nombre : nombres) {
 									if (!nombre.isEmpty()) {
 										Label label;
@@ -217,7 +221,7 @@ public class FuncionesTableView {
 										if (columna.getText().equalsIgnoreCase("referencia")) {
 											label = new Label(nombre + "\n");
 											busquedaHyperLink(columna);
-											
+
 										} else if (columna.getText().equalsIgnoreCase("fecha")
 												|| columna.getText().equalsIgnoreCase("editorial")
 												|| columna.getText().equalsIgnoreCase("formato")
@@ -237,7 +241,7 @@ public class FuncionesTableView {
 										hyperlink.setGraphic(label);
 										hyperlink.setOnAction(event -> {
 											try {
-												columnaSeleccionada(tablaBBDD, columnList, nombre);
+												columnaSeleccionada(tablaBBDD, nombre);
 											} catch (SQLException e) {
 												e.printStackTrace();
 											}
@@ -280,9 +284,8 @@ public class FuncionesTableView {
 	 *
 	 * @param listaComic
 	 */
-	public static void tablaBBDD(List<Comic> listaComic, TableView<Comic> tablaBBDD,
-			List<TableColumn<Comic, String>> columnList) {
-		tablaBBDD.getColumns().setAll(columnList);
+	public static void tablaBBDD(List<Comic> listaComic, TableView<Comic> tablaBBDD) {
+		tablaBBDD.getColumns().setAll(referenciaVentana.getColumnasTabla());
 		tablaBBDD.getItems().setAll(listaComic);
 	}
 
@@ -294,15 +297,14 @@ public class FuncionesTableView {
 	 * @param rawSelecionado El comic seleccionado en su forma cruda.
 	 * @throws SQLException Si ocurre un error de base de datos.
 	 */
-	public static void columnaSeleccionada(TableView<Comic> tablaBBDD, List<TableColumn<Comic, String>> columnList,
-			String rawSelecionado) throws SQLException {
+	public static void columnaSeleccionada(TableView<Comic> tablaBBDD, String rawSelecionado) throws SQLException {
 		ListaComicsDAO.reiniciarListaComics();
-		nombreColumnas(columnList, tablaBBDD);
-		
-		tablaBBDD(SelectManager.libreriaSeleccionado(rawSelecionado), tablaBBDD, columnList);
-		
-	    // Deseleccionar la fila seleccionada
-	    tablaBBDD.getSelectionModel().clearSelection();
+		nombreColumnas(tablaBBDD);
+
+		tablaBBDD(SelectManager.libreriaSeleccionado(rawSelecionado), tablaBBDD);
+
+		// Deseleccionar la fila seleccionada
+		tablaBBDD.getSelectionModel().clearSelection();
 	}
 
 	/**
@@ -312,8 +314,8 @@ public class FuncionesTableView {
 	 * @param columnList La lista de TableColumn a configurar.
 	 * @param tablaBBDD  La TableView en la que se aplicarán las configuraciones.
 	 */
-	public static void nombreColumnas(List<TableColumn<Comic, String>> columnList, TableView<Comic> tablaBBDD) {
-		for (TableColumn<Comic, String> column : columnList) {
+	public static void nombreColumnas(TableView<Comic> tablaBBDD) {
+		for (TableColumn<Comic, String> column : referenciaVentana.getColumnasTabla()) {
 			String columnName = column.getText(); // Obtiene el nombre de la columna
 
 			if (columnName.equalsIgnoreCase("Nº")) {
@@ -346,9 +348,9 @@ public class FuncionesTableView {
 	 * @param columnList La lista de TableColumn correspondiente a las columnas de
 	 *                   la tabla.
 	 */
-	public static void modificarColumnas(TableView<Comic> tablaBBDD, List<TableColumn<Comic, String>> columnList) {
+	public static void modificarColumnas(TableView<Comic> tablaBBDD) {
 
-		for (TableColumn<Comic, String> column : columnList) {
+		for (TableColumn<Comic, String> column : referenciaVentana.getColumnasTabla()) {
 			column.prefWidthProperty().unbind(); // Desvincular cualquier propiedad prefWidth existente
 		}
 
@@ -370,8 +372,8 @@ public class FuncionesTableView {
 		};
 
 		// Aplicar los anchos específicos a cada columna
-		for (int i = 0; i < columnList.size(); i++) {
-			TableColumn<Comic, String> column = columnList.get(i);
+		for (int i = 0; i < referenciaVentana.getColumnasTabla().size(); i++) {
+			TableColumn<Comic, String> column = referenciaVentana.getColumnasTabla().get(i);
 			Double columnWidth = columnWidths[i];
 			column.setPrefWidth(columnWidth);
 		}

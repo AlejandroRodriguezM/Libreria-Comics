@@ -4,14 +4,16 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-import Controladores.VentanaAccionController;
 import Funcionamiento.FuncionesComboBox;
+import Funcionamiento.FuncionesTableView;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
 import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
+import dbmanager.DBUtilidades;
+import dbmanager.ListaComicsDAO;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 
@@ -19,77 +21,19 @@ public class AccionModificar {
 
 	private static AccionFuncionesComunes accionFuncionesComunes = new AccionFuncionesComunes();
 
-	private static VentanaAccionController accionController = new VentanaAccionController();
-
 	public static AccionReferencias referenciaVentana = new AccionReferencias();
 
 	private static AccionControlUI accionRellenoDatos = new AccionControlUI();
-	
+
 	/**
 	 * Instancia de la clase FuncionesComboBox para el manejo de ComboBox.
 	 */
 	private static FuncionesComboBox funcionesCombo = new FuncionesComboBox();
-	
+
 	/**
 	 * Instancia de la clase Ventanas para la navegación.
 	 */
 	private static Ventanas nav = new Ventanas();
-
-	/**
-	 * Funcion que permite modificar un comic, segun los datos introducidos
-	 * 
-	 * @throws Exception
-	 */
-	public static void modificacionComic() throws Exception {
-
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
-
-		String id_comic = referenciaVentana.getIdComicTratar_mod().getText();
-
-		Comic comic_temp = ComicManagerDAO.comicDatos(id_comic);
-		Comic datos = accionController.camposComic();
-		Comic comicModificado = new Comic();
-
-		Utilidades.convertirNombresCarpetas(accionFuncionesComunes.SOURCE_PATH);
-
-		comicModificado.setNombre(Utilidades.defaultIfNullOrEmpty(datos.getNombre(), comic_temp.getNombre()));
-		comicModificado.setNumero(Utilidades.defaultIfNullOrEmpty(datos.getNumero(), comic_temp.getNumero()));
-		comicModificado.setVariante(Utilidades.defaultIfNullOrEmpty(datos.getVariante(), comic_temp.getVariante()));
-		comicModificado.setFirma(Utilidades.defaultIfNullOrEmpty(datos.getFirma(), comic_temp.getFirma()));
-		comicModificado.setEditorial(Utilidades.defaultIfNullOrEmpty(datos.getEditorial(), comic_temp.getEditorial()));
-		comicModificado.setFormato(Utilidades.defaultIfNullOrEmpty(datos.getFormato(), comic_temp.getFormato()));
-		comicModificado
-				.setProcedencia(Utilidades.defaultIfNullOrEmpty(datos.getProcedencia(), comic_temp.getProcedencia()));
-		comicModificado.setFecha(Utilidades.defaultIfNullOrEmpty(datos.getFecha(), comic_temp.getFecha()));
-		comicModificado.setGuionista(Utilidades.defaultIfNullOrEmpty(datos.getGuionista(), comic_temp.getGuionista()));
-		comicModificado.setDibujante(Utilidades.defaultIfNullOrEmpty(datos.getDibujante(), comic_temp.getDibujante()));
-		comicModificado.setImagen(Utilidades.defaultIfNullOrEmpty(datos.getImagen(), comic_temp.getImagen()));
-		comicModificado.setEstado(Utilidades.defaultIfNullOrEmpty(datos.getEstado(), comic_temp.getEstado()));
-		comicModificado.setNumCaja(Utilidades.defaultIfNullOrEmpty(datos.getNumCaja(), comic_temp.getNumCaja()));
-		comicModificado.setPuntuacion(
-				comic_temp.getPuntuacion().equals("Sin puntuar") ? "Sin puntuar" : comic_temp.getPuntuacion());
-
-		String key_issue_sinEspacios = datos.getKey_issue().trim();
-
-		if (!key_issue_sinEspacios.isEmpty() && key_issue_sinEspacios.matches(".*\\w+.*")) {
-			comicModificado.setKey_issue(key_issue_sinEspacios);
-		} else if (comic_temp != null && comic_temp.getKey_issue() != null && !comic_temp.getKey_issue().isEmpty()) {
-			comicModificado.setKey_issue(comic_temp.getKey_issue());
-		}
-
-		String url_referencia = Utilidades.defaultIfNullOrEmpty(datos.getUrl_referencia(), "");
-		comicModificado.setUrl_referencia(url_referencia.isEmpty() ? "Sin referencia" : url_referencia);
-
-		String precio_comic = Utilidades.defaultIfNullOrEmpty(datos.getPrecio_comic(), "0");
-		comicModificado.setPrecio_comic(
-				String.valueOf(Utilidades.convertirMonedaADolar(comicModificado.getProcedencia(), precio_comic)));
-
-		comicModificado.setCodigo_comic(Utilidades.defaultIfNullOrEmpty(datos.getCodigo_comic(), ""));
-
-		accionFuncionesComunes.procesarComic(comicModificado, true);
-	}
 
 	/**
 	 * Oculta y deshabilita varios campos y elementos en la interfaz gráfica.
@@ -115,7 +59,7 @@ public class AccionModificar {
 	 * @throws SQLException Excepción lanzada en caso de errores de acceso a la base
 	 *                      de datos.
 	 */
-	public void accionPuntuar(boolean esAgregar) {
+	public static void accionPuntuar(boolean esAgregar) {
 
 		if (ConectManager.conexionActiva()) {
 			String id_comic = referenciaVentana.getIdComicTratar_mod().getText();
@@ -131,7 +75,7 @@ public class AccionModificar {
 
 					AlarmaList.mostrarMensajePront(mensaje, true, referenciaVentana.getProntInfo());
 
-					List<ComboBox<String>> comboboxes = VentanaAccionController.getComboBoxes();
+					List<ComboBox<String>> comboboxes = AccionReferencias.getComboboxes();
 
 					funcionesCombo.rellenarComboBox(comboboxes);
 				} else {
@@ -141,7 +85,101 @@ public class AccionModificar {
 
 			}
 		}
+	}
 
+	public static void venderComic() throws SQLException {
+		String id_comic = referenciaVentana.getIdComicTratar_mod().getText();
+		referenciaVentana.getIdComicTratar_mod().setStyle("");
+		Comic comicActualizar = ComicManagerDAO.comicDatos(id_comic);
+		if (accionFuncionesComunes.comprobarExistenciaComic(id_comic)) {
+			if (nav.alertaAccionGeneral()) {
+				ComicManagerDAO.actualizarComicBBDD(comicActualizar, "vender");
+				ListaComicsDAO.reiniciarListaComics();
+				String mensaje = ". Has puesto a la venta el comic";
+				AlarmaList.mostrarMensajePront(mensaje, false, referenciaVentana.getProntInfo());
+
+				List<ComboBox<String>> comboboxes = AccionReferencias.getComboboxes();
+
+				funcionesCombo.rellenarComboBox(comboboxes);
+			} else {
+				String mensaje = "Accion cancelada";
+				AlarmaList.mostrarMensajePront(mensaje, false, referenciaVentana.getProntInfo());
+			}
+
+		}
+	}
+
+	public static void modificarComic() throws Exception {
+
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
+		String id_comic = referenciaVentana.getIdComicTratar_mod().getText();
+		referenciaVentana.getIdComicTratar_mod().setStyle("");
+		if (accionFuncionesComunes.comprobarExistenciaComic(id_comic)) {
+			if (nav.alertaAccionGeneral()) {
+
+				Utilidades.convertirNombresCarpetas(AccionFuncionesComunes.SOURCE_PATH);
+
+				Comic comicModificado = AccionControlUI.comicModificado();
+
+				accionFuncionesComunes.procesarComic(comicModificado, true);
+
+				ListaComicsDAO.listasAutoCompletado();
+
+				List<ComboBox<String>> comboboxes = AccionReferencias.getComboboxes();
+				referenciaVentana.getTablaBBDD().refresh();
+				if (comboboxes != null) {
+					funcionesCombo.rellenarComboBox(comboboxes);
+				}
+			}
+
+			else {
+				String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
+
+				List<Comic> listaComics = ComicManagerDAO.verLibreria(sentenciaSQL);
+
+				ComicManagerDAO.borrarComic(id_comic);
+				ListaComicsDAO.reiniciarListaComics();
+				ListaComicsDAO.listasAutoCompletado();
+				FuncionesTableView.nombreColumnas(referenciaVentana.getTablaBBDD()); // Llamada a funcion
+				FuncionesTableView.actualizarBusquedaRaw(referenciaVentana.getTablaBBDD());
+				FuncionesTableView.tablaBBDD(listaComics, referenciaVentana.getTablaBBDD());
+
+				List<ComboBox<String>> comboboxes = AccionReferencias.getComboboxes();
+
+				funcionesCombo.rellenarComboBox(comboboxes);
+			}
+		}
+	}
+
+	public static void actualizarComicLista() {
+
+		if (!accionRellenoDatos.camposComicSonValidos()) {
+			String mensaje = "Error. Debes de introducir los datos correctos";
+			AlarmaList.mostrarMensajePront(mensaje, false, referenciaVentana.getProntInfo());
+			return; // Agregar return para salir del método en este punto
+		}
+		Comic datos = AccionControlUI.camposComic();
+
+		if (datos.getID() == null || datos.getID().isEmpty()) {
+			datos = ListaComicsDAO.buscarComicPorID(ListaComicsDAO.comicsImportados, datos.getID());
+		}
+
+		for (Comic c : ListaComicsDAO.comicsImportados) {
+			if (c.getID().equals(datos.getID())) {
+				ListaComicsDAO.comicsImportados.set(ListaComicsDAO.comicsImportados.indexOf(c), datos);
+				break;
+			}
+		}
+
+		AccionFuncionesComunes.cambiarEstadoBotones(false);
+		referenciaVentana.getBotonCancelarSubida().setVisible(false); // Oculta el botón de cancelar
+
+		Comic.limpiarCamposComic(datos);
+		AccionControlUI.limpiarAutorellenos();
+		FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, referenciaVentana.getTablaBBDD()); // funcion
 	}
 
 	public void mostrarElementosPuntuar(List<Node> elementosAMostrarYHabilitar) {
