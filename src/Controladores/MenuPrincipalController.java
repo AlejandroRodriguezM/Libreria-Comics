@@ -68,6 +68,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import webScrap.WebScraperCatalogPreviews;
 
 /**
  * Esta clase sirve viajar a las diferentes ventanas del programa, asi como
@@ -549,7 +550,7 @@ public class MenuPrincipalController implements Initializable {
 
 		Platform.runLater(() -> {
 
-			urlPreviews = Utilidades.urlPreviews();
+			urlPreviews = WebScraperCatalogPreviews.urlPreviews();
 			
 			enviarReferencias();
 
