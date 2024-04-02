@@ -1,6 +1,9 @@
 package Controladores;
 
+import java.io.File;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import Funcionamiento.Utilidades;
@@ -9,29 +12,51 @@ import alarmas.AlarmaList;
 import dbmanager.ConectManager;
 import dbmanager.DatabaseManagerDAO;
 import dbmanager.ListaComicsDAO;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.input.MouseEvent;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class OpcionesAvanzadasController implements Initializable {
 
 	@FXML
+	private Button botonActualizarDatos;
+
+	@FXML
+	private Button botonActualizarPortadas;
+
+	@FXML
 	private Button botonActualizarSoftware;
+
+	@FXML
+	private Button botonActualizarTodo;
+
+	@FXML
+	private Button botonDescargarPdf;
 
 	@FXML
 	private Button botonDescargarSQL;
 
 	@FXML
-	private Button botonDescargarSW;
+	private Button botonNormalizarDB;
 
 	@FXML
-	private Button botonNormalizarDB;
+	private CheckBox checkFirmas;
+
+	@FXML
+	private ComboBox<String> comboPreviews;
 
 	@FXML
 	private Label labelComprobar;
@@ -41,6 +66,14 @@ public class OpcionesAvanzadasController implements Initializable {
 
 	@FXML
 	private Label prontInfo;
+
+	@FXML
+	private Label prontInfoEspecial;
+
+	@FXML
+	private Label prontInfoPreviews;
+
+	public static ObservableList<String> urlActualizados = FXCollections.observableArrayList();
 
 	/**
 	 * Referencia a la ventana (stage).
@@ -58,22 +91,29 @@ public class OpcionesAvanzadasController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+
+		Platform.runLater(() -> {
+			rellenarComboboxPreviews();
+		});
 		miStageVentana();
 		obtenerVersionDesdeOtraClase();
 		AlarmaList.iniciarAnimacionEspera(prontInfo);
+		AlarmaList.iniciarAnimacionEspera(prontInfoEspecial);
+		AlarmaList.iniciarAnimacionEspera(prontInfoPreviews);
 	}
 
 	@FXML
-	void descargarActualizacion(MouseEvent event) {
+	void descargarActualizacion(ActionEvent event) {
 		Utilidades.descargarYAbrirEjecutableDesdeGitHub(stage);
 	}
 
 	@FXML
-	void descargarSQL(MouseEvent event) {
+	void descargarSQL(ActionEvent event) {
 
 		if (!ConectManager.conexionActiva()) {
 			return;
 		}
+
 		AlarmaList.detenerAnimacionEspera();
 		DatabaseManagerDAO.makeSQL(prontInfo);
 		Utilidades.borrarArchivosNoEnLista(ListaComicsDAO.listaImagenes);
@@ -81,31 +121,30 @@ public class OpcionesAvanzadasController implements Initializable {
 	}
 
 	@FXML
-	void comprobarVersion(MouseEvent event) {
+	void comprobarVersion(ActionEvent event) {
 		String versionSW = VersionService.obtenerVersion();
 		String versionLocal = VersionService.leerVersionDelArchivo();
 		AlarmaList.detenerAnimacionEspera();
 		labelComprobar.setStyle("-fx-text-fill: white;");
-		botonDescargarSW.setVisible(false);
 		String cadena = "";
-        if (compareVersions(versionSW, versionLocal) > 0) {
-            estaActualizado = false;
-            labelComprobar.setStyle("-fx-text-fill: red;");
-            cadena = "Versión desactualizada";
-        } else {
-            estaActualizado = true;
-            cadena = "Versión actualizada";
-        }
-		
+		if (compareVersions(versionSW, versionLocal) > 0) {
+			estaActualizado = false;
+			labelComprobar.setStyle("-fx-text-fill: red;");
+			cadena = "Versión desactualizada";
+		} else {
+			estaActualizado = true;
+			cadena = "Versión actualizada";
+		}
+
 		AlarmaList.iniciarAnimacionAvanzado(prontInfo, cadena);
 
 		if (!estaActualizado) {
-			botonDescargarSW.setVisible(true);
+			botonActualizarSoftware.setVisible(true);
 		}
 	}
 
 	@FXML
-	void normalizarDataBase(MouseEvent event) {
+	void normalizarDataBase(ActionEvent event) {
 		AlarmaList.detenerAnimacionEspera();
 		DatabaseManagerDAO.comprobarNormalizado("nomGuionista", prontInfo);
 		DatabaseManagerDAO.comprobarNormalizado("nomDibujante", prontInfo);
@@ -141,6 +180,74 @@ public class OpcionesAvanzadasController implements Initializable {
 		}
 
 		return Integer.compare(parts1.length, parts2.length);
+	}
+
+	@FXML
+	void actualizarCompletoComic(ActionEvent event) {
+
+	}
+
+	@FXML
+	void actualizarDatosComic(ActionEvent event) {
+
+	}
+
+	@FXML
+	void actualizarPortadaComic(ActionEvent event) {
+
+	}
+
+	@FXML
+	void descargarPreview(ActionEvent evento) {
+		if (Utilidades.isInternetAvailable()) {
+			Platform.runLater(() -> {
+				FileChooser fileChooser = new FileChooser();
+				fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos PDF", "*.pdf"));
+				File file = fileChooser.showSaveDialog(new Stage());
+
+				if (file != null) {
+					Utilidades.descargarPDFAsync(file, comboPreviews);
+					String cadenaAfirmativo = "PDF descargado exitosamente.";
+					AlarmaList.iniciarAnimacionAvanzado(prontInfoPreviews, cadenaAfirmativo);
+				} else {
+					String cadenaCancelado = "PDF descargado exitosamente.";
+					AlarmaList.iniciarAnimacionAvanzado(prontInfoPreviews, cadenaCancelado);
+				}
+			});
+		}else {
+			String cadenaCancelado = "No se puede descargar, no hay internet";
+			AlarmaList.iniciarAnimacionAvanzado(prontInfoPreviews, cadenaCancelado);
+		}
+	}
+
+	private void rellenarComboboxPreviews() {
+	    ObservableList<String> meses = FXCollections.observableArrayList();
+
+	    if (Utilidades.isInternetAvailable()) {
+	        Task<Void> task = new Task<Void>() {
+	            @Override
+	            protected Void call() throws Exception {
+	                List<Map.Entry<String, String>> previews = MenuPrincipalController.urlPreviews.get();
+	                ObservableList<String> mesesActualizados = FXCollections.observableArrayList();
+	                for (Map.Entry<String, String> entry : previews) {
+	                    urlActualizados.add(entry.getValue()); // Agregar la URL a la lista global
+	                    mesesActualizados.add(entry.getKey());
+	                }
+	                
+	                Platform.runLater(() -> {
+	                    comboPreviews.setItems(mesesActualizados);
+	                    comboPreviews.getSelectionModel().selectFirst();
+	                });
+	                
+	                return null;
+	            }
+	        };
+
+	        new Thread(task).start();
+	    } else {
+	        meses.add("No hay previews");
+	        comboPreviews.setItems(meses);
+	    }
 	}
 
 	/**

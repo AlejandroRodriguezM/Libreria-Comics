@@ -26,33 +26,39 @@ public class VersionService extends Service<String> {
 		};
 	}
 
-    public static String obtenerVersion() {
-        try {
-            URI uri = new URI(GITHUB_URL);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(uri.toURL().openStream(), StandardCharsets.UTF_8));
-            return reader.lines().collect(Collectors.joining());
-        } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
-            return "Error al obtener la versión";
-        }
-    }
-    
-    public static String leerVersionDelArchivo() {
-        StringBuilder version = new StringBuilder();
-        String direccionVersion = "version.txt";
-        
-        
-        try (InputStream is = VersionService.class.getResourceAsStream(direccionVersion);
-             BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
-            String linea;
-            while ((linea = reader.readLine()) != null) {
-                version.append(linea);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "Error al leer la versión";
-        }
-        
-        return version.toString();
-    }
+	public static String obtenerVersion() {
+
+		if (Utilidades.isInternetAvailable()) {
+			try {
+
+				URI uri = new URI(GITHUB_URL);
+				BufferedReader reader = new BufferedReader(
+						new InputStreamReader(uri.toURL().openStream(), StandardCharsets.UTF_8));
+				return reader.lines().collect(Collectors.joining());
+			} catch (IOException | URISyntaxException e) {
+				e.printStackTrace();
+				return "Error al obtener la versión";
+			}
+		}
+		return null;
+
+	}
+
+	public static String leerVersionDelArchivo() {
+		StringBuilder version = new StringBuilder();
+		String direccionVersion = "version.txt";
+
+		try (InputStream is = VersionService.class.getResourceAsStream(direccionVersion);
+				BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+			String linea;
+			while ((linea = reader.readLine()) != null) {
+				version.append(linea);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			return "Error al leer la versión";
+		}
+
+		return version.toString();
+	}
 }

@@ -3,11 +3,12 @@ package Controladores.managment;
 import java.util.Arrays;
 import java.util.List;
 
-import Funcionamiento.FuncionesComboBox;
-import Funcionamiento.FuncionesTableView;
 import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
+import controlUI.AccionControlUI;
+import controlUI.FuncionesComboBox;
+import controlUI.FuncionesTableView;
 import dbmanager.ComicManagerDAO;
 import dbmanager.DBUtilidades;
 import dbmanager.ListaComicsDAO;

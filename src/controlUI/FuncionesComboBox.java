@@ -1,4 +1,4 @@
-package Funcionamiento;
+package controlUI;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

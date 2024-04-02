@@ -68,10 +68,10 @@
 				</Menu>
 			</menus>
 		</MenuBar>
-                <VBox layoutX="4.0" layoutY="30.0" prefHeight="345.0" prefWidth="271.0" spacing="7">
+                <VBox fx:id="comboboxVbox" layoutX="4.0" layoutY="30.0" prefHeight="346.0" prefWidth="271.0" spacing="7" AnchorPane.bottomAnchor="374.0" AnchorPane.topAnchor="30.0">
             <children>
 
-		<Label layoutX="16.0" layoutY="33.0" prefHeight="25.0" prefWidth="96.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Busqueda general" wrapText="true">
+		<Label layoutX="16.0" layoutY="33.0" prefHeight="25.0" prefWidth="49.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="General" wrapText="true">
 			<font>
 				<Font size="11.0" />
 			</font>
@@ -116,12 +116,12 @@
 				<Font size="14.0" />
 			</font>
 		</Label>
-		<Label layoutX="16.0" layoutY="288.0" prefHeight="23.0" prefWidth="43.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Firma">
+		<Label layoutX="16.0" layoutY="288.0" prefHeight="23.0" prefWidth="35.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Firma">
 			<font>
 				<Font size="14.0" />
 			</font>
 		</Label>
-		<Label layoutX="16.0" layoutY="316.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Fecha publicacion">
+		<Label layoutX="16.0" layoutY="316.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Publicacion">
 			<font>
 				<Font size="13.0" />
 			</font>
@@ -160,25 +160,25 @@
 
 		</VBox>
 		
-		<TextField fx:id="busquedaGeneral" layoutX="109.0" layoutY="30.0" prefHeight="25.0" prefWidth="151.0" promptText="Busqueda general" />
-		<ComboBox fx:id="nombreComic" layoutX="109.0" layoutY="61.0" prefHeight="25.0" prefWidth="151.0" promptText="Seleccionar nombre" stylesheets="@../style/combobox_style.css" />
-		<ComboBox fx:id="numeroComic" layoutX="109.0" layoutY="89.0" prefHeight="25.0" prefWidth="151.0" promptText="Seleccionar numero" stylesheets="@../style/combobox_style.css" />
-		<ComboBox fx:id="nombreVariante" layoutX="109.0" layoutY="117.0" prefHeight="25.0" prefWidth="151.0" promptText="Seleccionar variante" stylesheets="@../style/combobox_style.css" />
-		<ComboBox fx:id="nombreProcedencia" layoutX="109.0" layoutY="145.0" prefHeight="25.0" prefWidth="151.0" promptText="Selecciona procedencia" stylesheets="@../style/combobox_style.css" />
-		<ComboBox fx:id="nombreFormato" layoutX="109.0" layoutY="173.0" prefHeight="25.0" prefWidth="151.0" promptText="Selecciona formato" stylesheets="@../style/combobox_style.css" />
-		<ComboBox fx:id="nombreDibujante" layoutX="109.0" layoutY="201.0" prefHeight="25.0" prefWidth="151.0" promptText="Seleccionar dibujante" stylesheets="@../style/combobox_style.css" />
-		<ComboBox fx:id="nombreGuionista" layoutX="109.0" layoutY="229.0" prefHeight="25.0" prefWidth="151.0" promptText="Seleccionar guionista" stylesheets="@../style/combobox_style.css" />
-		<ComboBox fx:id="nombreEditorial" layoutX="109.0" layoutY="257.0" prefHeight="25.0" prefWidth="151.0" promptText="Seleccionar editorial" stylesheets="@../style/combobox_style.css" />
-		<ComboBox fx:id="nombreFirma" layoutX="109.0" layoutY="285.0" prefHeight="25.0" prefWidth="151.0" promptText="Seleccionar firma" stylesheets="@../style/combobox_style.css" />
-		<DatePicker fx:id="fechaPublicacion" layoutX="109.0" layoutY="315.0" prefHeight="25.0" prefWidth="151.0" promptText="2000-01-01" />
-		<ComboBox fx:id="numeroCaja" layoutX="109.0" layoutY="343.0" prefHeight="25.0" prefWidth="151.0" promptText="Selecciona caja" stylesheets="@../style/combobox_style.css" />
-		<Button fx:id="botonLimpiar" layoutX="277.0" layoutY="31.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="35.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Limpiar/Reiniciar" />
-		<Button fx:id="botonbbdd" layoutX="277.0" layoutY="72.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="25.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Ver todo" />
-		<Button fx:id="botonMostrarParametro" alignment="CENTER" contentDisplay="BOTTOM" layoutX="277.0" layoutY="116.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="35.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Busqueda" />
+		<TextField fx:id="busquedaGeneral" layoutX="73.0" layoutY="30.0" prefHeight="25.0" prefWidth="151.0" promptText="Busqueda general" />
+		<ComboBox fx:id="nombreComic" layoutX="73.0" layoutY="61.0" prefHeight="25.0" prefWidth="151.0" promptText="Seleccionar nombre" stylesheets="@../style/combobox_style.css" />
+		<ComboBox fx:id="numeroComic" layoutX="73.0" layoutY="89.0" prefHeight="25.0" prefWidth="151.0" promptText="Seleccionar numero" stylesheets="@../style/combobox_style.css" />
+		<ComboBox fx:id="nombreVariante" layoutX="73.0" layoutY="117.0" prefHeight="25.0" prefWidth="151.0" promptText="Seleccionar variante" stylesheets="@../style/combobox_style.css" />
+		<ComboBox fx:id="nombreProcedencia" layoutX="73.0" layoutY="145.0" prefHeight="25.0" prefWidth="151.0" promptText="Selecciona procedencia" stylesheets="@../style/combobox_style.css" />
+		<ComboBox fx:id="nombreFormato" layoutX="73.0" layoutY="173.0" prefHeight="25.0" prefWidth="151.0" promptText="Selecciona formato" stylesheets="@../style/combobox_style.css" />
+		<ComboBox fx:id="nombreDibujante" layoutX="73.0" layoutY="201.0" prefHeight="25.0" prefWidth="151.0" promptText="Seleccionar dibujante" stylesheets="@../style/combobox_style.css" />
+		<ComboBox fx:id="nombreGuionista" layoutX="73.0" layoutY="229.0" prefHeight="25.0" prefWidth="151.0" promptText="Seleccionar guionista" stylesheets="@../style/combobox_style.css" />
+		<ComboBox fx:id="nombreEditorial" layoutX="73.0" layoutY="257.0" prefHeight="25.0" prefWidth="151.0" promptText="Seleccionar editorial" stylesheets="@../style/combobox_style.css" />
+		<ComboBox fx:id="nombreFirma" layoutX="73.0" layoutY="285.0" prefHeight="25.0" prefWidth="151.0" promptText="Seleccionar firma" stylesheets="@../style/combobox_style.css" />
+		<DatePicker fx:id="fechaPublicacion" layoutX="73.0" layoutY="315.0" prefHeight="25.0" prefWidth="151.0" promptText="2000-01-01" />
+		<ComboBox fx:id="numeroCaja" layoutX="73.0" layoutY="343.0" prefHeight="25.0" prefWidth="151.0" promptText="Selecciona caja" stylesheets="@../style/combobox_style.css" />
+		<Button fx:id="botonLimpiar" layoutX="231.0" layoutY="31.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Limpiar" />
+		<Button fx:id="botonbbdd" layoutX="231.0" layoutY="72.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Ver todo" />
+		<Button fx:id="botonMostrarParametro" alignment="CENTER" contentDisplay="BOTTOM" layoutX="231.0" layoutY="116.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Busqueda" />
       <Label fx:id="alarmaConexionSql" layoutX="1187.0" prefHeight="25.0" prefWidth="23.0" stylesheets="@../style/alarma_conexion_style.css" AnchorPane.rightAnchor="2.0" />
       <AnchorPane fx:id="anchoPaneInfo" layoutX="610.0" layoutY="31.0" prefHeight="339.0" prefWidth="593.0" AnchorPane.rightAnchor="9.0">
          <children>
-              <VBox fx:id="vboxContenido" layoutX="6.0" layoutY="1.0" prefHeight="337.0" prefWidth="241.0">
+              <VBox fx:id="vboxContenido" layoutX="35.0" layoutY="1.0" prefHeight="337.0" prefWidth="241.0">
                <children>
             		
                                             <ImageView fx:id="imagencomic" fitHeight="337.0" fitWidth="244.0" onMouseClicked="#ampliarImagen" pickOnBounds="true" preserveRatio="true" />
@@ -192,16 +192,19 @@
          </children>
       </AnchorPane>
         <ProgressIndicator fx:id="progresoCarga" layoutX="1154.0" layoutY="317.0" prefHeight="66.0" prefWidth="70.0" stylesheets="@../style/progreso_style.css" visible="false" />
-      <Button fx:id="botonIntroducir" layoutX="407.0" layoutY="31.0" mnemonicParsing="false" onAction="#accionComic" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Añadir Comic" />
-      <Button fx:id="botonModificar" layoutX="506.0" layoutY="31.0" mnemonicParsing="false" onAction="#accionComic" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Modificar Comic">
+      <Button fx:id="botonIntroducir" layoutX="340.0" layoutY="31.0" mnemonicParsing="false" onAction="#accionComic" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Añadir Comic" />
+      <Button fx:id="botonModificar" layoutX="439.0" layoutY="31.0" mnemonicParsing="false" onAction="#accionComic" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Modificar Comic">
          <font>
             <Font size="10.0" />
          </font></Button>
-      <Button fx:id="botonEliminar" layoutX="407.0" layoutY="72.0" mnemonicParsing="false" onAction="#accionComic" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Eliminar Comic" />
-      <Button fx:id="botonAgregarPuntuacion" layoutX="506.0" layoutY="72.0" mnemonicParsing="false" onAction="#accionComic" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Puntuar Comic" />
-      <Button fx:id="botonImprimir" layoutX="372.0" layoutY="333.0" mnemonicParsing="false" onAction="#imprimirResultado" prefHeight="35.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Imprimir resultado" visible="false" />
-      <Button fx:id="botonGuardarResultado" layoutX="269.0" layoutY="333.0" mnemonicParsing="false" onAction="#guardarResultado" prefHeight="35.0" prefWidth="96.0" stylesheets="@../style/genericos_style.css" text="Guardar resultado" visible="false" />
-      <Button fx:id="botonMostrarGuardados" alignment="CENTER" contentDisplay="BOTTOM" layoutX="277.0" layoutY="158.0" mnemonicParsing="false" onAction="#comicsGuardados" prefHeight="35.0" prefWidth="102.0" stylesheets="@../style/genericos_style.css" text="Ver guardados" visible="false" />
+      <Button fx:id="botonEliminar" layoutX="340.0" layoutY="72.0" mnemonicParsing="false" onAction="#accionComic" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Eliminar Comic" />
+      <Button fx:id="botonAgregarPuntuacion" layoutX="439.0" layoutY="72.0" mnemonicParsing="false" onAction="#accionComic" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Puntuar Comic" />
+      <Button fx:id="botonImprimir" layoutX="290.0" layoutY="337.0" mnemonicParsing="false" onAction="#imprimirResultado" prefHeight="21.0" prefWidth="53.0" stylesheets="@../style/genericos_style.css" text="Imprimir" textAlignment="CENTER" visible="false" wrapText="true" />
+      <Button fx:id="botonGuardarResultado" layoutX="231.0" layoutY="337.0" mnemonicParsing="false" onAction="#guardarResultado" prefHeight="13.0" prefWidth="53.0" stylesheets="@../style/genericos_style.css" text="Guardar" textAlignment="CENTER" visible="false" wrapText="true" />
+      <Button fx:id="botonMostrarGuardados" alignment="CENTER" contentDisplay="BOTTOM" layoutX="231.0" layoutY="158.0" mnemonicParsing="false" onAction="#comicsGuardados" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Ver Guardados" visible="false">
+         <font>
+            <Font size="11.0" />
+         </font></Button>
 
     </children>
 </AnchorPane>

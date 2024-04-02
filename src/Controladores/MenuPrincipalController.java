@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -19,18 +20,18 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import Controladores.managment.AccionControlUI;
 import Controladores.managment.AccionFuncionesComunes;
 import Controladores.managment.AccionReferencias;
 import Controladores.managment.AccionSeleccionar;
-import Funcionamiento.FuncionesComboBox;
 import Funcionamiento.FuncionesExcel;
-import Funcionamiento.FuncionesManejoFront;
-import Funcionamiento.FuncionesTableView;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
+import controlUI.AccionControlUI;
+import controlUI.FuncionesComboBox;
+import controlUI.FuncionesManejoFront;
+import controlUI.FuncionesTableView;
 import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
@@ -371,6 +372,9 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	private VBox vboxImage;
 
+	@FXML
+	private VBox comboboxVbox;
+
 	/**
 	 * Panel de anclaje para información.
 	 */
@@ -418,6 +422,8 @@ public class MenuPrincipalController implements Initializable {
 	private static FuncionesComboBox funcionesCombo = new FuncionesComboBox();
 
 	public static AccionReferencias referenciaVentana = new AccionReferencias();
+	
+	public static CompletableFuture<List<Entry<String, String>>> urlPreviews;
 
 	double y = 0;
 
@@ -543,6 +549,8 @@ public class MenuPrincipalController implements Initializable {
 
 		Platform.runLater(() -> {
 
+			urlPreviews = Utilidades.urlPreviews();
+			
 			enviarReferencias();
 
 			establecerDinamismoAnchor();
@@ -605,10 +613,9 @@ public class MenuPrincipalController implements Initializable {
 			double deltaY = event.getScreenY() - y;
 			double newHeight = rootVBox.getPrefHeight() - deltaY;
 			double max_height = calcularMaxHeight(); // Calcula el máximo altura permitido
-			double min_height = 300; // Límite mínimo de altura
+			double min_height = 250; // Límite mínimo de altura
 
-			if (newHeight > min_height && newHeight <= max_height) { // Verificar si la nueva altura está dentro del
-																		// límite
+			if (newHeight > min_height && newHeight <= max_height) {
 				rootVBox.setPrefHeight(newHeight);
 				rootVBox.setLayoutY(tablaBBDD.getLayoutY() + deltaY);
 				tablaBBDD.setPrefHeight(newHeight);
@@ -626,6 +633,57 @@ public class MenuPrincipalController implements Initializable {
 				barraCambioAltura.setCursor(Cursor.DEFAULT);
 			}
 		});
+
+		rootAnchorPane.heightProperty().addListener((observable, oldValue, newHeightValue) -> {
+			rootVBox.setMaxHeight(calcularMaxHeight());
+		});
+
+		rootAnchorPane.widthProperty().addListener((observable, oldValue, newWidthValue) -> {
+			double newWidth = newWidthValue.doubleValue();
+
+			if (newWidth <= 1130) {
+
+				botonIntroducir.setLayoutX(231);
+				botonIntroducir.setLayoutY(199);
+				
+				botonEliminar.setLayoutX(231);
+				botonEliminar.setLayoutY(240);
+				
+				botonModificar.setLayoutX(231);
+				botonModificar.setLayoutY(280);
+
+				botonAgregarPuntuacion.setLayoutX(231);
+				botonAgregarPuntuacion.setLayoutY(321);
+				
+				botonGuardarResultado.setLayoutX(327);
+				botonGuardarResultado.setLayoutY(32);
+				
+				botonImprimir.setLayoutX(327);
+				botonImprimir.setLayoutY(74);
+
+			} else if (newWidth >= 1131) {
+
+				botonIntroducir.setLayoutX(340);
+				botonIntroducir.setLayoutY(31);
+				
+				botonEliminar.setLayoutX(340);
+				botonEliminar.setLayoutY(72);
+				
+				botonModificar.setLayoutX(439);
+				botonModificar.setLayoutY(31);
+
+				botonAgregarPuntuacion.setLayoutX(439);
+				botonAgregarPuntuacion.setLayoutY(72);
+				
+				botonGuardarResultado.setLayoutX(231);
+				botonGuardarResultado.setLayoutY(337);
+				
+				botonImprimir.setLayoutX(290);
+				botonImprimir.setLayoutY(337);
+
+			}
+		});
+
 	}
 
 	// Método para calcular el máximo altura permitido
@@ -636,8 +694,7 @@ public class MenuPrincipalController implements Initializable {
 
 		// Ajustar el máximo altura permitido según la posición del AnchorPane
 		// numeroCaja
-		double max_height = windowHeight - numeroCaja.getLayoutY() - 80; // 80 es un valor arbitrario para dejar un
-																			// pequeño espacio
+		double max_height = windowHeight - numeroCaja.getLayoutY() - 80;
 		return max_height;
 	}
 

@@ -3,10 +3,11 @@ package Controladores.managment;
 import java.sql.SQLException;
 import java.util.List;
 
-import Funcionamiento.FuncionesTableView;
 import Funcionamiento.Utilidades;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
+import controlUI.AccionControlUI;
+import controlUI.FuncionesTableView;
 import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;

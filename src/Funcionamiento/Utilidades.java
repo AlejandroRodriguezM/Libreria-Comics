@@ -6,6 +6,7 @@ package Funcionamiento;
 
 import java.awt.Desktop;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -62,10 +63,15 @@ import java.util.zip.ZipOutputStream;
 import javax.imageio.ImageIO;
 
 import org.json.JSONException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import Apis.ApiCambioDivisas;
 import Apis.ApiISBNGeneral;
 import Apis.ApiMarvel;
+import Controladores.OpcionesAvanzadasController;
 import comicManagement.Comic;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
@@ -75,6 +81,7 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -2136,6 +2143,79 @@ public class Utilidades {
 		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg"));
 
 		return fileChooser;
+	}
+
+    public static CompletableFuture<List<Map.Entry<String, String>>> urlPreviews() {
+        return CompletableFuture.supplyAsync(() -> {
+            List<Map.Entry<String, String>> resultList = new ArrayList<>();
+
+            try {
+                String urlWeb = "https://prhcomics.com/comics/";
+                Document doc = Jsoup.connect(urlWeb).get();
+
+                Map<String, String> mesesYEnlaces = new HashMap<>();
+                Elements articulos = doc.select("div.catalog-item");
+
+                for (Element articulo : articulos) {
+                    String tituloCatalogo = articulo.select("div.catalog-meta-title").text();
+                    String enlaceCatalogo = articulo.select("div.catalog-link-pdf a[href]").attr("href");
+                    if (enlaceCatalogo.contains("PRH-Panels")) {
+                        mesesYEnlaces.put(tituloCatalogo, enlaceCatalogo);
+                    }
+                }
+
+                resultList.addAll(mesesYEnlaces.entrySet());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return resultList;
+        });
+    }
+
+	public static void descargarPDFAsync(File file, ComboBox<String> comboPreviews) {
+		String seleccion = comboPreviews.getValue();
+
+		if (seleccion != null) {
+			int indiceSeleccionado = comboPreviews.getSelectionModel().getSelectedIndex();
+			if (indiceSeleccionado >= 0 && indiceSeleccionado < OpcionesAvanzadasController.urlActualizados.size()) {
+				String urlSeleccionada =  OpcionesAvanzadasController.urlActualizados.get(indiceSeleccionado);
+
+				Task<Void> task = new Task<Void>() {
+					@Override
+					protected Void call() throws Exception {
+						try {
+							URI uri = new URI(urlSeleccionada);
+							URLConnection conexion = uri.toURL().openConnection();
+							InputStream inputStream = conexion.getInputStream();
+							BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+							FileOutputStream fileOutputStream = new FileOutputStream(file);
+							byte[] buffer = new byte[1024];
+							int bytesRead;
+							while ((bytesRead = bufferedInputStream.read(buffer)) != -1) {
+								fileOutputStream.write(buffer, 0, bytesRead);
+							}
+							fileOutputStream.close();
+							bufferedInputStream.close();
+							// Actualizar la interfaz de usuario desde el hilo de JavaFX
+
+						} catch (IOException | URISyntaxException e) {
+							// Manejar excepciones en el hilo de JavaFX
+							Platform.runLater(() -> Utilidades.manejarExcepcion(e));
+						}
+						return null;
+					}
+				};
+
+				// Manejar excepciones generadas dentro del Task
+				task.setOnFailed(event -> Utilidades.manejarExcepcion((Exception) task.getException()));
+
+				// Ejecutar el Task en un nuevo hilo
+				Thread thread = new Thread(task);
+				thread.setDaemon(true); // Para que el hilo finalice cuando la aplicación principal se cierre
+				thread.start();
+			}
+		}
 	}
 
 }

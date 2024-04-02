@@ -1,4 +1,4 @@
-package Controladores.managment;
+package controlUI;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -9,12 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import Controladores.MenuPrincipalController;
 import Controladores.VentanaAccionController;
-import Funcionamiento.FuncionesComboBox;
-import Funcionamiento.FuncionesManejoFront;
-import Funcionamiento.FuncionesTableView;
-import Funcionamiento.FuncionesTooltips;
+import Controladores.managment.AccionAniadir;
+import Controladores.managment.AccionEliminar;
+import Controladores.managment.AccionFuncionesComunes;
+import Controladores.managment.AccionModificar;
+import Controladores.managment.AccionReferencias;
+import Controladores.managment.AccionSeleccionar;
 import Funcionamiento.Utilidades;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
@@ -38,8 +39,6 @@ public class AccionControlUI {
 	public static AccionReferencias referenciaVentana = new AccionReferencias();
 
 	private static VentanaAccionController accionController = new VentanaAccionController();
-
-	private static MenuPrincipalController principalController = new MenuPrincipalController();
 
 	private static AccionAniadir accionAniadir = new AccionAniadir();
 
@@ -409,42 +408,49 @@ public class AccionControlUI {
 	 * elementos.
 	 */
 	public static void establecerTooltips() {
-	    Platform.runLater(() -> {
-	        Map<Node, String> tooltipsMap = new HashMap<>();
+		Platform.runLater(() -> {
+			Map<Node, String> tooltipsMap = new HashMap<>();
 
-	        tooltipsMap.put(referenciaVentana.getNombreComic(), "Nombre de los cómics / libros / mangas");
-	        tooltipsMap.put(referenciaVentana.getNumeroComic(), "Número del cómic / libro / manga");
-	        tooltipsMap.put(referenciaVentana.getVarianteComic(), "Nombre de la variante del cómic / libro / manga");
-	        tooltipsMap.put(referenciaVentana.getBotonLimpiar(), "Limpia la pantalla y reinicia todos los valores");
-	        tooltipsMap.put(referenciaVentana.getBotonbbdd(), "Botón para acceder a la base de datos");
-	        tooltipsMap.put(referenciaVentana.getBotonSubidaPortada(), "Botón para subir una portada");
-	        tooltipsMap.put(referenciaVentana.getBotonEliminar(), "Botón para eliminar un cómic");
-	        tooltipsMap.put(referenciaVentana.getBotonVender(), "Botón para vender un cómic");
-	        tooltipsMap.put(referenciaVentana.getBotonParametroComic(), "Botón para buscar un cómic mediante una lista de parámetros");
-	        tooltipsMap.put(referenciaVentana.getBotonModificarComic(), "Botón para modificar un cómic");
-	        tooltipsMap.put(referenciaVentana.getBotonBorrarOpinion(), "Botón para borrar una opinión");
-	        tooltipsMap.put(referenciaVentana.getBotonAgregarPuntuacion(), "Botón para agregar una puntuación");
-	        tooltipsMap.put(referenciaVentana.getPuntuacionMenu(), "Selecciona una puntuación en el menú");
+			tooltipsMap.put(referenciaVentana.getNombreComic(), "Nombre de los cómics / libros / mangas");
+			tooltipsMap.put(referenciaVentana.getNumeroComic(), "Número del cómic / libro / manga");
+			tooltipsMap.put(referenciaVentana.getVarianteComic(), "Nombre de la variante del cómic / libro / manga");
+			tooltipsMap.put(referenciaVentana.getBotonLimpiar(), "Limpia la pantalla y reinicia todos los valores");
+			tooltipsMap.put(referenciaVentana.getBotonbbdd(), "Botón para acceder a la base de datos");
+			tooltipsMap.put(referenciaVentana.getBotonSubidaPortada(), "Botón para subir una portada");
+			tooltipsMap.put(referenciaVentana.getBotonEliminar(), "Botón para eliminar un cómic");
+			tooltipsMap.put(referenciaVentana.getBotonVender(), "Botón para vender un cómic");
+			tooltipsMap.put(referenciaVentana.getBotonParametroComic(),
+					"Botón para buscar un cómic mediante una lista de parámetros");
+			tooltipsMap.put(referenciaVentana.getBotonModificarComic(), "Botón para modificar un cómic");
+			tooltipsMap.put(referenciaVentana.getBotonBorrarOpinion(), "Botón para borrar una opinión");
+			tooltipsMap.put(referenciaVentana.getBotonAgregarPuntuacion(), "Botón para agregar una puntuación");
+			tooltipsMap.put(referenciaVentana.getPuntuacionMenu(), "Selecciona una puntuación en el menú");
 
-	        tooltipsMap.put(referenciaVentana.getNombreFirma(), "Nombre de la firma del cómic / libro / manga");
-	        tooltipsMap.put(referenciaVentana.getNombreGuionista(), "Nombre del guionista del cómic / libro / manga");
-	        tooltipsMap.put(referenciaVentana.getNombreProcedencia(), "Nombre de la procedencia del cómic / libro / manga");
-	        tooltipsMap.put(referenciaVentana.getNombreFormato(), "Nombre del formato del cómic / libro / manga");
-	        tooltipsMap.put(referenciaVentana.getNombreEditorial(), "Nombre de la editorial del cómic / libro / manga");
-	        tooltipsMap.put(referenciaVentana.getNombreDibujante(), "Nombre del dibujante del cómic / libro / manga");
-	        tooltipsMap.put(referenciaVentana.getFechaPublicacion(), "Fecha del cómic / libro / manga");
-	        tooltipsMap.put(referenciaVentana.getBusquedaGeneral(), "Puedes buscar de forma general los cómic / libro / manga / artistas / guionistas");
-	        tooltipsMap.put(referenciaVentana.getNumeroCaja(), "Caja donde guardas el cómic / libro / manga");
-	        tooltipsMap.put(referenciaVentana.getBotonIntroducir(), "Realizar una acción de introducción del cómic / libro / manga");
-	        tooltipsMap.put(referenciaVentana.getBotonModificar(), "Realizar una acción de modificación del cómic / libro / manga");
-	        tooltipsMap.put(referenciaVentana.getBotonEliminar(), "Realizar una acción de eliminación del cómic / libro / manga");
-	        tooltipsMap.put(referenciaVentana.getBotonAgregarPuntuacion(), "Abrir una ventana para agregar puntuación del cómic / libro / manga");
-	        tooltipsMap.put(referenciaVentana.getBotonMostrarParametro(), "Buscar por parámetros según los datos rellenados");
+			tooltipsMap.put(referenciaVentana.getNombreFirma(), "Nombre de la firma del cómic / libro / manga");
+			tooltipsMap.put(referenciaVentana.getNombreGuionista(), "Nombre del guionista del cómic / libro / manga");
+			tooltipsMap.put(referenciaVentana.getNombreProcedencia(),
+					"Nombre de la procedencia del cómic / libro / manga");
+			tooltipsMap.put(referenciaVentana.getNombreFormato(), "Nombre del formato del cómic / libro / manga");
+			tooltipsMap.put(referenciaVentana.getNombreEditorial(), "Nombre de la editorial del cómic / libro / manga");
+			tooltipsMap.put(referenciaVentana.getNombreDibujante(), "Nombre del dibujante del cómic / libro / manga");
+			tooltipsMap.put(referenciaVentana.getFechaPublicacion(), "Fecha del cómic / libro / manga");
+			tooltipsMap.put(referenciaVentana.getBusquedaGeneral(),
+					"Puedes buscar de forma general los cómic / libro / manga / artistas / guionistas");
+			tooltipsMap.put(referenciaVentana.getNumeroCaja(), "Caja donde guardas el cómic / libro / manga");
+			tooltipsMap.put(referenciaVentana.getBotonIntroducir(),
+					"Realizar una acción de introducción del cómic / libro / manga");
+			tooltipsMap.put(referenciaVentana.getBotonModificar(),
+					"Realizar una acción de modificación del cómic / libro / manga");
+			tooltipsMap.put(referenciaVentana.getBotonEliminar(),
+					"Realizar una acción de eliminación del cómic / libro / manga");
+			tooltipsMap.put(referenciaVentana.getBotonAgregarPuntuacion(),
+					"Abrir una ventana para agregar puntuación del cómic / libro / manga");
+			tooltipsMap.put(referenciaVentana.getBotonMostrarParametro(),
+					"Buscar por parámetros según los datos rellenados");
 
-	        FuncionesTooltips.assignTooltips(tooltipsMap);
-	    });
+			FuncionesTooltips.assignTooltips(tooltipsMap);
+		});
 	}
-
 
 	public static void listas_autocompletado() {
 		if (ConectManager.conexionActiva()) {
@@ -541,7 +547,7 @@ public class AccionControlUI {
 		// Establecer un Listener para el tamaño del AnchorPane
 		referenciaVentana.getRootAnchorPane().widthProperty().addListener((observable, oldValue, newValue) -> {
 
-			principalController.establecerDinamismoAnchor();
+//			principalController.establecerDinamismoAnchor();
 
 			FuncionesTableView.ajustarAnchoVBox(referenciaVentana.getProntInfo(), referenciaVentana.getVboxContenido());
 			FuncionesTableView.seleccionarRaw(referenciaVentana.getTablaBBDD());

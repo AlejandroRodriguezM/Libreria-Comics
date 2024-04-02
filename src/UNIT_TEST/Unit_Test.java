@@ -21,7 +21,9 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
@@ -34,6 +36,7 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import Apis.ApiISBNGeneral;
 import Apis.ApiMarvel;
@@ -161,6 +164,7 @@ public class Unit_Test extends Application {
 	 */
 	public static void main(String[] args)
 			throws IOException, JSONException, URISyntaxException, SQLException, ComicInfoException {
+
 //		testDescargaImagen();
 //		mostrarComicMarvel();
 //		mostrarComicGeneral();
@@ -183,44 +187,80 @@ public class Unit_Test extends Application {
 //		comicModificarCodigoPruebaCompleta();
 
 //		nav.verMenuCodigosBarra();
-		
+
 //		nav.verEstadoConexion();
-		
-		System.out.println(leerVersionDelArchivo());
+
+		String urlWeb = "https://prhcomics.com/comics/";
+		urlPreviews(urlWeb);
+
+//		System.out.println(leerVersionDelArchivo());
 
 	}
-	
+
+    public static void urlPreviews(String urlWeb) {
+        try {
+            // Descargar el HTML
+            Document doc = Jsoup.connect(urlWeb).get();
+
+            // Crear un mapa para almacenar los meses y los enlaces
+            Map<String, String> mesesYEnlaces = new HashMap<>();
+
+            // Seleccionar todos los artículos con la clase "catalog-item"
+            Elements articulos = doc.select("div.catalog-item");
+
+            // Iterar sobre los artículos
+            for (Element articulo : articulos) {
+                // Obtener el título del catálogo
+                String tituloCatalogo = articulo.select("div.catalog-meta-title").text();
+                
+                // Obtener el enlace del catálogo
+                String enlaceCatalogo = articulo.select("div.catalog-link-pdf a[href]").attr("href");
+
+                // Verificar si el enlace contiene la palabra "PRH-Panels"
+                if (enlaceCatalogo.contains("PRH-Panels")) {
+                    mesesYEnlaces.put(tituloCatalogo, enlaceCatalogo);
+                }
+            }
+
+            // Imprimir los meses y enlaces que contienen "PRH-Panels"
+            for (Map.Entry<String, String> entry : mesesYEnlaces.entrySet()) {
+                System.out.println("Mes: " + entry.getKey());
+                System.out.println("Enlace: " + entry.getValue());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 	public static String leerVersionDelArchivo() {
-	    StringBuilder version = new StringBuilder();
-	    
-	    try (InputStream is = VersionService.class.getResourceAsStream("/version.txt")) {
-	        if (is == null) {
-	            throw new IOException("No se pudo encontrar el archivo version.txt");
-	        }
-	        
-	        // Obtener la URL del recurso
-	        java.net.URL url = VersionService.class.getResource("version.txt");
-	        if (url != null) {
-	            System.out.println("Ruta del archivo version.txt: " + url.getPath());
-	        } else {
-	            System.out.println("No se pudo obtener la ruta del archivo version.txt");
-	        }
-	        
-	        try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
-	            String linea;
-	            while ((linea = reader.readLine()) != null) {
-	                version.append(linea);
-	            }
-	        }
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	        return "Error al leer la versión";
-	    }
-	    
-	    return version.toString();
+		StringBuilder version = new StringBuilder();
+
+		try (InputStream is = VersionService.class.getResourceAsStream("/version.txt")) {
+			if (is == null) {
+				throw new IOException("No se pudo encontrar el archivo version.txt");
+			}
+
+			// Obtener la URL del recurso
+			java.net.URL url = VersionService.class.getResource("version.txt");
+			if (url != null) {
+				System.out.println("Ruta del archivo version.txt: " + url.getPath());
+			} else {
+				System.out.println("No se pudo obtener la ruta del archivo version.txt");
+			}
+
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+				String linea;
+				while ((linea = reader.readLine()) != null) {
+					version.append(linea);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			return "Error al leer la versión";
+		}
+
+		return version.toString();
 	}
-
-
 
 	public void start(Stage primaryStage) {
 //
