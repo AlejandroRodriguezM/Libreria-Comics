@@ -54,7 +54,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
@@ -2117,5 +2116,37 @@ public class Utilidades {
 			}
 		}
 	}
+	
+    public static String eliminarParentesis(String input) {
+        StringBuilder resultado = new StringBuilder();
+        boolean dentroDeParentesis = false;
+
+        for (int i = 0; i < input.length(); i++) {
+            char caracter = input.charAt(i);
+            
+            if (caracter == '(') {
+                dentroDeParentesis = true;
+            } else if (caracter == ')') {
+                dentroDeParentesis = false;
+            } else if (!dentroDeParentesis) {
+                resultado.append(caracter);
+            }
+        }
+
+        // Convertir la primera letra de cada palabra a mayúscula
+        String[] palabras = resultado.toString().trim().split("\\s+");
+        StringBuilder resultadoFinal = new StringBuilder();
+        for (String palabra : palabras) {
+            if (palabra.length() > 0) {
+                resultadoFinal.append(Character.toUpperCase(palabra.charAt(0)));
+                if (palabra.length() > 1) {
+                    resultadoFinal.append(palabra.substring(1).toLowerCase());
+                }
+                resultadoFinal.append(" ");
+            }
+        }
+
+        return resultadoFinal.toString().trim(); // Elimina espacios en blanco al inicio y al final
+    }
 
 }

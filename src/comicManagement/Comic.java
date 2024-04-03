@@ -112,79 +112,6 @@ public class Comic {
 	protected String codigo_comic;
 
 	/**
-	 * Constructor para crear un objeto Comic con todos los atributos.
-	 *
-	 * @param ID             El ID único del cómic.
-	 * @param nombre         El nombre del cómic.
-	 * @param numCaja        El número de caja del cómic.
-	 * @param numero         El número de edición del cómic.
-	 * @param variante       La variante del cómic.
-	 * @param firma          La firma asociada al cómic.
-	 * @param editorial      La editorial del cómic.
-	 * @param formato        El formato del cómic.
-	 * @param procedencia    La procedencia del cómic.
-	 * @param fecha          La fecha de venta del cómic.
-	 * @param guionista      El guionista del cómic.
-	 * @param dibujante      El dibujante del cómic.
-	 * @param estado         El estado del cómic.
-	 * @param key_issue      La clave (key issue) del cómic.
-	 * @param puntuacion     La puntuación del cómic.
-	 * @param imagen         La URL de la imagen del cómic.
-	 * @param url_referencia La URL de referencia del cómic.
-	 * @param precio_comic   El precio del cómic.
-	 */
-	public Comic(String ID, String nombre, String numCaja, String numero, String variante, String firma,
-			String editorial, String formato, String procedencia, String fecha, String guionista, String dibujante,
-			String estado, String key_issue, String puntuacion, String imagen, String url_referencia,
-			String precio_comic, String codigo_comic) {
-		this.ID = ID;
-		this.nombre = nombre;
-		this.numCaja = numCaja;
-		this.numero = numero;
-		this.variante = variante;
-		this.firma = firma;
-		this.editorial = editorial;
-		this.formato = formato;
-		this.procedencia = procedencia;
-		this.fecha = fecha;
-		this.guionista = guionista;
-		this.dibujante = dibujante;
-		this.key_issue = key_issue;
-		this.estado = estado;
-		this.puntuacion = puntuacion;
-		this.imagen = imagen;
-		this.url_referencia = url_referencia;
-		this.precio_comic = precio_comic;
-		this.codigo_comic = codigo_comic;
-
-	}
-
-	/**
-	 * Constructor vacío para crear un objeto Comic sin atributos inicializados.
-	 */
-	public Comic() {
-		this.ID = "";
-		this.nombre = "";
-		this.numero = "";
-		this.variante = "";
-		this.firma = "";
-		this.editorial = "";
-		this.formato = "";
-		this.procedencia = "";
-		this.fecha = "";
-		this.guionista = "";
-		this.dibujante = "";
-		this.key_issue = "";
-		this.estado = "";
-		this.puntuacion = "";
-		this.imagen = null;
-		this.numCaja = "";
-		this.url_referencia = "";
-		this.precio_comic = "";
-		this.codigo_comic = "";
-	}
-
-	/**
 	 * Getter para obtener el ID del cómic.
 	 *
 	 * @return El ID del cómic.
@@ -514,6 +441,91 @@ public class Comic {
 	 */
 	public void setNumCaja(String numCaja) {
 		this.numCaja = numCaja;
+	}
+
+	/**
+	 * Constructor para crear un objeto Comic con todos los atributos.
+	 *
+	 * @param ID             El ID único del cómic.
+	 * @param nombre         El nombre del cómic.
+	 * @param numCaja        El número de caja del cómic.
+	 * @param numero         El número de edición del cómic.
+	 * @param variante       La variante del cómic.
+	 * @param firma          La firma asociada al cómic.
+	 * @param editorial      La editorial del cómic.
+	 * @param formato        El formato del cómic.
+	 * @param procedencia    La procedencia del cómic.
+	 * @param fecha          La fecha de venta del cómic.
+	 * @param guionista      El guionista del cómic.
+	 * @param dibujante      El dibujante del cómic.
+	 * @param estado         El estado del cómic.
+	 * @param key_issue      La clave (key issue) del cómic.
+	 * @param puntuacion     La puntuación del cómic.
+	 * @param imagen         La URL de la imagen del cómic.
+	 * @param url_referencia La URL de referencia del cómic.
+	 * @param precio_comic   El precio del cómic.
+	 */
+	public Comic(String ID, String nombre, String numCaja, String numero, String variante, String firma,
+			String editorial, String formato, String procedencia, String fecha, String guionista, String dibujante,
+			String estado, String key_issue, String puntuacion, String imagen, String url_referencia,
+			String precio_comic, String codigo_comic) {
+		this.ID = ID;
+		this.nombre = nombre;
+		this.numCaja = numCaja;
+		this.numero = numero;
+		this.variante = variante;
+		this.firma = firma;
+		this.editorial = editorial;
+		this.formato = formato;
+		this.procedencia = procedencia;
+		this.fecha = fecha;
+		this.guionista = guionista;
+		this.dibujante = dibujante;
+		this.key_issue = key_issue;
+		this.estado = estado;
+		this.puntuacion = puntuacion;
+		this.imagen = imagen;
+		this.url_referencia = url_referencia;
+		this.precio_comic = precio_comic;
+		this.codigo_comic = codigo_comic;
+	}
+
+	/**
+	 * Constructor vacío para crear un objeto Comic sin atributos inicializados.
+	 */
+	public Comic() {
+		this.ID = "";
+		this.nombre = "";
+		this.numero = "";
+		this.variante = "";
+		this.firma = "";
+		this.editorial = "";
+		this.formato = "";
+		this.procedencia = "";
+		this.fecha = "";
+		this.guionista = "";
+		this.dibujante = "";
+		this.key_issue = "";
+		this.estado = "";
+		this.puntuacion = "";
+		this.imagen = null;
+		this.numCaja = "";
+		this.url_referencia = "";
+		this.precio_comic = "";
+		this.codigo_comic = "";
+	}
+
+	public boolean estaVacio() {
+		return (ID == null || ID.isEmpty()) && (nombre == null || nombre.isEmpty())
+				&& (numCaja == null || numCaja.isEmpty()) && (numero == null || numero.isEmpty())
+				&& (variante == null || variante.isEmpty()) && (firma == null || firma.isEmpty())
+				&& (editorial == null || editorial.isEmpty()) && (formato == null || formato.isEmpty())
+				&& (procedencia == null || procedencia.isEmpty()) && (fecha == null || fecha.isEmpty())
+				&& (guionista == null || guionista.isEmpty()) && (dibujante == null || dibujante.isEmpty())
+				&& (estado == null || estado.isEmpty()) && (key_issue == null || key_issue.isEmpty())
+				&& (puntuacion == null || puntuacion.isEmpty()) && (imagen == null || imagen.isEmpty())
+				&& (url_referencia == null || url_referencia.isEmpty())
+				&& (precio_comic == null || precio_comic.isEmpty()) && (codigo_comic == null || codigo_comic.isEmpty());
 	}
 
 	public static void limpiarCamposComic(Comic comic) {

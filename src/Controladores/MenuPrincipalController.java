@@ -815,7 +815,17 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
 		enviarReferencias();
-		mostrarComics(false);
+		Comic comic = AccionControlUI.camposComic();
+		
+		if (!comic.estaVacio()) {
+			
+			System.out.println();
+			
+			mostrarComics(false);
+		} else {
+			String mensaje = "Debes de seleccionar algun valor de los combobox";
+			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+		}
 	}
 
 	/**
@@ -944,7 +954,7 @@ public class MenuPrincipalController implements Initializable {
 		} else {
 			String sentenciaSQL = DBUtilidades.construirSentenciaSQL(tipoBusqueda);
 
-			listaComics = SelectManager.verLibreria(sentenciaSQL,false);
+			listaComics = SelectManager.verLibreria(sentenciaSQL, false);
 		}
 
 		FuncionesTableView.tablaBBDD(listaComics, tablaBBDD);
@@ -1004,7 +1014,7 @@ public class MenuPrincipalController implements Initializable {
 			limpiarComboBox();
 			String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
 
-			List<Comic> listaComics = SelectManager.verLibreria(sentenciaSQL,false);
+			List<Comic> listaComics = SelectManager.verLibreria(sentenciaSQL, false);
 
 			cargaExportExcel(listaComics, DBUtilidades.TipoBusqueda.COMPLETA.toString());
 

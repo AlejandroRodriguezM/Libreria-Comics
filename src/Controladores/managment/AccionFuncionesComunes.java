@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -22,6 +23,7 @@ import org.json.JSONException;
 import Apis.ApiISBNGeneral;
 import Apis.ApiMarvel;
 import Controladores.CargaComicsController;
+import Controladores.OpcionesAvanzadasController;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
@@ -187,13 +189,19 @@ public class AccionFuncionesComunes {
 		}
 	}
 
-	public static void actualizarComicsDatabase(Comic comicOriginal) {
+	public static void actualizarComicsDatabase(Comic comicOriginal, String tipoUpdate, boolean confirmarFirma) {
 		if (!ConectManager.conexionActiva()) {
 			return;
 		}
 
 		String codigoComic = comicOriginal.getCodigo_comic();
 		Comic comicInfo = obtenerComicInfo(codigoComic);
+
+		// Verificar si la firma ya está establecida en comicInfo
+		if (!confirmarFirma && !comicOriginal.getFirma().isEmpty()) {
+			System.out.println("Comic: " + comicOriginal.getID() + " evitado");
+			return; // Si ya tiene firma, salir de la función
+		}
 
 		if (!comprobarCodigo(comicInfo)) {
 			return;
@@ -204,8 +212,53 @@ public class AccionFuncionesComunes {
 		String urlFinal = SOURCE_PATH + File.separator + codigo_imagen + ".jpg";
 		String correctedUrl = urlImagen.replace("\\", "/").replaceFirst("^http:", "https:");
 
-		comicInfo.setID(comicOriginal.getID());
-		comicInfo.setImagen(urlFinal);
+		if (tipoUpdate.equalsIgnoreCase("modificar") || tipoUpdate.equalsIgnoreCase("actualizar datos")) {
+
+			comicInfo.setID(comicOriginal.getID());
+			comicInfo.setImagen(urlFinal);
+
+			completarInformacionFaltante(comicInfo, comicOriginal);
+
+			if (comicInfo.getNombre().contains("(")) {
+				String nombreCorregido = Utilidades.eliminarParentesis(comicInfo.getNombre());
+				comicInfo.setNombre(nombreCorregido);
+			}
+
+			if (tipoUpdate.equalsIgnoreCase("modificar")) {
+				comicInfo.setID(comicOriginal.getID());
+				comicInfo.setImagen(urlFinal);
+			} else {
+				comicInfo.setID(comicOriginal.getID());
+				comicInfo.setImagen(comicOriginal.getImagen());
+			}
+		}
+
+		if (tipoUpdate.equalsIgnoreCase("modificar") || tipoUpdate.equalsIgnoreCase("actualizar portadas")) {
+
+			comicOriginal.setID(comicOriginal.getID());
+			comicOriginal.setImagen(urlFinal);
+
+			// Asynchronously download and convert image
+			Platform.runLater(() -> {
+				URI uri = null;
+				try {
+					uri = new URI(correctedUrl);
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+				}
+				Utilidades.descargarYConvertirImagenAsync(uri, SOURCE_PATH, codigo_imagen + ".jpg");
+			});
+		}
+
+		if (tipoUpdate.equalsIgnoreCase("modificar") || tipoUpdate.equalsIgnoreCase("actualizar datos")) {
+			UpdateManager.actualizarComicBBDD(comicInfo, "modificar");
+		} else {
+			UpdateManager.actualizarComicBBDD(comicOriginal, "modificar");
+		}
+	}
+
+	private static void completarInformacionFaltante(Comic comicInfo, Comic comicOriginal) {
+		// Completar información faltante con la información original si está vacía
 		if (comicInfo.getVariante() == null || comicInfo.getVariante().isEmpty()) {
 			comicInfo.setVariante(comicOriginal.getVariante());
 		}
@@ -215,24 +268,12 @@ public class AccionFuncionesComunes {
 		if (comicInfo.getDibujante() == null || comicInfo.getDibujante().isEmpty()) {
 			comicInfo.setDibujante(comicOriginal.getDibujante());
 		}
-
 		if (comicInfo.getPrecio_comic() == null || comicInfo.getPrecio_comic().isEmpty()) {
 			comicInfo.setPrecio_comic(comicOriginal.getPrecio_comic());
 		}
-
-		// Update database synchronously
-		UpdateManager.actualizarComicBBDD(comicInfo, "modificar");
-
-		// Asynchronously download and convert image
-		Platform.runLater(() -> {
-			URI uri = null;
-			try {
-				uri = new URI(correctedUrl);
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-			}
-			Utilidades.descargarYConvertirImagenAsync(uri, SOURCE_PATH, codigo_imagen + ".jpg");
-		});
+		if (comicInfo.getFormato() == null || comicInfo.getFormato().isEmpty()) {
+			comicInfo.setFormato(comicOriginal.getFormato());
+		}
 	}
 
 	/**
@@ -612,12 +653,14 @@ public class AccionFuncionesComunes {
 	 *
 	 * @param listaComicsDatabase La lista de códigos de importación a buscar.
 	 */
-	public static void busquedaPorListaDatabase(List<Comic> listaComicsDatabase) {
+	public static void busquedaPorListaDatabase(List<Comic> listaComicsDatabase, String tipoUpdate,
+			boolean actualizarFirma) {
 
+		Label prontEspecial = referenciaVentana.getProntInfoEspecial();
 		if (!ConectManager.conexionActiva() && !Utilidades.isInternetAvailable()) {
 			return;
 		}
-		Label prontEspecial = referenciaVentana.getProntInfoEspecial();
+
 		StringBuilder codigoFaltante = new StringBuilder();
 		AtomicInteger contadorErrores = new AtomicInteger(0);
 		AtomicInteger comicsProcesados = new AtomicInteger(0);
@@ -642,7 +685,7 @@ public class AccionFuncionesComunes {
 						Comic comicInfo = obtenerComicInfo(finalValorCodigo);
 
 						if (comicInfo != null) {
-							texto[0] = "Comic: " + finalValorCodigo + "\n";
+							texto[0] = "ID: " + codigo.getID() + " - Comic: " + finalValorCodigo + "\n";
 
 						} else {
 							codigoFaltante.append("Falta comic con codigo: ").append(finalValorCodigo).append("\n");
@@ -652,7 +695,7 @@ public class AccionFuncionesComunes {
 						comicsProcesados.getAndIncrement();
 						long finalProcessedItems = comicsProcesados.get();
 
-						AccionFuncionesComunes.actualizarComicsDatabase(codigo);
+						AccionFuncionesComunes.actualizarComicsDatabase(codigo, tipoUpdate, actualizarFirma);
 
 						// Update UI elements using Platform.runLater
 						Platform.runLater(() -> {
@@ -672,25 +715,38 @@ public class AccionFuncionesComunes {
 		};
 
 		tarea.setOnRunning(ev -> {
-			System.out.println(1);
-			String cadenaAfirmativo = "Actualizando base de datos";
+			String cadenaAfirmativo = "";
+
+			if (tipoUpdate.equalsIgnoreCase("actualizar datos")) {
+				cadenaAfirmativo = "Actualizando datos";
+			} else if (tipoUpdate.equalsIgnoreCase("actualizar portadas")) {
+				cadenaAfirmativo = "Actualizando portadas";
+			} else {
+				cadenaAfirmativo = "Actualizando base de datos";
+			}
+
 			AlarmaList.iniciarAnimacionAvanzado(prontEspecial, cadenaAfirmativo);
 			referenciaVentana.getBotonCancelarSubida().setVisible(true);
 		});
 
 		tarea.setOnSucceeded(ev -> {
-			System.out.println(2);
 			Platform.runLater(() -> {
 				cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0);
 			});
+			String cadenaAfirmativo = "";
+			if (tipoUpdate.equalsIgnoreCase("actualizar datos")) {
+				cadenaAfirmativo = "Datos actualizados";
+			} else if (tipoUpdate.equalsIgnoreCase("actualizar portadas")) {
+				cadenaAfirmativo = "Portadas actualizadas";
+			} else {
+				cadenaAfirmativo = "Base de datos actualizada";
+			}
 
-			String cadenaAfirmativo = "Base de datos actualizada";
 			AlarmaList.iniciarAnimacionAvanzado(prontEspecial, cadenaAfirmativo);
 			referenciaVentana.getBotonCancelarSubida().setVisible(false);
 		});
 
 		tarea.setOnCancelled(ev -> {
-			System.out.println(3);
 			String cadenaAfirmativo = "Cancelada la actualizacion de la base de datos.";
 			AlarmaList.iniciarAnimacionAvanzado(prontEspecial, cadenaAfirmativo);
 		});

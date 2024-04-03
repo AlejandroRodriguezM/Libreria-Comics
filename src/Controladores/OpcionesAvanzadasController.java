@@ -5,11 +5,13 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import Controladores.managment.AccionFuncionesComunes;
 import Controladores.managment.AccionModificar;
 import Controladores.managment.AccionReferencias;
 import Funcionamiento.Utilidades;
+import Funcionamiento.Ventanas;
 import Funcionamiento.VersionService;
 import alarmas.AlarmaList;
 import dbmanager.ConectManager;
@@ -86,7 +88,14 @@ public class OpcionesAvanzadasController implements Initializable {
 	 */
 	private Stage stage;
 
-	boolean estaActualizado = true;
+	public static boolean estaActualizado = true;
+
+	/**
+	 * Instancia de la clase Ventanas para la navegación.
+	 */
+	private static Ventanas nav = new Ventanas();
+
+	public static AtomicBoolean actualizarFima = new AtomicBoolean(false);
 
 	public AccionReferencias guardarReferencia() {
 		AccionReferencias referenciaVentana = new AccionReferencias();
@@ -130,6 +139,21 @@ public class OpcionesAvanzadasController implements Initializable {
 		AlarmaList.iniciarAnimacionEspera(prontInfo);
 		AlarmaList.iniciarAnimacionEspera(prontInfoEspecial);
 		AlarmaList.iniciarAnimacionEspera(prontInfoPreviews);
+
+		checkFirmas.selectedProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue) {
+				if (nav.alertaFirmaActivada()) {
+					actualizarFima.set(true);
+				} else {
+					// Si la alerta no está activada, desmarcar el CheckBox
+					checkFirmas.setSelected(false);
+				}
+			} else {
+				// Cuando el CheckBox se desmarca, actualiza actualizarFima a false
+				actualizarFima.set(false);
+			}
+		});
+
 	}
 
 	@FXML
@@ -280,18 +304,22 @@ public class OpcionesAvanzadasController implements Initializable {
 
 		AccionModificar.referenciaVentana = guardarReferencia();
 		AccionFuncionesComunes.referenciaVentana = guardarReferencia();
-		AccionModificar.actualizarDatabase();
+		AccionModificar.actualizarDatabase("modificar", actualizarFima.get());
 
 	}
 
 	@FXML
 	void actualizarDatosComic(ActionEvent event) {
-
+		AccionModificar.referenciaVentana = guardarReferencia();
+		AccionFuncionesComunes.referenciaVentana = guardarReferencia();
+		AccionModificar.actualizarDatabase("actualizar datos", actualizarFima.get());
 	}
 
 	@FXML
 	void actualizarPortadaComic(ActionEvent event) {
-
+		AccionModificar.referenciaVentana = guardarReferencia();
+		AccionFuncionesComunes.referenciaVentana = guardarReferencia();
+		AccionModificar.actualizarDatabase("actualizar portadas", actualizarFima.get());
 	}
 
 	/**

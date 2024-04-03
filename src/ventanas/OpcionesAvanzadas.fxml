@@ -68,11 +68,11 @@
                         <Image url="@../imagenes/azul.jpg" />
                      </image>
                   </ImageView>
-                  <Label layoutX="7.0" layoutY="111.0" prefHeight="17.0" prefWidth="103.0" style="-fx-text-fill: white;" text="Actualizar Comics" />
+                  <Label layoutX="8.0" layoutY="113.0" prefHeight="17.0" prefWidth="103.0" style="-fx-text-fill: white;" text="Actualizar Datos" />
                   <Button fx:id="botonActualizarDatos" layoutX="161.0" layoutY="104.0" mnemonicParsing="false" onAction="#actualizarDatosComic" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Actualizar" />
-                  <Label layoutX="7.0" layoutY="148.0" prefHeight="38.0" prefWidth="107.0" style="-fx-text-fill: white;" text="Actualizar Portadas" wrapText="true" />
+                  <Label layoutX="8.0" layoutY="155.0" prefHeight="10.0" prefWidth="107.0" style="-fx-text-fill: white;" text="Actualizar Portadas" wrapText="true" />
                   <Button fx:id="botonActualizarPortadas" layoutX="161.0" layoutY="146.0" mnemonicParsing="false" onAction="#actualizarPortadaComic" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Actualizar" />
-                  <Label layoutX="8.0" layoutY="187.0" prefHeight="38.0" prefWidth="107.0" style="-fx-text-fill: white;" text="Actualizar Todo" wrapText="true" />
+                  <Label layoutX="8.0" layoutY="198.0" prefHeight="3.0" prefWidth="107.0" style="-fx-text-fill: white;" text="Actualizar Todo" wrapText="true" />
                   <Button fx:id="botonActualizarTodo" layoutX="162.0" layoutY="189.0" mnemonicParsing="false" onAction="#actualizarCompletoComic" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Actualizar" />
                   <Label fx:id="prontInfoEspecial" alignment="CENTER" contentDisplay="TOP" layoutX="6.0" layoutY="6.0" mouseTransparent="true" prefHeight="88.0" prefWidth="228.0" style="-fx-background-color: #29B6CC;" wrapText="true">
                      <font>
