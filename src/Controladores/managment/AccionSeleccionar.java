@@ -98,7 +98,7 @@ public class AccionSeleccionar {
 		}
 
 		ListaComicsDAO.reiniciarListaComics();
-		FuncionesTableView.modificarColumnas(referenciaVentana.getTablaBBDD());
+		FuncionesTableView.modificarColumnas();
 		referenciaVentana.getTablaBBDD().refresh();
 		referenciaVentana.getProntInfo().clear();
 		referenciaVentana.getProntInfo().setOpacity(0);

@@ -2,7 +2,7 @@
  * Contiene las clases que hacen funcionar las diferentes funciones de uso de back end y front de todo el proyecto
  *  
 */
-package Funcionamiento;
+package ficherosFunciones;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,6 +33,8 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import Controladores.CargaComicsController;
+import Funcionamiento.Utilidades;
+import Funcionamiento.Ventanas;
 import comicManagement.Comic;
 import comicManagement.ComicFichero;
 import dbmanager.ComicManagerDAO;

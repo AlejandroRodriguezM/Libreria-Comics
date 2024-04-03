@@ -37,11 +37,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import Funcionamiento.FuncionesFicheros;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
 import controlUI.FuncionesComboBox;
+import ficherosFunciones.FuncionesFicheros;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

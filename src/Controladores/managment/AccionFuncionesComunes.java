@@ -53,8 +53,8 @@ public class AccionFuncionesComunes {
 	 */
 	private final static String DOCUMENTS_PATH = USER_DIR + File.separator + "Documents";
 
-	private final static String CARPETA_RAIZ_PORTADAS = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
-			+ ConectManager.DB_NAME + File.separator;
+	private final static String CARPETA_RAIZ_PORTADAS = DOCUMENTS_PATH + File.separator + "libreria_comics"
+			+ File.separator + ConectManager.DB_NAME + File.separator;
 
 	/**
 	 * Construimos la ruta al directorio "libreria_comics" dentro de "Documents" y
@@ -161,7 +161,7 @@ public class AccionFuncionesComunes {
 		referenciaVentana.getImagencomic().setImage(imagen);
 		referenciaVentana.getImagencomic().setImage(imagen);
 
-		List<ComboBox<String>> comboboxes = AccionReferencias.getComboboxes();
+		List<ComboBox<String>> comboboxes = referenciaVentana.getComboboxes();
 
 		ListaComicsDAO.listasAutoCompletado();
 		FuncionesTableView.nombreColumnas(referenciaVentana.getTablaBBDD());
@@ -420,8 +420,8 @@ public class AccionFuncionesComunes {
 		}
 	}
 
-	private static void actualizarInterfaz(AtomicInteger contadorErrores, StringBuilder codigoFaltante, String carpetaDatabase,
-			AtomicInteger contadorTotal) {
+	private static void actualizarInterfaz(AtomicInteger contadorErrores, StringBuilder codigoFaltante,
+			String carpetaDatabase, AtomicInteger contadorTotal) {
 		Platform.runLater(() -> {
 			String mensaje = "";
 			if (contadorErrores.get() > 0 && !carpetaDatabase.isEmpty()) {

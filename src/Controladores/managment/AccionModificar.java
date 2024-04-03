@@ -76,7 +76,7 @@ public class AccionModificar {
 
 					AlarmaList.mostrarMensajePront(mensaje, true, referenciaVentana.getProntInfo());
 
-					List<ComboBox<String>> comboboxes = AccionReferencias.getComboboxes();
+					List<ComboBox<String>> comboboxes = referenciaVentana.getComboboxes();
 
 					funcionesCombo.rellenarComboBox(comboboxes);
 				} else {
@@ -99,7 +99,7 @@ public class AccionModificar {
 				String mensaje = ". Has puesto a la venta el comic";
 				AlarmaList.mostrarMensajePront(mensaje, false, referenciaVentana.getProntInfo());
 
-				List<ComboBox<String>> comboboxes = AccionReferencias.getComboboxes();
+				List<ComboBox<String>> comboboxes = referenciaVentana.getComboboxes();
 
 				funcionesCombo.rellenarComboBox(comboboxes);
 			} else {
@@ -129,7 +129,7 @@ public class AccionModificar {
 
 				ListaComicsDAO.listasAutoCompletado();
 
-				List<ComboBox<String>> comboboxes = AccionReferencias.getComboboxes();
+				List<ComboBox<String>> comboboxes = referenciaVentana.getComboboxes();
 				referenciaVentana.getTablaBBDD().refresh();
 				if (comboboxes != null) {
 					funcionesCombo.rellenarComboBox(comboboxes);
@@ -148,7 +148,7 @@ public class AccionModificar {
 				FuncionesTableView.actualizarBusquedaRaw(referenciaVentana.getTablaBBDD());
 				FuncionesTableView.tablaBBDD(listaComics, referenciaVentana.getTablaBBDD());
 
-				List<ComboBox<String>> comboboxes = AccionReferencias.getComboboxes();
+				List<ComboBox<String>> comboboxes = referenciaVentana.getComboboxes();
 
 				funcionesCombo.rellenarComboBox(comboboxes);
 			}

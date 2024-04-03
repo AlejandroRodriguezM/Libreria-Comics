@@ -2,8 +2,8 @@ package comicManagement;
 
 import java.io.File;
 
-import Funcionamiento.FuncionesExcel;
 import Funcionamiento.Utilidades;
+import ficherosFunciones.FuncionesExcel;
 
 public class ComicFichero extends Comic {
 

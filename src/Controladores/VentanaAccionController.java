@@ -23,10 +23,10 @@ import Controladores.managment.AccionFuncionesComunes;
 import Controladores.managment.AccionModificar;
 import Controladores.managment.AccionReferencias;
 import Controladores.managment.AccionSeleccionar;
-import Funcionamiento.FuncionesApis;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
+import apisFunciones.FuncionesApis;
 import comicManagement.Comic;
 import controlUI.AccionControlUI;
 import controlUI.FuncionesComboBox;
@@ -603,13 +603,20 @@ public class VentanaAccionController implements Initializable {
 		referenciaVentana.setEditorialComic(editorialComic);
 		referenciaVentana.setFirmaComic(firmaComic);
 		referenciaVentana.setGuionistaComic(guionistaComic);
-		referenciaVentana.setIdComicTratar_mod(idComicTratar_mod);
-		referenciaVentana.setCodigoComicTratar(codigoComicTratar);
 		referenciaVentana.setNombreComic(nombreComic);
 		referenciaVentana.setNombreKeyIssue(nombreKeyIssue);
 		referenciaVentana.setPrecioComic(precioComic);
 		referenciaVentana.setUrlReferencia(urlReferencia);
 		referenciaVentana.setVarianteComic(varianteComic);
+		referenciaVentana.setEstadoComic(estadoComic);
+		referenciaVentana.setFechaComic(fechaComic);
+		referenciaVentana.setFormatoComic(formatoComic);
+		referenciaVentana.setNumeroCajaComic(numeroCajaComic);
+		referenciaVentana.setNumeroComic(numeroComic);
+		referenciaVentana.setProcedenciaComic(procedenciaComic);
+		referenciaVentana.setIdComicTratar_mod(idComicTratar_mod);
+		referenciaVentana.setCodigoComicTratar(codigoComicTratar);
+
 		referenciaVentana.setLabelPuntuacion(labelPuntuacion);
 		referenciaVentana.setLabel_caja(label_caja);
 		referenciaVentana.setLabel_dibujante(label_dibujante);
@@ -626,12 +633,7 @@ public class VentanaAccionController implements Initializable {
 		referenciaVentana.setLabel_precio(label_precio);
 		referenciaVentana.setLabel_procedencia(label_procedencia);
 		referenciaVentana.setLabel_referencia(label_referencia);
-		referenciaVentana.setEstadoComic(estadoComic);
-		referenciaVentana.setFechaComic(fechaComic);
-		referenciaVentana.setFormatoComic(formatoComic);
-		referenciaVentana.setNumeroCajaComic(numeroCajaComic);
-		referenciaVentana.setNumeroComic(numeroComic);
-		referenciaVentana.setProcedenciaComic(procedenciaComic);
+
 		referenciaVentana.setPuntuacionMenu(puntuacionMenu);
 		referenciaVentana.setTablaBBDD(tablaBBDD);
 		referenciaVentana.setImagencomic(imagencomic);
@@ -651,6 +653,11 @@ public class VentanaAccionController implements Initializable {
 		referenciaVentana.setNavegacion_cerrar(navegacion_cerrar);
 		referenciaVentana.setNavegacion_comic(navegacion_comic);
 		referenciaVentana.setNavegacion_estadistica(navegacion_estadistica);
+
+		AccionReferencias.setListaTextFields(FXCollections.observableArrayList(
+				Arrays.asList(nombreComic, numeroComic, varianteComic, firmaComic, editorialComic, formatoComic,
+						procedenciaComic, guionistaComic, dibujanteComic, numeroCajaComic, direccionImagen, estadoComic,
+						nombreKeyIssue, precioComic, urlReferencia, codigoComicTratar, idComicTratar_mod)));
 
 		AccionReferencias.setColumnasTabla(Arrays.asList(nombre, variante, editorial, guionista, dibujante));
 

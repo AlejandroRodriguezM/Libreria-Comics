@@ -69,7 +69,7 @@ public class AccionAniadir {
 			}
 
 			ListaComicsDAO.listasAutoCompletado();
-			List<ComboBox<String>> comboboxes = AccionReferencias.getComboboxes();
+			List<ComboBox<String>> comboboxes = referenciaVentana.getComboboxes();
 			funcionesCombo.rellenarComboBox(comboboxes);
 
 			ListaComicsDAO.comicsImportados.clear();

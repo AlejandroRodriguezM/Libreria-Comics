@@ -59,8 +59,6 @@ public class WebScraperCatalogPreviews {
     // Método para obtener el mes del título del catálogo
     private static String obtenerMes(String tituloCatalogo) {
         // Implementa aquí la lógica para extraer el mes del título del catálogo
-        // Por ejemplo, puedes utilizar expresiones regulares o lógica de cadenas para hacerlo
-        // Este es solo un ejemplo simple
         if (tituloCatalogo.contains("January")) {
             return "01";
         } else if (tituloCatalogo.contains("February")) {

@@ -73,7 +73,7 @@ public class FuncionesManejoFront {
 	}
 
 	public static void establecerAnchoMaximoComboBoxes(double maxTextComboWidth) {
-		for (ComboBox<?> comboBox : AccionReferencias.getComboboxes()) {
+		for (ComboBox<?> comboBox : referenciaVentana.getComboboxes()) {
 			comboBox.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, comboBox.widthProperty()));
 		}
 	}

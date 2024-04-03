@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,10 +19,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import Controladores.managment.AccionEliminar;
 import Controladores.managment.AccionFuncionesComunes;
 import Controladores.managment.AccionReferencias;
 import Controladores.managment.AccionSeleccionar;
-import Funcionamiento.FuncionesExcel;
 import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
@@ -38,6 +37,7 @@ import dbmanager.DBUtilidades;
 import dbmanager.DBUtilidades.TipoBusqueda;
 import dbmanager.ListaComicsDAO;
 import dbmanager.SelectManager;
+import ficherosFunciones.FuncionesExcel;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
@@ -423,7 +423,7 @@ public class MenuPrincipalController implements Initializable {
 	private static FuncionesComboBox funcionesCombo = new FuncionesComboBox();
 
 	public static AccionReferencias referenciaVentana = new AccionReferencias();
-	
+
 	public static CompletableFuture<List<Entry<String, String>>> urlPreviews;
 
 	double y = 0;
@@ -490,6 +490,8 @@ public class MenuPrincipalController implements Initializable {
 		referenciaVentana.setNombreVariante(nombreVariante);
 		referenciaVentana.setNumeroCaja(numeroCaja);
 		referenciaVentana.setNumeroComic(numeroComic);
+		referenciaVentana.setFechaComic(fechaPublicacion);
+		referenciaVentana.setNumeroComic(numeroComic);
 		referenciaVentana.setProntInfo(prontInfo);
 		referenciaVentana.setProgresoCarga(progresoCarga);
 		referenciaVentana.setID(ID);
@@ -518,8 +520,8 @@ public class MenuPrincipalController implements Initializable {
 		referenciaVentana.setBotonAgregarPuntuacion(botonAgregarPuntuacion);
 		referenciaVentana.setAlarmaConexionSql(alarmaConexionSql);
 
-		referenciaVentana.setComboBoxes(Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
-				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, numeroCaja));
+		referenciaVentana.setComboBoxes(Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreFirma,
+				nombreEditorial, nombreFormato, nombreProcedencia, nombreGuionista, nombreDibujante, numeroCaja));
 
 		AccionReferencias.setListaElementosFondo(FXCollections.observableArrayList(backgroundImage, menu_navegacion));
 
@@ -551,17 +553,17 @@ public class MenuPrincipalController implements Initializable {
 		Platform.runLater(() -> {
 
 			urlPreviews = WebScraperCatalogPreviews.urlPreviews();
-			
+
 			enviarReferencias();
 
 			establecerDinamismoAnchor();
 
 			cambiarTamanioTable();
 
-			FuncionesTableView.ajustarAnchoVBox(prontInfo, vboxContenido);
-			FuncionesTableView.seleccionarRaw(tablaBBDD);
+			FuncionesTableView.ajustarAnchoVBox();
+			FuncionesTableView.seleccionarRaw();
 
-			FuncionesTableView.modificarColumnas(tablaBBDD);
+			FuncionesTableView.modificarColumnas();
 			AccionControlUI.controlarEventosInterfazPrincipal();
 		});
 
@@ -646,19 +648,19 @@ public class MenuPrincipalController implements Initializable {
 
 				botonIntroducir.setLayoutX(231);
 				botonIntroducir.setLayoutY(199);
-				
+
 				botonEliminar.setLayoutX(231);
 				botonEliminar.setLayoutY(240);
-				
+
 				botonModificar.setLayoutX(231);
 				botonModificar.setLayoutY(280);
 
 				botonAgregarPuntuacion.setLayoutX(231);
 				botonAgregarPuntuacion.setLayoutY(321);
-				
+
 				botonGuardarResultado.setLayoutX(327);
 				botonGuardarResultado.setLayoutY(32);
-				
+
 				botonImprimir.setLayoutX(327);
 				botonImprimir.setLayoutY(74);
 
@@ -666,19 +668,19 @@ public class MenuPrincipalController implements Initializable {
 
 				botonIntroducir.setLayoutX(340);
 				botonIntroducir.setLayoutY(31);
-				
+
 				botonEliminar.setLayoutX(340);
 				botonEliminar.setLayoutY(72);
-				
+
 				botonModificar.setLayoutX(439);
 				botonModificar.setLayoutY(31);
 
 				botonAgregarPuntuacion.setLayoutX(439);
 				botonAgregarPuntuacion.setLayoutY(72);
-				
+
 				botonGuardarResultado.setLayoutX(231);
 				botonGuardarResultado.setLayoutY(337);
-				
+
 				botonImprimir.setLayoutX(290);
 				botonImprimir.setLayoutY(337);
 
@@ -724,8 +726,8 @@ public class MenuPrincipalController implements Initializable {
 				Task<Void> task = new Task<Void>() {
 					@Override
 					protected Void call() throws Exception {
-						funcionesCombo.rellenarComboBox(AccionReferencias.getComboboxes());
-						funcionesCombo.lecturaComboBox(AccionReferencias.getComboboxes());
+						funcionesCombo.rellenarComboBox(referenciaVentana.getComboboxes());
+						funcionesCombo.lecturaComboBox(referenciaVentana.getComboboxes());
 						return null;
 					}
 				};
@@ -836,7 +838,7 @@ public class MenuPrincipalController implements Initializable {
 		if (esCompleto) {
 			AccionSeleccionar.verBasedeDatos(esCompleto, false, null);
 		} else {
-			Comic comicBusqueda = camposComic();
+			Comic comicBusqueda = AccionControlUI.camposComic();
 
 			AccionSeleccionar.verBasedeDatos(esCompleto, false, comicBusqueda);
 		}
@@ -931,13 +933,11 @@ public class MenuPrincipalController implements Initializable {
 		if (!ConectManager.conexionActiva()) {
 			return;
 		}
-
 		limpiezaDeDatos();
 		limpiarComboBox();
-		ListaComicsDAO.reiniciarListaComics(); // Reiniciar la base de datos si es necesario
-		FuncionesTableView.nombreColumnas(tablaBBDD); // Llamada a la función para
-														// establecer nombres de
-		FuncionesTableView.actualizarBusquedaRaw(tablaBBDD); // columnas
+		ListaComicsDAO.reiniciarListaComics();
+		FuncionesTableView.nombreColumnas(tablaBBDD);
+		FuncionesTableView.actualizarBusquedaRaw(tablaBBDD);
 		List<Comic> listaComics = new ArrayList<Comic>();
 		if (esGuardado) {
 			listaComics = ListaComicsDAO.comicsGuardadosList;
@@ -1064,42 +1064,17 @@ public class MenuPrincipalController implements Initializable {
 			return;
 		}
 
-		CompletableFuture.supplyAsync(this::deleteTableAsync).thenAccept(result -> handleDeleteResult(result));
-	}
-
-	private boolean deleteTableAsync() {
-		try {
-
-			Utilidades.borrarArchivosNoEnLista(ListaComicsDAO.listaImagenes);
-
-			CompletableFuture<Boolean> borradoTablaFuture = nav.borrarContenidoTabla();
-			boolean confirmacionBorrado = borradoTablaFuture.get(); // Espera a que el CompletableFuture se complete
-																	// y obtiene el resultado
-			if (confirmacionBorrado) {
-				CompletableFuture<Boolean> deleteResult = ComicManagerDAO.deleteTable();
-				return deleteResult.get(); // Espera a que el CompletableFuture se complete y obtiene el resultado
-			} else {
-				String mensaje = "ERROR. Has cancelado el borrado de la base de datos";
-				AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
-				return false;
-			}
-
-		} catch (Exception e) {
-			Utilidades.manejarExcepcion(e);
-			return false;
-		}
-	}
-
-	private void handleDeleteResult(boolean deleteResult) {
-
-		String mensaje = "";
-		if (deleteResult) {
-			mensaje = "Base de datos borrada y reiniciada correctamente";
-			limpiezaDeDatos();
-		} else {
-			mensaje = "ERROR. No se ha podido eliminar y reiniciar la base de datos";
-		}
-		AlarmaList.mostrarMensajePront(mensaje, deleteResult, prontInfo);
+		CompletableFuture.runAsync(() -> {
+			boolean result = AccionEliminar.deleteTableAsync();
+			Platform.runLater(() -> {
+				String mensaje = result ? "Base de datos borrada y reiniciada correctamente"
+						: "ERROR. No se ha podido eliminar y reiniciar la base de datos";
+				AlarmaList.mostrarMensajePront(mensaje, result, prontInfo);
+				if (result) {
+					limpiezaDeDatos();
+				}
+			});
+		});
 	}
 
 	/**
@@ -1252,7 +1227,6 @@ public class MenuPrincipalController implements Initializable {
 		prontInfo.setOpacity(0);
 		tablaBBDD.getItems().clear();
 		imagencomic.setImage(null);
-		prontInfo.setOpacity(0);
 
 		// Configuración de la tarea para crear el archivo Excel
 		Task<Boolean> crearExcelTask = excelFuntions.crearExcelTask(listaComics, tipoBusqueda);
@@ -1273,7 +1247,6 @@ public class MenuPrincipalController implements Initializable {
 
 			} else {
 				// La tarea no se completó correctamente, muestra un mensaje de error.
-
 				procesarResultadoImportacion(crearExcelTask.getValue());
 
 			}
@@ -1359,7 +1332,6 @@ public class MenuPrincipalController implements Initializable {
 
 			lecturaTask.setOnSucceeded(e -> {
 				cargarDatosDataBase();
-//				procesarResultadoImportacion(lecturaTask.getValue());
 				AlarmaList.detenerAnimacion();
 				AlarmaList.detenerAnimacionCarga(progresoCarga);
 
@@ -1393,44 +1365,6 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	/**
-	 * Devuelve un array con los datos de los TextField correspondientes a la los
-	 * comics que se encuentran en la bbdd
-	 *
-	 * @return
-	 */
-	public Comic camposComic() {
-		Comic comic = new Comic();
-		LocalDate fecha = fechaPublicacion.getValue();
-		String fechaComic = (fecha != null) ? fecha.toString() : "";
-
-		comic.setNombre(Utilidades.defaultIfNullOrEmpty(nombreComic.getValue(), ""));
-		comic.setNumero(Utilidades.defaultIfNullOrEmpty(
-				Utilidades.comaYGuionPorEspaciado(FuncionesComboBox.numeroCombobox(numeroComic)), ""));
-		comic.setVariante(
-				Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreVariante.getValue()), ""));
-		comic.setFirma(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreFirma.getValue()), ""));
-		comic.setEditorial(
-				Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreEditorial.getValue()), ""));
-		comic.setFormato(Utilidades.defaultIfNullOrEmpty(FuncionesComboBox.formatoCombobox(nombreFormato), ""));
-		comic.setProcedencia(
-				Utilidades.defaultIfNullOrEmpty(FuncionesComboBox.procedenciaCombobox(nombreProcedencia), ""));
-		comic.setFecha(fechaComic);
-		comic.setGuionista(
-				Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreGuionista.getValue()), ""));
-		comic.setDibujante(
-				Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreDibujante.getValue()), ""));
-		comic.setImagen("");
-		comic.setEstado("");
-		comic.setNumCaja(Utilidades.defaultIfNullOrEmpty(FuncionesComboBox.cajaCombobox(numeroCaja), ""));
-		comic.setKey_issue("");
-		comic.setUrl_referencia("");
-		comic.setPrecio_comic("");
-		comic.setCodigo_comic("");
-
-		return comic;
-	}
-
-	/**
 	 * Realiza la limpieza de datos en la interfaz gráfica.
 	 */
 	private void limpiezaDeDatos() {
@@ -1448,7 +1382,7 @@ public class MenuPrincipalController implements Initializable {
 	private void limpiarComboBox() {
 
 		// Iterar sobre todos los ComboBox para realizar la limpieza
-		for (ComboBox<String> comboBox : AccionReferencias.getComboboxes()) {
+		for (ComboBox<String> comboBox : referenciaVentana.getComboboxes()) {
 			// Limpiar el campo
 			comboBox.setValue("");
 			comboBox.getEditor().setText("");
@@ -1468,7 +1402,7 @@ public class MenuPrincipalController implements Initializable {
 		tablaBBDD.getItems().clear();
 
 		// Pasar la lista de ComboBoxes a VentanaAccionController
-		referenciaVentana.setComboBoxes(AccionReferencias.getComboboxes());
+		referenciaVentana.setComboBoxes(referenciaVentana.getComboboxes());
 
 		if (fuente instanceof Button) {
 			Button botonPresionado = (Button) fuente;

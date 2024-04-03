@@ -1,4 +1,4 @@
-package Funcionamiento;
+package ficherosFunciones;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import Funcionamiento.Utilidades;
 import alarmas.AlarmaList;
 import javafx.application.Platform;
 import javafx.scene.control.Label;

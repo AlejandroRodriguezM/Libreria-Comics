@@ -73,6 +73,8 @@ import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
 import dbmanager.ListaComicsDAO;
 import dbmanager.SelectManager;
+import ficherosFunciones.FuncionesExcel;
+import ficherosFunciones.FuncionesFicheros;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.Node;
@@ -1733,7 +1735,7 @@ public class Utilidades {
 	 * @param nombreModificado El nombre del archivo modificado
 	 * @return true si el archivo existe, false en caso contrario
 	 */
-	static boolean existeArchivo(String defaultImagePath, String nombreModificado) {
+	public static boolean existeArchivo(String defaultImagePath, String nombreModificado) {
 
 		return Files.exists(Paths.get(defaultImagePath, nombreModificado));
 	}

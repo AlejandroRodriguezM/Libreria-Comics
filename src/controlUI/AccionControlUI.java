@@ -25,11 +25,14 @@ import dbmanager.ListaComicsDAO;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputControl;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -473,7 +476,7 @@ public class AccionControlUI {
 		listaElementosVentana();
 
 		referenciaVentana.getProntInfo().textProperty().addListener((observable, oldValue, newValue) -> {
-			FuncionesTableView.ajustarAnchoVBox(referenciaVentana.getProntInfo(), referenciaVentana.getVboxContenido());
+			FuncionesTableView.ajustarAnchoVBox();
 		});
 
 		// Desactivar el enfoque en el VBox para evitar que reciba eventos de teclado
@@ -547,11 +550,9 @@ public class AccionControlUI {
 		// Establecer un Listener para el tamaño del AnchorPane
 		referenciaVentana.getRootAnchorPane().widthProperty().addListener((observable, oldValue, newValue) -> {
 
-//			principalController.establecerDinamismoAnchor();
-
-			FuncionesTableView.ajustarAnchoVBox(referenciaVentana.getProntInfo(), referenciaVentana.getVboxContenido());
-			FuncionesTableView.seleccionarRaw(referenciaVentana.getTablaBBDD());
-			FuncionesTableView.modificarColumnas(referenciaVentana.getTablaBBDD());
+			FuncionesTableView.ajustarAnchoVBox();
+			FuncionesTableView.seleccionarRaw();
+			FuncionesTableView.modificarColumnas();
 		});
 
 		referenciaVentana.getBotonGuardarResultado().setOnMousePressed(event -> {
@@ -582,43 +583,90 @@ public class AccionControlUI {
 	public static Comic camposComic() {
 		Comic comic = new Comic();
 
+		List<String> valoresComic = comprobarYDevolverLista(referenciaVentana.getComboboxes(),
+				referenciaVentana.getListaTextFields());
+
 		LocalDate fecha = referenciaVentana.getFechaComic().getValue();
 		String fechaComic = (fecha != null) ? fecha.toString() : "";
 
-		comic.setNombre(Utilidades.defaultIfNullOrEmpty(
-				Utilidades.comaYGuionPorEspaciado(referenciaVentana.getNombreComic().getText()), ""));
-		comic.setNumero(Utilidades.defaultIfNullOrEmpty(
-				Utilidades.comaYGuionPorEspaciado(FuncionesComboBox.numeroCombobox(referenciaVentana.getNumeroComic())),
-				""));
-		comic.setVariante(Utilidades.defaultIfNullOrEmpty(
-				Utilidades.comaYGuionPorEspaciado(referenciaVentana.getVarianteComic().getText()), ""));
-		comic.setFirma(Utilidades.defaultIfNullOrEmpty(
-				Utilidades.comaYGuionPorEspaciado(referenciaVentana.getFirmaComic().getText()), ""));
-		comic.setEditorial(Utilidades.defaultIfNullOrEmpty(
-				Utilidades.comaYGuionPorEspaciado(referenciaVentana.getEditorialComic().getText()), ""));
-		comic.setFormato(Utilidades
-				.defaultIfNullOrEmpty(FuncionesComboBox.formatoCombobox(referenciaVentana.getFormatoComic()), ""));
-		comic.setProcedencia(Utilidades.defaultIfNullOrEmpty(
-				FuncionesComboBox.procedenciaCombobox(referenciaVentana.getProcedenciaComic()), ""));
+		String nombreComic = valoresComic.get(0);
+		String numeroComic = valoresComic.get(1);
+		String varianteComic = valoresComic.get(2);
+		String firmaComic = valoresComic.get(3);
+		String editorialComic = valoresComic.get(4);
+		String formatoComic = valoresComic.get(5);
+		String procedenciaComic = valoresComic.get(6);
+		String guionistaComic = valoresComic.get(7);
+		String dibujanteComic = valoresComic.get(8);
+		String numeroCajaComic = valoresComic.get(9);
+		String direccionImagen = null;
+		String estadoComic = null;
+		String nombreKeyIssue = null;
+		String precioComic = null;
+		String urlReferencia = null;
+		String codigoComicTratar = null;
+		String idComicTratar_mod = null;
+
+		if (contieneNulo(referenciaVentana.getListaTextFields())) {
+			direccionImagen = valoresComic.get(10);
+			estadoComic = valoresComic.get(11);
+			nombreKeyIssue = valoresComic.get(12);
+			precioComic = valoresComic.get(13);
+			urlReferencia = valoresComic.get(14);
+			codigoComicTratar = valoresComic.get(15);
+			idComicTratar_mod = valoresComic.get(16);
+		}
+
+		comic.setNombre(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreComic), ""));
+		comic.setNumero(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(numeroComic), ""));
+		comic.setVariante(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(varianteComic), ""));
+		comic.setFirma(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(firmaComic), ""));
+		comic.setEditorial(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(editorialComic), ""));
+		comic.setFormato(Utilidades.defaultIfNullOrEmpty(formatoComic, ""));
+		comic.setProcedencia(Utilidades.defaultIfNullOrEmpty(procedenciaComic, ""));
 		comic.setFecha(fechaComic);
-		comic.setGuionista(Utilidades.defaultIfNullOrEmpty(
-				Utilidades.comaYGuionPorEspaciado(referenciaVentana.getGuionistaComic().getText()), ""));
-		comic.setDibujante(Utilidades.defaultIfNullOrEmpty(
-				Utilidades.comaYGuionPorEspaciado(referenciaVentana.getDibujanteComic().getText()), ""));
-		comic.setImagen(Utilidades.defaultIfNullOrEmpty(referenciaVentana.getDireccionImagen().getText(), ""));
-		comic.setEstado(Utilidades
-				.defaultIfNullOrEmpty(FuncionesComboBox.estadoCombobox(referenciaVentana.getEstadoComic()), ""));
-		comic.setNumCaja(Utilidades
-				.defaultIfNullOrEmpty(FuncionesComboBox.cajaCombobox(referenciaVentana.getNumeroCajaComic()), ""));
-		comic.setKey_issue(Utilidades.defaultIfNullOrEmpty(referenciaVentana.getNombreKeyIssue().getText().trim(), ""));
-		comic.setUrl_referencia(
-				(Utilidades.defaultIfNullOrEmpty(referenciaVentana.getUrlReferencia().getText().trim(), "")));
-		comic.setPrecio_comic(
-				(Utilidades.defaultIfNullOrEmpty(referenciaVentana.getPrecioComic().getText().trim(), "")));
-		comic.setCodigo_comic(Utilidades.eliminarEspacios(referenciaVentana.getCodigoComicTratar().getText()));
-		comic.setID(Utilidades.defaultIfNullOrEmpty(referenciaVentana.getIdComicTratar_mod().getText().trim(), ""));
+		comic.setGuionista(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(guionistaComic), ""));
+		comic.setDibujante(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(dibujanteComic), ""));
+		comic.setNumCaja(Utilidades.defaultIfNullOrEmpty(numeroCajaComic, ""));
+		comic.setImagen(Utilidades.defaultIfNullOrEmpty(direccionImagen, ""));
+		comic.setEstado(Utilidades.defaultIfNullOrEmpty(estadoComic, ""));
+		comic.setKey_issue(Utilidades.defaultIfNullOrEmpty(nombreKeyIssue, ""));
+		comic.setPrecio_comic(Utilidades.defaultIfNullOrEmpty(precioComic, ""));
+		comic.setUrl_referencia(Utilidades.defaultIfNullOrEmpty(urlReferencia, ""));
+
+		comic.setCodigo_comic(Utilidades.eliminarEspacios(codigoComicTratar));
+		comic.setID(Utilidades.defaultIfNullOrEmpty(idComicTratar_mod, ""));
 
 		return comic;
+	}
+
+	public static List<String> comprobarYDevolverLista(List<ComboBox<String>> comboBoxes,
+			ObservableList<Control> observableList) {
+		List<String> valores = new ArrayList<>();
+		for (ComboBox<String> comboBox : comboBoxes) {
+			valores.add(comboBox.getValue() != null ? comboBox.getValue() : "");
+		}
+		if (contieneNulo(comboBoxes)) {
+			return Arrays.asList(observableList.stream()
+					.map(control -> control instanceof TextInputControl ? ((TextInputControl) control).getText() : "")
+					.toArray(String[]::new));
+		} else {
+			return valores;
+		}
+	}
+
+	private static <T> boolean contieneNulo(List<T> lista) {
+
+		if (lista == null) {
+			return false;
+		}
+
+		for (T elemento : lista) {
+			if (elemento == null) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static Comic comicModificado() {

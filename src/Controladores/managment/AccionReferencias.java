@@ -542,6 +542,7 @@ public class AccionReferencias {
 	private static List<ComboBox<String>> comboboxes;
 
 	private static ObservableList<Control> listaCamposTexto;
+	private static ObservableList<Control> listaTextFields;
 	private static ObservableList<Button> listaBotones;
 	private static ObservableList<Node> listaElementosFondo;
 
@@ -709,54 +710,6 @@ public class AccionReferencias {
 		return botonSubidaPortada;
 	}
 
-	public TextField getBusquedaCodigo() {
-		return busquedaCodigo;
-	}
-
-	public TextField getDibujanteComic() {
-		return dibujanteComic;
-	}
-
-	public TextField getEditorialComic() {
-		return editorialComic;
-	}
-
-	public TextField getFirmaComic() {
-		return firmaComic;
-	}
-
-	public TextField getGuionistaComic() {
-		return guionistaComic;
-	}
-
-	public TextField getIdComicTratar_mod() {
-		return idComicTratar_mod;
-	}
-
-	public TextField getCodigoComicTratar() {
-		return codigoComicTratar;
-	}
-
-	public TextField getNombreComic() {
-		return nombreComic;
-	}
-
-	public TextField getNombreKeyIssue() {
-		return nombreKeyIssue;
-	}
-
-	public TextField getPrecioComic() {
-		return precioComic;
-	}
-
-	public TextField getUrlReferencia() {
-		return urlReferencia;
-	}
-
-	public TextField getVarianteComic() {
-		return varianteComic;
-	}
-
 	public Label getLabelPuntuacion() {
 		return labelPuntuacion;
 	}
@@ -819,34 +772,6 @@ public class AccionReferencias {
 
 	public Label getLabel_referencia() {
 		return label_referencia;
-	}
-
-	public ComboBox<String> getEstadoComic() {
-		return estadoComic;
-	}
-
-	public DatePicker getFechaComic() {
-		return fechaComic;
-	}
-
-	public ComboBox<String> getFormatoComic() {
-		return formatoComic;
-	}
-
-	public ComboBox<String> getNumeroCajaComic() {
-		return numeroCajaComic;
-	}
-
-	public ComboBox<String> getNumeroComic() {
-		return numeroComic;
-	}
-
-	public ComboBox<String> getProcedenciaComic() {
-		return procedenciaComic;
-	}
-
-	public ComboBox<String> getPuntuacionMenu() {
-		return puntuacionMenu;
 	}
 
 	public ImageView getImagencomic() {
@@ -993,47 +918,11 @@ public class AccionReferencias {
 		return menu_archivo_avanzado;
 	}
 
-	public ComboBox<String> getNombreDibujante() {
-		return nombreDibujante;
-	}
-
-	public ComboBox<String> getNombreEditorial() {
-		return nombreEditorial;
-	}
-
-	public ComboBox<String> getNombreFirma() {
-		return nombreFirma;
-	}
-
-	public ComboBox<String> getNombreFormato() {
-		return nombreFormato;
-	}
-
-	public ComboBox<String> getNombreGuionista() {
-		return nombreGuionista;
-	}
-
-	public ComboBox<String> getNombreProcedencia() {
-		return nombreProcedencia;
-	}
-
-	public ComboBox<String> getNombreVariante() {
-		return nombreVariante;
-	}
-
-	public ComboBox<String> getNumeroCaja() {
-		return numeroCaja;
-	}
-
 	public ProgressIndicator getProgresoCarga() {
 		return progresoCarga;
 	}
 
-	public ComboBox<String> getTituloComic() {
-		return tituloComic;
-	}
-
-	public static List<ComboBox<String>> getComboboxes() {
+	public List<ComboBox<String>> getComboboxes() {
 		return comboboxes;
 	}
 
@@ -1051,6 +940,14 @@ public class AccionReferencias {
 
 	public List<TableColumn<Comic, String>> getColumnasTabla() {
 		return columnasTabla;
+	}
+
+	public ObservableList<Control> getListaTextFields() {
+		return listaTextFields;
+	}
+
+	public static void setListaTextFields(ObservableList<Control> listaTextFields) {
+		AccionReferencias.listaTextFields = listaTextFields;
 	}
 
 	public static void setColumnasTabla(List<TableColumn<Comic, String>> columnasTabla) {
@@ -1237,54 +1134,6 @@ public class AccionReferencias {
 		this.botonSubidaPortada = botonSubidaPortada;
 	}
 
-	public void setBusquedaCodigo(TextField busquedaCodigo) {
-		this.busquedaCodigo = busquedaCodigo;
-	}
-
-	public void setDibujanteComic(TextField dibujanteComic) {
-		this.dibujanteComic = dibujanteComic;
-	}
-
-	public void setEditorialComic(TextField editorialComic) {
-		this.editorialComic = editorialComic;
-	}
-
-	public void setFirmaComic(TextField firmaComic) {
-		this.firmaComic = firmaComic;
-	}
-
-	public void setGuionistaComic(TextField guionistaComic) {
-		this.guionistaComic = guionistaComic;
-	}
-
-	public void setIdComicTratar_mod(TextField idComicTratar_mod) {
-		this.idComicTratar_mod = idComicTratar_mod;
-	}
-
-	public void setCodigoComicTratar(TextField codigoComicTratar) {
-		this.codigoComicTratar = codigoComicTratar;
-	}
-
-	public void setNombreComic(TextField nombreComic) {
-		this.nombreComic = nombreComic;
-	}
-
-	public void setNombreKeyIssue(TextField nombreKeyIssue) {
-		this.nombreKeyIssue = nombreKeyIssue;
-	}
-
-	public void setPrecioComic(TextField precioComic) {
-		this.precioComic = precioComic;
-	}
-
-	public void setUrlReferencia(TextField urlReferencia) {
-		this.urlReferencia = urlReferencia;
-	}
-
-	public void setVarianteComic(TextField varianteComic) {
-		this.varianteComic = varianteComic;
-	}
-
 	public void setLabelPuntuacion(Label labelPuntuacion) {
 		this.labelPuntuacion = labelPuntuacion;
 	}
@@ -1347,34 +1196,6 @@ public class AccionReferencias {
 
 	public void setLabel_referencia(Label label_referencia) {
 		this.label_referencia = label_referencia;
-	}
-
-	public void setEstadoComic(ComboBox<String> estadoComic) {
-		this.estadoComic = estadoComic;
-	}
-
-	public void setFechaComic(DatePicker fechaComic) {
-		this.fechaComic = fechaComic;
-	}
-
-	public void setFormatoComic(ComboBox<String> formatoComic) {
-		this.formatoComic = formatoComic;
-	}
-
-	public void setNumeroCajaComic(ComboBox<String> numeroCajaComic) {
-		this.numeroCajaComic = numeroCajaComic;
-	}
-
-	public void setNumeroComic(ComboBox<String> numeroComic) {
-		this.numeroComic = numeroComic;
-	}
-
-	public void setProcedenciaComic(ComboBox<String> procedenciaComic) {
-		this.procedenciaComic = procedenciaComic;
-	}
-
-	public void setPuntuacionMenu(ComboBox<String> puntuacionMenu) {
-		this.puntuacionMenu = puntuacionMenu;
 	}
 
 	public void setImagencomic(ImageView imagencomic) {
@@ -1461,10 +1282,6 @@ public class AccionReferencias {
 		this.botonMostrarGuardados = botonMostrarGuardados;
 	}
 
-	public void setBusquedaGeneral(TextField busquedaGeneral) {
-		this.busquedaGeneral = busquedaGeneral;
-	}
-
 	public void setFechaPublicacion(DatePicker fechaPublicacion) {
 		this.fechaPublicacion = fechaPublicacion;
 	}
@@ -1521,6 +1338,80 @@ public class AccionReferencias {
 		this.menu_archivo_avanzado = menu_archivo_avanzado;
 	}
 
+	public void setProgresoCarga(ProgressIndicator progresoCarga) {
+		this.progresoCarga = progresoCarga;
+	}
+
+	// ComboBox
+
+	public ComboBox<String> getEstadoComic() {
+		return estadoComic;
+	}
+
+	public ComboBox<String> getFormatoComic() {
+		return formatoComic;
+	}
+
+	public ComboBox<String> getNumeroCajaComic() {
+		return numeroCajaComic;
+	}
+
+	public ComboBox<String> getNumeroComic() {
+		return numeroComic;
+	}
+
+	public ComboBox<String> getProcedenciaComic() {
+		return procedenciaComic;
+	}
+
+	public ComboBox<String> getPuntuacionMenu() {
+		return puntuacionMenu;
+	}
+
+	public ComboBox<String> getNombreDibujante() {
+		return nombreDibujante;
+	}
+
+	public ComboBox<String> getNombreEditorial() {
+		return nombreEditorial;
+	}
+
+	public ComboBox<String> getNombreFirma() {
+		return nombreFirma;
+	}
+
+	public ComboBox<String> getNombreFormato() {
+		return nombreFormato;
+	}
+
+	public ComboBox<String> getNombreGuionista() {
+		return nombreGuionista;
+	}
+
+	public ComboBox<String> getNombreProcedencia() {
+		return nombreProcedencia;
+	}
+
+	public ComboBox<String> getNombreVariante() {
+		return nombreVariante;
+	}
+
+	public ComboBox<String> getNumeroCaja() {
+		return numeroCaja;
+	}
+
+	public ComboBox<String> getTituloComic() {
+		return tituloComic;
+	}
+
+	public void setEstadoComic(ComboBox<String> estadoComic) {
+		this.estadoComic = estadoComic;
+	}
+
+	public void setFechaComic(DatePicker fechaComic) {
+		this.fechaComic = fechaComic;
+	}
+
 	public void setTituloComic(ComboBox<String> tituloComic) {
 		this.tituloComic = tituloComic;
 	}
@@ -1557,8 +1448,130 @@ public class AccionReferencias {
 		this.numeroCaja = numeroCaja;
 	}
 
-	public void setProgresoCarga(ProgressIndicator progresoCarga) {
-		this.progresoCarga = progresoCarga;
+	public void setFormatoComic(ComboBox<String> formatoComic) {
+		this.formatoComic = formatoComic;
+	}
+
+	public void setNumeroCajaComic(ComboBox<String> numeroCajaComic) {
+		this.numeroCajaComic = numeroCajaComic;
+	}
+
+	public void setNumeroComic(ComboBox<String> numeroComic) {
+		this.numeroComic = numeroComic;
+	}
+
+	public void setProcedenciaComic(ComboBox<String> procedenciaComic) {
+		this.procedenciaComic = procedenciaComic;
+	}
+
+	public void setPuntuacionMenu(ComboBox<String> puntuacionMenu) {
+		this.puntuacionMenu = puntuacionMenu;
+	}
+
+	// TextField
+
+	public void setBusquedaCodigo(TextField busquedaCodigo) {
+		this.busquedaCodigo = busquedaCodigo;
+	}
+
+	public void setDibujanteComic(TextField dibujanteComic) {
+		this.dibujanteComic = dibujanteComic;
+	}
+
+	public void setEditorialComic(TextField editorialComic) {
+		this.editorialComic = editorialComic;
+	}
+
+	public void setFirmaComic(TextField firmaComic) {
+		this.firmaComic = firmaComic;
+	}
+
+	public void setGuionistaComic(TextField guionistaComic) {
+		this.guionistaComic = guionistaComic;
+	}
+
+	public void setIdComicTratar_mod(TextField idComicTratar_mod) {
+		this.idComicTratar_mod = idComicTratar_mod;
+	}
+
+	public void setCodigoComicTratar(TextField codigoComicTratar) {
+		this.codigoComicTratar = codigoComicTratar;
+	}
+
+	public void setNombreComic(TextField nombreComic) {
+		this.nombreComic = nombreComic;
+	}
+
+	public void setNombreKeyIssue(TextField nombreKeyIssue) {
+		this.nombreKeyIssue = nombreKeyIssue;
+	}
+
+	public void setPrecioComic(TextField precioComic) {
+		this.precioComic = precioComic;
+	}
+
+	public void setUrlReferencia(TextField urlReferencia) {
+		this.urlReferencia = urlReferencia;
+	}
+
+	public void setVarianteComic(TextField varianteComic) {
+		this.varianteComic = varianteComic;
+	}
+
+	public void setBusquedaGeneral(TextField busquedaGeneral) {
+		this.busquedaGeneral = busquedaGeneral;
+	}
+
+	public TextField getBusquedaCodigo() {
+		return busquedaCodigo;
+	}
+
+	public TextField getDibujanteComic() {
+		return dibujanteComic;
+	}
+
+	public TextField getEditorialComic() {
+		return editorialComic;
+	}
+
+	public TextField getFirmaComic() {
+		return firmaComic;
+	}
+
+	public TextField getGuionistaComic() {
+		return guionistaComic;
+	}
+
+	public TextField getIdComicTratar_mod() {
+		return idComicTratar_mod;
+	}
+
+	public TextField getCodigoComicTratar() {
+		return codigoComicTratar;
+	}
+
+	public TextField getNombreComic() {
+		return nombreComic;
+	}
+
+	public TextField getNombreKeyIssue() {
+		return nombreKeyIssue;
+	}
+
+	public TextField getPrecioComic() {
+		return precioComic;
+	}
+
+	public TextField getUrlReferencia() {
+		return urlReferencia;
+	}
+
+	public TextField getVarianteComic() {
+		return varianteComic;
+	}
+
+	public DatePicker getFechaComic() {
+		return fechaComic;
 	}
 
 }

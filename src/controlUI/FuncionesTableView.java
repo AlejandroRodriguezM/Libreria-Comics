@@ -138,8 +138,8 @@ public class FuncionesTableView {
 	 *
 	 * @param tablaBBDD La TableView en la que operar.
 	 */
-	public static void seleccionarRaw(TableView<Comic> tablaBBDD) {
-		tablaBBDD.setRowFactory(tv -> {
+	public static void seleccionarRaw() {
+		referenciaVentana.getTablaBBDD().setRowFactory(tv -> {
 			TableRow<Comic> row = new TableRow<>();
 			Tooltip tooltip = new Tooltip();
 			tooltip.setShowDelay(Duration.ZERO);
@@ -177,9 +177,9 @@ public class FuncionesTableView {
 		});
 
 		// Deshabilitar el enfoque en el TableView
-		tablaBBDD.setFocusTraversable(false);
+		referenciaVentana.getTablaBBDD().setFocusTraversable(false);
 
-		Scene scene = tablaBBDD.getScene();
+		Scene scene = referenciaVentana.getTablaBBDD().getScene();
 		if (scene != null) {
 			VBox root = (VBox) scene.lookup("#rootVBox");
 			if (root != null) {
@@ -348,7 +348,7 @@ public class FuncionesTableView {
 	 * @param columnList La lista de TableColumn correspondiente a las columnas de
 	 *                   la tabla.
 	 */
-	public static void modificarColumnas(TableView<Comic> tablaBBDD) {
+	public static void modificarColumnas() {
 
 		for (TableColumn<Comic, String> column : referenciaVentana.getColumnasTabla()) {
 			column.prefWidthProperty().unbind(); // Desvincular cualquier propiedad prefWidth existente
@@ -379,7 +379,7 @@ public class FuncionesTableView {
 		}
 
 		// Configurar la política de redimensionamiento
-		tablaBBDD.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+		referenciaVentana.getTablaBBDD().setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
 	}
 
 	/**
@@ -388,16 +388,16 @@ public class FuncionesTableView {
 	 * @param textArea El TextArea del cual obtener el contenido.
 	 * @param vbox     El VBox al cual ajustar el alto.
 	 */
-	public static void ajustarAnchoVBox(TextArea textArea, VBox vbox) {
+	public static void ajustarAnchoVBox() {
 		// Crear un objeto Text con el contenido del TextArea
-		Text text = new Text(textArea.getText());
+		Text text = new Text(referenciaVentana.getProntInfo().getText());
 
 		// Configurar el mismo estilo que tiene el TextArea
-		text.setFont(textArea.getFont());
+		text.setFont(referenciaVentana.getProntInfo().getFont());
 
 		double textHeight = text.getLayoutBounds().getHeight();
 
-		textArea.setPrefHeight(textHeight);
+		referenciaVentana.getProntInfo().setPrefHeight(textHeight);
 	}
 
 }

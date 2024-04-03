@@ -18,8 +18,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import Funcionamiento.FuncionesApis;
 import alarmas.AlarmaList;
+import apisFunciones.FuncionesApis;
 import comicManagement.Comic;
 import dbmanager.ListaComicsDAO;
 import javafx.scene.control.TextArea;
