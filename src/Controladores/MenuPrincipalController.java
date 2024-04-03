@@ -819,8 +819,6 @@ public class MenuPrincipalController implements Initializable {
 		
 		if (!comic.estaVacio()) {
 			
-			System.out.println();
-			
 			mostrarComics(false);
 		} else {
 			String mensaje = "Debes de seleccionar algun valor de los combobox";
