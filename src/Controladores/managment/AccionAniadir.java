@@ -76,7 +76,7 @@ public class AccionAniadir {
 			referenciaVentana.getTablaBBDD().getItems().clear();
 			AccionControlUI.validarCamposClave(true);
 			FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, referenciaVentana.getTablaBBDD()); // Llamada a
-			AccionControlUI.limpiarAutorellenos();
+			AccionControlUI.limpiarAutorellenos(false);
 
 			String mensajePront = "Has introducido los comics correctamente\n";
 			AlarmaList.mostrarMensajePront(mensajePront, true, referenciaVentana.getProntInfo());

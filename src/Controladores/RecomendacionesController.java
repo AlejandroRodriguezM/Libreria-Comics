@@ -266,7 +266,7 @@ public class RecomendacionesController implements Initializable {
 		utilidad = new Utilidades();
 		String id_comic;
 		String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
-		List<Comic> listaComics = SelectManager.verLibreria(sentenciaSQL);
+		List<Comic> listaComics = SelectManager.verLibreria(sentenciaSQL, false);
 		limpiarPront(); // Llamada a función para limpiar la pantalla "TextArea"
 
 		if (listaComics.size() != 0) {

@@ -54,11 +54,11 @@ public class AccionControlUI {
 		referenciaVentana.getIdComicTratar_mod().textProperty().addListener((observable, oldValue, newValue) -> {
 			if (!newValue.isEmpty()) {
 				if (!rellenarCampos(newValue)) {
-					limpiarAutorellenos();
+					limpiarAutorellenos(false);
 					borrarDatosGraficos();
 				}
 			} else {
-				limpiarAutorellenos();
+				limpiarAutorellenos(false);
 				borrarDatosGraficos();
 			}
 		});
@@ -347,7 +347,12 @@ public class AccionControlUI {
 	/**
 	 * Borra los datos del cómic
 	 */
-	public static void limpiarAutorellenos() {
+	public static void limpiarAutorellenos(boolean esPrincipal) {
+
+		if (esPrincipal) {
+			return;
+		}
+
 		referenciaVentana.getNombreComic().setText("");
 		referenciaVentana.getNumeroComic().setValue("");
 		referenciaVentana.getNumeroComic().getEditor().setText("");

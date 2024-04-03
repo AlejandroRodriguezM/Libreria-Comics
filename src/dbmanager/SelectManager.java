@@ -213,7 +213,7 @@ public class SelectManager {
 				+ "%' OR fecha_publicacion LIKE '%" + datoSeleccionado + "%' OR procedencia LIKE '%" + datoSeleccionado
 				+ "%' ORDER BY nomComic, numComic ASC, fecha_publicacion";
 
-		return verLibreria(sentenciaSQL);
+		return verLibreria(sentenciaSQL, false);
 	}
 
 	/**
@@ -224,7 +224,7 @@ public class SelectManager {
 	 * @return Una lista de objetos Comic que representan los cómics de la librería.
 	 * @throws SQLException Si ocurre algún error al ejecutar la consulta SQL.
 	 */
-	public static List<Comic> verLibreria(String sentenciaSQL) {
+	public static List<Comic> verLibreria(String sentenciaSQL, boolean esActualizacion) {
 		ListaComicsDAO.listaComics.clear(); // Limpiar la lista existente de cómics
 		List<Comic> listaComics = new ArrayList<>();
 
@@ -233,8 +233,19 @@ public class SelectManager {
 						ResultSet.CONCUR_UPDATABLE);
 				ResultSet rs = stmt.executeQuery()) {
 
-			while (rs.next()) {
-				listaComics.add(DBUtilidades.obtenerComicDesdeResultSet(rs));
+			if (esActualizacion) {
+				while (rs.next()) {
+
+					Comic comic = DBUtilidades.obtenerComicDesdeResultSet(rs);
+
+					if (!comic.getCodigo_comic().isEmpty() && !comic.getCodigo_comic().equals("0")) {
+						listaComics.add(comic);
+					}
+				}
+			} else {
+				while (rs.next()) {
+					listaComics.add(DBUtilidades.obtenerComicDesdeResultSet(rs));
+				}
 			}
 
 		} catch (SQLException e) {

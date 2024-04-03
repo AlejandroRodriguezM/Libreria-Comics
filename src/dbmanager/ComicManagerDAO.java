@@ -134,7 +134,7 @@ public class ComicManagerDAO {
 	 * @throws SQLException Si ocurre algún error al ejecutar la consulta SQL.
 	 */
 	public static List<Comic> verLibreria(String sentenciaSQL) {
-		return SelectManager.verLibreria(sentenciaSQL);
+		return SelectManager.verLibreria(sentenciaSQL,false);
 	}
 
 }

@@ -45,11 +45,6 @@ public class AccionSeleccionar {
 	}
 
 	public static void mostrarComic(String idComic, boolean esPrincipal) {
-		if (idComic == null || idComic.isEmpty()) {
-			AccionControlUI.limpiarAutorellenos();
-			AccionControlUI.borrarDatosGraficos();
-			return;
-		}
 
 		Comic comicTemp = null;
 		String mensaje = "";
@@ -59,10 +54,9 @@ public class AccionSeleccionar {
 			comicTemp = ComicManagerDAO.comicDatos(idComic);
 		}
 
-		if (comicTemp == null) {
-			AccionControlUI.limpiarAutorellenos();
+		if (idComic == null || idComic.isEmpty() || comicTemp == null) {
+			AccionControlUI.limpiarAutorellenos(esPrincipal);
 			AccionControlUI.borrarDatosGraficos();
-			AlarmaList.mostrarMensajePront("No existe comic con dicho ID", false, referenciaVentana.getProntInfo());
 			return;
 		}
 

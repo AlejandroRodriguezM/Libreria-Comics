@@ -28,7 +28,7 @@ public class UpdateManager {
 	 * @param operacion La operación a realizar: "Vender", "En venta" o "Eliminar".
 	 * @throws SQLException Si ocurre un error en la consulta SQL.
 	 */
-	public static void actualizarComicBBDD(Comic comic, String operacion) throws SQLException {
+	public static void actualizarComicBBDD(Comic comic, String operacion) {
 		String sentenciaSQL = null;
 
 		switch (operacion.toLowerCase()) {
@@ -77,7 +77,7 @@ public class UpdateManager {
 	}
 
 	// Método que fusiona las dos funciones originales
-	public static void modificarComic(Comic datos, String sentenciaSQL) throws SQLException {
+	public static void modificarComic(Comic datos, String sentenciaSQL) {
 		if (SelectManager.comprobarIdentificadorComic(datos.getID())) {
 			try (Connection conn = ConectManager.conexion();
 					PreparedStatement ps = conn.prepareStatement(sentenciaSQL)) {
@@ -89,7 +89,6 @@ public class UpdateManager {
 				}
 			} catch (SQLException ex) {
 				Utilidades.manejarExcepcion(ex);
-				throw ex; // Relanzar la excepción para que se maneje adecuadamente en el nivel superior
 			}
 		}
 	}

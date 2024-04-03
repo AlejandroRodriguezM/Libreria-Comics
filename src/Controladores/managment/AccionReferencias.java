@@ -4,8 +4,10 @@ import java.util.List;
 
 import comicManagement.Comic;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.DatePicker;
@@ -419,6 +421,8 @@ public class AccionReferencias {
 	 * TextArea para mostrar información de texto.
 	 */
 	private TextArea prontInfo;
+	
+	private Label prontInfoLabel;
 
 	private MenuItem menu_Importar_Fichero_CodigoBarras;
 
@@ -549,6 +553,32 @@ public class AccionReferencias {
 	private static List<TableColumn<Comic, String>> columnasTabla;
 
 	private ProgressIndicator progresoCarga;
+
+	private Button botonActualizarDatos;
+
+	private Button botonActualizarPortadas;
+
+	private Button botonActualizarSoftware;
+
+	private Button botonActualizarTodo;
+
+	private Button botonDescargarPdf;
+
+	private Button botonDescargarSQL;
+
+	private Button botonNormalizarDB;
+
+	private CheckBox checkFirmas;
+
+	private ComboBox<String> comboPreviews;
+
+	private Label labelComprobar;
+
+	private Label labelVersion;
+
+	private Label prontInfoEspecial;
+
+	private Label prontInfoPreviews;
 
 	public TableColumn<Comic, String> getProcedencia() {
 		return procedencia;
@@ -946,6 +976,114 @@ public class AccionReferencias {
 		return listaTextFields;
 	}
 
+	public Button getBotonActualizarDatos() {
+		return botonActualizarDatos;
+	}
+
+	public Button getBotonActualizarPortadas() {
+		return botonActualizarPortadas;
+	}
+
+	public Button getBotonActualizarSoftware() {
+		return botonActualizarSoftware;
+	}
+
+	public Button getBotonActualizarTodo() {
+		return botonActualizarTodo;
+	}
+
+	public Button getBotonDescargarPdf() {
+		return botonDescargarPdf;
+	}
+
+	public Button getBotonDescargarSQL() {
+		return botonDescargarSQL;
+	}
+
+	public Button getBotonNormalizarDB() {
+		return botonNormalizarDB;
+	}
+
+	public CheckBox getCheckFirmas() {
+		return checkFirmas;
+	}
+
+	public ComboBox<String> getComboPreviews() {
+		return comboPreviews;
+	}
+
+	public Label getLabelComprobar() {
+		return labelComprobar;
+	}
+
+	public Label getLabelVersion() {
+		return labelVersion;
+	}
+
+	public Label getProntInfoEspecial() {
+		return prontInfoEspecial;
+	}
+
+	public Label getProntInfoPreviews() {
+		return prontInfoPreviews;
+	}
+
+	public Label getProntInfoLabel() {
+		return prontInfoLabel;
+	}
+
+	public void setBotonActualizarDatos(Button botonActualizarDatos) {
+		this.botonActualizarDatos = botonActualizarDatos;
+	}
+
+	public void setBotonActualizarPortadas(Button botonActualizarPortadas) {
+		this.botonActualizarPortadas = botonActualizarPortadas;
+	}
+
+	public void setBotonActualizarSoftware(Button botonActualizarSoftware) {
+		this.botonActualizarSoftware = botonActualizarSoftware;
+	}
+
+	public void setBotonActualizarTodo(Button botonActualizarTodo) {
+		this.botonActualizarTodo = botonActualizarTodo;
+	}
+
+	public void setBotonDescargarPdf(Button botonDescargarPdf) {
+		this.botonDescargarPdf = botonDescargarPdf;
+	}
+
+	public void setBotonDescargarSQL(Button botonDescargarSQL) {
+		this.botonDescargarSQL = botonDescargarSQL;
+	}
+
+	public void setBotonNormalizarDB(Button botonNormalizarDB) {
+		this.botonNormalizarDB = botonNormalizarDB;
+	}
+
+	public void setCheckFirmas(CheckBox checkFirmas) {
+		this.checkFirmas = checkFirmas;
+	}
+
+	public void setComboPreviews(ComboBox<String> comboPreviews) {
+		this.comboPreviews = comboPreviews;
+	}
+
+	public void setLabelComprobar(Label labelComprobar) {
+		this.labelComprobar = labelComprobar;
+	}
+
+	public void setLabelVersion(Label labelVersion) {
+		this.labelVersion = labelVersion;
+	}
+
+	public void setProntInfoEspecial(Label prontInfoEspecial) {
+		this.prontInfoEspecial = prontInfoEspecial;
+	}
+
+	public void setProntInfoPreviews(Label prontInfoPreviews) {
+		this.prontInfoPreviews = prontInfoPreviews;
+	}
+
 	public static void setListaTextFields(ObservableList<Control> listaTextFields) {
 		AccionReferencias.listaTextFields = listaTextFields;
 	}
@@ -1208,6 +1346,10 @@ public class AccionReferencias {
 
 	public void setProntInfo(TextArea prontInfo) {
 		this.prontInfo = prontInfo;
+	}
+	
+	public void setProntInfoLabel(Label prontInfoLabel) {
+		this.prontInfoLabel = prontInfoLabel;
 	}
 
 	public void setMenu_Importar_Fichero_CodigoBarras(MenuItem menu_Importar_Fichero_CodigoBarras) {

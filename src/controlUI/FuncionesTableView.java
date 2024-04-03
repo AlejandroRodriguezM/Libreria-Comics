@@ -40,6 +40,8 @@ import comicManagement.Comic;
 import dbmanager.DBUtilidades;
 import dbmanager.ListaComicsDAO;
 import dbmanager.SelectManager;
+import javafx.geometry.Bounds;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -56,6 +58,7 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+import javafx.stage.Screen;
 
 /**
  * Clase que contiene diversas funciones relacionadas con TableView y
@@ -132,12 +135,6 @@ public class FuncionesTableView {
 		return matcher.matches(); // Devolver true si la cadena coincide con la expresión regular
 	}
 
-	/**
-	 * Configura el efecto de resaltado y mensaje emergente al pasar el ratón por
-	 * encima de una fila (raw) en la tabla.
-	 *
-	 * @param tablaBBDD La TableView en la que operar.
-	 */
 	public static void seleccionarRaw() {
 		referenciaVentana.getTablaBBDD().setRowFactory(tv -> {
 			TableRow<Comic> row = new TableRow<>();
@@ -145,33 +142,57 @@ public class FuncionesTableView {
 			tooltip.setShowDelay(Duration.ZERO);
 			tooltip.setHideDelay(Duration.ZERO);
 			tooltip.setFont(TOOLTIP_FONT);
-			row.setOnMouseEntered(event -> {
-				if (!row.isEmpty()) {
-					row.setStyle("-fx-background-color: #BFEFFF;");
+			row.setOnMouseMoved(event -> {
+			    if (!row.isEmpty()) {
+			        row.setStyle("-fx-background-color: #BFEFFF;");
 
-					Comic comic = row.getItem();
-					if (comic != null && !tooltip.isShowing()) {
-						String mensaje = "Nombre: " + comic.getNombre() + "\nNúmero: " + comic.getNumero()
-								+ "\nVariante: " + comic.getVariante() + "\nPrecio: "
-								+ (!comic.getPrecio_comic().isEmpty() ? comic.getPrecio_comic() + " $" : "");
+			        Comic comic = row.getItem();
+			        if (comic != null && !tooltip.isShowing()) {
+			            String mensaje = "Nombre: " + comic.getNombre() + "\nNúmero: " + comic.getNumero()
+			                    + "\nVariante: " + comic.getVariante() + "\nPrecio: "
+			                    + (!comic.getPrecio_comic().isEmpty() ? comic.getPrecio_comic() + " $" : "");
 
-						if (!comic.getFirma().isEmpty()) {
-							mensaje += "\nFirma: " + comic.getFirma();
-						}
-						tooltip.setText(mensaje);
-						tooltip.show(row, event.getSceneX(), event.getSceneY());
-						tooltip.setX(event.getScreenX() + 10);
-						tooltip.setY(event.getScreenY() - 20);
-					}
-				}
+			            if (!comic.getFirma().isEmpty()) {
+			                mensaje += "\nFirma: " + comic.getFirma();
+			            }
+			            tooltip.setText(mensaje);
+
+			            // Obtener las dimensiones de la pantalla
+			            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+
+			            // Ajustar la posición del tooltip para que no salga del área de la aplicación
+			            double posX = event.getScreenX() + 10;
+			            double posY = event.getScreenY() - 20;
+
+			            // Verificar si el tooltip está fuera de los límites de la ventana principal
+			            if (posX + tooltip.getWidth() > screenBounds.getMaxX()) {
+			                posX = screenBounds.getMaxX() - tooltip.getWidth();
+			            }
+			            if (posY + tooltip.getHeight() > screenBounds.getMaxY()) {
+			                posY = screenBounds.getMaxY() - tooltip.getHeight();
+			            }
+
+			            tooltip.show(row, posX, posY);
+			        }
+			    }
 			});
+
+
 
 			row.setOnMouseExited(event -> {
-				if (!row.isEmpty()) {
-					row.setStyle("");
-					tooltip.hide();
-				}
+			    if (!row.isEmpty()) {
+			        Bounds rowBounds = row.getBoundsInLocal();
+			        double mouseX = event.getSceneX();
+			        double mouseY = event.getSceneY();
+			        
+			        if (!rowBounds.contains(mouseX, mouseY)) {
+			            row.setStyle(""); // Restaura el estilo por defecto solo si el ratón está fuera del área del nodo
+			            tooltip.hide(); // Oculta el tooltip
+			        }
+			    }
 			});
+
+
 
 			return row;
 		});

@@ -73,7 +73,7 @@ public class AccionEliminar {
 			if (id_comic != null) {
 
 				ListaComicsDAO.comicsImportados.removeIf(c -> c.getID().equals(id_comic));
-				AccionControlUI.limpiarAutorellenos();
+				AccionControlUI.limpiarAutorellenos(false);
 				FuncionesTableView.nombreColumnas(referenciaVentana.getTablaBBDD());
 
 				FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, referenciaVentana.getTablaBBDD());

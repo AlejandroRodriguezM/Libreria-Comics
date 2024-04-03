@@ -1051,36 +1051,7 @@ public class Utilidades {
 		return false;
 	}
 
-	/**
-	 * Descarga una imagen desde una URL y la guarda en una carpeta de destino.
-	 * 
-	 * @param urlImagen      URL de la imagen a descargar.
-	 * @param carpetaDestino Ruta de la carpeta de destino.
-	 * @return Ruta de destino de la imagen descargada o null si hay un error.
-	 * @throws IOException Si ocurre un error de entrada/salida.
-	 */
-	public static CompletableFuture<String> descargarImagenAsync(String urlImagen, String carpetaDestino) {
-		Executor executor = Executors.newCachedThreadPool();
-		CompletableFuture<String> downloadTask = new CompletableFuture<>();
 
-		CompletableFuture.runAsync(() -> {
-			try {
-				String nombreImagen = obtenerNombreImagen(urlImagen);
-				crearCarpetaSiNoExiste(carpetaDestino);
-				String rutaDestino = carpetaDestino + File.separator + nombreImagen;
-				downloadTask.complete(rutaDestino);
-			} catch (IllegalArgumentException e) {
-				downloadTask.completeExceptionally(e);
-			} catch (Exception e) {
-				e.printStackTrace();
-				downloadTask.completeExceptionally(e);
-			} finally {
-				((ExecutorService) executor).shutdown();
-			}
-		}, executor);
-
-		return downloadTask;
-	}
 
 	/**
 	 * Obtiene el nombre de la imagen a partir de una URL.
@@ -1091,20 +1062,6 @@ public class Utilidades {
 	public static String obtenerNombreImagen(String urlImagen) {
 		String[] partesURL = urlImagen.split("/");
 		return partesURL[partesURL.length - 1];
-	}
-
-	/**
-	 * Crea una carpeta de destino si no existe.
-	 * 
-	 * @param carpetaDestino Ruta de la carpeta de destino.
-	 * @return Objeto File de la carpeta de destino.
-	 */
-	private static File crearCarpetaSiNoExiste(String carpetaDestino) {
-		File carpeta = new File(carpetaDestino);
-		if (!carpeta.exists()) {
-			carpeta.mkdirs();
-		}
-		return carpeta;
 	}
 
 	/**
@@ -1381,34 +1338,7 @@ public class Utilidades {
 		}
 	}
 
-	/**
-	 * Obtiene la dirección de la portada de un cómic.
-	 *
-	 * @param direccionPortada La dirección de la portada del cómic.
-	 * @return La dirección de la portada actualizada después de procesar la lógica.
-	 */
-	public static String obtenerPortada(String direccionPortada) {
 
-		if (direccionPortada != null && !direccionPortada.isEmpty()) {
-			File file = new File(direccionPortada);
-
-			if (Utilidades.isImageURL(direccionPortada)) {
-				// Es una URL en internet
-				CompletableFuture<String> futurePortada = descargarImagenAsync(direccionPortada, DOCUMENTS_PATH);
-				// Esperar a que el CompletableFuture se complete y obtener el resultado
-				return futurePortada.join();
-			} else if (file.exists()) {
-				// Si no existe el archivo, asignar la portada por defecto
-				return file.toURI().toString();
-			}
-		}
-
-		return obtenerRutaSinPortada();
-	}
-
-	private static String obtenerRutaSinPortada() {
-		return new File("Funcionamiento/sinPortada.jpg").toURI().toString();
-	}
 
 	/**
 	 * Agrega una etiqueta y un valor al constructor StringBuilder si el valor no
@@ -1454,7 +1384,7 @@ public class Utilidades {
 
 		String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
 
-		SelectManager.verLibreria(sentenciaSQL);
+		SelectManager.verLibreria(sentenciaSQL, false);
 
 	}
 
@@ -2143,12 +2073,12 @@ public class Utilidades {
 		return fileChooser;
 	}
 
-
 	public static void descargarPDFAsync(File file, ComboBox<String> comboPreviews) {
 		String seleccion = comboPreviews.getValue();
 
 		if (seleccion != null) {
 			int indiceSeleccionado = comboPreviews.getSelectionModel().getSelectedIndex();
+
 			if (indiceSeleccionado >= 0 && indiceSeleccionado < OpcionesAvanzadasController.urlActualizados.size()) {
 				String urlSeleccionada = OpcionesAvanzadasController.urlActualizados.get(indiceSeleccionado);
 
@@ -2168,7 +2098,6 @@ public class Utilidades {
 							}
 							fileOutputStream.close();
 							bufferedInputStream.close();
-							// Actualizar la interfaz de usuario desde el hilo de JavaFX
 
 						} catch (IOException | URISyntaxException e) {
 							// Manejar excepciones en el hilo de JavaFX

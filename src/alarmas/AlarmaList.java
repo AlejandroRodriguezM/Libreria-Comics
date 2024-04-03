@@ -887,6 +887,23 @@ public class AlarmaList {
 			detenerAnimacion();
 		}
 	}
+	
+	public static void mostrarMensajeProntLabel(String mensaje, boolean exito, Label prontInfo) {
+
+		if (prontInfo != null) {
+			detenerAnimacion();
+			prontInfo.setOpacity(1);
+			prontInfo.setVisible(true);
+			if (exito) {
+				prontInfo.setStyle("-fx-border-color: green;");
+			} else {
+				prontInfo.setStyle("-fx-border-color: red;");
+			}
+			prontInfo.setText(mensaje);
+
+			detenerAnimacion();
+		}
+	}
 
 	/**
 	 * Metodo que permite detener una animacion

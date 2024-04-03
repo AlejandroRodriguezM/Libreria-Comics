@@ -328,7 +328,7 @@ public class FuncionesExcel {
 
 			String sentenciaSQL = DBUtilidades.construirSentenciaSQL(TipoBusqueda.COMPLETA);
 
-			List<Comic> listaComics = SelectManager.verLibreria(sentenciaSQL);
+			List<Comic> listaComics = SelectManager.verLibreria(sentenciaSQL, false);
 
 			libro = new XSSFWorkbook();
 
@@ -559,7 +559,7 @@ public class FuncionesExcel {
 
 		try {
 			if (!sourceFile.exists()) {
-				try (InputStream input = getClass().getResourceAsStream("sinPortada.jpg");
+				try (InputStream input = getClass().getResourceAsStream("/imagenes/sinPortada.jpg");
 						OutputStream output = new FileOutputStream(destinationFile)) {
 
 					File destinationDirectory = destinationFile.getParentFile();

@@ -33,10 +33,12 @@ import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
 import dbmanager.ListaComicsDAO;
+import dbmanager.UpdateManager;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import webScrap.WebScrapGoogle;
 import webScrap.WebScraperPreviewsWorld;
@@ -183,6 +185,54 @@ public class AccionFuncionesComunes {
 		} else {
 			return false;
 		}
+	}
+
+	public static void actualizarComicsDatabase(Comic comicOriginal) {
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+
+		String codigoComic = comicOriginal.getCodigo_comic();
+		Comic comicInfo = obtenerComicInfo(codigoComic);
+
+		if (!comprobarCodigo(comicInfo)) {
+			return;
+		}
+
+		String codigo_imagen = Utilidades.generarCodigoUnico(SOURCE_PATH + File.separator);
+		String urlImagen = comicInfo.getImagen();
+		String urlFinal = SOURCE_PATH + File.separator + codigo_imagen + ".jpg";
+		String correctedUrl = urlImagen.replace("\\", "/").replaceFirst("^http:", "https:");
+
+		comicInfo.setID(comicOriginal.getID());
+		comicInfo.setImagen(urlFinal);
+		if (comicInfo.getVariante() == null || comicInfo.getVariante().isEmpty()) {
+			comicInfo.setVariante(comicOriginal.getVariante());
+		}
+		if (comicInfo.getGuionista() == null || comicInfo.getGuionista().isEmpty()) {
+			comicInfo.setGuionista(comicOriginal.getGuionista());
+		}
+		if (comicInfo.getDibujante() == null || comicInfo.getDibujante().isEmpty()) {
+			comicInfo.setDibujante(comicOriginal.getDibujante());
+		}
+
+		if (comicInfo.getPrecio_comic() == null || comicInfo.getPrecio_comic().isEmpty()) {
+			comicInfo.setPrecio_comic(comicOriginal.getPrecio_comic());
+		}
+
+		// Update database synchronously
+		UpdateManager.actualizarComicBBDD(comicInfo, "modificar");
+
+		// Asynchronously download and convert image
+		Platform.runLater(() -> {
+			URI uri = null;
+			try {
+				uri = new URI(correctedUrl);
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
+			Utilidades.descargarYConvertirImagenAsync(uri, SOURCE_PATH, codigo_imagen + ".jpg");
+		});
 	}
 
 	/**
@@ -368,7 +418,7 @@ public class AccionFuncionesComunes {
 					precio, codigo_comic);
 
 			ListaComicsDAO.comicsImportados.add(comicImport);
-
+//
 			FuncionesTableView.nombreColumnas(referenciaVentana.getTablaBBDD());
 			FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, referenciaVentana.getTablaBBDD());
 		});
@@ -513,7 +563,7 @@ public class AccionFuncionesComunes {
 		};
 
 		tarea.setOnRunning(ev -> {
-			AccionControlUI.limpiarAutorellenos();
+			AccionControlUI.limpiarAutorellenos(false);
 			cambiarEstadoBotones(true);
 			referenciaVentana.getImagencomic().setImage(null);
 			referenciaVentana.getImagencomic().setVisible(true);
@@ -550,6 +600,107 @@ public class AccionFuncionesComunes {
 			tarea.cancel(true);
 			referenciaVentana.getMenu_Importar_Fichero_CodigoBarras().setDisable(false);
 
+		});
+
+		thread.setDaemon(true);
+		thread.start();
+	}
+
+	/**
+	 * Realiza una búsqueda utilizando una lista de códigos de importación y muestra
+	 * los resultados en la interfaz gráfica.
+	 *
+	 * @param listaComicsDatabase La lista de códigos de importación a buscar.
+	 */
+	public static void busquedaPorListaDatabase(List<Comic> listaComicsDatabase) {
+
+		if (!ConectManager.conexionActiva() && !Utilidades.isInternetAvailable()) {
+			return;
+		}
+		Label prontEspecial = referenciaVentana.getProntInfoEspecial();
+		StringBuilder codigoFaltante = new StringBuilder();
+		AtomicInteger contadorErrores = new AtomicInteger(0);
+		AtomicInteger comicsProcesados = new AtomicInteger(0);
+		AtomicInteger numLineas = new AtomicInteger(listaComicsDatabase.size()); // Obtener el tamaño de la lista
+		AtomicReference<CargaComicsController> cargaComicsControllerRef = new AtomicReference<>();
+		nav.verCargaComics(cargaComicsControllerRef);
+		Task<Void> tarea = new Task<>() {
+			@Override
+			protected Void call() {
+
+				listaComicsDatabase.forEach(codigo -> {
+					// Verifica si la tarea ha sido cancelada
+					if (isCancelled()) {
+						return; // Sale del método call() si la tarea ha sido cancelada
+					}
+
+					String finalValorCodigo = Utilidades.eliminarEspacios(codigo.getCodigo_comic()).replace("-", "");
+
+					if (!finalValorCodigo.isEmpty()) {
+						String[] texto = { "" }; // Envuelve la variable en un array de un solo elemento
+
+						Comic comicInfo = obtenerComicInfo(finalValorCodigo);
+
+						if (comicInfo != null) {
+							texto[0] = "Comic: " + finalValorCodigo + "\n";
+
+						} else {
+							codigoFaltante.append("Falta comic con codigo: ").append(finalValorCodigo).append("\n");
+							texto[0] = "Comic no capturado: " + finalValorCodigo + "\n";
+							contadorErrores.getAndIncrement();
+						}
+						comicsProcesados.getAndIncrement();
+						long finalProcessedItems = comicsProcesados.get();
+
+						AccionFuncionesComunes.actualizarComicsDatabase(codigo);
+
+						// Update UI elements using Platform.runLater
+						Platform.runLater(() -> {
+
+							String textoFinal = texto[0];
+
+							double progress = (double) finalProcessedItems / (numLineas.get() + 1);
+							String porcentaje = String.format("%.2f%%", progress * 100);
+
+							cargaComicsControllerRef.get().cargarDatosEnCargaComics(textoFinal, porcentaje, progress);
+						});
+					}
+				});
+
+				return null;
+			}
+		};
+
+		tarea.setOnRunning(ev -> {
+			System.out.println(1);
+			String cadenaAfirmativo = "Actualizando base de datos";
+			AlarmaList.iniciarAnimacionAvanzado(prontEspecial, cadenaAfirmativo);
+			referenciaVentana.getBotonCancelarSubida().setVisible(true);
+		});
+
+		tarea.setOnSucceeded(ev -> {
+			System.out.println(2);
+			Platform.runLater(() -> {
+				cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0);
+			});
+
+			String cadenaAfirmativo = "Base de datos actualizada";
+			AlarmaList.iniciarAnimacionAvanzado(prontEspecial, cadenaAfirmativo);
+			referenciaVentana.getBotonCancelarSubida().setVisible(false);
+		});
+
+		tarea.setOnCancelled(ev -> {
+			System.out.println(3);
+			String cadenaAfirmativo = "Cancelada la actualizacion de la base de datos.";
+			AlarmaList.iniciarAnimacionAvanzado(prontEspecial, cadenaAfirmativo);
+		});
+
+		Thread thread = new Thread(tarea);
+
+		referenciaVentana.getBotonCancelarSubida().setOnAction(ev -> {
+			nav.cerrarCargaComics();
+			tarea.cancel(true);
+			referenciaVentana.getBotonCancelarSubida().setVisible(false);
 		});
 
 		thread.setDaemon(true);

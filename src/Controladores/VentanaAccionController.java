@@ -796,7 +796,7 @@ public class VentanaAccionController implements Initializable {
 	@FXML
 	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
 		enviarReferencias();
-		AccionControlUI.limpiarAutorellenos();
+		AccionControlUI.limpiarAutorellenos(false);
 		AccionControlUI.borrarDatosGraficos();
 
 		AccionSeleccionar.verBasedeDatos(true, true, null);
@@ -899,7 +899,7 @@ public class VentanaAccionController implements Initializable {
 		if (FuncionesApis.verificarClavesAPI(clavesMarvel, apiKey)) {
 			if (Utilidades.isInternetAvailable()) {
 
-				AccionControlUI.limpiarAutorellenos();
+				AccionControlUI.limpiarAutorellenos(false);
 				AccionControlUI.borrarDatosGraficos();
 				String frase = "Fichero txt";
 
@@ -947,7 +947,7 @@ public class VentanaAccionController implements Initializable {
 					return;
 				}
 
-				AccionControlUI.limpiarAutorellenos();
+				AccionControlUI.limpiarAutorellenos(false);
 
 				AtomicBoolean isCancelled = new AtomicBoolean(true);
 
@@ -968,7 +968,7 @@ public class VentanaAccionController implements Initializable {
 				};
 
 				tarea.setOnRunning(ev -> {
-					AccionControlUI.limpiarAutorellenos();
+					AccionControlUI.limpiarAutorellenos(false);
 					AccionFuncionesComunes.cambiarEstadoBotones(true);
 					imagencomic.setImage(null);
 					imagencomic.setVisible(true);

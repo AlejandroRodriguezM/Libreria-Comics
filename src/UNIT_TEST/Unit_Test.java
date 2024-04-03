@@ -474,16 +474,16 @@ public class Unit_Test extends Application {
 	public static void testDescargaImagenAsync() throws IOException {
 		String URLimagen = "https://covers.openlibrary.org/b/id/12705636-L.jpg";
 
-		CompletableFuture<String> descargaImagenFuture = Utilidades.descargarImagenAsync(URLimagen, DOCUMENTS_PATH);
+//		CompletableFuture<String> descargaImagenFuture = Utilidades.descargarImagenAsync(URLimagen, DOCUMENTS_PATH);
 
-		descargaImagenFuture.thenAccept(rutaImagen -> {
-			if (rutaImagen != null) {
-				System.out.println("Imagen descargada y guardada como JPG correctamente en: " + rutaImagen);
-			} else {
-				System.err.println("Error al descargar la imagen.");
-			}
-		}).join(); // Esperar a que la tarea asíncrona se complete (bloquea el hilo principal hasta
-					// que se complete)
+//		descargaImagenFuture.thenAccept(rutaImagen -> {
+//			if (rutaImagen != null) {
+//				System.out.println("Imagen descargada y guardada como JPG correctamente en: " + rutaImagen);
+//			} else {
+//				System.err.println("Error al descargar la imagen.");
+//			}
+//		}).join(); // Esperar a que la tarea asíncrona se complete (bloquea el hilo principal hasta
+//					// que se complete)
 	}
 
 	/**
@@ -494,24 +494,24 @@ public class Unit_Test extends Application {
 	 * @throws IOException
 	 */
 	private static void scrapeAndPrintMainImageAsync(Document document) throws IOException {
-		Element mainImageElement = document.selectFirst("#MainContentImage");
-		if (mainImageElement != null) {
-			String mainImageUrl = "https://www.previewsworld.com" + mainImageElement.attr("src");
+//		Element mainImageElement = document.selectFirst("#MainContentImage");
+//		if (mainImageElement != null) {
+//			String mainImageUrl = "https://www.previewsworld.com" + mainImageElement.attr("src");
+//
+//			System.out.println(mainImageUrl);
 
-			System.out.println(mainImageUrl);
+//			CompletableFuture<String> descargaImagenFuture = Utilidades.descargarImagenAsync(mainImageUrl,
+//					DOCUMENTS_PATH);
 
-			CompletableFuture<String> descargaImagenFuture = Utilidades.descargarImagenAsync(mainImageUrl,
-					DOCUMENTS_PATH);
-
-			descargaImagenFuture.thenAccept(rutaImagen -> {
-				if (rutaImagen != null) {
-					System.out.println("Imagen descargada y guardada como JPG correctamente en: " + rutaImagen);
-				} else {
-					System.err.println("Error al descargar la imagen.");
-				}
-			}).join(); // Esperar a que la tarea asíncrona se complete (bloquea el hilo principal hasta
-						// que se complete)
-		}
+//			descargaImagenFuture.thenAccept(rutaImagen -> {
+//				if (rutaImagen != null) {
+//					System.out.println("Imagen descargada y guardada como JPG correctamente en: " + rutaImagen);
+//				} else {
+//					System.err.println("Error al descargar la imagen.");
+//				}
+//			}).join(); // Esperar a que la tarea asíncrona se complete (bloquea el hilo principal hasta
+//						// que se complete)
+//		}
 	}
 
 	/**

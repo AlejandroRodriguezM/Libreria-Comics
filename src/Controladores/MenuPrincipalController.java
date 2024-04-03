@@ -944,7 +944,7 @@ public class MenuPrincipalController implements Initializable {
 		} else {
 			String sentenciaSQL = DBUtilidades.construirSentenciaSQL(tipoBusqueda);
 
-			listaComics = SelectManager.verLibreria(sentenciaSQL);
+			listaComics = SelectManager.verLibreria(sentenciaSQL,false);
 		}
 
 		FuncionesTableView.tablaBBDD(listaComics, tablaBBDD);
@@ -1004,7 +1004,7 @@ public class MenuPrincipalController implements Initializable {
 			limpiarComboBox();
 			String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
 
-			List<Comic> listaComics = SelectManager.verLibreria(sentenciaSQL);
+			List<Comic> listaComics = SelectManager.verLibreria(sentenciaSQL,false);
 
 			cargaExportExcel(listaComics, DBUtilidades.TipoBusqueda.COMPLETA.toString());
 

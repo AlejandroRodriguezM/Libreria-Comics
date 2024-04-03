@@ -15,6 +15,7 @@ import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
 import dbmanager.ListaComicsDAO;
+import dbmanager.SelectManager;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 
@@ -179,7 +180,7 @@ public class AccionModificar {
 		referenciaVentana.getBotonCancelarSubida().setVisible(false); // Oculta el botón de cancelar
 
 		Comic.limpiarCamposComic(datos);
-		AccionControlUI.limpiarAutorellenos();
+		AccionControlUI.limpiarAutorellenos(false);
 		FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, referenciaVentana.getTablaBBDD()); // funcion
 	}
 
@@ -213,6 +214,77 @@ public class AccionModificar {
 						referenciaVentana.getCodigoComicTratar(), referenciaVentana.getLabel_codigo_comic(),
 						referenciaVentana.getRootVBox(), referenciaVentana.getBotonSubidaPortada()));
 		referenciaVentana.getRootVBox().toFront();
+	}
+
+//	public static void actualizarDatabase() {
+//
+//		String apiKey = FuncionesApis.cargarApiComicVine();
+//		String clavesMarvel[] = FuncionesApis.clavesApiMarvel();
+//
+//		Platform.runLater(() -> {
+//
+//			try {
+//				if (!ConectManager.conexionActiva() || !Utilidades.isInternetAvailable()) {
+//					return;
+//				}
+//
+//				if (!FuncionesApis.verificarClavesAPI(clavesMarvel, apiKey)) {
+//					referenciaVentana.getProntInfoLabel().setText("No estás conectado a internet. Revisa tu conexión");
+//					return;
+//				}
+//
+//				AtomicBoolean isCancelled = new AtomicBoolean(true);
+//
+//				Task<Void> tarea = new Task<>() {
+//					@Override
+//					protected Void call() throws Exception {
+//						String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
+//						List<Comic> listaComicsDatabase = SelectManager.verLibreria(sentenciaSQL, true);
+//
+//						for (Comic comic : listaComicsDatabase) {
+//
+//							AccionFuncionesComunes.actualizarComicsDatabase(comic);
+//
+//						}
+//
+//						return null;
+//					}
+//				};
+//
+//				tarea.setOnSucceeded(ev -> {
+//					String mensaje = "Terminado";
+//					AlarmaList.mostrarMensajeProntLabel(mensaje, false, referenciaVentana.getProntInfoLabel());
+//				});
+//
+//				tarea.setOnCancelled(ev -> {
+//					String mensaje = "Ha cancelado la búsqueda del cómic";
+//					AlarmaList.mostrarMensajeProntLabel(mensaje, false, referenciaVentana.getProntInfoLabel());
+//				});
+//
+//				Thread thread = new Thread(tarea);
+//
+//				referenciaVentana.getBotonCancelarSubida().setOnAction(ev -> {
+//
+//					isCancelled.set(true);
+//					tarea.cancel(true);
+//
+//				});
+//
+//				thread.setDaemon(true);
+//				thread.start();
+//			} catch (Exception ex) {
+//				ex.printStackTrace();
+//			}
+//		});
+//	}
+
+	public static void actualizarDatabase() {
+
+		String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
+		List<Comic> listaComicsDatabase = SelectManager.verLibreria(sentenciaSQL, true);
+
+		AccionFuncionesComunes.busquedaPorListaDatabase(listaComicsDatabase);
+		
 	}
 
 }

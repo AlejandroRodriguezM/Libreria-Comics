@@ -50,9 +50,6 @@ public class ApiMarvel {
 			jsonComic = getComicInfo(formattedIsbn, "isbn", prontInfo);
 		} else if (cleanedCode.length() == 17) {
 			jsonComic = getComicInfo(cleanedCode, "upc", prontInfo);
-		} else {
-			
-			return null;
 		}
 		if (jsonComic != null) {
 			return displayComicInfo(jsonComic, comicCode);

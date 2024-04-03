@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import Controladores.managment.AccionFuncionesComunes;
+import Controladores.managment.AccionModificar;
+import Controladores.managment.AccionReferencias;
 import Funcionamiento.Utilidades;
 import Funcionamiento.VersionService;
 import alarmas.AlarmaList;
@@ -53,6 +56,9 @@ public class OpcionesAvanzadasController implements Initializable {
 	private Button botonNormalizarDB;
 
 	@FXML
+	private Button botonCancelarSubida;
+
+	@FXML
 	private CheckBox checkFirmas;
 
 	@FXML
@@ -82,6 +88,28 @@ public class OpcionesAvanzadasController implements Initializable {
 
 	boolean estaActualizado = true;
 
+	public AccionReferencias guardarReferencia() {
+		AccionReferencias referenciaVentana = new AccionReferencias();
+
+		referenciaVentana.setBotonCancelarSubida(botonCancelarSubida);
+		referenciaVentana.setBotonActualizarDatos(botonActualizarDatos);
+		referenciaVentana.setBotonActualizarPortadas(botonActualizarPortadas);
+		referenciaVentana.setBotonActualizarSoftware(botonActualizarSoftware);
+		referenciaVentana.setBotonActualizarTodo(botonActualizarTodo);
+		referenciaVentana.setBotonDescargarPdf(botonDescargarPdf);
+		referenciaVentana.setBotonDescargarSQL(botonDescargarSQL);
+		referenciaVentana.setBotonNormalizarDB(botonNormalizarDB);
+		referenciaVentana.setCheckFirmas(checkFirmas);
+		referenciaVentana.setComboPreviews(comboPreviews);
+		referenciaVentana.setLabelComprobar(labelComprobar);
+		referenciaVentana.setLabelVersion(labelVersion);
+		referenciaVentana.setProntInfoLabel(prontInfo);
+		referenciaVentana.setProntInfoEspecial(prontInfoEspecial);
+		referenciaVentana.setProntInfoPreviews(prontInfoPreviews);
+
+		return referenciaVentana;
+	}
+
 	/**
 	 * Inicializa la interfaz de usuario y configura el comportamiento de los
 	 * elementos al cargar la vista.
@@ -93,6 +121,8 @@ public class OpcionesAvanzadasController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 
 		Platform.runLater(() -> {
+			AccionModificar.referenciaVentana = guardarReferencia();
+			AccionFuncionesComunes.referenciaVentana = guardarReferencia();
 			rellenarComboboxPreviews();
 		});
 		miStageVentana();
@@ -183,7 +213,74 @@ public class OpcionesAvanzadasController implements Initializable {
 	}
 
 	@FXML
+	void descargarPreview(ActionEvent evento) {
+		if (Utilidades.isInternetAvailable()) {
+			Platform.runLater(() -> {
+
+				int indiceSeleccionado = comboPreviews.getSelectionModel().getSelectedIndex();
+				String urlSeleccionada = OpcionesAvanzadasController.urlActualizados.get(indiceSeleccionado);
+
+				if (urlSeleccionada.equals("No hay previews")) {
+					String cadenaError = "No existe PDF que descargar";
+					AlarmaList.iniciarAnimacionAvanzado(prontInfoPreviews, cadenaError);
+					return;
+				}
+
+				FileChooser fileChooser = new FileChooser();
+				fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos PDF", "*.pdf"));
+				File file = fileChooser.showSaveDialog(new Stage());
+
+				if (file != null) {
+					Utilidades.descargarPDFAsync(file, comboPreviews);
+					String cadenaAfirmativo = "PDF descargado exitosamente.";
+					AlarmaList.iniciarAnimacionAvanzado(prontInfoPreviews, cadenaAfirmativo);
+				} else {
+					String cadenaCancelado = "Has cancelado la descarga del PDF.";
+					AlarmaList.iniciarAnimacionAvanzado(prontInfoPreviews, cadenaCancelado);
+				}
+			});
+		} else {
+			String cadenaCancelado = "No se puede descargar, no hay internet";
+			AlarmaList.iniciarAnimacionAvanzado(prontInfoPreviews, cadenaCancelado);
+		}
+	}
+
+	private void rellenarComboboxPreviews() {
+		ObservableList<String> meses = FXCollections.observableArrayList();
+
+		if (Utilidades.isInternetAvailable()) {
+			Task<Void> task = new Task<Void>() {
+				@Override
+				protected Void call() throws Exception {
+					List<Map.Entry<String, String>> previews = MenuPrincipalController.urlPreviews.get();
+					ObservableList<String> mesesActualizados = FXCollections.observableArrayList();
+					for (Map.Entry<String, String> entry : previews) {
+						urlActualizados.add(entry.getValue()); // Agregar la URL a la lista global
+						mesesActualizados.add(entry.getKey());
+					}
+
+					Platform.runLater(() -> {
+						comboPreviews.setItems(mesesActualizados);
+						comboPreviews.getSelectionModel().selectFirst();
+					});
+
+					return null;
+				}
+			};
+
+			new Thread(task).start();
+		} else {
+			meses.add("No hay previews");
+			comboPreviews.setItems(meses);
+		}
+	}
+
+	@FXML
 	void actualizarCompletoComic(ActionEvent event) {
+
+		AccionModificar.referenciaVentana = guardarReferencia();
+		AccionFuncionesComunes.referenciaVentana = guardarReferencia();
+		AccionModificar.actualizarDatabase();
 
 	}
 
@@ -195,59 +292,6 @@ public class OpcionesAvanzadasController implements Initializable {
 	@FXML
 	void actualizarPortadaComic(ActionEvent event) {
 
-	}
-
-	@FXML
-	void descargarPreview(ActionEvent evento) {
-		if (Utilidades.isInternetAvailable()) {
-			Platform.runLater(() -> {
-				FileChooser fileChooser = new FileChooser();
-				fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos PDF", "*.pdf"));
-				File file = fileChooser.showSaveDialog(new Stage());
-
-				if (file != null) {
-					Utilidades.descargarPDFAsync(file, comboPreviews);
-					String cadenaAfirmativo = "PDF descargado exitosamente.";
-					AlarmaList.iniciarAnimacionAvanzado(prontInfoPreviews, cadenaAfirmativo);
-				} else {
-					String cadenaCancelado = "PDF descargado exitosamente.";
-					AlarmaList.iniciarAnimacionAvanzado(prontInfoPreviews, cadenaCancelado);
-				}
-			});
-		}else {
-			String cadenaCancelado = "No se puede descargar, no hay internet";
-			AlarmaList.iniciarAnimacionAvanzado(prontInfoPreviews, cadenaCancelado);
-		}
-	}
-
-	private void rellenarComboboxPreviews() {
-	    ObservableList<String> meses = FXCollections.observableArrayList();
-
-	    if (Utilidades.isInternetAvailable()) {
-	        Task<Void> task = new Task<Void>() {
-	            @Override
-	            protected Void call() throws Exception {
-	                List<Map.Entry<String, String>> previews = MenuPrincipalController.urlPreviews.get();
-	                ObservableList<String> mesesActualizados = FXCollections.observableArrayList();
-	                for (Map.Entry<String, String> entry : previews) {
-	                    urlActualizados.add(entry.getValue()); // Agregar la URL a la lista global
-	                    mesesActualizados.add(entry.getKey());
-	                }
-	                
-	                Platform.runLater(() -> {
-	                    comboPreviews.setItems(mesesActualizados);
-	                    comboPreviews.getSelectionModel().selectFirst();
-	                });
-	                
-	                return null;
-	            }
-	        };
-
-	        new Thread(task).start();
-	    } else {
-	        meses.add("No hay previews");
-	        comboPreviews.setItems(meses);
-	    }
 	}
 
 	/**
