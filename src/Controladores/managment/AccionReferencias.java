@@ -956,7 +956,7 @@ public class AccionReferencias {
 		return comboboxes;
 	}
 
-	public static ObservableList<Control> getListaCamposTexto() {
+	public ObservableList<Control> getListaCamposTexto() {
 		return listaCamposTexto;
 	}
 

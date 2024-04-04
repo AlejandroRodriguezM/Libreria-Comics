@@ -119,9 +119,10 @@ public class AccionModificar {
 
 		String id_comic = referenciaVentana.getIdComicTratar_mod().getText();
 		referenciaVentana.getIdComicTratar_mod().setStyle("");
+		
 		if (accionFuncionesComunes.comprobarExistenciaComic(id_comic)) {
 			if (nav.alertaAccionGeneral()) {
-
+				
 				Utilidades.convertirNombresCarpetas(AccionFuncionesComunes.SOURCE_PATH);
 
 				Comic comicModificado = AccionControlUI.comicModificado();
@@ -163,17 +164,26 @@ public class AccionModificar {
 			AlarmaList.mostrarMensajePront(mensaje, false, referenciaVentana.getProntInfo());
 			return; // Agregar return para salir del método en este punto
 		}
-		Comic datos = AccionControlUI.camposComic();
+		Comic datos = AccionControlUI.camposComic(referenciaVentana.getListaTextFields(), true);
 
-		if (datos.getID() == null || datos.getID().isEmpty()) {
-			datos = ListaComicsDAO.buscarComicPorID(ListaComicsDAO.comicsImportados, datos.getID());
-		}
+		if (ListaComicsDAO.comicsImportados.size() > 0) {
 
-		for (Comic c : ListaComicsDAO.comicsImportados) {
-			if (c.getID().equals(datos.getID())) {
-				ListaComicsDAO.comicsImportados.set(ListaComicsDAO.comicsImportados.indexOf(c), datos);
-				break;
+			if (datos.getID() == null || datos.getID().isEmpty()) {
+				datos = ListaComicsDAO.buscarComicPorID(ListaComicsDAO.comicsImportados, datos.getID());
 			}
+
+			// Si hay elementos en la lista
+			for (Comic c : ListaComicsDAO.comicsImportados) {
+				if (c.getID().equals(datos.getID())) {
+					// Si se encuentra un cómic con el mismo ID, reemplazarlo con los nuevos datos
+					ListaComicsDAO.comicsImportados.set(ListaComicsDAO.comicsImportados.indexOf(c), datos);
+					break; // Salir del bucle una vez que se actualice el cómic
+				}
+			}
+		} else {
+			String id = "A" + 0 + "" + (ListaComicsDAO.comicsImportados.size() + 1);
+			datos.setID(id);
+			ListaComicsDAO.comicsImportados.add(datos);
 		}
 
 		AccionFuncionesComunes.cambiarEstadoBotones(false);
@@ -181,7 +191,9 @@ public class AccionModificar {
 
 		Comic.limpiarCamposComic(datos);
 		AccionControlUI.limpiarAutorellenos(false);
-		FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, referenciaVentana.getTablaBBDD()); // funcion
+		
+		FuncionesTableView.nombreColumnas(referenciaVentana.getTablaBBDD());
+		FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, referenciaVentana.getTablaBBDD());
 	}
 
 	public void mostrarElementosPuntuar(List<Node> elementosAMostrarYHabilitar) {
@@ -222,7 +234,7 @@ public class AccionModificar {
 		List<Comic> listaComicsDatabase = SelectManager.verLibreria(sentenciaSQL, true);
 
 		AccionFuncionesComunes.busquedaPorListaDatabase(listaComicsDatabase, tipoUpdate, actualizarFima);
-		
+
 	}
 
 }

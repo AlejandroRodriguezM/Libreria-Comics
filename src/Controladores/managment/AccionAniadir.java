@@ -49,7 +49,7 @@ public class AccionAniadir {
 
 		Utilidades.convertirNombresCarpetas(AccionFuncionesComunes.SOURCE_PATH);
 
-		Comic comic = AccionControlUI.camposComic();
+		Comic comic = AccionControlUI.camposComic(referenciaVentana.getListaCamposTexto(), true);
 		accionRellenoDatos.actualizarCamposUnicos(comic);
 
 		referenciaVentana.getProntInfo().setOpacity(1);

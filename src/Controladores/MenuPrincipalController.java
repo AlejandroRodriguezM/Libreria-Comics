@@ -50,6 +50,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Control;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -815,10 +816,17 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void mostrarPorParametro(ActionEvent event) throws SQLException {
 		enviarReferencias();
-		Comic comic = AccionControlUI.camposComic();
-		
+
+		// Convertir la lista de ComboBox<String> a una lista de Control
+		List<Control> controls = new ArrayList<>();
+		for (ComboBox<String> comboBox : referenciaVentana.getComboboxes()) {
+			controls.add(comboBox);
+		}
+
+		Comic comic = AccionControlUI.camposComic(controls,false);
+
 		if (!comic.estaVacio()) {
-			
+
 			mostrarComics(false);
 		} else {
 			String mensaje = "Debes de seleccionar algun valor de los combobox";
@@ -846,9 +854,16 @@ public class MenuPrincipalController implements Initializable {
 		if (esCompleto) {
 			AccionSeleccionar.verBasedeDatos(esCompleto, false, null);
 		} else {
-			Comic comicBusqueda = AccionControlUI.camposComic();
+			
+			// Convertir la lista de ComboBox<String> a una lista de Control
+			List<Control> controls = new ArrayList<>();
+			for (ComboBox<String> comboBox : referenciaVentana.getComboboxes()) {
+				controls.add(comboBox);
+			}
 
-			AccionSeleccionar.verBasedeDatos(esCompleto, false, comicBusqueda);
+			Comic comic = AccionControlUI.camposComic(controls,false);
+
+			AccionSeleccionar.verBasedeDatos(esCompleto, false, comic);
 		}
 
 	}

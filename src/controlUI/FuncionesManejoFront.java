@@ -63,7 +63,7 @@ public class FuncionesManejoFront {
 	}
 
 	public static void establecerAnchoMaximoCamposTexto(double maxTextComboWidth) {
-		for (Control campo : AccionReferencias.getListaCamposTexto()) {
+		for (Control campo : referenciaVentana.getListaCamposTexto()) {
 			if (campo instanceof TextField) {
 				TextField campoTexto = (TextField) campo;
 				Platform.runLater(() -> campoTexto.maxWidthProperty()

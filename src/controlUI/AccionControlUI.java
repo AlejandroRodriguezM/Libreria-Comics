@@ -585,44 +585,62 @@ public class AccionControlUI {
 		VentanaAccionController.columnList = accionController.columnListCarga;
 	}
 
-	public static Comic camposComic() {
+	public static Comic camposComic(List<Control> camposComic, boolean esAccion) {
 		Comic comic = new Comic();
-
-		List<String> valoresComic = comprobarYDevolverLista(referenciaVentana.getComboboxes(),
-				referenciaVentana.getListaTextFields());
 
 		LocalDate fecha = referenciaVentana.getFechaComic().getValue();
 		String fechaComic = (fecha != null) ? fecha.toString() : "";
 
-		String nombreComic = valoresComic.get(0);
-		String numeroComic = valoresComic.get(1);
-		String varianteComic = valoresComic.get(2);
-		String firmaComic = valoresComic.get(3);
-		String editorialComic = valoresComic.get(4);
-		String formatoComic = valoresComic.get(5);
-		String procedenciaComic = valoresComic.get(6);
-		String guionistaComic = valoresComic.get(7);
-		String dibujanteComic = valoresComic.get(8);
-		String numeroCajaComic = valoresComic.get(9);
-		String direccionImagen = null;
-		String estadoComic = null;
-		String nombreKeyIssue = null;
-		String precioComic = null;
-		String urlReferencia = null;
-		String codigoComicTratar = null;
-		String idComicTratar_mod = null;
+		List<String> valores = new ArrayList<>();
 
-		if (contieneNulo(referenciaVentana.getListaTextFields())) {
-			direccionImagen = valoresComic.get(10);
-			estadoComic = valoresComic.get(11);
-			nombreKeyIssue = valoresComic.get(12);
-			precioComic = valoresComic.get(13);
-			urlReferencia = valoresComic.get(14);
-			codigoComicTratar = valoresComic.get(15);
-			idComicTratar_mod = valoresComic.get(16);
+		for (Control control : camposComic) {
+			if (control instanceof TextField) {
+				valores.add(((TextField) control).getText());
+			} else if (control instanceof ComboBox<?>) {
+				Object selectedItem = ((ComboBox<?>) control).getSelectionModel().getSelectedItem();
+				if (selectedItem != null) {
+					valores.add(selectedItem.toString());
+				} else {
+					valores.add(""); // o algún valor predeterminado si deseas
+				}
+			}
 		}
 
-		comic.setNombre(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreComic), ""));
+		// Asignar los valores a las variables correspondientes
+		String nombreComic = valores.get(0);
+		String numeroComic = valores.get(1);
+		String varianteComic = valores.get(2);
+		String firmaComic = valores.get(3);
+		String editorialComic = valores.get(4);
+		String formatoComic = valores.get(5);
+		String procedenciaComic = valores.get(6);
+		String guionistaComic = valores.get(7);
+		String dibujanteComic = valores.get(8);
+		String numeroCajaComic = valores.get(9);
+		String direccionImagen = "";
+		String estadoComic = "";
+		String nombreKeyIssue = "";
+		String precioComic = "";
+		String urlReferencia = "";
+		String codigoComicTratar = "";
+		String idComicTratar_mod = "";
+
+		if (esAccion) {
+			direccionImagen = valores.get(10);
+			estadoComic = valores.get(11);
+			nombreKeyIssue = valores.get(12);
+			precioComic = valores.get(13);
+			urlReferencia = valores.get(14);
+			codigoComicTratar = valores.get(15);
+			idComicTratar_mod = valores.get(16);
+		}
+
+		if (esAccion) {
+			comic.setNombre(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreComic), ""));
+		} else {
+			comic.setNombre(Utilidades.defaultIfNullOrEmpty(nombreComic, ""));
+		}
+
 		comic.setNumero(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(numeroComic), ""));
 		comic.setVariante(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(varianteComic), ""));
 		comic.setFirma(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(firmaComic), ""));
@@ -680,7 +698,7 @@ public class AccionControlUI {
 
 		Comic comic_temp = ComicManagerDAO.comicDatos(id_comic);
 
-		Comic datos = camposComic();
+		Comic datos = camposComic(referenciaVentana.getListaTextFields(), true);
 
 		Comic comicModificado = new Comic();
 
@@ -716,7 +734,8 @@ public class AccionControlUI {
 		comicModificado.setPrecio_comic(
 				String.valueOf(Utilidades.convertirMonedaADolar(comicModificado.getProcedencia(), precio_comic)));
 
-		comicModificado.setCodigo_comic(Utilidades.defaultIfNullOrEmpty(datos.getCodigo_comic(), ""));
+		comicModificado.setCodigo_comic(
+				Utilidades.defaultIfNullOrEmpty(datos.getCodigo_comic(), comic_temp.getCodigo_comic()));
 
 		return comicModificado;
 	}

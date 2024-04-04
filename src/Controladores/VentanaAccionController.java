@@ -565,8 +565,9 @@ public class VentanaAccionController implements Initializable {
 
 	private static AccionFuncionesComunes accionFuncionesComunes = new AccionFuncionesComunes();
 
+	public static AccionReferencias referenciaVentana = new AccionReferencias();
+
 	public AccionReferencias guardarReferencia() {
-		AccionReferencias referenciaVentana = new AccionReferencias();
 		referenciaVentana.setAlarmaConexionInternet(alarmaConexionInternet);
 		referenciaVentana.setAlarmaConexionSql(alarmaConexionSql);
 		referenciaVentana.setDireccionImagen(direccionImagen);
@@ -781,7 +782,7 @@ public class VentanaAccionController implements Initializable {
 		enviarReferencias();
 		AccionControlUI.borrarDatosGraficos();
 
-		Comic comic = AccionControlUI.camposComic();
+		Comic comic = AccionControlUI.camposComic(referenciaVentana.getListaCamposTexto(), true);
 
 		AccionSeleccionar.verBasedeDatos(false, true, comic);
 	}
@@ -800,6 +801,26 @@ public class VentanaAccionController implements Initializable {
 		AccionControlUI.borrarDatosGraficos();
 
 		AccionSeleccionar.verBasedeDatos(true, true, null);
+	}
+
+	/**
+	 * Llamada a funcion que modifica los datos de 1 comic en la base de datos.
+	 *
+	 * @param event
+	 * @throws Exception
+	 * @throws SQLException
+	 * @throws NumberFormatException
+	 * @throws IOException
+	 * @throws ExecutionException
+	 * @throws InterruptedException
+	 */
+	@FXML
+	void modificarDatos(ActionEvent event) throws Exception {
+		enviarReferencias();
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+		AccionModificar.modificarComic();
 	}
 
 	@FXML
@@ -1097,26 +1118,6 @@ public class VentanaAccionController implements Initializable {
 		}
 		AccionAniadir.guardarContenidoLista();
 
-	}
-
-	/**
-	 * Llamada a funcion que modifica los datos de 1 comic en la base de datos.
-	 *
-	 * @param event
-	 * @throws Exception
-	 * @throws SQLException
-	 * @throws NumberFormatException
-	 * @throws IOException
-	 * @throws ExecutionException
-	 * @throws InterruptedException
-	 */
-	@FXML
-	void modificarDatos(ActionEvent event) throws Exception {
-		enviarReferencias();
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
-		AccionModificar.modificarComic();
 	}
 
 	/**
