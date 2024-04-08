@@ -237,20 +237,6 @@ public class WebScraperPreviewsWorld {
 	}
 
 	/**
-	 * Elimina el símbolo "#" y todo lo que le sigue del contenido del título.
-	 *
-	 * @param titleContent El contenido del título a procesar.
-	 * @return El contenido del título sin el "#" y el texto siguiente.
-	 */
-	private static String removeHashtagAndFollowing(String titleContent) {
-		if (titleContent.contains("#")) {
-			int hashtagIndex = titleContent.indexOf('#');
-			return titleContent.substring(0, hashtagIndex).trim().toLowerCase();
-		}
-		return titleContent;
-	}
-
-	/**
 	 * Extrae e imprime la URL de la imagen principal del documento.
 	 *
 	 * @param document El documento HTML a analizar.

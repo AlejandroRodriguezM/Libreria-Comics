@@ -7,8 +7,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -23,12 +21,9 @@ import Funcionamiento.VersionService;
 import alarmas.AlarmaList;
 import controlUI.FuncionesComboBox;
 import controlUI.FuncionesManejoFront;
-import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
-import dbmanager.DBUtilidades;
 import dbmanager.DatabaseManagerDAO;
 import dbmanager.ListaComicsDAO;
-import ficherosFunciones.FuncionesExcel;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -178,6 +173,7 @@ public class OpcionesAvanzadasController implements Initializable {
 		AlarmaList.iniciarAnimacionEspera(prontInfo);
 		AlarmaList.iniciarAnimacionEspera(prontInfoEspecial);
 		AlarmaList.iniciarAnimacionEspera(prontInfoPreviews);
+		AlarmaList.iniciarAnimacionEspera(prontInfoEspecial);
 
 		checkFirmas.selectedProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue) {
@@ -192,7 +188,6 @@ public class OpcionesAvanzadasController implements Initializable {
 				actualizarFima.set(false);
 			}
 		});
-
 	}
 
 	@FXML
@@ -377,9 +372,9 @@ public class OpcionesAvanzadasController implements Initializable {
 		final String DB_NAME = ConectManager.DB_NAME;
 		final String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator + DB_NAME
 				+ File.separator;
-		final String directorioOriginal = directorioComun + "portadas";
+		final String directorioOriginal = directorioComun + "portadas" + File.separator;
 
-		final String directorioNuevo = directorioComun;
+		final String directorioNuevo = directorioComun + "portadas_originales";
 
 		List<String> inputPaths = ListaComicsDAO.listaImagenes;
 		AtomicReference<CargaComicsController> cargaComicsControllerRef = new AtomicReference<>();

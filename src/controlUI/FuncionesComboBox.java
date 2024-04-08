@@ -576,12 +576,13 @@ public class FuncionesComboBox {
 	 */
 	public static void rellenarComboBoxEstaticos(List<ComboBox<String>> comboboxes, String tipo_accion) {
 		String[][] valores = {
-				{ "Grapa (Issue individual)", "Tapa blanda (Paperback)", "Cómic de bolsillo (Pocket)",
-						"Edicion de lujo (Deluxe Edition)", "Edicion omnibus(Omnibus)", "Edicion integral (Integral)",
-						"Tapa dura (Hardcover)", "eBook (libro electrónico)", "Comic digital (Digital Comic)",
-						"Manga digital (Digital Manga)", "Manga (Manga tome)", "PDF (Portable Document Format)",
-						"Revista (Magazine)", "Edicion de coleccionista (Collector's Edition)",
-						"Edicion especial (Special Edition)", "Edicion con extras (Bonus Edition)", "Libro (Book)" },
+				{ "Grapa (Issue individual)", "Tapa blanda (Paperback)", "Edicion absolute (Absolute Edition)",
+						"Cómic de bolsillo (Pocket)", "Edicion de lujo (Deluxe Edition)", "Edicion omnibus(Omnibus)",
+						"Edicion integral (Integral)", "Tapa dura (Hardcover)", "eBook (libro electrónico)",
+						"Comic digital (Digital Comic)", "Manga digital (Digital Manga)", "Manga (Manga tome)",
+						"PDF (Portable Document Format)", "Revista (Magazine)",
+						"Edicion de coleccionista (Collector's Edition)", "Edicion especial (Special Edition)",
+						"Edicion con extras (Bonus Edition)", "Libro (Book)" },
 				{ "Estados Unidos (United States)", "Japón (Japan)", "Francia (France)", "Italia (Italy)",
 						"España (Spain)", "Reino Unido (United Kingdom)", "Alemania (Germany)", "Brasil (Brazil)",
 						"Corea del Sur (South Korea)", "México (Mexico)", "Canadá (Canada)", "China (China)",

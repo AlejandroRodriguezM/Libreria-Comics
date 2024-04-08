@@ -553,13 +553,10 @@ public class WebScrapGooglePreviewsWorld {
 		List<String> inputPaths = DBUtilidades.obtenerValoresColumna("portada");
 
 		borrarArchivosNoEnLista(inputPaths);
-
 //		convertJpgToPng(inputPaths);
-
 //		readMetadata();
 		// Comprimir las imágenes con un factor de compresión del 0.5 (50%)
-		compressImages(inputPaths, 0.5, 1);
-
+//		compressImages(inputPaths, 0.5, 1);
 //
 //		String sentenciaSQL = DBUtilidades.construirSentenciaSQL(TipoBusqueda.COMPLETA);
 //

@@ -454,19 +454,19 @@ public class Utilidades {
 		}
 	}
 
-    private static void crearArchivoZip(File sourceFolder, String carpetaLibreria, SimpleDateFormat dateFormat)
-            throws IOException {
-        // Crear archivo ZIP con fecha actual
-        String backupFileName = "portadas_" + dateFormat.format(new Date()) + ".zip";
-        String backupPath = carpetaLibreria + File.separator + backupFileName;
-        File backupFile = new File(backupPath);
+	private static void crearArchivoZip(File sourceFolder, String carpetaLibreria, SimpleDateFormat dateFormat)
+			throws IOException {
+		// Crear archivo ZIP con fecha actual
+		String backupFileName = "portadas_" + dateFormat.format(new Date()) + ".zip";
+		String backupPath = carpetaLibreria + File.separator + backupFileName;
+		File backupFile = new File(backupPath);
 
-        // Comprimir carpeta en el archivo ZIP
-        try (FileOutputStream fos = new FileOutputStream(backupFile);
-             ZipOutputStream zipOut = new ZipOutputStream(fos)) {
-            zipFile(sourceFolder, sourceFolder.getName(), zipOut);
-        }
-    }
+		// Comprimir carpeta en el archivo ZIP
+		try (FileOutputStream fos = new FileOutputStream(backupFile);
+				ZipOutputStream zipOut = new ZipOutputStream(fos)) {
+			zipFile(sourceFolder, sourceFolder.getName(), zipOut);
+		}
+	}
 
 	/**
 	 * Añade un archivo al archivo ZIP especificado con el nombre de entrada dado.
@@ -1251,32 +1251,32 @@ public class Utilidades {
 		}
 	}
 
-    /**
-     * Elimina archivos en un directorio común que no están presentes en la lista
-     * proporcionada de URLs.
-     *
-     * @param inputPaths Lista de URLs que representan los archivos a conservar.
-     */
-    public static void borrarArchivosNoEnLista(List<String> inputPaths) {
-        String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
-                + ConectManager.DB_NAME + File.separator + "portadas" + File.separator;
+	/**
+	 * Elimina archivos en un directorio común que no están presentes en la lista
+	 * proporcionada de URLs.
+	 *
+	 * @param inputPaths Lista de URLs que representan los archivos a conservar.
+	 */
+	public static void borrarArchivosNoEnLista(List<String> inputPaths) {
+		String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+				+ ConectManager.DB_NAME + File.separator + "portadas" + File.separator;
 
-        List<String> nombresArchivosEnDirectorio = obtenerNombresArchivosEnDirectorio(directorioComun);
+		List<String> nombresArchivosEnDirectorio = obtenerNombresArchivosEnDirectorio(directorioComun);
 
-        for (String nombreArchivo : nombresArchivosEnDirectorio) {
-            Path archivoAEliminarPath = Paths.get(directorioComun, nombreArchivo).normalize();
+		for (String nombreArchivo : nombresArchivosEnDirectorio) {
+			Path archivoAEliminarPath = Paths.get(directorioComun, nombreArchivo).normalize();
 
-            if (!inputPaths.contains(archivoAEliminarPath.toString())) {
-                try {
-                    if (Files.exists(archivoAEliminarPath) && Files.isRegularFile(archivoAEliminarPath)) {
-                        Files.delete(archivoAEliminarPath);
-                    }
-                } catch (Exception e) {
-                    manejarExcepcion(e);
-                }
-            }
-        }
-    }
+			if (!inputPaths.contains(archivoAEliminarPath.toString())) {
+				try {
+					if (Files.exists(archivoAEliminarPath) && Files.isRegularFile(archivoAEliminarPath)) {
+						Files.delete(archivoAEliminarPath);
+					}
+				} catch (Exception e) {
+					manejarExcepcion(e);
+				}
+			}
+		}
+	}
 
 	/**
 	 * Obtiene la lista de nombres de archivos en un directorio especificado.
@@ -2162,143 +2162,229 @@ public class Utilidades {
 	}
 
 	private static String eliminarPalabrasClave(String texto) {
-	    // Eliminar cualquier número
-	    texto = texto.replaceAll("\\d", "");
+		// Eliminar cualquier número
+		texto = texto.replaceAll("\\d", "");
 
-	    // Eliminar palabras clave
-	    texto = texto.replaceAll("(?i)\\b(tp|omnibus|omni|ed|deluxe|dlx|edition|hc|vol|cvr)\\b", "");
+		// Eliminar palabras clave
+		texto = texto.replaceAll("(?i)\\b(tp|omnibus|omni|ed|deluxe|dlx|edition|hc|vol|cvr)\\b", "");
 
-	    // Eliminar "by" y lo que sigue después de él
-	    texto = texto.replaceAll("(?i)\\s*by\\s*.*", "");
+		// Eliminar "by" y lo que sigue después de él
+		texto = texto.replaceAll("(?i)\\s*by\\s*.*", "");
 
-	    // Eliminar espacios adicionales
-	    texto = texto.trim().replaceAll("\\s+", " ");
+		// Eliminar espacios adicionales
+		texto = texto.trim().replaceAll("\\s+", " ");
 
-	    return texto;
+		return texto;
+	}
+
+	public static String devolverPalabrasClave(String texto) {
+		// Expresión regular para buscar palabras clave
+		Pattern patron = Pattern.compile("\\b(tp|omnibus|omni|ed|deluxe|dlx|edition|hc|vol|cvr)\\b",
+				Pattern.CASE_INSENSITIVE);
+		Matcher matcher = patron.matcher(texto);
+
+		// StringBuilder para almacenar los resultados
+		StringBuilder resultado = new StringBuilder();
+
+		// Iterar sobre las coincidencias encontradas
+		while (matcher.find()) {
+			// Obtener la palabra clave encontrada
+			String palabraClave = matcher.group().toLowerCase();
+
+			// Realizar acciones según la palabra clave encontrada
+			switch (palabraClave) {
+
+			case "omnibus hc":
+				resultado.append("Edicion omnibus(Omnibus)");
+				break;
+			case "hc omnibus":
+				resultado.append("Edicion omnibus(Omnibus)");
+				break;
+			case "tp omnibus":
+				resultado.append("Edicion omnibus(Omnibus)");
+				break;
+			case "omnibus tp":
+				resultado.append("Edicion omnibus(Omnibus)");
+				break;
+			case "hc omni":
+				resultado.append("Edicion omnibus(Omnibus)");
+				break;
+			case "omni hc":
+				resultado.append("Edicion omnibus(Omnibus)");
+				break;
+			case "tp omni":
+				resultado.append("Edicion omnibus(Omnibus)");
+				break;
+			case "omni tp":
+				resultado.append("Edicion omnibus(Omnibus)");
+				break;
+			case "tp":
+				resultado.append("Tapa blanda (Paperback)");
+				break;
+			case "omnibus":
+				resultado.append("Edicion omnibus(Omnibus)");
+				break;
+			case "omni":
+				resultado.append("Edicion omnibus(Omnibus)");
+				break;
+			case "deluxe":
+				resultado.append("Edicion de lujo (Deluxe Edition)");
+				break;
+			case "dlx":
+				resultado.append("Edicion de lujo (Deluxe Edition)");
+				break;
+			case "hc":
+				resultado.append("Tapa dura (Hardcover)");
+				break;
+			case "treasury edition":
+				resultado.append("Edicion de lujo (Deluxe Edition)");
+				break;
+			case "#":
+				resultado.append("Grapa (Issue individual)");
+				break;
+			case "cvr":
+				resultado.append("Grapa (Issue individual)");
+				break;
+			case "absolute":
+				resultado.append("Edicion absolute (Absolute Edition)");
+				break;
+			default:
+				resultado.append("Grapa (Issue individual)");
+				break;
+			}
+		}
+
+		// Devolver el resultado como cadena de texto
+		return resultado.toString();
 	}
 
 	public static String extraerNumeroLimpio(String numComic) {
-	    // Encontrar la posición del símbolo #
-	    int indiceNumeral = numComic.indexOf("#");
+		// Encontrar la posición del símbolo #
+		int indiceNumeral = numComic.indexOf("#");
 
-	    // Si no se encuentra el símbolo #, buscar cualquier número en la cadena
-	    if (indiceNumeral == -1) {
-	        // Buscar cualquier número en la cadena
-	        String posibleNumero = numComic.replaceAll("\\D", "").trim();
-	        if (!posibleNumero.isEmpty()) {
-	            return posibleNumero;
-	        } else {
-	            return "0";
-	        }
-	    }
+		// Si no se encuentra el símbolo #, buscar cualquier número en la cadena
+		if (indiceNumeral == -1) {
+			// Buscar cualquier número en la cadena
+			String posibleNumero = numComic.replaceAll("\\D", "").trim();
+			if (!posibleNumero.isEmpty()) {
+				return posibleNumero;
+			} else {
+				return "0";
+			}
+		}
 
-	    // Encontrar la posición del primer espacio después del #
-	    int indiceEspacioDespuesNumeral = numComic.indexOf(" ", indiceNumeral);
+		// Encontrar la posición del primer espacio después del #
+		int indiceEspacioDespuesNumeral = numComic.indexOf(" ", indiceNumeral);
 
-	    // Si no se encuentra el espacio después del símbolo #,
-	    // devuelve el texto después del #
-	    if (indiceEspacioDespuesNumeral == -1) {
-	        return numComic.substring(indiceNumeral + 1).trim();
-	    }
+		// Si no se encuentra el espacio después del símbolo #,
+		// devuelve el texto después del #
+		if (indiceEspacioDespuesNumeral == -1) {
+			return numComic.substring(indiceNumeral + 1).trim();
+		}
 
-	    // Buscar "hc", "vol", "omnibus" o "tp" después del espacio
-	    String textoDespuesNumeral = numComic.substring(indiceNumeral + 1, indiceEspacioDespuesNumeral).trim().toLowerCase();
-	    int indiceHc = textoDespuesNumeral.indexOf("hc ");
-	    int indiceVol = textoDespuesNumeral.indexOf("vol ");
-	    int indiceOmnibus = textoDespuesNumeral.indexOf("omnibus ");
-	    int indiceTp = textoDespuesNumeral.indexOf("tp ");
-	    int indiceTermino = Math.min(Math.min(Math.min(indiceHc, indiceVol), indiceOmnibus), indiceTp);
+		// Buscar "hc", "vol", "omnibus" o "tp" después del espacio
+		String textoDespuesNumeral = numComic.substring(indiceNumeral + 1, indiceEspacioDespuesNumeral).trim()
+				.toLowerCase();
+		int indiceHc = textoDespuesNumeral.indexOf("hc ");
+		int indiceVol = textoDespuesNumeral.indexOf("vol ");
+		int indiceOmnibus = textoDespuesNumeral.indexOf("omnibus ");
+		int indiceTp = textoDespuesNumeral.indexOf("tp ");
+		int indiceTermino = Math.min(Math.min(Math.min(indiceHc, indiceVol), indiceOmnibus), indiceTp);
 
-	    // Si se encuentra alguna palabra clave, buscar un número después de esa palabra clave
-	    if (indiceTermino != -1) {
-	        int indiceEspacioDespuesTermino = numComic.indexOf(" ", indiceEspacioDespuesNumeral + 1);
-	        if (indiceEspacioDespuesTermino != -1) {
-	            String posibleNumero = numComic.substring(indiceEspacioDespuesNumeral + 1, indiceEspacioDespuesTermino).trim();
-	            if (posibleNumero.matches("\\d+")) {
-	                return posibleNumero;
-	            }
-	        }
-	    }
+		// Si se encuentra alguna palabra clave, buscar un número después de esa palabra
+		// clave
+		if (indiceTermino != -1) {
+			int indiceEspacioDespuesTermino = numComic.indexOf(" ", indiceEspacioDespuesNumeral + 1);
+			if (indiceEspacioDespuesTermino != -1) {
+				String posibleNumero = numComic.substring(indiceEspacioDespuesNumeral + 1, indiceEspacioDespuesTermino)
+						.trim();
+				if (posibleNumero.matches("\\d+")) {
+					return posibleNumero;
+				}
+			}
+		}
 
-	    // Si no se encontró ningún número después de las palabras clave, buscar un número después del espacio
-	    // que sigue al símbolo #
-	    int indiceEspacioDespuesNumeral2 = numComic.indexOf(" ", indiceNumeral + 1);
-	    if (indiceEspacioDespuesNumeral2 != -1) {
-	        String posibleNumero = numComic.substring(indiceNumeral + 1, indiceEspacioDespuesNumeral2).trim();
-	        if (posibleNumero.matches("\\d+")) {
-	            return posibleNumero;
-	        }
-	    }
+		// Si no se encontró ningún número después de las palabras clave, buscar un
+		// número después del espacio
+		// que sigue al símbolo #
+		int indiceEspacioDespuesNumeral2 = numComic.indexOf(" ", indiceNumeral + 1);
+		if (indiceEspacioDespuesNumeral2 != -1) {
+			String posibleNumero = numComic.substring(indiceNumeral + 1, indiceEspacioDespuesNumeral2).trim();
+			if (posibleNumero.matches("\\d+")) {
+				return posibleNumero;
+			}
+		}
 
-	    // Si no se encontró ningún número después de los términos clave o el espacio después del símbolo #,
-	    // buscar cualquier número al final de la cadena
-	    Pattern pattern = Pattern.compile("\\d+$");
-	    Matcher matcher = pattern.matcher(numComic);
-	    if (matcher.find()) {
-	        return matcher.group();
-	    }
+		// Si no se encontró ningún número después de los términos clave o el espacio
+		// después del símbolo #,
+		// buscar cualquier número al final de la cadena
+		Pattern pattern = Pattern.compile("\\d+$");
+		Matcher matcher = pattern.matcher(numComic);
+		if (matcher.find()) {
+			return matcher.group();
+		}
 
-	    // Si no se encontró ningún número en la cadena, devolver "0"
-	    return "0";
+		// Si no se encontró ningún número en la cadena, devolver "0"
+		return "0";
 	}
 
-    public static void copiarDirectorio(String directorioNuevo,String directorioOriginal) {
+	public static void copiarDirectorio(String directorioNuevo, String directorioOriginal) {
 
-        File directorioOrigen = new File(directorioOriginal);
-        File directorioDestino = new File(directorioNuevo);
+		File directorioOrigen = new File(directorioOriginal);
+		File directorioDestino = new File(directorioNuevo);
 
-        System.out.println(directorioOriginal);
-        
-        // Verificar si el directorio origen existe y es un directorio
-        if (!directorioOrigen.exists() || !directorioOrigen.isDirectory()) {
-            throw new IllegalArgumentException("El directorio origen no existe o no es un directorio válido.");
-        }
+		System.out.println(directorioOriginal);
 
-        // Verificar si el directorio destino ya existe
-        if (!directorioDestino.exists()) {
-            // Si el directorio destino ya existe, añadir la fecha actual al nombre
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmm");
-            String fechaActual = dateFormat.format(new Date());
-            directorioNuevo += "portadas_original_" + fechaActual + File.separator;
-        }
+		// Verificar si el directorio origen existe y es un directorio
+		if (!directorioOrigen.exists() || !directorioOrigen.isDirectory()) {
+			throw new IllegalArgumentException("El directorio origen no existe o no es un directorio válido.");
+		}
 
-        // Crear el directorio destino
-        directorioDestino = new File(directorioNuevo);
-        directorioDestino.mkdirs();
+		// Verificar si el directorio destino ya existe
+		if (!directorioDestino.exists()) {
+			// Si el directorio destino ya existe, añadir la fecha actual al nombre
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmm");
+			String fechaActual = dateFormat.format(new Date());
+			directorioNuevo += "_" + fechaActual + File.separator;
+		}
 
-        // Obtener la lista de archivos en el directorio origen
-        File[] archivos = directorioOrigen.listFiles();
+		// Crear el directorio destino
+		directorioDestino = new File(directorioNuevo);
+		directorioDestino.mkdirs();
 
-        if (archivos != null) {
-            for (File archivo : archivos) {
-                if (archivo.isDirectory()) {
-                    // Si es un directorio, llamar recursivamente a esta función
-                    copiarDirectorio(directorioNuevo,directorioOriginal);
-                } else {
-                    // Si es un archivo, copiarlo al nuevo directorio
-                    try {
-                        copiarArchivo(archivo.getAbsolutePath(), directorioNuevo + File.separator + archivo.getName());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-    }
+		// Obtener la lista de archivos en el directorio origen
+		File[] archivos = directorioOrigen.listFiles();
 
-    public static void copiarArchivo(String origen, String destino) throws IOException {
-        FileInputStream entrada = new FileInputStream(origen);
-        FileOutputStream salida = new FileOutputStream(destino);
+		if (archivos != null) {
+			for (File archivo : archivos) {
+				if (archivo.isDirectory()) {
+					// Si es un directorio, llamar recursivamente a esta función
+					copiarDirectorio(directorioNuevo, directorioOriginal);
+				} else {
+					// Si es un archivo, copiarlo al nuevo directorio
+					try {
+						copiarArchivo(archivo.getAbsolutePath(), directorioNuevo + File.separator + archivo.getName());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
 
-        byte[] buffer = new byte[1024];
-        int longitud;
-        while ((longitud = entrada.read(buffer)) > 0) {
-            salida.write(buffer, 0, longitud);
-        }
+	public static void copiarArchivo(String origen, String destino) throws IOException {
+		FileInputStream entrada = new FileInputStream(origen);
+		FileOutputStream salida = new FileOutputStream(destino);
 
-        // Cerrar flujos
-        entrada.close();
-        salida.close();
-    }
+		byte[] buffer = new byte[1024];
+		int longitud;
+		while ((longitud = entrada.read(buffer)) > 0) {
+			salida.write(buffer, 0, longitud);
+		}
+
+		// Cerrar flujos
+		entrada.close();
+		salida.close();
+	}
 
 }

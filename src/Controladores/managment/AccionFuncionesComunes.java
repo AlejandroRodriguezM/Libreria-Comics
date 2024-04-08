@@ -219,14 +219,16 @@ public class AccionFuncionesComunes {
 			comicInfo.setID(comicOriginal.getID());
 			comicInfo.setImagen(urlFinal);
 
-			completarInformacionFaltante(comicInfo, comicOriginal);
 			String numComic = Utilidades.extraerNumeroLimpio(comicInfo.getNombre());
 			String nombreCorregido = Utilidades.eliminarParentesis(comicInfo.getNombre());
 			String nombreLimpio = Utilidades.extraerNombreLimpio(nombreCorregido);
+			String formatoLimpio = Utilidades.devolverPalabrasClave(comicInfo.getNombre());
 
 			comicInfo.setNombre(nombreLimpio);
 			comicInfo.setNumero(numComic);
+			comicInfo.setFormato(formatoLimpio);
 
+			completarInformacionFaltante(comicInfo, comicOriginal);
 			if (tipoUpdate.equalsIgnoreCase("modificar")) {
 				comicInfo.setID(comicOriginal.getID());
 				comicInfo.setImagen(urlFinal);
@@ -451,7 +453,8 @@ public class AccionFuncionesComunes {
 				urlImagen = file.toString();
 			}
 
-			String formato = Utilidades.defaultIfNullOrEmpty(comic.getFormato(), "Grapa (Issue individual)");
+			String formatoLimpio = Utilidades.devolverPalabrasClave(comic.getNombre());
+			String formato = Utilidades.defaultIfNullOrEmpty(formatoLimpio, "Grapa (Issue individual)");
 			String procedencia = Utilidades.defaultIfNullOrEmpty(comic.getProcedencia(),
 					"Estados Unidos (United States)");
 
@@ -689,13 +692,12 @@ public class AccionFuncionesComunes {
 
 				listaComicsDatabase.forEach(codigo -> {
 					// Verifica si la tarea ha sido cancelada
-					
+
 					if (isCancelled() || !referenciaVentana.getStage().isShowing()) {
 						return; // Sale del método call() si la tarea ha sido cancelada
 					}
 
 					String finalValorCodigo = Utilidades.eliminarEspacios(codigo.getCodigo_comic()).replace("-", "");
-					System.out.println(codigo);
 					if (!finalValorCodigo.isEmpty()) {
 						String[] texto = { "" }; // Envuelve la variable en un array de un solo elemento
 
@@ -773,7 +775,7 @@ public class AccionFuncionesComunes {
 			String cadenaAfirmativo = "Cancelada la actualizacion de la base de datos.";
 			AlarmaList.iniciarAnimacionAvanzado(prontEspecial, cadenaAfirmativo);
 			actualizarCombobox();
-			
+
 			FuncionesManejoFront.cambiarEstadoMenuBar(false);
 		});
 
