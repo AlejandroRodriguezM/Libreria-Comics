@@ -96,7 +96,7 @@ public class DBUtilidades {
 			return 0;
 		}
 
-		int count = ComicManagerDAO.countRows(sql.toString());
+		int count = ComicManagerDAO.countRows();
 		return count; // Devolver la cadena SQL solo si se han agregado condiciones
 
 	}

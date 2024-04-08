@@ -56,6 +56,8 @@ import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -115,7 +117,7 @@ public class Utilidades {
 	/**
 	 * Construimos la ruta al directorio "Documents"
 	 */
-	private final static String DOCUMENTS_PATH = USER_DIR + File.separator + "Documents";
+	public final static String DOCUMENTS_PATH = USER_DIR + File.separator + "Documents";
 
 	/**
 	 * Construimos la ruta al directorio "libreria_comics" dentro de "Documents" y
@@ -452,18 +454,19 @@ public class Utilidades {
 		}
 	}
 
-	private static void crearArchivoZip(File sourceFolder, String carpetaLibreria, SimpleDateFormat dateFormat)
-			throws IOException {
-		// Crear archivo ZIP con fecha actual
-		String backupFileName = "portadas_" + dateFormat.format(new Date()) + ".zip";
-		String backupPath = carpetaLibreria + File.separator + backupFileName;
-		File backupFile = new File(backupPath);
+    private static void crearArchivoZip(File sourceFolder, String carpetaLibreria, SimpleDateFormat dateFormat)
+            throws IOException {
+        // Crear archivo ZIP con fecha actual
+        String backupFileName = "portadas_" + dateFormat.format(new Date()) + ".zip";
+        String backupPath = carpetaLibreria + File.separator + backupFileName;
+        File backupFile = new File(backupPath);
 
-		// Comprimir carpeta en el archivo ZIP
-		try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(backupFile))) {
-			zipFile(sourceFolder, sourceFolder.getName(), zipOut);
-		}
-	}
+        // Comprimir carpeta en el archivo ZIP
+        try (FileOutputStream fos = new FileOutputStream(backupFile);
+             ZipOutputStream zipOut = new ZipOutputStream(fos)) {
+            zipFile(sourceFolder, sourceFolder.getName(), zipOut);
+        }
+    }
 
 	/**
 	 * Añade un archivo al archivo ZIP especificado con el nombre de entrada dado.
@@ -1050,8 +1053,6 @@ public class Utilidades {
 		return false;
 	}
 
-
-
 	/**
 	 * Obtiene el nombre de la imagen a partir de una URL.
 	 * 
@@ -1250,32 +1251,32 @@ public class Utilidades {
 		}
 	}
 
-	/**
-	 * Elimina archivos en un directorio común que no están presentes en la lista
-	 * proporcionada de URLs.
-	 * 
-	 * @param listaUrls Lista de URLs que representan los archivos a conservar.
-	 */
-	public static void borrarArchivosNoEnLista(List<String> listaUrls) {
-		String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
-				+ ConectManager.DB_NAME + File.separator + "portadas" + File.separator;
+    /**
+     * Elimina archivos en un directorio común que no están presentes en la lista
+     * proporcionada de URLs.
+     *
+     * @param inputPaths Lista de URLs que representan los archivos a conservar.
+     */
+    public static void borrarArchivosNoEnLista(List<String> inputPaths) {
+        String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+                + ConectManager.DB_NAME + File.separator + "portadas" + File.separator;
 
-		List<String> nombresArchivosEnDirectorio = obtenerNombresArchivosEnDirectorio(directorioComun);
+        List<String> nombresArchivosEnDirectorio = obtenerNombresArchivosEnDirectorio(directorioComun);
 
-		for (String nombreArchivo : nombresArchivosEnDirectorio) {
-			Path archivoAEliminarPath = Paths.get(nombreArchivo).normalize();
+        for (String nombreArchivo : nombresArchivosEnDirectorio) {
+            Path archivoAEliminarPath = Paths.get(directorioComun, nombreArchivo).normalize();
 
-			if (!listaUrls.stream().anyMatch(url -> url.equalsIgnoreCase(archivoAEliminarPath.toString()))) {
-				try {
-					if (archivoAEliminarPath.toFile().exists() && archivoAEliminarPath.toFile().isFile()) {
-						archivoAEliminarPath.toFile().delete();
-					}
-				} catch (SecurityException e) {
-					manejarExcepcion(e);
-				}
-			}
-		}
-	}
+            if (!inputPaths.contains(archivoAEliminarPath.toString())) {
+                try {
+                    if (Files.exists(archivoAEliminarPath) && Files.isRegularFile(archivoAEliminarPath)) {
+                        Files.delete(archivoAEliminarPath);
+                    }
+                } catch (Exception e) {
+                    manejarExcepcion(e);
+                }
+            }
+        }
+    }
 
 	/**
 	 * Obtiene la lista de nombres de archivos en un directorio especificado.
@@ -1283,7 +1284,7 @@ public class Utilidades {
 	 * @param directorio La ruta del directorio.
 	 * @return Lista de nombres de archivos en el directorio.
 	 */
-	private static List<String> obtenerNombresArchivosEnDirectorio(String directorio) {
+	public static List<String> obtenerNombresArchivosEnDirectorio(String directorio) {
 		List<String> nombresArchivos = new ArrayList<>();
 
 		File directorioComun = new File(directorio);
@@ -1336,8 +1337,6 @@ public class Utilidades {
 			}
 		}
 	}
-
-
 
 	/**
 	 * Agrega una etiqueta y un valor al constructor StringBuilder si el valor no
@@ -2030,7 +2029,7 @@ public class Utilidades {
 		}
 	}
 
-	public static void descargarYAbrirEjecutableDesdeGitHub(Stage primaryStage) {
+	public static void descargarYAbrirEjecutableDesdeGitHub() {
 		Task<Void> task = new Task<Void>() {
 			@Override
 			protected Void call() throws Exception {
@@ -2116,37 +2115,190 @@ public class Utilidades {
 			}
 		}
 	}
-	
-    public static String eliminarParentesis(String input) {
-        StringBuilder resultado = new StringBuilder();
-        boolean dentroDeParentesis = false;
 
-        for (int i = 0; i < input.length(); i++) {
-            char caracter = input.charAt(i);
-            
-            if (caracter == '(') {
-                dentroDeParentesis = true;
-            } else if (caracter == ')') {
-                dentroDeParentesis = false;
-            } else if (!dentroDeParentesis) {
-                resultado.append(caracter);
-            }
+	public static String eliminarParentesis(String input) {
+		StringBuilder resultado = new StringBuilder();
+		boolean dentroDeParentesis = false;
+
+		for (int i = 0; i < input.length(); i++) {
+			char caracter = input.charAt(i);
+
+			if (caracter == '(') {
+				dentroDeParentesis = true;
+			} else if (caracter == ')') {
+				dentroDeParentesis = false;
+			} else if (!dentroDeParentesis) {
+				resultado.append(caracter);
+			}
+		}
+
+		// Convertir la primera letra de cada palabra a mayúscula
+		String[] palabras = resultado.toString().trim().split("\\s+");
+		StringBuilder resultadoFinal = new StringBuilder();
+		for (String palabra : palabras) {
+			if (palabra.length() > 0) {
+				resultadoFinal.append(Character.toUpperCase(palabra.charAt(0)));
+				if (palabra.length() > 1) {
+					resultadoFinal.append(palabra.substring(1).toLowerCase());
+				}
+				resultadoFinal.append(" ");
+			}
+		}
+
+		return resultadoFinal.toString().trim(); // Elimina espacios en blanco al inicio y al final
+	}
+
+	public static String extraerNombreLimpio(String nombreComic) {
+		// Encontrar la posición del símbolo #
+		int indiceNumeral = nombreComic.indexOf("#");
+
+		// Si no se encuentra el símbolo #, devuelve el nombre completo
+		if (indiceNumeral == -1) {
+			return eliminarPalabrasClave(nombreComic.trim());
+		}
+
+		// Extraer el texto antes del símbolo #
+		return eliminarPalabrasClave(nombreComic.substring(0, indiceNumeral).trim());
+	}
+
+	private static String eliminarPalabrasClave(String texto) {
+	    // Eliminar cualquier número
+	    texto = texto.replaceAll("\\d", "");
+
+	    // Eliminar palabras clave
+	    texto = texto.replaceAll("(?i)\\b(tp|omnibus|omni|ed|deluxe|dlx|edition|hc|vol|cvr)\\b", "");
+
+	    // Eliminar "by" y lo que sigue después de él
+	    texto = texto.replaceAll("(?i)\\s*by\\s*.*", "");
+
+	    // Eliminar espacios adicionales
+	    texto = texto.trim().replaceAll("\\s+", " ");
+
+	    return texto;
+	}
+
+	public static String extraerNumeroLimpio(String numComic) {
+	    // Encontrar la posición del símbolo #
+	    int indiceNumeral = numComic.indexOf("#");
+
+	    // Si no se encuentra el símbolo #, buscar cualquier número en la cadena
+	    if (indiceNumeral == -1) {
+	        // Buscar cualquier número en la cadena
+	        String posibleNumero = numComic.replaceAll("\\D", "").trim();
+	        if (!posibleNumero.isEmpty()) {
+	            return posibleNumero;
+	        } else {
+	            return "0";
+	        }
+	    }
+
+	    // Encontrar la posición del primer espacio después del #
+	    int indiceEspacioDespuesNumeral = numComic.indexOf(" ", indiceNumeral);
+
+	    // Si no se encuentra el espacio después del símbolo #,
+	    // devuelve el texto después del #
+	    if (indiceEspacioDespuesNumeral == -1) {
+	        return numComic.substring(indiceNumeral + 1).trim();
+	    }
+
+	    // Buscar "hc", "vol", "omnibus" o "tp" después del espacio
+	    String textoDespuesNumeral = numComic.substring(indiceNumeral + 1, indiceEspacioDespuesNumeral).trim().toLowerCase();
+	    int indiceHc = textoDespuesNumeral.indexOf("hc ");
+	    int indiceVol = textoDespuesNumeral.indexOf("vol ");
+	    int indiceOmnibus = textoDespuesNumeral.indexOf("omnibus ");
+	    int indiceTp = textoDespuesNumeral.indexOf("tp ");
+	    int indiceTermino = Math.min(Math.min(Math.min(indiceHc, indiceVol), indiceOmnibus), indiceTp);
+
+	    // Si se encuentra alguna palabra clave, buscar un número después de esa palabra clave
+	    if (indiceTermino != -1) {
+	        int indiceEspacioDespuesTermino = numComic.indexOf(" ", indiceEspacioDespuesNumeral + 1);
+	        if (indiceEspacioDespuesTermino != -1) {
+	            String posibleNumero = numComic.substring(indiceEspacioDespuesNumeral + 1, indiceEspacioDespuesTermino).trim();
+	            if (posibleNumero.matches("\\d+")) {
+	                return posibleNumero;
+	            }
+	        }
+	    }
+
+	    // Si no se encontró ningún número después de las palabras clave, buscar un número después del espacio
+	    // que sigue al símbolo #
+	    int indiceEspacioDespuesNumeral2 = numComic.indexOf(" ", indiceNumeral + 1);
+	    if (indiceEspacioDespuesNumeral2 != -1) {
+	        String posibleNumero = numComic.substring(indiceNumeral + 1, indiceEspacioDespuesNumeral2).trim();
+	        if (posibleNumero.matches("\\d+")) {
+	            return posibleNumero;
+	        }
+	    }
+
+	    // Si no se encontró ningún número después de los términos clave o el espacio después del símbolo #,
+	    // buscar cualquier número al final de la cadena
+	    Pattern pattern = Pattern.compile("\\d+$");
+	    Matcher matcher = pattern.matcher(numComic);
+	    if (matcher.find()) {
+	        return matcher.group();
+	    }
+
+	    // Si no se encontró ningún número en la cadena, devolver "0"
+	    return "0";
+	}
+
+    public static void copiarDirectorio(String directorioNuevo,String directorioOriginal) {
+
+        File directorioOrigen = new File(directorioOriginal);
+        File directorioDestino = new File(directorioNuevo);
+
+        System.out.println(directorioOriginal);
+        
+        // Verificar si el directorio origen existe y es un directorio
+        if (!directorioOrigen.exists() || !directorioOrigen.isDirectory()) {
+            throw new IllegalArgumentException("El directorio origen no existe o no es un directorio válido.");
         }
 
-        // Convertir la primera letra de cada palabra a mayúscula
-        String[] palabras = resultado.toString().trim().split("\\s+");
-        StringBuilder resultadoFinal = new StringBuilder();
-        for (String palabra : palabras) {
-            if (palabra.length() > 0) {
-                resultadoFinal.append(Character.toUpperCase(palabra.charAt(0)));
-                if (palabra.length() > 1) {
-                    resultadoFinal.append(palabra.substring(1).toLowerCase());
+        // Verificar si el directorio destino ya existe
+        if (!directorioDestino.exists()) {
+            // Si el directorio destino ya existe, añadir la fecha actual al nombre
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmm");
+            String fechaActual = dateFormat.format(new Date());
+            directorioNuevo += "portadas_original_" + fechaActual + File.separator;
+        }
+
+        // Crear el directorio destino
+        directorioDestino = new File(directorioNuevo);
+        directorioDestino.mkdirs();
+
+        // Obtener la lista de archivos en el directorio origen
+        File[] archivos = directorioOrigen.listFiles();
+
+        if (archivos != null) {
+            for (File archivo : archivos) {
+                if (archivo.isDirectory()) {
+                    // Si es un directorio, llamar recursivamente a esta función
+                    copiarDirectorio(directorioNuevo,directorioOriginal);
+                } else {
+                    // Si es un archivo, copiarlo al nuevo directorio
+                    try {
+                        copiarArchivo(archivo.getAbsolutePath(), directorioNuevo + File.separator + archivo.getName());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-                resultadoFinal.append(" ");
             }
         }
+    }
 
-        return resultadoFinal.toString().trim(); // Elimina espacios en blanco al inicio y al final
+    public static void copiarArchivo(String origen, String destino) throws IOException {
+        FileInputStream entrada = new FileInputStream(origen);
+        FileOutputStream salida = new FileOutputStream(destino);
+
+        byte[] buffer = new byte[1024];
+        int longitud;
+        while ((longitud = entrada.read(buffer)) > 0) {
+            salida.write(buffer, 0, longitud);
+        }
+
+        // Cerrar flujos
+        entrada.close();
+        salida.close();
     }
 
 }

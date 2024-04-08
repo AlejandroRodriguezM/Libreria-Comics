@@ -8,6 +8,8 @@ import com.gluonhq.charm.glisten.control.ProgressIndicator;
 import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
 import apisFunciones.FuncionesApis;
+import controlUI.FuncionesManejoFront;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -71,7 +73,9 @@ public class ModificarApiDatosController implements Initializable {
 		alarmaList.iniciarThreadChecker(true);
 
 		AlarmaList.iniciarAnimacionEspera(printInfo);
-
+		Platform.runLater(() -> {
+			FuncionesManejoFront.stageVentanas.add(estadoStage());
+		});
 		if (TIPO_ACCION.equalsIgnoreCase("Marvel")) {
 			textFieldPublica.setDisable(false);
 			textFieldPublica.setVisible(true);
@@ -171,11 +175,20 @@ public class ModificarApiDatosController implements Initializable {
 		}
 	}
 
+	public Stage estadoStage() {
+
+		return (Stage) guardarDatosApi.getScene().getWindow();
+	}
+
 	/**
 	 * Al cerrar la ventana, carga la ventana del menu principal
 	 *
 	 */
 	public void closeWindow() {
+
+		if (FuncionesManejoFront.stageVentanas.contains(estadoStage())) {
+			FuncionesManejoFront.stageVentanas.remove(estadoStage());
+		}
 
 		Stage myStage = (Stage) guardarDatosApi.getScene().getWindow();
 		myStage.close();

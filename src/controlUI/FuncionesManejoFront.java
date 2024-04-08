@@ -1,5 +1,6 @@
 package controlUI;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -20,6 +21,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 
 public class FuncionesManejoFront {
@@ -27,6 +29,8 @@ public class FuncionesManejoFront {
 	static ImageView imagenComic;
 
 	public static AccionReferencias referenciaVentana = new AccionReferencias();
+	
+	public static List<Stage> stageVentanas = new ArrayList<Stage>();
 
 	private static final List<Character> simbolos = Arrays.asList(',', '-', '!', '@', '#', '$', '%', '^', '&', '*', '(',
 			')', '[', ']', '{', '}', ';', ':', '|', '\\', '<', '>', '/', '?', '~', '`', '+', '=', '.');
@@ -248,6 +252,38 @@ public class FuncionesManejoFront {
 			});
 
 		}
+	}
+
+	public static void cambiarEstadoMenuBar(boolean estadoAccion) {
+
+		referenciaVentana.getMenu_archivo_excel().setDisable(estadoAccion);
+		referenciaVentana.getMenu_archivo_importar().setDisable(estadoAccion);
+		referenciaVentana.getMenu_archivo_delete().setDisable(estadoAccion);
+		referenciaVentana.getMenu_comic_aniadir().setDisable(estadoAccion);
+		referenciaVentana.getMenu_comic_eliminar().setDisable(estadoAccion);
+		referenciaVentana.getMenu_comic_modificar().setDisable(estadoAccion);
+		referenciaVentana.getMenu_comic_puntuar().setDisable(estadoAccion);
+		referenciaVentana.getMenu_comic_aleatoria().setDisable(estadoAccion);
+		referenciaVentana.getBotonIntroducir().setDisable(estadoAccion);
+		referenciaVentana.getBotonModificar().setDisable(estadoAccion);
+		referenciaVentana.getBotonEliminar().setDisable(estadoAccion);
+		referenciaVentana.getBotonAgregarPuntuacion().setDisable(estadoAccion);
+		referenciaVentana.getBotonLimpiar().setDisable(estadoAccion);
+		referenciaVentana.getBotonMostrarParametro().setDisable(estadoAccion);
+		referenciaVentana.getBotonImprimir().setDisable(estadoAccion);
+		referenciaVentana.getBotonGuardarResultado().setDisable(estadoAccion);
+		referenciaVentana.getBotonbbdd().setDisable(estadoAccion);
+
+		referenciaVentana.getTituloComic().setDisable(estadoAccion);
+		referenciaVentana.getNombreDibujante().setDisable(estadoAccion);
+		referenciaVentana.getNombreEditorial().setDisable(estadoAccion);
+		referenciaVentana.getNombreFirma().setDisable(estadoAccion);
+		referenciaVentana.getNombreFormato().setDisable(estadoAccion);
+		referenciaVentana.getNombreGuionista().setDisable(estadoAccion);
+		referenciaVentana.getNombreProcedencia().setDisable(estadoAccion);
+		referenciaVentana.getNombreVariante().setDisable(estadoAccion);
+		referenciaVentana.getNumeroCaja().setDisable(estadoAccion);
+		referenciaVentana.getNumeroComic().setDisable(estadoAccion);
 	}
 
 }

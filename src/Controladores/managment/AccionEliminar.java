@@ -64,7 +64,7 @@ public class AccionEliminar {
 			}
 		}
 	}
-	
+
 	public static void eliminarComicLista() {
 		String id_comic = referenciaVentana.getIdComicTratar_mod().getText();
 
@@ -86,19 +86,20 @@ public class AccionEliminar {
 			}
 		}
 	}
-	
+
 	public static boolean deleteTableAsync() {
 		try {
 
-			Utilidades.borrarArchivosNoEnLista(ListaComicsDAO.listaImagenes);
+//			Utilidades.borrarArchivosNoEnLista(ListaComicsDAO.listaImagenes);
 
 			CompletableFuture<Boolean> borradoTablaFuture = nav.borrarContenidoTabla();
-			boolean confirmacionBorrado = borradoTablaFuture.get(); // Espera a que el CompletableFuture se complete
-																	// y obtiene el resultado
+			boolean confirmacionBorrado = borradoTablaFuture.get();
+			AlarmaList.iniciarAnimacionCarga(referenciaVentana.getProgresoCarga());
 			if (confirmacionBorrado) {
 				CompletableFuture<Boolean> deleteResult = ComicManagerDAO.deleteTable();
 				return deleteResult.get(); // Espera a que el CompletableFuture se complete y obtiene el resultado
 			} else {
+				AlarmaList.detenerAnimacionCarga(referenciaVentana.getProgresoCarga());
 				String mensaje = "ERROR. Has cancelado el borrado de la base de datos";
 				AlarmaList.mostrarMensajePront(mensaje, false, referenciaVentana.getProntInfo());
 				return false;

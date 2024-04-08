@@ -34,43 +34,40 @@ import javafx.scene.control.TextArea;
 public class WebScraperPreviewsWorld {
 
 	public static int verificarCodigoRespuesta(String urlString) throws IOException, URISyntaxException {
-	    try {
-	        // Desactivar la validación del certificado SSL/TLS
-	        TrustManager[] trustAllCerts = new TrustManager[]{
-	            new X509TrustManager() {
-	                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-	                    return null;
-	                }
-	                public void checkClientTrusted(
-	                    java.security.cert.X509Certificate[] certs, String authType) {
-	                }
-	                public void checkServerTrusted(
-	                    java.security.cert.X509Certificate[] certs, String authType) {
-	                }
-	            }
-	        };
+		try {
+			// Desactivar la validación del certificado SSL/TLS
+			TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+					return null;
+				}
 
-	        SSLContext sc = SSLContext.getInstance("SSL");
-	        sc.init(null, trustAllCerts, new java.security.SecureRandom());
-	        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+				public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+				}
 
-	        URI uri = new URI(urlString);
-	        HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
-	        connection.setRequestMethod("GET");
+				public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+				}
+			} };
 
-	        // Obtener el código de respuesta HTTP
-	        int codigoRespuesta = connection.getResponseCode();
+			SSLContext sc = SSLContext.getInstance("SSL");
+			sc.init(null, trustAllCerts, new java.security.SecureRandom());
+			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 
-	        // Cerrar la conexión
-	        connection.disconnect();
+			URI uri = new URI(urlString);
+			HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
+			connection.setRequestMethod("GET");
 
-	        return codigoRespuesta;
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return -1;
-	    }
+			// Obtener el código de respuesta HTTP
+			int codigoRespuesta = connection.getResponseCode();
+
+			// Cerrar la conexión
+			connection.disconnect();
+
+			return codigoRespuesta;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return -1;
+		}
 	}
-
 
 	/**
 	 * Realiza scraping en una URL dada para extraer información sobre un cómic.
@@ -198,10 +195,10 @@ public class WebScraperPreviewsWorld {
 		Element titleElement = document.selectFirst("h1.Title");
 		if (titleElement != null) {
 			String titleContent = titleElement.text().trim();
-			// Eliminar el símbolo "#" y todo lo que le sigue
-			titleContent = removeHashtagAndFollowing(titleContent);
-			// Capitalizar la primera letra de cada palabra en el título
-			titleContent = capitalizeFirstLetter(titleContent);
+//			// Eliminar el símbolo "#" y todo lo que le sigue
+//			titleContent = removeHashtagAndFollowing(titleContent);
+//			// Capitalizar la primera letra de cada palabra en el título
+//			titleContent = capitalizeFirstLetter(titleContent);
 			return titleContent;
 		}
 		return null;
@@ -355,11 +352,33 @@ public class WebScraperPreviewsWorld {
 	 * @return El objeto Date analizado o null si hay un error de análisis.
 	 */
 	private static Date parseReleaseDate(String dateText) {
+		// Verificar si el texto de la fecha es "N/A" o está vacío
+		if ("N/A".equals(dateText) || dateText.trim().isEmpty()) {
+			// Si es "N/A" o está vacío, devolver la fecha predeterminada
+			return getDefaultDate();
+		}
+
 		try {
 			SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy", Locale.ENGLISH);
-			return dateFormat.parse(dateText);
+			// Intenta parsear la fecha
+			Date parsedDate = dateFormat.parse(dateText);
+			return parsedDate;
 		} catch (ParseException e) {
+			// En caso de error de análisis, imprime el error y devuelve la fecha
+			// predeterminada
 			e.printStackTrace();
+			return getDefaultDate();
+		}
+	}
+
+	private static Date getDefaultDate() {
+		try {
+			SimpleDateFormat defaultFormat = new SimpleDateFormat("yyyy-MM-dd");
+			return defaultFormat.parse("2000-01-01");
+		} catch (ParseException ex) {
+			// En caso de que ocurra un error al parsear la fecha predeterminada, devuelve
+			// null
+			ex.printStackTrace();
 			return null;
 		}
 	}
@@ -405,4 +424,6 @@ public class WebScraperPreviewsWorld {
 
 		return result.toString();
 	}
+	
+	
 }

@@ -425,6 +425,8 @@ public class MenuPrincipalController implements Initializable {
 
 	public static AccionReferencias referenciaVentana = new AccionReferencias();
 
+	public static FuncionesManejoFront funcionesFront = new FuncionesManejoFront();
+
 	public static CompletableFuture<List<Entry<String, String>>> urlPreviews;
 
 	double y = 0;
@@ -520,6 +522,7 @@ public class MenuPrincipalController implements Initializable {
 		referenciaVentana.setBotonEliminar(botonEliminar);
 		referenciaVentana.setBotonAgregarPuntuacion(botonAgregarPuntuacion);
 		referenciaVentana.setAlarmaConexionSql(alarmaConexionSql);
+		referenciaVentana.setStage(estadoStage());
 
 		referenciaVentana.setComboBoxes(Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreFirma,
 				nombreEditorial, nombreFormato, nombreProcedencia, nombreGuionista, nombreDibujante, numeroCaja));
@@ -587,6 +590,10 @@ public class MenuPrincipalController implements Initializable {
 		FuncionesManejoFront.referenciaVentana = guardarReferencia();
 
 		AccionSeleccionar.referenciaVentana = guardarReferencia();
+
+		OpcionesAvanzadasController.referenciaVentana = guardarReferencia();
+
+		AccionEliminar.referenciaVentana = guardarReferencia();
 	}
 
 	@FXML
@@ -823,7 +830,7 @@ public class MenuPrincipalController implements Initializable {
 			controls.add(comboBox);
 		}
 
-		Comic comic = AccionControlUI.camposComic(controls,false);
+		Comic comic = AccionControlUI.camposComic(controls, false);
 
 		if (!comic.estaVacio()) {
 
@@ -854,14 +861,14 @@ public class MenuPrincipalController implements Initializable {
 		if (esCompleto) {
 			AccionSeleccionar.verBasedeDatos(esCompleto, false, null);
 		} else {
-			
+
 			// Convertir la lista de ComboBox<String> a una lista de Control
 			List<Control> controls = new ArrayList<>();
 			for (ComboBox<String> comboBox : referenciaVentana.getComboboxes()) {
 				controls.add(comboBox);
 			}
 
-			Comic comic = AccionControlUI.camposComic(controls,false);
+			Comic comic = AccionControlUI.camposComic(controls, false);
 
 			AccionSeleccionar.verBasedeDatos(esCompleto, false, comic);
 		}
@@ -1033,7 +1040,7 @@ public class MenuPrincipalController implements Initializable {
 
 			ListaComicsDAO.limpiarListaGuardados();
 
-			Utilidades.borrarArchivosNoEnLista(ListaComicsDAO.listaImagenes);
+//			Utilidades.borrarArchivosNoEnLista(ListaComicsDAO.listaImagenes);
 			estaVacia = true;
 			mensaje = "Base de datos exportada correctamente";
 		} else {
@@ -1081,7 +1088,7 @@ public class MenuPrincipalController implements Initializable {
 			return;
 		}
 
-		if (ComicManagerDAO.countRows(SelectManager.TAMANIO_DATABASE) < 1) {
+		if (ComicManagerDAO.countRows() < 1) {
 			String mensaje = "ERROR. La base de datos ya se encuentra vacia";
 			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 			return;
@@ -1090,6 +1097,9 @@ public class MenuPrincipalController implements Initializable {
 		CompletableFuture.runAsync(() -> {
 			boolean result = AccionEliminar.deleteTableAsync();
 			Platform.runLater(() -> {
+
+				AlarmaList.detenerAnimacionCarga(progresoCarga);
+
 				String mensaje = result ? "Base de datos borrada y reiniciada correctamente"
 						: "ERROR. No se ha podido eliminar y reiniciar la base de datos";
 				AlarmaList.mostrarMensajePront(mensaje, result, prontInfo);
@@ -1255,12 +1265,6 @@ public class MenuPrincipalController implements Initializable {
 		Task<Boolean> crearExcelTask = excelFuntions.crearExcelTask(listaComics, tipoBusqueda);
 		Thread excelThread = new Thread(crearExcelTask);
 
-		// Configuración del comportamiento cuando la tarea está en ejecución
-		crearExcelTask.setOnRunning(e -> {
-			// Iniciar la animación
-			AlarmaList.iniciarAnimacionCarga(progresoCarga);
-		});
-
 		// Configuración del comportamiento cuando la tarea tiene éxito
 		crearExcelTask.setOnSucceeded(event -> {
 			boolean result = crearExcelTask.getValue();
@@ -1280,59 +1284,34 @@ public class MenuPrincipalController implements Initializable {
 			excelThread.interrupt();
 		});
 
-		crearExcelTask.setOnRunning(event -> cambiarEstadoMenuBar(true));
+		crearExcelTask.setOnRunning(e -> {
+			FuncionesManejoFront.cambiarEstadoMenuBar(true);
+			AlarmaList.iniciarAnimacionCarga(progresoCarga);
+		});
 
 		crearExcelTask.setOnSucceeded(event -> {
-			cambiarEstadoMenuBar(false);
+			FuncionesManejoFront.cambiarEstadoMenuBar(false);
 			AlarmaList.mostrarMensajePront(mensajeValido, true, prontInfo);
+			AlarmaList.detenerAnimacionCarga(progresoCarga);
+
 		});
 
 		// Configuración del comportamiento cuando la tarea falla
 		crearExcelTask.setOnFailed(event -> {
 			alarmaList.manejarFallo(mensajeErrorExportar, prontInfo);
-			cambiarEstadoMenuBar(false);
+			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+			AlarmaList.detenerAnimacionCarga(progresoCarga);
 		});
 
 		// Configuración del comportamiento cuando la tarea es cancelada
 		crearExcelTask.setOnCancelled(event -> {
 			alarmaList.manejarFallo(mensajeCancelarExportar, prontInfo);
-			cambiarEstadoMenuBar(false);
+			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+			AlarmaList.detenerAnimacionCarga(progresoCarga);
 		});
 
 		// Iniciar la tarea principal de creación de Excel en un hilo separado
 		excelThread.start();
-	}
-
-	public void cambiarEstadoMenuBar(boolean estadoAccion) {
-
-		menu_archivo_excel.setDisable(estadoAccion);
-		menu_archivo_importar.setDisable(estadoAccion);
-		menu_archivo_delete.setDisable(estadoAccion);
-		menu_comic_aniadir.setDisable(estadoAccion);
-		menu_comic_eliminar.setDisable(estadoAccion);
-		menu_comic_modificar.setDisable(estadoAccion);
-		menu_comic_puntuar.setDisable(estadoAccion);
-		menu_comic_aleatoria.setDisable(estadoAccion);
-		botonIntroducir.setDisable(estadoAccion);
-		botonModificar.setDisable(estadoAccion);
-		botonEliminar.setDisable(estadoAccion);
-		botonAgregarPuntuacion.setDisable(estadoAccion);
-		botonLimpiar.setDisable(estadoAccion);
-		botonMostrarParametro.setDisable(estadoAccion);
-		botonImprimir.setDisable(estadoAccion);
-		botonGuardarResultado.setDisable(estadoAccion);
-		botonbbdd.setDisable(estadoAccion);
-
-		nombreComic.setDisable(estadoAccion);
-		nombreDibujante.setDisable(estadoAccion);
-		nombreEditorial.setDisable(estadoAccion);
-		nombreFirma.setDisable(estadoAccion);
-		nombreFormato.setDisable(estadoAccion);
-		nombreGuionista.setDisable(estadoAccion);
-		nombreProcedencia.setDisable(estadoAccion);
-		nombreVariante.setDisable(estadoAccion);
-		numeroCaja.setDisable(estadoAccion);
-		numeroComic.setDisable(estadoAccion);
 	}
 
 	public void guardarDatosCSV() {
@@ -1342,31 +1321,32 @@ public class MenuPrincipalController implements Initializable {
 		}
 		String frase = "Fichero CSV";
 		String formato = "*.csv";
-		FuncionesExcel funcionesExcel = new FuncionesExcel();
 
 		File fichero = Utilidades.tratarFichero(frase, formato).showOpenDialog(null);
 
 		String mensajeValido = "Has importado correctamente la lista de comics en la base de datos";
 
 		if (fichero != null) {
-			Task<Boolean> lecturaTask = funcionesExcel.procesarArchivoCSVTask(fichero);
-
-			lecturaTask.setOnRunning(e -> AlarmaList.iniciarAnimacionCarga(progresoCarga));
+			Task<Boolean> lecturaTask = FuncionesExcel.procesarArchivoCSVTask(fichero);
 
 			lecturaTask.setOnSucceeded(e -> {
 				cargarDatosDataBase();
 				AlarmaList.detenerAnimacion();
 				AlarmaList.detenerAnimacionCarga(progresoCarga);
 
-				cambiarEstadoMenuBar(false);
+				FuncionesManejoFront.cambiarEstadoMenuBar(false);
 				AlarmaList.mostrarMensajePront(mensajeValido, true, prontInfo);
 			});
 
-			lecturaTask.setOnRunning(e -> cambiarEstadoMenuBar(true));
+			lecturaTask.setOnRunning(e -> {
+				FuncionesManejoFront.cambiarEstadoMenuBar(true);
+				AlarmaList.iniciarAnimacionCarga(progresoCarga);
+			});
 
 			lecturaTask.setOnFailed(e -> {
 				procesarResultadoImportacion(lecturaTask.getValue());
-				cambiarEstadoMenuBar(false);
+				FuncionesManejoFront.cambiarEstadoMenuBar(false);
+				AlarmaList.detenerAnimacionCarga(progresoCarga);
 			});
 
 			// Iniciar la tarea principal de importación en un hilo separado
@@ -1525,6 +1505,13 @@ public class MenuPrincipalController implements Initializable {
 		ConectManager.close();
 		nav.verAccesoBBDD();
 
+		List<Stage> stageVentanas = FuncionesManejoFront.stageVentanas;
+
+		// Assuming `stages` is a collection of stages you want to check against
+		for (Stage stage : stageVentanas) {
+			stage.close(); // Close the stage if it's not the current state
+		}
+
 		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 		myStage.close();
 	}
@@ -1542,6 +1529,11 @@ public class MenuPrincipalController implements Initializable {
 			Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 			myStage.close();
 		}
+	}
+
+	public Stage estadoStage() {
+
+		return (Stage) menu_navegacion.getScene().getWindow();
 	}
 
 	/**

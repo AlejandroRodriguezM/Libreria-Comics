@@ -2,6 +2,8 @@ package Controladores.managment;
 
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import Funcionamiento.Utilidades;
@@ -232,7 +234,17 @@ public class AccionModificar {
 
 		String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
 		List<Comic> listaComicsDatabase = SelectManager.verLibreria(sentenciaSQL, true);
-
+		
+	       // Ordenar la lista según el ID convertido a número
+        Collections.sort(listaComicsDatabase, new Comparator<Comic>() {
+            @Override
+            public int compare(Comic comic1, Comic comic2) {
+                int id1 = Integer.parseInt(comic1.getID());
+                int id2 = Integer.parseInt(comic2.getID());
+                return Integer.compare(id1, id2);
+            }
+        });
+		
 		AccionFuncionesComunes.busquedaPorListaDatabase(listaComicsDatabase, tipoUpdate, actualizarFima);
 
 	}

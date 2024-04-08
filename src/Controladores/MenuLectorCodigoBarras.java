@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Funcionamiento.Utilidades;
+import controlUI.FuncionesManejoFront;
 import dbmanager.ConectManager;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -113,6 +115,9 @@ public class MenuLectorCodigoBarras {
 				// Consumir el evento para evitar que se propague más allá de este punto
 				event.consume();
 			}
+		});
+		Platform.runLater(() -> {
+			FuncionesManejoFront.stageVentanas.add(estadoStage());
 		});
 	}
 
@@ -275,6 +280,11 @@ public class MenuLectorCodigoBarras {
 		}
 	}
 
+	public Stage estadoStage() {
+
+		return (Stage) botonIntroducirCodigo.getScene().getWindow();
+	}
+
 	/**
 	 * Establece la instancia de la ventana (Stage) asociada a este controlador.
 	 *
@@ -290,6 +300,11 @@ public class MenuLectorCodigoBarras {
 	 */
 	public void closeWindow() {
 		if (stage != null) {
+
+			if (FuncionesManejoFront.stageVentanas.contains(estadoStage())) {
+				FuncionesManejoFront.stageVentanas.remove(estadoStage());
+			}
+
 			stage.close();
 		}
 	}

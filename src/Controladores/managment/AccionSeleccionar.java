@@ -101,7 +101,7 @@ public class AccionSeleccionar {
 		FuncionesTableView.nombreColumnas(referenciaVentana.getTablaBBDD());
 		FuncionesTableView.actualizarBusquedaRaw(referenciaVentana.getTablaBBDD());
 
-		if (ComicManagerDAO.countRows(SelectManager.TAMANIO_DATABASE) > 0) {
+		if (ComicManagerDAO.countRows() > 0) {
 			if (completo) {
 				String sentenciaSQL = DBUtilidades.construirSentenciaSQL(TipoBusqueda.COMPLETA);
 

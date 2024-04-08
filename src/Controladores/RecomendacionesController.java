@@ -39,9 +39,11 @@ import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
+import controlUI.FuncionesManejoFront;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
 import dbmanager.SelectManager;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -223,6 +225,9 @@ public class RecomendacionesController implements Initializable {
 				});
 			}
 		});
+		Platform.runLater(() -> {
+			FuncionesManejoFront.stageVentanas.add(estadoStage());
+		});
 	}
 
 	@FXML
@@ -384,6 +389,11 @@ public class RecomendacionesController implements Initializable {
 		}
 	}
 
+	public Stage estadoStage() {
+
+		return (Stage) menu_navegacion.getScene().getWindow();
+	}
+	
 	/**
 	 * Vuelve al menu inicial de conexion de la base de datos.
 	 *
@@ -417,6 +427,10 @@ public class RecomendacionesController implements Initializable {
 	 */
 	public void closeWindows() {
 
+		if (FuncionesManejoFront.stageVentanas.contains(estadoStage())) {
+			FuncionesManejoFront.stageVentanas.remove(estadoStage());
+		}
+		
 		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 		myStage.close();
 		nav.verAccesoBBDD();

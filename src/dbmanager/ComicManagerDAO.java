@@ -74,8 +74,8 @@ public class ComicManagerDAO {
 	// ############ FUNCIONES SELECT ###############
 	// #############################################
 
-	public static int countRows(String sentenciaSQL) {
-		return SelectManager.countRows(sentenciaSQL);
+	public static int countRows() {
+		return SelectManager.countRows();
 	}
 
 	public static Comic comicDatos(String idComic) {

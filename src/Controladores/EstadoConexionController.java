@@ -10,6 +10,7 @@ import com.gluonhq.charm.glisten.control.ProgressIndicator;
 
 import Funcionamiento.Utilidades;
 import alarmas.AlarmaList;
+import controlUI.FuncionesManejoFront;
 import ficherosFunciones.FuncionesFicheros;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -73,8 +74,8 @@ public class EstadoConexionController implements Initializable {
 					executorService.shutdownNow();
 				}
 			});
+			FuncionesManejoFront.stageVentanas.add(estadoStage());
 		});
-
 	}
 
 	@FXML
@@ -121,6 +122,11 @@ public class EstadoConexionController implements Initializable {
 		}
 	}
 
+	public Stage estadoStage() {
+
+		return (Stage) progresoCarga.getScene().getWindow();
+	}
+
 	/**
 	 * Establece la instancia de la ventana (Stage) asociada a este controlador.
 	 *
@@ -136,6 +142,11 @@ public class EstadoConexionController implements Initializable {
 	 */
 	public void closeWindow() {
 		if (stage != null) {
+
+			if (FuncionesManejoFront.stageVentanas.contains(estadoStage())) {
+				FuncionesManejoFront.stageVentanas.remove(estadoStage());
+			}
+
 			stage.close();
 		}
 	}

@@ -297,6 +297,7 @@ public class DatabaseManagerDAO {
 		nombre = nombre.trim();
 		// Reemplazar ',' por '-'
 		nombre = nombre.replaceAll(",", "-");
+		nombre = nombre.replaceAll(", ", " - ");
 		// Reemplazar ',-' por '-'
 		nombre = nombre.replaceAll(",-", "-");
 		// Reemplazar '-,' por '-'

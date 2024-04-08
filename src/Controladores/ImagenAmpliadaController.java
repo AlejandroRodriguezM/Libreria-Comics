@@ -10,7 +10,9 @@ import java.util.ResourceBundle;
 
 import Funcionamiento.Utilidades;
 import comicManagement.Comic;
+import controlUI.FuncionesManejoFront;
 import dbmanager.ConectManager;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -81,7 +83,9 @@ public class ImagenAmpliadaController implements Initializable {
 		double textAreaHeight = infoComic.getPrefHeight();
 
 		infoComic.setPrefHeight(computeTextHeight(infoComicString, infoComic.getFont(), textAreaWidth, textAreaHeight));
-
+		Platform.runLater(() -> {
+			FuncionesManejoFront.stageVentanas.add(estadoStage());
+		});
 	}
 
 	// Método para calcular la altura del texto de manera dinámica
@@ -171,6 +175,11 @@ public class ImagenAmpliadaController implements Initializable {
 		}
 	}
 
+	public Stage estadoStage() {
+
+		return (Stage) imagenAmpliada.getScene().getWindow();
+	}
+	
 	/**
 	 * Establece la instancia de la ventana (Stage) asociada a este controlador.
 	 *
@@ -188,6 +197,11 @@ public class ImagenAmpliadaController implements Initializable {
 	 */
 	public void closeWindow() {
 		if (stage != null) {
+			
+			if (FuncionesManejoFront.stageVentanas.contains(estadoStage())) {
+				FuncionesManejoFront.stageVentanas.remove(estadoStage());
+			}
+			
 			stage.close();
 		}
 	}

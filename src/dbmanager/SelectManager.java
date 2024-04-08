@@ -34,11 +34,11 @@ public class SelectManager {
 	 *
 	 * @return
 	 */
-	public static int countRows(String sentenciaSQL) {
+	public static int countRows() {
 
 		try (Connection conn = ConectManager.conexion();
 				Statement stmt = conn.createStatement();
-				ResultSet rs = stmt.executeQuery(sentenciaSQL)) {
+				ResultSet rs = stmt.executeQuery(TAMANIO_DATABASE)) {
 
 			if (rs.next()) {
 				return rs.getInt(1);
@@ -161,7 +161,7 @@ public class SelectManager {
 	public static List<Comic> busquedaParametro(Comic comic, String busquedaGeneral) {
 
 		List<Comic> listComic = new ArrayList<Comic>();
-		if (ComicManagerDAO.countRows(TAMANIO_DATABASE) > 0) {
+		if (ComicManagerDAO.countRows() > 0) {
 
 			if (!busquedaGeneral.isEmpty()) {
 				return DBUtilidades.verBusquedaGeneral(busquedaGeneral);
@@ -237,10 +237,13 @@ public class SelectManager {
 				while (rs.next()) {
 
 					Comic comic = DBUtilidades.obtenerComicDesdeResultSet(rs);
-
 					if (!comic.getCodigo_comic().isEmpty() && !comic.getCodigo_comic().equals("0")) {
+
 						listaComics.add(comic);
+					}else {
+						
 					}
+
 				}
 			} else {
 				while (rs.next()) {
@@ -248,7 +251,9 @@ public class SelectManager {
 				}
 			}
 
-		} catch (SQLException e) {
+		} catch (
+
+		SQLException e) {
 			Utilidades.manejarExcepcion(e);
 		}
 

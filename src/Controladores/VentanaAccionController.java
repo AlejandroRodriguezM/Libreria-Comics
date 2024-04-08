@@ -688,14 +688,16 @@ public class VentanaAccionController implements Initializable {
 			rellenarCombosEstaticos();
 
 			AccionControlUI.mostrarOpcion(AccionFuncionesComunes.TIPO_ACCION);
+			
+			FuncionesManejoFront.stageVentanas.add(estadoStage());
 		});
-
+		
 		ListaComicsDAO.comicsImportados.clear();
 
 		AccionControlUI.establecerTooltips();
 
 		formatearTextField();
-
+		
 	}
 
 	public void enviarReferencias() {
@@ -718,8 +720,6 @@ public class VentanaAccionController implements Initializable {
 		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
 
 		if (idRow != null) {
-
-			System.out.println(123);
 
 			ImagenAmpliadaController.comicInfo = idRow;
 
@@ -1181,6 +1181,11 @@ public class VentanaAccionController implements Initializable {
 		}
 	}
 
+	public Stage estadoStage() {
+
+		return (Stage) botonLimpiar.getScene().getWindow();
+	}
+
 	/**
 	 * Cierra la ventana asociada a este controlador, si está disponible. Si no se
 	 * ha establecido una instancia de ventana (Stage), este método no realiza
@@ -1188,6 +1193,11 @@ public class VentanaAccionController implements Initializable {
 	 */
 	public void closeWindow() {
 		if (stage != null) {
+
+			if (FuncionesManejoFront.stageVentanas.contains(estadoStage())) {
+				FuncionesManejoFront.stageVentanas.remove(estadoStage());
+			}
+
 			stage.close();
 		}
 	}

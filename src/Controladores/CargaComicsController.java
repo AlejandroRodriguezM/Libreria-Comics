@@ -7,6 +7,9 @@ package Controladores;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import controlUI.FuncionesManejoFront;
+import javafx.application.Platform;
+
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  * Las ventanas graficas se realizan con JavaFX.
@@ -69,6 +72,9 @@ public class CargaComicsController implements Initializable {
 		updateProgress(0);
 		appendTextToTextArea("");
 		updateLabel("");
+		Platform.runLater(() -> {
+			FuncionesManejoFront.stageVentanas.add(estadoStage());
+		});
 	}
 
 	/**
@@ -108,6 +114,11 @@ public class CargaComicsController implements Initializable {
 		this.stage = stage;
 	}
 
+	public Stage estadoStage() {
+
+		return (Stage) comicsCarga.getScene().getWindow();
+	}
+
 	/**
 	 * Pasa datos a los métodos del controlador de la ventana de carga de cómics.
 	 *
@@ -127,10 +138,14 @@ public class CargaComicsController implements Initializable {
 	 */
 	public void closeWindow() {
 		if (stage != null) {
+
+			if (FuncionesManejoFront.stageVentanas.contains(estadoStage())) {
+				FuncionesManejoFront.stageVentanas.remove(estadoStage());
+			}
+
 			Stage myStage = (Stage) comicsCarga.getScene().getWindow();
 			myStage.close();
 		}
-		
 
 	}
 

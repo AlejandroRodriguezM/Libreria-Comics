@@ -1,11 +1,18 @@
 package Controladores;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
+import javax.imageio.ImageIO;
 
 import Controladores.managment.AccionFuncionesComunes;
 import Controladores.managment.AccionModificar;
@@ -14,9 +21,14 @@ import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import Funcionamiento.VersionService;
 import alarmas.AlarmaList;
+import controlUI.FuncionesComboBox;
+import controlUI.FuncionesManejoFront;
+import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
+import dbmanager.DBUtilidades;
 import dbmanager.DatabaseManagerDAO;
 import dbmanager.ListaComicsDAO;
+import ficherosFunciones.FuncionesExcel;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,13 +38,17 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import net.coobird.thumbnailator.Thumbnails;
 
 public class OpcionesAvanzadasController implements Initializable {
 
@@ -49,6 +65,15 @@ public class OpcionesAvanzadasController implements Initializable {
 	private Button botonActualizarTodo;
 
 	@FXML
+	private Button botonCancelarSubida;
+
+	@FXML
+	private Button botonCancelarSubidaPortadas;
+
+	@FXML
+	private Button botonComprimirPortadas;
+
+	@FXML
 	private Button botonDescargarPdf;
 
 	@FXML
@@ -58,7 +83,7 @@ public class OpcionesAvanzadasController implements Initializable {
 	private Button botonNormalizarDB;
 
 	@FXML
-	private Button botonCancelarSubida;
+	private Button botonReCopiarPortadas;
 
 	@FXML
 	private CheckBox checkFirmas;
@@ -79,14 +104,24 @@ public class OpcionesAvanzadasController implements Initializable {
 	private Label prontInfoEspecial;
 
 	@FXML
+	private Label prontInfoPortadas;
+
+	@FXML
 	private Label prontInfoPreviews;
 
 	public static ObservableList<String> urlActualizados = FXCollections.observableArrayList();
 
+	public static AccionReferencias referenciaVentana = new AccionReferencias();
+
+	/**
+	 * Instancia de la clase FuncionesComboBox para el manejo de ComboBox.
+	 */
+	private static FuncionesComboBox funcionesCombo = new FuncionesComboBox();
+
 	/**
 	 * Referencia a la ventana (stage).
 	 */
-	private Stage stage;
+	private Scene ventanaOpciones;
 
 	public static boolean estaActualizado = true;
 
@@ -115,6 +150,7 @@ public class OpcionesAvanzadasController implements Initializable {
 		referenciaVentana.setProntInfoLabel(prontInfo);
 		referenciaVentana.setProntInfoEspecial(prontInfoEspecial);
 		referenciaVentana.setProntInfoPreviews(prontInfoPreviews);
+		referenciaVentana.setStage(estadoStage());
 
 		return referenciaVentana;
 	}
@@ -133,8 +169,11 @@ public class OpcionesAvanzadasController implements Initializable {
 			AccionModificar.referenciaVentana = guardarReferencia();
 			AccionFuncionesComunes.referenciaVentana = guardarReferencia();
 			rellenarComboboxPreviews();
+			FuncionesManejoFront.stageVentanas.add(estadoStage());
 		});
-		miStageVentana();
+		ventanaOpciones = miStageVentana();
+		
+		
 		obtenerVersionDesdeOtraClase();
 		AlarmaList.iniciarAnimacionEspera(prontInfo);
 		AlarmaList.iniciarAnimacionEspera(prontInfoEspecial);
@@ -158,7 +197,7 @@ public class OpcionesAvanzadasController implements Initializable {
 
 	@FXML
 	void descargarActualizacion(ActionEvent event) {
-		Utilidades.descargarYAbrirEjecutableDesdeGitHub(stage);
+		Utilidades.descargarYAbrirEjecutableDesdeGitHub();
 	}
 
 	@FXML
@@ -202,6 +241,16 @@ public class OpcionesAvanzadasController implements Initializable {
 		AlarmaList.detenerAnimacionEspera();
 		DatabaseManagerDAO.comprobarNormalizado("nomGuionista", prontInfo);
 		DatabaseManagerDAO.comprobarNormalizado("nomDibujante", prontInfo);
+		DatabaseManagerDAO.comprobarNormalizado("nomVariante", prontInfo);
+
+		ListaComicsDAO.reiniciarListaComics();
+		ListaComicsDAO.listasAutoCompletado();
+		List<ComboBox<String>> comboboxes = referenciaVentana.getComboboxes();
+		referenciaVentana.getTablaBBDD().refresh();
+		if (comboboxes != null) {
+			funcionesCombo.rellenarComboBox(comboboxes);
+		}
+
 	}
 
 	public void obtenerVersionDesdeOtraClase() {
@@ -301,7 +350,6 @@ public class OpcionesAvanzadasController implements Initializable {
 
 	@FXML
 	void actualizarCompletoComic(ActionEvent event) {
-
 		AccionModificar.referenciaVentana = guardarReferencia();
 		AccionFuncionesComunes.referenciaVentana = guardarReferencia();
 		AccionModificar.actualizarDatabase("modificar", actualizarFima.get());
@@ -322,35 +370,154 @@ public class OpcionesAvanzadasController implements Initializable {
 		AccionModificar.actualizarDatabase("actualizar portadas", actualizarFima.get());
 	}
 
-	/**
-	 * Establece la instancia de la ventana (Stage) asociada a este controlador.
-	 *
-	 * @param stage La instancia de la ventana (Stage) que se asocia con este
-	 *              controlador.
-	 */
-	public void setStage(Stage stage) {
-		this.stage = stage;
+	@FXML
+	void comprimirPortadas(ActionEvent event) {
+		// Constantes
+		final String DOCUMENTS_PATH = Utilidades.DOCUMENTS_PATH;
+		final String DB_NAME = ConectManager.DB_NAME;
+		final String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator + DB_NAME
+				+ File.separator;
+		final String directorioOriginal = directorioComun + "portadas";
+
+		final String directorioNuevo = directorioComun;
+
+		List<String> inputPaths = ListaComicsDAO.listaImagenes;
+		AtomicReference<CargaComicsController> cargaComicsControllerRef = new AtomicReference<>();
+
+		Stage myStage = (Stage) botonActualizarDatos.getScene().getWindow();
+
+		// Crear y ejecutar tarea para comprimir las portadas
+		Task<Void> task = new Task<>() {
+			@Override
+			protected Void call() throws Exception {
+
+				nav.verCargaComics(cargaComicsControllerRef);
+				// Copiar directorio original a uno nuevo
+				Utilidades.copiarDirectorio(directorioNuevo, directorioOriginal);
+				int numEntries = inputPaths.size();
+				int numConverted[] = { 0 };
+				inputPaths.forEach(codigo -> {
+
+					if (isCancelled() || !myStage.isShowing()) {
+						return; // Sale del método call() si la tarea ha sido cancelada
+					}
+
+					// Actualizar texto de progreso
+					String texto = "Comprimiendo: " + (numConverted[0] + 1) + " de " + numEntries + "\n";
+
+					try {
+						File inputFile = new File(codigo);
+						BufferedImage image = ImageIO.read(inputFile);
+						// Comprimir imagen
+						Thumbnails.of(image).scale(1).outputQuality(0.5).toFile(codigo);
+
+						System.out.println(codigo);
+
+						numConverted[0]++;
+
+						// Actualizar UI
+						Platform.runLater(() -> {
+							double progress = (double) numConverted[0] / numEntries;
+							String porcentaje = String.format("%.2f%%", progress * 100);
+							cargaComicsControllerRef.get().cargarDatosEnCargaComics(texto, porcentaje, progress);
+						});
+					} catch (IOException e) {
+						e.printStackTrace();
+						// Manejar la excepción adecuadamente según tus requisitos
+					}
+				});
+				return null;
+			}
+		};
+
+		// Manejar eventos de la tarea
+		task.setOnRunning(ev -> {
+
+			AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, "Comprimiendo portadas");
+			botonCancelarSubidaPortadas.setVisible(true);
+			FuncionesManejoFront.cambiarEstadoMenuBar(true);
+		});
+
+		task.setOnSucceeded(ev -> {
+			AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, "Portadas comprimidas");
+			Platform.runLater(() -> {
+				cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0);
+			});
+			botonCancelarSubidaPortadas.setVisible(false);
+			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+		});
+
+		task.setOnCancelled(ev -> {
+			AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, "Cancelada la actualizacion de la base de datos.");
+			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+		});
+
+		// Iniciar tarea en un nuevo hilo
+		Thread thread = new Thread(task);
+
+		// Manejar la cancelación
+		botonCancelarSubidaPortadas.setOnAction(ev -> {
+			botonCancelarSubidaPortadas.setVisible(false);
+			nav.cerrarCargaComics();
+			task.cancel();
+		});
+
+		thread.setDaemon(true);
+		thread.start();
 	}
 
-	public Stage miStageVentana() {
-		Scene scene = botonActualizarSoftware.getScene();
+	@FXML
+	void reCopiarPortadas(ActionEvent event) {
 
-		if (scene != null) {
-			// Devolver el Stage de la escena si no es nulo
-			return (Stage) scene.getWindow();
+		DirectoryChooser directoryChooser = new DirectoryChooser();
+		directoryChooser.setTitle("Seleccionar carpeta");
+
+		// Mostrar el diálogo de selección de carpeta
+		File selectedDirectory = directoryChooser.showDialog(null);
+
+		String directorioNuevo = Utilidades.DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+				+ ConectManager.DB_NAME + File.separator + "portadas";
+
+		Utilidades.copiarDirectorio(directorioNuevo, selectedDirectory.getAbsolutePath());
+
+	}
+
+	public Scene miStageVentana() {
+		Node rootNode = botonActualizarSoftware;
+		while (rootNode.getParent() != null) {
+			rootNode = rootNode.getParent();
+		}
+
+		if (rootNode instanceof Parent) {
+			Scene scene = ((Parent) rootNode).getScene();
+
+			ConectManager.activeScenes.add(scene);
+
+			return scene;
 		} else {
-			// Manejar el caso en el que no se pueda encontrar la escena
+			// Manejar el caso en el que no se pueda encontrar un nodo raíz adecuado
 			return null;
 		}
+	}
+	
+	public Stage estadoStage() {
+		
+		return (Stage) botonActualizarDatos.getScene().getWindow();
 	}
 
 	/**
 	 * Cierra la ventana asociada a este controlador, si está disponible. Si no se
-	 * ha establecido una instancia de ventana (Stage), este método no realiza
+	 * ha establecido una instancia de ventana (Scene), este método no realiza
 	 * ninguna acción.
 	 */
 	public void closeWindow() {
-		if (stage != null) {
+		if (ventanaOpciones != null && ventanaOpciones.getWindow() instanceof Stage) {
+			
+			if (FuncionesManejoFront.stageVentanas.contains(estadoStage())) {
+				FuncionesManejoFront.stageVentanas.remove(estadoStage());
+			}
+			
+			Stage stage = (Stage) ventanaOpciones.getWindow();
 			stage.close();
 		}
 	}

@@ -58,7 +58,7 @@
     -fx-background-color: #009EE8; /* Color azul más oscuro en hover */
 }
 
-.button#botonDescargarSQL,.button#botonDescargarPdf,.button#botonActualizarDatos,.button#botonActualizarPortadas,.button#botonActualizarTodo,.button#botonDescargarExcel,.button#botonDescargarPortadas,.button#botonNormalizarDB, .button#botonActualizarSoftware, .button#botonDescargarSW  {
+.button#botonDescargarSQL,.button#botonDescargarPdf,.button#botonActualizarDatos,.button#botonActualizarPortadas,.button#botonActualizarTodo,.button#botonDescargarExcel,.button#botonDescargarPortadas,.button#botonNormalizarDB, .button#botonActualizarSoftware, .button#botonDescargarSW, .button#botonReCopiarPortadas, .button#botonComprimirPortadas {
     -fx-background-color: #5cb85c;
     -fx-border-color: #4cae4c;
 }
@@ -346,11 +346,11 @@
     -fx-border-color: #b47a0c;
 }
 
-.button#botonCancelarSubida {
+.button#botonCancelarSubida,.button#botonCancelarSubidaPortadas {
     -fx-background-color: #d9534f;
     -fx-border-color: #d43f3a;
 }
 
-.button#botonCancelarSubida:hover {
+.button#botonCancelarSubida:hover,.button#botonCancelarSubidaPortadas:hover {
     -fx-background-color: #c9302c;
 }

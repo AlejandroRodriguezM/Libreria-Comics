@@ -167,7 +167,7 @@ public class FuncionesExcel {
 	 *
 	 * @return La carpeta seleccionada como objeto File.
 	 */
-	public File carpetaPortadasTask() {
+	public static File carpetaPortadasTask() {
 		final File[] directorio = new File[1];
 		CountDownLatch latch = new CountDownLatch(1);
 
@@ -199,7 +199,7 @@ public class FuncionesExcel {
 		NUMERO_COMICS_LEIDOS = 0;
 		File directorioImagenes = carpetaPortadas();
 		File directorioFichero = carpetaExcelExportado();
-		NUMERO_LINEAS_FICHERO = ComicManagerDAO.countRows(SelectManager.TAMANIO_DATABASE);
+		NUMERO_LINEAS_FICHERO = ComicManagerDAO.countRows();
 		Task<Boolean> task = new Task<Boolean>() {
 			@Override
 			protected Boolean call() throws Exception {
@@ -324,7 +324,7 @@ public class FuncionesExcel {
 			File fichero = new File(carpetaLibreria, "BaseDatos.xlsx");
 			fichero.createNewFile();
 
-			NUMERO_LINEAS_FICHERO = ComicManagerDAO.countRows(SelectManager.TAMANIO_DATABASE);
+			NUMERO_LINEAS_FICHERO = ComicManagerDAO.countRows();
 
 			String sentenciaSQL = DBUtilidades.construirSentenciaSQL(TipoBusqueda.COMPLETA);
 
@@ -417,7 +417,7 @@ public class FuncionesExcel {
 		}
 	}
 
-	public Task<Boolean> procesarArchivoCSVTask(File fichero) {
+	public static Task<Boolean> procesarArchivoCSVTask(File fichero) {
 		
 		Task<Boolean> task = new Task<Boolean>() {
 			@Override
@@ -448,7 +448,7 @@ public class FuncionesExcel {
 		NUMERO_LINEAS_FICHERO = numLineas;
 	}
 
-	private void procesarCSVInternamente(File fichero) throws SQLException, IOException {
+	private static void procesarCSVInternamente(File fichero) throws SQLException, IOException {
 		NUMERO_COMICS_LEIDOS = 0;
 		Utilidades.crearCarpeta();
 		try (BufferedReader lineReader = new BufferedReader(new FileReader(fichero))) {
@@ -505,7 +505,7 @@ public class FuncionesExcel {
 		}
 	}
 
-	public void cargaComics(Comic comicNuevo, AtomicReference<CargaComicsController> cargaComicsControllerRef,
+	public static void cargaComics(Comic comicNuevo, AtomicReference<CargaComicsController> cargaComicsControllerRef,
 			File directorio, boolean esImportado) {
 		String nombre_portada = "";
 		String nombre_modificado = "";
@@ -549,7 +549,7 @@ public class FuncionesExcel {
 	 * @param nombreModificado El nombre del archivo modificado
 	 * @throws IOException
 	 */
-	public void copiarPortadaPredeterminada(String defaultImagePath, String nombreModificado) {
+	public static void copiarPortadaPredeterminada(String defaultImagePath, String nombreModificado) {
 		if (defaultImagePath == null || nombreModificado == null) {
 			throw new IllegalArgumentException("defaultImagePath y nombreModificado no pueden ser nulos");
 		}
@@ -559,8 +559,9 @@ public class FuncionesExcel {
 
 		try {
 			if (!sourceFile.exists()) {
-				try (InputStream input = getClass().getResourceAsStream("/imagenes/sinPortada.jpg");
-						OutputStream output = new FileOutputStream(destinationFile)) {
+				Utilidades utilidades = new Utilidades();
+				try (InputStream input = utilidades.getClass().getResourceAsStream("/imagenes/sinPortada.jpg");
+					     OutputStream output = new FileOutputStream(destinationFile)) {
 
 					File destinationDirectory = destinationFile.getParentFile();
 					if (!destinationDirectory.exists()) {
@@ -601,7 +602,7 @@ public class FuncionesExcel {
 //		}
 //	}
 
-	private void checkCSVColumns(String filePath) throws IOException {
+	private static void checkCSVColumns(String filePath) throws IOException {
 		// Columnas esperadas
 		String[] expectedColumns = { "ID", "nomComic", "caja_deposito", "precio_comic", "codigo_comic", "numComic",
 				"nomVariante", "Firma", "nomEditorial", "Formato", "Procedencia", "fecha_publicacion", "nomGuionista",

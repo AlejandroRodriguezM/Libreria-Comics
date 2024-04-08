@@ -17,7 +17,7 @@
 }
 
 /* Clase CSS para el botón */
-.button#botonCancelarSubida {
+.button#botonCancelarSubida,.button#botonCancelarSubidaPortadas {
     -fx-background-radius: 60.0px;
     -fx-padding: 8.0px 1.0px;
     -fx-background-image: url('stop.png');
@@ -30,7 +30,7 @@
 
 }
 
-.button#botonCancelarSubida:hover {
+.button#botonCancelarSubida:hover,.button#botonCancelarSubidaPortadas:hover {
     -fx-border-radius: 00.0px;
     -fx-background-color: black; /* Fondo blanco */
     -fx-background-radius: 50.0px;

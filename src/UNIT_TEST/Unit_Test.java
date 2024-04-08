@@ -2,6 +2,8 @@ package UNIT_TEST;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -169,7 +171,7 @@ public class Unit_Test extends Application {
 //		mostrarComicMarvel();
 //		mostrarComicGeneral();
 //		crearDatabasePrueba();
-//		envioDatosBasePrueba();
+		envioDatosBasePrueba();
 
 //		pruebaSubidaComic();
 //		pruebaModificacionComic();
@@ -190,12 +192,68 @@ public class Unit_Test extends Application {
 
 //		nav.verEstadoConexion();
 
-		String urlWeb = "https://prhcomics.com/comics/";
-		urlPreviews(urlWeb);
+//		String urlWeb = "https://prhcomics.com/comics/";
+//		urlPreviews(urlWeb);
+		
+		copiarDirectorio();
 
 //		System.out.println(leerVersionDelArchivo());
 
 	}
+	
+    public static void copiarDirectorio() throws IOException {
+    	
+   	 String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+                + ConectManager.DB_NAME + File.separator;
+        String directorioOriginal = directorioComun+ "portadas";
+        String directorioNuevo = directorioComun + "portadas_original" + File.separator;
+   	
+       File directorioOrigen = new File(directorioOriginal);
+       File directorioDestino = new File(directorioNuevo);
+
+       // Verificar si el directorio origen existe y es un directorio
+       if (!directorioOrigen.exists() || !directorioOrigen.isDirectory()) {
+           throw new IllegalArgumentException("El directorio origen no existe o no es un directorio válido.");
+       }
+
+       // Verificar si el directorio destino ya existe
+       if (directorioDestino.exists()) {
+           throw new IllegalArgumentException("El directorio destino ya existe.");
+       }
+
+       // Crear el directorio destino
+       directorioDestino.mkdirs();
+
+       // Obtener la lista de archivos en el directorio origen
+       File[] archivos = directorioOrigen.listFiles();
+
+       if (archivos != null) {
+           for (File archivo : archivos) {
+               if (archivo.isDirectory()) {
+                   // Si es un directorio, llamar recursivamente a esta función
+                   copiarDirectorio();
+               } else {
+                   // Si es un archivo, copiarlo al nuevo directorio
+                   copiarArchivo(archivo.getAbsolutePath(), directorioNuevo + File.separator + archivo.getName());
+               }
+           }
+       }
+   }
+
+   public static void copiarArchivo(String origen, String destino) throws IOException {
+       FileInputStream entrada = new FileInputStream(origen);
+       FileOutputStream salida = new FileOutputStream(destino);
+
+       byte[] buffer = new byte[1024];
+       int longitud;
+       while ((longitud = entrada.read(buffer)) > 0) {
+           salida.write(buffer, 0, longitud);
+       }
+
+       // Cerrar flujos
+       entrada.close();
+       salida.close();
+   }
 
     public static void urlPreviews(String urlWeb) {
         try {
