@@ -406,8 +406,6 @@ public class OpcionesAvanzadasController implements Initializable {
 						// Comprimir imagen
 						Thumbnails.of(image).scale(1).outputQuality(0.5).toFile(codigo);
 
-						System.out.println(codigo);
-
 						numConverted[0]++;
 
 						// Actualizar UI

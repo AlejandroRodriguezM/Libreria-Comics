@@ -86,7 +86,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/materialfx-11.13.5.jar"/>
-	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/groupdocs-conversion-24.3.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/thumbnailator-0.4.20.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
