@@ -173,7 +173,7 @@ public class OpcionesAvanzadasController implements Initializable {
 		AlarmaList.iniciarAnimacionEspera(prontInfo);
 		AlarmaList.iniciarAnimacionEspera(prontInfoEspecial);
 		AlarmaList.iniciarAnimacionEspera(prontInfoPreviews);
-		AlarmaList.iniciarAnimacionEspera(prontInfoEspecial);
+		AlarmaList.iniciarAnimacionEspera(prontInfoPortadas);
 
 		checkFirmas.selectedProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue) {
