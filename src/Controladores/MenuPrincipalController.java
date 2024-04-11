@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import Controladores.managment.AccionEliminar;
 import Controladores.managment.AccionFuncionesComunes;
+import Controladores.managment.AccionModificar;
 import Controladores.managment.AccionReferencias;
 import Controladores.managment.AccionSeleccionar;
 import Funcionamiento.Utilidades;
@@ -432,7 +433,6 @@ public class MenuPrincipalController implements Initializable {
 	double y = 0;
 
 	public AccionReferencias guardarReferencia() {
-		AccionReferencias referenciaVentana = new AccionReferencias();
 		referenciaVentana.setAlarmaConexionSql(alarmaConexionSql);
 		referenciaVentana.setID(ID);
 		referenciaVentana.setCaja(caja);
@@ -591,9 +591,11 @@ public class MenuPrincipalController implements Initializable {
 
 		AccionSeleccionar.referenciaVentana = guardarReferencia();
 
-		OpcionesAvanzadasController.referenciaVentana = guardarReferencia();
+//		OpcionesAvanzadasController.referenciaVentana = guardarReferencia();
 
 		AccionEliminar.referenciaVentana = guardarReferencia();
+		
+		AccionModificar.referenciaVentana = guardarReferencia();
 	}
 
 	@FXML
@@ -1009,7 +1011,7 @@ public class MenuPrincipalController implements Initializable {
 
 		ListaComicsDAO.limpiarListaGuardados();
 
-		Utilidades.borrarArchivosNoEnLista(ListaComicsDAO.listaImagenes);
+//		Utilidades.borrarArchivosNoEnLista(ListaComicsDAO.listaImagenes);
 
 	}
 
@@ -1081,35 +1083,6 @@ public class MenuPrincipalController implements Initializable {
 		}
 	}
 
-	@FXML
-	void borrarContenidoTabla(ActionEvent event) {
-
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
-
-		if (ComicManagerDAO.countRows() < 1) {
-			String mensaje = "ERROR. La base de datos ya se encuentra vacia";
-			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
-			return;
-		}
-
-		CompletableFuture.runAsync(() -> {
-			boolean result = AccionEliminar.deleteTableAsync();
-			Platform.runLater(() -> {
-
-				AlarmaList.detenerAnimacionCarga(progresoCarga);
-
-				String mensaje = result ? "Base de datos borrada y reiniciada correctamente"
-						: "ERROR. No se ha podido eliminar y reiniciar la base de datos";
-				AlarmaList.mostrarMensajePront(mensaje, result, prontInfo);
-				if (result) {
-					limpiezaDeDatos();
-				}
-			});
-		});
-	}
-
 	/**
 	 * Se llama a funcion que permite ver las estadisticas de la bbdd
 	 *
@@ -1145,7 +1118,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void clickRaton(MouseEvent event) throws IOException, SQLException {
-		enviarReferencias();
+//		enviarReferencias();
 		AccionSeleccionar.seleccionarComics(true);
 	}
 
@@ -1160,7 +1133,7 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void teclasDireccion(KeyEvent event) throws IOException, SQLException {
 		if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
-			enviarReferencias();
+//			enviarReferencias();
 			AccionSeleccionar.seleccionarComics(true);
 		}
 	}
@@ -1238,6 +1211,72 @@ public class MenuPrincipalController implements Initializable {
 
 	}
 
+	@FXML
+	void borrarContenidoTabla(ActionEvent event) {
+		try {
+			Thread borradoTablaThread = new Thread(() -> {
+				try {
+					boolean confirmacionBorrado = nav.borrarContenidoTabla().get();
+
+					if (confirmacionBorrado) {
+						AlarmaList.iniciarAnimacionCarga(referenciaVentana.getProgresoCarga());
+						String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
+
+						List<Comic> listaComics = SelectManager.verLibreria(sentenciaSQL, false);
+						FuncionesExcel excelFuntions = new FuncionesExcel();
+						// Configuración de la tarea para crear el archivo Excel
+						Task<Boolean> crearExcelTask = excelFuntions.crearExcelTask(listaComics,
+								TipoBusqueda.ELIMINAR.toString());
+						Thread excelThread = new Thread(crearExcelTask);
+
+						crearExcelTask.setOnRunning(e -> {
+							FuncionesManejoFront.cambiarEstadoMenuBar(true);
+						});
+						
+						crearExcelTask.setOnSucceeded(e -> {
+
+							boolean deleteCompleted;
+							try {
+								deleteCompleted = ComicManagerDAO.deleteTable().get();
+								String mensaje = deleteCompleted ? "Base de datos borrada y reiniciada correctamente"
+										: "ERROR. No se ha podido eliminar y reiniciar la base de datos";
+
+								if (deleteCompleted) {
+									AlarmaList.detenerAnimacionCarga(referenciaVentana.getProgresoCarga());
+									Utilidades.eliminarArchivosEnCarpeta();
+									ListaComicsDAO.limpiarListaGuardados();
+								}
+								FuncionesManejoFront.cambiarEstadoMenuBar(false);
+								AlarmaList.mostrarMensajePront(mensaje, deleteCompleted,
+										referenciaVentana.getProntInfo());
+
+							} catch (InterruptedException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (ExecutionException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+
+						});
+						// Iniciar la tarea principal de creación de Excel en un hilo separado
+						excelThread.start();
+					} else {
+						AlarmaList.detenerAnimacionCarga(referenciaVentana.getProgresoCarga());
+						String mensaje = "ERROR. Has cancelado el borrado de la base de datos";
+						AlarmaList.mostrarMensajePront(mensaje, false, referenciaVentana.getProntInfo());
+					}
+				} catch (InterruptedException | ExecutionException e) {
+					Utilidades.manejarExcepcion(e);
+				}
+			});
+
+			borradoTablaThread.start();
+		} catch (Exception e) {
+			Utilidades.manejarExcepcion(e);
+		}
+	}
+
 	/**
 	 * Carga y ejecuta una tarea para exportar datos a un archivo Excel.
 	 *
@@ -1265,8 +1304,21 @@ public class MenuPrincipalController implements Initializable {
 		Task<Boolean> crearExcelTask = excelFuntions.crearExcelTask(listaComics, tipoBusqueda);
 		Thread excelThread = new Thread(crearExcelTask);
 
-		// Configuración del comportamiento cuando la tarea tiene éxito
+		crearExcelTask.setOnRunning(e -> {
+			FuncionesManejoFront.cambiarEstadoMenuBar(true);
+			AlarmaList.iniciarAnimacionCarga(progresoCarga);
+		});
+
 		crearExcelTask.setOnSucceeded(event -> {
+			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+			AlarmaList.mostrarMensajePront(mensajeValido, true, prontInfo);
+			AlarmaList.detenerAnimacionCarga(progresoCarga);
+
+		});
+
+		// Configuración del comportamiento cuando la tarea falla
+		crearExcelTask.setOnFailed(event -> {
+
 			boolean result = crearExcelTask.getValue();
 			if (result) {
 				// Tarea completada con éxito, muestra el mensaje de éxito.
@@ -1282,22 +1334,7 @@ public class MenuPrincipalController implements Initializable {
 
 			// Detener el hilo de la tarea
 			excelThread.interrupt();
-		});
 
-		crearExcelTask.setOnRunning(e -> {
-			FuncionesManejoFront.cambiarEstadoMenuBar(true);
-			AlarmaList.iniciarAnimacionCarga(progresoCarga);
-		});
-
-		crearExcelTask.setOnSucceeded(event -> {
-			FuncionesManejoFront.cambiarEstadoMenuBar(false);
-			AlarmaList.mostrarMensajePront(mensajeValido, true, prontInfo);
-			AlarmaList.detenerAnimacionCarga(progresoCarga);
-
-		});
-
-		// Configuración del comportamiento cuando la tarea falla
-		crearExcelTask.setOnFailed(event -> {
 			alarmaList.manejarFallo(mensajeErrorExportar, prontInfo);
 			FuncionesManejoFront.cambiarEstadoMenuBar(false);
 			AlarmaList.detenerAnimacionCarga(progresoCarga);
@@ -1461,9 +1498,7 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void modificarApiVine(ActionEvent event) {
 		tablaBBDD.getItems().clear();
-
 		ModificarApiDatosController.tipoAccion("Vine");
-
 		nav.verModificarApis(false);
 	}
 

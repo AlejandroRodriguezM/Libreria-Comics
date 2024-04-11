@@ -2,9 +2,7 @@ package Controladores.managment;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
-import Funcionamiento.Utilidades;
 import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
@@ -51,6 +49,7 @@ public class AccionEliminar {
 				ComicManagerDAO.borrarComic(id_comic);
 				ListaComicsDAO.reiniciarListaComics();
 				ListaComicsDAO.listasAutoCompletado();
+				referenciaVentana.getTablaBBDD().refresh();
 				FuncionesTableView.nombreColumnas(referenciaVentana.getTablaBBDD());
 				FuncionesTableView.actualizarBusquedaRaw(referenciaVentana.getTablaBBDD());
 				FuncionesTableView.tablaBBDD(listaComics, referenciaVentana.getTablaBBDD());
@@ -84,30 +83,6 @@ public class AccionEliminar {
 				}
 
 			}
-		}
-	}
-
-	public static boolean deleteTableAsync() {
-		try {
-
-//			Utilidades.borrarArchivosNoEnLista(ListaComicsDAO.listaImagenes);
-
-			CompletableFuture<Boolean> borradoTablaFuture = nav.borrarContenidoTabla();
-			boolean confirmacionBorrado = borradoTablaFuture.get();
-			AlarmaList.iniciarAnimacionCarga(referenciaVentana.getProgresoCarga());
-			if (confirmacionBorrado) {
-				CompletableFuture<Boolean> deleteResult = ComicManagerDAO.deleteTable();
-				return deleteResult.get(); // Espera a que el CompletableFuture se complete y obtiene el resultado
-			} else {
-				AlarmaList.detenerAnimacionCarga(referenciaVentana.getProgresoCarga());
-				String mensaje = "ERROR. Has cancelado el borrado de la base de datos";
-				AlarmaList.mostrarMensajePront(mensaje, false, referenciaVentana.getProntInfo());
-				return false;
-			}
-
-		} catch (Exception e) {
-			Utilidades.manejarExcepcion(e);
-			return false;
 		}
 	}
 

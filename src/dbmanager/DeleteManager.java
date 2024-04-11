@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 
 import Funcionamiento.Utilidades;
 import comicManagement.Comic;
@@ -24,15 +25,11 @@ public class DeleteManager {
 		return CompletableFuture.supplyAsync(() -> {
 			try {
 				ListaComicsDAO.limpiarListasPrincipales();
-
 				CompletableFuture<Boolean> result = CompletableFuture.supplyAsync(() -> {
 					try (Connection conn = ConectManager.conexion();
 							PreparedStatement deleteStatement = conn.prepareStatement(DELETE_SENTENCIA_COMPLETA);
 							PreparedStatement resetAutoIncrementStatement = conn
 									.prepareStatement(SENTENCIA_REBOOT_ID)) {
-
-						Utilidades.copiaSeguridad();
-						Utilidades.eliminarArchivosEnCarpeta();
 
 						deleteStatement.executeUpdate();
 						resetAutoIncrementStatement.executeUpdate();
@@ -48,7 +45,8 @@ public class DeleteManager {
 				throw new RuntimeException(e); // Envuelve excepción en RuntimeException para ser manejada en el nivel
 												// superior
 			}
-		});
+		}, Executors.newCachedThreadPool()); // Se utiliza un Executor diferente para ejecutar el CompletableFuture en
+												// un hilo separado
 	}
 
 	/**

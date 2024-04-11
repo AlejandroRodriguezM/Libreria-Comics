@@ -56,8 +56,6 @@ public class AccionAniadir {
 
 		accionFuncionesComunes.procesarComic(comic, false);
 	}
-	
-
 
 	public static void guardarContenidoLista() {
 		if (ListaComicsDAO.comicsImportados.size() > 0 && nav.alertaInsertar()) {
@@ -75,7 +73,8 @@ public class AccionAniadir {
 			ListaComicsDAO.comicsImportados.clear();
 			referenciaVentana.getTablaBBDD().getItems().clear();
 			AccionControlUI.validarCamposClave(true);
-			FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, referenciaVentana.getTablaBBDD()); // Llamada a
+			FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, referenciaVentana.getTablaBBDD()); // Llamada
+																												// a
 			AccionControlUI.limpiarAutorellenos(false);
 
 			String mensajePront = "Has introducido los comics correctamente\n";
@@ -83,8 +82,6 @@ public class AccionAniadir {
 		}
 
 	}
-	
-
 
 	public void mostrarElementosAniadir(List<Node> elementosAMostrarYHabilitar) {
 		elementosAMostrarYHabilitar.addAll(Arrays.asList(referenciaVentana.getDibujanteComic(),

@@ -153,7 +153,7 @@ public class AlarmaList {
 							iniciarAnimacionAlarmaError(alarmaConexionInternet);
 
 							if (esComprobarConexion) {
-								iniciarAnimacionDesconectado(alarmaConexionInternet);
+								iniciarAnimacionDesconectado(iniciarAnimacionEspera);
 							}
 						}
 
@@ -169,8 +169,8 @@ public class AlarmaList {
 							if (esComprobarConexion) {
 								if (ConectManager.estadoConexion) {
 									detenerAnimacionEspera();
+//									iniciarAnimacionConectado(iniciarAnimacionEspera);
 									iniciarAnimacionConectado(iniciarAnimacionEspera);
-									iniciarAnimacionConectado(alarmaConexion);
 								} else {
 									iniciarAnimacionEspera(iniciarAnimacionEspera);
 								}
@@ -713,6 +713,27 @@ public class AlarmaList {
 	/**
 	 * Metodo que permite crear una animacion
 	 */
+	public static void iniciarAnimacionTextArea(TextArea prontInfo, String mensaje) {
+		prontInfo.setOpacity(1);
+		Timeline timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
+
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarSubida1 = new KeyFrame(Duration.ZERO, new KeyValue(prontInfo.textProperty(), mensaje));
+		KeyFrame mostrarSubida2 = new KeyFrame(Duration.seconds(0.5), new KeyValue(prontInfo.textProperty(), ""));
+		KeyFrame mostrarSubida3 = new KeyFrame(Duration.seconds(1), new KeyValue(prontInfo.textProperty(), mensaje));
+		KeyFrame mostrarSubida4 = new KeyFrame(Duration.seconds(1.5), new KeyValue(prontInfo.textProperty(), ""));
+
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarSubida1, mostrarSubida2, mostrarSubida3, mostrarSubida4);
+
+		// Iniciar la animación
+		timeline.play();
+	}
+
+	/**
+	 * Metodo que permite crear una animacion
+	 */
 	public static void iniciarAnimacionGuardado(TextArea prontInfo) {
 		prontInfo.setOpacity(1);
 		prontInfo.setStyle("-fx-background-color: green;");
@@ -887,7 +908,7 @@ public class AlarmaList {
 			detenerAnimacion();
 		}
 	}
-	
+
 	public static void mostrarMensajeProntLabel(String mensaje, boolean exito, Label prontInfo) {
 
 		if (prontInfo != null) {
@@ -919,16 +940,17 @@ public class AlarmaList {
 	 * Inicia la animación del progreso de carga.
 	 */
 	public static void iniciarAnimacionCarga(ProgressIndicator progresoCarga) {
-		progresoCarga.setVisible(true);
-		progresoCarga.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
+		Platform.runLater(() -> {
+			progresoCarga.setVisible(true);
+			progresoCarga.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
+		});
 	}
 
-	/**
-	 * Detiene la animación del progreso de carga.
-	 */
 	public static void detenerAnimacionCarga(ProgressIndicator progresoCarga) {
-		progresoCarga.setVisible(false);
-		progresoCarga.setProgress(0); // Establece el progreso en 0 para detener la animación
+		Platform.runLater(() -> {
+			progresoCarga.setVisible(false);
+			progresoCarga.setProgress(0); // Establece el progreso en 0 para detener la animación
+		});
 	}
 
 	public static void manejarFalloGuardadoBD(Throwable exception, TextArea prontInfo) {

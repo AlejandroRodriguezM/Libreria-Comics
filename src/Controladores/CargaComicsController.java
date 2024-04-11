@@ -130,7 +130,6 @@ public class CargaComicsController implements Initializable {
 		appendTextToTextArea(nombreComic);
 		updateLabel(porcentaje);
 		updateProgress(progreso);
-
 	}
 
 	/**

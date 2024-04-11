@@ -614,6 +614,7 @@ public class VentanaAccionController implements Initializable {
 		referenciaVentana.setProcedenciaComic(procedenciaComic);
 		referenciaVentana.setIdComicTratar_mod(idComicTratar_mod);
 		referenciaVentana.setCodigoComicTratar(codigoComicTratar);
+		referenciaVentana.setStage(estadoStage());
 
 		referenciaVentana.setLabelPuntuacion(labelPuntuacion);
 		referenciaVentana.setLabel_caja(label_caja);
@@ -688,16 +689,16 @@ public class VentanaAccionController implements Initializable {
 			rellenarCombosEstaticos();
 
 			AccionControlUI.mostrarOpcion(AccionFuncionesComunes.TIPO_ACCION);
-			
+
 			FuncionesManejoFront.stageVentanas.add(estadoStage());
 		});
-		
+
 		ListaComicsDAO.comicsImportados.clear();
 
 		AccionControlUI.establecerTooltips();
 
 		formatearTextField();
-		
+
 	}
 
 	public void enviarReferencias() {
@@ -926,9 +927,9 @@ public class VentanaAccionController implements Initializable {
 				File fichero = Utilidades.tratarFichero(frase, formato).showOpenDialog(null); // Llamada a funcion
 
 				if (fichero != null) {
-					Platform.runLater(() -> {
-						AccionFuncionesComunes.busquedaPorCodigoImportacion(fichero);
-					});
+//					Platform.runLater(() -> {
+					AccionFuncionesComunes.busquedaPorCodigoImportacion(fichero);
+//					});
 
 				}
 			}
@@ -1192,12 +1193,15 @@ public class VentanaAccionController implements Initializable {
 	 * ninguna acción.
 	 */
 	public void closeWindow() {
+
+		stage = estadoStage();
+
 		if (stage != null) {
 
 			if (FuncionesManejoFront.stageVentanas.contains(estadoStage())) {
 				FuncionesManejoFront.stageVentanas.remove(estadoStage());
 			}
-
+			nav.cerrarCargaComics();
 			stage.close();
 		}
 	}

@@ -12,6 +12,7 @@ import alarmas.AlarmaList;
 import comicManagement.Comic;
 import controlUI.AccionControlUI;
 import controlUI.FuncionesComboBox;
+import controlUI.FuncionesManejoFront;
 import controlUI.FuncionesTableView;
 import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
@@ -20,6 +21,7 @@ import dbmanager.ListaComicsDAO;
 import dbmanager.SelectManager;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
+import javafx.stage.Stage;
 
 public class AccionModificar {
 
@@ -69,19 +71,24 @@ public class AccionModificar {
 			String id_comic = referenciaVentana.getIdComicTratar_mod().getText();
 			if (accionFuncionesComunes.comprobarExistenciaComic(id_comic)) {
 				if (nav.alertaAccionGeneral()) {
+					String mensaje = "";
 					if (esAgregar) {
 						ComicManagerDAO.actualizarOpinion(id_comic,
 								FuncionesComboBox.puntuacionCombobox(referenciaVentana.getPuntuacionMenu()));
+						mensaje = "Has agregado una puntuacion correctamente";
 					} else {
 						ComicManagerDAO.actualizarOpinion(id_comic, "0");
+						mensaje = "Has borrado correctamente la puntuacion";
 					}
-					String mensaje = ". Has borrado la puntuacion del comic.";
 
 					AlarmaList.mostrarMensajePront(mensaje, true, referenciaVentana.getProntInfo());
 
 					List<ComboBox<String>> comboboxes = referenciaVentana.getComboboxes();
 
 					funcionesCombo.rellenarComboBox(comboboxes);
+					referenciaVentana.getTablaBBDD().refresh();
+					FuncionesTableView.nombreColumnas(referenciaVentana.getTablaBBDD());
+					FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, referenciaVentana.getTablaBBDD());
 				} else {
 					String mensaje = "Accion cancelada";
 					AlarmaList.mostrarMensajePront(mensaje, false, referenciaVentana.getProntInfo());
@@ -105,6 +112,10 @@ public class AccionModificar {
 				List<ComboBox<String>> comboboxes = referenciaVentana.getComboboxes();
 
 				funcionesCombo.rellenarComboBox(comboboxes);
+				referenciaVentana.getTablaBBDD().refresh();
+				FuncionesTableView.nombreColumnas(referenciaVentana.getTablaBBDD());
+				FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, referenciaVentana.getTablaBBDD());
+
 			} else {
 				String mensaje = "Accion cancelada";
 				AlarmaList.mostrarMensajePront(mensaje, false, referenciaVentana.getProntInfo());
@@ -121,10 +132,10 @@ public class AccionModificar {
 
 		String id_comic = referenciaVentana.getIdComicTratar_mod().getText();
 		referenciaVentana.getIdComicTratar_mod().setStyle("");
-		
+
 		if (accionFuncionesComunes.comprobarExistenciaComic(id_comic)) {
 			if (nav.alertaAccionGeneral()) {
-				
+
 				Utilidades.convertirNombresCarpetas(AccionFuncionesComunes.SOURCE_PATH);
 
 				Comic comicModificado = AccionControlUI.comicModificado();
@@ -132,9 +143,12 @@ public class AccionModificar {
 				accionFuncionesComunes.procesarComic(comicModificado, true);
 
 				ListaComicsDAO.listasAutoCompletado();
+				referenciaVentana.getTablaBBDD().refresh();
 
 				List<ComboBox<String>> comboboxes = referenciaVentana.getComboboxes();
 				referenciaVentana.getTablaBBDD().refresh();
+				FuncionesTableView.nombreColumnas(referenciaVentana.getTablaBBDD());
+				FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, referenciaVentana.getTablaBBDD());
 				if (comboboxes != null) {
 					funcionesCombo.rellenarComboBox(comboboxes);
 				}
@@ -193,7 +207,7 @@ public class AccionModificar {
 
 		Comic.limpiarCamposComic(datos);
 		AccionControlUI.limpiarAutorellenos(false);
-		
+
 		FuncionesTableView.nombreColumnas(referenciaVentana.getTablaBBDD());
 		FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, referenciaVentana.getTablaBBDD());
 	}
@@ -230,23 +244,34 @@ public class AccionModificar {
 		referenciaVentana.getRootVBox().toFront();
 	}
 
-	public static void actualizarDatabase(String tipoUpdate, boolean actualizarFima) {
+	public static void actualizarDatabase(String tipoUpdate, boolean actualizarFima, Stage ventanaOpciones) {
 
 		String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
 		List<Comic> listaComicsDatabase = SelectManager.verLibreria(sentenciaSQL, true);
-		
-	       // Ordenar la lista según el ID convertido a número
-        Collections.sort(listaComicsDatabase, new Comparator<Comic>() {
-            @Override
-            public int compare(Comic comic1, Comic comic2) {
-                int id1 = Integer.parseInt(comic1.getID());
-                int id2 = Integer.parseInt(comic2.getID());
-                return Integer.compare(id1, id2);
-            }
-        });
-		
-		AccionFuncionesComunes.busquedaPorListaDatabase(listaComicsDatabase, tipoUpdate, actualizarFima);
 
+		// Ordenar la lista según el ID convertido a número
+		Collections.sort(listaComicsDatabase, new Comparator<Comic>() {
+			@Override
+			public int compare(Comic comic1, Comic comic2) {
+				int id1 = Integer.parseInt(comic1.getID());
+				int id2 = Integer.parseInt(comic2.getID());
+				return Integer.compare(id1, id2);
+			}
+		});
+
+		List<Stage> stageVentanas = FuncionesManejoFront.stageVentanas;
+
+		// Assuming `stages` is a collection of stages you want to check against
+		for (Stage stage : stageVentanas) {
+			if (stage != ventanaOpciones) {
+				stage.close(); // Close the stage if it's not the current state
+			}
+		}
+
+		AccionFuncionesComunes.busquedaPorListaDatabase(listaComicsDatabase, tipoUpdate, actualizarFima);
+		referenciaVentana.getTablaBBDD().refresh();
+		FuncionesTableView.nombreColumnas(referenciaVentana.getTablaBBDD());
+		FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, referenciaVentana.getTablaBBDD());
 	}
 
 }

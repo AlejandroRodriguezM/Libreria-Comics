@@ -76,14 +76,17 @@ public class Ventanas {
 	private static Stage menuCodigoBarras = null;
 
 	private static Stage accionComic = null;
-	
+
 	private static Stage opcionesAvanzadasStage = null;
 
-	private static Stage cargaComics = null;
+	public static Stage cargaComics = null;
 
 	private static Stage menuPrincipal = null;
 
 	private static Stage imagenAmpliada = null;
+	
+    private boolean ventanaCerrada = false; // Variable para almacenar el estado de la ventana
+
 
 	/**
 	 * Abre una ventana para el acceso a la base de datos. Carga la vista y muestra
@@ -269,7 +272,7 @@ public class Ventanas {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Abre una ventana para realizar acciones en un cómic. Verifica si hay una
 	 * ventana abierta y la cierra si es necesario. Carga la vista de la ventana de
@@ -642,6 +645,9 @@ public class Ventanas {
 	public void verCargaComics(AtomicReference<CargaComicsController> cargaComicsControllerRef) {
 		Platform.runLater(() -> {
 			try {
+
+				ventanaAbierta(cargaComics);
+				ventanaCerrada = false; // Marcar la ventana como cerrada
 				FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/PantallaCargaComics.fxml"));
 //				loader.setController(this);  // Make sure this line is present
 				Parent root = loader.load();
@@ -655,25 +661,27 @@ public class Ventanas {
 				stage.setTitle("Carga de comics"); // Titulo de la aplicacion.
 				stage.getIcons().add(new Image("/Icono/icon2.png"));
 
-				// Indico que debe hacer al cerrar
-				stage.setOnCloseRequest(e -> {
-					cargaComicsController.closeWindow();
-				});
-
 				cargaComics = stage;
 
 				// Asocio el stage con el scene
 				stage.setScene(scene);
 				stage.show();
 
-				// Now you can call methods on cargaComicsController
-//				cargaComicsController.cargarDatosEnCargaComics("", "", 0.0); // Call the data passing function
+				stage.setOnCloseRequest(e -> {
+					cargaComicsController.closeWindow();
+					ventanaCerrada = true; // Marcar la ventana como cerrada
+				});
 
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}
 		});
 	}
+	
+    // Método para obtener el estado de la ventana
+    public boolean isVentanaCerrada() {
+        return ventanaCerrada;
+    }
 
 	public void cerrarCargaComics() {
 		if (cargaComics != null) {
@@ -732,7 +740,7 @@ public class Ventanas {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Llama a una ventana de alarma para eliminar datos
 	 *

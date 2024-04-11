@@ -12,13 +12,13 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="310.0" prefWidth="265.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.OpcionesAvanzadasController">
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="331.0" prefWidth="265.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.OpcionesAvanzadasController">
   <tabs>
     <Tab text="Opciones">
       <content>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="240.0">
                <children>
-                  <ImageView fitHeight="282.0" fitWidth="265.0" pickOnBounds="true">
+                  <ImageView fitHeight="303.0" fitWidth="265.0" pickOnBounds="true">
                      <image>
                         <Image url="@../imagenes/azul.jpg" />
                      </image>
@@ -34,8 +34,8 @@
                   <Button fx:id="botonActualizarSoftware" layoutX="186.0" layoutY="191.0" mnemonicParsing="false" onAction="#comprobarVersion" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Comprobar" />
                   <Label layoutX="6.0" layoutY="147.0" prefHeight="38.0" prefWidth="107.0" style="-fx-text-fill: white;" text="Normalizar Base de Datos" wrapText="true" />
                   <Button fx:id="botonNormalizarDB" layoutX="186.0" layoutY="148.0" mnemonicParsing="false" onAction="#normalizarDataBase" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Normalizar" />
-                  <Label layoutX="168.0" layoutY="255.0" prefHeight="17.0" prefWidth="83.0" style="-fx-text-fill: white;" text="Versión" />
-                  <Label fx:id="labelVersion" layoutX="213.0" layoutY="255.0" prefHeight="17.0" prefWidth="52.0" style="-fx-text-fill: white;" text="(Version)" />
+                  <Label layoutX="172.0" layoutY="282.0" prefHeight="17.0" prefWidth="45.0" style="-fx-text-fill: white;" text="Versión" />
+                  <Label fx:id="labelVersion" layoutX="222.0" layoutY="282.0" prefHeight="17.0" prefWidth="45.0" style="-fx-text-fill: white;" text="0.0.0.0" />
                </children></AnchorPane>
       </content>
     </Tab>
@@ -43,7 +43,7 @@
       <content>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
-                  <ImageView fitHeight="282.0" fitWidth="265.0" pickOnBounds="true">
+                  <ImageView fitHeight="302.0" fitWidth="265.0" pickOnBounds="true">
                      <image>
                         <Image url="@../imagenes/azul.jpg" />
                      </image>
@@ -56,6 +56,8 @@
                   </Label>
                   <Label layoutX="69.0" layoutY="114.0" prefHeight="17.0" prefWidth="127.0" style="-fx-background-color: grey;" text="Previews Catalago PDF" />
                   <Button fx:id="botonDescargarPdf" layoutX="78.0" layoutY="196.0" mnemonicParsing="false" onAction="#descargarPreview" prefHeight="42.0" prefWidth="113.0" stylesheets="@../style/genericos_style.css" text="Descargar" />
+                  <Label layoutX="172.0" layoutY="281.0" prefHeight="17.0" prefWidth="83.0" style="-fx-text-fill: white;" text="Versión" />
+                  <Label fx:id="labelVersionPreviews" layoutX="222.0" layoutY="282.0" prefHeight="17.0" prefWidth="52.0" style="-fx-text-fill: white;" text="0.0.0.0" />
                </children></AnchorPane>
       </content>
     </Tab>
@@ -63,7 +65,7 @@
          <content>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
-                  <ImageView fitHeight="282.0" fitWidth="265.0" pickOnBounds="true">
+                  <ImageView fitHeight="302.0" fitWidth="265.0" pickOnBounds="true">
                      <image>
                         <Image url="@../imagenes/azul.jpg" />
                      </image>
@@ -80,12 +82,14 @@
                      </font>
                   </Label>
                   <CheckBox fx:id="checkFirmas" layoutX="7.0" layoutY="245.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="99.0" style="-fx-text-fill: white;" text="Incluir Firmas" />
-                  <Button fx:id="botonCancelarSubida" layoutX="179.0" layoutY="231.0" mnemonicParsing="false" prefHeight="54.0" prefWidth="57.0" style="-fx-border-color: none; -fx-background-color: none;" visible="false">
+                  <Button fx:id="botonCancelarSubida" layoutX="206.0" layoutY="226.0" mnemonicParsing="false" prefHeight="54.0" prefWidth="57.0" style="-fx-border-color: none; -fx-background-color: none;" visible="false">
                      <stylesheets>
                         <URL value="@../style/genericos_style.css" />
                         <URL value="@../style/boton_reestart_style.css" />
                      </stylesheets>
                   </Button>
+                  <Label layoutX="172.0" layoutY="281.0" prefHeight="17.0" prefWidth="83.0" style="-fx-text-fill: white;" text="Versión" />
+                  <Label fx:id="labelVersionEspecial" layoutX="222.0" layoutY="281.0" prefHeight="17.0" prefWidth="52.0" style="-fx-text-fill: white;" text="0.0.0.0" />
                </children>
             </AnchorPane>
          </content>
@@ -94,7 +98,7 @@
          <content>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
-                  <ImageView fitHeight="281.0" fitWidth="265.0" pickOnBounds="true">
+                  <ImageView fitHeight="302.0" fitWidth="265.0" pickOnBounds="true">
                      <image>
                         <Image url="@../imagenes/azul.jpg" />
                      </image>
@@ -104,16 +108,18 @@
                         <Font name="Comic Sans MS" size="18.0" />
                      </font>
                   </Label>
-                  <Label layoutX="6.0" layoutY="152.0" prefHeight="17.0" prefWidth="148.0" style="-fx-text-fill: white;" text="Comprimir Portadas" />
+                  <Label layoutX="6.0" layoutY="155.0" prefHeight="17.0" prefWidth="148.0" style="-fx-text-fill: white;" text="Comprimir Portadas" />
                   <Button fx:id="botonComprimirPortadas" layoutX="185.0" layoutY="146.0" mnemonicParsing="false" onAction="#comprimirPortadas" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Comprimir" />
                   <Label layoutX="6.0" layoutY="110.0" prefHeight="17.0" prefWidth="148.0" style="-fx-text-fill: white;" text="Copiar portadas" />
                   <Button fx:id="botonReCopiarPortadas" layoutX="185.0" layoutY="104.0" mnemonicParsing="false" onAction="#reCopiarPortadas" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Copiar" />
-                  <Button fx:id="botonCancelarSubidaPortadas" layoutX="204.0" layoutY="225.0" mnemonicParsing="false" prefHeight="54.0" prefWidth="57.0" style="-fx-border-color: none; -fx-background-color: none;" visible="false">
+                  <Button fx:id="botonCancelarSubidaPortadas" layoutX="206.0" layoutY="226.0" mnemonicParsing="false" prefHeight="54.0" prefWidth="57.0" style="-fx-border-color: none; -fx-background-color: none;" visible="false">
                      <stylesheets>
                         <URL value="@../style/genericos_style.css" />
                         <URL value="@../style/boton_reestart_style.css" />
                      </stylesheets>
                   </Button>
+                  <Label layoutX="172.0" layoutY="281.0" prefHeight="17.0" prefWidth="83.0" style="-fx-text-fill: white;" text="Versión" />
+                  <Label fx:id="labelVersionPortadas" layoutX="222.0" layoutY="282.0" prefHeight="17.0" prefWidth="52.0" style="-fx-text-fill: white;" text="0.0.0.0" />
                </children>
             </AnchorPane>
          </content>

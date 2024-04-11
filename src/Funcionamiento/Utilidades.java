@@ -74,7 +74,6 @@ import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
 import dbmanager.ListaComicsDAO;
 import dbmanager.SelectManager;
-import ficherosFunciones.FuncionesExcel;
 import ficherosFunciones.FuncionesFicheros;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -418,11 +417,8 @@ public class Utilidades {
 		return nombreArchivo;
 	}
 
-	public static void copiaSeguridad() throws IOException, SQLException {
-		FuncionesExcel excel = new FuncionesExcel();
-
+	public static void copiaSeguridad(List<Comic> listaComics, SimpleDateFormat dateFormat) {
 		try {
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
 			String nombreCarpeta = dateFormat.format(new Date());
 
 			String userDir = System.getProperty("user.home");
@@ -438,9 +434,6 @@ public class Utilidades {
 			if (sourceFolder.exists()) {
 				crearCarpetaBackups(carpetaLibreria);
 				crearArchivoZip(sourceFolder, carpetaLibreria, dateFormat);
-
-				// Guardar datos en Excel
-				excel.savedataExcel(nombreCarpeta);
 			}
 		} catch (IOException e) {
 			manejarExcepcion(e);
@@ -2333,8 +2326,6 @@ public class Utilidades {
 		File directorioOrigen = new File(directorioOriginal);
 		File directorioDestino = new File(directorioNuevo);
 
-		System.out.println(directorioOriginal);
-
 		// Verificar si el directorio origen existe y es un directorio
 		if (!directorioOrigen.exists() || !directorioOrigen.isDirectory()) {
 			throw new IllegalArgumentException("El directorio origen no existe o no es un directorio válido.");
@@ -2373,6 +2364,11 @@ public class Utilidades {
 	}
 
 	public static void copiarArchivo(String origen, String destino) throws IOException {
+		// Verificar si el archivo es de extensión .jpg
+		if (!origen.toLowerCase().endsWith(".jpg")) {
+			return;
+		}
+
 		FileInputStream entrada = new FileInputStream(origen);
 		FileOutputStream salida = new FileOutputStream(destino);
 
@@ -2385,6 +2381,29 @@ public class Utilidades {
 		// Cerrar flujos
 		entrada.close();
 		salida.close();
+	}
+
+	public static void eliminarArchivosJPG(File dir) {
+		// Verifica que el directorio exista y sea un directorio válido
+		if (dir.exists() && dir.isDirectory()) {
+			// Lista de archivos en el directorio
+			File[] archivos = dir.listFiles();
+
+			// Itera sobre cada archivo en el directorio
+			for (File archivo : archivos) {
+				// Verifica si el archivo es un archivo JPG
+				if (archivo.isFile() && archivo.getName().toLowerCase().endsWith(".jpg")) {
+					// Intenta eliminar el archivo
+					if (archivo.delete()) {
+						System.out.println("Se ha eliminado: " + archivo.getName());
+					} else {
+						System.out.println("No se pudo eliminar: " + archivo.getName());
+					}
+				}
+			}
+		} else {
+			System.out.println("El directorio especificado no existe o no es válido.");
+		}
 	}
 
 }

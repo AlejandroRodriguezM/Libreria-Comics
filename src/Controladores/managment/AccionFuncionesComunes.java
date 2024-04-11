@@ -9,11 +9,12 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -214,8 +215,6 @@ public class AccionFuncionesComunes {
 
 		if (tipoUpdate.equalsIgnoreCase("modificar") || tipoUpdate.equalsIgnoreCase("actualizar datos")) {
 
-			System.out.println("Antes: " + comicInfo.getNombre() + " - " + comicInfo.getNumero());
-
 			comicInfo.setID(comicOriginal.getID());
 			comicInfo.setImagen(urlFinal);
 
@@ -236,8 +235,6 @@ public class AccionFuncionesComunes {
 				comicInfo.setID(comicOriginal.getID());
 				comicInfo.setImagen(comicOriginal.getImagen());
 			}
-
-			System.out.println("Despues: " + comicInfo.getNombre() + " - " + comicInfo.getNumero());
 
 		}
 
@@ -521,15 +518,6 @@ public class AccionFuncionesComunes {
 		}
 	}
 
-	private static void cerrarExecutorService(ExecutorService executorService) {
-		executorService.shutdown();
-		try {
-			executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-		} catch (InterruptedException e) {
-			Utilidades.manejarExcepcion(e);
-		}
-	}
-
 	private static void actualizarInterfaz(AtomicInteger contadorErrores, StringBuilder codigoFaltante,
 			String carpetaDatabase, AtomicInteger contadorTotal) {
 		Platform.runLater(() -> {
@@ -565,57 +553,82 @@ public class AccionFuncionesComunes {
 		StringBuilder codigoFaltante = new StringBuilder();
 		AtomicInteger contadorErrores = new AtomicInteger(0);
 		AtomicInteger comicsProcesados = new AtomicInteger(0);
+		AtomicInteger mensajeIdCounter = new AtomicInteger(0); // Contador para generar IDs únicos
 		AtomicInteger numLineas = new AtomicInteger(0); // Declarar como AtomicInteger
 		numLineas.set(Utilidades.contarLineasFichero(fichero)); // Asignar el valor aquí
 		AtomicReference<CargaComicsController> cargaComicsControllerRef = new AtomicReference<>();
 		String mensaje = "ERROR. Has cancelado la subida de comics";
-		nav.verCargaComics(cargaComicsControllerRef);
+
 		Task<Void> tarea = new Task<>() {
 			@Override
 			protected Void call() {
-				ExecutorService executorService = Executors
-						.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+//				AccionControlUI.limpiarAutorellenos(false);
+				HashSet<String> mensajesUnicos = new HashSet<>(); // Para almacenar mensajes únicos
+				nav.verCargaComics(cargaComicsControllerRef);
 
 				try (BufferedReader reader = new BufferedReader(new FileReader(fichero))) {
 					AtomicReference<String> finalValorCodigoWrapper = new AtomicReference<>();
+
 					reader.lines().forEach(linea -> {
-						// Verifica si la tarea ha sido cancelada
-						if (isCancelled()) {
+//						// Verifica si la tarea ha sido cancelada
+						if (isCancelled() || !referenciaVentana.getStage().isShowing()) {
 							return; // Sale del método call() si la tarea ha sido cancelada
 						}
-
 						String finalValorCodigo = Utilidades.eliminarEspacios(linea).replace("-", "");
 						finalValorCodigoWrapper.set(finalValorCodigo);
 
 						if (!finalValorCodigo.isEmpty()) {
-							final String[] texto = { "" }; // Envuelve la variable en un array de un solo elemento
-							if (procesarComicPorCodigo(finalValorCodigoWrapper.get())) {
-								texto[0] = "Comic: " + finalValorCodigoWrapper.get() + "\n";
+
+							StringBuilder textoBuilder = new StringBuilder();
+							Comic comicInfo = obtenerComicInfo(finalValorCodigo);
+							// Dentro del bucle forEach
+							String mensajeId = String.valueOf(mensajeIdCounter.getAndIncrement()); // Generar un ID
+																									// único
+							if (comicInfo != null) {
+								textoBuilder.append("Codigo: ").append(finalValorCodigo).append(" procesado.")
+										.append("\n");
 							} else {
 								codigoFaltante.append("Falta comic con codigo: ").append(finalValorCodigo).append("\n");
-								texto[0] = "Comic no capturado: " + finalValorCodigoWrapper.get() + "\n";
+								textoBuilder.append("Comic no capturado: ").append(finalValorCodigo).append("\n");
 								contadorErrores.getAndIncrement();
 							}
+
+							String mensaje = mensajeId + ": " + textoBuilder.toString();
+							mensajesUnicos.add(mensaje);
+
 							comicsProcesados.getAndIncrement();
-							final long finalProcessedItems = comicsProcesados.get();
 
-							// Update UI elements using Platform.runLater
-							Platform.runLater(() -> {
+							long finalProcessedItems = comicsProcesados.get();
+							double progress = (double) finalProcessedItems / (numLineas.get());
+							String porcentaje = String.format("%.2f%%", progress * 100);
 
-								String textoFinal = texto[0];
+							if (nav.isVentanaCerrada()) {
+								nav.verCargaComics(cargaComicsControllerRef);
 
-								double progress = (double) finalProcessedItems / (numLineas.get() + 1);
-								String porcentaje = String.format("%.2f%%", progress * 100);
+								StringBuilder textoFiltrado = new StringBuilder();
+								List<String> mensajesOrdenados = new ArrayList<>(mensajesUnicos); // Convertir el
+																									// conjunto a
+																									// lista
+								Collections.sort(mensajesOrdenados,
+										Comparator.comparingInt(m -> Integer.parseInt(m.split(":")[0]))); // Ordenar por
+																											// ID
 
-								cargaComicsControllerRef.get().cargarDatosEnCargaComics(textoFinal, porcentaje,
-										progress);
-							});
+								for (String mensajeUnico : mensajesOrdenados) {
+									if (!mensajeUnico.equalsIgnoreCase(mensaje)) {
+										textoFiltrado.append(mensajeUnico.substring(mensajeUnico.indexOf(":") + 2));
+									}
+								}
+
+								Platform.runLater(() -> cargaComicsControllerRef.get()
+										.cargarDatosEnCargaComics(textoFiltrado.toString(), porcentaje, progress));
+							}
+
+							Platform.runLater(() -> cargaComicsControllerRef.get()
+									.cargarDatosEnCargaComics(textoBuilder.toString(), porcentaje, progress));
 						}
 					});
 				} catch (IOException e) {
 					Utilidades.manejarExcepcion(e);
-				} finally {
-					cerrarExecutorService(executorService);
 				}
 
 				return null;
@@ -630,6 +643,7 @@ public class AccionFuncionesComunes {
 
 			AlarmaList.iniciarAnimacionCargaImagen(referenciaVentana.getCargaImagen());
 
+			FuncionesManejoFront.cambiarEstadoMenuBar(true);
 			referenciaVentana.getMenu_Importar_Fichero_CodigoBarras().setDisable(true);
 		});
 
@@ -638,24 +652,30 @@ public class AccionFuncionesComunes {
 			cambiarEstadoBotones(false);
 
 			actualizarInterfaz(contadorErrores, codigoFaltante, CARPETA_RAIZ_PORTADAS, numLineas);
+			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+			referenciaVentana.getMenu_Importar_Fichero_CodigoBarras().setDisable(false);
 
 			Platform.runLater(() -> {
 				cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0);
 			});
-			referenciaVentana.getMenu_Importar_Fichero_CodigoBarras().setDisable(false);
+
 		});
 
 		tarea.setOnCancelled(ev -> {
 			cambiarEstadoBotones(false);
 			AlarmaList.mostrarMensajePront(mensaje, false, referenciaVentana.getProntInfo());
 			AlarmaList.detenerAnimacionCargaImagen(referenciaVentana.getCargaImagen()); // Detiene la animación de carga
+			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+
+			Platform.runLater(() -> {
+				cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0);
+			});
 		});
 
 		Thread thread = new Thread(tarea);
 
 		referenciaVentana.getBotonCancelarSubida().setOnAction(ev -> {
 			actualizarInterfaz(comicsProcesados, codigoFaltante, "", numLineas);
-			nav.cerrarCargaComics();
 			cambiarEstadoBotones(false);
 			tarea.cancel(true);
 			referenciaVentana.getMenu_Importar_Fichero_CodigoBarras().setDisable(false);
@@ -683,15 +703,19 @@ public class AccionFuncionesComunes {
 		StringBuilder codigoFaltante = new StringBuilder();
 		AtomicInteger contadorErrores = new AtomicInteger(0);
 		AtomicInteger comicsProcesados = new AtomicInteger(0);
+		AtomicInteger mensajeIdCounter = new AtomicInteger(0); // Contador para generar IDs únicos
+
 		AtomicInteger numLineas = new AtomicInteger(listaComicsDatabase.size()); // Obtener el tamaño de la lista
 		AtomicReference<CargaComicsController> cargaComicsControllerRef = new AtomicReference<>();
-		nav.verCargaComics(cargaComicsControllerRef);
+
 		Task<Void> tarea = new Task<>() {
 			@Override
 			protected Void call() {
-
+				AccionControlUI.limpiarAutorellenos(false);
+				HashSet<String> mensajesUnicos = new HashSet<>(); // Para almacenar mensajes únicos
+				nav.verCargaComics(cargaComicsControllerRef);
 				listaComicsDatabase.forEach(codigo -> {
-					// Verifica si la tarea ha sido cancelada
+					// Realizar otras acciones
 
 					if (isCancelled() || !referenciaVentana.getStage().isShowing()) {
 						return; // Sale del método call() si la tarea ha sido cancelada
@@ -699,32 +723,52 @@ public class AccionFuncionesComunes {
 
 					String finalValorCodigo = Utilidades.eliminarEspacios(codigo.getCodigo_comic()).replace("-", "");
 					if (!finalValorCodigo.isEmpty()) {
-						String[] texto = { "" }; // Envuelve la variable en un array de un solo elemento
+						StringBuilder textoBuilder = new StringBuilder();
 
 						Comic comicInfo = obtenerComicInfo(finalValorCodigo);
+						// Dentro del bucle forEach
+						String mensajeId = String.valueOf(mensajeIdCounter.getAndIncrement()); // Generar un ID único
 						if (comicInfo != null) {
-							texto[0] = "ID: " + codigo.getID() + " - Comic: " + finalValorCodigo + "\n";
-
+							textoBuilder.append("ID: ").append(codigo.getID()).append(" - Comic: ")
+									.append(finalValorCodigo).append("\n");
 						} else {
 							codigoFaltante.append("Falta comic con codigo: ").append(finalValorCodigo).append("\n");
-							texto[0] = "Comic no capturado: " + finalValorCodigo + "\n";
+							textoBuilder.append("Comic no capturado: ").append(finalValorCodigo).append("\n");
 							contadorErrores.getAndIncrement();
 						}
-						comicsProcesados.getAndIncrement();
-						long finalProcessedItems = comicsProcesados.get();
 
+						String mensaje = mensajeId + ": " + textoBuilder.toString();
+						mensajesUnicos.add(mensaje);
+
+						comicsProcesados.getAndIncrement();
 						AccionFuncionesComunes.actualizarComicsDatabase(codigo, tipoUpdate, actualizarFirma);
 
-						// Update UI elements using Platform.runLater
-						Platform.runLater(() -> {
+						// Calcula el progreso y el porcentaje
+						long finalProcessedItems = comicsProcesados.get();
+						double progress = (double) finalProcessedItems / (numLineas.get());
+						String porcentaje = String.format("%.2f%%", progress * 100);
 
-							String textoFinal = texto[0];
+						if (nav.isVentanaCerrada()) {
+							nav.verCargaComics(cargaComicsControllerRef);
 
-							double progress = (double) finalProcessedItems / (numLineas.get() + 1);
-							String porcentaje = String.format("%.2f%%", progress * 100);
+							StringBuilder textoFiltrado = new StringBuilder();
+							List<String> mensajesOrdenados = new ArrayList<>(mensajesUnicos); // Convertir el conjunto a
+																								// lista
+							Collections.sort(mensajesOrdenados,
+									Comparator.comparingInt(m -> Integer.parseInt(m.split(":")[0]))); // Ordenar por ID
 
-							cargaComicsControllerRef.get().cargarDatosEnCargaComics(textoFinal, porcentaje, progress);
-						});
+							for (String mensajeUnico : mensajesOrdenados) {
+								if (!mensajeUnico.equalsIgnoreCase(mensaje)) {
+									textoFiltrado.append(mensajeUnico.substring(mensajeUnico.indexOf(":") + 2));
+								}
+							}
+
+							Platform.runLater(() -> cargaComicsControllerRef.get()
+									.cargarDatosEnCargaComics(textoFiltrado.toString(), porcentaje, progress));
+						}
+
+						Platform.runLater(() -> cargaComicsControllerRef.get()
+								.cargarDatosEnCargaComics(textoBuilder.toString(), porcentaje, progress));
 					}
 				});
 
@@ -748,6 +792,8 @@ public class AccionFuncionesComunes {
 
 			actualizarCombobox();
 			FuncionesManejoFront.cambiarEstadoMenuBar(true);
+			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(true, referenciaVentana);
+			FuncionesManejoFront.manejarMensajeTextArea(cadenaAfirmativo);
 		});
 
 		tarea.setOnSucceeded(ev -> {
@@ -766,29 +812,39 @@ public class AccionFuncionesComunes {
 			AlarmaList.iniciarAnimacionAvanzado(prontEspecial, cadenaAfirmativo);
 			referenciaVentana.getBotonCancelarSubida().setVisible(false);
 
-			FuncionesManejoFront.cambiarEstadoMenuBar(false);
 			actualizarCombobox();
-
+			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, referenciaVentana);
+			FuncionesManejoFront.manejarMensajeTextArea(cadenaAfirmativo);
 		});
 
 		tarea.setOnCancelled(ev -> {
 			String cadenaAfirmativo = "Cancelada la actualizacion de la base de datos.";
 			AlarmaList.iniciarAnimacionAvanzado(prontEspecial, cadenaAfirmativo);
-			actualizarCombobox();
 
+			actualizarCombobox();
 			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, referenciaVentana);
+			FuncionesManejoFront.manejarMensajeTextArea(cadenaAfirmativo);
+
+			Platform.runLater(() -> {
+				cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0);
+			});
 		});
 
 		Thread thread = new Thread(tarea);
 
 		referenciaVentana.getBotonCancelarSubida().setOnAction(ev -> {
 			referenciaVentana.getBotonCancelarSubida().setVisible(false);
-			nav.cerrarCargaComics();
 			tarea.cancel(true);
 		});
 
 		thread.setDaemon(true);
 		thread.start();
+	}
+
+	public void verEstadoVentana() {
+
 	}
 
 	public static void actualizarCombobox() {

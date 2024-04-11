@@ -4,10 +4,15 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.imageio.ImageIO;
@@ -93,6 +98,15 @@ public class OpcionesAvanzadasController implements Initializable {
 	private Label labelVersion;
 
 	@FXML
+	private Label labelVersionEspecial;
+
+	@FXML
+	private Label labelVersionPortadas;
+
+	@FXML
+	private Label labelVersionPreviews;
+
+	@FXML
 	private Label prontInfo;
 
 	@FXML
@@ -128,7 +142,6 @@ public class OpcionesAvanzadasController implements Initializable {
 	public static AtomicBoolean actualizarFima = new AtomicBoolean(false);
 
 	public AccionReferencias guardarReferencia() {
-		AccionReferencias referenciaVentana = new AccionReferencias();
 
 		referenciaVentana.setBotonCancelarSubida(botonCancelarSubida);
 		referenciaVentana.setBotonActualizarDatos(botonActualizarDatos);
@@ -146,6 +159,9 @@ public class OpcionesAvanzadasController implements Initializable {
 		referenciaVentana.setProntInfoEspecial(prontInfoEspecial);
 		referenciaVentana.setProntInfoPreviews(prontInfoPreviews);
 		referenciaVentana.setStage(estadoStage());
+
+		referenciaVentana.setBotonComprimirPortadas(botonComprimirPortadas);
+		referenciaVentana.setBotonReCopiarPortadas(botonReCopiarPortadas);
 
 		return referenciaVentana;
 	}
@@ -167,8 +183,7 @@ public class OpcionesAvanzadasController implements Initializable {
 			FuncionesManejoFront.stageVentanas.add(estadoStage());
 		});
 		ventanaOpciones = miStageVentana();
-		
-		
+
 		obtenerVersionDesdeOtraClase();
 		AlarmaList.iniciarAnimacionEspera(prontInfo);
 		AlarmaList.iniciarAnimacionEspera(prontInfoEspecial);
@@ -210,14 +225,19 @@ public class OpcionesAvanzadasController implements Initializable {
 
 	@FXML
 	void comprobarVersion(ActionEvent event) {
+
 		String versionSW = VersionService.obtenerVersion();
 		String versionLocal = VersionService.leerVersionDelArchivo();
 		AlarmaList.detenerAnimacionEspera();
 		labelComprobar.setStyle("-fx-text-fill: white;");
+
 		String cadena = "";
 		if (compareVersions(versionSW, versionLocal) > 0) {
 			estaActualizado = false;
 			labelComprobar.setStyle("-fx-text-fill: red;");
+			labelVersionPreviews.setStyle("-fx-text-fill: red;");
+			labelVersionPortadas.setStyle("-fx-text-fill: red;");
+			labelVersionEspecial.setStyle("-fx-text-fill: red;");
 			cadena = "Versión desactualizada";
 		} else {
 			estaActualizado = true;
@@ -225,6 +245,9 @@ public class OpcionesAvanzadasController implements Initializable {
 		}
 
 		AlarmaList.iniciarAnimacionAvanzado(prontInfo, cadena);
+		AlarmaList.iniciarAnimacionAvanzado(prontInfoPreviews, cadena);
+		AlarmaList.iniciarAnimacionAvanzado(prontInfoEspecial, cadena);
+		AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, cadena);
 
 		if (!estaActualizado) {
 			botonActualizarSoftware.setVisible(true);
@@ -256,6 +279,9 @@ public class OpcionesAvanzadasController implements Initializable {
 			public void handle(WorkerStateEvent event) {
 				String version = VersionService.leerVersionDelArchivo();
 				labelVersion.setText(version);
+				labelVersionPreviews.setText(version);
+				labelVersionPortadas.setText(version);
+				labelVersionEspecial.setText(version);
 			}
 		});
 
@@ -302,14 +328,17 @@ public class OpcionesAvanzadasController implements Initializable {
 					Utilidades.descargarPDFAsync(file, comboPreviews);
 					String cadenaAfirmativo = "PDF descargado exitosamente.";
 					AlarmaList.iniciarAnimacionAvanzado(prontInfoPreviews, cadenaAfirmativo);
+					FuncionesManejoFront.manejarMensajeTextArea(cadenaAfirmativo);
 				} else {
 					String cadenaCancelado = "Has cancelado la descarga del PDF.";
 					AlarmaList.iniciarAnimacionAvanzado(prontInfoPreviews, cadenaCancelado);
+					FuncionesManejoFront.manejarMensajeTextArea(cadenaCancelado);
 				}
 			});
 		} else {
 			String cadenaCancelado = "No se puede descargar, no hay internet";
 			AlarmaList.iniciarAnimacionAvanzado(prontInfoPreviews, cadenaCancelado);
+			FuncionesManejoFront.manejarMensajeTextArea(cadenaCancelado);
 		}
 	}
 
@@ -347,7 +376,7 @@ public class OpcionesAvanzadasController implements Initializable {
 	void actualizarCompletoComic(ActionEvent event) {
 		AccionModificar.referenciaVentana = guardarReferencia();
 		AccionFuncionesComunes.referenciaVentana = guardarReferencia();
-		AccionModificar.actualizarDatabase("modificar", actualizarFima.get());
+		AccionModificar.actualizarDatabase("modificar", actualizarFima.get(), estadoStage());
 
 	}
 
@@ -355,14 +384,14 @@ public class OpcionesAvanzadasController implements Initializable {
 	void actualizarDatosComic(ActionEvent event) {
 		AccionModificar.referenciaVentana = guardarReferencia();
 		AccionFuncionesComunes.referenciaVentana = guardarReferencia();
-		AccionModificar.actualizarDatabase("actualizar datos", actualizarFima.get());
+		AccionModificar.actualizarDatabase("actualizar datos", actualizarFima.get(), estadoStage());
 	}
 
 	@FXML
 	void actualizarPortadaComic(ActionEvent event) {
 		AccionModificar.referenciaVentana = guardarReferencia();
 		AccionFuncionesComunes.referenciaVentana = guardarReferencia();
-		AccionModificar.actualizarDatabase("actualizar portadas", actualizarFima.get());
+		AccionModificar.actualizarDatabase("actualizar portadas", actualizarFima.get(), estadoStage());
 	}
 
 	@FXML
@@ -373,76 +402,129 @@ public class OpcionesAvanzadasController implements Initializable {
 		final String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator + DB_NAME
 				+ File.separator;
 		final String directorioOriginal = directorioComun + "portadas" + File.separator;
-
 		final String directorioNuevo = directorioComun + "portadas_originales";
 
 		List<String> inputPaths = ListaComicsDAO.listaImagenes;
 		AtomicReference<CargaComicsController> cargaComicsControllerRef = new AtomicReference<>();
-
-		Stage myStage = (Stage) botonActualizarDatos.getScene().getWindow();
-
+		AtomicInteger portadasProcesados = new AtomicInteger(0);
+		AtomicInteger mensajeIdCounter = new AtomicInteger(0); // Contador para generar IDs únicos
 		// Crear y ejecutar tarea para comprimir las portadas
 		Task<Void> task = new Task<>() {
 			@Override
 			protected Void call() throws Exception {
+				HashSet<String> mensajesUnicos = new HashSet<>(); // Para almacenar mensajes únicos
 
-				nav.verCargaComics(cargaComicsControllerRef);
 				// Copiar directorio original a uno nuevo
 				Utilidades.copiarDirectorio(directorioNuevo, directorioOriginal);
+				nav.verCargaComics(cargaComicsControllerRef);
 				int numEntries = inputPaths.size();
-				int numConverted[] = { 0 };
 				inputPaths.forEach(codigo -> {
-
-					if (isCancelled() || !myStage.isShowing()) {
+					portadasProcesados.getAndIncrement();
+					if (isCancelled() || !referenciaVentana.getStage().isShowing()) {
 						return; // Sale del método call() si la tarea ha sido cancelada
 					}
 
+					StringBuilder textoBuilder = new StringBuilder();
 					// Actualizar texto de progreso
-					String texto = "Comprimiendo: " + (numConverted[0] + 1) + " de " + numEntries + "\n";
-
+					String mensajeId = String.valueOf(mensajeIdCounter.getAndIncrement()); // Generar un ID único
+					textoBuilder.append("Comprimiendo: ").append(portadasProcesados.get()).append(" de ")
+							.append(numEntries).append("\n");
+					mensajesUnicos.add(mensajeId + ": " + textoBuilder.toString());
+					mensajesUnicos.add(textoBuilder.toString());
 					try {
 						File inputFile = new File(codigo);
+						if (!inputFile.exists()) {
+							return; // O manejar el caso de que la imagen no exista de otra manera
+						}
+
 						BufferedImage image = ImageIO.read(inputFile);
-						// Comprimir imagen
-						Thumbnails.of(image).scale(1).outputQuality(0.5).toFile(codigo);
+						if (image == null) {
+							return; // O manejar el caso de que la imagen no se cargue correctamente de otra manera
+						}
 
-						numConverted[0]++;
-
-						// Actualizar UI
-						Platform.runLater(() -> {
-							double progress = (double) numConverted[0] / numEntries;
-							String porcentaje = String.format("%.2f%%", progress * 100);
-							cargaComicsControllerRef.get().cargarDatosEnCargaComics(texto, porcentaje, progress);
+						// Comprimir imagen en un nuevo hilo
+						Thread compressionThread = new Thread(() -> {
+							try {
+								Thumbnails.of(image).scale(1).outputQuality(0.5).toFile(codigo);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
 						});
+						compressionThread.start();
+						try {
+							compressionThread.join(); // Espera a que termine la compresión
+						} catch (InterruptedException e) {
+							compressionThread.interrupt(); // Envía una señal de interrupción al hilo
+						}
+
+						// Actualizar el progreso y la interfaz de usuario
+						double progress = (double) portadasProcesados.get() / numEntries;
+						String porcentaje = String.format("%.2f%%", progress * 100);
+
+						if (nav.isVentanaCerrada()) {
+							nav.verCargaComics(cargaComicsControllerRef);
+							StringBuilder textoFiltrado = new StringBuilder();
+
+							List<String> mensajesOrdenados = new ArrayList<>(mensajesUnicos); // Convertir el conjunto a
+																								// lista
+							Collections.sort(mensajesOrdenados,
+									Comparator.comparingInt(m -> Integer.parseInt(m.split(":")[0]))); // Ordenar por ID
+
+							for (String mensaje : mensajesOrdenados) {
+								if (!mensaje.equalsIgnoreCase(textoBuilder.toString())) {
+									textoFiltrado.append(mensaje.substring(mensaje.indexOf(":") + 2)); // Añadir mensaje
+																										// sin el ID
+								}
+							}
+
+							Platform.runLater(() -> {
+								cargaComicsControllerRef.get().cargarDatosEnCargaComics(textoFiltrado.toString(),
+										porcentaje, progress);
+							});
+						}
+
+						Platform.runLater(() -> cargaComicsControllerRef.get()
+								.cargarDatosEnCargaComics(textoBuilder.toString(), porcentaje, progress));
 					} catch (IOException e) {
 						e.printStackTrace();
 						// Manejar la excepción adecuadamente según tus requisitos
 					}
 				});
+
 				return null;
 			}
 		};
 
 		// Manejar eventos de la tarea
 		task.setOnRunning(ev -> {
-
-			AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, "Comprimiendo portadas");
+			String mensaje = "Comprimiendo portadas";
+			AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, mensaje);
 			botonCancelarSubidaPortadas.setVisible(true);
 			FuncionesManejoFront.cambiarEstadoMenuBar(true);
+			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(true, referenciaVentana);
+			FuncionesManejoFront.manejarMensajeTextArea(mensaje);
 		});
 
 		task.setOnSucceeded(ev -> {
-			AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, "Portadas comprimidas");
-			Platform.runLater(() -> {
-				cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0);
-			});
+			String mensaje = "Portadas comprimidas";
+			AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, mensaje);
+			Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0));
 			botonCancelarSubidaPortadas.setVisible(false);
 			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, referenciaVentana);
+			FuncionesManejoFront.manejarMensajeTextArea(mensaje);
 		});
 
 		task.setOnCancelled(ev -> {
-			AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, "Cancelada la actualizacion de la base de datos.");
+			String mensaje = "Cancelada la actualizacion de la base de datos.";
+			AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, mensaje);
 			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, referenciaVentana);
+			FuncionesManejoFront.manejarMensajeTextArea(mensaje);
+			
+			Platform.runLater(() -> {
+				cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0);
+			});
 		});
 
 		// Iniciar tarea en un nuevo hilo
@@ -451,7 +533,7 @@ public class OpcionesAvanzadasController implements Initializable {
 		// Manejar la cancelación
 		botonCancelarSubidaPortadas.setOnAction(ev -> {
 			botonCancelarSubidaPortadas.setVisible(false);
-			nav.cerrarCargaComics();
+
 			task.cancel();
 		});
 
@@ -492,9 +574,9 @@ public class OpcionesAvanzadasController implements Initializable {
 			return null;
 		}
 	}
-	
+
 	public Stage estadoStage() {
-		
+
 		return (Stage) botonActualizarDatos.getScene().getWindow();
 	}
 
@@ -504,12 +586,13 @@ public class OpcionesAvanzadasController implements Initializable {
 	 * ninguna acción.
 	 */
 	public void closeWindow() {
+		
 		if (ventanaOpciones != null && ventanaOpciones.getWindow() instanceof Stage) {
-			
+
 			if (FuncionesManejoFront.stageVentanas.contains(estadoStage())) {
 				FuncionesManejoFront.stageVentanas.remove(estadoStage());
 			}
-			
+			nav.cerrarCargaComics();
 			Stage stage = (Stage) ventanaOpciones.getWindow();
 			stage.close();
 		}

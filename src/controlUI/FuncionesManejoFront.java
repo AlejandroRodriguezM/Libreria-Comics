@@ -9,6 +9,7 @@ import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 
 import Controladores.managment.AccionReferencias;
+import alarmas.AlarmaList;
 import comicManagement.Comic;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -29,7 +30,7 @@ public class FuncionesManejoFront {
 	static ImageView imagenComic;
 
 	public static AccionReferencias referenciaVentana = new AccionReferencias();
-	
+
 	public static List<Stage> stageVentanas = new ArrayList<Stage>();
 
 	private static final List<Character> simbolos = Arrays.asList(',', '-', '!', '@', '#', '$', '%', '^', '&', '*', '(',
@@ -254,6 +255,10 @@ public class FuncionesManejoFront {
 		}
 	}
 
+	public static void manejarMensajeTextArea(String mensaje) {
+		AlarmaList.iniciarAnimacionTextArea(referenciaVentana.getProntInfo(), mensaje);
+	}
+	
 	public static void cambiarEstadoMenuBar(boolean estadoAccion) {
 
 		referenciaVentana.getMenu_archivo_excel().setDisable(estadoAccion);
@@ -284,6 +289,32 @@ public class FuncionesManejoFront {
 		referenciaVentana.getNombreVariante().setDisable(estadoAccion);
 		referenciaVentana.getNumeroCaja().setDisable(estadoAccion);
 		referenciaVentana.getNumeroComic().setDisable(estadoAccion);
+		referenciaVentana.getFechaPublicacion().setDisable(estadoAccion);
+		referenciaVentana.getBusquedaGeneral().setDisable(estadoAccion);
+
+		if (referenciaVentana.getTablaBBDD() != null) {
+			referenciaVentana.getTablaBBDD().getItems().clear();
+			referenciaVentana.getTablaBBDD().refresh();
+		}
+		referenciaVentana.getImagencomic().setVisible(false);
+		referenciaVentana.getProntInfo().clear();
+		referenciaVentana.getProntInfo().setText(null);
+		referenciaVentana.getProntInfo().setOpacity(0);
+	}
+
+	public static void cambiarEstadoOpcionesAvanzadas(boolean estadoAccion, AccionReferencias referenciaVentana) {
+
+		referenciaVentana.getBotonActualizarDatos().setDisable(estadoAccion);
+		referenciaVentana.getBotonActualizarPortadas().setDisable(estadoAccion);
+		referenciaVentana.getBotonActualizarSoftware().setDisable(estadoAccion);
+		referenciaVentana.getBotonActualizarTodo().setDisable(estadoAccion);
+		referenciaVentana.getBotonComprimirPortadas().setDisable(estadoAccion);
+		referenciaVentana.getBotonReCopiarPortadas().setDisable(estadoAccion);
+		referenciaVentana.getBotonDescargarPdf().setDisable(estadoAccion);
+		referenciaVentana.getBotonDescargarSQL().setDisable(estadoAccion);
+		referenciaVentana.getBotonNormalizarDB().setDisable(estadoAccion);
+
+		referenciaVentana.getCheckFirmas().setDisable(estadoAccion);
 	}
 
 }

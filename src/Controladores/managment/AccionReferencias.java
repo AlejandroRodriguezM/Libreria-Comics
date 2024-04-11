@@ -92,6 +92,10 @@ public class AccionReferencias {
 	 */
 	private Button botonEliminar;
 
+	private Button botonComprimirPortadas;
+	
+	private Button botonReCopiarPortadas;
+
 	/**
 	 * Botón para agregar una puntuación.
 	 */
@@ -421,7 +425,7 @@ public class AccionReferencias {
 	 * TextArea para mostrar información de texto.
 	 */
 	private TextArea prontInfo;
-	
+
 	private Label prontInfoLabel;
 
 	private MenuItem menu_Importar_Fichero_CodigoBarras;
@@ -579,7 +583,7 @@ public class AccionReferencias {
 	private Label prontInfoEspecial;
 
 	private Label prontInfoPreviews;
-	
+
 	private Stage stage;
 
 	public TableColumn<Comic, String> getProcedencia() {
@@ -1038,6 +1042,22 @@ public class AccionReferencias {
 		return stage;
 	}
 
+	public Button getBotonComprimirPortadas() {
+		return botonComprimirPortadas;
+	}
+
+	public Button getBotonReCopiarPortadas() {
+		return botonReCopiarPortadas;
+	}
+
+	public void setBotonComprimirPortadas(Button botonComprimirPortadas) {
+		this.botonComprimirPortadas = botonComprimirPortadas;
+	}
+
+	public void setBotonReCopiarPortadas(Button botonReCopiarPortadas) {
+		this.botonReCopiarPortadas = botonReCopiarPortadas;
+	}
+
 	public void setStage(Stage stage) {
 		this.stage = stage;
 	}
@@ -1357,7 +1377,7 @@ public class AccionReferencias {
 	public void setProntInfo(TextArea prontInfo) {
 		this.prontInfo = prontInfo;
 	}
-	
+
 	public void setProntInfoLabel(Label prontInfoLabel) {
 		this.prontInfoLabel = prontInfoLabel;
 	}
