@@ -36,11 +36,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import Funcionamiento.Utilidades;
 import comicManagement.Comic;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
 import ficherosFunciones.FuncionesFicheros;
+import funciones_auxiliares.Utilidades;
 import net.coobird.thumbnailator.Thumbnails;
 
 public class WebScrapGooglePreviewsWorld {

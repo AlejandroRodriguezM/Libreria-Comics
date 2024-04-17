@@ -8,10 +8,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
-import Funcionamiento.Utilidades;
 import comicManagement.Comic;
 import controlUI.FuncionesManejoFront;
 import dbmanager.ConectManager;
+import funciones_auxiliares.Utilidades;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

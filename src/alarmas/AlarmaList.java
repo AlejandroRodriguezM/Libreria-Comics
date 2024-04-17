@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import Funcionamiento.Utilidades;
-import Funcionamiento.Ventanas;
 import dbmanager.ConectManager;
 import dbmanager.DatabaseManagerDAO;
 import ficherosFunciones.FuncionesFicheros;
+import funciones_auxiliares.Utilidades;
+import funciones_auxiliares.Ventanas;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;

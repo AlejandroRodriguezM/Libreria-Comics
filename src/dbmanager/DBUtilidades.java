@@ -6,8 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import Funcionamiento.Utilidades;
 import comicManagement.Comic;
+import funciones_auxiliares.Utilidades;
 
 public class DBUtilidades {
 

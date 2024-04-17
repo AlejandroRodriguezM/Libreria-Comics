@@ -9,8 +9,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import Funcionamiento.Utilidades;
 import comicManagement.Comic;
+import funciones_auxiliares.Utilidades;
 
 public class SelectManager {
 

@@ -3,7 +3,6 @@ package Controladores.managment;
 import java.util.Arrays;
 import java.util.List;
 
-import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
 import controlUI.AccionControlUI;
@@ -12,6 +11,7 @@ import controlUI.FuncionesTableView;
 import dbmanager.ComicManagerDAO;
 import dbmanager.DBUtilidades;
 import dbmanager.ListaComicsDAO;
+import funciones_auxiliares.Ventanas;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 
@@ -42,21 +42,25 @@ public class AccionEliminar {
 		referenciaVentana.getIdComicTratar_mod().setStyle("");
 		if (accionFuncionesComunes.comprobarExistenciaComic(id_comic)) {
 			if (nav.alertaAccionGeneral()) {
-				String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
-
-				List<Comic> listaComics = ComicManagerDAO.verLibreria(sentenciaSQL);
 
 				ComicManagerDAO.borrarComic(id_comic);
 				ListaComicsDAO.reiniciarListaComics();
 				ListaComicsDAO.listasAutoCompletado();
+
+				String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
+				List<Comic> listaComics = ComicManagerDAO.verLibreria(sentenciaSQL);
 				referenciaVentana.getTablaBBDD().refresh();
 				FuncionesTableView.nombreColumnas(referenciaVentana.getTablaBBDD());
-				FuncionesTableView.actualizarBusquedaRaw(referenciaVentana.getTablaBBDD());
 				FuncionesTableView.tablaBBDD(listaComics, referenciaVentana.getTablaBBDD());
 
 				List<ComboBox<String>> comboboxes = referenciaVentana.getComboboxes();
 
 				funcionesCombo.rellenarComboBox(comboboxes);
+				referenciaVentana.getImagencomic().setImage(null);
+				referenciaVentana.getImagencomic().setVisible(true);
+				referenciaVentana.getProntInfo().clear();
+				referenciaVentana.getProntInfo().setOpacity(0);
+				
 			} else {
 				String mensaje = "Accion cancelada";
 				AlarmaList.mostrarMensajePront(mensaje, false, referenciaVentana.getProntInfo());

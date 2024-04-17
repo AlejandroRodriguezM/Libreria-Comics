@@ -5,10 +5,10 @@ import java.util.ResourceBundle;
 
 import com.gluonhq.charm.glisten.control.ProgressIndicator;
 
-import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
 import apisFunciones.FuncionesApis;
 import controlUI.FuncionesManejoFront;
+import funciones_auxiliares.Ventanas;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

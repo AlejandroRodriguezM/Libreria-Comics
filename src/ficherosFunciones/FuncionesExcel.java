@@ -38,13 +38,13 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import Controladores.CargaComicsController;
-import Funcionamiento.Utilidades;
-import Funcionamiento.Ventanas;
 import comicManagement.Comic;
 import comicManagement.ComicFichero;
 import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades.TipoBusqueda;
+import funciones_auxiliares.Utilidades;
+import funciones_auxiliares.Ventanas;
 import dbmanager.InsertManager;
 import javafx.application.Platform;
 import javafx.concurrent.Task;

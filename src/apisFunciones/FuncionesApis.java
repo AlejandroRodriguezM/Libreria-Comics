@@ -7,8 +7,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import Funcionamiento.Utilidades;
-import Funcionamiento.Ventanas;
+import funciones_auxiliares.Utilidades;
+import funciones_auxiliares.Ventanas;
 
 public class FuncionesApis {
 

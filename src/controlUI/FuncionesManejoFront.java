@@ -11,6 +11,7 @@ import org.controlsfx.control.textfield.TextFields;
 import Controladores.managment.AccionReferencias;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
+import dbmanager.ListaComicsDAO;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.scene.Node;
@@ -296,6 +297,7 @@ public class FuncionesManejoFront {
 			referenciaVentana.getTablaBBDD().getItems().clear();
 			referenciaVentana.getTablaBBDD().refresh();
 		}
+
 		referenciaVentana.getImagencomic().setVisible(false);
 		referenciaVentana.getProntInfo().clear();
 		referenciaVentana.getProntInfo().setText(null);

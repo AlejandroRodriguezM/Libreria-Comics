@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import Funcionamiento.Utilidades;
 import alarmas.AlarmaList;
+import funciones_auxiliares.Utilidades;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.stage.DirectoryChooser;

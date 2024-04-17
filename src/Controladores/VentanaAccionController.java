@@ -20,8 +20,6 @@ import Controladores.managment.AccionFuncionesComunes;
 import Controladores.managment.AccionModificar;
 import Controladores.managment.AccionReferencias;
 import Controladores.managment.AccionSeleccionar;
-import Funcionamiento.Utilidades;
-import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
 import apisFunciones.FuncionesApis;
 import comicManagement.Comic;
@@ -30,6 +28,8 @@ import controlUI.FuncionesComboBox;
 import controlUI.FuncionesManejoFront;
 import dbmanager.ConectManager;
 import dbmanager.ListaComicsDAO;
+import funciones_auxiliares.Utilidades;
+import funciones_auxiliares.Ventanas;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -927,10 +927,7 @@ public class VentanaAccionController implements Initializable {
 				File fichero = Utilidades.tratarFichero(frase, formato).showOpenDialog(null); // Llamada a funcion
 
 				if (fichero != null) {
-//					Platform.runLater(() -> {
 					AccionFuncionesComunes.busquedaPorCodigoImportacion(fichero);
-//					});
-
 				}
 			}
 		}

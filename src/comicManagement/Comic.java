@@ -4,9 +4,9 @@
 */
 package comicManagement;
 
-import Funcionamiento.Utilidades;
 import dbmanager.ComicManagerDAO;
 import dbmanager.ListaComicsDAO;
+import funciones_auxiliares.Utilidades;
 
 /**
  * Esta clase objeto sirve para dar forma al comic que estara dentro de la base

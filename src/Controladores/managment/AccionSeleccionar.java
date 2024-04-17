@@ -3,7 +3,6 @@ package Controladores.managment;
 import java.sql.SQLException;
 import java.util.List;
 
-import Funcionamiento.Utilidades;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
 import controlUI.AccionControlUI;
@@ -12,6 +11,7 @@ import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
 import dbmanager.DBUtilidades.TipoBusqueda;
+import funciones_auxiliares.Utilidades;
 import dbmanager.ListaComicsDAO;
 import dbmanager.SelectManager;
 import javafx.collections.FXCollections;

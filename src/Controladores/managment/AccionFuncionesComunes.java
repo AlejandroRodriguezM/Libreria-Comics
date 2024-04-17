@@ -23,8 +23,6 @@ import org.json.JSONException;
 import Apis.ApiISBNGeneral;
 import Apis.ApiMarvel;
 import Controladores.CargaComicsController;
-import Funcionamiento.Utilidades;
-import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
 import controlUI.AccionControlUI;
@@ -36,6 +34,8 @@ import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
 import dbmanager.ListaComicsDAO;
 import dbmanager.UpdateManager;
+import funciones_auxiliares.Utilidades;
+import funciones_auxiliares.Ventanas;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.Node;
@@ -440,7 +440,7 @@ public class AccionFuncionesComunes {
 
 			// Manejo de la ruta de la imagen
 			if (comic.getImagen() == null || comic.getImagen().isEmpty()) {
-				String rutaImagen = "/Funcionamiento/sinPortada.jpg";
+				String rutaImagen = "/imagenes/sinPortada.jpg";
 				URL url = Utilidades.class.getClass().getResource(rutaImagen);
 				if (url != null) {
 					urlImagen = url.toExternalForm();
@@ -587,6 +587,7 @@ public class AccionFuncionesComunes {
 							if (comicInfo != null) {
 								textoBuilder.append("Codigo: ").append(finalValorCodigo).append(" procesado.")
 										.append("\n");
+								AccionFuncionesComunes.procesarComicPorCodigo(finalValorCodigo);
 							} else {
 								codigoFaltante.append("Falta comic con codigo: ").append(finalValorCodigo).append("\n");
 								textoBuilder.append("Comic no capturado: ").append(finalValorCodigo).append("\n");
@@ -606,12 +607,9 @@ public class AccionFuncionesComunes {
 								nav.verCargaComics(cargaComicsControllerRef);
 
 								StringBuilder textoFiltrado = new StringBuilder();
-								List<String> mensajesOrdenados = new ArrayList<>(mensajesUnicos); // Convertir el
-																									// conjunto a
-																									// lista
+								List<String> mensajesOrdenados = new ArrayList<>(mensajesUnicos);
 								Collections.sort(mensajesOrdenados,
-										Comparator.comparingInt(m -> Integer.parseInt(m.split(":")[0]))); // Ordenar por
-																											// ID
+										Comparator.comparingInt(m -> Integer.parseInt(m.split(":")[0])));
 
 								for (String mensajeUnico : mensajesOrdenados) {
 									if (!mensajeUnico.equalsIgnoreCase(mensaje)) {
@@ -645,6 +643,9 @@ public class AccionFuncionesComunes {
 
 			FuncionesManejoFront.cambiarEstadoMenuBar(true);
 			referenciaVentana.getMenu_Importar_Fichero_CodigoBarras().setDisable(true);
+			
+
+
 		});
 
 		tarea.setOnSucceeded(ev -> {

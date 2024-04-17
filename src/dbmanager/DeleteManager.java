@@ -6,8 +6,8 @@ import java.sql.SQLException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
-import Funcionamiento.Utilidades;
 import comicManagement.Comic;
+import funciones_auxiliares.Utilidades;
 
 public class DeleteManager {
 

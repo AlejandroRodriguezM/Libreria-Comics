@@ -13,10 +13,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import Controladores.CrearBBDDController;
-import Funcionamiento.Utilidades;
-import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
+import funciones_auxiliares.Utilidades;
+import funciones_auxiliares.Ventanas;
 import javafx.scene.control.Label;
 
 public class DatabaseManagerDAO {

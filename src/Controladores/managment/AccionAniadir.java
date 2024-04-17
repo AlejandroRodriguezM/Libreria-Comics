@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import Funcionamiento.Utilidades;
-import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
 import controlUI.AccionControlUI;
@@ -15,6 +13,8 @@ import controlUI.FuncionesTableView;
 import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.ListaComicsDAO;
+import funciones_auxiliares.Utilidades;
+import funciones_auxiliares.Ventanas;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 

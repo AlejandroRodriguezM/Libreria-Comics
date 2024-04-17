@@ -2,7 +2,7 @@
  * Contiene las clases que hacen funcionar las diferentes funciones de uso de back end y front de todo el proyecto
  *  
 */
-package Funcionamiento;
+package funciones_auxiliares;
 
 import java.awt.Desktop;
 import java.awt.image.BufferedImage;
@@ -1923,7 +1923,7 @@ public class Utilidades {
 						// Verificar si el archivo existe
 						if (!fichero.exists()) {
 							// Si el archivo no existe, cargar la imagen por defecto desde el proyecto
-							InputStream is = getClass().getResourceAsStream("/Funcionamiento/sinPortada.jpg");
+							InputStream is = getClass().getResourceAsStream("/imagenes/sinPortada.jpg");
 							if (is != null) {
 								// Intentar cargar la imagen desde el flujo de entrada
 								Image imagenCargada = new Image(is, 250, 0, true, true);

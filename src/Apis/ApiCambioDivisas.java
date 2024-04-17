@@ -11,7 +11,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.ConcurrentHashMap;
 
-import Funcionamiento.Utilidades;
+import funciones_auxiliares.Utilidades;
 
 public class ApiCambioDivisas {
 

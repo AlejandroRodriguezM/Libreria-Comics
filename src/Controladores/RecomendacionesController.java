@@ -35,14 +35,14 @@ import java.util.Random;
 import java.util.ResourceBundle;
 
 import Controladores.managment.AccionFuncionesComunes;
-import Funcionamiento.Utilidades;
-import Funcionamiento.Ventanas;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
 import controlUI.FuncionesManejoFront;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
 import dbmanager.SelectManager;
+import funciones_auxiliares.Utilidades;
+import funciones_auxiliares.Ventanas;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

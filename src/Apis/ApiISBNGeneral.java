@@ -196,7 +196,7 @@ public class ApiISBNGeneral {
 		} else {
 			// No hay thumbnail_url, agregar la ruta de la imagen predeterminada desde los
 			// recursos
-			String rutaImagen = "/Funcionamiento/sinPortada.jpg";
+			String rutaImagen = "/imagenes/sinPortada.jpg";
 			URL url = getClass().getResource(rutaImagen);
 			if (url != null) {
 				return url.toExternalForm();

@@ -6,9 +6,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import Funcionamiento.Utilidades;
-import Funcionamiento.Ventanas;
 import ficherosFunciones.FuncionesFicheros;
+import funciones_auxiliares.Utilidades;
+import funciones_auxiliares.Ventanas;
 import javafx.scene.Scene;
 
 /**

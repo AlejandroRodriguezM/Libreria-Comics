@@ -8,10 +8,10 @@ import java.util.concurrent.Executors;
 
 import com.gluonhq.charm.glisten.control.ProgressIndicator;
 
-import Funcionamiento.Utilidades;
 import alarmas.AlarmaList;
 import controlUI.FuncionesManejoFront;
 import ficherosFunciones.FuncionesFicheros;
+import funciones_auxiliares.Utilidades;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;

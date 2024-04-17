@@ -4,8 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import Funcionamiento.Utilidades;
 import comicManagement.Comic;
+import funciones_auxiliares.Utilidades;
 
 public class UpdateManager {
 
