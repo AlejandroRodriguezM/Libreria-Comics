@@ -47,12 +47,14 @@ public class AccionSeleccionar {
 	public static void mostrarComic(String idComic, boolean esPrincipal) {
 
 		Comic comicTemp = null;
+		AlarmaList.detenerAnimacion();
 		String mensaje = "";
 		if (!ListaComicsDAO.comicsImportados.isEmpty()) {
 			comicTemp = ListaComicsDAO.buscarComicPorID(ListaComicsDAO.comicsImportados, idComic);
 		} else {
 			comicTemp = ComicManagerDAO.comicDatos(idComic);
 		}
+		
 
 		if (idComic == null || idComic.isEmpty() || comicTemp == null) {
 			AccionControlUI.limpiarAutorellenos(esPrincipal);
@@ -81,6 +83,7 @@ public class AccionSeleccionar {
 		} else {
 			mensaje = comicTemp.toString().replace("[", "").replace("]", "");
 		}
+		referenciaVentana.getProntInfo().clear();
 		referenciaVentana.getProntInfo().setText(mensaje);
 
 	}
@@ -94,6 +97,7 @@ public class AccionSeleccionar {
 		ListaComicsDAO.reiniciarListaComics();
 		FuncionesTableView.modificarColumnas();
 		referenciaVentana.getTablaBBDD().refresh();
+		referenciaVentana.getProntInfo().setText(null);
 		referenciaVentana.getProntInfo().clear();
 		referenciaVentana.getProntInfo().setOpacity(0);
 		referenciaVentana.getImagencomic().setImage(null);

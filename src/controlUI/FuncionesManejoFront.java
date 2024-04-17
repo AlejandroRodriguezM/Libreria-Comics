@@ -11,7 +11,6 @@ import org.controlsfx.control.textfield.TextFields;
 import Controladores.managment.AccionReferencias;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
-import dbmanager.ListaComicsDAO;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.scene.Node;

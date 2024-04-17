@@ -715,7 +715,8 @@ public class AlarmaList {
 	 */
 	public static void iniciarAnimacionTextArea(TextArea prontInfo, String mensaje) {
 		prontInfo.setOpacity(1);
-		Timeline timeline = new Timeline();
+//		Timeline timeline = new Timeline();
+		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
 
 		// Agregar los keyframes para cambiar el texto
