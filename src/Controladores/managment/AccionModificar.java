@@ -269,9 +269,13 @@ public class AccionModificar {
 		}
 
 		AccionFuncionesComunes.busquedaPorListaDatabase(listaComicsDatabase, tipoUpdate, actualizarFima);
-		referenciaVentana.getTablaBBDD().refresh();
-		FuncionesTableView.nombreColumnas(referenciaVentana.getTablaBBDD());
-		FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, referenciaVentana.getTablaBBDD());
+
+		if (referenciaVentana.getTablaBBDD() != null) {
+			referenciaVentana.getTablaBBDD().refresh();
+			FuncionesTableView.nombreColumnas(referenciaVentana.getTablaBBDD());
+			FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, referenciaVentana.getTablaBBDD());
+		}
+
 	}
 
 }

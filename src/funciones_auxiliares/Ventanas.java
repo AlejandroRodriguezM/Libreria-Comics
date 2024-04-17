@@ -84,9 +84,8 @@ public class Ventanas {
 	private static Stage menuPrincipal = null;
 
 	private static Stage imagenAmpliada = null;
-	
-    private boolean ventanaCerrada = false; // Variable para almacenar el estado de la ventana
 
+	private boolean ventanaCerrada = false; // Variable para almacenar el estado de la ventana
 
 	/**
 	 * Abre una ventana para el acceso a la base de datos. Carga la vista y muestra
@@ -677,11 +676,16 @@ public class Ventanas {
 			}
 		});
 	}
-	
-    // Método para obtener el estado de la ventana
-    public boolean isVentanaCerrada() {
-        return ventanaCerrada;
-    }
+
+	// Método para obtener el estado de la ventana
+	public boolean isVentanaCerrada() {
+
+		if (cargaComics != null) {
+			return ventanaCerrada;
+		}
+		return ventanaCerrada;
+
+	}
 
 	public void cerrarCargaComics() {
 		if (cargaComics != null) {
