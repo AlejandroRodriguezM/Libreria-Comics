@@ -2,7 +2,6 @@
 package funciones_auxiliares;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,7 +14,7 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
 public class VersionService extends Service<String> {
-	private static final String GITHUB_URL = "https://raw.githubusercontent.com/AlejandroRodriguezM/Libreria-Comics/main/version.txt";
+	private static final String GITHUB_URL = "https://raw.githubusercontent.com/AlejandroRodriguezM/Libreria-Comics/main/src/funciones_auxiliares/version.txt";
 
 	@Override
 	protected Task<String> createTask() {
@@ -49,8 +48,8 @@ public class VersionService extends Service<String> {
 		StringBuilder version = new StringBuilder();
 		String direccionVersion = "version.txt";
 
-		try (InputStream is = new FileInputStream(direccionVersion);
-			     BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+		try (InputStream is = Utilidades.class.getResourceAsStream(direccionVersion);
+				BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
 			String linea;
 			while ((linea = reader.readLine()) != null) {
 				version.append(linea);

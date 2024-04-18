@@ -27,7 +27,7 @@ import javafx.util.Callback;
 
 public class FuncionesManejoFront {
 
-	static ImageView imagenComic;
+	public static ImageView imagenComic;
 
 	public static AccionReferencias referenciaVentana = new AccionReferencias();
 
