@@ -21,11 +21,14 @@ import Controladores.managment.AccionFuncionesComunes;
 import Controladores.managment.AccionModificar;
 import Controladores.managment.AccionReferencias;
 import alarmas.AlarmaList;
+import comicManagement.Comic;
 import controlUI.FuncionesComboBox;
 import controlUI.FuncionesManejoFront;
+import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.DatabaseManagerDAO;
 import dbmanager.ListaComicsDAO;
+import ficherosFunciones.FuncionesExcel;
 import funciones_auxiliares.Utilidades;
 import funciones_auxiliares.Ventanas;
 import funciones_auxiliares.VersionService;
@@ -158,6 +161,7 @@ public class OpcionesAvanzadasController implements Initializable {
 		referenciaVentana.setProntInfoLabel(prontInfo);
 		referenciaVentana.setProntInfoEspecial(prontInfoEspecial);
 		referenciaVentana.setProntInfoPreviews(prontInfoPreviews);
+		referenciaVentana.setProntInfoPortadas(prontInfoPortadas);
 		referenciaVentana.setStage(estadoStage());
 
 		referenciaVentana.setBotonComprimirPortadas(botonComprimirPortadas);
@@ -228,26 +232,23 @@ public class OpcionesAvanzadasController implements Initializable {
 
 		String versionSW = VersionService.obtenerVersion();
 		String versionLocal = VersionService.leerVersionDelArchivo();
-		AlarmaList.detenerAnimacionEspera();
-		labelComprobar.setStyle("-fx-text-fill: white;");
 
 		String cadena = "";
-		if (compareVersions(versionSW, versionLocal) > 0) {
-			estaActualizado = false;
+		if (Utilidades.compareVersions(versionSW, versionLocal) > 0) {
+
 			labelComprobar.setStyle("-fx-text-fill: red;");
 			labelVersionPreviews.setStyle("-fx-text-fill: red;");
 			labelVersionPortadas.setStyle("-fx-text-fill: red;");
 			labelVersionEspecial.setStyle("-fx-text-fill: red;");
 			cadena = "Versión desactualizada";
+			estaActualizado = false;
 		} else {
-			estaActualizado = true;
+			labelComprobar.setStyle("-fx-text-fill: white;");
 			cadena = "Versión actualizada";
+			estaActualizado = true;
 		}
 
 		AlarmaList.iniciarAnimacionAvanzado(prontInfo, cadena);
-		AlarmaList.iniciarAnimacionAvanzado(prontInfoPreviews, cadena);
-		AlarmaList.iniciarAnimacionAvanzado(prontInfoEspecial, cadena);
-		AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, cadena);
 
 		if (!estaActualizado) {
 			botonActualizarSoftware.setVisible(true);
@@ -264,7 +265,6 @@ public class OpcionesAvanzadasController implements Initializable {
 		ListaComicsDAO.reiniciarListaComics();
 		ListaComicsDAO.listasAutoCompletado();
 		List<ComboBox<String>> comboboxes = referenciaVentana.getComboboxes();
-		referenciaVentana.getTablaBBDD().refresh();
 		if (comboboxes != null) {
 			funcionesCombo.rellenarComboBox(comboboxes);
 		}
@@ -286,24 +286,6 @@ public class OpcionesAvanzadasController implements Initializable {
 		});
 
 		versionService.start();
-	}
-
-	private static int compareVersions(String version1, String version2) {
-		String[] parts1 = version1.split("\\.");
-		String[] parts2 = version2.split("\\.");
-
-		int minLength = Math.min(parts1.length, parts2.length);
-
-		for (int i = 0; i < minLength; i++) {
-			int part1 = Integer.parseInt(parts1[i]);
-			int part2 = Integer.parseInt(parts2[i]);
-
-			if (part1 != part2) {
-				return Integer.compare(part1, part2);
-			}
-		}
-
-		return Integer.compare(parts1.length, parts2.length);
 	}
 
 	@FXML
@@ -389,9 +371,11 @@ public class OpcionesAvanzadasController implements Initializable {
 
 	@FXML
 	void actualizarPortadaComic(ActionEvent event) {
+
 		AccionModificar.referenciaVentana = guardarReferencia();
 		AccionFuncionesComunes.referenciaVentana = guardarReferencia();
 		AccionModificar.actualizarDatabase("actualizar portadas", actualizarFima.get(), estadoStage());
+
 	}
 
 	@FXML
@@ -408,15 +392,24 @@ public class OpcionesAvanzadasController implements Initializable {
 		AtomicReference<CargaComicsController> cargaComicsControllerRef = new AtomicReference<>();
 		AtomicInteger portadasProcesados = new AtomicInteger(0);
 		AtomicInteger mensajeIdCounter = new AtomicInteger(0); // Contador para generar IDs únicos
-		// Crear y ejecutar tarea para comprimir las portadas
+
 		Task<Void> task = new Task<>() {
 			@Override
 			protected Void call() throws Exception {
-				HashSet<String> mensajesUnicos = new HashSet<>(); // Para almacenar mensajes únicos
 
+				HashSet<String> mensajesUnicos = new HashSet<>(); // Para almacenar mensajes únicos
 				// Copiar directorio original a uno nuevo
 				Utilidades.copiarDirectorio(directorioNuevo, directorioOriginal);
 				nav.verCargaComics(cargaComicsControllerRef);
+
+				boolean estaBaseLlena = ListaComicsDAO.comprobarLista();
+				if (!estaBaseLlena) {
+					String cadenaCancelado = "La base de datos esta vacia";
+					AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, cadenaCancelado);
+					cancel(); // Cancelar el Task si la base de datos está vacía
+					return null; // Salir del método call() para finalizar el Task
+				}
+
 				int numEntries = inputPaths.size();
 				inputPaths.forEach(codigo -> {
 					portadasProcesados.getAndIncrement();
@@ -517,11 +510,12 @@ public class OpcionesAvanzadasController implements Initializable {
 
 		task.setOnCancelled(ev -> {
 			String mensaje = "Cancelada la actualizacion de la base de datos.";
+			botonCancelarSubidaPortadas.setVisible(false);
 			AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, mensaje);
 			FuncionesManejoFront.cambiarEstadoMenuBar(false);
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, referenciaVentana);
 			FuncionesManejoFront.manejarMensajeTextArea(mensaje);
-			
+
 			Platform.runLater(() -> {
 				cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0);
 			});
@@ -543,18 +537,64 @@ public class OpcionesAvanzadasController implements Initializable {
 
 	@FXML
 	void reCopiarPortadas(ActionEvent event) {
-
 		DirectoryChooser directoryChooser = new DirectoryChooser();
 		directoryChooser.setTitle("Seleccionar carpeta");
-
-		// Mostrar el diálogo de selección de carpeta
 		File selectedDirectory = directoryChooser.showDialog(null);
 
-		String directorioNuevo = Utilidades.DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
-				+ ConectManager.DB_NAME + File.separator + "portadas";
+		Task<Void> task = new Task<Void>() {
+			@Override
+			protected Void call() throws Exception {
+				try {
+					boolean estaBaseLlena = ListaComicsDAO.comprobarLista();
+					if (!estaBaseLlena) {
+						String cadenaCancelado = "La base de datos esta vacia";
+						AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, cadenaCancelado);
+						cancel(); // Cancelar el Task si la base de datos está vacía
+						return null; // Salir del método call() para finalizar el Task
+					}
 
-		Utilidades.copiarDirectorio(directorioNuevo, selectedDirectory.getAbsolutePath());
+					List<String> listaID = ListaComicsDAO.listaID;
+					// Mostrar el diálogo de selección de carpeta
+					Utilidades.copyDirectory(FuncionesExcel.DEFAULT_PORTADA_IMAGE_PATH,
+							selectedDirectory.getAbsolutePath());
 
+					for (String idComic : listaID) {
+						Comic comicNuevo = ComicManagerDAO.comicDatos(idComic);
+
+						String nombre_portada = Utilidades.obtenerNombrePortada(false, comicNuevo.getImagen());
+						String nombre_modificado = Utilidades.convertirNombreArchivo(nombre_portada);
+						if (!Utilidades.existeArchivo(FuncionesExcel.DEFAULT_PORTADA_IMAGE_PATH, nombre_portada)) {
+							FuncionesExcel.copiarPortadaPredeterminada(selectedDirectory.getAbsolutePath(),
+									nombre_modificado);
+						}
+					}
+
+				} catch (Exception e) {
+					e.printStackTrace(); // Maneja la excepción de acuerdo a tu lógica
+				}
+				return null;
+			}
+		};
+
+		Thread thread = new Thread(task);
+
+		task.setOnRunning(e -> {
+			String cadenaCancelado = "Copiando portadas";
+			AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, cadenaCancelado);
+		});
+
+		task.setOnSucceeded(e -> {
+			String cadenaCancelado = "Portadas copiadas";
+			AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, cadenaCancelado);
+		});
+
+		task.setOnFailed(e -> {
+			String cadenaCancelado = "ERROR. No se han podido copiar las portadas";
+			AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, cadenaCancelado);
+		});
+
+		thread.setDaemon(true);
+		thread.start();
 	}
 
 	public Scene miStageVentana() {
@@ -586,7 +626,7 @@ public class OpcionesAvanzadasController implements Initializable {
 	 * ninguna acción.
 	 */
 	public void closeWindow() {
-		
+
 		if (ventanaOpciones != null && ventanaOpciones.getWindow() instanceof Stage) {
 
 			if (FuncionesManejoFront.stageVentanas.contains(estadoStage())) {

@@ -275,10 +275,10 @@ public class DatabaseManagerDAO {
 			}
 
 			if (contador == 0) {
-				cadena = "Todo normalizado";
+				cadena = "Ya esta todo normalizado.";
 
 			} else {
-				cadena = contador + " sin normalizar";
+				cadena = " Se han normalizado: " + contador;
 			}
 			AlarmaList.iniciarAnimacionAvanzado(prontInfo, cadena);
 

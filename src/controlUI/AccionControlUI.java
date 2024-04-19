@@ -390,7 +390,6 @@ public class AccionControlUI {
 			referenciaVentana.getIdComicTratar_mod().setDisable(false);
 			referenciaVentana.getIdComicTratar_mod().setText("");
 			referenciaVentana.getIdComicTratar_mod().setDisable(true);
-
 		}
 
 		referenciaVentana.getFormatoComic().getSelectionModel().selectFirst();
@@ -407,7 +406,6 @@ public class AccionControlUI {
 		referenciaVentana.getProntInfo().setText(null);
 		referenciaVentana.getProntInfo().setOpacity(0);
 		referenciaVentana.getProntInfo().setStyle("");
-		referenciaVentana.getTablaBBDD().getItems().clear();
 	}
 
 	/**

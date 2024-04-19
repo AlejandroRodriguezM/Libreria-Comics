@@ -971,6 +971,10 @@ public class VentanaAccionController implements Initializable {
 					@Override
 					protected Void call() throws Exception {
 
+				        if (isCancelled() || !referenciaVentana.getStage().isShowing()) {
+				            return null; // Exit the call() method if the task has been canceled or the stage is not showing
+				        }
+						
 						if (AccionFuncionesComunes.procesarComicPorCodigo(valorCodigo)) {
 							String mensaje = "Comic encontrado correctamente";
 							AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
@@ -989,18 +993,23 @@ public class VentanaAccionController implements Initializable {
 					imagencomic.setImage(null);
 					imagencomic.setVisible(true);
 					botonCancelarSubida.setVisible(true);
-
+					botonBusquedaCodigo.setDisable(true);
+					botonSubidaPortada.setDisable(true);
+					referenciaVentana.getMenu_Importar_Fichero_CodigoBarras().setDisable(true);
 					AlarmaList.iniciarAnimacionCargaImagen(cargaImagen);
 					menu_Importar_Fichero_CodigoBarras.setDisable(true);
-
+					FuncionesManejoFront.cambiarEstadoMenuBar(true);
 				});
 
 				tarea.setOnSucceeded(ev -> {
 					AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
 					menu_Importar_Fichero_CodigoBarras.setDisable(false);
 					botonCancelarSubida.setVisible(false);
+					botonBusquedaCodigo.setDisable(false);
+					botonSubidaPortada.setDisable(false);
+					referenciaVentana.getMenu_Importar_Fichero_CodigoBarras().setDisable(false);
 					AccionFuncionesComunes.cambiarEstadoBotones(false);
-
+					FuncionesManejoFront.cambiarEstadoMenuBar(false);
 					if (ListaComicsDAO.comicsImportados.size() > 0) {
 						botonEliminarImportadoComic.setVisible(true);
 						botonGuardarCambioComic.setVisible(true);
@@ -1017,7 +1026,12 @@ public class VentanaAccionController implements Initializable {
 					String mensaje = "Ha cancelado la búsqueda del cómic";
 					AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 					botonCancelarSubida.setVisible(false); // Oculta el botón de cancelar
+					botonBusquedaCodigo.setDisable(false);
+					botonSubidaPortada.setDisable(false);
+					referenciaVentana.getMenu_Importar_Fichero_CodigoBarras().setDisable(false);
 					AlarmaList.detenerAnimacionCargaImagen(cargaImagen); // Detiene la animación de carga
+					AccionFuncionesComunes.cambiarEstadoBotones(false);
+					FuncionesManejoFront.cambiarEstadoMenuBar(false);
 				});
 
 				Thread thread = new Thread(tarea);

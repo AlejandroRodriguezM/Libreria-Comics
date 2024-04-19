@@ -556,14 +556,17 @@ public class Comic {
 	}
 
 	public static String limpiarCampo(String campo) {
-		if (campo != null) {
-			// Eliminar comas repetidas y otros símbolos al final del campo (comas, guiones,
-			// y espacios), con o sin espacios entre ellos
-			campo = campo.replaceAll(",\\s*,", ",");
-			campo = campo.replaceAll("(?:[,\\s-])+(?=[,\\s-]*$)", "");
-		}
-		return campo;
+	    if (campo != null) {
+	        // Eliminar comas repetidas y otros símbolos al inicio y al final del campo
+	        campo = campo.replaceAll("^\\s*[,\\s-]+", ""); // Al principio
+	        campo = campo.replaceAll("[,\\s-]+\\s*$", ""); // Al final
+	        campo = campo.replaceAll(",\\s*,", ","); // Comas repetidas
+	        campo = campo.replaceAll(",\\s*", " - "); // Reemplazar ", " por " - "
+	    }
+	    return campo;
 	}
+
+
 
 	public static Comic obtenerComic(String idComic) {
 		boolean existeComic = ComicManagerDAO.comprobarIdentificadorComic(idComic);

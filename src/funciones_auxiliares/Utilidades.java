@@ -327,7 +327,19 @@ public class Utilidades {
 	 * @param destinationDirectoryPath Ruta del directorio de destino.
 	 */
 	public static void copyDirectory(String sourceDirectoryPath, String destinationDirectoryPath) {
+
+		if (sourceDirectoryPath == null || sourceDirectoryPath.isEmpty()) {
+			System.err.println("El directorio de origen no puede estar vacío o ser nulo.");
+			return;
+		}
+
 		Path sourceDirectory = Paths.get(sourceDirectoryPath);
+
+	    if (!Files.exists(sourceDirectory) || !Files.isDirectory(sourceDirectory)) {
+	        System.err.println("El directorio de origen no es válido.");
+	        return;
+	    }
+
 		Path destinationDirectory = Paths.get(destinationDirectoryPath);
 
 		final int[] contadorArchivosNoExistentes = { 0 }; // Array de un solo elemento para almacenar el contador
@@ -1484,7 +1496,7 @@ public class Utilidades {
 	// UTILIDADES.CLASS
 
 	private static void copiarImagenPredeterminada(File directorio, String nombreImagen) throws IOException {
-		try (InputStream input = Utilidades.class.getResourceAsStream("sinPortada.jpg")) {
+		try (InputStream input = Utilidades.class.getResourceAsStream("/imagenes/sinPortada.jpg")) {
 			if (input == null) {
 				throw new FileNotFoundException("La imagen predeterminada no se encontró en el paquete");
 			}
@@ -2172,79 +2184,59 @@ public class Utilidades {
 
 	public static String devolverPalabrasClave(String texto) {
 		// Expresión regular para buscar palabras clave
-		Pattern patron = Pattern.compile("\\b(tp|omnibus|omni|ed|deluxe|dlx|edition|hc|vol|cvr)\\b",
+		Pattern patron = Pattern.compile(
+				"\\b(tp|omnibus|omni|ed|deluxe|dlx|edition|hc|vol|cvr|absolute|treasury edition|#)\\b",
 				Pattern.CASE_INSENSITIVE);
 		Matcher matcher = patron.matcher(texto);
 
-		// StringBuilder para almacenar los resultados
+		// StringBuilder para almacenar el resultado
 		StringBuilder resultado = new StringBuilder();
 
-		// Iterar sobre las coincidencias encontradas
-		while (matcher.find()) {
+		// Verificar si se encontró alguna palabra clave
+		if (matcher.find()) {
 			// Obtener la palabra clave encontrada
 			String palabraClave = matcher.group().toLowerCase();
 
 			// Realizar acciones según la palabra clave encontrada
 			switch (palabraClave) {
-
+			case "absolute":
+				resultado.append("Edicion absolute (Absolute Edition)");
+				break;
 			case "omnibus hc":
-				resultado.append("Edicion omnibus(Omnibus)");
-				break;
 			case "hc omnibus":
-				resultado.append("Edicion omnibus(Omnibus)");
-				break;
 			case "tp omnibus":
-				resultado.append("Edicion omnibus(Omnibus)");
-				break;
 			case "omnibus tp":
-				resultado.append("Edicion omnibus(Omnibus)");
-				break;
 			case "hc omni":
-				resultado.append("Edicion omnibus(Omnibus)");
-				break;
 			case "omni hc":
-				resultado.append("Edicion omnibus(Omnibus)");
-				break;
 			case "tp omni":
-				resultado.append("Edicion omnibus(Omnibus)");
-				break;
 			case "omni tp":
-				resultado.append("Edicion omnibus(Omnibus)");
+			case "omnibus":
+			case "omni":
+				resultado.append("Edicion omnibus (Omnibus)");
 				break;
 			case "tp":
 				resultado.append("Tapa blanda (Paperback)");
 				break;
-			case "omnibus":
-				resultado.append("Edicion omnibus(Omnibus)");
-				break;
-			case "omni":
-				resultado.append("Edicion omnibus(Omnibus)");
-				break;
 			case "deluxe":
-				resultado.append("Edicion de lujo (Deluxe Edition)");
-				break;
 			case "dlx":
+			case "treasury edition":
 				resultado.append("Edicion de lujo (Deluxe Edition)");
 				break;
 			case "hc":
 				resultado.append("Tapa dura (Hardcover)");
 				break;
-			case "treasury edition":
-				resultado.append("Edicion de lujo (Deluxe Edition)");
-				break;
 			case "#":
-				resultado.append("Grapa (Issue individual)");
-				break;
 			case "cvr":
 				resultado.append("Grapa (Issue individual)");
-				break;
-			case "absolute":
-				resultado.append("Edicion absolute (Absolute Edition)");
 				break;
 			default:
 				resultado.append("Grapa (Issue individual)");
 				break;
 			}
+		} else {
+			// Si no se encontraron palabras clave, devolver un mensaje de error o un valor
+			// predeterminado
+			resultado.append("No se encontraron palabras clave");
 		}
 
 		// Devolver el resultado como cadena de texto
@@ -2363,6 +2355,30 @@ public class Utilidades {
 		}
 	}
 
+	public static String obtenerNombreArchivoSinExtension(String ruta) {
+		// Encontrar la última ocurrencia del separador de directorios
+		int indiceSeparador = ruta.lastIndexOf(File.separator);
+
+		// Si no se encuentra el separador, devolver toda la ruta
+		if (indiceSeparador == -1) {
+			return ruta;
+		}
+
+		// Obtener la subcadena después del último separador
+		String nombreConExtension = ruta.substring(indiceSeparador + 1);
+
+		// Encontrar la última ocurrencia del punto que separa el nombre de la extensión
+		int indicePunto = nombreConExtension.lastIndexOf('.');
+
+		// Si no se encuentra el punto, devolver el nombre con extensión
+		if (indicePunto == -1) {
+			return nombreConExtension;
+		}
+
+		// Devolver el nombre del archivo sin extensión
+		return nombreConExtension.substring(0, indicePunto);
+	}
+
 	public static void copiarArchivo(String origen, String destino) throws IOException {
 		// Verificar si el archivo es de extensión .jpg
 		if (!origen.toLowerCase().endsWith(".jpg")) {
@@ -2404,6 +2420,24 @@ public class Utilidades {
 		} else {
 			System.out.println("El directorio especificado no existe o no es válido.");
 		}
+	}
+
+	public static int compareVersions(String version1, String version2) {
+		String[] parts1 = version1.split("\\.");
+		String[] parts2 = version2.split("\\.");
+
+		int minLength = Math.min(parts1.length, parts2.length);
+
+		for (int i = 0; i < minLength; i++) {
+			int part1 = Integer.parseInt(parts1[i]);
+			int part2 = Integer.parseInt(parts2[i]);
+
+			if (part1 != part2) {
+				return Integer.compare(part1, part2);
+			}
+		}
+
+		return Integer.compare(parts1.length, parts2.length);
 	}
 
 }

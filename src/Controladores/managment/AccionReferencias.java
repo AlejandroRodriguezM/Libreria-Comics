@@ -583,6 +583,8 @@ public class AccionReferencias {
 	private Label prontInfoEspecial;
 
 	private Label prontInfoPreviews;
+	
+	private Label prontInfoPortadas;
 
 	private Stage stage;
 
@@ -1033,6 +1035,10 @@ public class AccionReferencias {
 	public Label getProntInfoPreviews() {
 		return prontInfoPreviews;
 	}
+	
+	public Label getProntInfoPortadas() {
+		return prontInfoPortadas;
+	}
 
 	public Label getProntInfoLabel() {
 		return prontInfoLabel;
@@ -1112,6 +1118,10 @@ public class AccionReferencias {
 
 	public void setProntInfoPreviews(Label prontInfoPreviews) {
 		this.prontInfoPreviews = prontInfoPreviews;
+	}
+	
+	public void setProntInfoPortadas(Label prontInfoPortadas) {
+		this.prontInfoPortadas = prontInfoPortadas;
 	}
 
 	public static void setListaTextFields(ObservableList<Control> listaTextFields) {

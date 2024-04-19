@@ -11,6 +11,8 @@ import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,11 +22,12 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import comicManagement.Comic;
+import funciones_auxiliares.Utilidades;
 
-public class WebScrapGoogle {
+public class WebScrapGoogleLeagueOfComics {
 
 	public static String agregarMasAMayusculas(String cadena) {
-	    return cadena.toUpperCase();
+		return cadena.toUpperCase();
 	}
 
 	public static String buscarURL(String searchTerm) throws URISyntaxException {
@@ -56,68 +59,67 @@ public class WebScrapGoogle {
 		}
 	}
 
-    public static String buscarEnGoogle(String searchTerm) throws URISyntaxException {
-        searchTerm = agregarMasAMayusculas(searchTerm);
-        searchTerm = searchTerm.replace("(", "%28").replace(")", "%29").replace("#", "%23");
+	public static String buscarEnGoogle(String searchTerm) throws URISyntaxException {
+		searchTerm = agregarMasAMayusculas(searchTerm);
+		searchTerm = searchTerm.replace("(", "%28").replace(")", "%29").replace("#", "%23");
 
-        try {
-            String encodedSearchTerm = URLEncoder.encode(searchTerm, "UTF-8");
-            String urlString = "https://www.google.com/search?q=" + encodedSearchTerm + "+league+of+comics";
+		try {
+			String encodedSearchTerm = URLEncoder.encode(searchTerm, "UTF-8");
+			String urlString = "https://www.google.com/search?q=" + encodedSearchTerm + "+league+of+comics";
 
-            URI uri = new URI(urlString);
-            URL url = uri.toURL();
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
-            con.setRequestProperty("User-Agent",
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36");
+			URI uri = new URI(urlString);
+			URL url = uri.toURL();
+			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			con.setRequestMethod("GET");
+			con.setRequestProperty("User-Agent",
+					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36");
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            String inputLine;
-            StringBuilder content = new StringBuilder();
-            while ((inputLine = in.readLine()) != null) {
-                content.append(inputLine);
-            }
-            in.close();
-            con.disconnect();
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuilder content = new StringBuilder();
+			while ((inputLine = in.readLine()) != null) {
+				content.append(inputLine);
+			}
+			in.close();
+			con.disconnect();
 
-            String html = content.toString();
-            int startIndex = html.indexOf("https://leagueofcomicgeeks.com/");
-            if (startIndex != -1) {
-                int endIndex = html.indexOf("\"", startIndex);
-                String[] urls = html.substring(startIndex, endIndex).split("\"");
-                return encontrarURLRelevante(urls, searchTerm);
-            } else {
-                return null;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+			String html = content.toString();
+			int startIndex = html.indexOf("https://leagueofcomicgeeks.com/");
+			if (startIndex != -1) {
+				int endIndex = html.indexOf("\"", startIndex);
+				String[] urls = html.substring(startIndex, endIndex).split("\"");
+				return encontrarURLRelevante(urls, searchTerm);
+			} else {
+				return null;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
-    public static String encontrarURLRelevante(String[] urls, String searchTerm) {
-        String urlElegida = null;
-        int maxCoincidencia = 0;
-        for (String url : urls) {
-            int coincidencia = contarCoincidencias(url.toLowerCase(), searchTerm.toLowerCase());
-            if (coincidencia > maxCoincidencia) {
-                maxCoincidencia = coincidencia;
-                urlElegida = url;
-            }
-        }
-        return urlElegida;
-    }
+	public static String encontrarURLRelevante(String[] urls, String searchTerm) {
+		String urlElegida = null;
+		int maxCoincidencia = 0;
+		for (String url : urls) {
+			int coincidencia = contarCoincidencias(url.toLowerCase(), searchTerm.toLowerCase());
+			if (coincidencia > maxCoincidencia) {
+				maxCoincidencia = coincidencia;
+				urlElegida = url;
+			}
+		}
+		return urlElegida;
+	}
 
-    public static int contarCoincidencias(String url, String searchTerm) {
-        int coincidencia = 0;
-        for (String word : searchTerm.split("\\s+")) {
-            if (url.contains(word)) {
-                coincidencia += word.length();
-            }
-        }
-        return coincidencia;
-    }
-
+	public static int contarCoincidencias(String url, String searchTerm) {
+		int coincidencia = 0;
+		for (String word : searchTerm.split("\\s+")) {
+			if (url.contains(word)) {
+				coincidencia += word.length();
+			}
+		}
+		return coincidencia;
+	}
 
 	public static boolean esURL(String urlString) {
 		try {
@@ -149,13 +151,12 @@ public class WebScrapGoogle {
 			String distribuidora = "";
 			String valorComic = "0";
 			String artistas = "";
-			String cover = "";
-			String guionista = "";
 			String numComic = "0";
 			String nombreComic = "";
 			String coverURL = "";
 			String key = "";
 			String upcValue = "";
+			String formato = "";
 
 			// Buscar la sección de detalles de la página
 			Element detallesPagina = doc.selectFirst("div.page-details");
@@ -190,7 +191,10 @@ public class WebScrapGoogle {
 				}
 			}
 
-			boolean seEncontroCoverArtist = false;
+			// Declara conjuntos para almacenar los nombres
+			Set<String> coverArtists = new HashSet<>();
+			Set<String> writers = new HashSet<>();
+			Set<String> artists = new HashSet<>();
 
 			for (Element divPadre : divPadres) {
 				Element divComentadoAntes = divPadre.selectFirst("div.role.color-offset.copy-really-small");
@@ -201,27 +205,15 @@ public class WebScrapGoogle {
 
 					// Solo agregar los datos para "Cover Artist", "Writer" y "Artist"
 					if (textoDiv.equalsIgnoreCase("Cover Artist") || textoDiv.equalsIgnoreCase("Cover Penciller")) {
-						if (!cover.isEmpty()) {
-							cover += ", ";
-						}
-						cover += textoEnlace;
-						seEncontroCoverArtist = true; // Marcamos que se encontró un "Cover Artist"
+						coverArtists.add(textoEnlace);
 					} else if (textoDiv.equalsIgnoreCase("Writer")) {
-						if (!guionista.isEmpty()) {
-							guionista += ", ";
-						}
-						guionista += textoEnlace;
-					} else if (!seEncontroCoverArtist
-							&& (textoDiv.equalsIgnoreCase("Artist") || textoDiv.equalsIgnoreCase("Artist, Colorist")
-									|| textoDiv.equalsIgnoreCase("Penciller"))) {
+						writers.add(textoEnlace);
+					} else if (textoDiv.equalsIgnoreCase("Artist") || textoDiv.equalsIgnoreCase("Artist, Colorist")
+							|| textoDiv.equalsIgnoreCase("Penciller")) {
+						// Agregar artistas solo si no es un "Cover Artist" y no está en la lista
 						if (!textoDiv.equalsIgnoreCase("Cover Artist")
 								&& !textoDiv.equalsIgnoreCase("Cover Penciller")) {
-							if (!artistas.contains(textoEnlace)) {
-								if (!artistas.isEmpty()) {
-									artistas += ", ";
-								}
-								artistas += textoEnlace;
-							}
+							artists.add(textoEnlace);
 						}
 					}
 				}
@@ -270,14 +262,21 @@ public class WebScrapGoogle {
 
 			String fecha = convertirFechaMySQL(fechaSalida);
 
+			// Ahora, convierte los conjuntos a cadenas
+			String cover = String.join(", ", coverArtists);
+			String guionista = String.join(", ", writers);
+			String artistasString = String.join(", ", artists);
+
+			cover = Comic.limpiarCampo(cover);
 			nombreComic = Comic.limpiarCampo(nombreComic);
 			distribuidora = Comic.limpiarCampo(distribuidora);
 			guionista = Comic.limpiarCampo(guionista);
-			artistas = Comic.limpiarCampo(artistas);
+			artistas = Comic.limpiarCampo(artistasString);
 			key = Comic.limpiarCampo(key);
 			upcValue = Comic.limpiarCampo(upcValue);
+			formato = Utilidades.devolverPalabrasClave(nombreComic);
 
-			Comic comic = new Comic("", nombreComic, "0", numComic, cover, "", distribuidora, "",
+			Comic comic = new Comic("", nombreComic, "0", numComic, cover, "", distribuidora, formato,
 					"Estados Unidos (United States)", fecha, guionista, artistas, "En posesion", key, "Sin puntuacion",
 					coverURL, url, valorComic, upcValue);
 

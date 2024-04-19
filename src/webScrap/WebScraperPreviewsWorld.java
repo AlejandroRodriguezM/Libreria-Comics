@@ -23,6 +23,7 @@ import org.jsoup.select.Elements;
 
 import alarmas.AlarmaList;
 import comicManagement.Comic;
+import funciones_auxiliares.Utilidades;
 import javafx.scene.control.TextArea;
 
 /**
@@ -118,7 +119,7 @@ public class WebScraperPreviewsWorld {
 
 				String numero = extractNumeroFromTitle(document);
 
-				String formato = "Grapa (Issue individual)";
+				String formato = Utilidades.devolverPalabrasClave(titulo);
 
 				// Scraping de la etiqueta div con class "SRP"
 				String precio = scrapeAndPrintSRP(document);
@@ -169,6 +170,13 @@ public class WebScraperPreviewsWorld {
 					editorial = "Marvel";
 				}
 
+				variant = Comic.limpiarCampo(variant);
+				titulo = Comic.limpiarCampo(titulo);
+				editorial = Comic.limpiarCampo(editorial);
+				writer = Comic.limpiarCampo(writer);
+				artist = Comic.limpiarCampo(artist);
+				issueKey = Comic.limpiarCampo(issueKey);
+				
 				Comic comicInfoArray = new Comic("", titulo, "0", numero, variant, "", editorial, formato,
 						"Estados Unidos (United States)", fecha, writer, artist, "En posesion", issueKey,
 						"Sin puntuacion", portadaImagen, previews_World_Url, precio, diamondCode);
@@ -195,10 +203,6 @@ public class WebScraperPreviewsWorld {
 		Element titleElement = document.selectFirst("h1.Title");
 		if (titleElement != null) {
 			String titleContent = titleElement.text().trim();
-//			// Eliminar el símbolo "#" y todo lo que le sigue
-//			titleContent = removeHashtagAndFollowing(titleContent);
-//			// Capitalizar la primera letra de cada palabra en el título
-//			titleContent = capitalizeFirstLetter(titleContent);
 			return titleContent;
 		}
 		return null;
@@ -264,7 +268,7 @@ public class WebScraperPreviewsWorld {
 	private static String scrapeAndPrintReleaseDate(Document document) {
 		Element releaseDateElement = document.selectFirst("div.ReleaseDate");
 		if (releaseDateElement != null) {
-			String releaseDateText = releaseDateElement.text().replace("In Shops: ", "").trim();
+			String releaseDateText = releaseDateElement.text().replace("In Shops: ", "").replace("N/A", "").trim();
 			Date releaseDate = parseReleaseDate(releaseDateText);
 			return formatDateAsString(releaseDate);
 		}

@@ -42,7 +42,7 @@ import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
-import webScrap.WebScrapGoogle;
+import webScrap.WebScrapGoogleLeagueOfComics;
 import webScrap.WebScraperPreviewsWorld;
 
 public class AccionFuncionesComunes {
@@ -497,7 +497,7 @@ public class AccionFuncionesComunes {
 				// Si no, intentar obtener la información del cómic de diferentes fuentes
 				Comic comicInfo = ApiMarvel.infoComicCode(finalValorCodigo.trim(), referenciaVentana.getProntInfo());
 				if (comicInfo == null) {
-					comicInfo = WebScrapGoogle.obtenerDatosDiv(finalValorCodigo.trim());
+					comicInfo = WebScrapGoogleLeagueOfComics.obtenerDatosDiv(finalValorCodigo.trim());
 				}
 				if (comicInfo == null) {
 					ApiISBNGeneral isbnGeneral = new ApiISBNGeneral();
@@ -562,6 +562,12 @@ public class AccionFuncionesComunes {
 		Task<Void> tarea = new Task<>() {
 			@Override
 			protected Void call() {
+
+				if (isCancelled() || !referenciaVentana.getStage().isShowing()) {
+					return null; // Exit the call() method if the task has been canceled or the stage is not
+									// showing
+				}
+
 //				AccionControlUI.limpiarAutorellenos(false);
 				HashSet<String> mensajesUnicos = new HashSet<>(); // Para almacenar mensajes únicos
 				nav.verCargaComics(cargaComicsControllerRef);
@@ -640,12 +646,9 @@ public class AccionFuncionesComunes {
 			referenciaVentana.getImagencomic().setVisible(true);
 
 			AlarmaList.iniciarAnimacionCargaImagen(referenciaVentana.getCargaImagen());
-
 			FuncionesManejoFront.cambiarEstadoMenuBar(true);
 			referenciaVentana.getMenu_Importar_Fichero_CodigoBarras().setDisable(true);
-			
-
-
+			referenciaVentana.getBotonSubidaPortada().setDisable(true);
 		});
 
 		tarea.setOnSucceeded(ev -> {
@@ -700,7 +703,7 @@ public class AccionFuncionesComunes {
 		if (!ConectManager.conexionActiva() && !Utilidades.isInternetAvailable()) {
 			return;
 		}
-		
+
 		StringBuilder codigoFaltante = new StringBuilder();
 		AtomicInteger contadorErrores = new AtomicInteger(0);
 		AtomicInteger comicsProcesados = new AtomicInteger(0);
@@ -708,23 +711,23 @@ public class AccionFuncionesComunes {
 
 		AtomicInteger numLineas = new AtomicInteger(listaComicsDatabase.size()); // Obtener el tamaño de la lista
 		AtomicReference<CargaComicsController> cargaComicsControllerRef = new AtomicReference<>();
-		
+
 		Task<Void> tarea = new Task<>() {
 			@Override
 			protected Void call() {
 //				AccionControlUI.limpiarAutorellenos(false);
 				HashSet<String> mensajesUnicos = new HashSet<>(); // Para almacenar mensajes únicos
-				
+
 				nav.verCargaComics(cargaComicsControllerRef);
 
 				listaComicsDatabase.forEach(codigo -> {
 					// Realizar otras acciones
 
 					if (isCancelled() || !referenciaVentana.getStage().isShowing()) {
-						
+
 						return; // Sale del método call() si la tarea ha sido cancelada
 					}
-					
+
 					String finalValorCodigo = Utilidades.eliminarEspacios(codigo.getCodigo_comic()).replace("-", "");
 					if (!finalValorCodigo.isEmpty()) {
 						StringBuilder textoBuilder = new StringBuilder();
@@ -751,7 +754,7 @@ public class AccionFuncionesComunes {
 						long finalProcessedItems = comicsProcesados.get();
 						double progress = (double) finalProcessedItems / (numLineas.get());
 						String porcentaje = String.format("%.2f%%", progress * 100);
-						
+
 						if (nav.isVentanaCerrada()) {
 							nav.verCargaComics(cargaComicsControllerRef);
 

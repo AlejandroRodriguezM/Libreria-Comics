@@ -62,6 +62,8 @@ public class ListaComicsDAO {
 	 */
 	public static List<Comic> listaComicsCheck = new ArrayList<>();
 
+	public static List<String> listaID = new ArrayList<>();
+
 	/**
 	 * Lista de nombres.
 	 */
@@ -243,6 +245,7 @@ public class ListaComicsDAO {
 	 * @throws SQLException si ocurre un error al acceder a la base de datos.
 	 */
 	public static void listasAutoCompletado() {
+		listaID = DBUtilidades.obtenerValoresColumna("ID");
 		listaNombre = DBUtilidades.obtenerValoresColumna("nomComic");
 		listaNumeroComic = DBUtilidades.obtenerValoresColumna("numComic");
 		listaVariante = DBUtilidades.obtenerValoresColumna("nomVariante");
@@ -254,6 +257,8 @@ public class ListaComicsDAO {
 		listaProcedencia = DBUtilidades.obtenerValoresColumna("procedencia");
 		listaCaja = DBUtilidades.obtenerValoresColumna("caja_deposito");
 		listaImagenes = DBUtilidades.obtenerValoresColumna("portada");
+
+		listaID = ordenarLista(listaID);
 
 		// Ordenar listaNumeroComic como enteros
 		List<Integer> numerosComic = listaNumeroComic.stream().map(Integer::parseInt).collect(Collectors.toList());
@@ -317,12 +322,12 @@ public class ListaComicsDAO {
 
 				} while (rs.next());
 
-	            procesarDatosAutocompletado(nombreGuionistaSet);
-	            procesarDatosAutocompletado(nombreVarianteSet);
-	            procesarDatosAutocompletado(nombreEditorialSet);
-	            procesarDatosAutocompletado(nombreDibujanteSet);
-	            procesarDatosAutocompletado(nombreFirmaSet);
-				
+				procesarDatosAutocompletado(nombreGuionistaSet);
+				procesarDatosAutocompletado(nombreVarianteSet);
+				procesarDatosAutocompletado(nombreEditorialSet);
+				procesarDatosAutocompletado(nombreDibujanteSet);
+				procesarDatosAutocompletado(nombreFirmaSet);
+
 				// Eliminar elementos repetidos
 				nombreComicSet = listaArregladaAutoComplete(nombreComicSet);
 				numeroComicSet = listaArregladaAutoComplete(numeroComicSet);
@@ -342,7 +347,7 @@ public class ListaComicsDAO {
 						return o1.compareTo(o2);
 					}
 				});
-				
+
 				listaOrdenada.add(nombreComicSet);
 				listaOrdenada.add(numeroComicSet.stream().map(String::valueOf).collect(Collectors.toList()));
 				listaOrdenada.add(nombreVarianteSet);
@@ -360,20 +365,45 @@ public class ListaComicsDAO {
 			Utilidades.manejarExcepcion(e);
 		}
 	}
-	
+
+	public static List<String> ordenarLista(List<String> listaStrings) {
+		// Creamos una lista para almacenar los enteros
+		List<Integer> listaEnteros = new ArrayList<>();
+
+		// Convertimos los strings a enteros y los almacenamos en la lista de enteros
+		for (String str : listaStrings) {
+			listaEnteros.add(Integer.parseInt(str));
+		}
+
+		// Ordenamos la lista de enteros de menor a mayor
+		Collections.sort(listaEnteros);
+
+		// Creamos una nueva lista para almacenar los strings ordenados
+		List<String> listaOrdenada = new ArrayList<>();
+
+		// Convertimos los enteros ordenados a strings y los almacenamos en la lista
+		// ordenada
+		for (int num : listaEnteros) {
+			listaOrdenada.add(String.valueOf(num));
+		}
+
+		// Devolvemos la lista ordenada de strings
+		return listaOrdenada;
+	}
+
 	public static void procesarDatosAutocompletado(List<String> lista) {
-	    List<String> nombresProcesados = new ArrayList<>();
-	    for (String cadena : lista) {
-	        String[] nombres = cadena.split("-");
-	        for (String nombre : nombres) {
-	            nombre = nombre.trim();
-	            if (!nombre.isEmpty()) {
-	                nombresProcesados.add(nombre);
-	            }
-	        }
-	    }
-	    lista.clear(); // Limpiar la lista original
-	    lista.addAll(nombresProcesados); // Agregar los nombres procesados a la lista original
+		List<String> nombresProcesados = new ArrayList<>();
+		for (String cadena : lista) {
+			String[] nombres = cadena.split("-");
+			for (String nombre : nombres) {
+				nombre = nombre.trim();
+				if (!nombre.isEmpty()) {
+					nombresProcesados.add(nombre);
+				}
+			}
+		}
+		lista.clear(); // Limpiar la lista original
+		lista.addAll(nombresProcesados); // Agregar los nombres procesados a la lista original
 	}
 
 	/**
@@ -555,28 +585,28 @@ public class ListaComicsDAO {
 		return listaLimpia;
 	}
 
-    /**
-     * Funcion que devuelve una lista en la que solamente se guardan aquellos datos
-     * que no se repiten
-     *
-     * @param listaComics
-     * @return
-     */
-    public static <T extends Comparable<? super T>> List<T> listaArregladaAutoComplete(List<T> listaComics) {
-        Set<T> uniqueSet = new HashSet<>();
-        List<T> result = new ArrayList<>();
+	/**
+	 * Funcion que devuelve una lista en la que solamente se guardan aquellos datos
+	 * que no se repiten
+	 *
+	 * @param listaComics
+	 * @return
+	 */
+	public static <T extends Comparable<? super T>> List<T> listaArregladaAutoComplete(List<T> listaComics) {
+		Set<T> uniqueSet = new HashSet<>();
+		List<T> result = new ArrayList<>();
 
-        for (T item : listaComics) {
-            if (uniqueSet.add(item)) {
-                result.add(item);
-            }
-        }
+		for (T item : listaComics) {
+			if (uniqueSet.add(item)) {
+				result.add(item);
+			}
+		}
 
-        // Ordenar la lista resultante de forma ascendente
-        Collections.sort(result);
+		// Ordenar la lista resultante de forma ascendente
+		Collections.sort(result);
 
-        return result;
-    }
+		return result;
+	}
 
 	/**
 	 * Busca un cómic por su ID en una lista de cómics.
@@ -594,6 +624,13 @@ public class ListaComicsDAO {
 		return null; // Retorna null si no se encuentra ningún cómic con la ID especificada
 	}
 
+	public static boolean comprobarLista() {
+		if (listaID.size() <= 0) {
+			return false;
+		}
+		return true;
+	}
+
 	/**
 	 * Genera un archivo de estadísticas basado en los datos de la base de datos de
 	 * cómics. Los datos se organizan en diferentes categorías y se cuentan para su
@@ -604,6 +641,7 @@ public class ListaComicsDAO {
 		// Crear HashMaps para almacenar los datos de cada campo sin repetición y sus
 		// conteos
 		Map<String, Integer> nomComicEstadistica = new HashMap<>();
+
 		Map<Integer, Integer> cajaDepositoEstadistica = new HashMap<>();
 		Map<String, Integer> nomVarianteEstadistica = new HashMap<>();
 		Map<String, Integer> firmaEstadistica = new HashMap<>();

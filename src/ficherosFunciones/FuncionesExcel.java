@@ -388,7 +388,6 @@ public class FuncionesExcel {
 			if (continuarSubida) {
 				directorio = carpetaPortadasTask();
 				directorio = (directorio == null) ? new File(DEFAULT_PORTADA_IMAGE_PATH + File.separator) : directorio;
-
 			}
 
 			// Inicializar referencia al controlador de carga de cómics

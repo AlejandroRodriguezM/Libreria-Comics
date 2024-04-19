@@ -246,6 +246,14 @@ public class AccionModificar {
 
 	public static void actualizarDatabase(String tipoUpdate, boolean actualizarFima, Stage ventanaOpciones) {
 
+		boolean estaBaseLlena = ListaComicsDAO.comprobarLista();
+
+		if (!estaBaseLlena) {
+			String cadenaCancelado = "La base de datos esta vacia";
+			AlarmaList.iniciarAnimacionAvanzado(referenciaVentana.getProntInfoEspecial(), cadenaCancelado);
+			return;
+		}
+
 		String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
 		List<Comic> listaComicsDatabase = SelectManager.verLibreria(sentenciaSQL, true);
 

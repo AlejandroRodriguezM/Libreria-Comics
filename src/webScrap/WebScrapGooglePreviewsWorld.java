@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,20 +15,13 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.metadata.IIOMetadata;
-import javax.imageio.stream.ImageInputStream;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -390,41 +382,41 @@ public class WebScrapGooglePreviewsWorld {
 		}
 	}
 
-	private static void limpiarFichero() {
-
-		String desktopPath = System.getProperty("user.home") + "/Desktop/";
-		String filePath = desktopPath + "comic_infoUpdate.txt";
-
-		String outputFile = desktopPath + "output.txt"; // Ruta del archivo de salida
-
-		try {
-			BufferedReader reader = new BufferedReader(new FileReader(filePath));
-			BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
-
-			String line;
-			while ((line = reader.readLine()) != null) {
-				int indexOfSemicolon = line.indexOf(';');
-				if (indexOfSemicolon != -1) {
-					// Si se encuentra un punto y coma, se escribe la parte de la línea antes de él
-					writer.write(line.substring(0, indexOfSemicolon + 1)); // +1 para incluir el punto y coma
-					writer.newLine();
-				} else {
-					// Si no se encuentra un punto y coma, se escribe la línea completa
-					writer.write(line);
-					writer.newLine();
-				}
-			}
-
-			reader.close();
-			writer.close();
-
-			System.out.println("El archivo ha sido procesado exitosamente.");
-		} catch (IOException e) {
-			System.err.println("Error al procesar el archivo: " + e.getMessage());
-			e.printStackTrace();
-		}
-
-	}
+//	private static void limpiarFichero() {
+//
+//		String desktopPath = System.getProperty("user.home") + "/Desktop/";
+//		String filePath = desktopPath + "comic_infoUpdate.txt";
+//
+//		String outputFile = desktopPath + "output.txt"; // Ruta del archivo de salida
+//
+//		try {
+//			BufferedReader reader = new BufferedReader(new FileReader(filePath));
+//			BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
+//
+//			String line;
+//			while ((line = reader.readLine()) != null) {
+//				int indexOfSemicolon = line.indexOf(';');
+//				if (indexOfSemicolon != -1) {
+//					// Si se encuentra un punto y coma, se escribe la parte de la línea antes de él
+//					writer.write(line.substring(0, indexOfSemicolon + 1)); // +1 para incluir el punto y coma
+//					writer.newLine();
+//				} else {
+//					// Si no se encuentra un punto y coma, se escribe la línea completa
+//					writer.write(line);
+//					writer.newLine();
+//				}
+//			}
+//
+//			reader.close();
+//			writer.close();
+//
+//			System.out.println("El archivo ha sido procesado exitosamente.");
+//		} catch (IOException e) {
+//			System.err.println("Error al procesar el archivo: " + e.getMessage());
+//			e.printStackTrace();
+//		}
+//
+//	}
 
 	public static void compressImages(List<String> inputPaths, double compressionFactor, double scaleRatio) {
 		long startTime = System.currentTimeMillis(); // Tiempo de inicio
@@ -458,59 +450,59 @@ public class WebScrapGooglePreviewsWorld {
 				+ seconds + " segundos");
 	}
 
-    public static void readMetadata() {
-        JFrame frame = new JFrame();
-        JFileChooser fileChooser = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Images", "jpg", "jpeg", "png", "gif", "bmp");
-        fileChooser.setFileFilter(filter);
+//    public static void readMetadata() {
+//        JFrame frame = new JFrame();
+//        JFileChooser fileChooser = new JFileChooser();
+//        FileNameExtensionFilter filter = new FileNameExtensionFilter("Images", "jpg", "jpeg", "png", "gif", "bmp");
+//        fileChooser.setFileFilter(filter);
+//
+//        int result = fileChooser.showOpenDialog(frame);
+//        if (result == JFileChooser.APPROVE_OPTION) {
+//            File selectedFile = fileChooser.getSelectedFile();
+//            try {
+//                BufferedImage image = ImageIO.read(selectedFile);
+//                ImageInputStream iis = ImageIO.createImageInputStream(selectedFile);
+//                Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
+//                if (readers.hasNext()) {
+//                    ImageReader reader = readers.next();
+//                    reader.setInput(iis, true);
+//                    IIOMetadata metadata = reader.getImageMetadata(0);
+//                    String[] names = metadata.getMetadataFormatNames();
+//                    for (String name : names) {
+//                        System.out.println("Formato de metadatos: " + name);
+//                        displayMetadata(metadata.getAsTree(name));
+//                    }
+//                } else {
+//                    System.out.println("No se encontró lector de imagen.");
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
-        int result = fileChooser.showOpenDialog(frame);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            try {
-                BufferedImage image = ImageIO.read(selectedFile);
-                ImageInputStream iis = ImageIO.createImageInputStream(selectedFile);
-                Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
-                if (readers.hasNext()) {
-                    ImageReader reader = readers.next();
-                    reader.setInput(iis, true);
-                    IIOMetadata metadata = reader.getImageMetadata(0);
-                    String[] names = metadata.getMetadataFormatNames();
-                    for (String name : names) {
-                        System.out.println("Formato de metadatos: " + name);
-                        displayMetadata(metadata.getAsTree(name));
-                    }
-                } else {
-                    System.out.println("No se encontró lector de imagen.");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+//    private static void displayMetadata(org.w3c.dom.Node root) {
+//        displayMetadata(root, 0);
+//    }
 
-    private static void displayMetadata(org.w3c.dom.Node root) {
-        displayMetadata(root, 0);
-    }
-
-    private static void displayMetadata(org.w3c.dom.Node node, int level) {
-        // Display node name
-        for (int i = 0; i < level; i++)
-            System.out.print("    ");
-        System.out.print(node.getNodeName() + ": ");
-        // Display node value, if any
-        org.w3c.dom.Node child = node.getFirstChild();
-        if (child != null) {
-            System.out.println(child.getNodeValue());
-        } else {
-            System.out.println();
-        }
-        // Recursively display children
-        org.w3c.dom.NodeList children = node.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-            displayMetadata(children.item(i), level + 1);
-        }
-    }
+//    private static void displayMetadata(org.w3c.dom.Node node, int level) {
+//        // Display node name
+//        for (int i = 0; i < level; i++)
+//            System.out.print("    ");
+//        System.out.print(node.getNodeName() + ": ");
+//        // Display node value, if any
+//        org.w3c.dom.Node child = node.getFirstChild();
+//        if (child != null) {
+//            System.out.println(child.getNodeValue());
+//        } else {
+//            System.out.println();
+//        }
+//        // Recursively display children
+//        org.w3c.dom.NodeList children = node.getChildNodes();
+//        for (int i = 0; i < children.getLength(); i++) {
+//            displayMetadata(children.item(i), level + 1);
+//        }
+//    }
 
 	public static final String DOCUMENTS_PATH = System.getProperty("user.home") + File.separator + "Documents";
 
