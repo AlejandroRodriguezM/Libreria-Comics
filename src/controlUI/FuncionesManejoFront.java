@@ -133,30 +133,31 @@ public class FuncionesManejoFront {
 		}
 	}
 
-	/**
-	 * Elimina un espacio en blanco al principio del texto en un TextField si
-	 * existe.
-	 *
-	 * @param textField El TextField al que se aplicará la eliminación del espacio
-	 *                  en blanco inicial.
-	 * @return El mismo TextField después de la modificación.
-	 */
-	public static void eliminarEspacioInicial(TextField textField) {
+	public static void eliminarEspacioInicialYFinal(TextField textField) {
 
-		if (textField != null) {
+	    if (textField != null) {
 
-			textField.textProperty().addListener((observable, oldValue, newValue) -> {
-				if (newValue != null && !newValue.isEmpty()) {
-					char firstChar = newValue.charAt(0);
-					// Si el primer carácter es un espacio en blanco o un símbolo
-					if (Character.isWhitespace(firstChar) || simbolos.contains(firstChar)) {
-						// Eliminar el espacio en blanco inicial o el símbolo
-						textField.setText(newValue.substring(1));
-					}
-				}
-			});
-		}
+	        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+	            if (newValue != null && !newValue.isEmpty()) {
+	                // Eliminar espacio en blanco inicial
+	                char firstChar = newValue.charAt(0);
+	                if (Character.isWhitespace(firstChar) || simbolos.contains(firstChar)) {
+	                    newValue = newValue.substring(1);
+	                }
+
+	                // Eliminar espacio en blanco final
+	                char lastChar = newValue.charAt(newValue.length() - 1);
+	                if (Character.isWhitespace(lastChar)) {
+	                    newValue = newValue.substring(0, newValue.length() - 1);
+	                }
+
+	                // Actualizar el valor del campo de texto
+	                textField.setText(newValue);
+	            }
+	        });
+	    }
 	}
+
 
 	public static void permitirUnSimbolo(TextField textField) {
 
@@ -185,31 +186,53 @@ public class FuncionesManejoFront {
 	 */
 	public static void restringirSimbolos(TextField textField) {
 
-		if (textField != null) {
+	    if (textField != null) {
 
-			textField.textProperty().addListener((observable, oldValue, newValue) -> {
-				String allowedPattern = "[\\p{L}\\p{N}\\s,.!-]*"; // Expresión regular para permitir letras, números,
-																	// espacios, ",", "-" y "."
+	        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+	            String allowedPattern = "[\\p{L}\\p{N}\\s,.!'`´\"-]*"; // Expresión regular para permitir letras, números, espacios, ",", "-", "'", "`", "´", y '"'
 
-				if (newValue != null) {
+	            if (newValue != null) {
 
-					// Elimina espacios al principio de la cadena.
-					newValue = newValue.trim();
+	                // Elimina espacios al principio y al final de la cadena.
+	                newValue = newValue.trim();
 
-					if (!newValue.matches(allowedPattern)) {
-						// Si el valor no coincide con el patrón permitido, restaura el valor anterior.
-						textField.setText(oldValue);
-					} else {
-						String updatedValue = newValue.replaceAll("\\s*(?<![,-])(?=[,-])|(?<=[,-])\\s*", "");
+	                if (!newValue.matches(allowedPattern)) {
+	                    // Si el valor no coincide con el patrón permitido, restaura el valor anterior.
+	                    textField.setText(oldValue);
+	                } else {
+	                    String updatedValue = newValue.replaceAll("\\s*(?<![,'\"`´-])(?=[,'\"`´-])|(?<=[,'\"`´-])\\s*", "");
 
-						if (!updatedValue.equals(newValue)) {
-							textField.setText(updatedValue);
-						}
-					}
-				}
-			});
-		}
+	                    if (!updatedValue.equals(newValue)) {
+	                        textField.setText(updatedValue);
+	                    }
+	                }
+	            }
+	        });
+	    }
 	}
+
+	
+	public static void eliminarSimbolosEspeciales(TextField textField) {
+
+	    if (textField != null) {
+
+	        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+	            if (newValue != null) {
+
+	                // Elimina los símbolos especiales ' " ! ? # @
+	                String cleanedValue = newValue.replaceAll("[\\'\"!\\?#@,]", "");
+
+	                // Reemplaza ' seguido de números con -
+	                cleanedValue = cleanedValue.replaceAll("\\'(?=\\d)", "-");
+
+	                // Actualiza el valor del campo de texto
+	                textField.setText(cleanedValue);
+	            }
+	        });
+	    }
+	}
+
+
 
 	/**
 	 * Reemplaza múltiples espacios seguidos por un solo espacio en un TextField.

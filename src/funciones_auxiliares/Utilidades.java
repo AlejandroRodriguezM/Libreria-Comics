@@ -335,10 +335,10 @@ public class Utilidades {
 
 		Path sourceDirectory = Paths.get(sourceDirectoryPath);
 
-	    if (!Files.exists(sourceDirectory) || !Files.isDirectory(sourceDirectory)) {
-	        System.err.println("El directorio de origen no es válido.");
-	        return;
-	    }
+		if (!Files.exists(sourceDirectory) || !Files.isDirectory(sourceDirectory)) {
+			System.err.println("El directorio de origen no es válido.");
+			return;
+		}
 
 		Path destinationDirectory = Paths.get(destinationDirectoryPath);
 
@@ -2183,24 +2183,30 @@ public class Utilidades {
 	}
 
 	public static String devolverPalabrasClave(String texto) {
-		// Expresión regular para buscar palabras clave
-		Pattern patron = Pattern.compile(
-				"\\b(tp|omnibus|omni|ed|deluxe|dlx|edition|hc|vol|cvr|absolute|treasury edition|#)\\b",
-				Pattern.CASE_INSENSITIVE);
-		Matcher matcher = patron.matcher(texto);
+		// Definir las palabras clave y sus correspondientes tipos de edición
+		String[] palabrasClave = { "absolute", "omnibus hc", "hc omnibus", "tp omnibus", "omnibus tp", "hc omni",
+				"omni hc", "tp omni", "omni tp", "omnibus", "omni", "tp", "deluxe", "dlx", "treasury edition", "hc",
+				"#", "cvr" };
 
-		// StringBuilder para almacenar el resultado
+		// Escapar los caracteres especiales en las palabras clave
+		StringBuilder regexBuilder = new StringBuilder();
+		for (String palabra : palabrasClave) {
+			regexBuilder.append(Pattern.quote(palabra)).append("|");
+		}
+		String regex = regexBuilder.substring(0, regexBuilder.length() - 1); // Eliminar el último "|"
+
+		// Compilar la expresión regular
+		Pattern pattern = Pattern.compile(regex);
+
+		// Crear un Matcher para buscar las coincidencias en el texto
+		Matcher matcher = pattern.matcher(texto);
+
+		// Determinar el tipo de edición correspondiente a la palabra clave encontrada
 		StringBuilder resultado = new StringBuilder();
-
-		// Verificar si se encontró alguna palabra clave
 		if (matcher.find()) {
-			// Obtener la palabra clave encontrada
-			String palabraClave = matcher.group().toLowerCase();
-
-			// Realizar acciones según la palabra clave encontrada
-			switch (palabraClave) {
+			switch (matcher.group()) {
 			case "absolute":
-				resultado.append("Edicion absolute (Absolute Edition)");
+				resultado.append("Edición absolute (Absolute Edition)");
 				break;
 			case "omnibus hc":
 			case "hc omnibus":
@@ -2212,7 +2218,7 @@ public class Utilidades {
 			case "omni tp":
 			case "omnibus":
 			case "omni":
-				resultado.append("Edicion omnibus (Omnibus)");
+				resultado.append("Edición omnibus (Omnibus)");
 				break;
 			case "tp":
 				resultado.append("Tapa blanda (Paperback)");
@@ -2220,13 +2226,14 @@ public class Utilidades {
 			case "deluxe":
 			case "dlx":
 			case "treasury edition":
-				resultado.append("Edicion de lujo (Deluxe Edition)");
+				resultado.append("Edición de lujo (Deluxe Edition)");
 				break;
 			case "hc":
 				resultado.append("Tapa dura (Hardcover)");
 				break;
 			case "#":
 			case "cvr":
+				System.out.println(1);
 				resultado.append("Grapa (Issue individual)");
 				break;
 			default:
@@ -2234,12 +2241,8 @@ public class Utilidades {
 				break;
 			}
 		} else {
-			// Si no se encontraron palabras clave, devolver un mensaje de error o un valor
-			// predeterminado
-			resultado.append("No se encontraron palabras clave");
+			resultado.append("Grapa (Issue individual)");
 		}
-
-		// Devolver el resultado como cadena de texto
 		return resultado.toString();
 	}
 

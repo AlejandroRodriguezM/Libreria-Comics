@@ -525,7 +525,7 @@ public class AccionControlUI {
 		});
 	}
 
-	public static void controlarEventosInterfazPrincipal() {
+	public static void controlarEventosInterfazPrincipal(AccionReferencias referenciaVentana) {
 		controlarEventosInterfaz();
 
 		referenciaVentana.getTablaBBDD().getSelectionModel().selectedItemProperty()
@@ -633,11 +633,7 @@ public class AccionControlUI {
 			idComicTratar_mod = valores.get(16);
 		}
 
-		if (esAccion) {
-			comic.setNombre(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(nombreComic), ""));
-		} else {
-			comic.setNombre(Utilidades.defaultIfNullOrEmpty(nombreComic, ""));
-		}
+		comic.setNombre(Utilidades.defaultIfNullOrEmpty(nombreComic, ""));
 
 		comic.setNumero(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(numeroComic), ""));
 		comic.setVariante(Utilidades.defaultIfNullOrEmpty(Utilidades.comaYGuionPorEspaciado(varianteComic), ""));

@@ -185,10 +185,10 @@ public class OpcionesAvanzadasController implements Initializable {
 			AccionFuncionesComunes.referenciaVentana = guardarReferencia();
 			rellenarComboboxPreviews();
 			FuncionesManejoFront.stageVentanas.add(estadoStage());
+			obtenerVersionDesdeOtraClase();
 		});
 		ventanaOpciones = miStageVentana();
 
-		obtenerVersionDesdeOtraClase();
 		AlarmaList.iniciarAnimacionEspera(prontInfo);
 		AlarmaList.iniciarAnimacionEspera(prontInfoEspecial);
 		AlarmaList.iniciarAnimacionEspera(prontInfoPreviews);
@@ -258,17 +258,40 @@ public class OpcionesAvanzadasController implements Initializable {
 	@FXML
 	void normalizarDataBase(ActionEvent event) {
 		AlarmaList.detenerAnimacionEspera();
-		DatabaseManagerDAO.comprobarNormalizado("nomGuionista", prontInfo);
-		DatabaseManagerDAO.comprobarNormalizado("nomDibujante", prontInfo);
-		DatabaseManagerDAO.comprobarNormalizado("nomVariante", prontInfo);
 
-		ListaComicsDAO.reiniciarListaComics();
-		ListaComicsDAO.listasAutoCompletado();
-		List<ComboBox<String>> comboboxes = referenciaVentana.getComboboxes();
-		if (comboboxes != null) {
-			funcionesCombo.rellenarComboBox(comboboxes);
-		}
+		Task<Void> task = new Task<Void>() {
+			@Override
+			protected Void call() throws Exception {
+				DatabaseManagerDAO.comprobarNormalizado("nomComic", prontInfo);
+				DatabaseManagerDAO.comprobarNormalizado("caja_deposito", prontInfo);
+				DatabaseManagerDAO.comprobarNormalizado("precio_comic", prontInfo);
+				DatabaseManagerDAO.comprobarNormalizado("codigo_comic", prontInfo);
+				DatabaseManagerDAO.comprobarNormalizado("numComic", prontInfo);
+				DatabaseManagerDAO.comprobarNormalizado("firma", prontInfo);
+				DatabaseManagerDAO.comprobarNormalizado("nomEditorial", prontInfo);
+				DatabaseManagerDAO.comprobarNormalizado("formato", prontInfo);
+				DatabaseManagerDAO.comprobarNormalizado("procedencia", prontInfo);
+				DatabaseManagerDAO.comprobarNormalizado("puntuacion", prontInfo);
+				DatabaseManagerDAO.comprobarNormalizado("key_issue", prontInfo);
+				DatabaseManagerDAO.comprobarNormalizado("estado", prontInfo);
 
+				DatabaseManagerDAO.comprobarNormalizado("nomGuionista", prontInfo);
+				DatabaseManagerDAO.comprobarNormalizado("nomDibujante", prontInfo);
+				DatabaseManagerDAO.comprobarNormalizado("nomVariante", prontInfo);
+
+				ListaComicsDAO.reiniciarListaComics();
+				ListaComicsDAO.listasAutoCompletado();
+				List<ComboBox<String>> comboboxes = referenciaVentana.getComboboxes();
+				if (comboboxes != null) {
+					Platform.runLater(() -> funcionesCombo.rellenarComboBox(comboboxes));
+				}
+				return null;
+			}
+		};
+
+		Thread thread = new Thread(task);
+		thread.setDaemon(true); // Hacer que el hilo sea demonio para que termine cuando la aplicación se cierre
+		thread.start();
 	}
 
 	public void obtenerVersionDesdeOtraClase() {

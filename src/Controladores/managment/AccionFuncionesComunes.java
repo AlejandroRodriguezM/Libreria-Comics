@@ -32,6 +32,7 @@ import controlUI.FuncionesTableView;
 import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
+import dbmanager.DatabaseManagerDAO;
 import dbmanager.ListaComicsDAO;
 import dbmanager.UpdateManager;
 import funciones_auxiliares.Utilidades;
@@ -422,20 +423,26 @@ public class AccionFuncionesComunes {
 
 			// Variables relacionadas con la importación de cómics
 			String id = "A" + 0 + "" + (ListaComicsDAO.comicsImportados.size() + 1);
-			String titulo = Utilidades.defaultIfNullOrEmpty(nombreLimpio, "Vacio");
-			String issueKey = Utilidades.defaultIfNullOrEmpty(comic.getKey_issue(), "Vacio");
-			String numero = Utilidades.defaultIfNullOrEmpty(numComic, "0");
-			String variante = Utilidades.defaultIfNullOrEmpty(comic.getVariante(), "Vacio");
-			String precio = Utilidades.defaultIfNullOrEmpty(comic.getPrecio_comic(), "0");
-			String dibujantes = Utilidades.defaultIfNullOrEmpty(comic.getDibujante(), "Vacio");
-			String escritores = Utilidades.defaultIfNullOrEmpty(comic.getGuionista(), "Vacio");
+			String titulo = Utilidades.defaultIfNullOrEmpty(DatabaseManagerDAO.corregirPatrones(nombreLimpio), "Vacio");
+			String issueKey = Utilidades.defaultIfNullOrEmpty(DatabaseManagerDAO.corregirNombre(comic.getKey_issue()),
+					"Vacio");
+			String numero = Utilidades.defaultIfNullOrEmpty(DatabaseManagerDAO.corregirPatrones(numComic), "0");
+			String variante = Utilidades.defaultIfNullOrEmpty(DatabaseManagerDAO.corregirNombre(comic.getVariante()),
+					"Vacio");
+			String precio = Utilidades.defaultIfNullOrEmpty(DatabaseManagerDAO.corregirNombre(comic.getPrecio_comic()),
+					"0");
+			String dibujantes = Utilidades.defaultIfNullOrEmpty(DatabaseManagerDAO.corregirNombre(comic.getDibujante()),
+					"Vacio");
+			String escritores = Utilidades.defaultIfNullOrEmpty(DatabaseManagerDAO.corregirNombre(comic.getGuionista()),
+					"Vacio");
 			String fechaVenta = comic.getFecha();
 			LocalDate fecha = Utilidades.parseFecha(fechaVenta);
 
 			// Variables relacionadas con la imagen del cómic
 			String referencia = Utilidades.defaultIfNullOrEmpty(comic.getUrl_referencia(), "Vacio");
 			String urlImagen = comic.getImagen();
-			String editorial = Utilidades.defaultIfNullOrEmpty(comic.getEditorial(), "Vacio");
+			String editorial = Utilidades
+					.defaultIfNullOrEmpty(DatabaseManagerDAO.corregirPatrones(comic.getEditorial()), "Vacio");
 			File file = new File(urlImagen);
 
 			// Manejo de la ruta de la imagen

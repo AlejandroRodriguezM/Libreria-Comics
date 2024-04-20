@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import Controladores.CrearBBDDController;
 import alarmas.AlarmaList;
@@ -265,7 +267,17 @@ public class DatabaseManagerDAO {
 			while (rs.next()) {
 				int id = rs.getInt("ID");
 				String nombre = rs.getString(columna);
-				String nombreCorregido = corregirNombre(nombre);
+				String nombreCorregido = "";
+				if (columna.equalsIgnoreCase("nomComic") || columna.equalsIgnoreCase("caja_deposito")
+						|| columna.equalsIgnoreCase("precio_comic") || columna.equalsIgnoreCase("codigo_comic")
+						|| columna.equalsIgnoreCase("numComic") || columna.equalsIgnoreCase("firma")
+						|| columna.equalsIgnoreCase("nomEditorial") || columna.equalsIgnoreCase("formato")
+						|| columna.equalsIgnoreCase("procedencia") || columna.equalsIgnoreCase("puntuacion")
+						|| columna.equalsIgnoreCase("key_issue") || columna.equalsIgnoreCase("estado")) {
+					nombreCorregido = corregirPatrones(nombre);
+				} else {
+					nombreCorregido = corregirNombre(nombre);
+				}
 
 				// Verificar si el nombre no está normalizado
 				if (!nombre.equals(nombreCorregido)) {
@@ -289,7 +301,7 @@ public class DatabaseManagerDAO {
 	}
 
 	// Método para corregir los nombres según los patrones especificados
-	private static String corregirNombre(String nombre) {
+	public static String corregirNombre(String nombre) {
 		// Convertir primera letra de cada palabra a mayúscula
 		nombre = nombre.replaceAll("(^|[-,\\s])(\\p{L})", "$1$2".toUpperCase());
 
@@ -316,17 +328,44 @@ public class DatabaseManagerDAO {
 
 		// Agregar la lógica para corregir los patrones específicos
 		// Reemplazar múltiples espacios entre palabras por un solo espacio
-		nombre = nombre.replaceAll("\\s{2,}", " ");
-		// Remover espacios alrededor de '-'
-		nombre = nombre.replaceAll("\\s*-\\s*", " - ");
-		// Remover espacios alrededor de ','
-		nombre = nombre.replaceAll("\\s*,\\s*", ", ");
-		// Remover espacios alrededor de '(' y ')'
-		nombre = nombre.replaceAll("\\s*\\(\\s*", "(");
-		nombre = nombre.replaceAll("\\s*\\)\\s*", ")");
+		nombre = corregirPatrones(nombre);
 
+		nombre = nombre.replaceAll("-", " - ");
+		
 		return nombre;
 	}
+
+    public static String corregirPatrones(String texto) {
+        // Reemplazar ' o ``´´ por ( seguido de texto y ) al final
+        texto = texto.replaceAll("('`´)(\\p{L}+)", "($2)");
+
+        // Reemplazar múltiples espacios entre palabras por un solo espacio
+        texto = texto.replaceAll("\\s{2,}", " ");
+
+        // Remover espacios alrededor de '-'
+        texto = texto.replaceAll("\\s*-\\s*", "-");
+
+        // Remover espacios alrededor de ','
+        texto = texto.replaceAll("\\s*,\\s*", ",");
+
+        // Agregar espacios alrededor de '(' y ')' si no están presentes ya
+        texto = texto.replaceAll("(?<!\\s)\\((?!\\s)", " (");
+        texto = texto.replaceAll("(?<!\\s)\\)(?!\\s)", ") ");
+
+        // Convertir la letra después de '-' a mayúscula
+        Pattern pattern = Pattern.compile("-(\\p{L})");
+        Matcher matcher = pattern.matcher(texto);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            matcher.appendReplacement(sb, "-" + matcher.group(1).toUpperCase());
+        }
+        matcher.appendTail(sb);
+        texto = sb.toString();
+
+        texto = texto.replaceAll("'", " ");
+
+        return texto;
+    }
 
 	/**
 	 * Funcion crea el fichero SQL segun el sistema operativo en el que te

@@ -11,9 +11,9 @@ import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
 import dbmanager.DBUtilidades.TipoBusqueda;
-import funciones_auxiliares.Utilidades;
 import dbmanager.ListaComicsDAO;
 import dbmanager.SelectManager;
+import funciones_auxiliares.Utilidades;
 import javafx.collections.FXCollections;
 
 public class AccionSeleccionar {
@@ -39,7 +39,7 @@ public class AccionSeleccionar {
 		// Verificar si idRow es nulo antes de intentar acceder a sus métodos
 		if (newSelection != null) {
 			String id_comic = newSelection.getID();
-
+			
 			mostrarComic(id_comic, esPrincipal);
 		}
 	}
@@ -49,12 +49,12 @@ public class AccionSeleccionar {
 		Comic comicTemp = null;
 		AlarmaList.detenerAnimacion();
 		String mensaje = "";
-		if (!ListaComicsDAO.comicsImportados.isEmpty()) {
+		
+		if (!ListaComicsDAO.comicsImportados.isEmpty() && !esPrincipal) {
 			comicTemp = ListaComicsDAO.buscarComicPorID(ListaComicsDAO.comicsImportados, idComic);
 		} else {
 			comicTemp = ComicManagerDAO.comicDatos(idComic);
 		}
-		
 
 		if (idComic == null || idComic.isEmpty() || comicTemp == null) {
 			AccionControlUI.limpiarAutorellenos(esPrincipal);
@@ -88,19 +88,15 @@ public class AccionSeleccionar {
 
 	}
 
-	public static void verBasedeDatos(boolean completo, boolean esAccion, Comic comic) {
-
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
+	public static void verBasedeDatos(boolean completo, boolean esAccion, Comic comic) {		
 
 		ListaComicsDAO.reiniciarListaComics();
 		FuncionesTableView.modificarColumnas();
 		referenciaVentana.getTablaBBDD().refresh();
 		referenciaVentana.getProntInfo().setText(null);
 		referenciaVentana.getProntInfo().clear();
-		referenciaVentana.getProntInfo().setOpacity(0);
-		referenciaVentana.getImagencomic().setImage(null);
+//		referenciaVentana.getProntInfo().setOpacity(1);
+//		referenciaVentana.getImagencomic().setImage(null);
 
 		FuncionesTableView.nombreColumnas(referenciaVentana.getTablaBBDD());
 		FuncionesTableView.actualizarBusquedaRaw(referenciaVentana.getTablaBBDD());

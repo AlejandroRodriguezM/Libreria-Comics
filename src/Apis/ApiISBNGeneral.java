@@ -274,15 +274,15 @@ public class ApiISBNGeneral {
 					authorName = ApiGoogle.translateText(authorName, "en");
 
 					// Llamar a la función para buscar información de la persona
-					String result = ApiComicVine.searchPersonAndExtractInfo(apiKey, authorName);
+					String result = ApiComicVine.searchPersonAndExtractInfo(apiKey, authorName.replace("-", " "));
 
 					// Verificar si el resultado es "Artist" o "Writer" y hacer append en las
 					// variables
 					if (result != null) {
 						if (result.equals("artist")) {
-							autoresSeparados.get("artistas").add(authorName);
+							autoresSeparados.get("artistas").add(authorName.replace("-", " "));
 						} else if (result.equals("writer")) {
-							autoresSeparados.get("escritores").add(authorName);
+							autoresSeparados.get("escritores").add(authorName.replace("-", " "));
 						}
 					}
 				}

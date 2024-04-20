@@ -205,15 +205,15 @@ public class WebScrapGoogleLeagueOfComics {
 
 					// Solo agregar los datos para "Cover Artist", "Writer" y "Artist"
 					if (textoDiv.equalsIgnoreCase("Cover Artist") || textoDiv.equalsIgnoreCase("Cover Penciller")) {
-						coverArtists.add(textoEnlace);
+						coverArtists.add(textoEnlace.replace("-", " "));
 					} else if (textoDiv.equalsIgnoreCase("Writer")) {
-						writers.add(textoEnlace);
+						writers.add(textoEnlace.replace("-", " "));
 					} else if (textoDiv.equalsIgnoreCase("Artist") || textoDiv.equalsIgnoreCase("Artist, Colorist")
 							|| textoDiv.equalsIgnoreCase("Penciller")) {
 						// Agregar artistas solo si no es un "Cover Artist" y no está en la lista
 						if (!textoDiv.equalsIgnoreCase("Cover Artist")
 								&& !textoDiv.equalsIgnoreCase("Cover Penciller")) {
-							artists.add(textoEnlace);
+							artists.add(textoEnlace.replace("-", " "));
 						}
 					}
 				}

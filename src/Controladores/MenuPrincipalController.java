@@ -568,7 +568,7 @@ public class MenuPrincipalController implements Initializable {
 			FuncionesTableView.seleccionarRaw();
 
 			FuncionesTableView.modificarColumnas();
-			AccionControlUI.controlarEventosInterfazPrincipal();
+			AccionControlUI.controlarEventosInterfazPrincipal(guardarReferencia());
 		});
 
 		AccionControlUI.establecerTooltips();
@@ -594,7 +594,7 @@ public class MenuPrincipalController implements Initializable {
 //		OpcionesAvanzadasController.referenciaVentana = guardarReferencia();
 
 		AccionEliminar.referenciaVentana = guardarReferencia();
-		
+
 		AccionModificar.referenciaVentana = guardarReferencia();
 	}
 
@@ -1118,7 +1118,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void clickRaton(MouseEvent event) throws IOException, SQLException {
-//		enviarReferencias();
+		enviarReferencias();
 		AccionSeleccionar.seleccionarComics(true);
 	}
 
@@ -1133,7 +1133,7 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void teclasDireccion(KeyEvent event) throws IOException, SQLException {
 		if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
-//			enviarReferencias();
+			enviarReferencias();
 			AccionSeleccionar.seleccionarComics(true);
 		}
 	}
@@ -1232,7 +1232,7 @@ public class MenuPrincipalController implements Initializable {
 						crearExcelTask.setOnRunning(e -> {
 							FuncionesManejoFront.cambiarEstadoMenuBar(true);
 						});
-						
+
 						crearExcelTask.setOnSucceeded(e -> {
 
 							boolean deleteCompleted;

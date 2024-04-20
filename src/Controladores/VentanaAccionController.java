@@ -704,11 +704,11 @@ public class VentanaAccionController implements Initializable {
 	public void enviarReferencias() {
 		AccionFuncionesComunes.referenciaVentana = guardarReferencia();
 
+		AccionControlUI.referenciaVentana = guardarReferencia();
+
 		AccionSeleccionar.referenciaVentana = guardarReferencia();
 
 		AccionAniadir.referenciaVentana = guardarReferencia();
-
-		AccionControlUI.referenciaVentana = guardarReferencia();
 
 		AccionModificar.referenciaVentana = guardarReferencia();
 
@@ -739,8 +739,8 @@ public class VentanaAccionController implements Initializable {
 	public void formatearTextField() {
 		listaTextField = FXCollections.observableArrayList(nombreComic, editorialComic, guionistaComic, dibujanteComic,
 				varianteComic);
-		FuncionesManejoFront.eliminarEspacioInicial(nombreComic);
-
+		FuncionesManejoFront.eliminarEspacioInicialYFinal(nombreComic);
+		FuncionesManejoFront.eliminarSimbolosEspeciales(nombreComic);
 		FuncionesManejoFront.restringirSimbolos(editorialComic);
 		FuncionesManejoFront.restringirSimbolos(guionistaComic);
 		FuncionesManejoFront.restringirSimbolos(dibujanteComic);
@@ -914,7 +914,6 @@ public class VentanaAccionController implements Initializable {
 	 */
 	@FXML
 	void importarFicheroCodigoBarras(ActionEvent evento) {
-		enviarReferencias();
 		if (FuncionesApis.verificarClavesAPI(clavesMarvel, apiKey)) {
 			if (Utilidades.isInternetAvailable()) {
 
@@ -928,6 +927,7 @@ public class VentanaAccionController implements Initializable {
 
 				if (fichero != null) {
 					AccionFuncionesComunes.busquedaPorCodigoImportacion(fichero);
+					enviarReferencias();
 				}
 			}
 		}
@@ -971,10 +971,11 @@ public class VentanaAccionController implements Initializable {
 					@Override
 					protected Void call() throws Exception {
 
-				        if (isCancelled() || !referenciaVentana.getStage().isShowing()) {
-				            return null; // Exit the call() method if the task has been canceled or the stage is not showing
-				        }
-						
+						if (isCancelled() || !referenciaVentana.getStage().isShowing()) {
+							return null; // Exit the call() method if the task has been canceled or the stage is not
+											// showing
+						}
+
 						if (AccionFuncionesComunes.procesarComicPorCodigo(valorCodigo)) {
 							String mensaje = "Comic encontrado correctamente";
 							AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);

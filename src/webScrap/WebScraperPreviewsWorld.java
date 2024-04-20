@@ -119,8 +119,6 @@ public class WebScraperPreviewsWorld {
 
 				String numero = extractNumeroFromTitle(document);
 
-				String formato = Utilidades.devolverPalabrasClave(titulo);
-
 				// Scraping de la etiqueta div con class "SRP"
 				String precio = scrapeAndPrintSRP(document);
 
@@ -141,15 +139,15 @@ public class WebScraperPreviewsWorld {
 						// Almacenar en la variable correspondiente según el tipo
 						switch (type) {
 						case "W":
-							writer = value;
+							writer = value.replace("-", " ");
 							break;
 						case "A":
-							artist = value;
+							artist = value.replace("-", " ");
 							break;
 						case "CA":
 						case "A/CA":
-							artist = value;
-							variant = value;
+							artist = value.replace("-", " ");
+							variant = value.replace("-", " ");
 							break;
 						default:
 							break;
@@ -176,6 +174,9 @@ public class WebScraperPreviewsWorld {
 				writer = Comic.limpiarCampo(writer);
 				artist = Comic.limpiarCampo(artist);
 				issueKey = Comic.limpiarCampo(issueKey);
+				String formato = Utilidades.devolverPalabrasClave(titulo);
+				
+				System.out.println(formato);
 				
 				Comic comicInfoArray = new Comic("", titulo, "0", numero, variant, "", editorial, formato,
 						"Estados Unidos (United States)", fecha, writer, artist, "En posesion", issueKey,
@@ -414,6 +415,5 @@ public class WebScraperPreviewsWorld {
 
 		return result.toString();
 	}
-	
-	
+
 }
