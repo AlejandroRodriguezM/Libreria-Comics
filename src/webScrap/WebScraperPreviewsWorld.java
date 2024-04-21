@@ -139,15 +139,15 @@ public class WebScraperPreviewsWorld {
 						// Almacenar en la variable correspondiente según el tipo
 						switch (type) {
 						case "W":
-							writer = value.replace("-", " ");
+							writer = value.replace("-", "");
 							break;
 						case "A":
-							artist = value.replace("-", " ");
+							artist = value.replace("-", "");
 							break;
 						case "CA":
 						case "A/CA":
-							artist = value.replace("-", " ");
-							variant = value.replace("-", " ");
+							artist = value.replace("-", "");
+							variant = value.replace("-", "");
 							break;
 						default:
 							break;
@@ -175,9 +175,7 @@ public class WebScraperPreviewsWorld {
 				artist = Comic.limpiarCampo(artist);
 				issueKey = Comic.limpiarCampo(issueKey);
 				String formato = Utilidades.devolverPalabrasClave(titulo);
-				
-				System.out.println(formato);
-				
+
 				Comic comicInfoArray = new Comic("", titulo, "0", numero, variant, "", editorial, formato,
 						"Estados Unidos (United States)", fecha, writer, artist, "En posesion", issueKey,
 						"Sin puntuacion", portadaImagen, previews_World_Url, precio, diamondCode);
@@ -269,7 +267,8 @@ public class WebScraperPreviewsWorld {
 	private static String scrapeAndPrintReleaseDate(Document document) {
 		Element releaseDateElement = document.selectFirst("div.ReleaseDate");
 		if (releaseDateElement != null) {
-			String releaseDateText = releaseDateElement.text().replace("In Shops: ", "").replace("N/A", "").trim();
+			
+			String releaseDateText = releaseDateElement.text().replace("In Shops: ", "").replace("N/A", "").replace("TBD", "").trim();
 			Date releaseDate = parseReleaseDate(releaseDateText);
 			return formatDateAsString(releaseDate);
 		}

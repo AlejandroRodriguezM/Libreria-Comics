@@ -905,8 +905,6 @@ public class AlarmaList {
 				prontInfo.setStyle("-fx-border-color: red;");
 			}
 			prontInfo.setText(mensaje);
-
-			detenerAnimacion();
 		}
 	}
 

@@ -222,11 +222,14 @@ public class AccionFuncionesComunes {
 			String numComic = Utilidades.extraerNumeroLimpio(comicInfo.getNombre());
 			String nombreCorregido = Utilidades.eliminarParentesis(comicInfo.getNombre());
 			String nombreLimpio = Utilidades.extraerNombreLimpio(nombreCorregido);
+			nombreLimpio = DatabaseManagerDAO.corregirPatrones(nombreLimpio);
 			String formatoLimpio = Utilidades.devolverPalabrasClave(comicInfo.getNombre());
+			String editorial = DatabaseManagerDAO.getEditorial(comicInfo.getEditorial());
 
 			comicInfo.setNombre(nombreLimpio);
 			comicInfo.setNumero(numComic);
 			comicInfo.setFormato(formatoLimpio);
+			comicInfo.setEditorial(editorial);
 
 			completarInformacionFaltante(comicInfo, comicOriginal);
 			if (tipoUpdate.equalsIgnoreCase("modificar")) {
@@ -426,11 +429,10 @@ public class AccionFuncionesComunes {
 			String titulo = Utilidades.defaultIfNullOrEmpty(DatabaseManagerDAO.corregirPatrones(nombreLimpio), "Vacio");
 			String issueKey = Utilidades.defaultIfNullOrEmpty(DatabaseManagerDAO.corregirNombre(comic.getKey_issue()),
 					"Vacio");
-			String numero = Utilidades.defaultIfNullOrEmpty(DatabaseManagerDAO.corregirPatrones(numComic), "0");
+			String numero = Utilidades.defaultIfNullOrEmpty(numComic, "0");
 			String variante = Utilidades.defaultIfNullOrEmpty(DatabaseManagerDAO.corregirNombre(comic.getVariante()),
 					"Vacio");
-			String precio = Utilidades.defaultIfNullOrEmpty(DatabaseManagerDAO.corregirNombre(comic.getPrecio_comic()),
-					"0");
+			String precio = Utilidades.defaultIfNullOrEmpty(comic.getPrecio_comic(), "0");
 			String dibujantes = Utilidades.defaultIfNullOrEmpty(DatabaseManagerDAO.corregirNombre(comic.getDibujante()),
 					"Vacio");
 			String escritores = Utilidades.defaultIfNullOrEmpty(DatabaseManagerDAO.corregirNombre(comic.getGuionista()),
@@ -807,7 +809,6 @@ public class AccionFuncionesComunes {
 			actualizarCombobox();
 			FuncionesManejoFront.cambiarEstadoMenuBar(true);
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(true, referenciaVentana);
-			FuncionesManejoFront.manejarMensajeTextArea(cadenaAfirmativo);
 		});
 
 		tarea.setOnSucceeded(ev -> {
@@ -829,7 +830,6 @@ public class AccionFuncionesComunes {
 			actualizarCombobox();
 			FuncionesManejoFront.cambiarEstadoMenuBar(false);
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, referenciaVentana);
-			FuncionesManejoFront.manejarMensajeTextArea(cadenaAfirmativo);
 		});
 
 		tarea.setOnCancelled(ev -> {
@@ -839,7 +839,6 @@ public class AccionFuncionesComunes {
 			actualizarCombobox();
 			FuncionesManejoFront.cambiarEstadoMenuBar(false);
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, referenciaVentana);
-			FuncionesManejoFront.manejarMensajeTextArea(cadenaAfirmativo);
 
 			Platform.runLater(() -> {
 				cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0);

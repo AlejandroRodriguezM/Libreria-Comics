@@ -391,13 +391,13 @@ public class ApiMarvel {
 				String creatorRole = creator.getString("role");
 
 				if (creatorRole.equals("penciler") || creatorRole.equals("penciller") || creatorRole.equals("artist")) {
-					pencillers.add(creatorName.replace("-", " "));
+					pencillers.add(creatorName.replace("-", ""));
 				} else if (creatorRole.equals("writer")) {
-					writers.add(creatorName.replace("-", " "));
+					writers.add(creatorName.replace("-", ""));
 				}
 				if (creatorRole.equals("penciller (cover)") || creatorRole.equals("penciler (cover)")
 						|| creatorRole.equals("painter (cover)")) {
-					coverPencillers.add(creatorName.replace("-", " "));
+					coverPencillers.add(creatorName.replace("-", ""));
 				} else {
 
 				}

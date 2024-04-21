@@ -29,7 +29,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.file.DirectoryStream;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -429,8 +428,8 @@ public class Utilidades {
 		return nombreArchivo;
 	}
 
-	public static void copiaSeguridad(List<Comic> listaComics, SimpleDateFormat dateFormat) {
-		try {
+	public static void copiaSeguridad(final List<Comic> listaComics, final SimpleDateFormat dateFormat) {
+		CompletableFuture<Void> backupFuture = CompletableFuture.runAsync(() -> {
 			String nombreCarpeta = dateFormat.format(new Date());
 
 			String userDir = System.getProperty("user.home");
@@ -444,33 +443,49 @@ public class Utilidades {
 					+ File.separator + "backups" + File.separator + nombreCarpeta;
 
 			if (sourceFolder.exists()) {
-				crearCarpetaBackups(carpetaLibreria);
-				crearArchivoZip(sourceFolder, carpetaLibreria, dateFormat);
+				crearCopiaSeg(sourceFolder, carpetaLibreria, dateFormat);
 			}
-		} catch (IOException e) {
-			manejarExcepcion(e);
-		}
+		});
+
+		// Espera a que la copia de seguridad se complete antes de continuar con la
+		// eliminación de archivos
+		backupFuture.exceptionally(ex -> {
+			// Manejar cualquier excepción que ocurra dentro del CompletableFuture
+			System.err.println("Error en la copia de seguridad: " + ex);
+			return null;
+		}).join(); // Esperar a que se complete la copia de seguridad
 	}
 
-	private static void crearCarpetaBackups(String carpetaLibreria) throws IOException {
-		File backupsFolder = new File(carpetaLibreria);
-		if (!backupsFolder.exists() && !backupsFolder.mkdirs()) {
-			throw new IOException("Error al crear la carpeta 'backups'.");
-		}
-	}
+	private static void crearCopiaSeg(final File sourceFolder, final String carpetaLibreria,
+			final SimpleDateFormat dateFormat) {
+		Thread thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					File backupsFolder = new File(carpetaLibreria);
+					if (!backupsFolder.exists() && !backupsFolder.mkdirs()) {
+						throw new IOException("Error al crear la carpeta 'backups'.");
+					}
 
-	private static void crearArchivoZip(File sourceFolder, String carpetaLibreria, SimpleDateFormat dateFormat)
-			throws IOException {
-		// Crear archivo ZIP con fecha actual
-		String backupFileName = "portadas_" + dateFormat.format(new Date()) + ".zip";
-		String backupPath = carpetaLibreria + File.separator + backupFileName;
-		File backupFile = new File(backupPath);
+					final String DOCUMENTS_PATH = Utilidades.DOCUMENTS_PATH;
+					final String DB_NAME = ConectManager.DB_NAME;
+					final String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+							+ DB_NAME + File.separator;
+					final String directorioOriginal = directorioComun + "portadas" + File.separator;
+					String backupFileName = "portadas_" + dateFormat.format(new Date());
+					File carpetaBackup = new File(backupFileName);
+					carpetaBackup.mkdir();
 
-		// Comprimir carpeta en el archivo ZIP
-		try (FileOutputStream fos = new FileOutputStream(backupFile);
-				ZipOutputStream zipOut = new ZipOutputStream(fos)) {
-			zipFile(sourceFolder, sourceFolder.getName(), zipOut);
-		}
+					String backupPath = carpetaLibreria + File.separator + backupFileName;
+
+					Utilidades.copiarDirectorio(backupPath, directorioOriginal);
+				} catch (IOException e) {
+					e.printStackTrace();
+					// Manejar la excepción según sea necesario
+				}
+			}
+		});
+		thread.start();
 	}
 
 	/**
@@ -492,43 +507,6 @@ public class Utilidades {
 				while ((length = fileInputStream.read(buffer)) > 0) {
 					zipOut.write(buffer, 0, length);
 				}
-			}
-		}
-	}
-
-	/**
-	 * Comprime un archivo o carpeta en un archivo zip.
-	 *
-	 * @param fileToZip El archivo o carpeta que se va a comprimir.
-	 * @param fileName  El nombre del archivo.
-	 * @param zipOut    El flujo de salida del archivo zip.
-	 * @throws IOException Si ocurre un error de E/S durante la compresión.
-	 */
-	private static void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut) throws IOException {
-		if (fileToZip.isHidden()) {
-			return;
-		}
-
-		if (fileToZip.isDirectory()) {
-			fileName = fileName.endsWith("/") ? fileName : fileName + "/";
-			zipOut.putNextEntry(new ZipEntry(fileName));
-
-			try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(fileToZip.toPath())) {
-				for (Path childPath : dirStream) {
-					zipFile(childPath.toFile(), fileName + childPath.getFileName(), zipOut);
-				}
-			}
-			return;
-		}
-
-		try (FileInputStream fis = new FileInputStream(fileToZip)) {
-			ZipEntry zipEntry = new ZipEntry(fileName);
-			zipOut.putNextEntry(zipEntry);
-
-			byte[] bytes = new byte[4096];
-			int length;
-			while ((length = fis.read(bytes)) >= 0) {
-				zipOut.write(bytes, 0, length);
 			}
 		}
 	}
@@ -1152,8 +1130,6 @@ public class Utilidades {
 		String documentsPath = userDir + File.separator + "Documents";
 		String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
 				+ obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas";
-
-		System.out.println(obtenerDatoDespuesDeDosPuntos("Database"));
 
 		File portadasFolder = new File(defaultImagePath);
 
@@ -2157,6 +2133,11 @@ public class Utilidades {
 		// Encontrar la posición del símbolo #
 		int indiceNumeral = nombreComic.indexOf("#");
 
+		// Eliminar todos los números si no hay #
+		if (!nombreComic.contains("#")) {
+			nombreComic = nombreComic.replaceAll("\\d+", "");
+		}
+
 		// Si no se encuentra el símbolo #, devuelve el nombre completo
 		if (indiceNumeral == -1) {
 			return eliminarPalabrasClave(nombreComic.trim());
@@ -2167,8 +2148,8 @@ public class Utilidades {
 	}
 
 	private static String eliminarPalabrasClave(String texto) {
-		// Eliminar cualquier número
-		texto = texto.replaceAll("\\d", "");
+		// Conservar números seguidos de ' junto con cualquier texto que los preceda
+		texto = texto.replaceAll("(.*?\\b\\w*'\\d+)", "$1");
 
 		// Eliminar palabras clave
 		texto = texto.replaceAll("(?i)\\b(tp|omnibus|omni|ed|deluxe|dlx|edition|hc|vol|cvr)\\b", "");
@@ -2186,7 +2167,7 @@ public class Utilidades {
 		// Definir las palabras clave y sus correspondientes tipos de edición
 		String[] palabrasClave = { "absolute", "omnibus hc", "hc omnibus", "tp omnibus", "omnibus tp", "hc omni",
 				"omni hc", "tp omni", "omni tp", "omnibus", "omni", "tp", "deluxe", "dlx", "treasury edition", "hc",
-				"#", "cvr" };
+				"#", "cvr", "TBD" };
 
 		// Escapar los caracteres especiales en las palabras clave
 		StringBuilder regexBuilder = new StringBuilder();
@@ -2199,7 +2180,7 @@ public class Utilidades {
 		Pattern pattern = Pattern.compile(regex);
 
 		// Crear un Matcher para buscar las coincidencias en el texto
-		Matcher matcher = pattern.matcher(texto);
+		Matcher matcher = pattern.matcher(texto.toLowerCase());
 
 		// Determinar el tipo de edición correspondiente a la palabra clave encontrada
 		StringBuilder resultado = new StringBuilder();
@@ -2221,6 +2202,7 @@ public class Utilidades {
 				resultado.append("Edición omnibus (Omnibus)");
 				break;
 			case "tp":
+			case "TBD":
 				resultado.append("Tapa blanda (Paperback)");
 				break;
 			case "deluxe":
@@ -2233,7 +2215,6 @@ public class Utilidades {
 				break;
 			case "#":
 			case "cvr":
-				System.out.println(1);
 				resultado.append("Grapa (Issue individual)");
 				break;
 			default:
@@ -2247,6 +2228,9 @@ public class Utilidades {
 	}
 
 	public static String extraerNumeroLimpio(String numComic) {
+
+		numComic = numComic.replaceAll("\\(.*?\\)", "");
+
 		// Encontrar la posición del símbolo #
 		int indiceNumeral = numComic.indexOf("#");
 

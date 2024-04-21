@@ -562,6 +562,7 @@ public class Comic {
 	        campo = campo.replaceAll("[,\\s-]+\\s*$", ""); // Al final
 	        campo = campo.replaceAll(",\\s*,", ","); // Comas repetidas
 	        campo = campo.replaceAll(",\\s*", " - "); // Reemplazar ", " por " - "
+	        campo = campo.replaceAll("'", " "); // Reemplazar ", " por " - "
 	    }
 	    return campo;
 	}

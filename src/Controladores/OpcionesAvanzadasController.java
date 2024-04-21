@@ -318,7 +318,7 @@ public class OpcionesAvanzadasController implements Initializable {
 
 				int indiceSeleccionado = comboPreviews.getSelectionModel().getSelectedIndex();
 				String urlSeleccionada = OpcionesAvanzadasController.urlActualizados.get(indiceSeleccionado);
-
+				String tituloComboBox = comboPreviews.getSelectionModel().toString();
 				if (urlSeleccionada.equals("No hay previews")) {
 					String cadenaError = "No existe PDF que descargar";
 					AlarmaList.iniciarAnimacionAvanzado(prontInfoPreviews, cadenaError);
@@ -327,6 +327,9 @@ public class OpcionesAvanzadasController implements Initializable {
 
 				FileChooser fileChooser = new FileChooser();
 				fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos PDF", "*.pdf"));
+
+				fileChooser.setInitialFileName(tituloComboBox);
+
 				File file = fileChooser.showSaveDialog(new Stage());
 
 				if (file != null) {
@@ -518,7 +521,6 @@ public class OpcionesAvanzadasController implements Initializable {
 			botonCancelarSubidaPortadas.setVisible(true);
 			FuncionesManejoFront.cambiarEstadoMenuBar(true);
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(true, referenciaVentana);
-			FuncionesManejoFront.manejarMensajeTextArea(mensaje);
 		});
 
 		task.setOnSucceeded(ev -> {
@@ -528,7 +530,6 @@ public class OpcionesAvanzadasController implements Initializable {
 			botonCancelarSubidaPortadas.setVisible(false);
 			FuncionesManejoFront.cambiarEstadoMenuBar(false);
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, referenciaVentana);
-			FuncionesManejoFront.manejarMensajeTextArea(mensaje);
 		});
 
 		task.setOnCancelled(ev -> {
@@ -537,7 +538,6 @@ public class OpcionesAvanzadasController implements Initializable {
 			AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, mensaje);
 			FuncionesManejoFront.cambiarEstadoMenuBar(false);
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, referenciaVentana);
-			FuncionesManejoFront.manejarMensajeTextArea(mensaje);
 
 			Platform.runLater(() -> {
 				cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0);

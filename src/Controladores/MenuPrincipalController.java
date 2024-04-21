@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -1217,16 +1218,18 @@ public class MenuPrincipalController implements Initializable {
 			Thread borradoTablaThread = new Thread(() -> {
 				try {
 					boolean confirmacionBorrado = nav.borrarContenidoTabla().get();
-
+					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
 					if (confirmacionBorrado) {
+
 						AlarmaList.iniciarAnimacionCarga(referenciaVentana.getProgresoCarga());
 						String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
 
 						List<Comic> listaComics = SelectManager.verLibreria(sentenciaSQL, false);
 						FuncionesExcel excelFuntions = new FuncionesExcel();
 						// Configuración de la tarea para crear el archivo Excel
+						
 						Task<Boolean> crearExcelTask = excelFuntions.crearExcelTask(listaComics,
-								TipoBusqueda.ELIMINAR.toString());
+								TipoBusqueda.ELIMINAR.toString(), dateFormat);
 						Thread excelThread = new Thread(crearExcelTask);
 
 						crearExcelTask.setOnRunning(e -> {
@@ -1241,14 +1244,14 @@ public class MenuPrincipalController implements Initializable {
 								String mensaje = deleteCompleted ? "Base de datos borrada y reiniciada correctamente"
 										: "ERROR. No se ha podido eliminar y reiniciar la base de datos";
 
+								
 								if (deleteCompleted) {
 									AlarmaList.detenerAnimacionCarga(referenciaVentana.getProgresoCarga());
 									Utilidades.eliminarArchivosEnCarpeta();
 									ListaComicsDAO.limpiarListaGuardados();
 								}
 								FuncionesManejoFront.cambiarEstadoMenuBar(false);
-								AlarmaList.mostrarMensajePront(mensaje, deleteCompleted,
-										referenciaVentana.getProntInfo());
+								AlarmaList.mostrarMensajePront(mensaje, deleteCompleted,prontInfo);
 
 							} catch (InterruptedException e1) {
 								// TODO Auto-generated catch block
@@ -1264,7 +1267,7 @@ public class MenuPrincipalController implements Initializable {
 					} else {
 						AlarmaList.detenerAnimacionCarga(referenciaVentana.getProgresoCarga());
 						String mensaje = "ERROR. Has cancelado el borrado de la base de datos";
-						AlarmaList.mostrarMensajePront(mensaje, false, referenciaVentana.getProntInfo());
+						AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 					}
 				} catch (InterruptedException | ExecutionException e) {
 					Utilidades.manejarExcepcion(e);
@@ -1299,9 +1302,9 @@ public class MenuPrincipalController implements Initializable {
 		prontInfo.setOpacity(0);
 		tablaBBDD.getItems().clear();
 		imagencomic.setImage(null);
-
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
 		// Configuración de la tarea para crear el archivo Excel
-		Task<Boolean> crearExcelTask = excelFuntions.crearExcelTask(listaComics, tipoBusqueda);
+		Task<Boolean> crearExcelTask = excelFuntions.crearExcelTask(listaComics, tipoBusqueda, dateFormat);
 		Thread excelThread = new Thread(crearExcelTask);
 
 		crearExcelTask.setOnRunning(e -> {

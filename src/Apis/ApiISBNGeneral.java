@@ -55,10 +55,10 @@ public class ApiISBNGeneral {
 		String apiUrl = "https://openlibrary.org/api/books?bibkeys=ISBN:" + isbn + "&jscmd=details&format=json";
 		String apiKey = FuncionesApis.cargarApiComicVine();
 
-		if(isbn.length() != 13) {
+		if (isbn.length() != 13) {
 			return null;
 		}
-		
+
 		try {
 			String jsonResponse = sendHttpGetRequest(apiUrl);
 			JSONObject jsonObject = new JSONObject(jsonResponse);
@@ -67,13 +67,13 @@ public class ApiISBNGeneral {
 			JSONObject bookInfo = jsonObject.optJSONObject("ISBN:" + isbn);
 
 			if (jsonObject.length() == 0 || bookInfo.length() == 0) {
-			    if (prontInfo != null) {
-			        String mensaje = "No se encontró el cómic con código: " + isbn;
+				if (prontInfo != null) {
+					String mensaje = "No se encontró el cómic con código: " + isbn;
 
-			        AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
-			    }
+					AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+				}
 
-			    return null;
+				return null;
 			}
 
 			// Ahora puedes acceder a las propiedades de bookInfo, ya que se ha verificado
@@ -91,12 +91,11 @@ public class ApiISBNGeneral {
 			String escritores = "";
 
 			for (String a : artistasJson) {
-
-				artistas += a + ",";
+				artistas += a.replace("-", "") + " - ";
 			}
 
 			for (String e : escritoresJson) {
-				escritores += e + ",";
+				escritores += e.replace("-", "") + " - ";
 			}
 
 			String nombre = extraerTitulo(details);

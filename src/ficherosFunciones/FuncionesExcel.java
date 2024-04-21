@@ -201,24 +201,24 @@ public class FuncionesExcel {
 	 * @return Una tarea que realiza la exportación y devuelve true si se realiza
 	 *         con éxito, o false si ocurre un error.
 	 */
-	public Task<Boolean> crearExcelTask(List<Comic> listaComics, String tipoBusqueda) {
+	public Task<Boolean> crearExcelTask(List<Comic> listaComics, String tipoBusqueda, SimpleDateFormat dateFormat) {
 
 		NUMERO_COMICS_LEIDOS = 0;
 		File directorioImagenes[] = { null };
 		File directorioFichero[] = { null };
 
 		if (tipoBusqueda.equalsIgnoreCase(TipoBusqueda.ELIMINAR.toString())) {
-
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
 			String nombreCarpeta = dateFormat.format(new Date());
 
 			String userDir = System.getProperty("user.home");
 			String ubicacion = userDir + File.separator + "AppData" + File.separator + "Roaming";
 			String direccion = ubicacion + File.separator + "libreria" + File.separator + ConectManager.DB_NAME
 					+ File.separator + "backups" + File.separator + nombreCarpeta;
-			Utilidades.copiaSeguridad(listaComics, dateFormat);
 
 			try {
+				
+				Utilidades.copiaSeguridad(listaComics, dateFormat);
+				
 				File carpetaLibreria = new File(direccion);
 				if (!carpetaLibreria.exists()) {
 					carpetaLibreria.mkdirs(); // This will create all necessary parent directories as well

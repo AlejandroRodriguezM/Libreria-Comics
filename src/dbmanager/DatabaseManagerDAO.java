@@ -268,15 +268,21 @@ public class DatabaseManagerDAO {
 				int id = rs.getInt("ID");
 				String nombre = rs.getString(columna);
 				String nombreCorregido = "";
-				if (columna.equalsIgnoreCase("nomComic") || columna.equalsIgnoreCase("caja_deposito")
-						|| columna.equalsIgnoreCase("precio_comic") || columna.equalsIgnoreCase("codigo_comic")
-						|| columna.equalsIgnoreCase("numComic") || columna.equalsIgnoreCase("firma")
+				if (columna.equalsIgnoreCase("nomComic") || columna.equalsIgnoreCase("firma")
 						|| columna.equalsIgnoreCase("nomEditorial") || columna.equalsIgnoreCase("formato")
-						|| columna.equalsIgnoreCase("procedencia") || columna.equalsIgnoreCase("puntuacion")
-						|| columna.equalsIgnoreCase("key_issue") || columna.equalsIgnoreCase("estado")) {
+						|| columna.equalsIgnoreCase("procedencia") || columna.equalsIgnoreCase("key_issue")
+						|| columna.equalsIgnoreCase("estado")) {
 					nombreCorregido = corregirPatrones(nombre);
 				} else {
 					nombreCorregido = corregirNombre(nombre);
+				}
+
+				if (columna.equalsIgnoreCase("firma")) {
+					nombreCorregido = nombreCorregido.replace("-", " - ");
+				}
+
+				if (columna.equalsIgnoreCase("nomEditorial")) {
+					nombreCorregido = getEditorial(nombreCorregido.replace("-", " - "));
 				}
 
 				// Verificar si el nombre no está normalizado
@@ -331,41 +337,62 @@ public class DatabaseManagerDAO {
 		nombre = corregirPatrones(nombre);
 
 		nombre = nombre.replaceAll("-", " - ");
-		
+
 		return nombre;
 	}
 
-    public static String corregirPatrones(String texto) {
-        // Reemplazar ' o ``´´ por ( seguido de texto y ) al final
-        texto = texto.replaceAll("('`´)(\\p{L}+)", "($2)");
+	public static String corregirPatrones(String texto) {
 
-        // Reemplazar múltiples espacios entre palabras por un solo espacio
-        texto = texto.replaceAll("\\s{2,}", " ");
+		System.out.println(texto);
 
-        // Remover espacios alrededor de '-'
-        texto = texto.replaceAll("\\s*-\\s*", "-");
+		// Reemplazar ' o ``´´ por ( seguido de texto y ) al final
+		texto = texto.replaceAll("('`´)(\\p{L}+)", "($2)");
 
-        // Remover espacios alrededor de ','
-        texto = texto.replaceAll("\\s*,\\s*", ",");
+		// Reemplazar múltiples espacios entre palabras por un solo espacio
+		texto = texto.replaceAll("\\s{2,}", " ");
 
-        // Agregar espacios alrededor de '(' y ')' si no están presentes ya
-        texto = texto.replaceAll("(?<!\\s)\\((?!\\s)", " (");
-        texto = texto.replaceAll("(?<!\\s)\\)(?!\\s)", ") ");
+		// Remover espacios alrededor de '-'
+		texto = texto.replaceAll("\\s*-\\s*", "-");
 
-        // Convertir la letra después de '-' a mayúscula
-        Pattern pattern = Pattern.compile("-(\\p{L})");
-        Matcher matcher = pattern.matcher(texto);
-        StringBuffer sb = new StringBuffer();
-        while (matcher.find()) {
-            matcher.appendReplacement(sb, "-" + matcher.group(1).toUpperCase());
-        }
-        matcher.appendTail(sb);
-        texto = sb.toString();
+		// Remover espacios alrededor de ','
+		texto = texto.replaceAll("\\s*,\\s*", ",");
 
-        texto = texto.replaceAll("'", " ");
+		// Agregar espacios alrededor de '(' y ')' si no están presentes ya
+		texto = texto.replaceAll("(?<!\\s)\\((?!\\s)", " (");
+		texto = texto.replaceAll("(?<!\\s)\\)(?!\\s)", ") ");
 
-        return texto;
-    }
+		// Convertir la letra después de '-' a mayúscula
+		Pattern pattern = Pattern.compile("-(\\p{L})");
+		Matcher matcher = pattern.matcher(texto);
+		StringBuffer sb = new StringBuffer();
+		while (matcher.find()) {
+			matcher.appendReplacement(sb, "-" + matcher.group(1).toUpperCase());
+		}
+
+		matcher.appendTail(sb);
+		texto = sb.toString();
+
+		texto = texto.replaceAll("'", " ");
+
+		return texto;
+	}
+
+	public static String getEditorial(String palabra) {
+		// Convertir la palabra a minúsculas para hacer la comparación insensible a
+		// mayúsculas
+		String palabraLower = palabra.toLowerCase();
+
+		// Comprobar si la palabra contiene "marve" o "dc"
+		if (palabraLower.contains("marvel")) {
+			return "Marvel";
+		} else if (palabraLower.contains("dc")) {
+			return "DC";
+		} else if (palabraLower.contains("dark horse")) {
+			return "Dark Horse";
+		} else {
+			return palabra;
+		}
+	}
 
 	/**
 	 * Funcion crea el fichero SQL segun el sistema operativo en el que te

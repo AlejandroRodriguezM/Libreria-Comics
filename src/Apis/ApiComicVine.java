@@ -118,7 +118,7 @@ public class ApiComicVine {
 
 	    if (matcher.find()) {
 	        // Devuelve la palabra clave encontrada (en minúsculas) si se encuentra una coincidencia
-	        return matcher.group().trim().toLowerCase();
+	        return matcher.group().trim().toLowerCase().replace("-", "");
 	    }
 
 	    // Devuelve una cadena vacía si no se encontraron coincidencias
