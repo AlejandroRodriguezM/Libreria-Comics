@@ -69,6 +69,7 @@ import Apis.ApiCambioDivisas;
 import Apis.ApiISBNGeneral;
 import Apis.ApiMarvel;
 import Controladores.OpcionesAvanzadasController;
+import Controladores.managment.AccionReferencias;
 import comicManagement.Comic;
 import controlUI.FuncionesManejoFront;
 import dbmanager.ConectManager;
@@ -128,6 +129,8 @@ public class Utilidades {
 
 	private static final String CARACTERES = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	private static final Random RANDOM = new Random();
+	
+	public static AccionReferencias referenciaVentana = new AccionReferencias();
 
 	/**
 	 * Verifica si el sistema operativo es Windows.
@@ -1186,7 +1189,7 @@ public class Utilidades {
 				FuncionesManejoFront.cambiarEstadoMenuBar(false);
 				return null; // Devolver null si no se seleccionó ningún archivo
 			}
-
+			referenciaVentana.getBotonCancelarSubida().setVisible(false);
 			return fichero; // Devuelve el FileChooser para que la interfaz gráfica lo utilice
 		} catch (Exception e) {
 			e.printStackTrace();

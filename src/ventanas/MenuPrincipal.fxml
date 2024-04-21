@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
@@ -205,6 +206,12 @@
             <Font size="11.0" />
          </font></Button>
         <ProgressIndicator fx:id="progresoCarga" layoutX="1154.0" layoutY="317.0" prefHeight="66.0" prefWidth="70.0" stylesheets="@../style/progreso_style.css" visible="false" />
+      <Button fx:id="botonCancelarSubida" layoutX="1090.0" layoutY="317.0" mnemonicParsing="false" prefHeight="54.0" prefWidth="57.0" style="-fx-border-color: none; -fx-background-color: none;" visible="false">
+         <stylesheets>
+            <URL value="@../style/genericos_style.css" />
+            <URL value="@../style/boton_reestart_style.css" />
+         </stylesheets>
+      </Button>
 
     </children>
 </AnchorPane>

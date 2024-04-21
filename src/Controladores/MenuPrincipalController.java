@@ -93,6 +93,9 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	private Button botonMostrarParametro;
 
+	@FXML
+	private Button botonCancelarSubida;
+
 	/**
 	 * Botón que permite imprimir el resultado de una busqueda por parametro
 	 */
@@ -524,6 +527,7 @@ public class MenuPrincipalController implements Initializable {
 		referenciaVentana.setBotonAgregarPuntuacion(botonAgregarPuntuacion);
 		referenciaVentana.setAlarmaConexionSql(alarmaConexionSql);
 		referenciaVentana.setStage(estadoStage());
+		referenciaVentana.setBotonCancelarSubida(botonCancelarSubida);
 
 		referenciaVentana.setComboBoxes(Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreFirma,
 				nombreEditorial, nombreFormato, nombreProcedencia, nombreGuionista, nombreDibujante, numeroCaja));
@@ -597,6 +601,8 @@ public class MenuPrincipalController implements Initializable {
 		AccionEliminar.referenciaVentana = guardarReferencia();
 
 		AccionModificar.referenciaVentana = guardarReferencia();
+
+		Utilidades.referenciaVentana = guardarReferencia();
 	}
 
 	@FXML
@@ -747,9 +753,22 @@ public class MenuPrincipalController implements Initializable {
 				Thread thread = new Thread(task);
 				thread.start();
 
+				// Manejar la cancelación
+				botonCancelarSubida.setOnAction(ev -> {
+					botonCancelarSubida.setVisible(false);
+
+					task.cancel();
+				});
+
 				// Cuando la tarea haya terminado, apaga el scheduler
 				task.setOnSucceeded(event -> {
+					botonCancelarSubida.setVisible(false);
 					scheduler.shutdown();
+				});
+
+				// Cuando la tarea haya terminado, apaga el scheduler
+				task.setOnRunning(event -> {
+					botonCancelarSubida.setVisible(true);
 				});
 			});
 		}, 0, TimeUnit.SECONDS);
@@ -1234,11 +1253,12 @@ public class MenuPrincipalController implements Initializable {
 
 						crearExcelTask.setOnRunning(e -> {
 							cerradoPorOperaciones();
+							botonCancelarSubida.setVisible(true);
 							FuncionesManejoFront.cambiarEstadoMenuBar(true);
 						});
 
 						crearExcelTask.setOnSucceeded(e -> {
-
+							botonCancelarSubida.setVisible(false);
 							boolean deleteCompleted;
 							try {
 								deleteCompleted = ComicManagerDAO.deleteTable().get();
@@ -1259,10 +1279,33 @@ public class MenuPrincipalController implements Initializable {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
 							}
+						});
+
+						crearExcelTask.setOnFailed(e -> {
+							botonCancelarSubida.setVisible(false);
+						});
+
+						crearExcelTask.setOnCancelled(e -> {
+
+							AlarmaList.detenerAnimacionCarga(referenciaVentana.getProgresoCarga());
+							String mensaje = "Has cancelado el borrado de la base de datos";
+							AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
 
 						});
+
+						// Manejar la cancelación
+						botonCancelarSubida.setOnAction(ev -> {
+							botonCancelarSubida.setVisible(false);
+							AlarmaList.detenerAnimacionCarga(referenciaVentana.getProgresoCarga());
+							FuncionesManejoFront.cambiarEstadoMenuBar(false);
+							crearExcelTask.cancel(true); // true indica que la tarea debe ser interrumpida si ya está en
+															// ejecución
+							excelThread.interrupt();
+						});
+
 						// Iniciar la tarea principal de creación de Excel en un hilo separado
 						excelThread.start();
+
 					} else {
 						AlarmaList.detenerAnimacionCarga(referenciaVentana.getProgresoCarga());
 						String mensaje = "ERROR. Has cancelado el borrado de la base de datos";
@@ -1307,21 +1350,22 @@ public class MenuPrincipalController implements Initializable {
 		Thread excelThread = new Thread(crearExcelTask);
 
 		crearExcelTask.setOnRunning(e -> {
+			botonCancelarSubida.setVisible(true);
 			cerradoPorOperaciones();
 			FuncionesManejoFront.cambiarEstadoMenuBar(true);
 			AlarmaList.iniciarAnimacionCarga(progresoCarga);
 		});
 
 		crearExcelTask.setOnSucceeded(event -> {
+			botonCancelarSubida.setVisible(false);
 			FuncionesManejoFront.cambiarEstadoMenuBar(false);
 			AlarmaList.mostrarMensajePront(mensajeValido, true, prontInfo);
 			AlarmaList.detenerAnimacionCarga(progresoCarga);
-
 		});
 
 		// Configuración del comportamiento cuando la tarea falla
 		crearExcelTask.setOnFailed(event -> {
-
+			botonCancelarSubida.setVisible(false);
 			boolean result = crearExcelTask.getValue();
 			if (result) {
 				// Tarea completada con éxito, muestra el mensaje de éxito.
@@ -1350,6 +1394,15 @@ public class MenuPrincipalController implements Initializable {
 			AlarmaList.detenerAnimacionCarga(progresoCarga);
 		});
 
+		// Manejar la cancelación
+		botonCancelarSubida.setOnAction(ev -> {
+			botonCancelarSubida.setVisible(false);
+
+			crearExcelTask.cancel(true); // true indica que la tarea debe ser interrumpida si ya está en
+			// ejecución
+			excelThread.interrupt();
+		});
+
 		// Iniciar la tarea principal de creación de Excel en un hilo separado
 		excelThread.start();
 	}
@@ -1376,7 +1429,7 @@ public class MenuPrincipalController implements Initializable {
 					cargarDatosDataBase();
 					AlarmaList.detenerAnimacion();
 					AlarmaList.detenerAnimacionCarga(progresoCarga);
-
+					botonCancelarSubida.setVisible(false);
 					FuncionesManejoFront.cambiarEstadoMenuBar(false);
 					AlarmaList.mostrarMensajePront(mensajeValido, true, prontInfo);
 				});
@@ -1384,13 +1437,25 @@ public class MenuPrincipalController implements Initializable {
 				lecturaTask.setOnRunning(e -> {
 					cerradoPorOperaciones();
 					FuncionesManejoFront.cambiarEstadoMenuBar(true);
+					botonCancelarSubida.setVisible(true);
 					AlarmaList.iniciarAnimacionCarga(progresoCarga);
 				});
 
 				lecturaTask.setOnFailed(e -> {
+					botonCancelarSubida.setVisible(false);
 					procesarResultadoImportacion(lecturaTask.getValue());
 					FuncionesManejoFront.cambiarEstadoMenuBar(false);
 					AlarmaList.detenerAnimacionCarga(progresoCarga);
+				});
+
+				// Manejar la cancelación
+				botonCancelarSubida.setOnAction(ev -> {
+					lecturaTask.cancel(true); // true indica que la tarea debe ser interrumpida si ya está en ejecución
+					botonCancelarSubida.setVisible(false);
+					FuncionesManejoFront.cambiarEstadoMenuBar(false);
+					AlarmaList.detenerAnimacionCarga(progresoCarga);
+
+					procesarResultadoImportacion(false);
 				});
 
 				// Iniciar la tarea principal de importación en un hilo separado

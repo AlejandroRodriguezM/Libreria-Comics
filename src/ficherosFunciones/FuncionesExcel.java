@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -331,7 +332,12 @@ public class FuncionesExcel {
 						try {
 							Thread.sleep(10); // Delay de 0.5 segundos
 						} catch (InterruptedException e) {
-							e.printStackTrace();
+							System.out.println("El hilo fue interrumpido mientras dormía.");
+						}
+
+						if (Thread.interrupted()) {
+							// Si se produce una interrupción, sal del bucle
+							break;
 						}
 					}
 
@@ -359,16 +365,24 @@ public class FuncionesExcel {
 	}
 
 	public static Task<Boolean> procesarArchivoCSVTask(File fichero) {
+		AtomicBoolean isCancelled = new AtomicBoolean(false);
 
 		Task<Boolean> task = new Task<Boolean>() {
 			@Override
 			protected Boolean call() throws Exception {
 				try {
 
+					System.err.println("Valor: " + isCancelled());
+
+					if (isCancelled()) {
+						isCancelled.set(true);
+						return false; // Salir de la tarea si ha sido cancelada
+					}
+
 					checkCSVColumns(fichero.getAbsolutePath().toString());
 					int numeroLineas = Utilidades.contarLineasFichero(fichero);
 					actualizarNumLineas(numeroLineas);
-					procesarCSVInternamente(fichero);
+					procesarCSVInternamente(fichero, isCancelled);
 					return true; // Indicar que la operación fue exitosa
 				} catch (SQLException e) {
 					e.printStackTrace();
@@ -389,7 +403,8 @@ public class FuncionesExcel {
 		NUMERO_LINEAS_FICHERO = numLineas;
 	}
 
-	private static void procesarCSVInternamente(File fichero) throws SQLException, IOException {
+	private static void procesarCSVInternamente(File fichero, AtomicBoolean isCancelled)
+			throws SQLException, IOException {
 		NUMERO_COMICS_LEIDOS = 0;
 		Utilidades.crearCarpeta();
 		try (BufferedReader lineReader = new BufferedReader(new FileReader(fichero), 8192)) { // Tamaño del búfer de
@@ -420,7 +435,17 @@ public class FuncionesExcel {
 
 			// Procesar líneas restantes del archivo
 			lineReader.lines().forEach(lineText -> {
+				if (isCancelled.get()) {
+					return; // Salir del bucle si la tarea ha sido cancelada
+				}
+
 				try {
+
+					if (isCancelled.get()) {
+						// Si se produce una interrupción, sal del bucle
+						return;
+					}
+
 					Comic comicNuevo = ComicFichero.datosComicFichero(lineText);
 
 					if (comicNuevo != null) {
@@ -436,7 +461,10 @@ public class FuncionesExcel {
 				try {
 					Thread.sleep(20); // Delay de 0.5 segundos
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					System.out.println("El hilo fue interrumpido mientras dormía.");
+					isCancelled.set(true);
+					return;
+
 				}
 			});
 
