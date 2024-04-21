@@ -89,6 +89,9 @@ public class OpcionesAvanzadasController implements Initializable {
 	private Button botonReCopiarPortadas;
 
 	@FXML
+	private Button botonRecomponerPortadas;
+
+	@FXML
 	private CheckBox checkFirmas;
 
 	@FXML
@@ -185,7 +188,11 @@ public class OpcionesAvanzadasController implements Initializable {
 			AccionFuncionesComunes.referenciaVentana = guardarReferencia();
 			rellenarComboboxPreviews();
 			FuncionesManejoFront.stageVentanas.add(estadoStage());
+			
 			obtenerVersionDesdeOtraClase();
+			
+			System.out.println(FuncionesManejoFront.stageVentanas.size());
+			
 		});
 		ventanaOpciones = miStageVentana();
 
@@ -560,6 +567,16 @@ public class OpcionesAvanzadasController implements Initializable {
 
 	@FXML
 	void reCopiarPortadas(ActionEvent event) {
+		accionPortadas(true);
+	}
+
+	@FXML
+	void recomponerPortadas(ActionEvent event) {
+		accionPortadas(false);
+	}
+
+	public void accionPortadas(boolean esCopia) {
+
 		DirectoryChooser directoryChooser = new DirectoryChooser();
 		directoryChooser.setTitle("Seleccionar carpeta");
 		File selectedDirectory = directoryChooser.showDialog(null);
@@ -578,8 +595,14 @@ public class OpcionesAvanzadasController implements Initializable {
 
 					List<String> listaID = ListaComicsDAO.listaID;
 					// Mostrar el diálogo de selección de carpeta
-					Utilidades.copyDirectory(FuncionesExcel.DEFAULT_PORTADA_IMAGE_PATH,
-							selectedDirectory.getAbsolutePath());
+
+					if (esCopia) {
+						Utilidades.copyDirectory(FuncionesExcel.DEFAULT_PORTADA_IMAGE_PATH,
+								selectedDirectory.getAbsolutePath());
+					} else {
+						Utilidades.copyDirectory(selectedDirectory.getAbsolutePath(),
+								FuncionesExcel.DEFAULT_PORTADA_IMAGE_PATH);
+					}
 
 					for (String idComic : listaID) {
 						Comic comicNuevo = ComicManagerDAO.comicDatos(idComic);
@@ -602,22 +625,32 @@ public class OpcionesAvanzadasController implements Initializable {
 		Thread thread = new Thread(task);
 
 		task.setOnRunning(e -> {
+			FuncionesManejoFront.cambiarEstadoMenuBar(true);
+			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(true, referenciaVentana);
+
 			String cadenaCancelado = "Copiando portadas";
 			AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, cadenaCancelado);
 		});
 
 		task.setOnSucceeded(e -> {
+			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, referenciaVentana);
+
 			String cadenaCancelado = "Portadas copiadas";
 			AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, cadenaCancelado);
 		});
 
 		task.setOnFailed(e -> {
+			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, referenciaVentana);
+
 			String cadenaCancelado = "ERROR. No se han podido copiar las portadas";
 			AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, cadenaCancelado);
 		});
 
 		thread.setDaemon(true);
 		thread.start();
+
 	}
 
 	public Scene miStageVentana() {

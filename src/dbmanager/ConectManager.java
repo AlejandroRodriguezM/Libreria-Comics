@@ -174,7 +174,7 @@ public class ConectManager {
 		} catch (SQLException ex) {
 			nav.alertaException("ERROR. Revisa los datos del fichero de conexión.");
 		}
-		return conn;
+		return null;
 	}
 
 	/**

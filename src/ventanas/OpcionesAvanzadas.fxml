@@ -108,9 +108,9 @@
                         <Font name="Comic Sans MS" size="18.0" />
                      </font>
                   </Label>
-                  <Label layoutX="6.0" layoutY="155.0" prefHeight="17.0" prefWidth="148.0" style="-fx-text-fill: white;" text="Comprimir Portadas" />
-                  <Button fx:id="botonComprimirPortadas" layoutX="185.0" layoutY="146.0" mnemonicParsing="false" onAction="#comprimirPortadas" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Comprimir" />
-                  <Label layoutX="6.0" layoutY="110.0" prefHeight="17.0" prefWidth="148.0" style="-fx-text-fill: white;" text="Copiar portadas" />
+                  <Label layoutX="6.0" layoutY="198.0" prefHeight="17.0" prefWidth="148.0" style="-fx-text-fill: white;" text="Comprimir Portadas" />
+                  <Button fx:id="botonComprimirPortadas" layoutX="186.0" layoutY="189.0" mnemonicParsing="false" onAction="#comprimirPortadas" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Comprimir" />
+                  <Label layoutX="6.0" layoutY="110.0" prefHeight="17.0" prefWidth="148.0" style="-fx-text-fill: white;" text="Copia seguridad portadas" />
                   <Button fx:id="botonReCopiarPortadas" layoutX="185.0" layoutY="104.0" mnemonicParsing="false" onAction="#reCopiarPortadas" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Copiar" />
                   <Button fx:id="botonCancelarSubidaPortadas" layoutX="206.0" layoutY="226.0" mnemonicParsing="false" prefHeight="54.0" prefWidth="57.0" style="-fx-border-color: none; -fx-background-color: none;" visible="false">
                      <stylesheets>
@@ -120,6 +120,8 @@
                   </Button>
                   <Label layoutX="172.0" layoutY="281.0" prefHeight="17.0" prefWidth="83.0" style="-fx-text-fill: white;" text="Versión" />
                   <Label fx:id="labelVersionPortadas" layoutX="222.0" layoutY="282.0" prefHeight="17.0" prefWidth="52.0" style="-fx-text-fill: white;" text="0.0.0.0" />
+                  <Label layoutX="6.0" layoutY="155.0" prefHeight="17.0" prefWidth="148.0" style="-fx-text-fill: white;" text="Recomponer portadas" />
+                  <Button fx:id="botonRecomponerPortadas" layoutX="185.0" layoutY="146.0" mnemonicParsing="false" onAction="#recomponerPortadas" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Copiar" />
                </children>
             </AnchorPane>
          </content>

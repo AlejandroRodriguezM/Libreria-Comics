@@ -296,12 +296,19 @@ public class AccionFuncionesComunes {
 	 * la imagen
 	 */
 	public void subirPortada() {
-		File file = Utilidades.tratarFichero().showOpenDialog(null); // Llamada a funcion
-		if (file != null) {
+		
+		String frase = "Fichero Excel xlsx";
+
+		String formato = "*.xlsx";
+		
+		File fichero = Utilidades.tratarFichero(frase, formato, false);
+
+		// Verificar si se obtuvo un objeto FileChooser válido
+		if (fichero != null) {
 			String nuevoNombreArchivo = Utilidades.generarCodigoUnico(CARPETA_RAIZ_PORTADAS);
 
 			try {
-				Utilidades.redimensionarYGuardarImagen(file.getAbsolutePath().toString(), nuevoNombreArchivo);
+				Utilidades.redimensionarYGuardarImagen(fichero.getAbsolutePath().toString(), nuevoNombreArchivo);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

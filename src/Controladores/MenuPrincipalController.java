@@ -1227,12 +1227,13 @@ public class MenuPrincipalController implements Initializable {
 						List<Comic> listaComics = SelectManager.verLibreria(sentenciaSQL, false);
 						FuncionesExcel excelFuntions = new FuncionesExcel();
 						// Configuración de la tarea para crear el archivo Excel
-						
+
 						Task<Boolean> crearExcelTask = excelFuntions.crearExcelTask(listaComics,
 								TipoBusqueda.ELIMINAR.toString(), dateFormat);
 						Thread excelThread = new Thread(crearExcelTask);
 
 						crearExcelTask.setOnRunning(e -> {
+							cerradoPorOperaciones();
 							FuncionesManejoFront.cambiarEstadoMenuBar(true);
 						});
 
@@ -1244,14 +1245,12 @@ public class MenuPrincipalController implements Initializable {
 								String mensaje = deleteCompleted ? "Base de datos borrada y reiniciada correctamente"
 										: "ERROR. No se ha podido eliminar y reiniciar la base de datos";
 
-								
 								if (deleteCompleted) {
 									AlarmaList.detenerAnimacionCarga(referenciaVentana.getProgresoCarga());
-									Utilidades.eliminarArchivosEnCarpeta();
 									ListaComicsDAO.limpiarListaGuardados();
 								}
 								FuncionesManejoFront.cambiarEstadoMenuBar(false);
-								AlarmaList.mostrarMensajePront(mensaje, deleteCompleted,prontInfo);
+								AlarmaList.mostrarMensajePront(mensaje, deleteCompleted, prontInfo);
 
 							} catch (InterruptedException e1) {
 								// TODO Auto-generated catch block
@@ -1308,6 +1307,7 @@ public class MenuPrincipalController implements Initializable {
 		Thread excelThread = new Thread(crearExcelTask);
 
 		crearExcelTask.setOnRunning(e -> {
+			cerradoPorOperaciones();
 			FuncionesManejoFront.cambiarEstadoMenuBar(true);
 			AlarmaList.iniciarAnimacionCarga(progresoCarga);
 		});
@@ -1355,42 +1355,47 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	public void guardarDatosCSV() {
-
 		if (!ConectManager.conexionActiva()) {
 			return;
 		}
+
 		String frase = "Fichero CSV";
 		String formato = "*.csv";
 
-		File fichero = Utilidades.tratarFichero(frase, formato).showOpenDialog(null);
+		File fichero = Utilidades.tratarFichero(frase, formato, false);
 
-		String mensajeValido = "Has importado correctamente la lista de comics en la base de datos";
-
+		// Verificar si se obtuvo un objeto FileChooser válido
 		if (fichero != null) {
-			Task<Boolean> lecturaTask = FuncionesExcel.procesarArchivoCSVTask(fichero);
 
-			lecturaTask.setOnSucceeded(e -> {
-				cargarDatosDataBase();
-				AlarmaList.detenerAnimacion();
-				AlarmaList.detenerAnimacionCarga(progresoCarga);
+			String mensajeValido = "Has importado correctamente la lista de comics en la base de datos";
 
-				FuncionesManejoFront.cambiarEstadoMenuBar(false);
-				AlarmaList.mostrarMensajePront(mensajeValido, true, prontInfo);
-			});
+			if (fichero != null) {
+				Task<Boolean> lecturaTask = FuncionesExcel.procesarArchivoCSVTask(fichero);
 
-			lecturaTask.setOnRunning(e -> {
-				FuncionesManejoFront.cambiarEstadoMenuBar(true);
-				AlarmaList.iniciarAnimacionCarga(progresoCarga);
-			});
+				lecturaTask.setOnSucceeded(e -> {
+					cargarDatosDataBase();
+					AlarmaList.detenerAnimacion();
+					AlarmaList.detenerAnimacionCarga(progresoCarga);
 
-			lecturaTask.setOnFailed(e -> {
-				procesarResultadoImportacion(lecturaTask.getValue());
-				FuncionesManejoFront.cambiarEstadoMenuBar(false);
-				AlarmaList.detenerAnimacionCarga(progresoCarga);
-			});
+					FuncionesManejoFront.cambiarEstadoMenuBar(false);
+					AlarmaList.mostrarMensajePront(mensajeValido, true, prontInfo);
+				});
 
-			// Iniciar la tarea principal de importación en un hilo separado
-			new Thread(lecturaTask).start();
+				lecturaTask.setOnRunning(e -> {
+					cerradoPorOperaciones();
+					FuncionesManejoFront.cambiarEstadoMenuBar(true);
+					AlarmaList.iniciarAnimacionCarga(progresoCarga);
+				});
+
+				lecturaTask.setOnFailed(e -> {
+					procesarResultadoImportacion(lecturaTask.getValue());
+					FuncionesManejoFront.cambiarEstadoMenuBar(false);
+					AlarmaList.detenerAnimacionCarga(progresoCarga);
+				});
+
+				// Iniciar la tarea principal de importación en un hilo separado
+				new Thread(lecturaTask).start();
+			}
 		}
 	}
 
@@ -1566,6 +1571,15 @@ public class MenuPrincipalController implements Initializable {
 		if (nav.salirPrograma(event)) {
 			Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 			myStage.close();
+		}
+	}
+
+	public void cerradoPorOperaciones() {
+		List<Stage> stageVentanas = FuncionesManejoFront.stageVentanas;
+
+		// Assuming `stages` is a collection of stages you want to check against
+		for (Stage stage : stageVentanas) {
+			stage.close(); // Close the stage if it's not the current state
 		}
 	}
 

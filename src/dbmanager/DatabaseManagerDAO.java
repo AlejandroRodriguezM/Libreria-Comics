@@ -410,8 +410,9 @@ public class DatabaseManagerDAO {
 
 		String formato = "*.sql";
 
-		File fichero = Utilidades.tratarFichero(frase, formato).showSaveDialog(null); // Llamada a funcion
+		File fichero = Utilidades.tratarFichero(frase, formato,true);
 
+		// Verificar si se obtuvo un objeto FileChooser válido
 		if (fichero != null) {
 
 			if (Utilidades.isWindows()) {

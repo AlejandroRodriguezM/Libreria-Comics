@@ -43,9 +43,9 @@ import comicManagement.ComicFichero;
 import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades.TipoBusqueda;
+import dbmanager.InsertManager;
 import funciones_auxiliares.Utilidades;
 import funciones_auxiliares.Ventanas;
-import dbmanager.InsertManager;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.stage.DirectoryChooser;
@@ -156,17 +156,16 @@ public class FuncionesExcel {
 	public File carpetaPortadas() {
 		DirectoryChooser directoryChooser = new DirectoryChooser();
 		File directorio = directoryChooser.showDialog(null);
+
 		return directorio;
 	}
 
-	public File carpetaExcelExportado() {
-		String frase = "Fichero Excel xlsx";
-
-		String formato = "*.xlsx";
-
-		File fichero = Utilidades.tratarFichero(frase, formato).showSaveDialog(null); // Llamada a funcion
-		return fichero;
-	}
+//	public File carpetaExcelExportado() {
+//
+//
+//		File fichero = Utilidades.tratarFichero(frase, formato).showSaveDialog(null); // Llamada a funcion
+//		return fichero;
+//	}
 
 	/**
 	 * Abre un cuadro de diálogo para seleccionar una carpeta de portadas en un hilo
@@ -201,6 +200,14 @@ public class FuncionesExcel {
 	 * @return Una tarea que realiza la exportación y devuelve true si se realiza
 	 *         con éxito, o false si ocurre un error.
 	 */
+	/**
+	 * Crea una tarea que se encarga de generar un archivo Excel a partir de los
+	 * datos de la base de datos.
+	 *
+	 * @param fichero El archivo en el que se exportarán los datos.
+	 * @return Una tarea que realiza la exportación y devuelve true si se realiza
+	 *         con éxito, o false si ocurre un error.
+	 */
 	public Task<Boolean> crearExcelTask(List<Comic> listaComics, String tipoBusqueda, SimpleDateFormat dateFormat) {
 
 		NUMERO_COMICS_LEIDOS = 0;
@@ -216,9 +223,9 @@ public class FuncionesExcel {
 					+ File.separator + "backups" + File.separator + nombreCarpeta;
 
 			try {
-				
+
 				Utilidades.copiaSeguridad(listaComics, dateFormat);
-				
+
 				File carpetaLibreria = new File(direccion);
 				if (!carpetaLibreria.exists()) {
 					carpetaLibreria.mkdirs(); // This will create all necessary parent directories as well
@@ -237,8 +244,13 @@ public class FuncionesExcel {
 				e.printStackTrace();
 			}
 		} else {
+			String frase = "Fichero Excel xlsx";
+
+			String formato = "*.xlsx";
+
+			File fichero = Utilidades.tratarFichero(frase, formato, true);
 			directorioImagenes[0] = carpetaPortadas();
-			directorioFichero[0] = carpetaExcelExportado();
+			directorioFichero[0] = fichero;
 		}
 
 		NUMERO_LINEAS_FICHERO = ComicManagerDAO.countRows();
@@ -279,6 +291,13 @@ public class FuncionesExcel {
 					indiceFinal++;
 					List<Comic> listaComicsCopy = new ArrayList<>(listaComics);
 
+					if ((tipoBusqueda.equalsIgnoreCase("Completa") || tipoBusqueda.equalsIgnoreCase("Parcial"))
+							&& directorioFichero != null) {
+
+						Utilidades.copyDirectory(FuncionesExcel.DEFAULT_PORTADA_IMAGE_PATH,
+								directorioImagenes[0].getAbsolutePath());
+					}
+
 					for (Comic comic : listaComicsCopy) {
 						filaCopy = hoja.createRow(indiceFinal);
 						filaCopy.createCell(0).setCellValue("");
@@ -307,16 +326,13 @@ public class FuncionesExcel {
 							directorioFichero[0].mkdir();
 						}
 
-						if (tipoBusqueda.equalsIgnoreCase("Completa")
-								|| tipoBusqueda.equalsIgnoreCase(TipoBusqueda.ELIMINAR.toString())
-								|| tipoBusqueda.equalsIgnoreCase("Parcial") && directorioFichero != null) {
-							Utilidades.saveImageFromDataBase(comic.getImagen(), directorioImagenes[0]);
-						}
-						if (tipoBusqueda.equalsIgnoreCase(TipoBusqueda.ELIMINAR.toString())) {
-							Utilidades.eliminarArchivosJPG(directorioImagenes[0]);
-						}
-
 						indiceFinal++; // Increment the index for the next row
+
+						try {
+							Thread.sleep(10); // Delay de 0.5 segundos
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 					}
 
 					Platform.runLater(() -> {
@@ -376,7 +392,8 @@ public class FuncionesExcel {
 	private static void procesarCSVInternamente(File fichero) throws SQLException, IOException {
 		NUMERO_COMICS_LEIDOS = 0;
 		Utilidades.crearCarpeta();
-		try (BufferedReader lineReader = new BufferedReader(new FileReader(fichero))) {
+		try (BufferedReader lineReader = new BufferedReader(new FileReader(fichero), 8192)) { // Tamaño del búfer de
+																								// 8192 caracteres
 			// Inicializar directorio con el valor predeterminado
 			File directorio = new File(DEFAULT_PORTADA_IMAGE_PATH + File.separator);
 
@@ -406,12 +423,19 @@ public class FuncionesExcel {
 				try {
 					Comic comicNuevo = ComicFichero.datosComicFichero(lineText);
 
-					InsertManager.insertarDatos(comicNuevo, true);
+					if (comicNuevo != null) {
+						InsertManager.insertarDatos(comicNuevo, true);
+					}
 
 					cargaComics(comicNuevo, cargaComicsControllerRef, directorioRef.get(), true);
 
 				} catch (Exception e) {
 					// Manejar cualquier excepción durante el procesamiento de la línea
+					e.printStackTrace();
+				}
+				try {
+					Thread.sleep(20); // Delay de 0.5 segundos
+				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			});
@@ -434,17 +458,25 @@ public class FuncionesExcel {
 		String nombre_modificado = "";
 		StringBuilder textoBuilder = new StringBuilder();
 		if (esImportado) {
-			nombre_portada = Utilidades.obtenerNombrePortada(false, comicNuevo.getImagen());
-			nombre_modificado = Utilidades.convertirNombreArchivo(nombre_portada);
-			if (!Utilidades.existeArchivo(directorio.getAbsolutePath(), nombre_portada)) {
 
-				copiarPortadaPredeterminada(DEFAULT_PORTADA_IMAGE_PATH, nombre_modificado);
+			if (comicNuevo != null) {
 
-				/////////////////////////////////////////////////////////////////////
-				////// HAY QUE ARREGLARLO, AL CAMBIAR EL NOMBRE ESTO DA FALLO SIEMPRE//
-				//////////////////////////////////////////////////////////////////////
-//				generarLogFaltaPortada(DEFAULT_IMAGE_PATH_BASE, LOG_FILE_NAME, nombre_portada);
+				nombre_portada = Utilidades.obtenerNombrePortada(false, comicNuevo.getImagen());
+				nombre_modificado = Utilidades.convertirNombreArchivo(nombre_portada);
+				if (!Utilidades.existeArchivo(directorio.getAbsolutePath(), nombre_portada)) {
+
+					copiarPortadaPredeterminada(DEFAULT_PORTADA_IMAGE_PATH, nombre_modificado);
+
+					/////////////////////////////////////////////////////////////////////
+					////// HAY QUE ARREGLARLO, AL CAMBIAR EL NOMBRE ESTO DA FALLO SIEMPRE//
+					//////////////////////////////////////////////////////////////////////
+//					generarLogFaltaPortada(DEFAULT_IMAGE_PATH_BASE, LOG_FILE_NAME, nombre_portada);
+				}
+
+			} else {
+				return;
 			}
+
 		}
 
 		String mensajeId = String.valueOf(mensajeIdCounter.getAndIncrement()); // Generate a unique ID

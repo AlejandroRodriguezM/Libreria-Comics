@@ -39,6 +39,7 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -69,6 +70,7 @@ import Apis.ApiISBNGeneral;
 import Apis.ApiMarvel;
 import Controladores.OpcionesAvanzadasController;
 import comicManagement.Comic;
+import controlUI.FuncionesManejoFront;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
 import dbmanager.ListaComicsDAO;
@@ -461,28 +463,20 @@ public class Utilidades {
 		Thread thread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				try {
-					File backupsFolder = new File(carpetaLibreria);
-					if (!backupsFolder.exists() && !backupsFolder.mkdirs()) {
-						throw new IOException("Error al crear la carpeta 'backups'.");
-					}
-
-					final String DOCUMENTS_PATH = Utilidades.DOCUMENTS_PATH;
-					final String DB_NAME = ConectManager.DB_NAME;
-					final String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
-							+ DB_NAME + File.separator;
-					final String directorioOriginal = directorioComun + "portadas" + File.separator;
-					String backupFileName = "portadas_" + dateFormat.format(new Date());
-					File carpetaBackup = new File(backupFileName);
-					carpetaBackup.mkdir();
-
-					String backupPath = carpetaLibreria + File.separator + backupFileName;
-
-					Utilidades.copiarDirectorio(backupPath, directorioOriginal);
-				} catch (IOException e) {
-					e.printStackTrace();
-					// Manejar la excepción según sea necesario
+				File backupsFolder = new File(carpetaLibreria);
+				if (!backupsFolder.exists()) {
+					backupsFolder.mkdirs();
 				}
+
+				final String DOCUMENTS_PATH = Utilidades.DOCUMENTS_PATH;
+				final String DB_NAME = ConectManager.DB_NAME;
+				final String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+						+ DB_NAME + File.separator;
+				final String directorioOriginal = directorioComun + "portadas" + File.separator;
+				String backupFileName = "portadas_" + dateFormat.format(new Date());
+				String backupPath = carpetaLibreria + File.separator + backupFileName;
+
+				Utilidades.copiarDirectorio(backupPath, directorioOriginal);
 			}
 		});
 		thread.start();
@@ -1172,11 +1166,32 @@ public class Utilidades {
 	 * @return FileChooser si el usuario selecciona un fichero; null si el usuario
 	 *         cancela la selección o cierra la ventana
 	 */
-	public static FileChooser tratarFichero(String frase, String formato) {
+	public static File tratarFichero(String frase, String formato, boolean esGuardado) {
+		FuncionesManejoFront.cambiarEstadoMenuBar(true);
+
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.getExtensionFilters().addAll(new ExtensionFilter(frase, formato));
 
-		return fileChooser; // Devuelve el FileChooser para que la interfaz gráfica lo utilice
+		try {
+			File fichero;
+			// Mostrar el diálogo y obtener el archivo seleccionado
+			if (esGuardado) {
+				fichero = fileChooser.showSaveDialog(null);
+			} else {
+				fichero = fileChooser.showOpenDialog(null);
+			}
+
+			// Verificar si se seleccionó un archivo
+			if (fichero == null) {
+				FuncionesManejoFront.cambiarEstadoMenuBar(false);
+				return null; // Devolver null si no se seleccionó ningún archivo
+			}
+
+			return fichero; // Devuelve el FileChooser para que la interfaz gráfica lo utilice
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	/**
@@ -1488,8 +1503,7 @@ public class Utilidades {
 		}
 	}
 
-	private static void copiarImagenDesdeArchivo(File imagenArchivo, File directorio, String nombreImagen)
-			throws IOException {
+	private static void copiarImagenDesdeArchivo(File imagenArchivo, File directorio, String nombreImagen) {
 		try (InputStream fileInputStream = new FileInputStream(imagenArchivo);
 				OutputStream fileOutputStream = new FileOutputStream(
 						Paths.get(directorio.getAbsolutePath(), nombreImagen).toFile())) {
@@ -1499,6 +1513,14 @@ public class Utilidades {
 			while ((bytesRead = fileInputStream.read(buffer)) != -1) {
 				fileOutputStream.write(buffer, 0, bytesRead);
 			}
+		} catch (FileNotFoundException e) {
+			// El archivo no se encontró, proporciona un mensaje de error descriptivo
+			System.err.println("No se pudo encontrar el archivo: " + imagenArchivo.getAbsolutePath());
+			e.printStackTrace();
+		} catch (IOException e) {
+			// Ocurrió un error de E/S, proporciona un mensaje de error genérico
+			System.err.println("Ocurrió un error al copiar la imagen.");
+			e.printStackTrace();
 		}
 	}
 
@@ -2040,18 +2062,6 @@ public class Utilidades {
 		new Thread(task).start();
 	}
 
-	/**
-	 * Permite abir una ventana para abrir ficheros de un determinado formato.
-	 *
-	 * @return
-	 */
-	public static FileChooser tratarFichero() {
-		FileChooser fileChooser = new FileChooser(); // Permite escoger donde se encuentra el fichero
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Subiendo imagen", "*.jpg"));
-
-		return fileChooser;
-	}
-
 	public static void descargarPDFAsync(File file, ComboBox<String> comboPreviews) {
 		String seleccion = comboPreviews.getValue();
 
@@ -2331,12 +2341,7 @@ public class Utilidades {
 					// Si es un directorio, llamar recursivamente a esta función
 					copiarDirectorio(directorioNuevo, directorioOriginal);
 				} else {
-					// Si es un archivo, copiarlo al nuevo directorio
-					try {
-						copiarArchivo(archivo.getAbsolutePath(), directorioNuevo + File.separator + archivo.getName());
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+					copiarArchivo(archivo.getAbsolutePath(), directorioNuevo + File.separator + archivo.getName());
 				}
 			}
 		}
@@ -2366,24 +2371,42 @@ public class Utilidades {
 		return nombreConExtension.substring(0, indicePunto);
 	}
 
-	public static void copiarArchivo(String origen, String destino) throws IOException {
-		// Verificar si el archivo es de extensión .jpg
-		if (!origen.toLowerCase().endsWith(".jpg")) {
+	public static void copiarArchivo(String origen, String destino) {
+		try {
+			// Verificar si el archivo es de extensión .jpg
+			if (!origen.toLowerCase().endsWith(".jpg")) {
+				return;
+			}
+
+			File file = new File(origen);
+			if (!file.exists()) {
+				return;
+			}
+			
+			FileInputStream entrada = new FileInputStream(origen);
+
+
+			FileOutputStream salida = new FileOutputStream(destino);
+
+			byte[] buffer = new byte[1024];
+			int longitud;
+			while ((longitud = entrada.read(buffer)) > 0) {
+				salida.write(buffer, 0, longitud);
+			}
+
+			// Cerrar flujos
+			entrada.close();
+			salida.close();
+		} catch (FileNotFoundException e) {
+			// Manejar el caso en el que el archivo de origen no existe
+			System.err.println("El archivo de origen no existe: " + origen);
+			// No hacer nada, simplemente salir de la función
 			return;
+		} catch (IOException e) {
+			// Manejar otras posibles excepciones de E/S
+			e.printStackTrace();
+			// Otra lógica de manejo de la excepción según tus necesidades
 		}
-
-		FileInputStream entrada = new FileInputStream(origen);
-		FileOutputStream salida = new FileOutputStream(destino);
-
-		byte[] buffer = new byte[1024];
-		int longitud;
-		while ((longitud = entrada.read(buffer)) > 0) {
-			salida.write(buffer, 0, longitud);
-		}
-
-		// Cerrar flujos
-		entrada.close();
-		salida.close();
 	}
 
 	public static void eliminarArchivosJPG(File dir) {
@@ -2426,5 +2449,29 @@ public class Utilidades {
 
 		return Integer.compare(parts1.length, parts2.length);
 	}
+	
+    public static String convertirFormatoFecha(String fechaStr) {
+        // Verificar si la fecha está en el formato incorrecto (dd/MM/yyyy)
+        if (!fechaStr.matches("\\d{2}/\\d{2}/\\d{4}")) {
+            System.out.println("La fecha no está en el formato incorrecto. Ignorándola.");
+            return fechaStr; // Devolver la misma fecha sin cambios
+        }
+
+        // Definir el formato de entrada y salida
+        SimpleDateFormat formatoEntrada = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat formatoSalida = new SimpleDateFormat("yyyy-MM-dd");
+
+        try {
+            // Convertir la fecha de cadena al tipo Date
+            Date fecha = formatoEntrada.parse(fechaStr);
+
+            // Formatear la fecha al nuevo formato
+            return formatoSalida.format(fecha);
+        } catch (ParseException e) {
+            // Si hay un error al convertir la fecha, imprimir un mensaje y devolver la fecha original
+            System.out.println("Error al convertir la fecha. Se devuelve la fecha original.");
+            return fechaStr;
+        }
+    }
 
 }

@@ -691,6 +691,7 @@ public class VentanaAccionController implements Initializable {
 			AccionControlUI.mostrarOpcion(AccionFuncionesComunes.TIPO_ACCION);
 
 			FuncionesManejoFront.stageVentanas.add(estadoStage());
+			System.out.println(FuncionesManejoFront.stageVentanas.size());
 		});
 
 		ListaComicsDAO.comicsImportados.clear();
@@ -923,8 +924,9 @@ public class VentanaAccionController implements Initializable {
 
 				String formato = "*.txt";
 
-				File fichero = Utilidades.tratarFichero(frase, formato).showOpenDialog(null); // Llamada a funcion
+				File fichero = Utilidades.tratarFichero(frase, formato, false);
 
+				// Verificar si se obtuvo un objeto FileChooser válido
 				if (fichero != null) {
 					AccionFuncionesComunes.busquedaPorCodigoImportacion(fichero);
 					enviarReferencias();
