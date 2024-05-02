@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import Controladores.CrearBBDDController;
+import controladores.CrearBBDDController;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
 import funciones_auxiliares.Utilidades;

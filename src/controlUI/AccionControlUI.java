@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import Controladores.VentanaAccionController;
-import Controladores.managment.AccionAniadir;
-import Controladores.managment.AccionEliminar;
-import Controladores.managment.AccionFuncionesComunes;
-import Controladores.managment.AccionModificar;
-import Controladores.managment.AccionReferencias;
-import Controladores.managment.AccionSeleccionar;
+import controladores.VentanaAccionController;
+import controladores.managment.AccionAniadir;
+import controladores.managment.AccionEliminar;
+import controladores.managment.AccionFuncionesComunes;
+import controladores.managment.AccionModificar;
+import controladores.managment.AccionReferencias;
+import controladores.managment.AccionSeleccionar;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
 import dbmanager.ComicManagerDAO;
@@ -64,9 +64,9 @@ public class AccionControlUI {
 	}
 
 	public static boolean rellenarCampos(String idComic) {
-		Comic comic_temp = Comic.obtenerComic(idComic);
-		if (comic_temp != null) {
-			rellenarDatos(comic_temp);
+		Comic comicTemp = Comic.obtenerComic(idComic);
+		if (comicTemp != null) {
+			rellenarDatos(comicTemp);
 			return true;
 		}
 		return false;
@@ -153,52 +153,52 @@ public class AccionControlUI {
 	/**
 	 * Establece los atributos del cómic basándose en el objeto Comic proporcionado.
 	 * 
-	 * @param comic_temp El objeto Comic que contiene los datos a establecer.
+	 * @param comicTemp El objeto Comic que contiene los datos a establecer.
 	 */
-	public void setAtributosDesdeTabla(Comic comic_temp) {
-		getReferenciaVentana().getNombreComic().setText(comic_temp.getNombre());
+	public void setAtributosDesdeTabla(Comic comicTemp) {
+		getReferenciaVentana().getNombreComic().setText(comicTemp.getNombre());
 
-		String numeroNuevo = comic_temp.getNumero();
+		String numeroNuevo = comicTemp.getNumero();
 		getReferenciaVentana().getNumeroComic().getSelectionModel().select(numeroNuevo);
 
-		getReferenciaVentana().getVarianteComic().setText(comic_temp.getVariante());
+		getReferenciaVentana().getVarianteComic().setText(comicTemp.getVariante());
 
-		getReferenciaVentana().getFirmaComic().setText(comic_temp.getFirma());
+		getReferenciaVentana().getFirmaComic().setText(comicTemp.getFirma());
 
-		getReferenciaVentana().getEditorialComic().setText(comic_temp.getEditorial());
+		getReferenciaVentana().getEditorialComic().setText(comicTemp.getEditorial());
 
-		String formato = comic_temp.getFormato();
+		String formato = comicTemp.getFormato();
 		getReferenciaVentana().getFormatoComic().getSelectionModel().select(formato);
 
-		String procedencia = comic_temp.getProcedencia();
+		String procedencia = comicTemp.getProcedencia();
 		getReferenciaVentana().getProcedenciaComic().getSelectionModel().select(procedencia);
 
-		String fechaString = comic_temp.getFecha();
+		String fechaString = comicTemp.getFecha();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 		LocalDate fecha = LocalDate.parse(fechaString, formatter);
 		getReferenciaVentana().getFechaComic().setValue(fecha);
 
-		getReferenciaVentana().getGuionistaComic().setText(comic_temp.getGuionista());
+		getReferenciaVentana().getGuionistaComic().setText(comicTemp.getGuionista());
 
-		getReferenciaVentana().getDibujanteComic().setText(comic_temp.getDibujante());
+		getReferenciaVentana().getDibujanteComic().setText(comicTemp.getDibujante());
 
-		String cajaAni = comic_temp.getValorGradeo();
+		String cajaAni = comicTemp.getValorGradeo();
 		getReferenciaVentana().getGradeoComic().getSelectionModel().select(cajaAni);
 
-		getReferenciaVentana().getNombreKeyIssue().setText(comic_temp.getKey_issue());
-		getReferenciaVentana().getEstadoComic().getSelectionModel().select(comic_temp.getEstado());
+		getReferenciaVentana().getNombreKeyIssue().setText(comicTemp.getkeyIssue());
+		getReferenciaVentana().getEstadoComic().getSelectionModel().select(comicTemp.getEstado());
 
-		getReferenciaVentana().getPrecioComic().setText(comic_temp.getPrecio_comic());
-		getReferenciaVentana().getUrlReferencia().setText(comic_temp.getUrl_referencia());
+		getReferenciaVentana().getPrecioComic().setText(comicTemp.getprecioComic());
+		getReferenciaVentana().getUrlReferencia().setText(comicTemp.geturlReferencia());
 
-		getReferenciaVentana().getDireccionImagen().setText(comic_temp.getImagen());
+		getReferenciaVentana().getDireccionImagen().setText(comicTemp.getImagen());
 
-		getReferenciaVentana().getCodigoComicTratar().setText(comic_temp.getCodigo_comic());
+		getReferenciaVentana().getCodigoComicTratar().setText(comicTemp.getcodigoComic());
 
-		getReferenciaVentana().getIdComicTratar().setText(comic_temp.getID());
+		getReferenciaVentana().getIdComicTratar().setText(comicTemp.getid());
 
-		Utilidades.cargarImagenAsync(comic_temp.getImagen(), getReferenciaVentana().getImagencomic());
+		Utilidades.cargarImagenAsync(comicTemp.getImagen(), getReferenciaVentana().getImagencomic());
 	}
 
 	private static void rellenarDatos(Comic comic) {
@@ -220,10 +220,10 @@ public class AccionControlUI {
 		getReferenciaVentana().getGuionistaComic().setText(comic.getGuionista());
 		getReferenciaVentana().getDibujanteComic().setText(comic.getDibujante());
 		getReferenciaVentana().getGradeoComic().getSelectionModel().select(comic.getValorGradeo());
-		getReferenciaVentana().getNombreKeyIssue().setText(comic.getKey_issue());
+		getReferenciaVentana().getNombreKeyIssue().setText(comic.getkeyIssue());
 		getReferenciaVentana().getEstadoComic().getSelectionModel().select(comic.getEstado());
-		getReferenciaVentana().getPrecioComic().setText(comic.getPrecio_comic());
-		getReferenciaVentana().getUrlReferencia().setText(comic.getUrl_referencia());
+		getReferenciaVentana().getPrecioComic().setText(comic.getprecioComic());
+		getReferenciaVentana().getUrlReferencia().setText(comic.geturlReferencia());
 		getReferenciaVentana().getDireccionImagen().setText(comic.getImagen());
 
 		getReferenciaVentana().getProntInfo().clear();
@@ -241,22 +241,22 @@ public class AccionControlUI {
 	 */
 	public void actualizarCamposUnicos(Comic comic) {
 
-		comic.setKey_issue(!getReferenciaVentana().getNombreKeyIssue().getText().isEmpty()
+		comic.setkeyIssue(!getReferenciaVentana().getNombreKeyIssue().getText().isEmpty()
 				? Utilidades.eliminarEspacios(getReferenciaVentana().getNombreKeyIssue().getText())
 				: (!getReferenciaVentana().getNombreKeyIssue().getText().trim().isEmpty() && Pattern.compile(".*\\w+.*")
 						.matcher(getReferenciaVentana().getNombreKeyIssue().getText().trim()).matches()
 								? getReferenciaVentana().getNombreKeyIssue().getText().trim()
 								: "Vacio"));
 
-		comic.setUrl_referencia(!getReferenciaVentana().getUrlReferencia().getText().isEmpty()
+		comic.seturlReferencia(!getReferenciaVentana().getUrlReferencia().getText().isEmpty()
 				? Utilidades.eliminarEspacios(getReferenciaVentana().getUrlReferencia().getText())
 				: (getReferenciaVentana().getUrlReferencia().getText().isEmpty() ? "Sin referencia"
 						: getReferenciaVentana().getUrlReferencia().getText()));
-		comic.setPrecio_comic(!getReferenciaVentana().getPrecioComic().getText().isEmpty()
+		comic.setprecioComic(!getReferenciaVentana().getPrecioComic().getText().isEmpty()
 				? Utilidades.eliminarEspacios(getReferenciaVentana().getPrecioComic().getText())
 				: (getReferenciaVentana().getPrecioComic().getText().isEmpty() ? "0"
 						: getReferenciaVentana().getPrecioComic().getText()));
-		comic.setCodigo_comic(Utilidades.eliminarEspacios(getReferenciaVentana().getCodigoComicTratar().getText()));
+		comic.setcodigoComic(Utilidades.eliminarEspacios(getReferenciaVentana().getCodigoComicTratar().getText()));
 
 		comic.setValorGradeo(comic.getValorGradeo().isEmpty() ? "0" : comic.getValorGradeo());
 	}
@@ -331,10 +331,10 @@ public class AccionControlUI {
 				|| c.getDibujante() == null || c.getDibujante().isEmpty() || c.getDibujante().equalsIgnoreCase("vacio")
 				|| c.getEstado() == null || c.getEstado().isEmpty() || c.getEstado().equalsIgnoreCase("vacio")
 				|| c.getValorGradeo() == null || c.getValorGradeo().isEmpty() || c.getValorGradeo().equalsIgnoreCase("vacio")
-				|| c.getUrl_referencia() == null || c.getUrl_referencia().isEmpty()
-				|| c.getUrl_referencia().equalsIgnoreCase("vacio") || c.getPrecio_comic() == null
-				|| c.getPrecio_comic().isEmpty() || c.getPrecio_comic().equalsIgnoreCase("vacio")
-				|| c.getCodigo_comic() == null) {
+				|| c.geturlReferencia() == null || c.geturlReferencia().isEmpty()
+				|| c.geturlReferencia().equalsIgnoreCase("vacio") || c.getprecioComic() == null
+				|| c.getprecioComic().isEmpty() || c.getprecioComic().equalsIgnoreCase("vacio")
+				|| c.getcodigoComic() == null) {
 
 			String mensajePront = "Revisa la lista, algunos comics estan mal rellenados.";
 			AlarmaList.mostrarMensajePront(mensajePront, false, getReferenciaVentana().getProntInfo());
@@ -646,11 +646,11 @@ public class AccionControlUI {
 		comic.setValorGradeo(Utilidades.defaultIfNullOrEmpty(numeroCajaComic, ""));
 		comic.setImagen(Utilidades.defaultIfNullOrEmpty(direccionImagen, ""));
 		comic.setEstado(Utilidades.defaultIfNullOrEmpty(estadoComic, ""));
-		comic.setKey_issue(Utilidades.defaultIfNullOrEmpty(nombreKeyIssue, ""));
-		comic.setPrecio_comic(Utilidades.defaultIfNullOrEmpty(precioComic, ""));
-		comic.setUrl_referencia(Utilidades.defaultIfNullOrEmpty(urlReferencia, ""));
+		comic.setkeyIssue(Utilidades.defaultIfNullOrEmpty(nombreKeyIssue, ""));
+		comic.setprecioComic(Utilidades.defaultIfNullOrEmpty(precioComic, ""));
+		comic.seturlReferencia(Utilidades.defaultIfNullOrEmpty(urlReferencia, ""));
 
-		comic.setCodigo_comic(Utilidades.eliminarEspacios(codigoComicTratar));
+		comic.setcodigoComic(Utilidades.eliminarEspacios(codigoComicTratar));
 		comic.setID(Utilidades.defaultIfNullOrEmpty(idComicTratar_mod, ""));
 
 		return comic;
@@ -689,46 +689,46 @@ public class AccionControlUI {
 
 		String id_comic = getReferenciaVentana().getIdComicTratar().getText();
 
-		Comic comic_temp = ComicManagerDAO.comicDatos(id_comic);
+		Comic comicTemp = ComicManagerDAO.comicDatos(id_comic);
 
 		Comic datos = camposComic(getReferenciaVentana().getListaTextFields(), true);
 
 		Comic comicModificado = new Comic();
 
-		comicModificado.setNombre(Utilidades.defaultIfNullOrEmpty(datos.getNombre(), comic_temp.getNombre()));
-		comicModificado.setNumero(Utilidades.defaultIfNullOrEmpty(datos.getNumero(), comic_temp.getNumero()));
-		comicModificado.setVariante(Utilidades.defaultIfNullOrEmpty(datos.getVariante(), comic_temp.getVariante()));
-		comicModificado.setFirma(Utilidades.defaultIfNullOrEmpty(datos.getFirma(), comic_temp.getFirma()));
-		comicModificado.setEditorial(Utilidades.defaultIfNullOrEmpty(datos.getEditorial(), comic_temp.getEditorial()));
-		comicModificado.setFormato(Utilidades.defaultIfNullOrEmpty(datos.getFormato(), comic_temp.getFormato()));
+		comicModificado.setNombre(Utilidades.defaultIfNullOrEmpty(datos.getNombre(), comicTemp.getNombre()));
+		comicModificado.setNumero(Utilidades.defaultIfNullOrEmpty(datos.getNumero(), comicTemp.getNumero()));
+		comicModificado.setVariante(Utilidades.defaultIfNullOrEmpty(datos.getVariante(), comicTemp.getVariante()));
+		comicModificado.setFirma(Utilidades.defaultIfNullOrEmpty(datos.getFirma(), comicTemp.getFirma()));
+		comicModificado.setEditorial(Utilidades.defaultIfNullOrEmpty(datos.getEditorial(), comicTemp.getEditorial()));
+		comicModificado.setFormato(Utilidades.defaultIfNullOrEmpty(datos.getFormato(), comicTemp.getFormato()));
 		comicModificado
-				.setProcedencia(Utilidades.defaultIfNullOrEmpty(datos.getProcedencia(), comic_temp.getProcedencia()));
-		comicModificado.setFecha(Utilidades.defaultIfNullOrEmpty(datos.getFecha(), comic_temp.getFecha()));
-		comicModificado.setGuionista(Utilidades.defaultIfNullOrEmpty(datos.getGuionista(), comic_temp.getGuionista()));
-		comicModificado.setDibujante(Utilidades.defaultIfNullOrEmpty(datos.getDibujante(), comic_temp.getDibujante()));
-		comicModificado.setImagen(Utilidades.defaultIfNullOrEmpty(datos.getImagen(), comic_temp.getImagen()));
-		comicModificado.setEstado(Utilidades.defaultIfNullOrEmpty(datos.getEstado(), comic_temp.getEstado()));
-		comicModificado.setValorGradeo(Utilidades.defaultIfNullOrEmpty(datos.getValorGradeo(), comic_temp.getValorGradeo()));
+				.setProcedencia(Utilidades.defaultIfNullOrEmpty(datos.getProcedencia(), comicTemp.getProcedencia()));
+		comicModificado.setFecha(Utilidades.defaultIfNullOrEmpty(datos.getFecha(), comicTemp.getFecha()));
+		comicModificado.setGuionista(Utilidades.defaultIfNullOrEmpty(datos.getGuionista(), comicTemp.getGuionista()));
+		comicModificado.setDibujante(Utilidades.defaultIfNullOrEmpty(datos.getDibujante(), comicTemp.getDibujante()));
+		comicModificado.setImagen(Utilidades.defaultIfNullOrEmpty(datos.getImagen(), comicTemp.getImagen()));
+		comicModificado.setEstado(Utilidades.defaultIfNullOrEmpty(datos.getEstado(), comicTemp.getEstado()));
+		comicModificado.setValorGradeo(Utilidades.defaultIfNullOrEmpty(datos.getValorGradeo(), comicTemp.getValorGradeo()));
 		comicModificado.setPuntuacion(
-				comic_temp.getPuntuacion().equals("Sin puntuar") ? "Sin puntuar" : comic_temp.getPuntuacion());
+				comicTemp.getPuntuacion().equals("Sin puntuar") ? "Sin puntuar" : comicTemp.getPuntuacion());
 
-		String key_issue_sinEspacios = datos.getKey_issue().trim();
+		String key_issue_sinEspacios = datos.getkeyIssue().trim();
 
 		if (!key_issue_sinEspacios.isEmpty() && key_issue_sinEspacios.matches(".*\\w+.*")) {
-			comicModificado.setKey_issue(key_issue_sinEspacios);
-		} else if (comic_temp != null && comic_temp.getKey_issue() != null && !comic_temp.getKey_issue().isEmpty()) {
-			comicModificado.setKey_issue(comic_temp.getKey_issue());
+			comicModificado.setkeyIssue(key_issue_sinEspacios);
+		} else if (comicTemp != null && comicTemp.getkeyIssue() != null && !comicTemp.getkeyIssue().isEmpty()) {
+			comicModificado.setkeyIssue(comicTemp.getkeyIssue());
 		}
 
-		String url_referencia = Utilidades.defaultIfNullOrEmpty(datos.getUrl_referencia(), "");
-		comicModificado.setUrl_referencia(url_referencia.isEmpty() ? "Sin referencia" : url_referencia);
+		String urlReferencia = Utilidades.defaultIfNullOrEmpty(datos.geturlReferencia(), "");
+		comicModificado.seturlReferencia(urlReferencia.isEmpty() ? "Sin referencia" : urlReferencia);
 
-		String precio_comic = Utilidades.defaultIfNullOrEmpty(datos.getPrecio_comic(), "0");
-		comicModificado.setPrecio_comic(
-				String.valueOf(Utilidades.convertirMonedaADolar(comicModificado.getProcedencia(), precio_comic)));
+		String precioComic = Utilidades.defaultIfNullOrEmpty(datos.getprecioComic(), "0");
+		comicModificado.setprecioComic(
+				String.valueOf(Utilidades.convertirMonedaADolar(comicModificado.getProcedencia(), precioComic)));
 
-		comicModificado.setCodigo_comic(
-				Utilidades.defaultIfNullOrEmpty(datos.getCodigo_comic(), comic_temp.getCodigo_comic()));
+		comicModificado.setcodigoComic(
+				Utilidades.defaultIfNullOrEmpty(datos.getcodigoComic(), comicTemp.getcodigoComic()));
 
 		return comicModificado;
 	}

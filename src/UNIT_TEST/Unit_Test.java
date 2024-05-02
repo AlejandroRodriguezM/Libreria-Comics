@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,12 +39,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import Apis.ApiISBNGeneral;
-import Apis.ApiMarvel;
-import Controladores.VentanaAccionController;
-import Controladores.managment.AccionFuncionesComunes;
-import apisFunciones.FuncionesApis;
+import apis.ApiISBNGeneral;
+import apis.ApiMarvel;
+import apis.funciones.FuncionesApis;
 import comicManagement.Comic;
+import controladores.managment.AccionFuncionesComunes;
 import dbmanager.ConectManager;
 import funciones_auxiliares.Utilidades;
 import funciones_auxiliares.Ventanas;
@@ -194,101 +192,101 @@ public class Unit_Test extends Application {
 
 //		String urlWeb = "https://prhcomics.com/comics/";
 //		urlPreviews(urlWeb);
-		
+
 		copiarDirectorio();
 
 //		System.out.println(leerVersionDelArchivo());
 
 	}
-	
-    public static void copiarDirectorio() throws IOException {
-    	
-   	 String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
-                + ConectManager.DB_NAME + File.separator;
-        String directorioOriginal = directorioComun+ "portadas";
-        String directorioNuevo = directorioComun + "portadas_original" + File.separator;
-   	
-       File directorioOrigen = new File(directorioOriginal);
-       File directorioDestino = new File(directorioNuevo);
 
-       // Verificar si el directorio origen existe y es un directorio
-       if (!directorioOrigen.exists() || !directorioOrigen.isDirectory()) {
-           throw new IllegalArgumentException("El directorio origen no existe o no es un directorio válido.");
-       }
+	public static void copiarDirectorio() throws IOException {
 
-       // Verificar si el directorio destino ya existe
-       if (directorioDestino.exists()) {
-           throw new IllegalArgumentException("El directorio destino ya existe.");
-       }
+		String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+				+ ConectManager.DB_NAME + File.separator;
+		String directorioOriginal = directorioComun + "portadas";
+		String directorioNuevo = directorioComun + "portadas_original" + File.separator;
 
-       // Crear el directorio destino
-       directorioDestino.mkdirs();
+		File directorioOrigen = new File(directorioOriginal);
+		File directorioDestino = new File(directorioNuevo);
 
-       // Obtener la lista de archivos en el directorio origen
-       File[] archivos = directorioOrigen.listFiles();
+		// Verificar si el directorio origen existe y es un directorio
+		if (!directorioOrigen.exists() || !directorioOrigen.isDirectory()) {
+			throw new IllegalArgumentException("El directorio origen no existe o no es un directorio válido.");
+		}
 
-       if (archivos != null) {
-           for (File archivo : archivos) {
-               if (archivo.isDirectory()) {
-                   // Si es un directorio, llamar recursivamente a esta función
-                   copiarDirectorio();
-               } else {
-                   // Si es un archivo, copiarlo al nuevo directorio
-                   copiarArchivo(archivo.getAbsolutePath(), directorioNuevo + File.separator + archivo.getName());
-               }
-           }
-       }
-   }
+		// Verificar si el directorio destino ya existe
+		if (directorioDestino.exists()) {
+			throw new IllegalArgumentException("El directorio destino ya existe.");
+		}
 
-   public static void copiarArchivo(String origen, String destino) throws IOException {
-       FileInputStream entrada = new FileInputStream(origen);
-       FileOutputStream salida = new FileOutputStream(destino);
+		// Crear el directorio destino
+		directorioDestino.mkdirs();
 
-       byte[] buffer = new byte[1024];
-       int longitud;
-       while ((longitud = entrada.read(buffer)) > 0) {
-           salida.write(buffer, 0, longitud);
-       }
+		// Obtener la lista de archivos en el directorio origen
+		File[] archivos = directorioOrigen.listFiles();
 
-       // Cerrar flujos
-       entrada.close();
-       salida.close();
-   }
+		if (archivos != null) {
+			for (File archivo : archivos) {
+				if (archivo.isDirectory()) {
+					// Si es un directorio, llamar recursivamente a esta función
+					copiarDirectorio();
+				} else {
+					// Si es un archivo, copiarlo al nuevo directorio
+					copiarArchivo(archivo.getAbsolutePath(), directorioNuevo + File.separator + archivo.getName());
+				}
+			}
+		}
+	}
 
-    public static void urlPreviews(String urlWeb) {
-        try {
-            // Descargar el HTML
-            Document doc = Jsoup.connect(urlWeb).get();
+	public static void copiarArchivo(String origen, String destino) throws IOException {
+		FileInputStream entrada = new FileInputStream(origen);
+		FileOutputStream salida = new FileOutputStream(destino);
 
-            // Crear un mapa para almacenar los meses y los enlaces
-            Map<String, String> mesesYEnlaces = new HashMap<>();
+		byte[] buffer = new byte[1024];
+		int longitud;
+		while ((longitud = entrada.read(buffer)) > 0) {
+			salida.write(buffer, 0, longitud);
+		}
 
-            // Seleccionar todos los artículos con la clase "catalog-item"
-            Elements articulos = doc.select("div.catalog-item");
+		// Cerrar flujos
+		entrada.close();
+		salida.close();
+	}
 
-            // Iterar sobre los artículos
-            for (Element articulo : articulos) {
-                // Obtener el título del catálogo
-                String tituloCatalogo = articulo.select("div.catalog-meta-title").text();
-                
-                // Obtener el enlace del catálogo
-                String enlaceCatalogo = articulo.select("div.catalog-link-pdf a[href]").attr("href");
+	public static void urlPreviews(String urlWeb) {
+		try {
+			// Descargar el HTML
+			Document doc = Jsoup.connect(urlWeb).get();
 
-                // Verificar si el enlace contiene la palabra "PRH-Panels"
-                if (enlaceCatalogo.contains("PRH-Panels")) {
-                    mesesYEnlaces.put(tituloCatalogo, enlaceCatalogo);
-                }
-            }
+			// Crear un mapa para almacenar los meses y los enlaces
+			Map<String, String> mesesYEnlaces = new HashMap<>();
 
-            // Imprimir los meses y enlaces que contienen "PRH-Panels"
-            for (Map.Entry<String, String> entry : mesesYEnlaces.entrySet()) {
-                System.out.println("Mes: " + entry.getKey());
-                System.out.println("Enlace: " + entry.getValue());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+			// Seleccionar todos los artículos con la clase "catalog-item"
+			Elements articulos = doc.select("div.catalog-item");
+
+			// Iterar sobre los artículos
+			for (Element articulo : articulos) {
+				// Obtener el título del catálogo
+				String tituloCatalogo = articulo.select("div.catalog-meta-title").text();
+
+				// Obtener el enlace del catálogo
+				String enlaceCatalogo = articulo.select("div.catalog-link-pdf a[href]").attr("href");
+
+				// Verificar si el enlace contiene la palabra "PRH-Panels"
+				if (enlaceCatalogo.contains("PRH-Panels")) {
+					mesesYEnlaces.put(tituloCatalogo, enlaceCatalogo);
+				}
+			}
+
+			// Imprimir los meses y enlaces que contienen "PRH-Panels"
+			for (Map.Entry<String, String> entry : mesesYEnlaces.entrySet()) {
+				System.out.println("Mes: " + entry.getKey());
+				System.out.println("Enlace: " + entry.getValue());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public static String leerVersionDelArchivo() {
 		StringBuilder version = new StringBuilder();
@@ -606,228 +604,6 @@ public class Unit_Test extends Application {
 	}
 
 	/**
-	 * Funcion que sirve para hacer pruebas manuales de subidas de comics a la base
-	 * de datos
-	 * 
-	 * @throws IOException
-	 * @throws SQLException
-	 */
-	public static void pruebaSubidaComic() throws IOException, SQLException {
-		utilidad = new Utilidades();
-
-		File file;
-		LocalDate fecha_comic;
-
-		String portadaUrl = "https://covers.openlibrary.org/b/id/12705636-L.jpg";
-
-		file = new File(portadaUrl);
-
-		String portada = "";
-
-		String nombre = "Prueba de comic test unitario";
-
-		String numero = "0";
-
-		String variante = "Variante prueba";
-
-		String firma = "Firma prueba";
-
-		String editorial = "Editorial prueba";
-
-		String formato = "Prueba Unitaria";
-
-		String procedencia = "Prueba unitaria";
-
-		String fecha = "2000-01-01";
-
-		fecha_comic = LocalDate.parse(fecha);
-
-		String guionista = "Guionista prueba";
-
-		String dibujante = "Dibujante prueba";
-
-		if (!portadaUrl.isEmpty()) {
-			file = new File(portadaUrl);
-
-			if (Utilidades.isImageURL(portadaUrl)) {
-				// Es una URL en internet
-				file = new File(portadaUrl);
-
-			} else {
-				if (!file.exists()) {
-					portada = "Funcionamiento/sinPortada.jpg";
-
-				} else {
-					portada = portadaUrl;
-				}
-			}
-		} else {
-			portada = "Funcionamiento/sinPortada.jpg";
-		}
-
-		String estado = "Estado prueba";
-
-		String numCaja = "0";
-
-		String key_issue = "Key prueba";
-
-		String url_referencia = "referencia prueba";
-		String precio_comic = "0";
-
-		String codigoComic = "0";
-
-		Comic comic = new Comic("", nombre, numCaja, numero, variante, firma, editorial, formato, procedencia,
-				fecha_comic.toString(), guionista, dibujante, estado, key_issue, "Sin puntuar", portada, url_referencia,
-				precio_comic, codigoComic);
-
-		String codigo_imagen = Utilidades.generarCodigoUnico(SOURCE_PATH + File.separator);
-
-		Utilidades.redimensionarYGuardarImagen(portada, codigo_imagen);
-		comic.setImagen(SOURCE_PATH + File.separator + codigo_imagen + ".jpg");
-		insertarDatosPrueba(comic);
-
-		System.err.println("Has introducido correctamente: \n" + comic.toString().replace("[", "").replace("]", ""));
-
-		if (Utilidades.isURL(portadaUrl)) {
-			Utilidades.borrarImagen(portada);
-		}
-	}
-
-	/**
-	 * Funcion que sirve para hacer pruebas manuales de modificacion de comics a la
-	 * base de datos
-	 * 
-	 * @throws IOException
-	 * @throws SQLException
-	 */
-	public static void pruebaModificacionComic() throws NumberFormatException, SQLException, IOException {
-
-		for (int ids : obtenerIDsDesdeBaseDeDatos()) {
-			System.out.println(ids);
-		}
-
-		Comic comic_temp = new Comic();
-		File file;
-//		Utilidades.convertirNombresCarpetas(SOURCE_PATH);
-
-		System.out.print("Escribe la ID del comic a modificar: ");
-		String id_comic = ent.next();
-
-		comic_temp = comicDatos(id_comic);
-
-		String nombre = "Modificacion prueba";
-
-		String numero = "0";
-
-		String variante = "Variante modificacion";
-
-		String firma = "Firma modificacion";
-
-		String editorial = "Editorial modificacion";
-
-		String formato = "Formato modificacion";
-
-		String procedencia = "Procedencia Modificacion";
-
-		String fecha = "2000-01-01";
-
-		String guionista = "Modificacion guionista";
-
-		String dibujante = "Modificacion dibujante";
-
-		String estado = "Modificacion estado";
-
-		String numCaja = "0";
-
-		String portadaUrl = "https://m.media-amazon.com/images/I/81RwspgAKSL._SL1500_.jpg";
-
-		String portada = "";
-
-		if (!portadaUrl.isEmpty()) {
-			file = new File(portadaUrl);
-
-			if (Utilidades.isImageURL(portadaUrl)) {
-				// Es una URL en internet
-				file = new File(portadaUrl);
-
-			} else {
-				if (!file.exists()) {
-					portada = "Funcionamiento/sinPortada.jpg";
-
-				} else {
-					portada = portadaUrl;
-				}
-			}
-		} else {
-			portada = "Funcionamiento/sinPortada.jpg";
-		}
-
-		String puntuacion = "0";
-
-		String nombreKeyIssue = "Key kmodificacion";
-
-		String url_referencia = "Url modificacion prueba";
-
-		String precio_comic = "0";
-
-		System.out.println("La portada es: " + portada);
-
-		String codigoComic = "Codigo modificado";
-
-		Comic comic = new Comic(id_comic, nombre, numCaja, numero, variante, firma, editorial, formato, procedencia,
-				fecha, guionista, dibujante, estado, nombreKeyIssue, puntuacion, portada, url_referencia, precio_comic,
-				codigoComic);
-
-		String codigo_imagen = Utilidades.generarCodigoUnico(SOURCE_PATH + File.separator);
-
-		Utilidades.redimensionarYGuardarImagen(portada, codigo_imagen);
-		comic.setImagen(SOURCE_PATH + File.separator + codigo_imagen + ".jpg");
-
-		String sql = "		String sentenciaSQL = \"UPDATE comicsbbdd SET nomComic = ?, caja_deposito = ?, numComic = ?,codigo_comic = ?, nomVariante = ?, \"\r\n"
-				+ "				+ \"Firma = ?, nomEditorial = ?, formato = ?, Procedencia = ?, fecha_publicacion = ?, \"\r\n"
-				+ "				+ \"nomGuionista = ?, nomDibujante = ?, key_issue = ?, portada = ?, estado = ?, url_referencia = ?, precio_comic = ? \"\r\n"
-				+ "				+ \"WHERE ID = ?\";";
-
-		actualizarComicPrueba(comic, sql);
-		Utilidades.eliminarFichero(comic_temp.getImagen());
-
-		System.err.println("Has modificado correctamente: " + comic.toString().replace("[", "").replace("]", ""));
-	}
-
-	/**
-	 * Inserta los datos de un cómic en la base de datos.
-	 *
-	 * @param comic_datos los datos del cómic a insertar
-	 * @throws IOException  si ocurre un error al manejar el archivo de imagen
-	 * @throws SQLException si ocurre un error al ejecutar la consulta SQL
-	 */
-	public static void insertarDatosPrueba(Comic comic_datos) throws IOException, SQLException {
-		String sentenciaSQL = "INSERT INTO comicsbbdd (nomComic, caja_deposito,precio_comic, numComic, nomVariante, firma, nomEditorial, formato, procedencia, fecha_publicacion, nomGuionista, nomDibujante, puntuacion, portada,key_issue,url_referencia, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-		subirComicPrueba(sentenciaSQL, comic_datos);
-	}
-
-	public static void actualizarComicPrueba(Comic datos, String sentenciaSQL) {
-		utilidad = new Utilidades();
-
-		try {
-			if (checkID(datos.getID())) { // Comprueba si la ID introducida existe en la base de datos
-				comicModificarPrueba(sentenciaSQL, datos); // Llama a la función que permite cambiar los datos del
-															// cómic
-			}
-		} catch (SQLException | IOException ex) {
-			nav.alertaException(ex.toString()); // Manejar excepciones y mostrar mensaje de alerta
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
-	/**
 	 * Comprueba si el identificador introducido existe en la base de datos.
 	 *
 	 * @param identificador El identificador a verificar.
@@ -923,279 +699,6 @@ public class Unit_Test extends Application {
 		ConectManager.datosBBDD(datos);
 	}
 
-	/**
-	 * Funcion que permita la subida de datos a la base de datos de prueba para
-	 * poder realizar pruebas unitarias
-	 * 
-	 * @param sentenciaSQL
-	 * @param datos
-	 * @throws IOException
-	 * @throws SQLException
-	 */
-	public static void subirComicPrueba(String sentenciaSQL, Comic datos) throws IOException, SQLException {
-		conn = ConectManager.conexion();
-		PreparedStatement statement = null;
-
-		try {
-			statement = conn.prepareStatement(sentenciaSQL);
-			statement.setString(1, datos.getNombre());
-			if (datos.getValorGradeo() == null) {
-				statement.setString(2, "0");
-			} else {
-				statement.setString(2, datos.getValorGradeo());
-			}
-			statement.setString(3, datos.getPrecio_comic());
-			statement.setString(4, datos.getNumero());
-			statement.setString(5, datos.getVariante());
-			statement.setString(6, datos.getFirma());
-			statement.setString(7, datos.getEditorial());
-			statement.setString(8, datos.getFormato());
-			statement.setString(9, datos.getProcedencia());
-			statement.setString(10, datos.getFecha());
-			statement.setString(11, datos.getGuionista());
-			statement.setString(12, datos.getDibujante());
-			statement.setString(13, "Sin puntuar");
-			statement.setString(14, datos.getImagen());
-			statement.setString(15, datos.getKey_issue());
-			statement.setString(16, datos.getUrl_referencia());
-			statement.setString(17, datos.getEstado());
-
-			statement.executeUpdate();
-		} catch (SQLException ex) {
-			System.err.println(ex.getMessage());
-		} finally {
-			if (statement != null) {
-				statement.close();
-			}
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
-	/**
-	 * Funcion que permite la modificacion de un comic para la<zs pruebas unitarias
-	 * 
-	 * @param sentenciaSQL
-	 * @param datos
-	 * @throws SQLException
-	 * @throws IOException
-	 */
-	public static void comicModificarPrueba(String sentenciaSQL, Comic datos) throws SQLException, IOException {
-		utilidad = new Utilidades();
-
-		String ID = datos.getID();
-		String nombre = datos.getNombre();
-		String numCaja = datos.getValorGradeo();
-		String numero = datos.getNumero();
-		String variante = datos.getVariante();
-		String firma = datos.getFirma();
-		String editorial = datos.getEditorial();
-		String formato = datos.getFormato();
-		String procedencia = datos.getProcedencia();
-		String fecha = datos.getFecha();
-		String guionista = datos.getGuionista();
-		String dibujante = datos.getDibujante();
-		String estado = datos.getEstado();
-		String portada_final = datos.getImagen();
-		String key_issue = datos.getKey_issue();
-		String url_referencia = datos.getUrl_referencia();
-		String precio_comic = datos.getPrecio_comic();
-		String codigo_imagen = Utilidades.generarCodigoUnico(portada_final + File.separator);
-
-		PreparedStatement ps = null;
-		try {
-			ps = conn.prepareStatement(sentenciaSQL);
-
-			ps.setString(1, nombre);
-			ps.setString(2, numCaja);
-			ps.setString(3, numero);
-			ps.setString(4, variante);
-			ps.setString(5, firma);
-			ps.setString(6, editorial);
-			ps.setString(7, formato);
-			ps.setString(8, procedencia);
-			ps.setString(9, fecha);
-			ps.setString(10, guionista);
-			ps.setString(11, dibujante);
-			ps.setString(12, key_issue);
-			ps.setString(13, portada_final);
-			ps.setString(14, estado);
-			ps.setString(15, url_referencia);
-			ps.setString(16, precio_comic);
-			ps.setString(17, ID);
-
-			if (ps.executeUpdate() == 1) {
-				System.out.println(datos.toString() + "\nComic modificado correctamente");
-				modificar_direccion_portada(codigo_imagen, ID);
-
-			}
-		} catch (SQLException ex) {
-			nav.alertaException(ex.toString());
-			ex.printStackTrace();
-		} finally {
-			if (ps != null) {
-				ps.close();
-			}
-
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
-	/**
-	 * Funcion que permite la modificacion de un comic para la<zs pruebas unitarias
-	 * 
-	 * @param sentenciaSQL
-	 * @param datos
-	 * @throws SQLException
-	 * @throws IOException
-	 * @throws URISyntaxException
-	 * @throws ComicInfoException
-	 */
-	public static void comicModificarCodigoPrueba()
-			throws SQLException, IOException, URISyntaxException, ComicInfoException {
-
-		// Obtener la lista de IDs desde la base de datos
-
-		String sentenciaSQL = "UPDATE comicsprueba.comicsbbdd SET codigo_comic = ?, url_referencia = ? WHERE ID = ?;";
-
-		PreparedStatement ps = null;
-		Connection connection = null;
-		String databaseName = "comicsprueba";
-		String username = "root";
-		String password = "1234";
-		String host = "localhost";
-
-		String url = "jdbc:mysql://" + host + ":" + "3306" + "/" + databaseName + "?serverTimezone=UTC";
-
-		try {
-			connection = DriverManager.getConnection(url, username, password);
-
-			List<String> ids = obtenerListaDeIDsDesdeBD(connection); // Implementa esta función según tu lógica
-
-//			Statement statement = connection.createStatement();
-			ps = connection.prepareStatement(sentenciaSQL);
-
-			for (String ID : ids) {
-				Comic comic_temp = comicDatos(ID);
-				String referencia_comic = comic_temp.getUrl_referencia();
-				String codigo_comic = displayComicInfo(referencia_comic);
-
-				ps.setString(1, codigo_comic);
-				ps.setString(2, referencia_comic);
-				ps.setString(3, ID);
-
-				if (ps.executeUpdate() == 1) {
-					System.out.println(comic_temp.getNombre() + ": " + comic_temp.getVariante() + " New code: "
-							+ comic_temp.getCodigo_comic());
-				}
-			}
-		} catch (SQLException ex) {
-			nav.alertaException(ex.toString());
-			ex.printStackTrace();
-		} finally {
-			if (ps != null) {
-				ps.close();
-			}
-
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
-	/**
-	 * Funcion que permite la modificacion de un comic para la<zs pruebas unitarias
-	 * 
-	 * @param sentenciaSQL
-	 * @param datos
-	 * @throws SQLException
-	 * @throws IOException
-	 * @throws URISyntaxException
-	 * @throws ComicInfoException
-	 */
-	public static void comicModificarCodigoPruebaCompleta()
-			throws SQLException, IOException, URISyntaxException, ComicInfoException {
-
-		// Obtener la lista de IDs desde la base de datos
-
-		String sentenciaSQL = "UPDATE comics.comicsbbdd SET codigo_comic = ? WHERE ID = ?;";
-
-		PreparedStatement ps = null;
-		Connection connection = null;
-		String databaseName = "comics";
-		String username = "root";
-		String password = "1234";
-		String host = "localhost";
-		String codigoComic = "";
-
-		String url = "jdbc:mysql://" + host + ":" + "3306" + "/" + databaseName + "?serverTimezone=UTC";
-
-		try {
-			connection = DriverManager.getConnection(url, username, password);
-
-			List<String> ids = obtenerListaDeIDsDesdeBD(connection); // Implementa esta función según tu lógica
-
-//			Statement statement = connection.createStatement();
-			ps = connection.prepareStatement(sentenciaSQL);
-
-			for (String ID : ids) {
-				Comic comic_temp = comicDatos(ID);
-
-				if (comic_temp.getEditorial().equalsIgnoreCase("Marvel")) {
-					String titulo = comic_temp.getNombre();
-					String artistaVariante = comic_temp.getVariante();
-					String numComic = comic_temp.getNumero();
-					String anioComic = obtenerAnio(comic_temp.getFecha());
-					codigoComic = getComicInfoUrl(titulo, artistaVariante, numComic, anioComic);
-					System.out.println(codigoComic);
-				}
-
-				if (codigoComic == null || codigoComic.isEmpty() || codigoComic.equals("0")) {
-					String referencia_comic = comic_temp.getUrl_referencia();
-					codigoComic = displayComicInfo(referencia_comic);
-				}
-
-				ps.setString(1, codigoComic);
-				ps.setString(2, ID);
-
-				if (ps.executeUpdate() == 1) {
-					System.out.println("ID: " + comic_temp.getID() + " - " + comic_temp.getNombre() + ": "
-							+ comic_temp.getVariante() + " - New code: " + codigoComic);
-				}
-			}
-		} catch (SQLException ex) {
-			nav.alertaException(ex.toString());
-			ex.printStackTrace();
-		} finally {
-			if (ps != null) {
-				ps.close();
-			}
-
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
 	private static String obtenerAnio(String fecha) {
 		try {
 			// Formato de la cadena de fecha
@@ -1230,75 +733,6 @@ public class Unit_Test extends Application {
 		}
 
 		return ids;
-	}
-
-	/**
-	 * Devuelve un objeto Comic cuya ID coincida con el parámetro de búsqueda.
-	 *
-	 * @param identificador el ID del cómic a buscar
-	 * @return el objeto Comic encontrado, o null si no se encontró ningún cómic con
-	 *         ese ID
-	 * @throws SQLException si ocurre algún error al ejecutar la consulta SQL
-	 */
-	public static Comic comicDatos(String identificador) throws SQLException {
-		Comic comic = null;
-
-		String sentenciaSQL = "SELECT * FROM comicsbbdd WHERE ID = ?";
-
-		PreparedStatement statement = null;
-		ResultSet rs = null;
-
-		try {
-			conn = ConectManager.conexion();
-			statement = conn.prepareStatement(sentenciaSQL);
-			statement.setString(1, identificador);
-			rs = statement.executeQuery();
-
-			if (rs.next()) {
-				String ID = rs.getString("ID");
-				String nombre = rs.getString("nomComic");
-				String numCaja = rs.getString("caja_deposito");
-				String numero = rs.getString("numComic");
-				String variante = rs.getString("nomVariante");
-				String firma = rs.getString("firma");
-				String editorial = rs.getString("nomEditorial");
-				String formato = rs.getString("formato");
-				String procedencia = rs.getString("procedencia");
-				String fecha = rs.getString("fecha_publicacion");
-				String guionista = rs.getString("nomGuionista");
-				String dibujante = rs.getString("nomDibujante");
-				String estado = rs.getString("estado");
-				String key_issue = rs.getString("key_issue");
-				String puntuacion = rs.getString("puntuacion");
-				String imagen = rs.getString("portada");
-				String url_referencia = rs.getString("url_referencia");
-				String precio_comic = rs.getString("precio_comic");
-				String codigo_comic = rs.getString("codigo_comic");
-
-				comic = new Comic(ID, nombre, numCaja, numero, variante, firma, editorial, formato, procedencia, fecha,
-						guionista, dibujante, estado, key_issue, puntuacion, imagen, url_referencia, precio_comic,
-						codigo_comic);
-			}
-		} catch (SQLException e) {
-			nav.alertaException(e.toString());
-		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (statement != null) {
-				statement.close();
-			}
-
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-
-		return comic;
 	}
 
 	/**

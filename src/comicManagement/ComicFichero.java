@@ -23,8 +23,8 @@ public class ComicFichero extends Comic {
 
 			String nombre = data[1];
 			String numCaja = data[2];
-			String precio_comic = data[3];
-			String codigo_comic = data[4];
+			String precioComic = data[3];
+			String codigoComic = data[4];
 			String numero = data[5];
 			String variante = data[6];
 			String firma = data[7];
@@ -35,25 +35,26 @@ public class ComicFichero extends Comic {
 			String guionista = data[12];
 			String dibujante = data[13];
 			String puntuacion = obtenerPuntuacion(data[13], data[14]);
-			String direccion_portada = data[15];
-			String nombre_portada = Utilidades.obtenerNombrePortada(false, direccion_portada);
-			String nombre_completo_portada = FuncionesExcel.DEFAULT_PORTADA_IMAGE_PATH + File.separator
-					+ nombre_portada;
+			String direccionPortada = data[15];
+			String nombrePortada = Utilidades.obtenerNombrePortada(false, direccionPortada);
+			String imagen = FuncionesExcel.DEFAULT_PORTADA_IMAGE_PATH + File.separator + nombrePortada;
 
-			String key_issue = data[16];
-			key_issue = key_issue.replaceAll("\\r|\\n", "");
-			String url_referencia = data[17];
+			String keyIssue = data[16];
+			keyIssue = keyIssue.replaceAll("\\r|\\n", "");
+			String urlReferencia = data[17];
 			String estado = data[18];
 
 			// Verificaciones y asignaciones predeterminadas
-			precio_comic = (precio_comic.isEmpty()) ? "0" : precio_comic;
-			codigo_comic = (codigo_comic.isEmpty()) ? "0" : codigo_comic;
-			url_referencia = (url_referencia.isEmpty()) ? "Sin referencia" : url_referencia;
+			precioComic = (precioComic.isEmpty()) ? "0" : precioComic;
+			codigoComic = (codigoComic.isEmpty()) ? "0" : codigoComic;
+			urlReferencia = (urlReferencia.isEmpty()) ? "Sin referencia" : urlReferencia;
 
-			Comic comic = new Comic("", nombre, numCaja, numero, variante, firma, editorial, formato, procedencia,
-					fecha, guionista, dibujante, estado, key_issue, puntuacion, nombre_completo_portada, url_referencia,
-					precio_comic, codigo_comic);
-			return comic;
+			return new Comic.ComicBuilder("", nombre).valorGradeo(numCaja).numero(numero).variante(variante)
+					.firma(firma).editorial(editorial).formato(formato).procedencia(procedencia).fecha(fecha)
+					.guionista(guionista).dibujante(dibujante).estado(estado).keyIssue(keyIssue).puntuacion(puntuacion)
+					.imagen(imagen).urlReferencia(urlReferencia).precioComic(precioComic).codigoComic(codigoComic)
+					.build();
+
 		} else {
 			return null;
 		}

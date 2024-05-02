@@ -42,7 +42,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import Controladores.CargaComicsController;
+import controladores.CargaComicsController;
 import comicManagement.Comic;
 import comicManagement.ComicFichero;
 import dbmanager.ComicManagerDAO;
@@ -341,8 +341,8 @@ public class FuncionesExcel {
 		fila.createCell(0).setCellValue("");
 		fila.createCell(1).setCellValue(comic.getNombre());
 		fila.createCell(2).setCellValue(comic.getValorGradeo());
-		fila.createCell(3).setCellValue(comic.getPrecio_comic());
-		fila.createCell(4).setCellValue(comic.getCodigo_comic());
+		fila.createCell(3).setCellValue(comic.getprecioComic());
+		fila.createCell(4).setCellValue(comic.getcodigoComic());
 		fila.createCell(5).setCellValue(comic.getNumero());
 		fila.createCell(6).setCellValue(comic.getVariante());
 		fila.createCell(7).setCellValue(comic.getFirma());
@@ -354,8 +354,8 @@ public class FuncionesExcel {
 		fila.createCell(13).setCellValue(comic.getDibujante());
 		fila.createCell(14).setCellValue(comic.getPuntuacion());
 		fila.createCell(15).setCellValue(comic.getImagen());
-		fila.createCell(16).setCellValue(comic.getKey_issue());
-		fila.createCell(17).setCellValue(comic.getUrl_referencia());
+		fila.createCell(16).setCellValue(comic.getkeyIssue());
+		fila.createCell(17).setCellValue(comic.geturlReferencia());
 		fila.createCell(18).setCellValue(comic.getEstado());
 	}
 

@@ -213,7 +213,7 @@ public class ListaComicsDAO {
 		// Buscar en comicsGuardadosList si es necesario
 		if (esGuardado) {
 			for (Comic comic : comicsGuardadosList) {
-				if (id.equals(comic.getID())) {
+				if (id.equals(comic.getid())) {
 					return true; // Si encuentra un comic con el mismo id, devuelve true
 				}
 			}
@@ -221,7 +221,7 @@ public class ListaComicsDAO {
 
 		// Buscar en comicsImportados
 		for (Comic comic : comicsImportados) {
-			if (id.equalsIgnoreCase(comic.getID())) {
+			if (id.equalsIgnoreCase(comic.getid())) {
 				return true; // Si encuentra un comic con el mismo id, devuelve true
 			}
 		}
@@ -232,7 +232,7 @@ public class ListaComicsDAO {
 	public static Comic devolverComicLista(String id) {
 		for (Comic comic : comicsImportados) {
 
-			if (comic.getID().equalsIgnoreCase(id)) {
+			if (comic.getid().equalsIgnoreCase(id)) {
 				return comic;
 			}
 		}
@@ -476,16 +476,16 @@ public class ListaComicsDAO {
 	 */
 	public static void agregarElementoUnico(Comic comicToAdd) {
 		// Usamos un Set para mantener los elementos únicos
-		Set<String> idsUnicos = comicsGuardadosList.stream().map(Comic::getID).collect(Collectors.toSet());
+		Set<String> idsUnicos = comicsGuardadosList.stream().map(Comic::getid).collect(Collectors.toSet());
 
 		// Verificamos si la ID del cómic ya está en la lista principal
-		if (!idsUnicos.contains(comicToAdd.getID())) {
+		if (!idsUnicos.contains(comicToAdd.getid())) {
 			// Añadimos el cómic a la lista principal
 			comicsGuardadosList.add(comicToAdd);
 
 			// Ordenamos la lista por ID en orden descendente de longitud
 			comicsGuardadosList
-					.sort(Comparator.comparing(Comic::getID, Comparator.comparingInt(String::length).reversed()));
+					.sort(Comparator.comparing(Comic::getid, Comparator.comparingInt(String::length).reversed()));
 		}
 	}
 
@@ -572,7 +572,7 @@ public class ListaComicsDAO {
 
 		// Aquí está la magia
 		for (Comic c : listaComics) {
-			mapComics.put(c.getID(), c);
+			mapComics.put(c.getid(), c);
 		}
 
 		// Agrego cada elemento del map a una nueva lista y muestro cada elemento.
@@ -617,7 +617,7 @@ public class ListaComicsDAO {
 	 */
 	public static Comic buscarComicPorID(List<Comic> comics, String idComic) {
 		for (Comic c : comics) {
-			if (c.getID().equals(idComic)) {
+			if (c.getid().equals(idComic)) {
 				return c; // Devuelve el cómic si encuentra la coincidencia por ID
 			}
 		}

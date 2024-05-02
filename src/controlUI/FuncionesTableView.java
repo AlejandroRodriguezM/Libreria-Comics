@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import Controladores.managment.AccionReferencias;
+import controladores.managment.AccionReferencias;
 import comicManagement.Comic;
 import dbmanager.DBUtilidades;
 import dbmanager.ListaComicsDAO;
@@ -143,56 +143,53 @@ public class FuncionesTableView {
 			tooltip.setHideDelay(Duration.ZERO);
 			tooltip.setFont(TOOLTIP_FONT);
 			row.setOnMouseMoved(event -> {
-			    if (!row.isEmpty()) {
-			        row.setStyle("-fx-background-color: #BFEFFF;");
+				if (!row.isEmpty()) {
+					row.setStyle("-fx-background-color: #BFEFFF;");
 
-			        Comic comic = row.getItem();
-			        if (comic != null && !tooltip.isShowing()) {
-			            String mensaje = "Nombre: " + comic.getNombre() + "\nNúmero: " + comic.getNumero()
-			                    + "\nVariante: " + comic.getVariante() + "\nPrecio: "
-			                    + (!comic.getPrecio_comic().isEmpty() ? comic.getPrecio_comic() + " $" : "");
+					Comic comic = row.getItem();
+					if (comic != null && !tooltip.isShowing()) {
+						String mensaje = "Nombre: " + comic.getNombre() + "\nNúmero: " + comic.getNumero()
+								+ "\nVariante: " + comic.getVariante() + "\nPrecio: "
+								+ (!comic.getprecioComic().isEmpty() ? comic.getprecioComic() + " $" : "");
 
-			            if (!comic.getFirma().isEmpty()) {
-			                mensaje += "\nFirma: " + comic.getFirma();
-			            }
-			            tooltip.setText(mensaje);
+						if (!comic.getFirma().isEmpty()) {
+							mensaje += "\nFirma: " + comic.getFirma();
+						}
+						tooltip.setText(mensaje);
 
-			            // Obtener las dimensiones de la pantalla
-			            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+						// Obtener las dimensiones de la pantalla
+						Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
 
-			            // Ajustar la posición del tooltip para que no salga del área de la aplicación
-			            double posX = event.getScreenX() + 10;
-			            double posY = event.getScreenY() - 20;
+						// Ajustar la posición del tooltip para que no salga del área de la aplicación
+						double posX = event.getScreenX() + 10;
+						double posY = event.getScreenY() - 20;
 
-			            // Verificar si el tooltip está fuera de los límites de la ventana principal
-			            if (posX + tooltip.getWidth() > screenBounds.getMaxX()) {
-			                posX = screenBounds.getMaxX() - tooltip.getWidth();
-			            }
-			            if (posY + tooltip.getHeight() > screenBounds.getMaxY()) {
-			                posY = screenBounds.getMaxY() - tooltip.getHeight();
-			            }
+						// Verificar si el tooltip está fuera de los límites de la ventana principal
+						if (posX + tooltip.getWidth() > screenBounds.getMaxX()) {
+							posX = screenBounds.getMaxX() - tooltip.getWidth();
+						}
+						if (posY + tooltip.getHeight() > screenBounds.getMaxY()) {
+							posY = screenBounds.getMaxY() - tooltip.getHeight();
+						}
 
-			            tooltip.show(row, posX, posY);
-			        }
-			    }
+						tooltip.show(row, posX, posY);
+					}
+				}
 			});
-
-
 
 			row.setOnMouseExited(event -> {
-			    if (!row.isEmpty()) {
-			        Bounds rowBounds = row.getBoundsInLocal();
-			        double mouseX = event.getSceneX();
-			        double mouseY = event.getSceneY();
-			        
-			        if (!rowBounds.contains(mouseX, mouseY)) {
-			            row.setStyle(""); // Restaura el estilo por defecto solo si el ratón está fuera del área del nodo
-			            tooltip.hide(); // Oculta el tooltip
-			        }
-			    }
+				if (!row.isEmpty()) {
+					Bounds rowBounds = row.getBoundsInLocal();
+					double mouseX = event.getSceneX();
+					double mouseY = event.getSceneY();
+
+					if (!rowBounds.contains(mouseX, mouseY)) {
+						row.setStyle(""); // Restaura el estilo por defecto solo si el ratón está fuera del área del
+											// nodo
+						tooltip.hide(); // Oculta el tooltip
+					}
+				}
 			});
-
-
 
 			return row;
 		});
@@ -260,13 +257,7 @@ public class FuncionesTableView {
 										label.getStyleClass().add("hyperlink");
 										Hyperlink hyperlink = new Hyperlink();
 										hyperlink.setGraphic(label);
-										hyperlink.setOnAction(event -> {
-											try {
-												columnaSeleccionada(tablaBBDD, nombre);
-											} catch (SQLException e) {
-												e.printStackTrace();
-											}
-										});
+										hyperlink.setOnAction(event -> columnaSeleccionada(tablaBBDD, nombre));
 										vbox.getChildren().add(hyperlink);
 									}
 								}
@@ -318,9 +309,9 @@ public class FuncionesTableView {
 	 * @param rawSelecionado El comic seleccionado en su forma cruda.
 	 * @throws SQLException Si ocurre un error de base de datos.
 	 */
-	public static void columnaSeleccionada(TableView<Comic> tablaBBDD, String rawSelecionado) throws SQLException {
+	public static void columnaSeleccionada(TableView<Comic> tablaBBDD, String rawSelecionado) {
 		ListaComicsDAO.reiniciarListaComics();
-		nombreColumnas(tablaBBDD);
+		nombreColumnas();
 
 		tablaBBDD(SelectManager.libreriaSeleccionado(rawSelecionado), tablaBBDD);
 
@@ -335,7 +326,7 @@ public class FuncionesTableView {
 	 * @param columnList La lista de TableColumn a configurar.
 	 * @param tablaBBDD  La TableView en la que se aplicarán las configuraciones.
 	 */
-	public static void nombreColumnas(TableView<Comic> tablaBBDD) {
+	public static void nombreColumnas() {
 		for (TableColumn<Comic, String> column : getReferenciaVentana().getColumnasTabla()) {
 			String columnName = column.getText(); // Obtiene el nombre de la columna
 
@@ -344,21 +335,20 @@ public class FuncionesTableView {
 			}
 
 			if (columnName.equalsIgnoreCase("Gradeo")) {
-				columnName = "numCaja";
+				columnName = "gradeo";
 			}
 
 			if (columnName.equalsIgnoreCase("Referencia")) {
-				columnName = "url_referencia";
+				columnName = "Referencia";
 			}
 
 			if (columnName.equalsIgnoreCase("Origen")) {
 				columnName = "Procedencia";
 			}
 
-			PropertyValueFactory<Comic, String> valueFactory = new PropertyValueFactory<>(columnName);
+	        PropertyValueFactory<Comic, String> valueFactory = new PropertyValueFactory<>(columnName);
 			column.setCellValueFactory(valueFactory);
 		}
-
 	}
 
 	/**

@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane fx:id="contenedorPrincipal" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyReleased="#manejarEventoTeclado" prefHeight="210.0" prefWidth="532.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.MenuLectorCodigoBarras">
+<Pane fx:id="contenedorPrincipal" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyReleased="#manejarEventoTeclado" prefHeight="210.0" prefWidth="532.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controladores.MenuLectorCodigoBarras">
    <children>
       <ImageView fitHeight="212.0" fitWidth="532.0" layoutY="-1.0" pickOnBounds="true">
          <image>

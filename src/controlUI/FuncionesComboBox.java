@@ -153,9 +153,13 @@ public class FuncionesComboBox {
 	 * @throws InterruptedException
 	 */
 	public void actualizarComboBoxes(int cantidadDeComboBoxes, List<ComboBox<String>> comboboxes, Comic comic) {
-		Comic comicTemp = new Comic("", comic.getNombre(), comic.getValorGradeo(), comic.getNumero(),
-				comic.getVariante(), comic.getFirma(), comic.getEditorial(), comic.getFormato(), comic.getProcedencia(),
-				"", comic.getGuionista(), comic.getDibujante(), "", "", "", "", "", "", "");
+
+		Comic comicTemp = new Comic.ComicBuilder("", comic.getNombre()).valorGradeo(comic.getValorGradeo())
+				.numero(comic.getNumero()).variante(comic.getVariante()).firma(comic.getFirma())
+				.editorial(comic.getEditorial()).formato(comic.getFormato()).procedencia(comic.getProcedencia())
+				.fecha("").guionista(comic.getGuionista()).dibujante(comic.getDibujante()).estado("").keyIssue("")
+				.puntuacion("").imagen("").urlReferencia("").precioComic("").codigoComic("").build();
+
 		String sql = DBUtilidades.datosConcatenados(comicTemp);
 		if (!sql.isEmpty()) {
 			isUserInput = false; // Disable user input during programmatic updates

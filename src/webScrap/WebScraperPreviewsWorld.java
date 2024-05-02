@@ -82,10 +82,10 @@ public class WebScraperPreviewsWorld {
 
 		try {
 			diamondCode = diamondCode.trim();
-			String previews_World_Url = "https://www.previewsworld.com/Catalog/" + diamondCode;
+			String urlReferencia = "https://www.previewsworld.com/Catalog/" + diamondCode;
 			// Realizar la conexión y obtener el documento HTML de la página
 
-			int codigoRespuesta = verificarCodigoRespuesta(previews_World_Url);
+			int codigoRespuesta = verificarCodigoRespuesta(urlReferencia);
 
 			// Expresión regular para verificar el patrón deseado
 			String patron = "^(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\\d{6}";
@@ -103,7 +103,7 @@ public class WebScraperPreviewsWorld {
 
 				return null;
 			} else {
-				Document document = Jsoup.connect(previews_World_Url).get();
+				Document document = Jsoup.connect(urlReferencia).get();
 
 				if (document == null) {
 					String mensaje = "Codigo de diamond code: " + diamondCode + " incorrecto";
@@ -175,12 +175,16 @@ public class WebScraperPreviewsWorld {
 				artist = Comic.limpiarCampo(artist);
 				issueKey = Comic.limpiarCampo(issueKey);
 				String formato = Utilidades.devolverPalabrasClave(titulo);
+				String procedencia = "Estados Unidos (United States)";
+				String estado = "En posesion";
+				String puntuacion = "Sin puntuacion";
 
-				Comic comicInfoArray = new Comic("", titulo, "0", numero, variant, "", editorial, formato,
-						"Estados Unidos (United States)", fecha, writer, artist, "En posesion", issueKey,
-						"Sin puntuacion", portadaImagen, previews_World_Url, precio, diamondCode);
+				return new Comic.ComicBuilder("", titulo).valorGradeo("0").numero(numero).variante(variant).firma("")
+						.editorial(editorial).formato(formato).procedencia(procedencia).fecha(fecha).guionista(writer)
+						.dibujante(artist).estado(estado).keyIssue(issueKey).puntuacion(puntuacion)
+						.imagen(portadaImagen).urlReferencia(urlReferencia).precioComic(precio).codigoComic(diamondCode)
+						.build();
 
-				return comicInfoArray;
 			}
 
 		} catch (IOException e) {
@@ -267,8 +271,9 @@ public class WebScraperPreviewsWorld {
 	private static String scrapeAndPrintReleaseDate(Document document) {
 		Element releaseDateElement = document.selectFirst("div.ReleaseDate");
 		if (releaseDateElement != null) {
-			
-			String releaseDateText = releaseDateElement.text().replace("In Shops: ", "").replace("N/A", "").replace("TBD", "").trim();
+
+			String releaseDateText = releaseDateElement.text().replace("In Shops: ", "").replace("N/A", "")
+					.replace("TBD", "").trim();
 			Date releaseDate = parseReleaseDate(releaseDateText);
 			return formatDateAsString(releaseDate);
 		}

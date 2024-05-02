@@ -42,7 +42,6 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -54,22 +53,16 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
 
-import org.json.JSONException;
-
-import Apis.ApiCambioDivisas;
-import Apis.ApiISBNGeneral;
-import Apis.ApiMarvel;
-import Controladores.OpcionesAvanzadasController;
-import Controladores.managment.AccionReferencias;
+import apis.ApiCambioDivisas;
+import apis.ApiISBNGeneral;
+import apis.ApiMarvel;
+import controladores.OpcionesAvanzadasController;
+import controladores.managment.AccionReferencias;
 import comicManagement.Comic;
 import controlUI.FuncionesManejoFront;
 import dbmanager.ConectManager;
@@ -1309,7 +1302,7 @@ public class Utilidades {
 	 */
 	public static String obtenerIdComicSeleccionado(TableView<Comic> tablaBBDD) {
 		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
-		return (idRow != null) ? idRow.getID() : null;
+		return (idRow != null) ? idRow.getid() : null;
 	}
 
 	/**

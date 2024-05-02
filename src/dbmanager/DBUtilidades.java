@@ -19,8 +19,8 @@ public class DBUtilidades {
 	public static void setParameters(PreparedStatement ps, Comic datos, boolean includeID) throws SQLException {
 		ps.setString(1, datos.getNombre());
 		ps.setString(2, datos.getValorGradeo() == null ? "0" : datos.getValorGradeo());
-		ps.setString(3, datos.getPrecio_comic());
-		ps.setString(4, datos.getCodigo_comic());
+		ps.setString(3, datos.getprecioComic());
+		ps.setString(4, datos.getcodigoComic());
 		ps.setString(5, datos.getNumero());
 		ps.setString(6, datos.getVariante());
 		ps.setString(7, datos.getFirma());
@@ -32,11 +32,11 @@ public class DBUtilidades {
 		ps.setString(13, datos.getDibujante());
 		ps.setString(14, "Sin puntuar");
 		ps.setString(15, datos.getImagen());
-		ps.setString(16, datos.getKey_issue());
-		ps.setString(17, datos.getUrl_referencia());
+		ps.setString(16, datos.getkeyIssue());
+		ps.setString(17, datos.geturlReferencia());
 		ps.setString(18, datos.getEstado());
 		if (includeID) {
-			ps.setString(19, datos.getID());
+			ps.setString(19, datos.getid());
 		}
 	}
 
@@ -80,7 +80,7 @@ public class DBUtilidades {
 
 		StringBuilder sql = new StringBuilder(sentenciaParametrosBusqueda);
 
-		connector = agregarCondicion(sql, connector, "ID", comic.getID());
+		connector = agregarCondicion(sql, connector, "ID", comic.getid());
 		connector = agregarCondicionLike(sql, connector, "nomComic", comic.getNombre());
 		connector = agregarCondicion(sql, connector, "nivel_gradeo", comic.getValorGradeo());
 		connector = agregarCondicion(sql, connector, "numComic", comic.getNumero());
@@ -105,7 +105,7 @@ public class DBUtilidades {
 		String connector = " WHERE ";
 		StringBuilder sql = new StringBuilder(SelectManager.SENTENCIA_BUSQUEDA_COMPLETA);
 
-		connector = agregarCondicion(sql, connector, "ID", comic.getID());
+		connector = agregarCondicion(sql, connector, "ID", comic.getid());
 		connector = agregarCondicion(sql, connector, "nomComic", comic.getNombre());
 		connector = agregarCondicion(sql, connector, "nivel_gradeo", comic.getValorGradeo());
 		connector = agregarCondicion(sql, connector, "numComic", comic.getNumero());
@@ -311,9 +311,9 @@ public class DBUtilidades {
 	 */
 	public static Comic obtenerComicDesdeResultSet(ResultSet rs) {
 		try {
-			String ID = rs.getString("ID");
+			String id = rs.getString("ID");
 			String nombre = rs.getString("nomComic");
-			String numCaja = rs.getString("nivel_gradeo");
+			String valorGradeo = rs.getString("nivel_gradeo");
 			String numero = rs.getString("numComic");
 			String variante = rs.getString("nomVariante");
 			String firma = rs.getString("firma");
@@ -324,16 +324,18 @@ public class DBUtilidades {
 			String guionista = rs.getString("nomGuionista");
 			String dibujante = rs.getString("nomDibujante");
 			String estado = rs.getString("estado");
-			String key_issue = rs.getString("key_issue");
+			String keyIssue = rs.getString("key_issue");
 			String puntuacion = rs.getString("puntuacion");
 			String imagen = rs.getString("portada");
-			String url_referencia = rs.getString("url_referencia");
-			String precio_comic = rs.getString("precio_comic");
-			String codigo_comic = rs.getString("codigo_comic");
+			String urlReferencia = rs.getString("url_referencia");
+			String precioComic = rs.getString("precio_comic");
+			String codigoComic = rs.getString("codigo_comic");
 
-			return new Comic(ID, nombre, numCaja, numero, variante, firma, editorial, formato, procedencia, fecha,
-					guionista, dibujante, estado, key_issue, puntuacion, imagen, url_referencia, precio_comic,
-					codigo_comic);
+			return new Comic.ComicBuilder(id, nombre).valorGradeo(valorGradeo).numero(numero).variante(variante)
+					.firma(firma).editorial(editorial).formato(formato).procedencia(procedencia).fecha(fecha)
+					.guionista(guionista).dibujante(dibujante).estado(estado).keyIssue(keyIssue).puntuacion(puntuacion)
+					.imagen(imagen).urlReferencia(urlReferencia).precioComic(precioComic).codigoComic(codigoComic)
+					.build();
 		} catch (SQLException e) {
 			// Manejar la excepción según tus necesidades
 			Utilidades.manejarExcepcion(e);

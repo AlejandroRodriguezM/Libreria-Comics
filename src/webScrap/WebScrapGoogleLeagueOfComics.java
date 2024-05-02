@@ -152,7 +152,7 @@ public class WebScrapGoogleLeagueOfComics {
 			String valorComic = "0";
 			String artistas = "";
 			String numComic = "0";
-			String nombreComic = "";
+			String titulo = "";
 			String coverURL = "";
 			String key = "";
 			String upcValue = "";
@@ -185,9 +185,9 @@ public class WebScrapGoogleLeagueOfComics {
 						e.printStackTrace();
 					}
 				}
-				nombreComic = h1Texto;
+				titulo = h1Texto;
 				if (indiceNumComic != -1) {
-					nombreComic = h1Texto.substring(0, indiceNumComic).trim();
+					titulo = h1Texto.substring(0, indiceNumComic).trim();
 				}
 			}
 
@@ -268,21 +268,21 @@ public class WebScrapGoogleLeagueOfComics {
 			String artistasString = String.join(", ", artists);
 
 			cover = Comic.limpiarCampo(cover);
-			nombreComic = Comic.limpiarCampo(nombreComic);
+			titulo = Comic.limpiarCampo(titulo);
 			distribuidora = Comic.limpiarCampo(distribuidora);
 			guionista = Comic.limpiarCampo(guionista);
 			artistas = Comic.limpiarCampo(artistasString);
 			key = Comic.limpiarCampo(key);
 			upcValue = Comic.limpiarCampo(upcValue);
-			formato = Utilidades.devolverPalabrasClave(nombreComic);
+			formato = Utilidades.devolverPalabrasClave(titulo);
+			String procedencia = "Estados Unidos (United States)";
+			String estado = "En posesion";
+			String puntuacion = "Sin puntuacion";
 
-			Comic comic = new Comic("", nombreComic, "0", numComic, cover, "", distribuidora, formato,
-					"Estados Unidos (United States)", fecha, guionista, artistas, "En posesion", key, "Sin puntuacion",
-					coverURL, url, valorComic, upcValue);
-
-			System.out.println(comic.toString());
-
-			return comic;
+			return new Comic.ComicBuilder("", titulo).valorGradeo("0").numero(numComic).variante(cover).firma("")
+					.editorial(distribuidora).formato(formato).procedencia(procedencia).fecha(fecha)
+					.guionista(guionista).dibujante(artistas).estado(estado).keyIssue(key).puntuacion(puntuacion)
+					.imagen(coverURL).urlReferencia(url).precioComic(valorComic).codigoComic(upcValue).build();
 
 		} catch (IOException e) {
 			e.printStackTrace();

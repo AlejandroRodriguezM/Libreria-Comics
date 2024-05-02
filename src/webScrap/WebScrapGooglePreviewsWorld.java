@@ -218,10 +218,14 @@ public class WebScrapGooglePreviewsWorld {
 			String formato = "Grapa (Issue individual)";
 			String precio = scrapeAndPrintSRP(document);
 			String code = scrapeElementCode(document, "div.ItemCode");
+			String procedencia = "Estados Unidos (United States)";
+			String estado = "En posesión";
+			String puntuacion = "Sin puntuación";
 
-			Comic comicInfoArray = new Comic(comic.getID(), titulo, "0", numero, "", "", "", formato,
-					"Estados Unidos (United States)", "", "", "", "En posesión", "", "Sin puntuación", "",
-					previewsWorldUrl, precio, code);
+			Comic comicInfoArray = new Comic.ComicBuilder(comic.getid(), titulo).valorGradeo("0").numero(numero)
+					.variante("").firma("").editorial("").formato(formato).procedencia(procedencia).fecha("")
+					.guionista("").dibujante("").estado(estado).keyIssue("").puntuacion(puntuacion).imagen("")
+					.urlReferencia(previewsWorldUrl).precioComic(precio).codigoComic(code).build();
 
 			// Escribir en un archivo
 			writeToTextFile(comicInfoArray, claveBusqueda);
@@ -366,11 +370,11 @@ public class WebScrapGooglePreviewsWorld {
 
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
 
-			System.out.println("Búsqueda: " + busquedaComic + " - Código: " + comicInfo.getCodigo_comic() + " - URL: "
-					+ comicInfo.getUrl_referencia());
+			System.out.println("Búsqueda: " + busquedaComic + " - Código: " + comicInfo.getcodigoComic() + " - URL: "
+					+ comicInfo.geturlReferencia());
 
-			writer.write("UPDATE comicsbbdd set codigo_comic = '" + comicInfo.getCodigo_comic() + "' where ID = "
-					+ comicInfo.getID() + "; " + comicInfo.getUrl_referencia());
+			writer.write("UPDATE comicsbbdd set codigo_comic = '" + comicInfo.getcodigoComic() + "' where ID = "
+					+ comicInfo.getid() + "; " + comicInfo.geturlReferencia());
 
 //			writer.write("Búsqueda: " + busquedaComic + " Código: " + comicInfo.getCodigo_comic() + " URL: "
 //			+ comicInfo.getUrl_referencia());
@@ -431,8 +435,7 @@ public class WebScrapGooglePreviewsWorld {
 				BufferedImage image = ImageIO.read(inputFile);
 
 				// Redimensionar la imagen al nuevo tamaño y aplicar la calidad de compresión
-				Thumbnails.of(image).scale(scaleRatio).outputQuality(compressionFactor)
-						.toFile(new File(inputPath));
+				Thumbnails.of(image).scale(scaleRatio).outputQuality(compressionFactor).toFile(new File(inputPath));
 
 				numConverted++;
 			}

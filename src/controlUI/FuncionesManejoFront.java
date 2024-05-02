@@ -2,15 +2,13 @@ package controlUI;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
-import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 
-import Controladores.managment.AccionReferencias;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
+import controladores.managment.AccionReferencias;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.scene.Node;
@@ -23,11 +21,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputControl;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 public class FuncionesManejoFront {
 

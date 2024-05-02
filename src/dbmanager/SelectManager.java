@@ -14,20 +14,20 @@ import funciones_auxiliares.Utilidades;
 
 public class SelectManager {
 
-	public final static String TAMANIO_DATABASE = "SELECT COUNT(*) FROM comicsbbdd";
-	private final static String SENTENCIA_BUSQUEDA_INDIVIDUAL = "SELECT * FROM comicsbbdd WHERE ID = ?";
-	private final static String SENTENCIA_CONTAR_COMICS_POR_ID = "SELECT COUNT(*) FROM comicsbbdd WHERE ID = ?";
-	private final static String SENTENCIA_BUSCAR_PORTADA = "SELECT portada FROM comicsbbdd WHERE ID = ?";
-	public final static String SENTENCIA_BUSQUEDA_COMPLETA = "SELECT * from comicsbbdd";
-	public final static String SENTENCIA_TOTAL_BUSQUEDA = "SELECT COUNT(*) FROM comicsbbdd WHERE 1=1";
+	public static final String TAMANIO_DATABASE = "SELECT COUNT(*) FROM comicsbbdd";
+	private static final String SENTENCIA_BUSQUEDA_INDIVIDUAL = "SELECT * FROM comicsbbdd WHERE ID = ?";
+	private static final String SENTENCIA_CONTAR_COMICS_POR_ID = "SELECT COUNT(*) FROM comicsbbdd WHERE ID = ?";
+	private static final String SENTENCIA_BUSCAR_PORTADA = "SELECT portada FROM comicsbbdd WHERE ID = ?";
+	public static final String SENTENCIA_BUSQUEDA_COMPLETA = "SELECT * from comicsbbdd";
+	public static final String SENTENCIA_TOTAL_BUSQUEDA = "SELECT COUNT(*) FROM comicsbbdd WHERE 1=1";
 
-	public final static String SENTENCIA_POSESION = "SELECT * FROM comicsbbdd WHERE estado = 'En posesion' ORDER BY nomComic, fecha_publicacion, numComic";
-	public final static String SENTENCIA_KEY_ISSUE = "SELECT * FROM comicsbbdd WHERE key_issue <> 'Vacio' ORDER BY nomComic, fecha_publicacion, numComic";
-	public final static String SENTENCIA_COMPLETA = "SELECT * FROM comicsbbdd ORDER BY nomComic, fecha_publicacion, numComic";
-	public final static String SENTENCIA_VENDIDOS = "SELECT * FROM comicsbbdd WHERE estado = 'Vendido' ORDER BY nomComic, fecha_publicacion, numComic";
-	public final static String SENTENCIA_COMPRADOS = "SELECT * FROM comicsbbdd WHERE estado = 'Comprado' ORDER BY nomComic, fecha_publicacion, numComic";
-	public final static String SENTENCIA_PUNTUACION = "SELECT * FROM comicsbbdd WHERE puntuacion <> 'Sin puntuar' ORDER BY nomComic, fecha_publicacion, numComic";
-	public final static String SENTENCIA_FIRMADOS = "SELECT * FROM comicsbbdd WHERE Firma <> '' ORDER BY nomComic, fecha_publicacion, numComic";
+	public static final String SENTENCIA_POSESION = "SELECT * FROM comicsbbdd WHERE estado = 'En posesion' ORDER BY nomComic, fecha_publicacion, numComic";
+	public static final String SENTENCIA_KEY_ISSUE = "SELECT * FROM comicsbbdd WHERE key_issue <> 'Vacio' ORDER BY nomComic, fecha_publicacion, numComic";
+	public static final String SENTENCIA_COMPLETA = "SELECT * FROM comicsbbdd ORDER BY nomComic, fecha_publicacion, numComic";
+	public static final String SENTENCIA_VENDIDOS = "SELECT * FROM comicsbbdd WHERE estado = 'Vendido' ORDER BY nomComic, fecha_publicacion, numComic";
+	public static final String SENTENCIA_COMPRADOS = "SELECT * FROM comicsbbdd WHERE estado = 'Comprado' ORDER BY nomComic, fecha_publicacion, numComic";
+	public static final String SENTENCIA_PUNTUACION = "SELECT * FROM comicsbbdd WHERE puntuacion <> 'Sin puntuar' ORDER BY nomComic, fecha_publicacion, numComic";
+	public static final String SENTENCIA_FIRMADOS = "SELECT * FROM comicsbbdd WHERE Firma <> '' ORDER BY nomComic, fecha_publicacion, numComic";
 
 	/**
 	 * Funcion que permite contar cuantas filas hay en la base de datos.
@@ -237,7 +237,7 @@ public class SelectManager {
 				while (rs.next()) {
 
 					Comic comic = DBUtilidades.obtenerComicDesdeResultSet(rs);
-					if (!comic.getCodigo_comic().isEmpty() && !comic.getCodigo_comic().equals("0")) {
+					if (!comic.getcodigoComic().isEmpty() && !comic.getcodigoComic().equals("0")) {
 
 						listaComics.add(comic);
 					}else {

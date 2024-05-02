@@ -78,7 +78,7 @@ public class UpdateManager {
 
 	// Método que fusiona las dos funciones originales
 	public static void modificarComic(Comic datos, String sentenciaSQL) {
-		if (SelectManager.comprobarIdentificadorComic(datos.getID())) {
+		if (SelectManager.comprobarIdentificadorComic(datos.getid())) {
 			try (Connection conn = ConectManager.conexion();
 					PreparedStatement ps = conn.prepareStatement(sentenciaSQL)) {
 				DBUtilidades.setParameters(ps, datos, true); // Configurar los parámetros de la consulta
