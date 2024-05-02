@@ -127,7 +127,7 @@
 				<Font size="13.0" />
 			</font>
 		</Label>
-		<Label layoutX="16.0" layoutY="344.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Caja">
+		<Label layoutX="16.0" layoutY="344.0" style="-fx-background-color: grey;" stylesheets="@../style/genericos_style.css" text="Gradeo">
 			<font>
 				<Font size="11.0" />
 			</font>
@@ -141,10 +141,10 @@
 					<columns>
 						<TableColumn fx:id="ID" prefWidth="47.0" text="ID" visible="false" />
 						<TableColumn fx:id="nombre" editable="false" maxWidth="5500.0" prefWidth="102.0" text="Nombre" />
-						<TableColumn fx:id="caja" editable="false" maxWidth="2000.0" prefWidth="39.0" text="Caja" visible="false" />
-						<TableColumn fx:id="numero" editable="false" maxWidth="2500.0" prefWidth="43.0" text="Nº" />
-						<TableColumn fx:id="variante" editable="false" prefWidth="116.0" text="Variante" />
-						<TableColumn fx:id="firma" editable="false" maxWidth="4000.0" minWidth="0.0" prefWidth="148.0" text="Firma" />
+						<TableColumn fx:id="gradeo" editable="false" maxWidth="2000.0" prefWidth="57.0" text="Gradeo" visible="false" />
+						<TableColumn fx:id="numero" editable="false" maxWidth="2500.0" prefWidth="46.0" text="Nº" />
+						<TableColumn fx:id="variante" editable="false" prefWidth="135.0" text="Variante" />
+						<TableColumn fx:id="firma" editable="false" maxWidth="4000.0" minWidth="0.0" prefWidth="148.0" text="Firma" visible="false" />
 						<TableColumn fx:id="editorial" editable="false" maxWidth="4500.0" minWidth="0.0" prefWidth="97.0" style="-fx-alignment: center;" text="Editorial" />
 						<TableColumn fx:id="formato" editable="false" maxWidth="4100.0" prefWidth="59.0" text="Formato" />
 						<TableColumn fx:id="procedencia" editable="false" text="Origen" />
@@ -172,7 +172,7 @@
 		<ComboBox fx:id="nombreEditorial" layoutX="73.0" layoutY="257.0" prefHeight="25.0" prefWidth="151.0" promptText="Seleccionar editorial" stylesheets="@../style/combobox_style.css" />
 		<ComboBox fx:id="nombreFirma" layoutX="73.0" layoutY="285.0" prefHeight="25.0" prefWidth="151.0" promptText="Seleccionar firma" stylesheets="@../style/combobox_style.css" />
 		<DatePicker fx:id="fechaPublicacion" layoutX="73.0" layoutY="315.0" prefHeight="25.0" prefWidth="151.0" promptText="2000-01-01" />
-		<ComboBox fx:id="numeroCaja" layoutX="73.0" layoutY="343.0" prefHeight="25.0" prefWidth="151.0" promptText="Selecciona caja" stylesheets="@../style/combobox_style.css" />
+		<ComboBox fx:id="numeroCaja" layoutX="73.0" layoutY="343.0" prefHeight="25.0" prefWidth="151.0" promptText="Nivel de gradeo" stylesheets="@../style/combobox_style.css" />
 		<Button fx:id="botonLimpiar" layoutX="231.0" layoutY="31.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Limpiar" />
 		<Button fx:id="botonbbdd" layoutX="231.0" layoutY="72.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Ver todo" />
 		<Button fx:id="botonMostrarParametro" alignment="CENTER" contentDisplay="BOTTOM" layoutX="231.0" layoutY="116.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Busqueda" />

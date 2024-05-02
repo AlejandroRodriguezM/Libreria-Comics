@@ -124,9 +124,9 @@ public class OpcionesAvanzadasController implements Initializable {
 	@FXML
 	private Label prontInfoPreviews;
 
-	public static ObservableList<String> urlActualizados = FXCollections.observableArrayList();
+	public static final ObservableList<String> urlActualizados = FXCollections.observableArrayList();
 
-	public static AccionReferencias referenciaVentana = new AccionReferencias();
+	public static final AccionReferencias referenciaVentana = new AccionReferencias();
 
 	/**
 	 * Instancia de la clase FuncionesComboBox para el manejo de ComboBox.
@@ -137,8 +137,6 @@ public class OpcionesAvanzadasController implements Initializable {
 	 * Referencia a la ventana (stage).
 	 */
 	private Scene ventanaOpciones;
-
-	public static boolean estaActualizado = true;
 
 	/**
 	 * Instancia de la clase Ventanas para la navegación.
@@ -173,6 +171,12 @@ public class OpcionesAvanzadasController implements Initializable {
 		return referenciaVentana;
 	}
 
+	public void enviarReferencias() {
+		AccionFuncionesComunes.setReferenciaVentana(guardarReferencia());
+		FuncionesManejoFront.setReferenciaVentana(guardarReferencia());
+		AccionModificar.setReferenciaVentana(guardarReferencia());
+	}
+
 	/**
 	 * Inicializa la interfaz de usuario y configura el comportamiento de los
 	 * elementos al cargar la vista.
@@ -184,15 +188,11 @@ public class OpcionesAvanzadasController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 
 		Platform.runLater(() -> {
-			AccionModificar.referenciaVentana = guardarReferencia();
-			AccionFuncionesComunes.referenciaVentana = guardarReferencia();
 			rellenarComboboxPreviews();
-			FuncionesManejoFront.stageVentanas.add(estadoStage());
-			
+			enviarReferencias();
+
 			obtenerVersionDesdeOtraClase();
-			
-			System.out.println(FuncionesManejoFront.stageVentanas.size());
-			
+
 		});
 		ventanaOpciones = miStageVentana();
 
@@ -239,7 +239,7 @@ public class OpcionesAvanzadasController implements Initializable {
 
 		String versionSW = VersionService.obtenerVersion();
 		String versionLocal = VersionService.leerVersionDelArchivo();
-
+		boolean estaActualizado = true;
 		String cadena = "";
 		if (Utilidades.compareVersions(versionSW, versionLocal) > 0) {
 
@@ -389,24 +389,24 @@ public class OpcionesAvanzadasController implements Initializable {
 
 	@FXML
 	void actualizarCompletoComic(ActionEvent event) {
-		AccionModificar.referenciaVentana = guardarReferencia();
-		AccionFuncionesComunes.referenciaVentana = guardarReferencia();
+		AccionModificar.setReferenciaVentana(guardarReferencia());
+		AccionFuncionesComunes.setReferenciaVentana(guardarReferencia());
 		AccionModificar.actualizarDatabase("modificar", actualizarFima.get(), estadoStage());
 
 	}
 
 	@FXML
 	void actualizarDatosComic(ActionEvent event) {
-		AccionModificar.referenciaVentana = guardarReferencia();
-		AccionFuncionesComunes.referenciaVentana = guardarReferencia();
+		AccionModificar.setReferenciaVentana(guardarReferencia());
+		AccionFuncionesComunes.setReferenciaVentana(guardarReferencia());
 		AccionModificar.actualizarDatabase("actualizar datos", actualizarFima.get(), estadoStage());
 	}
 
 	@FXML
 	void actualizarPortadaComic(ActionEvent event) {
 
-		AccionModificar.referenciaVentana = guardarReferencia();
-		AccionFuncionesComunes.referenciaVentana = guardarReferencia();
+		AccionModificar.setReferenciaVentana(guardarReferencia());
+		AccionFuncionesComunes.setReferenciaVentana(guardarReferencia());
 		AccionModificar.actualizarDatabase("actualizar portadas", actualizarFima.get(), estadoStage());
 
 	}
@@ -503,10 +503,8 @@ public class OpcionesAvanzadasController implements Initializable {
 								}
 							}
 
-							Platform.runLater(() -> {
-								cargaComicsControllerRef.get().cargarDatosEnCargaComics(textoFiltrado.toString(),
-										porcentaje, progress);
-							});
+							Platform.runLater(() -> cargaComicsControllerRef.get()
+									.cargarDatosEnCargaComics(textoFiltrado.toString(), porcentaje, progress));
 						}
 
 						Platform.runLater(() -> cargaComicsControllerRef.get()
@@ -546,9 +544,7 @@ public class OpcionesAvanzadasController implements Initializable {
 			FuncionesManejoFront.cambiarEstadoMenuBar(false);
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, referenciaVentana);
 
-			Platform.runLater(() -> {
-				cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0);
-			});
+			Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0));
 		});
 
 		// Iniciar tarea en un nuevo hilo
@@ -685,8 +681,8 @@ public class OpcionesAvanzadasController implements Initializable {
 
 		if (ventanaOpciones != null && ventanaOpciones.getWindow() instanceof Stage) {
 
-			if (FuncionesManejoFront.stageVentanas.contains(estadoStage())) {
-				FuncionesManejoFront.stageVentanas.remove(estadoStage());
+			if (FuncionesManejoFront.getStageVentanas().contains(estadoStage())) {
+				FuncionesManejoFront.getStageVentanas().remove(estadoStage());
 			}
 			nav.cerrarCargaComics();
 			Stage stage = (Stage) ventanaOpciones.getWindow();

@@ -95,7 +95,7 @@ public class FuncionesComboBox {
 				comic.setFirma(value);
 				break;
 			case 9:
-				comic.setNumCaja(value);
+				comic.setValorGradeo(value);
 				break;
 			// Add more cases for additional comboboxes if needed
 			default:
@@ -153,9 +153,9 @@ public class FuncionesComboBox {
 	 * @throws InterruptedException
 	 */
 	public void actualizarComboBoxes(int cantidadDeComboBoxes, List<ComboBox<String>> comboboxes, Comic comic) {
-		Comic comicTemp = new Comic("", comic.getNombre(), comic.getNumCaja(), comic.getNumero(), comic.getVariante(),
-				comic.getFirma(), comic.getEditorial(), comic.getFormato(), comic.getProcedencia(), "",
-				comic.getGuionista(), comic.getDibujante(), "", "", "", "", "", "", "");
+		Comic comicTemp = new Comic("", comic.getNombre(), comic.getValorGradeo(), comic.getNumero(),
+				comic.getVariante(), comic.getFirma(), comic.getEditorial(), comic.getFormato(), comic.getProcedencia(),
+				"", comic.getGuionista(), comic.getDibujante(), "", "", "", "", "", "", "");
 		String sql = DBUtilidades.datosConcatenados(comicTemp);
 		if (!sql.isEmpty()) {
 			isUserInput = false; // Disable user input during programmatic updates
@@ -217,7 +217,7 @@ public class FuncionesComboBox {
 		Collections.sort(numerosEnteros);
 
 		// Convierte la lista de enteros de nuevo a una lista de cadenas
-		return numerosEnteros.stream().map(String::valueOf).collect(Collectors.toList());
+		return numerosEnteros.stream().map(String::valueOf).toList();
 	}
 
 	/**
@@ -230,13 +230,15 @@ public class FuncionesComboBox {
 		isUserInput = false; // Deshabilitar la entrada del usuario durante la limpieza
 
 		// Restaurar los elementos originales para cada ComboBox
-		for (ComboBox<String> comboBox : originalComboBoxItems.keySet()) {
-			ObservableList<String> originalItems = originalComboBoxItems.get(comboBox);
+		for (Map.Entry<ComboBox<String>, ObservableList<String>> entry : originalComboBoxItems.entrySet()) {
+			ComboBox<String> comboBox = entry.getKey();
+			ObservableList<String> originalItems = entry.getValue();
 			comboBox.setItems(originalItems);
 
 			// Configurar el tamaño y apariencia del despliegue del ComboBox
 			modificarPopup(comboBox);
 		}
+
 		isUserInput = true; // Habilitar nuevamente la entrada del usuario después de la limpieza
 		rellenarComboBox(comboboxes); // Rellenar los ComboBoxes con nuevos datos
 	}
@@ -286,12 +288,9 @@ public class FuncionesComboBox {
 
 	private void setupComboBoxMouseClickEvent(List<ComboBox<String>> comboboxes, ComboBox<String> comboBox, int index) {
 		comboBox.setOnMousePressed(event -> {
-//	        handleComboBoxEvent(comboboxes, comboBox, index);
 		});
 
-		comboBox.setOnMouseClicked(event -> {
-			handleComboBoxEvent(comboboxes, comboBox, index);
-		});
+		comboBox.setOnMouseClicked(event -> handleComboBoxEvent(comboboxes, comboBox, index));
 	}
 
 	private void handleComboBoxEvent(List<ComboBox<String>> comboboxes, ComboBox<String> comboBox, int index) {
@@ -325,7 +324,6 @@ public class FuncionesComboBox {
 		StringProperty filteredText = new SimpleStringProperty();
 		filterTextField.textProperty().bindBidirectional(filteredText);
 
-		Bounds bounds = originalComboBox.localToScreen(originalComboBox.getBoundsInLocal());
 		Popup popup = createCustomPopup(originalComboBox, filterTextField, listView);
 
 		Map<ComboBox<String>, Popup> comboBoxPopupMap = new HashMap<>();
@@ -342,8 +340,8 @@ public class FuncionesComboBox {
 			if (newValue != null && !newValue.isEmpty()) {
 
 				List<String> newFilteredItems = ListaComicsDAO.listaOrdenada.get(comboboxes.indexOf(originalComboBox))
-						.stream().filter(item -> item.toLowerCase().contains(newValue.toLowerCase()))
-						.collect(Collectors.toList());
+						.stream().filter(item -> item.toLowerCase().contains(newValue.toLowerCase())).toList();
+
 				currentFilteredItems.clear();
 				currentFilteredItems.addAll(newFilteredItems);
 				listView.setItems(FXCollections.observableArrayList(currentFilteredItems));
@@ -383,7 +381,7 @@ public class FuncionesComboBox {
 				.handle(new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.ENTER, false, false, false, false)));
 
 		if (!popup.isShowing()) {
-			showFilteredPopup(popup, originalComboBox, filterTextField, filteredText, bounds);
+			showFilteredPopup(popup, originalComboBox, filterTextField, filteredText);
 		} else {
 			originalComboBox.hide();
 			popup.hide();
@@ -448,7 +446,7 @@ public class FuncionesComboBox {
 	 * @param bounds           Los límites del área de visualización.
 	 */
 	private void showFilteredPopup(Popup popup, ComboBox<String> originalComboBox, TextField filterTextField,
-			StringProperty filteredText, Bounds bounds) {
+			StringProperty filteredText) {
 
 		Bounds comboBoxBounds = originalComboBox.getBoundsInLocal();
 		Bounds screenBounds = originalComboBox.localToScreen(comboBoxBounds);
@@ -516,8 +514,8 @@ public class FuncionesComboBox {
 
 				if (originalItems != null && !originalItems.isEmpty()) {
 					ObservableList<String> filteredItems = FXCollections.observableArrayList(originalItems.stream()
-							.filter(item -> item.toLowerCase().contains(selectedItem.toLowerCase()))
-							.collect(Collectors.toList()));
+							.filter(item -> item.toLowerCase().contains(selectedItem.toLowerCase())).toList());
+
 					comboBox.setItems(filteredItems);
 				}
 			}
@@ -533,21 +531,19 @@ public class FuncionesComboBox {
 	 */
 	public static TextFormatter<Integer> validador_Nenteros() {
 		// Crear un validador para permitir solo números enteros
-		TextFormatter<Integer> textFormatter = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
+		return new TextFormatter<>(new IntegerStringConverter(), null, change -> {
 			if (change.getControlNewText().matches("\\d*")) {
 				return change;
 			}
 			return null;
 		});
 
-		return textFormatter;
 	}
 
 	public static TextFormatter<String> desactivarValidadorNenteros() {
 		// Crear un TextFormatter que permita cualquier tipo de entrada
-		TextFormatter<String> textFormatter = new TextFormatter<>(new DefaultStringConverter());
+		return new TextFormatter<>(new DefaultStringConverter());
 
-		return textFormatter;
 	}
 
 	/**
@@ -558,15 +554,13 @@ public class FuncionesComboBox {
 	 */
 	public static TextFormatter<Double> validador_Ndecimales() {
 		// Crear un validador para permitir solo números decimales (double)
-		TextFormatter<Double> textFormatter = new TextFormatter<>(new DoubleStringConverter(), 0.0, change -> {
+		return new TextFormatter<>(new DoubleStringConverter(), 0.0, change -> {
 			String newText = change.getControlNewText();
 			if (newText.matches("\\d*\\.?\\d*")) {
 				return change;
 			}
 			return null;
 		});
-
-		return textFormatter;
 	}
 
 	/**
@@ -594,9 +588,9 @@ public class FuncionesComboBox {
 
 		// Verificar que la lista de ComboBox tenga al menos el mismo tamaño que los
 		// arreglos
-		int tamaño = Math.min(comboboxes.size(), valores.length);
+		int tamanio = Math.min(comboboxes.size(), valores.length);
 
-		for (int i = 0; i < tamaño; i++) {
+		for (int i = 0; i < tamanio; i++) {
 			comboboxes.get(i).getItems().clear(); // Limpiar elementos anteriores si los hay
 			comboboxes.get(i).getItems().addAll(valores[i]);
 
@@ -613,9 +607,7 @@ public class FuncionesComboBox {
 	 */
 	public static String puntuacionCombobox(ComboBox<String> puntuacionMenu) {
 
-		String puntuacion = puntuacionMenu.getSelectionModel().getSelectedItem().toString(); // Toma el valor del menu
-																								// "puntuacion"
-		return puntuacion;
+		return puntuacionMenu.getSelectionModel().getSelectedItem();
 	}
 
 	/**
@@ -628,7 +620,7 @@ public class FuncionesComboBox {
 		String numComic = "";
 
 		if (numeroComic.getSelectionModel().getSelectedItem() != null) {
-			numComic = numeroComic.getSelectionModel().getSelectedItem().toString();
+			numComic = numeroComic.getSelectionModel().getSelectedItem();
 		}
 
 		return numComic;
@@ -645,7 +637,7 @@ public class FuncionesComboBox {
 		String cajaComics = "";
 
 		if (numeroCajaComic.getSelectionModel().getSelectedItem() != null) {
-			cajaComics = numeroCajaComic.getSelectionModel().getSelectedItem().toString();
+			cajaComics = numeroCajaComic.getSelectionModel().getSelectedItem();
 		}
 
 		return cajaComics;
@@ -662,7 +654,7 @@ public class FuncionesComboBox {
 		String estadoNuevo = "";
 
 		if (estadoComic.getSelectionModel().getSelectedItem() != null) {
-			estadoNuevo = estadoComic.getSelectionModel().getSelectedItem().toString();
+			estadoNuevo = estadoComic.getSelectionModel().getSelectedItem();
 		}
 
 		return estadoNuevo;
@@ -678,7 +670,7 @@ public class FuncionesComboBox {
 
 		String formatoEstado = "";
 		if (formatoComic.getSelectionModel().getSelectedItem() != null) {
-			formatoEstado = formatoComic.getSelectionModel().getSelectedItem().toString();
+			formatoEstado = formatoComic.getSelectionModel().getSelectedItem();
 		}
 		return formatoEstado;
 	}
@@ -693,7 +685,7 @@ public class FuncionesComboBox {
 
 		String procedenciaEstadoNuevo = "";
 		if (procedenciaComic.getSelectionModel().getSelectedItem() != null) {
-			procedenciaEstadoNuevo = procedenciaComic.getSelectionModel().getSelectedItem().toString();
+			procedenciaEstadoNuevo = procedenciaComic.getSelectionModel().getSelectedItem();
 		}
 
 		return procedenciaEstadoNuevo;

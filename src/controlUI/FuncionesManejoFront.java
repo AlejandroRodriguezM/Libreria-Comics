@@ -15,11 +15,15 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputControl;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -29,31 +33,26 @@ public class FuncionesManejoFront {
 
 	public static ImageView imagenComic;
 
-	public static AccionReferencias referenciaVentana = new AccionReferencias();
+	private static AccionReferencias referenciaVentana = getReferenciaVentana();
 
-	public static List<Stage> stageVentanas = new ArrayList<Stage>();
+	private static List<Stage> stageVentanas = new ArrayList<>();
 
 	private static final List<Character> simbolos = Arrays.asList(',', '-', '!', '@', '#', '$', '%', '^', '&', '*', '(',
 			')', '[', ']', '{', '}', ';', ':', '|', '\\', '<', '>', '/', '?', '~', '`', '+', '=', '.');
 
 	public static void establecerFondoDinamico() {
-		for (Node elemento : referenciaVentana.getListaElementosFondo()) {
-			if (elemento instanceof ImageView || elemento instanceof TableView || elemento instanceof AnchorPane) {
-				if (elemento instanceof ImageView) {
-					((ImageView) elemento).fitWidthProperty()
-							.bind(referenciaVentana.getRootAnchorPane().widthProperty());
-					((ImageView) elemento).fitHeightProperty()
-							.bind(referenciaVentana.getRootAnchorPane().heightProperty());
-				} else if (elemento instanceof TableView) {
-					((TableView<?>) elemento).prefWidthProperty()
-							.bind(referenciaVentana.getRootAnchorPane().widthProperty());
-				} else if (elemento instanceof AnchorPane) {
-					((AnchorPane) elemento).prefWidthProperty()
-							.bind(referenciaVentana.getRootAnchorPane().widthProperty());
-				}
-			}
-		}
+	    for (Node elemento : referenciaVentana.getListaElementosFondo()) {
+	        if (elemento instanceof ImageView imageview) {
+	            imageview.fitWidthProperty().bind(referenciaVentana.getRootAnchorPane().widthProperty());
+	            imageview.fitHeightProperty().bind(referenciaVentana.getRootAnchorPane().heightProperty());
+	        } else if (elemento instanceof TableView<?> tableview) {
+	            tableview.prefWidthProperty().bind(referenciaVentana.getRootAnchorPane().widthProperty());
+	        } else if (elemento instanceof AnchorPane anchorpane) {
+	            anchorpane.prefWidthProperty().bind(referenciaVentana.getRootAnchorPane().widthProperty());
+	        }
+	    }
 	}
+
 
 	public static void establecerAnchoColumnas(double numColumns) {
 		for (TableColumn<Comic, String> columna : referenciaVentana.getColumnasTabla()) {
@@ -69,8 +68,7 @@ public class FuncionesManejoFront {
 
 	public static void establecerAnchoMaximoCamposTexto(double maxTextComboWidth) {
 		for (Control campo : referenciaVentana.getListaCamposTexto()) {
-			if (campo instanceof TextField) {
-				TextField campoTexto = (TextField) campo;
+			if (campo instanceof TextField campoTexto) {
 				Platform.runLater(() -> campoTexto.maxWidthProperty()
 						.bind(Bindings.max(maxTextComboWidth, campoTexto.widthProperty())));
 			}
@@ -103,33 +101,23 @@ public class FuncionesManejoFront {
 			final String[] textAfterLastComma = { "" };
 			final int[] lastCommaIndex = { 0 };
 
-			TextFields.bindAutoCompletion(textField,
-					new Callback<AutoCompletionBinding.ISuggestionRequest, Collection<String>>() {
-						@Override
-						public Collection<String> call(AutoCompletionBinding.ISuggestionRequest param) {
-							String userText = textField.getText();
-							lastCommaIndex[0] = userText.lastIndexOf(',');
-							if (lastCommaIndex[0] != -1) {
-								textBeforeLastComma[0] = userText.substring(0, lastCommaIndex[0] + 1);
-								textAfterLastComma[0] = userText.substring(lastCommaIndex[0] + 1).trim();
-							} else {
-								textBeforeLastComma[0] = "";
-								textAfterLastComma[0] = userText;
-							}
-							Collection<String> filteredList = listaCompleta.stream()
-									.filter(item -> item.toLowerCase().startsWith(textAfterLastComma[0].toLowerCase()))
-									.toList();
-
-							return filteredList;
-						}
-					}).setOnAutoCompleted(event -> {
-
-						String textoCompleto = textBeforeLastComma[0] + textField.getText();
-
-						textField.setText(textoCompleto);
-
-						event.consume();
-					});
+			TextFields.bindAutoCompletion(textField, param -> {
+				String userText = textField.getText();
+				lastCommaIndex[0] = userText.lastIndexOf(',');
+				if (lastCommaIndex[0] != -1) {
+					textBeforeLastComma[0] = userText.substring(0, lastCommaIndex[0] + 1);
+					textAfterLastComma[0] = userText.substring(lastCommaIndex[0] + 1).trim();
+				} else {
+					textBeforeLastComma[0] = "";
+					textAfterLastComma[0] = userText;
+				}
+				return listaCompleta.stream()
+						.filter(item -> item.toLowerCase().startsWith(textAfterLastComma[0].toLowerCase())).toList();
+			}).setOnAutoCompleted(event -> {
+				String textoCompleto = textBeforeLastComma[0] + textField.getText();
+				textField.setText(textoCompleto);
+				event.consume();
+			});
 		}
 	}
 
@@ -268,7 +256,7 @@ public class FuncionesManejoFront {
 			textField.textProperty().addListener((observable, oldValue, newValue) -> {
 				if (newValue != null) {
 					// Reemplaza múltiples espacios seguidos por un solo espacio.
-					newValue = newValue.replaceAll(" ", "");
+					newValue = newValue.replace(" ", "");
 
 					textField.setText(newValue); // Actualiza el valor del TextField
 				}
@@ -282,48 +270,69 @@ public class FuncionesManejoFront {
 	}
 
 	public static void cambiarEstadoMenuBar(boolean estadoAccion) {
+		disableMenuItems(estadoAccion, referenciaVentana.getMenu_archivo_excel(),
+				referenciaVentana.getMenu_archivo_importar(), referenciaVentana.getMenu_archivo_delete(),
+				referenciaVentana.getMenu_comic_aniadir(), referenciaVentana.getMenu_comic_eliminar(),
+				referenciaVentana.getMenu_comic_modificar(), referenciaVentana.getMenu_comic_puntuar(),
+				referenciaVentana.getMenu_comic_aleatoria(), referenciaVentana.getMenu_archivo_avanzado());
 
-		referenciaVentana.getMenu_archivo_excel().setDisable(estadoAccion);
-		referenciaVentana.getMenu_archivo_importar().setDisable(estadoAccion);
-		referenciaVentana.getMenu_archivo_delete().setDisable(estadoAccion);
-		referenciaVentana.getMenu_comic_aniadir().setDisable(estadoAccion);
-		referenciaVentana.getMenu_comic_eliminar().setDisable(estadoAccion);
-		referenciaVentana.getMenu_comic_modificar().setDisable(estadoAccion);
-		referenciaVentana.getMenu_comic_puntuar().setDisable(estadoAccion);
-		referenciaVentana.getMenu_comic_aleatoria().setDisable(estadoAccion);
-		referenciaVentana.getMenu_archivo_avanzado().setDisable(estadoAccion);
-		referenciaVentana.getBotonIntroducir().setDisable(estadoAccion);
-		referenciaVentana.getBotonModificar().setDisable(estadoAccion);
-		referenciaVentana.getBotonEliminar().setDisable(estadoAccion);
-		referenciaVentana.getBotonAgregarPuntuacion().setDisable(estadoAccion);
-		referenciaVentana.getBotonLimpiar().setDisable(estadoAccion);
-		referenciaVentana.getBotonMostrarParametro().setDisable(estadoAccion);
-		referenciaVentana.getBotonImprimir().setDisable(estadoAccion);
-		referenciaVentana.getBotonGuardarResultado().setDisable(estadoAccion);
-		referenciaVentana.getBotonbbdd().setDisable(estadoAccion);
+		disableButtons(estadoAccion, referenciaVentana.getBotonIntroducir(), referenciaVentana.getBotonModificar(),
+				referenciaVentana.getBotonEliminar(), referenciaVentana.getBotonAgregarPuntuacion(),
+				referenciaVentana.getBotonLimpiar(), referenciaVentana.getBotonMostrarParametro(),
+				referenciaVentana.getBotonImprimir(), referenciaVentana.getBotonGuardarResultado(),
+				referenciaVentana.getBotonbbdd());
 
-		referenciaVentana.getTituloComic().setDisable(estadoAccion);
-		referenciaVentana.getNombreDibujante().setDisable(estadoAccion);
-		referenciaVentana.getNombreEditorial().setDisable(estadoAccion);
-		referenciaVentana.getNombreFirma().setDisable(estadoAccion);
-		referenciaVentana.getNombreFormato().setDisable(estadoAccion);
-		referenciaVentana.getNombreGuionista().setDisable(estadoAccion);
-		referenciaVentana.getNombreProcedencia().setDisable(estadoAccion);
-		referenciaVentana.getNombreVariante().setDisable(estadoAccion);
-		referenciaVentana.getNumeroCaja().setDisable(estadoAccion);
-		referenciaVentana.getNumeroComic().setDisable(estadoAccion);
-		referenciaVentana.getFechaPublicacion().setDisable(estadoAccion);
-		referenciaVentana.getBusquedaGeneral().setDisable(estadoAccion);
+		disableControls(estadoAccion, referenciaVentana.getTituloComic(), referenciaVentana.getNombreDibujante(),
+				referenciaVentana.getNombreEditorial(), referenciaVentana.getNombreFirma(),
+				referenciaVentana.getNombreFormato(), referenciaVentana.getNombreGuionista(),
+				referenciaVentana.getNombreProcedencia(), referenciaVentana.getNombreVariante(),
+				referenciaVentana.getNumeroCaja(), referenciaVentana.getNumeroComic(),
+				referenciaVentana.getFechaPublicacion(), referenciaVentana.getBusquedaGeneral());
 
-		if (referenciaVentana.getTablaBBDD() != null) {
-			referenciaVentana.getTablaBBDD().getItems().clear();
-			referenciaVentana.getTablaBBDD().refresh();
+		clearAndRefreshTableView(referenciaVentana.getTablaBBDD());
+		hideImageAndClearText(referenciaVentana.getImagencomic(), referenciaVentana.getProntInfo());
+	}
+
+	private static void disableMenuItems(boolean estadoAccion, MenuItem... items) {
+		for (MenuItem item : items) {
+			if (item != null) {
+				item.setDisable(estadoAccion);
+			}
 		}
+	}
 
-		referenciaVentana.getImagencomic().setVisible(false);
-		referenciaVentana.getProntInfo().clear();
-		referenciaVentana.getProntInfo().setText(null);
-		referenciaVentana.getProntInfo().setOpacity(0);
+	private static void disableButtons(boolean estadoAccion, ButtonBase... buttons) {
+		for (ButtonBase button : buttons) {
+			if (button != null) {
+				button.setDisable(estadoAccion);
+			}
+		}
+	}
+
+	private static void disableControls(boolean estadoAccion, Control... controls) {
+		for (Control control : controls) {
+			if (control != null) {
+				control.setDisable(estadoAccion);
+			}
+		}
+	}
+
+	private static void clearAndRefreshTableView(TableView<?> tableView) {
+		if (tableView != null) {
+			tableView.getItems().clear();
+			tableView.refresh();
+		}
+	}
+
+	private static void hideImageAndClearText(Node imageNode, TextArea textArea) {
+		if (imageNode != null) {
+			imageNode.setVisible(false);
+		}
+		if (textArea != null) {
+			textArea.clear();
+			textArea.setText(null);
+			textArea.setOpacity(0);
+		}
 	}
 
 	public static void cambiarEstadoOpcionesAvanzadas(boolean estadoAccion, AccionReferencias referenciaVentana) {
@@ -339,6 +348,25 @@ public class FuncionesManejoFront {
 		referenciaVentana.getBotonNormalizarDB().setDisable(estadoAccion);
 
 		referenciaVentana.getCheckFirmas().setDisable(estadoAccion);
+	}
+
+	public static AccionReferencias getReferenciaVentana() {
+		return referenciaVentana;
+	}
+
+	public static void setReferenciaVentana(AccionReferencias referenciaVentana) {
+
+		FuncionesManejoFront.referenciaVentana = referenciaVentana;
+	}
+
+
+	public static List<Stage> getStageVentanas() {
+		return stageVentanas;
+	}
+
+
+	public static void setStageVentanas(List<Stage> stageVentanas) {
+		FuncionesManejoFront.stageVentanas = stageVentanas;
 	}
 
 }

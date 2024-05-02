@@ -38,18 +38,18 @@ public class ListaComicsDAO {
 	/**
 	 * Obtenemos el directorio de inicio del usuario
 	 */
-	private final static String USER_DIR = System.getProperty("user.home");
+	private static final String USER_DIR = System.getProperty("user.home");
 
 	/**
 	 * Construimos la ruta al directorio "Documents"
 	 */
-	private final static String DOCUMENTS_PATH = USER_DIR + File.separator + "Documents";
+	private static final String DOCUMENTS_PATH = USER_DIR + File.separator + "Documents";
 
 	/**
 	 * Construimos la ruta al directorio "libreria_comics" dentro de "Documents" y
 	 * añadimos el nombre de la base de datos y la carpeta "portadas".
 	 */
-	private final static String SOURCE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+	private static final String SOURCE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
 			+ ConectManager.DB_NAME + File.separator + "portadas" + File.separator;
 
 	/**
@@ -184,7 +184,7 @@ public class ListaComicsDAO {
 	 */
 	public static List<String> listaLimpiaAutoCompletado = new ArrayList<>();
 
-	public static List<Comic> comicsImportados = new ArrayList<Comic>();
+	public static List<Comic> comicsImportados = new ArrayList<>();
 
 	/**
 	 * Lista ordenada que contiene todas las listas anteriores.
@@ -255,7 +255,7 @@ public class ListaComicsDAO {
 		listaGuionista = DBUtilidades.obtenerValoresColumna("nomGuionista");
 		listaDibujante = DBUtilidades.obtenerValoresColumna("nomDibujante");
 		listaProcedencia = DBUtilidades.obtenerValoresColumna("procedencia");
-		listaCaja = DBUtilidades.obtenerValoresColumna("caja_deposito");
+		listaCaja = DBUtilidades.obtenerValoresColumna("nivel_gradeo");
 		listaImagenes = DBUtilidades.obtenerValoresColumna("portada");
 
 		listaID = ordenarLista(listaID);
@@ -302,8 +302,8 @@ public class ListaComicsDAO {
 					String nomVariante = rs.getString("nomVariante").trim();
 					nombreVarianteSet.add(nomVariante);
 
-					String cajaDeposito = rs.getString("caja_deposito").trim();
-					numeroCajaSet.add(cajaDeposito);
+					String nivelGradeo = rs.getString("nivel_gradeo").trim();
+					numeroCajaSet.add(nivelGradeo);
 
 					String procedencia = rs.getString("procedencia").trim();
 					nombreProcedenciaSet.add(procedencia);
@@ -462,7 +462,7 @@ public class ListaComicsDAO {
 	 * @return true si la lista está vacía, false si contiene elementos.
 	 */
 	public boolean checkList(List<Comic> listaComic) {
-		if (listaComic.size() == 0) {
+		if (listaComic.isEmpty()) {
 			return true; // La lista está vacía
 		}
 		return false; // La lista contiene elementos
@@ -625,7 +625,7 @@ public class ListaComicsDAO {
 	}
 
 	public static boolean comprobarLista() {
-		if (listaID.size() <= 0) {
+		if (listaID.isEmpty()) {
 			return false;
 		}
 		return true;
@@ -642,7 +642,7 @@ public class ListaComicsDAO {
 		// conteos
 		Map<String, Integer> nomComicEstadistica = new HashMap<>();
 
-		Map<Integer, Integer> cajaDepositoEstadistica = new HashMap<>();
+		Map<Integer, Integer> nivelGradeoEstadistica = new HashMap<>();
 		Map<String, Integer> nomVarianteEstadistica = new HashMap<>();
 		Map<String, Integer> firmaEstadistica = new HashMap<>();
 		Map<String, Integer> nomEditorialEstadistica = new HashMap<>();
@@ -666,7 +666,7 @@ public class ListaComicsDAO {
 				// Obtener los datos de cada campo
 				String nomComic = rs.getString("nomComic");
 				int numComic = rs.getInt("numComic");
-				int cajaDeposito = rs.getInt("caja_deposito");
+				int nivelGradeo = rs.getInt("nivel_gradeo");
 				String nomVariante = rs.getString("nomVariante");
 				String firma = rs.getString("firma");
 				String nomEditorial = rs.getString("nomEditorial");
@@ -681,7 +681,7 @@ public class ListaComicsDAO {
 
 				// Actualizar los HashMaps para cada campo
 				nomComicEstadistica.put(nomComic, nomComicEstadistica.getOrDefault(nomComic, 0) + 1);
-				cajaDepositoEstadistica.put(cajaDeposito, cajaDepositoEstadistica.getOrDefault(cajaDeposito, 0) + 1);
+				nivelGradeoEstadistica.put(nivelGradeo, nivelGradeoEstadistica.getOrDefault(nivelGradeo, 0) + 1);
 
 				firmaEstadistica.put(firma, firmaEstadistica.getOrDefault(firma, 0) + 1);
 				nomEditorialEstadistica.put(nomEditorial, nomEditorialEstadistica.getOrDefault(nomEditorial, 0) + 1);
@@ -776,12 +776,12 @@ public class ListaComicsDAO {
 			estadisticaStr.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
 		}
 
-		// Agregar los valores de cajaDeposito a la estadística
+		// Agregar los valores de nivelGradeo a la estadística
 		estadisticaStr.append(lineaDecorativa1);
 		estadisticaStr.append("\nEstadística de las cajas:\n");
 		estadisticaStr.append(lineaDecorativa2);
-		List<Map.Entry<Integer, Integer>> cajaDepositoList = sortByValueInt(cajaDepositoEstadistica);
-		for (Map.Entry<Integer, Integer> entry : cajaDepositoList) {
+		List<Map.Entry<Integer, Integer>> nivelGradeoList = sortByValueInt(nivelGradeoEstadistica);
+		for (Map.Entry<Integer, Integer> entry : nivelGradeoList) {
 			estadisticaStr.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
 		}
 

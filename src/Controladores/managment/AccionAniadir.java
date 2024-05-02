@@ -22,7 +22,7 @@ public class AccionAniadir {
 
 	private static AccionFuncionesComunes accionFuncionesComunes = new AccionFuncionesComunes();
 
-	public static AccionReferencias referenciaVentana = new AccionReferencias();
+	private static AccionReferencias referenciaVentana = getReferenciaVentana();
 
 	private static AccionControlUI accionRellenoDatos = new AccionControlUI();
 
@@ -58,7 +58,7 @@ public class AccionAniadir {
 	}
 
 	public static void guardarContenidoLista() {
-		if (ListaComicsDAO.comicsImportados.size() > 0 && nav.alertaInsertar()) {
+		if (!ListaComicsDAO.comicsImportados.isEmpty() && nav.alertaInsertar()) {
 			Collections.sort(ListaComicsDAO.comicsImportados, Comparator.comparing(Comic::getNombre));
 
 			for (Comic c : ListaComicsDAO.comicsImportados) {
@@ -88,7 +88,7 @@ public class AccionAniadir {
 				referenciaVentana.getEditorialComic(), referenciaVentana.getEstadoComic(),
 				referenciaVentana.getFechaComic(), referenciaVentana.getFirmaComic(),
 				referenciaVentana.getFormatoComic(), referenciaVentana.getGuionistaComic(),
-				referenciaVentana.getNombreKeyIssue(), referenciaVentana.getNumeroCajaComic(),
+				referenciaVentana.getNombreKeyIssue(), referenciaVentana.getGradeoComic(),
 				referenciaVentana.getProcedenciaComic(), referenciaVentana.getUrlReferencia(),
 				referenciaVentana.getBotonBusquedaAvanzada(), referenciaVentana.getPrecioComic(),
 				referenciaVentana.getDireccionImagen(), referenciaVentana.getLabel_portada(),
@@ -100,8 +100,16 @@ public class AccionAniadir {
 				referenciaVentana.getLabel_procedencia(), referenciaVentana.getLabel_referencia(),
 				referenciaVentana.getCodigoComicTratar(), referenciaVentana.getLabel_codigo_comic(),
 				referenciaVentana.getTablaBBDD(), referenciaVentana.getRootVBox(),
-				referenciaVentana.getBotonSubidaPortada(), referenciaVentana.getIdComicTratar_mod(),
+				referenciaVentana.getBotonSubidaPortada(), referenciaVentana.getIdComicTratar(),
 				referenciaVentana.getLabel_id_mod(), referenciaVentana.getBotonGuardarCambioComic()));
+	}
+	
+	public static AccionReferencias getReferenciaVentana() {
+		return referenciaVentana;
+	}
+
+	public static void setReferenciaVentana(AccionReferencias referenciaVentana) {
+		AccionAniadir.referenciaVentana = referenciaVentana;
 	}
 
 }

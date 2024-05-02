@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 import comicManagement.Comic;
@@ -17,7 +18,7 @@ public class DBUtilidades {
 
 	public static void setParameters(PreparedStatement ps, Comic datos, boolean includeID) throws SQLException {
 		ps.setString(1, datos.getNombre());
-		ps.setString(2, datos.getNumCaja() == null ? "0" : datos.getNumCaja());
+		ps.setString(2, datos.getValorGradeo() == null ? "0" : datos.getValorGradeo());
 		ps.setString(3, datos.getPrecio_comic());
 		ps.setString(4, datos.getCodigo_comic());
 		ps.setString(5, datos.getNumero());
@@ -81,7 +82,7 @@ public class DBUtilidades {
 
 		connector = agregarCondicion(sql, connector, "ID", comic.getID());
 		connector = agregarCondicionLike(sql, connector, "nomComic", comic.getNombre());
-		connector = agregarCondicion(sql, connector, "caja_deposito", comic.getNumCaja());
+		connector = agregarCondicion(sql, connector, "nivel_gradeo", comic.getValorGradeo());
 		connector = agregarCondicion(sql, connector, "numComic", comic.getNumero());
 		connector = agregarCondicionLike(sql, connector, "nomVariante", comic.getVariante());
 		connector = agregarCondicionLike(sql, connector, "firma", comic.getFirma());
@@ -96,8 +97,7 @@ public class DBUtilidades {
 			return 0;
 		}
 
-		int count = ComicManagerDAO.countRows();
-		return count; // Devolver la cadena SQL solo si se han agregado condiciones
+		return ComicManagerDAO.countRows(); // Devolver la cadena SQL solo si se han agregado condiciones
 
 	}
 
@@ -107,7 +107,7 @@ public class DBUtilidades {
 
 		connector = agregarCondicion(sql, connector, "ID", comic.getID());
 		connector = agregarCondicion(sql, connector, "nomComic", comic.getNombre());
-		connector = agregarCondicion(sql, connector, "caja_deposito", comic.getNumCaja());
+		connector = agregarCondicion(sql, connector, "nivel_gradeo", comic.getValorGradeo());
 		connector = agregarCondicion(sql, connector, "numComic", comic.getNumero());
 		connector = agregarCondicionLike(sql, connector, "nomVariante", comic.getVariante());
 		connector = agregarCondicionLike(sql, connector, "firma", comic.getFirma());
@@ -117,10 +117,6 @@ public class DBUtilidades {
 		connector = agregarCondicionLike(sql, connector, "fecha_publicacion", comic.getFecha());
 		connector = agregarCondicionLike(sql, connector, "nomGuionista", comic.getGuionista());
 		connector = agregarCondicionLike(sql, connector, "nomDibujante", comic.getDibujante());
-//		
-//		if (!Comic.validarComic(comic)) {
-//			return "";
-//		}
 
 		return (connector.length() > 0) ? sql.toString() : "";
 	}
@@ -240,7 +236,7 @@ public class DBUtilidades {
 			Utilidades.manejarExcepcion(ex);
 		}
 
-		return null;
+		return Collections.emptyList();
 	}
 
 	/**
@@ -317,7 +313,7 @@ public class DBUtilidades {
 		try {
 			String ID = rs.getString("ID");
 			String nombre = rs.getString("nomComic");
-			String numCaja = rs.getString("caja_deposito");
+			String numCaja = rs.getString("nivel_gradeo");
 			String numero = rs.getString("numComic");
 			String variante = rs.getString("nomVariante");
 			String firma = rs.getString("firma");

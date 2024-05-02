@@ -26,13 +26,13 @@ import comicManagement.Comic;
 import controlUI.AccionControlUI;
 import controlUI.FuncionesComboBox;
 import controlUI.FuncionesManejoFront;
+import controlUI.FuncionesTableView;
 import dbmanager.ConectManager;
 import dbmanager.ListaComicsDAO;
 import funciones_auxiliares.Utilidades;
 import funciones_auxiliares.Ventanas;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -42,7 +42,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Control;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -81,13 +80,13 @@ public class VentanaAccionController implements Initializable {
 	 * Columna de la tabla para el ID.
 	 */
 	@FXML
-	private TableColumn<Comic, String> ID;
+	private TableColumn<Comic, String> id;
 
 	/**
 	 * Columna de la tabla para la caja.
 	 */
 	@FXML
-	private TableColumn<Comic, String> caja;
+	private TableColumn<Comic, String> gradeo;
 
 	/**
 	 * Columna de la tabla para el dibujante.
@@ -282,7 +281,7 @@ public class VentanaAccionController implements Initializable {
 	 * Campo de texto para el ID del cómic a tratar en modificacion.
 	 */
 	@FXML
-	private TextField idComicTratar_mod;
+	private TextField idComicTratar;
 
 	/**
 	 * Campo de texto para el codigo del cómic a tratar en modificacion o para
@@ -332,91 +331,91 @@ public class VentanaAccionController implements Initializable {
 	 * Etiqueta para mostrar la caja.
 	 */
 	@FXML
-	private Label label_caja;
+	private Label labelGradeo;
 
 	/**
 	 * Etiqueta para mostrar el dibujante.
 	 */
 	@FXML
-	private Label label_dibujante;
+	private Label labelDibujante;
 
 	/**
 	 * Etiqueta para mostrar la editorial.
 	 */
 	@FXML
-	private Label label_editorial;
+	private Label labelEditorial;
 
 	/**
 	 * Etiqueta para mostrar el estado.
 	 */
 	@FXML
-	private Label label_estado;
+	private Label labelEstado;
 
 	/**
 	 * Etiqueta para mostrar la fecha.
 	 */
 	@FXML
-	private Label label_fecha;
+	private Label labelFecha;
 
 	/**
 	 * Etiqueta para mostrar la firma.
 	 */
 	@FXML
-	private Label label_firma;
+	private Label labelFirma;
 
 	/**
 	 * Etiqueta para mostrar el formato.
 	 */
 	@FXML
-	private Label label_formato;
+	private Label labelFormato;
 
 	/**
 	 * Etiqueta para mostrar el guionista.
 	 */
 	@FXML
-	private Label label_guionista;
+	private Label labelGuionista;
 
 	/**
 	 * Etiqueta para mostrar el ID en modificacion.
 	 */
 	@FXML
-	private Label label_id_mod;
+	private Label labelId;
 
 	/**
 	 * Etiqueta para mostrar el codigo en modificacion o aniadir.
 	 */
 	@FXML
-	private Label label_codigo_comic;
+	private Label labelCodigo;
 
 	/**
 	 * Etiqueta para mostrar el Key Issue.
 	 */
 	@FXML
-	private Label label_key;
+	private Label labelKey;
 
 	/**
 	 * Etiqueta para mostrar la portada.
 	 */
 	@FXML
-	private Label label_portada;
+	private Label labelPortada;
 
 	/**
 	 * Etiqueta para mostrar el precio.
 	 */
 	@FXML
-	private Label label_precio;
+	private Label labelPrecio;
 
 	/**
 	 * Etiqueta para mostrar la procedencia.
 	 */
 	@FXML
-	private Label label_procedencia;
+	private Label labelProcedencia;
 
 	/**
 	 * Etiqueta para mostrar la referencia.
 	 */
 	@FXML
-	private Label label_referencia;
+	private Label labelReferencia;
 
 	// Otros controles (ComboBox, DatePicker, TableView, etc.)
 	/**
@@ -441,7 +440,7 @@ public class VentanaAccionController implements Initializable {
 	 * ComboBox para seleccionar el número de caja del cómic.
 	 */
 	@FXML
-	private ComboBox<String> numeroCajaComic;
+	private ComboBox<String> gradeoComic;
 
 	/**
 	 * ComboBox para seleccionar el número del cómic.
@@ -492,48 +491,25 @@ public class VentanaAccionController implements Initializable {
 	private VBox rootVBox;
 
 	@FXML
-	private MenuItem menu_Importar_Fichero_CodigoBarras;
+	private MenuBar menuNavegacion;
 
 	@FXML
-	private MenuItem menu_archivo_conexion;
+	private Menu navegacionEstadistica;
 
 	@FXML
-	private MenuItem menu_leer_CodigoBarras;
+	private Menu navegacionOpciones;
 
 	@FXML
-	private MenuItem menu_comic_aleatoria;
+	private MenuItem menuImportarFichero;
 
 	@FXML
-	private MenuItem menu_comic_aniadir;
+	private MenuItem menuConexion;
 
 	@FXML
-	private MenuItem menu_comic_eliminar;
+	private MenuItem menuCodigoBarras;
 
 	@FXML
-	private MenuItem menu_comic_modificar;
-
-	@FXML
-	private MenuItem menu_comic_puntuar;
-
-	@FXML
-	private MenuItem menu_estadistica_estadistica;
-
-	@FXML
-	private MenuBar menu_navegacion;
-
-	@FXML
-	private Menu navegacion_cerrar;
-
-	@FXML
-	private Menu navegacion_comic;
-
-	@FXML
-	private Menu navegacion_estadistica;
-
-	/**
-	 * Lista de columnas de la tabla de cómics.
-	 */
-	public static List<TableColumn<Comic, String>> columnList;
+	private MenuItem navegacionMostrarEstadistica;
 
 	/**
 	 * Referencia a la ventana (stage).
@@ -545,31 +521,27 @@ public class VentanaAccionController implements Initializable {
 	 */
 	private static Ventanas nav = new Ventanas();
 
-	public static String apiKey = FuncionesApis.cargarApiComicVine();
-	public static String clavesMarvel[] = FuncionesApis.clavesApiMarvel();
+	static final String API_KEY = FuncionesApis.cargarApiComicVine();
+	protected static final String[] clavesMarvel = FuncionesApis.clavesApiMarvel();
 
-	public ObservableList<ImageView> listaImagenes;
+//	private ObservableList<ImageView> listaImagenes;
+//	private static List<TableColumn<Comic, String>> columnList;
+//	private ObservableList<ComboBox<String>> listaComboBoxes;
+//	private ObservableList<TableColumn<Comic, String>> listaColumnas;
+//	private List<TableColumn<Comic, String>> columnListCarga;
+//	private ObservableList<Control> listaCamposTexto;
+//	private ObservableList<Button> listaBotones;
+//	private ObservableList<Node> listaElementosFondo;
+//	private ObservableList<TextField> listaTextField;
 
-	public ObservableList<ComboBox<String>> listaComboBoxes;
-	public ObservableList<TableColumn<Comic, String>> listaColumnas;
-	public List<TableColumn<Comic, String>> columnListCarga;
-	public ObservableList<Control> listaCamposTexto;
-	public ObservableList<Button> listaBotones;
-	public ObservableList<Node> listaElementosFondo;
-	public ObservableList<TextField> listaTextField;
-
-	public static List<ComboBox<String>> comboboxesMod;
-
-	private static AccionFuncionesComunes accionFuncionesComunes = new AccionFuncionesComunes();
-
-	public static AccionReferencias referenciaVentana = new AccionReferencias();
+	public static final AccionReferencias referenciaVentana = new AccionReferencias();
 
 	public AccionReferencias guardarReferencia() {
 		referenciaVentana.setAlarmaConexionInternet(alarmaConexionInternet);
 		referenciaVentana.setAlarmaConexionSql(alarmaConexionSql);
 		referenciaVentana.setDireccionImagen(direccionImagen);
-		referenciaVentana.setID(ID);
-		referenciaVentana.setCaja(caja);
+		referenciaVentana.setID(id);
+		referenciaVentana.setCaja(gradeo);
 		referenciaVentana.setDibujante(dibujante);
 		referenciaVentana.setEditorial(editorial);
 		referenciaVentana.setFecha(fecha);
@@ -609,29 +581,29 @@ public class VentanaAccionController implements Initializable {
 		referenciaVentana.setEstadoComic(estadoComic);
 		referenciaVentana.setFechaComic(fechaComic);
 		referenciaVentana.setFormatoComic(formatoComic);
-		referenciaVentana.setNumeroCajaComic(numeroCajaComic);
+		referenciaVentana.setGradeoComic(gradeoComic);
 		referenciaVentana.setNumeroComic(numeroComic);
 		referenciaVentana.setProcedenciaComic(procedenciaComic);
-		referenciaVentana.setIdComicTratar_mod(idComicTratar_mod);
+		referenciaVentana.setIdComicTratar(idComicTratar);
 		referenciaVentana.setCodigoComicTratar(codigoComicTratar);
 		referenciaVentana.setStage(estadoStage());
 
 		referenciaVentana.setLabelPuntuacion(labelPuntuacion);
-		referenciaVentana.setLabel_caja(label_caja);
-		referenciaVentana.setLabel_dibujante(label_dibujante);
-		referenciaVentana.setLabel_editorial(label_editorial);
-		referenciaVentana.setLabel_estado(label_estado);
-		referenciaVentana.setLabel_fecha(label_fecha);
-		referenciaVentana.setLabel_firma(label_firma);
-		referenciaVentana.setLabel_formato(label_formato);
-		referenciaVentana.setLabel_guionista(label_guionista);
-		referenciaVentana.setLabel_id_mod(label_id_mod);
-		referenciaVentana.setLabel_codigo_comic(label_codigo_comic);
-		referenciaVentana.setLabel_key(label_key);
-		referenciaVentana.setLabel_portada(label_portada);
-		referenciaVentana.setLabel_precio(label_precio);
-		referenciaVentana.setLabel_procedencia(label_procedencia);
-		referenciaVentana.setLabel_referencia(label_referencia);
+		referenciaVentana.setLabel_caja(labelGradeo);
+		referenciaVentana.setLabel_dibujante(labelDibujante);
+		referenciaVentana.setLabel_editorial(labelEditorial);
+		referenciaVentana.setLabel_estado(labelEstado);
+		referenciaVentana.setLabel_fecha(labelFecha);
+		referenciaVentana.setLabel_firma(labelFirma);
+		referenciaVentana.setLabel_formato(labelFormato);
+		referenciaVentana.setLabel_guionista(labelGuionista);
+		referenciaVentana.setLabel_id_mod(labelId);
+		referenciaVentana.setLabel_codigo_comic(labelCodigo);
+		referenciaVentana.setLabel_key(labelKey);
+		referenciaVentana.setLabel_portada(labelPortada);
+		referenciaVentana.setLabel_precio(labelPrecio);
+		referenciaVentana.setLabel_procedencia(labelProcedencia);
+		referenciaVentana.setLabel_referencia(labelReferencia);
 
 		referenciaVentana.setPuntuacionMenu(puntuacionMenu);
 		referenciaVentana.setTablaBBDD(tablaBBDD);
@@ -639,28 +611,35 @@ public class VentanaAccionController implements Initializable {
 		referenciaVentana.setCargaImagen(cargaImagen);
 		referenciaVentana.setProntInfo(prontInfo);
 		referenciaVentana.setRootVBox(rootVBox);
-		referenciaVentana.setMenu_Importar_Fichero_CodigoBarras(menu_Importar_Fichero_CodigoBarras);
-		referenciaVentana.setMenu_archivo_conexion(menu_archivo_conexion);
-		referenciaVentana.setMenu_leer_CodigoBarras(menu_leer_CodigoBarras);
-		referenciaVentana.setMenu_comic_aleatoria(menu_comic_aleatoria);
-		referenciaVentana.setMenu_comic_aniadir(menu_comic_aniadir);
-		referenciaVentana.setMenu_comic_eliminar(menu_comic_eliminar);
-		referenciaVentana.setMenu_comic_modificar(menu_comic_modificar);
-		referenciaVentana.setMenu_comic_puntuar(menu_comic_puntuar);
-		referenciaVentana.setMenu_estadistica_estadistica(menu_estadistica_estadistica);
-		referenciaVentana.setMenu_navegacion(menu_navegacion);
-		referenciaVentana.setNavegacion_cerrar(navegacion_cerrar);
-		referenciaVentana.setNavegacion_comic(navegacion_comic);
-		referenciaVentana.setNavegacion_estadistica(navegacion_estadistica);
+		referenciaVentana.setMenu_Importar_Fichero_CodigoBarras(menuImportarFichero);
+		referenciaVentana.setMenu_archivo_conexion(menuConexion);
+		referenciaVentana.setMenu_leer_CodigoBarras(menuCodigoBarras);
+		referenciaVentana.setMenu_estadistica_estadistica(navegacionMostrarEstadistica);
+		referenciaVentana.setMenu_navegacion(menuNavegacion);
+		referenciaVentana.setNavegacion_Opciones(navegacionOpciones);
+		referenciaVentana.setNavegacion_estadistica(navegacionEstadistica);
 
-		AccionReferencias.setListaTextFields(FXCollections.observableArrayList(
-				Arrays.asList(nombreComic, numeroComic, varianteComic, firmaComic, editorialComic, formatoComic,
-						procedenciaComic, guionistaComic, dibujanteComic, numeroCajaComic, direccionImagen, estadoComic,
-						nombreKeyIssue, precioComic, urlReferencia, codigoComicTratar, idComicTratar_mod)));
+		//ESTO HAY QUE RETOCARLO
+		referenciaVentana
+				.setComboBoxes(Arrays.asList(numeroComic, procedenciaComic, formatoComic, gradeoComic, estadoComic));
+
+		AccionReferencias.setListaTextFields(FXCollections
+				.observableArrayList(Arrays.asList(nombreComic, numeroComic, varianteComic, firmaComic, editorialComic,
+						formatoComic, procedenciaComic, guionistaComic, dibujanteComic, gradeoComic, direccionImagen,
+						estadoComic, nombreKeyIssue, precioComic, urlReferencia, codigoComicTratar, idComicTratar)));
 
 		AccionReferencias.setColumnasTabla(Arrays.asList(nombre, variante, editorial, guionista, dibujante));
 
 		return referenciaVentana;
+	}
+
+	public void enviarReferencias() {
+		AccionControlUI.setReferenciaVentana(guardarReferencia());
+		AccionFuncionesComunes.setReferenciaVentana(guardarReferencia());
+		AccionSeleccionar.setReferenciaVentana(guardarReferencia());
+		AccionEliminar.setReferenciaVentana(guardarReferencia());
+		AccionModificar.setReferenciaVentana(guardarReferencia());
+		AccionAniadir.setReferenciaVentana(guardarReferencia());
 	}
 
 	/**
@@ -688,10 +667,9 @@ public class VentanaAccionController implements Initializable {
 
 			rellenarCombosEstaticos();
 
-			AccionControlUI.mostrarOpcion(AccionFuncionesComunes.TIPO_ACCION);
+			AccionControlUI.mostrarOpcion(AccionFuncionesComunes.getTipoAccion());
 
-			FuncionesManejoFront.stageVentanas.add(estadoStage());
-			System.out.println(FuncionesManejoFront.stageVentanas.size());
+			FuncionesManejoFront.getStageVentanas().add(estadoStage());
 		});
 
 		ListaComicsDAO.comicsImportados.clear();
@@ -700,20 +678,6 @@ public class VentanaAccionController implements Initializable {
 
 		formatearTextField();
 
-	}
-
-	public void enviarReferencias() {
-		AccionFuncionesComunes.referenciaVentana = guardarReferencia();
-
-		AccionControlUI.referenciaVentana = guardarReferencia();
-
-		AccionSeleccionar.referenciaVentana = guardarReferencia();
-
-		AccionAniadir.referenciaVentana = guardarReferencia();
-
-		AccionModificar.referenciaVentana = guardarReferencia();
-
-		AccionEliminar.referenciaVentana = guardarReferencia();
 	}
 
 	@FXML
@@ -734,12 +698,11 @@ public class VentanaAccionController implements Initializable {
 	 * ComboBoxes con opciones estáticas predefinidas.
 	 */
 	public void rellenarCombosEstaticos() {
-		FuncionesComboBox.rellenarComboBoxEstaticos(comboboxesMod, AccionFuncionesComunes.TIPO_ACCION);
+		FuncionesComboBox.rellenarComboBoxEstaticos(referenciaVentana.getComboboxes(),
+				AccionFuncionesComunes.TIPO_ACCION);
 	}
 
 	public void formatearTextField() {
-		listaTextField = FXCollections.observableArrayList(nombreComic, editorialComic, guionistaComic, dibujanteComic,
-				varianteComic);
 		FuncionesManejoFront.eliminarEspacioInicialYFinal(nombreComic);
 		FuncionesManejoFront.eliminarSimbolosEspeciales(nombreComic);
 		FuncionesManejoFront.restringirSimbolos(editorialComic);
@@ -761,12 +724,12 @@ public class VentanaAccionController implements Initializable {
 		FuncionesManejoFront.permitirUnSimbolo(busquedaCodigo);
 
 		numeroComic.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
-		numeroCajaComic.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
-		idComicTratar_mod.setTextFormatter(FuncionesComboBox.validador_Nenteros());
+//		gradeoComic.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
+		idComicTratar.setTextFormatter(FuncionesComboBox.validador_Nenteros());
 		precioComic.setTextFormatter(FuncionesComboBox.validador_Ndecimales());
 
 		if (AccionFuncionesComunes.TIPO_ACCION.equalsIgnoreCase("aniadir")) {
-			idComicTratar_mod.setTextFormatter(FuncionesComboBox.desactivarValidadorNenteros());
+			idComicTratar.setTextFormatter(FuncionesComboBox.desactivarValidadorNenteros());
 		}
 	}
 
@@ -835,11 +798,9 @@ public class VentanaAccionController implements Initializable {
 	 * tabla.
 	 *
 	 * @param event
-	 * @throws IOException
-	 * @throws SQLException
 	 */
 	@FXML
-	void clickRaton(MouseEvent event) throws IOException, SQLException {
+	void clickRaton(MouseEvent event) {
 		enviarReferencias();
 		AccionSeleccionar.seleccionarComics(false);
 	}
@@ -853,7 +814,7 @@ public class VentanaAccionController implements Initializable {
 	 * @throws SQLException
 	 */
 	@FXML
-	void teclasDireccion(KeyEvent event) throws IOException, SQLException {
+	void teclasDireccion(KeyEvent event) {
 		if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
 			enviarReferencias();
 			AccionSeleccionar.seleccionarComics(false);
@@ -898,12 +859,11 @@ public class VentanaAccionController implements Initializable {
 	void busquedaAvanzada(ActionEvent event) {
 		enviarReferencias();
 		// Verificar si las claves API están ausentes o vacías
-		if (!FuncionesApis.verificarClavesAPI(clavesMarvel, apiKey)) {
+		if (!FuncionesApis.verificarClavesAPI(clavesMarvel, API_KEY)) {
 			nav.alertaException("Revisa las APIS de Marvel y Vine, estan incorrectas o no funcionan");
-			return;
 		} else {
 			// Continuar con la lógica cuando ambas claves están presente
-			accionFuncionesComunes.cambiarVisibilidadAvanzada();
+			AccionFuncionesComunes.cambiarVisibilidadAvanzada();
 		}
 	}
 
@@ -915,7 +875,7 @@ public class VentanaAccionController implements Initializable {
 	 */
 	@FXML
 	void importarFicheroCodigoBarras(ActionEvent evento) {
-		if (FuncionesApis.verificarClavesAPI(clavesMarvel, apiKey)) {
+		if (FuncionesApis.verificarClavesAPI(clavesMarvel, API_KEY)) {
 			if (Utilidades.isInternetAvailable()) {
 
 				AccionControlUI.limpiarAutorellenos(false);
@@ -948,13 +908,12 @@ public class VentanaAccionController implements Initializable {
 	void busquedaPorCodigo(ActionEvent event) {
 		enviarReferencias();
 		Platform.runLater(() -> {
-
 			try {
 				if (!ConectManager.conexionActiva() || !Utilidades.isInternetAvailable()) {
 					return;
 				}
 
-				if (!FuncionesApis.verificarClavesAPI(clavesMarvel, apiKey)) {
+				if (!FuncionesApis.verificarClavesAPI(clavesMarvel, API_KEY)) {
 					prontInfo.setText("No estás conectado a internet. Revisa tu conexión");
 					return;
 				}
@@ -965,90 +924,15 @@ public class VentanaAccionController implements Initializable {
 					return;
 				}
 
-				AccionControlUI.limpiarAutorellenos(false);
+				limpiarUIBeforeSearch();
 
 				AtomicBoolean isCancelled = new AtomicBoolean(true);
 
-				Task<Void> tarea = new Task<>() {
-					@Override
-					protected Void call() throws Exception {
+				Task<Void> tarea = createSearchTask(valorCodigo, isCancelled);
 
-						if (isCancelled() || !referenciaVentana.getStage().isShowing()) {
-							return null; // Exit the call() method if the task has been canceled or the stage is not
-											// showing
-						}
-
-						if (AccionFuncionesComunes.procesarComicPorCodigo(valorCodigo)) {
-							String mensaje = "Comic encontrado correctamente";
-							AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
-						} else {
-							String mensaje = "La busqueda del comic ha salido mal. Revisa el codigo";
-							AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
-							AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
-						}
-						return null;
-					}
-				};
-
-				tarea.setOnRunning(ev -> {
-					AccionControlUI.limpiarAutorellenos(false);
-					AccionFuncionesComunes.cambiarEstadoBotones(true);
-					imagencomic.setImage(null);
-					imagencomic.setVisible(true);
-					botonCancelarSubida.setVisible(true);
-					botonBusquedaCodigo.setDisable(true);
-					botonSubidaPortada.setDisable(true);
-					referenciaVentana.getMenu_Importar_Fichero_CodigoBarras().setDisable(true);
-					AlarmaList.iniciarAnimacionCargaImagen(cargaImagen);
-					menu_Importar_Fichero_CodigoBarras.setDisable(true);
-					FuncionesManejoFront.cambiarEstadoMenuBar(true);
-				});
-
-				tarea.setOnSucceeded(ev -> {
-					AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
-					menu_Importar_Fichero_CodigoBarras.setDisable(false);
-					botonCancelarSubida.setVisible(false);
-					botonBusquedaCodigo.setDisable(false);
-					botonSubidaPortada.setDisable(false);
-					referenciaVentana.getMenu_Importar_Fichero_CodigoBarras().setDisable(false);
-					AccionFuncionesComunes.cambiarEstadoBotones(false);
-					FuncionesManejoFront.cambiarEstadoMenuBar(false);
-					if (ListaComicsDAO.comicsImportados.size() > 0) {
-						botonEliminarImportadoComic.setVisible(true);
-						botonGuardarCambioComic.setVisible(true);
-						botonGuardarComic.setVisible(true);
-					} else {
-						botonEliminarImportadoComic.setVisible(false);
-						botonGuardarCambioComic.setVisible(false);
-						botonGuardarComic.setVisible(false);
-					}
-
-				});
-
-				tarea.setOnCancelled(ev -> {
-					String mensaje = "Ha cancelado la búsqueda del cómic";
-					AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
-					botonCancelarSubida.setVisible(false); // Oculta el botón de cancelar
-					botonBusquedaCodigo.setDisable(false);
-					botonSubidaPortada.setDisable(false);
-					referenciaVentana.getMenu_Importar_Fichero_CodigoBarras().setDisable(false);
-					AlarmaList.detenerAnimacionCargaImagen(cargaImagen); // Detiene la animación de carga
-					AccionFuncionesComunes.cambiarEstadoBotones(false);
-					FuncionesManejoFront.cambiarEstadoMenuBar(false);
-				});
+				configureTaskListeners(tarea, isCancelled);
 
 				Thread thread = new Thread(tarea);
-
-				botonCancelarSubida.setOnAction(ev -> {
-
-					isCancelled.set(true);
-					tarea.cancel(true);
-					menu_Importar_Fichero_CodigoBarras.setDisable(false);
-
-					AlarmaList.detenerAnimacionCargaImagen(cargaImagen); // Detiene la animación de carga
-					botonCancelarSubida.setVisible(false); // Oculta el botón de cancelar
-				});
-
 				thread.setDaemon(true);
 				thread.start();
 			} catch (Exception ex) {
@@ -1057,13 +941,91 @@ public class VentanaAccionController implements Initializable {
 		});
 	}
 
+	private void limpiarUIBeforeSearch() {
+		AccionControlUI.limpiarAutorellenos(false);
+		imagencomic.setImage(null);
+		imagencomic.setVisible(true);
+		botonCancelarSubida.setVisible(true);
+		botonBusquedaCodigo.setDisable(true);
+		botonSubidaPortada.setDisable(true);
+		referenciaVentana.getMenu_Importar_Fichero_CodigoBarras().setDisable(true);
+		AlarmaList.iniciarAnimacionCargaImagen(cargaImagen);
+		menuImportarFichero.setDisable(true);
+		FuncionesManejoFront.cambiarEstadoMenuBar(true);
+	}
+
+	private Task<Void> createSearchTask(String valorCodigo, AtomicBoolean isCancelled) {
+		return new Task<>() {
+			@Override
+			protected Void call() throws Exception {
+				if (isCancelled() || !referenciaVentana.getStage().isShowing()) {
+					return null;
+				}
+
+				if (AccionFuncionesComunes.procesarComicPorCodigo(valorCodigo)) {
+					String mensaje = "Comic encontrado correctamente";
+					AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
+				} else {
+					String mensaje = "La búsqueda del cómic ha salido mal. Revisa el código";
+					AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+					AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
+				}
+				return null;
+			}
+		};
+	}
+
+	private void configureTaskListeners(Task<Void> tarea, AtomicBoolean isCancelled) {
+		tarea.setOnRunning(ev -> {
+			limpiarUIBeforeSearch();
+			AccionFuncionesComunes.cambiarEstadoBotones(true);
+		});
+
+		tarea.setOnSucceeded(ev -> {
+			AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
+			botonCancelarSubida.setVisible(false);
+			botonBusquedaCodigo.setDisable(false);
+			botonSubidaPortada.setDisable(false);
+			referenciaVentana.getMenu_Importar_Fichero_CodigoBarras().setDisable(false);
+			AccionFuncionesComunes.cambiarEstadoBotones(false);
+			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+			menuImportarFichero.setDisable(false);
+			updateButtonsVisibility();
+		});
+
+		tarea.setOnCancelled(ev -> {
+			String mensaje = "Ha cancelado la búsqueda del cómic";
+			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+			botonCancelarSubida.setVisible(false);
+			botonBusquedaCodigo.setDisable(false);
+			botonSubidaPortada.setDisable(false);
+			referenciaVentana.getMenu_Importar_Fichero_CodigoBarras().setDisable(false);
+			AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
+			AccionFuncionesComunes.cambiarEstadoBotones(false);
+			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+			menuImportarFichero.setDisable(false);
+		});
+	}
+
+	private void updateButtonsVisibility() {
+		if (ListaComicsDAO.comicsImportados.size() > 0) {
+			botonEliminarImportadoComic.setVisible(true);
+			botonGuardarCambioComic.setVisible(true);
+			botonGuardarComic.setVisible(true);
+		} else {
+			botonEliminarImportadoComic.setVisible(false);
+			botonGuardarCambioComic.setVisible(false);
+			botonGuardarComic.setVisible(false);
+		}
+	}
+
 	/**
 	 * Limpia los datos de la pantalla al hacer clic en el botón "Limpiar".
 	 */
 	@FXML
 	void limpiarDatos(ActionEvent event) {
 		enviarReferencias();
-		accionFuncionesComunes.limpiarDatosPantallaAccion();
+		AccionFuncionesComunes.limpiarDatosPantallaAccion();
 	}
 
 	/**
@@ -1073,7 +1035,7 @@ public class VentanaAccionController implements Initializable {
 	 */
 	@FXML
 	void nuevaPortada(ActionEvent event) {
-		accionFuncionesComunes.subirPortada();
+		AccionFuncionesComunes.subirPortada();
 	}
 
 	/**
@@ -1123,7 +1085,7 @@ public class VentanaAccionController implements Initializable {
 	 * @throws URISyntaxException
 	 */
 	@FXML
-	void guardarListaImportados(ActionEvent event) throws IOException, SQLException, URISyntaxException {
+	void guardarListaImportados(ActionEvent event) throws IOException, SQLException {
 		enviarReferencias();
 		if (!ConectManager.conexionActiva()) {
 			return;
@@ -1141,7 +1103,7 @@ public class VentanaAccionController implements Initializable {
 	 * @throws SQLException
 	 */
 	@FXML
-	void ventaComic(ActionEvent event) throws IOException, SQLException {
+	void ventaComic(ActionEvent event) throws SQLException {
 		enviarReferencias();
 		if (!ConectManager.conexionActiva()) {
 			return;
@@ -1160,7 +1122,7 @@ public class VentanaAccionController implements Initializable {
 	 * @throws InterruptedException
 	 */
 	@FXML
-	void eliminarDatos(ActionEvent event) throws IOException, SQLException, InterruptedException, ExecutionException {
+	void eliminarDatos(ActionEvent event) {
 		enviarReferencias();
 		if (!ConectManager.conexionActiva()) {
 			return;
@@ -1212,8 +1174,8 @@ public class VentanaAccionController implements Initializable {
 
 		if (stage != null) {
 
-			if (FuncionesManejoFront.stageVentanas.contains(estadoStage())) {
-				FuncionesManejoFront.stageVentanas.remove(estadoStage());
+			if (FuncionesManejoFront.getStageVentanas().contains(estadoStage())) {
+				FuncionesManejoFront.getStageVentanas().remove(estadoStage());
 			}
 			nav.cerrarCargaComics();
 			stage.close();

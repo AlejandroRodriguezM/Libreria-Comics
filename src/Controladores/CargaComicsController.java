@@ -72,9 +72,7 @@ public class CargaComicsController implements Initializable {
 		updateProgress(0);
 		appendTextToTextArea("");
 		updateLabel("");
-		Platform.runLater(() -> {
-			FuncionesManejoFront.stageVentanas.add(estadoStage());
-		});
+		Platform.runLater(() -> FuncionesManejoFront.getStageVentanas().add(estadoStage()));
 	}
 
 	/**
@@ -138,8 +136,8 @@ public class CargaComicsController implements Initializable {
 	public void closeWindow() {
 		if (stage != null) {
 
-			if (FuncionesManejoFront.stageVentanas.contains(estadoStage())) {
-				FuncionesManejoFront.stageVentanas.remove(estadoStage());
+			if (FuncionesManejoFront.getStageVentanas().contains(estadoStage())) {
+				FuncionesManejoFront.getStageVentanas().remove(estadoStage());
 			}
 
 			Stage myStage = (Stage) comicsCarga.getScene().getWindow();

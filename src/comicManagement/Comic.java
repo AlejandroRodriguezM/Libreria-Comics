@@ -29,7 +29,7 @@ public class Comic {
 	/**
 	 * Número de caja del cómic.
 	 */
-	protected String numCaja;
+	protected String valorGradeo;
 
 	/**
 	 * Número del cómic.
@@ -233,8 +233,8 @@ public class Comic {
 	 *
 	 * @return El número de caja del cómic.
 	 */
-	public String getNumCaja() {
-		return numCaja;
+	public String getValorGradeo() {
+		return valorGradeo;
 	}
 
 	/**
@@ -439,8 +439,8 @@ public class Comic {
 	 *
 	 * @param numCaja El número de caja a establecer.
 	 */
-	public void setNumCaja(String numCaja) {
-		this.numCaja = numCaja;
+	public void setValorGradeo(String valorGradeo) {
+		this.valorGradeo = valorGradeo;
 	}
 
 	/**
@@ -465,13 +465,13 @@ public class Comic {
 	 * @param url_referencia La URL de referencia del cómic.
 	 * @param precio_comic   El precio del cómic.
 	 */
-	public Comic(String ID, String nombre, String numCaja, String numero, String variante, String firma,
+	public Comic(String ID, String nombre, String valorGradeo, String numero, String variante, String firma,
 			String editorial, String formato, String procedencia, String fecha, String guionista, String dibujante,
 			String estado, String key_issue, String puntuacion, String imagen, String url_referencia,
 			String precio_comic, String codigo_comic) {
 		this.ID = ID;
 		this.nombre = nombre;
-		this.numCaja = numCaja;
+		this.valorGradeo = valorGradeo;
 		this.numero = numero;
 		this.variante = variante;
 		this.firma = firma;
@@ -509,23 +509,24 @@ public class Comic {
 		this.estado = "";
 		this.puntuacion = "";
 		this.imagen = null;
-		this.numCaja = "";
+		this.valorGradeo = "";
 		this.url_referencia = "";
 		this.precio_comic = "";
 		this.codigo_comic = "";
 	}
 
 	public boolean estaVacio() {
-		return (ID == null || ID.isEmpty()) && (nombre == null || nombre.isEmpty())
-				&& (numCaja == null || numCaja.isEmpty()) && (numero == null || numero.isEmpty())
-				&& (variante == null || variante.isEmpty()) && (firma == null || firma.isEmpty())
-				&& (editorial == null || editorial.isEmpty()) && (formato == null || formato.isEmpty())
-				&& (procedencia == null || procedencia.isEmpty()) && (fecha == null || fecha.isEmpty())
-				&& (guionista == null || guionista.isEmpty()) && (dibujante == null || dibujante.isEmpty())
-				&& (estado == null || estado.isEmpty()) && (key_issue == null || key_issue.isEmpty())
-				&& (puntuacion == null || puntuacion.isEmpty()) && (imagen == null || imagen.isEmpty())
-				&& (url_referencia == null || url_referencia.isEmpty())
-				&& (precio_comic == null || precio_comic.isEmpty()) && (codigo_comic == null || codigo_comic.isEmpty());
+	    return isNullOrEmpty(ID) && isNullOrEmpty(nombre) && isNullOrEmpty(valorGradeo)
+	            && isNullOrEmpty(numero) && isNullOrEmpty(variante) && isNullOrEmpty(firma)
+	            && isNullOrEmpty(editorial) && isNullOrEmpty(formato) && isNullOrEmpty(procedencia)
+	            && isNullOrEmpty(fecha) && isNullOrEmpty(guionista) && isNullOrEmpty(dibujante)
+	            && isNullOrEmpty(estado) && isNullOrEmpty(key_issue) && isNullOrEmpty(puntuacion)
+	            && isNullOrEmpty(imagen) && isNullOrEmpty(url_referencia) && isNullOrEmpty(precio_comic)
+	            && isNullOrEmpty(codigo_comic);
+	}
+
+	private boolean isNullOrEmpty(String str) {
+	    return str == null || str.isEmpty();
 	}
 
 	public static void limpiarCamposComic(Comic comic) {
@@ -562,7 +563,7 @@ public class Comic {
 	        campo = campo.replaceAll("[,\\s-]+\\s*$", ""); // Al final
 	        campo = campo.replaceAll(",\\s*,", ","); // Comas repetidas
 	        campo = campo.replaceAll(",\\s*", " - "); // Reemplazar ", " por " - "
-	        campo = campo.replaceAll("'", " "); // Reemplazar ", " por " - "
+	        campo = campo.replace("'", " "); // Reemplazar ", " por " - "
 	    }
 	    return campo;
 	}
@@ -637,7 +638,7 @@ public class Comic {
 		Utilidades.appendIfNotEmpty(contenidoComic, "Puntuacion", puntuacion);
 		Utilidades.appendIfNotEmpty(contenidoComic, "Estado", estado);
 		Utilidades.appendIfNotEmpty(contenidoComic, "Url referencia", url_referencia);
-		Utilidades.appendIfNotEmpty(contenidoComic, "Caja", numCaja);
+		Utilidades.appendIfNotEmpty(contenidoComic, "Valor gradeo", valorGradeo);
 		Utilidades.appendIfNotEmpty(contenidoComic, "Key issue", key_issue);
 		Utilidades.appendIfNotEmpty(contenidoComic, "Portada", imagen);
 
@@ -686,7 +687,6 @@ public class Comic {
 		Utilidades.appendIfNotEmpty(contenidoComic, "Estado", estado);
 		Utilidades.appendIfNotEmpty(contenidoComic, "Url", url_referencia);
 		Utilidades.appendIfNotEmpty(contenidoComic, "", "");
-//		Utilidades.appendIfNotEmpty(contenidoComic, "Descripcion", key_issue);
 
 		return contenidoComic.toString();
 	}

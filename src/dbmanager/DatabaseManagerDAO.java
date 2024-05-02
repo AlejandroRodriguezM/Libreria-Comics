@@ -66,7 +66,7 @@ public class DatabaseManagerDAO {
 
 			String dropTableSQL = "DROP TABLE IF EXISTS comicsbbdd";
 			String createTableSQL = "CREATE TABLE comicsbbdd (" + "ID INT NOT NULL AUTO_INCREMENT, "
-					+ "nomComic VARCHAR(150) NOT NULL, " + "caja_deposito TEXT, " + "precio_comic DOUBLE NOT NULL, "
+					+ "nomComic VARCHAR(150) NOT NULL, " + "nivel_gradeo TEXT, " + "precio_comic DOUBLE NOT NULL, "
 					+ "codigo_comic VARCHAR(150), " + "numComic INT NOT NULL, " + "nomVariante VARCHAR(150) NOT NULL, "
 					+ "firma VARCHAR(150) NOT NULL, " + "nomEditorial VARCHAR(150) NOT NULL, "
 					+ "formato VARCHAR(150) NOT NULL, " + "procedencia VARCHAR(150) NOT NULL, "
@@ -117,7 +117,7 @@ public class DatabaseManagerDAO {
 			if (tables.next()) {
 				// La tabla existe, ahora verifiquemos las columnas
 				ResultSet columns = metaData.getColumns(database, null, "comicsbbdd", null);
-				Set<String> expectedColumns = Set.of("ID", "nomComic", "caja_deposito", "precio_comic", "codigo_comic",
+				Set<String> expectedColumns = Set.of("ID", "nomComic", "nivel_gradeo", "precio_comic", "codigo_comic",
 						"numComic", "nomVariante", "firma", "nomEditorial", "formato", "procedencia",
 						"fecha_publicacion", "nomGuionista", "nomDibujante", "puntuacion", "portada", "key_issue",
 						"url_referencia", "estado");
@@ -159,12 +159,9 @@ public class DatabaseManagerDAO {
 
 		String url = "jdbc:mysql://" + CrearBBDDController.DB_HOST + ":" + CrearBBDDController.DB_PORT
 				+ "?serverTimezone=UTC";
-		Statement statement;
-		try {
-			Connection connection = DriverManager.getConnection(url, CrearBBDDController.DB_USER,
-					CrearBBDDController.DB_PASS);
+		try (Connection connection = DriverManager.getConnection(url, CrearBBDDController.DB_USER,
+				CrearBBDDController.DB_PASS); Statement statement = connection.createStatement();) {
 
-			statement = connection.createStatement();
 			statement.executeUpdate(sentenciaSQL);
 
 		} catch (SQLException e) {
@@ -214,12 +211,12 @@ public class DatabaseManagerDAO {
 
 		String url = "jdbc:mysql://" + CrearBBDDController.DB_HOST + ":" + CrearBBDDController.DB_PORT
 				+ "?serverTimezone=UTC";
-		Statement statement;
 
-		try {
-			Connection connection = DriverManager.getConnection(url, CrearBBDDController.DB_USER,
-					CrearBBDDController.DB_PASS);
-			statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+		try (Connection connection = DriverManager.getConnection(url, CrearBBDDController.DB_USER,
+				CrearBBDDController.DB_PASS);
+				Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+						ResultSet.CONCUR_UPDATABLE);) {
+
 			ResultSet rs = statement.executeQuery(sentenciaSQL);
 
 			if (rs.next()) {
@@ -244,8 +241,6 @@ public class DatabaseManagerDAO {
 			try (PreparedStatement pstmt = connection.prepareStatement(consultaUpdate)) {
 				pstmt.setString(1, nombreCorregido);
 				pstmt.executeUpdate();
-
-				System.out.println("ID: " + idColumna + " nombre: " + nombreCorregido + " corregido");
 
 			}
 		} catch (SQLException e) {
@@ -309,23 +304,23 @@ public class DatabaseManagerDAO {
 	// Método para corregir los nombres según los patrones especificados
 	public static String corregirNombre(String nombre) {
 		// Convertir primera letra de cada palabra a mayúscula
-		nombre = nombre.replaceAll("(^|[-,\\s])(\\p{L})", "$1$2".toUpperCase());
+		nombre = nombre.replace("(^|[-,\\s])(\\p{L})", "$1$2".toUpperCase());
 
 		// Añadir las líneas adicionales
 		nombre = nombre.trim();
 		// Reemplazar ',' por '-'
-		nombre = nombre.replaceAll(",", "-");
-		nombre = nombre.replaceAll(", ", " - ");
+		nombre = nombre.replace(",", "-");
+		nombre = nombre.replace(", ", " - ");
 		// Reemplazar ',-' por '-'
-		nombre = nombre.replaceAll(",-", "-");
+		nombre = nombre.replace(",-", "-");
 		// Reemplazar '-,' por '-'
-		nombre = nombre.replaceAll("-,", "-");
+		nombre = nombre.replace("-,", "-");
 		// Remover espacios extra alrededor de '-'
-		nombre = nombre.replaceAll("\\s*-\\s*", " - ");
+		nombre = nombre.replace("\\s*-\\s*", " - ");
 		// Remover ',' al final si existe
-		nombre = nombre.replaceAll(",$", "");
+		nombre = nombre.replace(",$", "");
 		// Remover '-' al final si existe
-		nombre = nombre.replaceAll("-$", "");
+		nombre = nombre.replace("-$", "");
 
 		// Si el nombre comienza con guion o coma, convertirlo en mayúscula
 		if (nombre.startsWith("-") || nombre.startsWith(",")) {
@@ -336,14 +331,12 @@ public class DatabaseManagerDAO {
 		// Reemplazar múltiples espacios entre palabras por un solo espacio
 		nombre = corregirPatrones(nombre);
 
-		nombre = nombre.replaceAll("-", " - ");
+		nombre = nombre.replace("-", " - ");
 
 		return nombre;
 	}
 
 	public static String corregirPatrones(String texto) {
-
-		System.out.println(texto);
 
 		// Reemplazar ' o ``´´ por ( seguido de texto y ) al final
 		texto = texto.replaceAll("('`´)(\\p{L}+)", "($2)");
@@ -372,7 +365,7 @@ public class DatabaseManagerDAO {
 		matcher.appendTail(sb);
 		texto = sb.toString();
 
-		texto = texto.replaceAll("'", " ");
+		texto = texto.replace("'", " ");
 
 		return texto;
 	}
@@ -410,7 +403,7 @@ public class DatabaseManagerDAO {
 
 		String formato = "*.sql";
 
-		File fichero = Utilidades.tratarFichero(frase, formato,true);
+		File fichero = Utilidades.tratarFichero(frase, formato, true);
 
 		// Verificar si se obtuvo un objeto FileChooser válido
 		if (fichero != null) {

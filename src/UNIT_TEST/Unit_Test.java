@@ -939,10 +939,10 @@ public class Unit_Test extends Application {
 		try {
 			statement = conn.prepareStatement(sentenciaSQL);
 			statement.setString(1, datos.getNombre());
-			if (datos.getNumCaja() == null) {
+			if (datos.getValorGradeo() == null) {
 				statement.setString(2, "0");
 			} else {
-				statement.setString(2, datos.getNumCaja());
+				statement.setString(2, datos.getValorGradeo());
 			}
 			statement.setString(3, datos.getPrecio_comic());
 			statement.setString(4, datos.getNumero());
@@ -990,7 +990,7 @@ public class Unit_Test extends Application {
 
 		String ID = datos.getID();
 		String nombre = datos.getNombre();
-		String numCaja = datos.getNumCaja();
+		String numCaja = datos.getValorGradeo();
 		String numero = datos.getNumero();
 		String variante = datos.getVariante();
 		String firma = datos.getFirma();
@@ -1438,28 +1438,28 @@ public class Unit_Test extends Application {
 
 	public static void accionComicPruebaAni() {
 
-		AccionFuncionesComunes.tipoAccion("aniadir");
+		AccionFuncionesComunes.setTipoAccion("aniadir");
 
 		nav.verAccionComic();
 	}
 
 	public static void accionComicPruebaMod() {
 
-		AccionFuncionesComunes.tipoAccion("modificar");
+		AccionFuncionesComunes.setTipoAccion("modificar");
 
 		nav.verAccionComic();
 	}
 
 	public static void accionComicPruebaDelete() {
 
-		AccionFuncionesComunes.tipoAccion("eliminar");
+		AccionFuncionesComunes.setTipoAccion("eliminar");
 
 		nav.verAccionComic();
 	}
 
 	public static void accionComicPruebaPuntuar() {
 
-		AccionFuncionesComunes.tipoAccion("puntuar");
+		AccionFuncionesComunes.setTipoAccion("puntuar");
 
 		nav.verAccionComic();
 	}

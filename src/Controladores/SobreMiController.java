@@ -202,10 +202,8 @@ public class SobreMiController implements Initializable {
 
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
 		alarmaList.iniciarThreadChecker(true);
-		
-		Platform.runLater(() -> {
-			FuncionesManejoFront.stageVentanas.add(estadoStage());
-		});
+
+		Platform.runLater(() -> FuncionesManejoFront.getStageVentanas().add(estadoStage()));
 	}
 
 	/**
@@ -323,13 +321,13 @@ public class SobreMiController implements Initializable {
 			MenuItem menuItemPresionado = (MenuItem) fuente;
 
 			if (menuItemPresionado == menu_comic_aniadir) {
-				AccionFuncionesComunes.tipoAccion("aniadir");
+				AccionFuncionesComunes.setTipoAccion("aniadir");
 			} else if (menuItemPresionado == menu_comic_modificar) {
-				AccionFuncionesComunes.tipoAccion("modificar");
+				AccionFuncionesComunes.setTipoAccion("modificar");
 			} else if (menuItemPresionado == menu_comic_eliminar) {
-				AccionFuncionesComunes.tipoAccion("eliminar");
+				AccionFuncionesComunes.setTipoAccion("eliminar");
 			} else if (menuItemPresionado == menu_comic_puntuar) {
-				AccionFuncionesComunes.tipoAccion("puntuar");
+				AccionFuncionesComunes.setTipoAccion("puntuar");
 			}
 		}
 
@@ -421,10 +419,10 @@ public class SobreMiController implements Initializable {
 	 */
 	public void closeWindows() {
 
-		if (FuncionesManejoFront.stageVentanas.contains(estadoStage())) {
-			FuncionesManejoFront.stageVentanas.remove(estadoStage());
+		if (FuncionesManejoFront.getStageVentanas().contains(estadoStage())) {
+			FuncionesManejoFront.getStageVentanas().remove(estadoStage());
 		}
-		
+
 		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
 		myStage.close();
 		nav.verAccesoBBDD();

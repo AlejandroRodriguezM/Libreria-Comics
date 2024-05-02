@@ -60,7 +60,7 @@
          </font>
       </TextField>
       <ComboBox fx:id="estadoComic" layoutX="239.0" layoutY="169.0" prefHeight="25.0" prefWidth="111.0" promptText="Estado" />
-      <ComboBox fx:id="numeroCajaComic" editable="true" layoutX="56.0" layoutY="178.0" prefHeight="25.0" prefWidth="125.0" promptText="Caja" stylesheets="@../style/combobox_style.css" />
+      <ComboBox fx:id="gradeoComic" layoutX="56.0" layoutY="178.0" prefHeight="25.0" prefWidth="125.0" promptText="Nivel de gradeo" stylesheets="@../style/combobox_style.css" />
       <TextField fx:id="nombreKeyIssue" layoutX="239.0" layoutY="117.0" prefHeight="21.0" prefWidth="111.0" promptText="Introduce key issue">
          <font>
             <Font size="10.0" />
@@ -84,24 +84,24 @@
       <Label layoutX="3.0" layoutY="30.0" prefHeight="21.0" prefWidth="45.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Nombre" />
       <Label layoutX="3.0" layoutY="55.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Numero" />
       <Label layoutX="3.0" layoutY="81.0" prefHeight="12.0" prefWidth="46.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Variante" />
-      <Label fx:id="label_firma" layoutX="3.0" layoutY="104.0" prefHeight="10.0" prefWidth="33.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Firma" />
-      <Label fx:id="label_editorial" layoutX="3.0" layoutY="128.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Editorial" />
-      <Label fx:id="label_formato" layoutX="3.0" layoutY="153.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Format" />
-      <Label fx:id="label_procedencia" layoutX="188.0" layoutY="143.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Origen*" />
-      <Label fx:id="label_fecha" layoutX="187.0" layoutY="200.0" prefHeight="21.0" prefWidth="37.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Fecha" />
-      <Label fx:id="label_guionista" layoutX="187.0" layoutY="71.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Guionist" />
-      <Label fx:id="label_dibujante" layoutX="187.0" layoutY="94.0" prefHeight="21.0" prefWidth="47.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Dibujant" />
-      <Label fx:id="label_estado" layoutX="188.0" layoutY="171.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Estado" />
-      <Label fx:id="label_caja" layoutX="5.0" layoutY="181.0" prefHeight="15.0" prefWidth="29.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Caja" wrapText="true">
+      <Label fx:id="labelFirma" layoutX="3.0" layoutY="104.0" prefHeight="10.0" prefWidth="33.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Firma" />
+      <Label fx:id="labelEditorial" layoutX="3.0" layoutY="128.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Editorial" />
+      <Label fx:id="labelFormato" layoutX="3.0" layoutY="153.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Format" />
+      <Label fx:id="labelProcedencia" layoutX="188.0" layoutY="143.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Origen*" />
+      <Label fx:id="labelFecha" layoutX="187.0" layoutY="200.0" prefHeight="21.0" prefWidth="37.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Fecha" />
+      <Label fx:id="labelGuionista" layoutX="187.0" layoutY="71.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Guionist" />
+      <Label fx:id="labelDibujante" layoutX="187.0" layoutY="94.0" prefHeight="21.0" prefWidth="47.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Dibujant" />
+      <Label fx:id="labelEstado" layoutX="188.0" layoutY="171.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Estado" />
+      <Label fx:id="labelGradeo" layoutX="5.0" layoutY="181.0" prefHeight="21.0" prefWidth="43.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Gradeo" wrapText="true">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
-      <Label fx:id="label_key" layoutX="188.0" layoutY="117.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Key" />
-      <Label fx:id="label_referencia" layoutX="187.0" layoutY="226.0" prefHeight="21.0" prefWidth="29.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="URL" />
-      <Label fx:id="label_precio" layoutX="5.0" layoutY="208.0" prefHeight="21.0" prefWidth="37.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Precio" />
-      <Label fx:id="label_portada" focusTraversable="false" layoutX="5.0" layoutY="255.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Portada" />
-      <Label fx:id="label_id_mod" focusTraversable="false" layoutX="5.0" layoutY="279.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="ID comic" />
+      <Label fx:id="labelKey" layoutX="188.0" layoutY="117.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Key" />
+      <Label fx:id="labelReferencia" layoutX="187.0" layoutY="226.0" prefHeight="21.0" prefWidth="29.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="URL" />
+      <Label fx:id="labelPrecio" layoutX="5.0" layoutY="208.0" prefHeight="21.0" prefWidth="37.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Precio" />
+      <Label fx:id="labelPortada" focusTraversable="false" layoutX="5.0" layoutY="255.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Portada" />
+      <Label fx:id="labelId" focusTraversable="false" layoutX="5.0" layoutY="279.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="ID comic" />
       <Button fx:id="botonLimpiar" layoutX="187.0" layoutY="29.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="21.0" prefWidth="57.0" stylesheets="@../style/genericos_style.css" text="Limpiar" />
       <Button fx:id="botonBusquedaAvanzada" focusTraversable="false" layoutX="5.0" layoutY="305.0" mnemonicParsing="false" onAction="#busquedaAvanzada" prefHeight="25.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Opciones avanzada" visible="false" />
       <ComboBox fx:id="puntuacionMenu" layoutX="56.0" layoutY="127.0" prefHeight="21.0" prefWidth="125.0" visible="false" />
@@ -117,7 +117,7 @@
       <Button fx:id="botonEliminar" disable="true" layoutX="5.0" layoutY="138.0" mnemonicParsing="false" onAction="#eliminarDatos" prefHeight="73.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Eliminar comic" visible="false" />
       <Button fx:id="botonVender" disable="true" ellipsisString="" layoutX="112.0" layoutY="137.0" mnemonicParsing="false" onAction="#ventaComic" prefHeight="73.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Vender comic" visible="false" />
       <Button fx:id="botonbbdd" disable="true" layoutX="248.0" layoutY="29.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="35.0" prefWidth="57.0" stylesheets="@../style/genericos_style.css" text="Ver todo" visible="false" />
-      <TextField fx:id="idComicTratar_mod" layoutX="56.0" layoutY="279.0" prefHeight="21.0" prefWidth="125.0" promptText="ID Comic ">
+      <TextField fx:id="idComicTratar" layoutX="56.0" layoutY="279.0" prefHeight="21.0" prefWidth="125.0" promptText="ID Comic ">
          <font>
             <Font size="10.0" />
          </font>
@@ -127,7 +127,7 @@
             <Font size="10.0" />
          </font>
       </Button>
-      <Label fx:id="label_codigo_comic" focusTraversable="false" layoutX="5.0" layoutY="231.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Codigo" />
+      <Label fx:id="labelCodigo" focusTraversable="false" layoutX="5.0" layoutY="231.0" style="-fx-background-color: white;" stylesheets="@../style/genericos_style.css" text="Codigo" />
       <TextField fx:id="codigoComicTratar" layoutX="56.0" layoutY="231.0" prefHeight="21.0" prefWidth="125.0" promptText="Codigo Comic">
          <font>
             <Font size="10.0" />
@@ -135,12 +135,12 @@
       </TextField>
       <VBox fx:id="rootVBox" layoutY="345.0" prefHeight="243.0" prefWidth="838.0">
          <children>
-            <TableView fx:id="tablaBBDD" onKeyPressed="#teclasDireccion" onMouseClicked="#clickRaton" prefHeight="300.0" prefWidth="715.0" stylesheets="@../style/tablas_style.css" tableMenuButtonVisible="true">
+            <TableView fx:id="tablaBBDD" onKeyPressed="#teclasDireccion" onMouseClicked="#clickRaton" prefHeight="300.0" prefWidth="715.0" stylesheets="@../style/tablas_style.css" tableMenuButtonVisible="true" VBox.vgrow="ALWAYS">
                <columns>
-                  <TableColumn fx:id="ID" prefWidth="47.0" text="ID" visible="false" />
+                  <TableColumn fx:id="id" prefWidth="47.0" text="ID" visible="false" />
                   <TableColumn fx:id="nombre" editable="false" maxWidth="5500.0" prefWidth="102.0" text="Nombre" />
-                  <TableColumn fx:id="caja" editable="false" maxWidth="2000.0" prefWidth="39.0" text="Caja" visible="false" />
-                  <TableColumn fx:id="numero1" editable="false" maxWidth="2500.0" prefWidth="43.0" text="Nº" visible="false" />
+                  <TableColumn fx:id="gradeo" editable="false" maxWidth="2000.0" prefWidth="39.0" text="Gradeo" />
+                  <TableColumn fx:id="numero" editable="false" maxWidth="2500.0" prefWidth="43.0" text="Nº" visible="false" />
                   <TableColumn fx:id="variante" editable="false" prefWidth="116.0" text="Variante" />
                   <TableColumn fx:id="firma" editable="false" maxWidth="4000.0" minWidth="0.0" prefWidth="148.0" text="Firma" visible="false" />
                   <TableColumn fx:id="editorial" editable="false" maxWidth="4500.0" minWidth="0.0" prefWidth="97.0" style="-fx-alignment: center;" text="Editorial" />
@@ -157,18 +157,18 @@
             </TableView>
          </children>
       </VBox>
-      <MenuBar fx:id="menu_navegacion" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="838.0">
+      <MenuBar fx:id="menuNavegacion" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="838.0">
          <menus>
-            <Menu fx:id="navegacion_cerrar" mnemonicParsing="false" text="Archivo">
+            <Menu fx:id="navegacionOpciones" mnemonicParsing="false" text="Archivo">
                <items>
-                  <MenuItem fx:id="menu_leer_CodigoBarras" mnemonicParsing="false" onAction="#verMenuCodigoBarras" text="Leer codigo de barras" />
-                  <MenuItem fx:id="menu_Importar_Fichero_CodigoBarras" mnemonicParsing="false" onAction="#importarFicheroCodigoBarras" text="Importar fichero" />
-                  <MenuItem fx:id="menu_archivo_conexion" mnemonicParsing="false" onAction="#verEstadoConexion" text="Comprobar Conexion" />
+                  <MenuItem fx:id="menuCodigoBarras" mnemonicParsing="false" onAction="#verMenuCodigoBarras" text="Leer codigo de barras" />
+                  <MenuItem fx:id="menuImportarFichero" mnemonicParsing="false" onAction="#importarFicheroCodigoBarras" text="Importar fichero" />
+                  <MenuItem fx:id="menuConexion" mnemonicParsing="false" onAction="#verEstadoConexion" text="Comprobar Conexion" />
                </items>
             </Menu>
-            <Menu fx:id="navegacion_estadistica" mnemonicParsing="false" text="Estadistica">
+            <Menu fx:id="navegacionEstadistica" mnemonicParsing="false" text="Estadistica">
                <items>
-                  <MenuItem fx:id="menu_estadistica_estadistica" mnemonicParsing="false" text="Descargar estadistica global" />
+                  <MenuItem fx:id="navegacionMostrarEstadistica" mnemonicParsing="false" text="Descargar estadistica global" />
                </items>
             </Menu>
          </menus>

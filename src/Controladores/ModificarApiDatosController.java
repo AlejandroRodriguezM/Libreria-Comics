@@ -74,7 +74,7 @@ public class ModificarApiDatosController implements Initializable {
 
 		AlarmaList.iniciarAnimacionEspera(printInfo);
 		Platform.runLater(() -> {
-			FuncionesManejoFront.stageVentanas.add(estadoStage());
+			FuncionesManejoFront.getStageVentanas().add(estadoStage());
 		});
 		if (TIPO_ACCION.equalsIgnoreCase("Marvel")) {
 			textFieldPublica.setDisable(false);
@@ -186,8 +186,8 @@ public class ModificarApiDatosController implements Initializable {
 	 */
 	public void closeWindow() {
 
-		if (FuncionesManejoFront.stageVentanas.contains(estadoStage())) {
-			FuncionesManejoFront.stageVentanas.remove(estadoStage());
+		if (FuncionesManejoFront.getStageVentanas().contains(estadoStage())) {
+			FuncionesManejoFront.getStageVentanas().remove(estadoStage());
 		}
 
 		Stage myStage = (Stage) guardarDatosApi.getScene().getWindow();

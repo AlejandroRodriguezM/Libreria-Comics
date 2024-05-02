@@ -293,7 +293,7 @@ public class AccesoBBDDController implements Initializable {
 	 * @throws SQLException
 	 */
 	@FXML
-	void enviarDatos(ActionEvent event) throws SQLException {
+	void enviarDatos(ActionEvent event) {
 
 		String[] datosFichero = FuncionesFicheros.datosEnvioFichero();
 
@@ -313,8 +313,7 @@ public class AccesoBBDDController implements Initializable {
 
 	public Scene miStageVentana() {
 
-		Scene scene = botonEnviar.getScene();
-		return scene;
+		return botonEnviar.getScene();
 
 	}
 
@@ -335,15 +334,7 @@ public class AccesoBBDDController implements Initializable {
 		});
 
 		iniciarXAMPPTask.setOnSucceeded(e -> {
-			boolean exito = iniciarXAMPPTask.getValue();
-
-			Platform.runLater(() -> {
-				if (exito) {
-					AlarmaList.detenerAnimacionCarga(progresoCarga);
-				} else {
-					AlarmaList.detenerAnimacionCarga(progresoCarga);
-				}
-			});
+			Platform.runLater(() -> AlarmaList.detenerAnimacionCarga(progresoCarga));
 
 			// Cerrar el hilo después de completar la tarea
 			if (!executorService.isShutdown()) {

@@ -65,25 +65,25 @@ import javafx.stage.Stage;
  */
 public class Ventanas {
 
-	private static Alert dialog = null;
+	private Alert dialog = null;
 
-	private static Stage accesoBBDDStage = null;
+	private Stage accesoBBDDStage = null;
 
-	private static Stage estadoConexionStage = null;
+	private Stage estadoConexionStage = null;
 
-	private static Stage estadoApiStage = null;
+	private Stage estadoApiStage = null;
 
-	private static Stage menuCodigoBarras = null;
+	private Stage menuCodigoBarras = null;
 
-	private static Stage accionComic = null;
+	private Stage accionComic = null;
 
-	private static Stage opcionesAvanzadasStage = null;
+	private Stage opcionesAvanzadasStage = null;
 
-	public static Stage cargaComics = null;
+	public Stage cargaComics = null;
 
-	private static Stage menuPrincipal = null;
+	private Stage menuPrincipal = null;
 
-	private static Stage imagenAmpliada = null;
+	private Stage imagenAmpliada = null;
 
 	private boolean ventanaCerrada = false; // Variable para almacenar el estado de la ventana
 
@@ -506,9 +506,7 @@ public class Ventanas {
 			stage.setScene(scene);
 			stage.show();
 			// Indico que debe hacer al cerrar
-			stage.setOnCloseRequest(e -> {
-				controlador.closeWindows();
-			});
+			stage.setOnCloseRequest(e -> controlador.closeWindows());
 
 			ConectManager.resetConnection();
 
@@ -548,9 +546,7 @@ public class Ventanas {
 			stage.setScene(scene);
 			stage.show();
 			// Indico que debe hacer al cerrar
-			stage.setOnCloseRequest(e -> {
-				controlador.closeWindows();
-			});
+			stage.setOnCloseRequest(e -> controlador.closeWindows());
 
 		} catch (IOException ex) {
 			alertaException(ex.toString());
@@ -590,9 +586,7 @@ public class Ventanas {
 			stage.setScene(scene);
 			stage.show();
 			// Indico que debe hacer al cerrar
-			stage.setOnCloseRequest(e -> {
-				controlador.closeWindows();
-			});
+			stage.setOnCloseRequest(e -> controlador.closeWindows());
 		} catch (IOException ex) {
 			alertaException(ex.toString());
 		}
@@ -628,9 +622,7 @@ public class Ventanas {
 			stage.setScene(scene);
 			stage.show();
 			// Indico que debe hacer al cerrar
-			stage.setOnCloseRequest(e -> {
-				controlador.closeWindows();
-			});
+			stage.setOnCloseRequest(e -> controlador.closeWindows());
 
 		} catch (IOException ex) {
 			alertaException(ex.toString());
@@ -946,41 +938,38 @@ public class Ventanas {
 	 *         operación.
 	 */
 	public CompletableFuture<Boolean> borrarContenidoTabla() {
-		CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
+	    CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
 
-		Platform.runLater(() -> {
-			Alert alert1 = new Alert(AlertType.CONFIRMATION);
-			Stage stage1 = (Stage) alert1.getDialogPane().getScene().getWindow();
-			stage1.setResizable(false);
-			stage1.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
-			alert1.setTitle("Borrando . . .");
-			alert1.setHeaderText("Estás a punto de borrar el contenido.");
-			alert1.setContentText("¿Estás seguro que quieres borrarlo todo?");
+	    Platform.runLater(() -> {
+	        Alert alert1 = new Alert(AlertType.CONFIRMATION);
+	        Stage stage1 = (Stage) alert1.getDialogPane().getScene().getWindow();
+	        stage1.setResizable(false);
+	        stage1.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
+	        alert1.setTitle("Borrando . . .");
+	        alert1.setHeaderText("Estás a punto de borrar el contenido.");
+	        alert1.setContentText("¿Estás seguro que quieres borrarlo todo?");
 
-			Optional<ButtonType> result1 = alert1.showAndWait();
-			if (result1.isPresent() && result1.get() == ButtonType.OK) {
-				Alert alert2 = new Alert(AlertType.CONFIRMATION);
-				Stage stage2 = (Stage) alert2.getDialogPane().getScene().getWindow();
-				stage2.setResizable(false);
-				stage2.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
-				alert2.setTitle("Borrando . . .");
-				alert2.setHeaderText("¿Estás seguro?");
-				alert2.setContentText("¿De verdad de verdad quieres borrarlo todo?");
+	        Optional<ButtonType> result1 = alert1.showAndWait();
+	        result1.ifPresent(result -> {
+	            if (result == ButtonType.OK) {
+	                Alert alert2 = new Alert(AlertType.CONFIRMATION);
+	                Stage stage2 = (Stage) alert2.getDialogPane().getScene().getWindow();
+	                stage2.setResizable(false);
+	                stage2.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
+	                alert2.setTitle("Borrando . . .");
+	                alert2.setHeaderText("¿Estás seguro?");
+	                alert2.setContentText("¿De verdad de verdad quieres borrarlo todo?");
 
-				alert2.showAndWait().ifPresent(result2 -> {
-					if (result2 == ButtonType.OK) {
-						futureResult.complete(true);
-					} else {
-						futureResult.complete(false);
-					}
-				});
-			} else {
-				futureResult.complete(false);
-			}
-		});
+	                alert2.showAndWait().ifPresent(result2 -> futureResult.complete(result2 == ButtonType.OK));
+	            } else {
+	                futureResult.complete(false);
+	            }
+	        });
+	    });
 
-		return futureResult;
+	    return futureResult;
 	}
+
 
 	/**
 	 * Solicita confirmación al usuario antes de borrar el contenido de la
@@ -1080,7 +1069,7 @@ public class Ventanas {
 	public void alertaNoApi(String excepcion) {
 		Platform.runLater(() -> {
 			if (dialog == null || !dialog.isShowing()) {
-				Alert dialog = new Alert(AlertType.ERROR, excepcion, ButtonType.OK);
+				dialog = new Alert(AlertType.ERROR, excepcion, ButtonType.OK);
 				Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
 				stage.getIcons().add(new Image("/Icono/icon2.png"));
 				dialog.showAndWait(); // Mostrar y esperar hasta que se cierre

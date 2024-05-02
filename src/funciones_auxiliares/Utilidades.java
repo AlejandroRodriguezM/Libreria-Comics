@@ -103,7 +103,7 @@ public class Utilidades {
 	/**
 	 * Sistema operativo actual.
 	 */
-	public static String os = System.getProperty("os.name", "unknown").toLowerCase(Locale.ROOT);
+	public static final String os = System.getProperty("os.name", "unknown").toLowerCase(Locale.ROOT);
 
 	/**
 	 * Mapa que almacena tasas de cambio.
@@ -113,24 +113,17 @@ public class Utilidades {
 	/**
 	 * Obtenemos el directorio de inicio del usuario
 	 */
-	private final static String USER_DIR = System.getProperty("user.home");
+	private static final String USER_DIR = System.getProperty("user.home");
 
 	/**
 	 * Construimos la ruta al directorio "Documents"
 	 */
-	public final static String DOCUMENTS_PATH = USER_DIR + File.separator + "Documents";
-
-	/**
-	 * Construimos la ruta al directorio "libreria_comics" dentro de "Documents" y
-	 * añadimos el nombre de la base de datos y la carpeta "portadas".
-	 */
-	public final static String SOURCE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
-			+ ConectManager.DB_NAME + File.separator + "portadas";
+	public static final String DOCUMENTS_PATH = USER_DIR + File.separator + "Documents";
 
 	private static final String CARACTERES = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	private static final Random RANDOM = new Random();
-	
-	public static AccionReferencias referenciaVentana = new AccionReferencias();
+
+	private static AccionReferencias referenciaVentana = getReferenciaVentana();
 
 	/**
 	 * Verifica si el sistema operativo es Windows.
@@ -167,11 +160,11 @@ public class Utilidades {
 	 * @param url
 	 * @return
 	 */
-	public static StringBuffer navegador(String url) {
+	public static StringBuilder navegador(String url) {
 		String[] browsers = { "google-chrome", "firefox", "mozilla", "epiphany", "konqueror", "netscape", "opera",
 				"links", "lynx" };
 
-		StringBuffer cmd = new StringBuffer();
+		StringBuilder cmd = new StringBuilder();
 		for (int i = 0; i < browsers.length; i++) {
 			if (i == 0) {
 				cmd.append(String.format("%s \"%s\"", browsers[i], url));
@@ -203,9 +196,9 @@ public class Utilidades {
 	public static void accesoWebLinux(String url) {
 		Runtime rt = Runtime.getRuntime();
 
-		StringBuffer cmd;
+		StringBuilder cmd;
 		try {
-			cmd = Utilidades.navegador(url);
+			cmd = navegador(url);
 			rt.exec(new String[] { "sh", "-c", cmd.toString() }); // Ejecuta el bucle y permite abrir el navegador que
 			// tengas principal
 		} catch (IOException e) {
@@ -391,8 +384,7 @@ public class Utilidades {
 		String documentsPath = userDir + File.separator + "Documents";
 		String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
 				+ ConectManager.DB_NAME + File.separator + "portadas" + File.separator;
-		String nuevoNombreArchivo = defaultImagePath + crearNuevoNombre(datos);
-		return nuevoNombreArchivo;
+		return defaultImagePath + crearNuevoNombre(datos);
 	}
 
 	/**
@@ -409,8 +401,7 @@ public class Utilidades {
 		String fecha_comic = datos.getFecha();
 		String nombre_completo = nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic;
 		String extension = ".jpg";
-		String nuevoNombreArchivo = nombre_completo + extension;
-		return nuevoNombreArchivo;
+		return nombre_completo + extension;
 	}
 
 	/**
@@ -428,9 +419,7 @@ public class Utilidades {
 		int posicionSeparador = rutaCompleta.lastIndexOf(separadorRuta);
 
 		// Extraer el nombre del archivo sin la ruta
-		String nombreArchivo = rutaCompleta.substring(posicionSeparador + 1);
-
-		return nombreArchivo;
+		return rutaCompleta.substring(posicionSeparador + 1);
 	}
 
 	public static void copiaSeguridad(final List<Comic> listaComics, final SimpleDateFormat dateFormat) {
@@ -448,7 +437,7 @@ public class Utilidades {
 					+ File.separator + "backups" + File.separator + nombreCarpeta;
 
 			if (sourceFolder.exists()) {
-				crearCopiaSeg(sourceFolder, carpetaLibreria, dateFormat);
+				crearCopiaSeg(carpetaLibreria, dateFormat);
 			}
 		});
 
@@ -461,51 +450,22 @@ public class Utilidades {
 		}).join(); // Esperar a que se complete la copia de seguridad
 	}
 
-	private static void crearCopiaSeg(final File sourceFolder, final String carpetaLibreria,
-			final SimpleDateFormat dateFormat) {
-		Thread thread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				File backupsFolder = new File(carpetaLibreria);
-				if (!backupsFolder.exists()) {
-					backupsFolder.mkdirs();
-				}
-
-				final String DOCUMENTS_PATH = Utilidades.DOCUMENTS_PATH;
-				final String DB_NAME = ConectManager.DB_NAME;
-				final String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
-						+ DB_NAME + File.separator;
-				final String directorioOriginal = directorioComun + "portadas" + File.separator;
-				String backupFileName = "portadas_" + dateFormat.format(new Date());
-				String backupPath = carpetaLibreria + File.separator + backupFileName;
-
-				Utilidades.copiarDirectorio(backupPath, directorioOriginal);
+	private static void crearCopiaSeg(final String carpetaLibreria, final SimpleDateFormat dateFormat) {
+		Thread thread = new Thread(() -> {
+			File backupsFolder = new File(carpetaLibreria);
+			if (!backupsFolder.exists()) {
+				backupsFolder.mkdirs();
 			}
+			final String DB_NAME = ConectManager.DB_NAME;
+			final String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+					+ DB_NAME + File.separator;
+			final String directorioOriginal = directorioComun + "portadas" + File.separator;
+			String backupFileName = "portadas_" + dateFormat.format(new Date());
+			String backupPath = carpetaLibreria + File.separator + backupFileName;
+
+			Utilidades.copiarDirectorio(backupPath, directorioOriginal);
 		});
 		thread.start();
-	}
-
-	/**
-	 * Añade un archivo al archivo ZIP especificado con el nombre de entrada dado.
-	 *
-	 * @param file      El archivo que se va a agregar al ZIP.
-	 * @param entryName El nombre de entrada del archivo en el ZIP.
-	 * @param zipFile   El archivo ZIP al que se va a agregar el nuevo archivo.
-	 * @throws IOException Si ocurre un error de lectura o escritura durante la
-	 *                     operación.
-	 */
-	public static void addFileToZip(File file, String entryName, File zipFile) throws IOException {
-		try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile, true))) {
-			ZipEntry zipEntry = new ZipEntry(entryName);
-			zipOut.putNextEntry(zipEntry);
-			try (FileInputStream fileInputStream = new FileInputStream(file)) {
-				byte[] buffer = new byte[1024];
-				int length;
-				while ((length = fileInputStream.read(buffer)) > 0) {
-					zipOut.write(buffer, 0, length);
-				}
-			}
-		}
 	}
 
 	public static void eliminarArchivosEnCarpeta() {
@@ -665,17 +625,8 @@ public class Utilidades {
 	 * @return true si la posición del guion es válida, false en caso contrario.
 	 */
 	public static boolean esPosicionGuionValida(String nombreArchivo, int indice) {
-
-		// Verificar si el guion está precedido por un dígito
-		if (indice > 0 && Character.isDigit(nombreArchivo.charAt(indice - 1))) {
-			return false;
-		}
-		// Verificar si el guion está seguido por un dígito
-		if (indice < nombreArchivo.length() - 1 && Character.isDigit(nombreArchivo.charAt(indice + 1))) {
-			return false;
-		}
-
-		return true;
+		return !(indice > 0 && Character.isDigit(nombreArchivo.charAt(indice - 1)))
+				&& !(indice < nombreArchivo.length() - 1 && Character.isDigit(nombreArchivo.charAt(indice + 1)));
 	}
 
 	public static String obtenerNombrePortada(boolean eliminarAntesPortadas, String rutaArchivo) {
@@ -812,9 +763,6 @@ public class Utilidades {
 		if (!archivo.exists()) {
 			crearArchivoConValoresPredeterminados(nombreArchivo);
 		}
-
-//        Thread imprimirDivisasThread = new Thread(() -> ApiCambioDivisas.imprimirDivisas(nombreArchivo));
-//        imprimirDivisasThread.start();
 
 		ApiCambioDivisas.imprimirDivisas(nombreArchivo);
 	}
@@ -1108,11 +1056,10 @@ public class Utilidades {
 	 *         correspondientes.
 	 */
 	public static String replaceHtmlEntities(String input) {
-		return input.replaceAll("&amp;", "&").replaceAll("&lt;", "<").replaceAll("&gt;", ">").replaceAll("&quot;", "\"")
-				.replaceAll("&#39;", "'").replaceAll("&rsquo;", "'").replaceAll("&ldquo;", "\"")
-				.replaceAll("&rdquo;", "\"").replaceAll("&nbsp;", " ").replaceAll("&mdash;", "—")
-				.replaceAll("&ndash;", "–").replaceAll("<ul>", "'").replaceAll("<li>", "'").replaceAll("</ul>", "'")
-				.replaceAll("</li>", "'");
+		return input.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", "\"")
+				.replace("&#39;", "'").replace("&rsquo;", "'").replace("&ldquo;", "\"").replace("&rdquo;", "\"")
+				.replace("&nbsp;", " ").replace("&mdash;", "—").replace("&ndash;", "–").replace("<ul>", "'")
+				.replace("<li>", "'").replace("</ul>", "'").replace("</li>", "'");
 	}
 
 	/**
@@ -1130,10 +1077,10 @@ public class Utilidades {
 
 		File portadasFolder = new File(defaultImagePath);
 
-		if (!portadasFolder.exists()) {
-			if (!portadasFolder.mkdirs()) {
-				nav.alertaException("No se puede crear la carpeta donde van las portadas descargadas/copiadas");
-			}
+		if (!portadasFolder.exists() && !portadasFolder.mkdirs()) {
+
+			nav.alertaException("No se puede crear la carpeta donde van las portadas descargadas/copiadas");
+
 		}
 	}
 
@@ -1179,6 +1126,7 @@ public class Utilidades {
 			File fichero;
 			// Mostrar el diálogo y obtener el archivo seleccionado
 			if (esGuardado) {
+				fileChooser.setInitialFileName("base de datos");
 				fichero = fileChooser.showSaveDialog(null);
 			} else {
 				fichero = fileChooser.showOpenDialog(null);
@@ -1189,42 +1137,11 @@ public class Utilidades {
 				FuncionesManejoFront.cambiarEstadoMenuBar(false);
 				return null; // Devolver null si no se seleccionó ningún archivo
 			}
-			referenciaVentana.getBotonCancelarSubida().setVisible(false);
+			getReferenciaVentana().getBotonCancelarSubida().setVisible(false);
 			return fichero; // Devuelve el FileChooser para que la interfaz gráfica lo utilice
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
-		}
-	}
-
-	/**
-	 * Imprime un mensaje de error en un archivo, junto con la fecha y hora actual.
-	 * Abre el archivo después de escribir en él.
-	 * 
-	 * @param mensajeError     Mensaje de error a imprimir.
-	 * @param ubicacionArchivo Ruta del directorio donde se guardará el archivo.
-	 */
-	public static void imprimirEnArchivo(String mensajeError, String ubicacionArchivo) {
-
-		// Obtener la fecha y hora actuales
-		LocalDateTime now = LocalDateTime.now();
-
-		// Formatear la fecha y hora
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH-mm");
-
-		// Mostrar la información
-		String fechaFormateada = now.format(formatter);
-
-		String direccionCompleta = ubicacionArchivo + File.separator + "CodigosFaltantes_" + fechaFormateada + ".txt";
-
-		try {
-			PrintWriter escritor = new PrintWriter(new FileWriter(direccionCompleta, true));
-			escritor.println(mensajeError);
-			escritor.close();
-			// Abrir el archivo
-			abrirArchivo(direccionCompleta);
-		} catch (IOException e) {
-			manejarExcepcion(e);
 		}
 	}
 
@@ -1398,19 +1315,17 @@ public class Utilidades {
 	/**
 	 * Obtiene el objeto Comic seleccionado según el ID proporcionado.
 	 * 
-	 * @param id_comic El ID del cómic a obtener.
+	 * @param idComic El ID del cómic a obtener.
 	 * @return El objeto Comic correspondiente al ID proporcionado.
 	 * @throws SQLException Si hay un error al acceder a la base de datos.
 	 */
-	public static Comic obtenerComicSeleccionado(String id_comic) throws SQLException {
-		Comic comic_temp;
-		if (!ListaComicsDAO.comicsImportados.isEmpty()) {
-			comic_temp = ListaComicsDAO.buscarComicPorID(ListaComicsDAO.comicsImportados, id_comic);
-		} else {
-			comic_temp = SelectManager.comicDatos(id_comic);
-		}
+	public static Comic obtenerComicSeleccionado(String idComic) {
 
-		return comic_temp;
+		if (!ListaComicsDAO.comicsImportados.isEmpty()) {
+			return ListaComicsDAO.buscarComicPorID(ListaComicsDAO.comicsImportados, idComic);
+		} else {
+			return SelectManager.comicDatos(idComic);
+		}
 	}
 
 	/**
@@ -1447,10 +1362,10 @@ public class Utilidades {
 				+ Utilidades.obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "backups";
 
 		try {
-			File carpeta_backupsFile = new File(carpetaBackup);
+			File carpetaBackupsFile = new File(carpetaBackup);
 			Utilidades.crearCarpeta();
-			if (!carpeta_backupsFile.exists()) {
-				carpeta_backupsFile.mkdirs();
+			if (!carpetaBackupsFile.exists()) {
+				carpetaBackupsFile.mkdirs();
 			}
 		} catch (Exception e) {
 			manejarExcepcion(e);
@@ -1535,58 +1450,6 @@ public class Utilidades {
 		e.printStackTrace();
 	}
 
-	public static void procesarArchivo(File archivo) {
-		ExecutorService executor = Executors.newSingleThreadExecutor();
-
-		executor.submit(() -> {
-			String linea;
-			int contadorFaltas = 0;
-			ApiISBNGeneral isbnGeneral = new ApiISBNGeneral();
-			String codigosFaltantes = "";
-			Comic comicInfo = new Comic();
-			String sourcePath = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
-					+ ConectManager.DB_NAME;
-
-			try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
-				while ((linea = br.readLine()) != null) {
-					// Procesar cada línea según tus requisitos
-					String finalValorCodigo = linea.trim();
-					String valorCodigo = finalValorCodigo; // Asignar el valor adecuado
-
-					if (!finalValorCodigo.isEmpty()) {
-						if (finalValorCodigo.length() == 9) {
-							comicInfo = WebScraperPreviewsWorld.displayComicInfo(finalValorCodigo.trim(), null);
-
-						} else {
-							comicInfo = ApiMarvel.infoComicCode(finalValorCodigo.trim(), null);
-							contadorFaltas++;
-
-							if (comicInfo == null) {
-								comicInfo = isbnGeneral.getBookInfo(finalValorCodigo.trim(), null);
-
-								if (comicInfo == null) {
-									contadorFaltas++;
-								}
-							}
-						}
-
-						if (contadorFaltas > 1) {
-							codigosFaltantes += "Falta comic con codigo: " + valorCodigo;
-						}
-					}
-				}
-			} catch (IOException | URISyntaxException | JSONException e) {
-				manejarExcepcion(e);
-			} finally {
-				if (contadorFaltas > 1) {
-					Utilidades.imprimirEnArchivo(codigosFaltantes, sourcePath);
-				}
-			}
-		});
-
-		executor.shutdown();
-	}
-
 	public static boolean codigoCorrectoImportado(String valorCodigo) {
 		try {
 			String finalValorCodigo = eliminarEspacios(valorCodigo).replace("-", "");
@@ -1613,7 +1476,6 @@ public class Utilidades {
 		int contador = 0;
 
 		try (BufferedReader br = new BufferedReader(new FileReader(fichero))) {
-			// Lee el archivo línea por línea
 			while (br.readLine() != null) {
 				contador++;
 			}
@@ -1757,13 +1619,11 @@ public class Utilidades {
 		String rutaXamppStart = buscarProgramasEnDirectorio(directorio, "xampp_start.exe");
 
 		try {
-			if (rutaScriptControl != null && verificarExistenciaFichero(rutaScriptControl)) {
-				if (!isXAMPPRunning()) {
-					abrirPrograma(rutaScriptControl);
-				}
+			if (!rutaScriptControl.isEmpty() && verificarExistenciaFichero(rutaScriptControl) && !isXAMPPRunning()) {
+				abrirPrograma(rutaScriptControl);
 			}
 
-			if (rutaXamppStart != null) {
+			if (!rutaXamppStart.isEmpty()) {
 				ejecutarComando(rutaXamppStart);
 			}
 		} catch (Exception e) {
@@ -1966,8 +1826,6 @@ public class Utilidades {
 							imageView.setImage(imagenCargada);
 						});
 						return imagenCargada;
-					} catch (FileNotFoundException e) {
-						Thread.sleep(1500); // Puedes ajustar el tiempo de espera según sea necesario
 					} catch (Exception e) {
 						Thread.sleep(1500); // Puedes ajustar el tiempo de espera según sea necesario
 					}
@@ -2077,18 +1935,17 @@ public class Utilidades {
 				Task<Void> task = new Task<Void>() {
 					@Override
 					protected Void call() throws Exception {
-						try {
+						try (FileOutputStream fileOutputStream = new FileOutputStream(file);) {
 							URI uri = new URI(urlSeleccionada);
 							URLConnection conexion = uri.toURL().openConnection();
 							InputStream inputStream = conexion.getInputStream();
 							BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-							FileOutputStream fileOutputStream = new FileOutputStream(file);
+
 							byte[] buffer = new byte[1024];
 							int bytesRead;
 							while ((bytesRead = bufferedInputStream.read(buffer)) != -1) {
 								fileOutputStream.write(buffer, 0, bytesRead);
 							}
-							fileOutputStream.close();
 							bufferedInputStream.close();
 
 						} catch (IOException | URISyntaxException e) {
@@ -2375,7 +2232,8 @@ public class Utilidades {
 	}
 
 	public static void copiarArchivo(String origen, String destino) {
-		try {
+		try (FileInputStream entrada = new FileInputStream(origen);
+				FileOutputStream salida = new FileOutputStream(destino);) {
 			// Verificar si el archivo es de extensión .jpg
 			if (!origen.toLowerCase().endsWith(".jpg")) {
 				return;
@@ -2385,21 +2243,12 @@ public class Utilidades {
 			if (!file.exists()) {
 				return;
 			}
-			
-			FileInputStream entrada = new FileInputStream(origen);
-
-
-			FileOutputStream salida = new FileOutputStream(destino);
 
 			byte[] buffer = new byte[1024];
 			int longitud;
 			while ((longitud = entrada.read(buffer)) > 0) {
 				salida.write(buffer, 0, longitud);
 			}
-
-			// Cerrar flujos
-			entrada.close();
-			salida.close();
 		} catch (FileNotFoundException e) {
 			// Manejar el caso en el que el archivo de origen no existe
 			System.err.println("El archivo de origen no existe: " + origen);
@@ -2452,29 +2301,38 @@ public class Utilidades {
 
 		return Integer.compare(parts1.length, parts2.length);
 	}
-	
-    public static String convertirFormatoFecha(String fechaStr) {
-        // Verificar si la fecha está en el formato incorrecto (dd/MM/yyyy)
-        if (!fechaStr.matches("\\d{2}/\\d{2}/\\d{4}")) {
-            System.out.println("La fecha no está en el formato incorrecto. Ignorándola.");
-            return fechaStr; // Devolver la misma fecha sin cambios
-        }
 
-        // Definir el formato de entrada y salida
-        SimpleDateFormat formatoEntrada = new SimpleDateFormat("dd/MM/yyyy");
-        SimpleDateFormat formatoSalida = new SimpleDateFormat("yyyy-MM-dd");
+	public static String convertirFormatoFecha(String fechaStr) {
+		// Verificar si la fecha está en el formato incorrecto (dd/MM/yyyy)
+		if (!fechaStr.matches("\\d{2}/\\d{2}/\\d{4}")) {
+			System.out.println("La fecha no está en el formato incorrecto. Ignorándola.");
+			return fechaStr; // Devolver la misma fecha sin cambios
+		}
 
-        try {
-            // Convertir la fecha de cadena al tipo Date
-            Date fecha = formatoEntrada.parse(fechaStr);
+		// Definir el formato de entrada y salida
+		SimpleDateFormat formatoEntrada = new SimpleDateFormat("dd/MM/yyyy");
+		SimpleDateFormat formatoSalida = new SimpleDateFormat("yyyy-MM-dd");
 
-            // Formatear la fecha al nuevo formato
-            return formatoSalida.format(fecha);
-        } catch (ParseException e) {
-            // Si hay un error al convertir la fecha, imprimir un mensaje y devolver la fecha original
-            System.out.println("Error al convertir la fecha. Se devuelve la fecha original.");
-            return fechaStr;
-        }
-    }
+		try {
+			// Convertir la fecha de cadena al tipo Date
+			Date fecha = formatoEntrada.parse(fechaStr);
+
+			// Formatear la fecha al nuevo formato
+			return formatoSalida.format(fecha);
+		} catch (ParseException e) {
+			// Si hay un error al convertir la fecha, imprimir un mensaje y devolver la
+			// fecha original
+			System.out.println("Error al convertir la fecha. Se devuelve la fecha original.");
+			return fechaStr;
+		}
+	}
+
+	public static AccionReferencias getReferenciaVentana() {
+		return referenciaVentana;
+	}
+
+	public static void setReferenciaVentana(AccionReferencias referenciaVentana) {
+		Utilidades.referenciaVentana = referenciaVentana;
+	}
 
 }

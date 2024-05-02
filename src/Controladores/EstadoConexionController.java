@@ -74,7 +74,7 @@ public class EstadoConexionController implements Initializable {
 					executorService.shutdownNow();
 				}
 			});
-			FuncionesManejoFront.stageVentanas.add(estadoStage());
+			FuncionesManejoFront.getStageVentanas().add(estadoStage());
 		});
 	}
 
@@ -143,8 +143,8 @@ public class EstadoConexionController implements Initializable {
 	public void closeWindow() {
 		if (stage != null) {
 
-			if (FuncionesManejoFront.stageVentanas.contains(estadoStage())) {
-				FuncionesManejoFront.stageVentanas.remove(estadoStage());
+			if (FuncionesManejoFront.getStageVentanas().contains(estadoStage())) {
+				FuncionesManejoFront.getStageVentanas().remove(estadoStage());
 			}
 
 			stage.close();

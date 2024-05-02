@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-21">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk-22">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
@@ -29,7 +29,7 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/JavaFX/lib/javafx.controls.jar">
+	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/JavaFX/lib/javafx.controls.jar" sourcepath="C:/Users/mrmis/.m2/repository/org/openjfx/javafx-controls/22/javafx-controls-22-sources.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>

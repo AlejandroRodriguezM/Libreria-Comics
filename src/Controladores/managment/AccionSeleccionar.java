@@ -1,6 +1,7 @@
 package Controladores.managment;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 import alarmas.AlarmaList;
@@ -18,7 +19,7 @@ import javafx.collections.FXCollections;
 
 public class AccionSeleccionar {
 
-	public static AccionReferencias referenciaVentana = new AccionReferencias();
+	private static AccionReferencias referenciaVentana = getReferenciaVentana();
 
 	private static AccionControlUI accionRellenoDatos = new AccionControlUI();
 
@@ -31,16 +32,16 @@ public class AccionSeleccionar {
 	 * @throws SQLException Si se produce un error al acceder a la base de datos.
 	 */
 	public static void seleccionarComics(boolean esPrincipal) {
-		FuncionesTableView.nombreColumnas(referenciaVentana.getTablaBBDD()); // funcion
+		FuncionesTableView.nombreColumnas(getReferenciaVentana().getTablaBBDD()); // funcion
 		Utilidades.comprobacionListaComics();
 
-		Comic newSelection = referenciaVentana.getTablaBBDD().getSelectionModel().getSelectedItem();
+		Comic newSelection = getReferenciaVentana().getTablaBBDD().getSelectionModel().getSelectedItem();
 
 		// Verificar si idRow es nulo antes de intentar acceder a sus métodos
 		if (newSelection != null) {
-			String id_comic = newSelection.getID();
-			
-			mostrarComic(id_comic, esPrincipal);
+			String idComic = newSelection.getID();
+
+			mostrarComic(idComic, esPrincipal);
 		}
 	}
 
@@ -49,7 +50,7 @@ public class AccionSeleccionar {
 		Comic comicTemp = null;
 		AlarmaList.detenerAnimacion();
 		String mensaje = "";
-		
+
 		if (!ListaComicsDAO.comicsImportados.isEmpty() && !esPrincipal) {
 			comicTemp = ListaComicsDAO.buscarComicPorID(ListaComicsDAO.comicsImportados, idComic);
 		} else {
@@ -70,66 +71,64 @@ public class AccionSeleccionar {
 
 			if (AccionFuncionesComunes.TIPO_ACCION.equals("modificar")) {
 				AccionControlUI.mostrarOpcion(AccionFuncionesComunes.TIPO_ACCION);
-				referenciaVentana.getIdComicTratar_mod().setText(comicTemp.getID());
+				getReferenciaVentana().getIdComicTratar().setText(comicTemp.getID());
 			}
 		} else {
-			Utilidades.cargarImagenAsync(comicTemp.getImagen(), referenciaVentana.getImagencomic());
+			Utilidades.cargarImagenAsync(comicTemp.getImagen(), getReferenciaVentana().getImagencomic());
 		}
 
-		referenciaVentana.getProntInfo().setOpacity(1);
+		getReferenciaVentana().getProntInfo().setOpacity(1);
 
 		if (!ListaComicsDAO.comicsImportados.isEmpty() && ComicManagerDAO.comprobarIdentificadorComic(idComic)) {
 			mensaje = ComicManagerDAO.comicDatos(idComic).toString().replace("[", "").replace("]", "");
 		} else {
 			mensaje = comicTemp.toString().replace("[", "").replace("]", "");
 		}
-		referenciaVentana.getProntInfo().clear();
-		referenciaVentana.getProntInfo().setText(mensaje);
+		getReferenciaVentana().getProntInfo().clear();
+		getReferenciaVentana().getProntInfo().setText(mensaje);
 
 	}
 
-	public static void verBasedeDatos(boolean completo, boolean esAccion, Comic comic) {		
+	public static void verBasedeDatos(boolean completo, boolean esAccion, Comic comic) {
 
 		ListaComicsDAO.reiniciarListaComics();
 		FuncionesTableView.modificarColumnas();
-		referenciaVentana.getTablaBBDD().refresh();
-		referenciaVentana.getProntInfo().setText(null);
-		referenciaVentana.getProntInfo().clear();
-//		referenciaVentana.getProntInfo().setOpacity(1);
-//		referenciaVentana.getImagencomic().setImage(null);
+		getReferenciaVentana().getTablaBBDD().refresh();
+		getReferenciaVentana().getProntInfo().setText(null);
+		getReferenciaVentana().getProntInfo().clear();
 
-		FuncionesTableView.nombreColumnas(referenciaVentana.getTablaBBDD());
-		FuncionesTableView.actualizarBusquedaRaw(referenciaVentana.getTablaBBDD());
+		FuncionesTableView.nombreColumnas(getReferenciaVentana().getTablaBBDD());
+		FuncionesTableView.actualizarBusquedaRaw(getReferenciaVentana().getTablaBBDD());
 
 		if (ComicManagerDAO.countRows() > 0) {
 			if (completo) {
 				String sentenciaSQL = DBUtilidades.construirSentenciaSQL(TipoBusqueda.COMPLETA);
 
 				List<Comic> listaComics = ComicManagerDAO.verLibreria(sentenciaSQL);
-				FuncionesTableView.tablaBBDD(listaComics, referenciaVentana.getTablaBBDD());
+				FuncionesTableView.tablaBBDD(listaComics, getReferenciaVentana().getTablaBBDD());
 
 			} else {
 
 				List<Comic> listaParametro = listaPorParametro(comic, esAccion);
 
-				FuncionesTableView.tablaBBDD(listaParametro, referenciaVentana.getTablaBBDD());
+				FuncionesTableView.tablaBBDD(listaParametro, getReferenciaVentana().getTablaBBDD());
 
 				if (!esAccion) {
 					if (!listaParametro.isEmpty()) {
-						referenciaVentana.getBotonImprimir().setVisible(true);
-						referenciaVentana.getBotonGuardarResultado().setVisible(true);
+						getReferenciaVentana().getBotonImprimir().setVisible(true);
+						getReferenciaVentana().getBotonGuardarResultado().setVisible(true);
 					} else {
-						referenciaVentana.getBotonImprimir().setVisible(false);
-						referenciaVentana.getBotonGuardarResultado().setVisible(false);
+						getReferenciaVentana().getBotonImprimir().setVisible(false);
+						getReferenciaVentana().getBotonGuardarResultado().setVisible(false);
 					}
-					referenciaVentana.getBusquedaGeneral().setText("");
+					getReferenciaVentana().getBusquedaGeneral().setText("");
 				}
 
 			}
 		} else {
 			String mensaje = "ERROR. No hay datos en la base de datos";
 
-			AlarmaList.mostrarMensajePront(mensaje, false, referenciaVentana.getProntInfo());
+			AlarmaList.mostrarMensajePront(mensaje, false, getReferenciaVentana().getProntInfo());
 		}
 	}
 
@@ -142,29 +141,37 @@ public class AccionSeleccionar {
 	public static List<Comic> listaPorParametro(Comic datos, boolean esAccion) {
 
 		if (!ConectManager.conexionActiva()) {
-			return null;
+			return Collections.emptyList();
 		}
 		String busquedaGeneralTextField = "";
 
 		if (!esAccion) {
-			busquedaGeneralTextField = referenciaVentana.getBusquedaGeneral().getText();
+			busquedaGeneralTextField = getReferenciaVentana().getBusquedaGeneral().getText();
 		}
 
 		List<Comic> listComic = FXCollections
 				.observableArrayList(SelectManager.busquedaParametro(datos, busquedaGeneralTextField));
 
-		if (listComic.size() > 0) {
-			referenciaVentana.getProntInfo().setOpacity(1);
-			referenciaVentana.getProntInfo().setText(FuncionesTableView.resultadoBusquedaPront(datos).getText());
+		if (!listComic.isEmpty()) {
+			getReferenciaVentana().getProntInfo().setOpacity(1);
+			getReferenciaVentana().getProntInfo().setText(FuncionesTableView.resultadoBusquedaPront(datos).getText());
 		} else {
-			referenciaVentana.getProntInfo().setOpacity(1);
+			getReferenciaVentana().getProntInfo().setOpacity(1);
 			// Show error message in red when no search fields are specified
-			referenciaVentana.getProntInfo().setStyle("-fx-text-fill: red;");
-			referenciaVentana.getProntInfo()
+			getReferenciaVentana().getProntInfo().setStyle("-fx-text-fill: red;");
+			getReferenciaVentana().getProntInfo()
 					.setText("Error No existe comic con los datos: " + datos.toString() + "\n \n \n");
 		}
 
 		return listComic;
+	}
+
+	public static AccionReferencias getReferenciaVentana() {
+		return referenciaVentana;
+	}
+
+	public static void setReferenciaVentana(AccionReferencias referenciaVentana) {
+		AccionSeleccionar.referenciaVentana = referenciaVentana;
 	}
 
 }

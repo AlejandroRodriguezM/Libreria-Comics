@@ -152,16 +152,33 @@ public class MenuPrincipalController implements Initializable {
 	 * Menú relacionado con operaciones de cómic.
 	 */
 	@FXML
-	private MenuItem menu_comic_aleatoria, menu_comic_aniadir, menu_comic_eliminar, menu_comic_modificar,
-			menu_comic_puntuar;
+	private MenuItem menu_comic_aleatoria;
+	@FXML
+	private MenuItem menu_comic_aniadir;
+	@FXML
+	private MenuItem menu_comic_eliminar;
+	@FXML
+	private MenuItem menu_comic_modificar;
+	@FXML
+	private MenuItem menu_comic_puntuar;
 
 	/**
 	 * Menú relacionado con estadísticas de cómics.
 	 */
 	@FXML
-	private MenuItem menu_estadistica_comprados, menu_estadistica_estadistica, menu_estadistica_firmados,
-			menu_estadistica_key_issue, menu_estadistica_posesion, menu_estadistica_puntuados,
-			menu_estadistica_vendidos;
+	private MenuItem menu_estadistica_comprados;
+	@FXML
+	private MenuItem menu_estadistica_estadistica;
+	@FXML
+	private MenuItem menu_estadistica_firmados;
+	@FXML
+	private MenuItem menu_estadistica_key_issue;
+	@FXML
+	private MenuItem menu_estadistica_posesion;
+	@FXML
+	private MenuItem menu_estadistica_puntuados;
+	@FXML
+	private MenuItem menu_estadistica_vendidos;
 
 	@FXML
 	private MenuItem menu_archivo_avanzado;
@@ -275,7 +292,7 @@ public class MenuPrincipalController implements Initializable {
 	 * Columna de la tabla para la caja.
 	 */
 	@FXML
-	private TableColumn<Comic, String> caja;
+	private TableColumn<Comic, String> gradeo;
 
 	/**
 	 * Columna de la tabla para el dibujante.
@@ -428,9 +445,7 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	private static FuncionesComboBox funcionesCombo = new FuncionesComboBox();
 
-	public static AccionReferencias referenciaVentana = new AccionReferencias();
-
-	public static FuncionesManejoFront funcionesFront = new FuncionesManejoFront();
+	public static final AccionReferencias referenciaVentana = new AccionReferencias();
 
 	public static CompletableFuture<List<Entry<String, String>>> urlPreviews;
 
@@ -439,7 +454,7 @@ public class MenuPrincipalController implements Initializable {
 	public AccionReferencias guardarReferencia() {
 		referenciaVentana.setAlarmaConexionSql(alarmaConexionSql);
 		referenciaVentana.setID(ID);
-		referenciaVentana.setCaja(caja);
+		referenciaVentana.setCaja(gradeo);
 		referenciaVentana.setDibujante(dibujante);
 		referenciaVentana.setEditorial(editorial);
 		referenciaVentana.setFecha(fecha);
@@ -484,7 +499,7 @@ public class MenuPrincipalController implements Initializable {
 		referenciaVentana.setMenu_archivo_avanzado(menu_archivo_avanzado);
 		referenciaVentana.setMenu_archivo_conexion(menu_archivo_conexion);
 		referenciaVentana.setMenu_navegacion(menu_navegacion);
-		referenciaVentana.setNavegacion_cerrar(navegacion_cerrar);
+		referenciaVentana.setNavegacion_Opciones(navegacion_cerrar);
 		referenciaVentana.setNavegacion_comic(navegacion_comic);
 		referenciaVentana.setNavegacion_estadistica(navegacion_estadistica);
 		referenciaVentana.setTituloComic(nombreComic);
@@ -502,7 +517,7 @@ public class MenuPrincipalController implements Initializable {
 		referenciaVentana.setProntInfo(prontInfo);
 		referenciaVentana.setProgresoCarga(progresoCarga);
 		referenciaVentana.setID(ID);
-		referenciaVentana.setCaja(caja);
+		referenciaVentana.setCaja(gradeo);
 		referenciaVentana.setDibujante(dibujante);
 		referenciaVentana.setEditorial(editorial);
 		referenciaVentana.setFecha(fecha);
@@ -539,10 +554,21 @@ public class MenuPrincipalController implements Initializable {
 		AccionReferencias.setListaBotones(FXCollections.observableArrayList(botonLimpiar, botonMostrarParametro,
 				botonbbdd, botonImprimir, botonGuardarResultado));
 
-		AccionReferencias.setColumnasTabla(Arrays.asList(nombre, caja, numero, variante, firma, editorial, formato,
+		AccionReferencias.setColumnasTabla(Arrays.asList(nombre, gradeo, numero, variante, firma, editorial, formato,
 				procedencia, fecha, guionista, dibujante, referencia));
 
 		return referenciaVentana;
+	}
+
+	public void enviarReferencias() {
+		AccionControlUI.setReferenciaVentana(guardarReferencia());
+		AccionFuncionesComunes.setReferenciaVentana(guardarReferencia());
+		FuncionesTableView.setReferenciaVentana(guardarReferencia());
+		FuncionesManejoFront.setReferenciaVentana(guardarReferencia());
+		AccionSeleccionar.setReferenciaVentana(guardarReferencia());
+		AccionEliminar.setReferenciaVentana(guardarReferencia());
+		AccionModificar.setReferenciaVentana(guardarReferencia());
+		Utilidades.setReferenciaVentana(guardarReferencia());
 	}
 
 	/**
@@ -582,27 +608,6 @@ public class MenuPrincipalController implements Initializable {
 
 		cargarDatosDataBase();
 
-	}
-
-	public void enviarReferencias() {
-
-		AccionControlUI.referenciaVentana = guardarReferencia();
-
-		AccionFuncionesComunes.referenciaVentana = guardarReferencia();
-
-		FuncionesTableView.referenciaVentana = guardarReferencia();
-
-		FuncionesManejoFront.referenciaVentana = guardarReferencia();
-
-		AccionSeleccionar.referenciaVentana = guardarReferencia();
-
-//		OpcionesAvanzadasController.referenciaVentana = guardarReferencia();
-
-		AccionEliminar.referenciaVentana = guardarReferencia();
-
-		AccionModificar.referenciaVentana = guardarReferencia();
-
-		Utilidades.referenciaVentana = guardarReferencia();
 	}
 
 	@FXML
@@ -714,8 +719,7 @@ public class MenuPrincipalController implements Initializable {
 
 		// Ajustar el máximo altura permitido según la posición del AnchorPane
 		// numeroCaja
-		double max_height = windowHeight - numeroCaja.getLayoutY() - 80;
-		return max_height;
+		return windowHeight - numeroCaja.getLayoutY() - 80;
 	}
 
 	/**
@@ -871,7 +875,7 @@ public class MenuPrincipalController implements Initializable {
 	 * @throws SQLException
 	 */
 	@FXML
-	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
+	void verTodabbdd(ActionEvent event) {
 		enviarReferencias();
 		mostrarComics(true);
 	}
@@ -905,7 +909,7 @@ public class MenuPrincipalController implements Initializable {
 	 * @throws SQLException
 	 */
 	@FXML
-	void comicsPuntuacion(ActionEvent event) throws SQLException {
+	void comicsPuntuacion(ActionEvent event) {
 		imprimirComicsEstado(TipoBusqueda.PUNTUACION, false);
 	}
 
@@ -917,7 +921,7 @@ public class MenuPrincipalController implements Initializable {
 	 * @throws SQLException
 	 */
 	@FXML
-	void comicsVendidos(ActionEvent event) throws SQLException {
+	void comicsVendidos(ActionEvent event) {
 		imprimirComicsEstado(TipoBusqueda.VENDIDOS, false);
 	}
 
@@ -929,7 +933,7 @@ public class MenuPrincipalController implements Initializable {
 	 * @throws SQLException
 	 */
 	@FXML
-	void comicsFirmados(ActionEvent event) throws SQLException {
+	void comicsFirmados(ActionEvent event) {
 		imprimirComicsEstado(TipoBusqueda.FIRMADOS, false);
 	}
 
@@ -941,7 +945,7 @@ public class MenuPrincipalController implements Initializable {
 	 * @throws SQLException
 	 */
 	@FXML
-	void comicsComprados(ActionEvent event) throws SQLException {
+	void comicsComprados(ActionEvent event) {
 		imprimirComicsEstado(TipoBusqueda.COMPRADOS, false);
 	}
 
@@ -953,18 +957,18 @@ public class MenuPrincipalController implements Initializable {
 	 * @throws SQLException
 	 */
 	@FXML
-	void comicsEnPosesion(ActionEvent event) throws SQLException {
+	void comicsEnPosesion(ActionEvent event) {
 		imprimirComicsEstado(TipoBusqueda.POSESION, false);
 	}
 
 	@FXML
-	void comicsGuardados(ActionEvent event) throws SQLException {
+	void comicsGuardados(ActionEvent event) {
 		imprimirComicsEstado(null, true);
 
 	}
 
 	@FXML
-	void verOpcionesAvanzadas(ActionEvent event) throws SQLException {
+	void verOpcionesAvanzadas(ActionEvent event) {
 		nav.verOpcionesAvanzadas();
 
 	}
@@ -1016,7 +1020,7 @@ public class MenuPrincipalController implements Initializable {
 	 * @throws InterruptedException
 	 */
 	@FXML
-	void importCSV(ActionEvent event) throws SQLException, InterruptedException, ExecutionException {
+	void importCSV(ActionEvent event) {
 
 		if (!ConectManager.conexionActiva()) {
 			return;
@@ -1137,7 +1141,7 @@ public class MenuPrincipalController implements Initializable {
 	 * @throws SQLException
 	 */
 	@FXML
-	void clickRaton(MouseEvent event) throws IOException, SQLException {
+	void clickRaton(MouseEvent event) {
 		enviarReferencias();
 		AccionSeleccionar.seleccionarComics(true);
 	}
@@ -1151,7 +1155,7 @@ public class MenuPrincipalController implements Initializable {
 	 * @throws SQLException
 	 */
 	@FXML
-	void teclasDireccion(KeyEvent event) throws IOException, SQLException {
+	void teclasDireccion(KeyEvent event) {
 		if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
 			enviarReferencias();
 			AccionSeleccionar.seleccionarComics(true);
@@ -1180,7 +1184,7 @@ public class MenuPrincipalController implements Initializable {
 		prontInfo.clear();
 		String tipoBusqueda = "Parcial";
 
-		if (ListaComicsDAO.comicsGuardadosList.size() > 0) {
+		if (!ListaComicsDAO.comicsGuardadosList.isEmpty()) {
 			cargaExportExcel(ListaComicsDAO.comicsGuardadosList, tipoBusqueda);
 
 			String mensaje = "Lista guardada de forma correcta";
@@ -1366,16 +1370,7 @@ public class MenuPrincipalController implements Initializable {
 		// Configuración del comportamiento cuando la tarea falla
 		crearExcelTask.setOnFailed(event -> {
 			botonCancelarSubida.setVisible(false);
-			boolean result = crearExcelTask.getValue();
-			if (result) {
-				// Tarea completada con éxito, muestra el mensaje de éxito.
-				procesarResultadoImportacion(crearExcelTask.getValue());
-
-			} else {
-				// La tarea no se completó correctamente, muestra un mensaje de error.
-				procesarResultadoImportacion(crearExcelTask.getValue());
-
-			}
+			procesarResultadoImportacion(crearExcelTask.getValue());
 			AlarmaList.detenerAnimacionPront(prontInfo);
 			AlarmaList.detenerAnimacionCarga(progresoCarga);
 
@@ -1413,54 +1408,53 @@ public class MenuPrincipalController implements Initializable {
 		}
 
 		String frase = "Fichero CSV";
-		String formato = "*.csv";
+		String formatoFichero = "*.csv";
 
-		File fichero = Utilidades.tratarFichero(frase, formato, false);
+		File fichero = Utilidades.tratarFichero(frase, formatoFichero, false);
 
 		// Verificar si se obtuvo un objeto FileChooser válido
 		if (fichero != null) {
 
 			String mensajeValido = "Has importado correctamente la lista de comics en la base de datos";
 
-			if (fichero != null) {
-				Task<Boolean> lecturaTask = FuncionesExcel.procesarArchivoCSVTask(fichero);
+			Task<Boolean> lecturaTask = FuncionesExcel.procesarArchivoCSVTask(fichero);
 
-				lecturaTask.setOnSucceeded(e -> {
-					cargarDatosDataBase();
-					AlarmaList.detenerAnimacion();
-					AlarmaList.detenerAnimacionCarga(progresoCarga);
-					botonCancelarSubida.setVisible(false);
-					FuncionesManejoFront.cambiarEstadoMenuBar(false);
-					AlarmaList.mostrarMensajePront(mensajeValido, true, prontInfo);
-				});
+			lecturaTask.setOnSucceeded(e -> {
+				cargarDatosDataBase();
+				AlarmaList.detenerAnimacion();
+				AlarmaList.detenerAnimacionCarga(progresoCarga);
+				botonCancelarSubida.setVisible(false);
+				FuncionesManejoFront.cambiarEstadoMenuBar(false);
+				AlarmaList.mostrarMensajePront(mensajeValido, true, prontInfo);
+			});
 
-				lecturaTask.setOnRunning(e -> {
-					cerradoPorOperaciones();
-					FuncionesManejoFront.cambiarEstadoMenuBar(true);
-					botonCancelarSubida.setVisible(true);
-					AlarmaList.iniciarAnimacionCarga(progresoCarga);
-				});
+			lecturaTask.setOnRunning(e -> {
+				cerradoPorOperaciones();
+				FuncionesManejoFront.cambiarEstadoMenuBar(true);
+				botonCancelarSubida.setVisible(true);
+				AlarmaList.iniciarAnimacionCarga(progresoCarga);
+			});
 
-				lecturaTask.setOnFailed(e -> {
-					botonCancelarSubida.setVisible(false);
-					procesarResultadoImportacion(lecturaTask.getValue());
-					FuncionesManejoFront.cambiarEstadoMenuBar(false);
-					AlarmaList.detenerAnimacionCarga(progresoCarga);
-				});
+			lecturaTask.setOnFailed(e -> {
+				botonCancelarSubida.setVisible(false);
+				procesarResultadoImportacion(lecturaTask.getValue());
+				FuncionesManejoFront.cambiarEstadoMenuBar(false);
+				AlarmaList.detenerAnimacionCarga(progresoCarga);
+			});
 
-				// Manejar la cancelación
-				botonCancelarSubida.setOnAction(ev -> {
-					lecturaTask.cancel(true); // true indica que la tarea debe ser interrumpida si ya está en ejecución
-					botonCancelarSubida.setVisible(false);
-					FuncionesManejoFront.cambiarEstadoMenuBar(false);
-					AlarmaList.detenerAnimacionCarga(progresoCarga);
+			// Manejar la cancelación
+			botonCancelarSubida.setOnAction(ev -> {
+				lecturaTask.cancel(true); // true indica que la tarea debe ser interrumpida si ya está en ejecución
+				botonCancelarSubida.setVisible(false);
+				FuncionesManejoFront.cambiarEstadoMenuBar(false);
+				AlarmaList.detenerAnimacionCarga(progresoCarga);
 
-					procesarResultadoImportacion(false);
-				});
+				procesarResultadoImportacion(false);
+			});
 
-				// Iniciar la tarea principal de importación en un hilo separado
-				new Thread(lecturaTask).start();
-			}
+			// Iniciar la tarea principal de importación en un hilo separado
+			new Thread(lecturaTask).start();
+
 		}
 	}
 
@@ -1521,25 +1515,25 @@ public class MenuPrincipalController implements Initializable {
 			Button botonPresionado = (Button) fuente;
 
 			if (botonPresionado == botonIntroducir) {
-				AccionFuncionesComunes.tipoAccion("aniadir");
+				AccionFuncionesComunes.setTipoAccion("aniadir");
 			} else if (botonPresionado == botonModificar) {
-				AccionFuncionesComunes.tipoAccion("modificar");
+				AccionFuncionesComunes.setTipoAccion("modificar");
 			} else if (botonPresionado == botonEliminar) {
-				AccionFuncionesComunes.tipoAccion("eliminar");
+				AccionFuncionesComunes.setTipoAccion("eliminar");
 			} else if (botonPresionado == botonAgregarPuntuacion) {
-				AccionFuncionesComunes.tipoAccion("puntuar");
+				AccionFuncionesComunes.setTipoAccion("puntuar");
 			}
 		} else if (fuente instanceof MenuItem) {
 			MenuItem menuItemPresionado = (MenuItem) fuente;
 
 			if (menuItemPresionado == menu_comic_aniadir) {
-				AccionFuncionesComunes.tipoAccion("aniadir");
+				AccionFuncionesComunes.setTipoAccion("aniadir");
 			} else if (menuItemPresionado == menu_comic_modificar) {
-				AccionFuncionesComunes.tipoAccion("modificar");
+				AccionFuncionesComunes.setTipoAccion("modificar");
 			} else if (menuItemPresionado == menu_comic_eliminar) {
-				AccionFuncionesComunes.tipoAccion("eliminar");
+				AccionFuncionesComunes.setTipoAccion("eliminar");
 			} else if (menuItemPresionado == menu_comic_puntuar) {
-				AccionFuncionesComunes.tipoAccion("puntuar");
+				AccionFuncionesComunes.setTipoAccion("puntuar");
 			}
 		}
 
@@ -1613,7 +1607,7 @@ public class MenuPrincipalController implements Initializable {
 		ConectManager.close();
 		nav.verAccesoBBDD();
 
-		List<Stage> stageVentanas = FuncionesManejoFront.stageVentanas;
+		List<Stage> stageVentanas = FuncionesManejoFront.getStageVentanas();
 
 		// Assuming `stages` is a collection of stages you want to check against
 		for (Stage stage : stageVentanas) {
@@ -1640,7 +1634,7 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	public void cerradoPorOperaciones() {
-		List<Stage> stageVentanas = FuncionesManejoFront.stageVentanas;
+		List<Stage> stageVentanas = FuncionesManejoFront.getStageVentanas();
 
 		// Assuming `stages` is a collection of stages you want to check against
 		for (Stage stage : stageVentanas) {

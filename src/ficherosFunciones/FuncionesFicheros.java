@@ -84,7 +84,6 @@ public class FuncionesFicheros {
 
 		try {
 
-
 			// Leer el archivo de configuración existente
 			File configFile = new File(archivoConfiguracion);
 			StringBuilder configContent = new StringBuilder();
@@ -374,10 +373,7 @@ public class FuncionesFicheros {
 		File xamppControl = new File(rutaXampp, "xampp-control.exe");
 		File xamppStart = new File(rutaXampp, "xampp_start.exe");
 
-		if (xamppControl.exists() && xamppStart.exists()) {
-			return true;
-		}
-		return false;
+		return xamppControl.exists() && xamppStart.exists();
 	}
 
 	/**
@@ -424,10 +420,8 @@ public class FuncionesFicheros {
 		String hostingTexto = datosConfiguracion.get("Hosting");
 		String xamppTexto = datosConfiguracion.get("Xampp");
 
-		String[] datosConfiguracionArray = { puertoTexto, databaseTexto, usuarioTexto, passwordTexto, hostingTexto,
-				xamppTexto };
+		return new String[] { puertoTexto, databaseTexto, usuarioTexto, passwordTexto, hostingTexto, xamppTexto };
 
-		return datosConfiguracionArray;
 	}
 
 	private static String construirURL(String hosting, String puerto) {
@@ -469,7 +463,7 @@ public class FuncionesFicheros {
 				}
 			}
 		} catch (SQLException e) {
-//			Utilidades.manejarExcepcion(e);
+			Utilidades.manejarExcepcion(e);
 		}
 		return opciones;
 	}

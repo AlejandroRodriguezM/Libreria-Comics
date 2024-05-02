@@ -71,7 +71,7 @@ public class FuncionesTableView {
 	 */
 	private static final Font TOOLTIP_FONT = Font.font("Comic Sans MS", FontWeight.NORMAL, FontPosture.REGULAR, 13);
 
-	public static AccionReferencias referenciaVentana = new AccionReferencias();
+	private static AccionReferencias referenciaVentana = getReferenciaVentana();
 
 	/**
 	 * Funcion que permite que los diferentes raw de los TableColumn se puedan
@@ -136,7 +136,7 @@ public class FuncionesTableView {
 	}
 
 	public static void seleccionarRaw() {
-		referenciaVentana.getTablaBBDD().setRowFactory(tv -> {
+		getReferenciaVentana().getTablaBBDD().setRowFactory(tv -> {
 			TableRow<Comic> row = new TableRow<>();
 			Tooltip tooltip = new Tooltip();
 			tooltip.setShowDelay(Duration.ZERO);
@@ -198,9 +198,9 @@ public class FuncionesTableView {
 		});
 
 		// Deshabilitar el enfoque en el TableView
-		referenciaVentana.getTablaBBDD().setFocusTraversable(false);
+		getReferenciaVentana().getTablaBBDD().setFocusTraversable(false);
 
-		Scene scene = referenciaVentana.getTablaBBDD().getScene();
+		Scene scene = getReferenciaVentana().getTablaBBDD().getScene();
 		if (scene != null) {
 			VBox root = (VBox) scene.lookup("#rootVBox");
 			if (root != null) {
@@ -217,7 +217,7 @@ public class FuncionesTableView {
 	 * @param columna
 	 */
 	public static void actualizarBusquedaRaw(TableView<Comic> tablaBBDD) {
-		referenciaVentana.getColumnasTabla().forEach(columna -> {
+		getReferenciaVentana().getColumnasTabla().forEach(columna -> {
 			columna.setCellFactory(column -> {
 				return new TableCell<Comic, String>() {
 					private VBox vbox = new VBox();
@@ -248,7 +248,7 @@ public class FuncionesTableView {
 												|| columna.getText().equalsIgnoreCase("formato")
 												|| columna.getText().equalsIgnoreCase("Nombre")
 												|| columna.getText().equalsIgnoreCase("Nº")
-												|| columna.getText().equalsIgnoreCase("Caja")
+												|| columna.getText().equalsIgnoreCase("Gradeo")
 												|| columna.getText().equalsIgnoreCase("Origen")) {
 											label = new Label(nombre + "\n");
 										} else if (columna.getText().equalsIgnoreCase("variante")
@@ -306,7 +306,7 @@ public class FuncionesTableView {
 	 * @param listaComic
 	 */
 	public static void tablaBBDD(List<Comic> listaComic, TableView<Comic> tablaBBDD) {
-		tablaBBDD.getColumns().setAll(referenciaVentana.getColumnasTabla());
+		tablaBBDD.getColumns().setAll(getReferenciaVentana().getColumnasTabla());
 		tablaBBDD.getItems().setAll(listaComic);
 	}
 
@@ -336,14 +336,14 @@ public class FuncionesTableView {
 	 * @param tablaBBDD  La TableView en la que se aplicarán las configuraciones.
 	 */
 	public static void nombreColumnas(TableView<Comic> tablaBBDD) {
-		for (TableColumn<Comic, String> column : referenciaVentana.getColumnasTabla()) {
+		for (TableColumn<Comic, String> column : getReferenciaVentana().getColumnasTabla()) {
 			String columnName = column.getText(); // Obtiene el nombre de la columna
 
 			if (columnName.equalsIgnoreCase("Nº")) {
 				columnName = "Numero";
 			}
 
-			if (columnName.equalsIgnoreCase("Caja")) {
+			if (columnName.equalsIgnoreCase("Gradeo")) {
 				columnName = "numCaja";
 			}
 
@@ -371,7 +371,7 @@ public class FuncionesTableView {
 	 */
 	public static void modificarColumnas() {
 
-		for (TableColumn<Comic, String> column : referenciaVentana.getColumnasTabla()) {
+		for (TableColumn<Comic, String> column : getReferenciaVentana().getColumnasTabla()) {
 			column.prefWidthProperty().unbind(); // Desvincular cualquier propiedad prefWidth existente
 		}
 
@@ -393,14 +393,14 @@ public class FuncionesTableView {
 		};
 
 		// Aplicar los anchos específicos a cada columna
-		for (int i = 0; i < referenciaVentana.getColumnasTabla().size(); i++) {
-			TableColumn<Comic, String> column = referenciaVentana.getColumnasTabla().get(i);
+		for (int i = 0; i < getReferenciaVentana().getColumnasTabla().size(); i++) {
+			TableColumn<Comic, String> column = getReferenciaVentana().getColumnasTabla().get(i);
 			Double columnWidth = columnWidths[i];
 			column.setPrefWidth(columnWidth);
 		}
 
 		// Configurar la política de redimensionamiento
-		referenciaVentana.getTablaBBDD().setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+		getReferenciaVentana().getTablaBBDD().setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
 	}
 
 	/**
@@ -411,14 +411,22 @@ public class FuncionesTableView {
 	 */
 	public static void ajustarAnchoVBox() {
 		// Crear un objeto Text con el contenido del TextArea
-		Text text = new Text(referenciaVentana.getProntInfo().getText());
+		Text text = new Text(getReferenciaVentana().getProntInfo().getText());
 
 		// Configurar el mismo estilo que tiene el TextArea
-		text.setFont(referenciaVentana.getProntInfo().getFont());
+		text.setFont(getReferenciaVentana().getProntInfo().getFont());
 
 		double textHeight = text.getLayoutBounds().getHeight();
 
-		referenciaVentana.getProntInfo().setPrefHeight(textHeight);
+		getReferenciaVentana().getProntInfo().setPrefHeight(textHeight);
+	}
+
+	public static AccionReferencias getReferenciaVentana() {
+		return referenciaVentana;
+	}
+
+	public static void setReferenciaVentana(AccionReferencias referenciaVentana) {
+		FuncionesTableView.referenciaVentana = referenciaVentana;
 	}
 
 }

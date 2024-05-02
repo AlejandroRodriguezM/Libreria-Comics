@@ -1,13 +1,17 @@
 /**
- * Contiene las clases que hacen funcionar las diferentes funciones de uso de back end y front de todo el proyecto
+ * Contiene las clases que hacen funcionar las diferentes funciones de uso de backend y frontend de todo el proyecto.
  *  
-*/
+ * Este paquete incluye:
+ * - Clases de backend que manejan la lógica de negocio, como procesamiento de datos, comunicación con la base de datos, etc.
+ * - Clases de frontend que gestionan la interfaz de usuario, interacción con el usuario, presentación de datos, etc.
+ * - Clases de utilidad que proporcionan funciones comunes utilizadas tanto en el backend como en el frontend.
+ * - Otros componentes necesarios para la funcionalidad completa del proyecto.
+ */
 package ficherosFunciones;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -15,7 +19,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -31,6 +34,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Logger;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -78,13 +82,14 @@ public class FuncionesExcel {
 	private static final String LOG_FILE_NAME = "log_"
 			+ LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")) + ".txt";
 
-	private static int NUMERO_LINEAS_FICHERO = 0;
-
-	private static int NUMERO_COMICS_LEIDOS = 0;
+	private static AtomicInteger numeroLineas = new AtomicInteger(0);
+	private static AtomicInteger numeroLeidos = new AtomicInteger(0);
 
 	private static AtomicInteger mensajeIdCounter = new AtomicInteger(0); // Contador para generar IDs únicos
 
 	private static HashSet<String> mensajesUnicos = new HashSet<>(); // Para almacenar mensajes únicos
+
+	private static final Logger logger = Logger.getLogger(FuncionesExcel.class.getName());
 
 	/**
 	 * Convierte un archivo Excel (XLSX) en formato CSV y guarda los datos en un
@@ -95,14 +100,12 @@ public class FuncionesExcel {
 	 */
 	public void createCSV(File fichero) {
 
-		// For storing data into CSV files
-		StringBuffer data = new StringBuffer();
+		StringBuilder data = new StringBuilder();
 
-		try {
-			// Creating input stream
-			FileInputStream fis = new FileInputStream(fichero);
-
-			Workbook workbook = new XSSFWorkbook(fis);
+		try (FileInputStream fis = new FileInputStream(fichero);
+				Workbook workbook = new XSSFWorkbook(fis);
+				FileOutputStream fos = new FileOutputStream(
+						fichero.getAbsolutePath().substring(0, fichero.getAbsolutePath().lastIndexOf(".")) + ".csv");) {
 
 			// Get first sheet from the workbook
 			Sheet sheet = workbook.getSheetAt(0);
@@ -138,11 +141,7 @@ public class FuncionesExcel {
 				data.append('\n');
 			}
 
-			FileOutputStream fos = new FileOutputStream(
-					fichero.getAbsolutePath().substring(0, fichero.getAbsolutePath().lastIndexOf(".")) + ".csv");
 			fos.write(data.toString().getBytes());
-			fos.close();
-			workbook.close();
 
 		} catch (Exception e) {
 			Utilidades.manejarExcepcion(e);
@@ -157,16 +156,9 @@ public class FuncionesExcel {
 	public File carpetaPortadas() {
 		DirectoryChooser directoryChooser = new DirectoryChooser();
 		File directorio = directoryChooser.showDialog(null);
-
-		return directorio;
+		String carpetaImagenes = directorio.getAbsolutePath() + File.separator + "copiaPortadas";
+		return new File(carpetaImagenes);
 	}
-
-//	public File carpetaExcelExportado() {
-//
-//
-//		File fichero = Utilidades.tratarFichero(frase, formato).showSaveDialog(null); // Llamada a funcion
-//		return fichero;
-//	}
 
 	/**
 	 * Abre un cuadro de diálogo para seleccionar una carpeta de portadas en un hilo
@@ -188,6 +180,7 @@ public class FuncionesExcel {
 			latch.await(); // Esperar hasta que se complete la selección del directorio
 		} catch (InterruptedException e) {
 			Utilidades.manejarExcepcion(e);
+			Thread.currentThread().interrupt(); // Re-interrupt the thread
 		}
 
 		return directorio[0];
@@ -201,19 +194,12 @@ public class FuncionesExcel {
 	 * @return Una tarea que realiza la exportación y devuelve true si se realiza
 	 *         con éxito, o false si ocurre un error.
 	 */
-	/**
-	 * Crea una tarea que se encarga de generar un archivo Excel a partir de los
-	 * datos de la base de datos.
-	 *
-	 * @param fichero El archivo en el que se exportarán los datos.
-	 * @return Una tarea que realiza la exportación y devuelve true si se realiza
-	 *         con éxito, o false si ocurre un error.
-	 */
 	public Task<Boolean> crearExcelTask(List<Comic> listaComics, String tipoBusqueda, SimpleDateFormat dateFormat) {
+		File[] directorioImagenes = { null };
+		File[] directorioFichero = { null };
 
-		NUMERO_COMICS_LEIDOS = 0;
-		File directorioImagenes[] = { null };
-		File directorioFichero[] = { null };
+		numeroLineas.set(0);
+		numeroLeidos.set(0);
 
 		if (tipoBusqueda.equalsIgnoreCase(TipoBusqueda.ELIMINAR.toString())) {
 			String nombreCarpeta = dateFormat.format(new Date());
@@ -224,7 +210,6 @@ public class FuncionesExcel {
 					+ File.separator + "backups" + File.separator + nombreCarpeta;
 
 			try {
-
 				Utilidades.copiaSeguridad(listaComics, dateFormat);
 
 				File carpetaLibreria = new File(direccion);
@@ -233,15 +218,16 @@ public class FuncionesExcel {
 				}
 
 				File fichero = new File(carpetaLibreria, "BaseDatos.xlsx");
-				fichero.createNewFile();
-
-				fichero.delete();
+				if (fichero.createNewFile()) {
+					logger.info("Fichero creado correctamente");
+				} else {
+					logger.warning("ERROR. Fichero no creado");
+				}
 
 				directorioImagenes[0] = carpetaLibreria;
 				directorioFichero[0] = fichero;
 
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} else {
@@ -254,141 +240,166 @@ public class FuncionesExcel {
 			directorioFichero[0] = fichero;
 		}
 
-		NUMERO_LINEAS_FICHERO = ComicManagerDAO.countRows();
+		numeroLineas.set(ComicManagerDAO.countRows());
 
-		Task<Boolean> task = new Task<Boolean>() {
+		return trabajarFichero(listaComics, tipoBusqueda, directorioImagenes, directorioFichero);
+	}
+
+	public Task<Boolean> trabajarFichero(List<Comic> listaComics, String tipoBusqueda, File[] directorioImagenes,
+			File[] directorioFichero) {
+		return new Task<Boolean>() {
 			@Override
 			protected Boolean call() throws Exception {
-
-				try (FileOutputStream outputStream = new FileOutputStream(directorioFichero[0])) {
-
-					Cell celda;
-					Row fila;
-					Sheet hoja;
-					Workbook libro;
-					String encabezado;
-					String[] encabezados = { "ID", "nomComic", "caja_deposito", "precio_comic", "codigo_comic",
-							"numComic", "nomVariante", "Firma", "nomEditorial", "Formato", "Procedencia",
-							"fecha_publicacion", "nomGuionista", "nomDibujante", "puntuacion", "portada", "key_issue",
-							"url_referencia", "estado" };
-					int indiceFila = 0;
-
-					directorioFichero[0].createNewFile();
-
-					libro = new XSSFWorkbook();
-
-					hoja = libro.createSheet("Base de datos comics");
-
-					fila = hoja.createRow(indiceFila);
-					for (int i = 0; i < encabezados.length; i++) {
-						encabezado = encabezados[i];
-						celda = fila.createCell(i);
-						celda.setCellValue(encabezado);
+				try {
+					Workbook libro = crearLibro(directorioFichero[0]);
+					if (libro == null) {
+						return false;
 					}
+
+					Sheet hoja = crearHoja(libro, "Base de datos comics");
+					if (hoja == null) {
+						return false;
+					}
+
+					crearEncabezados(hoja);
+
 					AtomicReference<CargaComicsController> cargaComicsControllerRef = new AtomicReference<>();
 					nav.verCargaComics(cargaComicsControllerRef);
-					Row filaCopy = fila; // Create a copy of fila here
-					int indiceFinal = indiceFila;
-					indiceFinal++;
-					List<Comic> listaComicsCopy = new ArrayList<>(listaComics);
 
-					if ((tipoBusqueda.equalsIgnoreCase("Completa") || tipoBusqueda.equalsIgnoreCase("Parcial"))
-							&& directorioFichero != null) {
+					List<Comic> listaComicsCopia = new ArrayList<>(listaComics);
+					copiarImagenesPortadaSiEsNecesario(tipoBusqueda, directorioFichero[0], directorioImagenes[0]);
 
-						Utilidades.copyDirectory(FuncionesExcel.DEFAULT_PORTADA_IMAGE_PATH,
-								directorioImagenes[0].getAbsolutePath());
-					}
+					escribirDatosComics(listaComicsCopia, hoja, cargaComicsControllerRef, directorioImagenes[0],
+							directorioFichero[0]);
 
-					for (Comic comic : listaComicsCopy) {
-						filaCopy = hoja.createRow(indiceFinal);
-						filaCopy.createCell(0).setCellValue("");
-						filaCopy.createCell(1).setCellValue(comic.getNombre());
-						filaCopy.createCell(2).setCellValue(comic.getNumCaja());
-						filaCopy.createCell(3).setCellValue(comic.getPrecio_comic());
-						filaCopy.createCell(4).setCellValue(comic.getCodigo_comic());
-						filaCopy.createCell(5).setCellValue(comic.getNumero());
-						filaCopy.createCell(6).setCellValue(comic.getVariante());
-						filaCopy.createCell(7).setCellValue(comic.getFirma());
-						filaCopy.createCell(8).setCellValue(comic.getEditorial());
-						filaCopy.createCell(9).setCellValue(comic.getFormato());
-						filaCopy.createCell(10).setCellValue(comic.getProcedencia());
-						filaCopy.createCell(11).setCellValue(comic.getFecha());
-						filaCopy.createCell(12).setCellValue(comic.getGuionista());
-						filaCopy.createCell(13).setCellValue(comic.getDibujante());
-						filaCopy.createCell(14).setCellValue(comic.getPuntuacion());
-						filaCopy.createCell(15).setCellValue(comic.getImagen());
-						filaCopy.createCell(16).setCellValue(comic.getKey_issue());
-						filaCopy.createCell(17).setCellValue(comic.getUrl_referencia());
-						filaCopy.createCell(18).setCellValue(comic.getEstado());
+					actualizarProgreso(cargaComicsControllerRef);
 
-						cargaComics(comic, cargaComicsControllerRef, directorioImagenes[0], false);
-
-						if (!directorioFichero[0].exists()) {
-							directorioFichero[0].mkdir();
-						}
-
-						indiceFinal++; // Increment the index for the next row
-
-						try {
-							Thread.sleep(10); // Delay de 0.5 segundos
-						} catch (InterruptedException e) {
-							System.out.println("El hilo fue interrumpido mientras dormía.");
-						}
-
-						if (Thread.interrupted()) {
-							// Si se produce una interrupción, sal del bucle
-							break;
-						}
-					}
-
-					Platform.runLater(() -> {
-						cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0);
-					});
-
-					libro.write(outputStream);
-					libro.close();
-					createCSV(directorioFichero[0]);
+					escribirLibroYCSV(libro, directorioFichero[0]);
 
 					return true;
-				} catch (FileNotFoundException ex) {
-					Utilidades.manejarExcepcion(ex);
-					return false;
 				} catch (IOException ex) {
 					Utilidades.manejarExcepcion(ex);
 					return false;
 				}
-
 			}
 		};
+	}
 
-		return task;
+	private Workbook crearLibro(File fichero) {
+		return fichero != null ? new XSSFWorkbook() : null;
+	}
+
+	private Sheet crearHoja(Workbook libro, String nombreHoja) {
+		return libro != null ? libro.createSheet(nombreHoja) : null;
+	}
+
+	private void crearEncabezados(Sheet hoja) {
+		String[] encabezados = { "ID", "nomComic", "nivel_gradeo", "precio_comic", "codigo_comic", "numComic",
+				"nomVariante", "Firma", "nomEditorial", "Formato", "Procedencia", "fecha_publicacion", "nomGuionista",
+				"nomDibujante", "puntuacion", "portada", "key_issue", "url_referencia", "estado" };
+		Row fila = hoja.createRow(0);
+		for (int i = 0; i < encabezados.length; i++) {
+			fila.createCell(i).setCellValue(encabezados[i]);
+		}
+	}
+
+	private void copiarImagenesPortadaSiEsNecesario(String tipoBusqueda, File directorioFichero,
+			File directorioImagenes) {
+		if (("Completa".equalsIgnoreCase(tipoBusqueda) || "Parcial".equalsIgnoreCase(tipoBusqueda))
+				&& directorioFichero != null) {
+			Utilidades.copiarDirectorio(FuncionesExcel.DEFAULT_PORTADA_IMAGE_PATH,
+					directorioImagenes.getAbsolutePath());
+		}
+	}
+
+	private int escribirDatosComics(List<Comic> listaComics, Sheet hoja,
+			AtomicReference<CargaComicsController> cargaComicsControllerRef, File directorioImagenes,
+			File directorioFichero) {
+		int indiceFinal = 1; // Comenzar desde 1 para omitir la fila de encabezado
+		for (Comic comic : listaComics) {
+			Row fila = hoja.createRow(indiceFinal);
+			llenarFilaConDatos(comic, fila);
+
+			cargaComics(comic, cargaComicsControllerRef, directorioImagenes, false);
+
+			if (!directorioFichero.exists()) {
+				directorioFichero.mkdir();
+			}
+
+			indiceFinal++;
+
+			retrasarCarga();
+
+			if (Thread.interrupted()) {
+				break;
+			}
+		}
+		return indiceFinal;
+	}
+
+	private void llenarFilaConDatos(Comic comic, Row fila) {
+		fila.createCell(0).setCellValue("");
+		fila.createCell(1).setCellValue(comic.getNombre());
+		fila.createCell(2).setCellValue(comic.getValorGradeo());
+		fila.createCell(3).setCellValue(comic.getPrecio_comic());
+		fila.createCell(4).setCellValue(comic.getCodigo_comic());
+		fila.createCell(5).setCellValue(comic.getNumero());
+		fila.createCell(6).setCellValue(comic.getVariante());
+		fila.createCell(7).setCellValue(comic.getFirma());
+		fila.createCell(8).setCellValue(comic.getEditorial());
+		fila.createCell(9).setCellValue(comic.getFormato());
+		fila.createCell(10).setCellValue(comic.getProcedencia());
+		fila.createCell(11).setCellValue(comic.getFecha());
+		fila.createCell(12).setCellValue(comic.getGuionista());
+		fila.createCell(13).setCellValue(comic.getDibujante());
+		fila.createCell(14).setCellValue(comic.getPuntuacion());
+		fila.createCell(15).setCellValue(comic.getImagen());
+		fila.createCell(16).setCellValue(comic.getKey_issue());
+		fila.createCell(17).setCellValue(comic.getUrl_referencia());
+		fila.createCell(18).setCellValue(comic.getEstado());
+	}
+
+	private void actualizarProgreso(AtomicReference<CargaComicsController> cargaComicsControllerRef) {
+		Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0));
+	}
+
+	private void escribirLibroYCSV(Workbook libro, File directorioFichero) throws IOException {
+		try (FileOutputStream outputStream = new FileOutputStream(directorioFichero)) {
+			libro.write(outputStream);
+			createCSV(directorioFichero);
+		} catch (IOException ex) {
+			Utilidades.manejarExcepcion(ex);
+		}
+
+	}
+
+	public static void retrasarCarga() {
+		try {
+			Thread.sleep(10); // Delay de 0.5 segundos
+		} catch (InterruptedException e) {
+			logger.warning("El hilo fue interrumpido mientras dormía.");
+			// Restablecer el estado de interrupción del hilo
+			Thread.currentThread().interrupt(); // Re-interrumpir el hilo
+		}
 	}
 
 	public static Task<Boolean> procesarArchivoCSVTask(File fichero) {
-		AtomicBoolean isCancelled = new AtomicBoolean(false);
 
-		Task<Boolean> task = new Task<Boolean>() {
+		return new Task<Boolean>() {
 			@Override
 			protected Boolean call() throws Exception {
+				AtomicBoolean isCancelled = new AtomicBoolean(false);
+
 				try {
-
-					System.err.println("Valor: " + isCancelled());
-
-					if (isCancelled()) {
+					if (isCancelled.get()) {
 						isCancelled.set(true);
 						return false; // Salir de la tarea si ha sido cancelada
 					}
 
-					checkCSVColumns(fichero.getAbsolutePath().toString());
-					int numeroLineas = Utilidades.contarLineasFichero(fichero);
-					actualizarNumLineas(numeroLineas);
+					checkCSVColumns(fichero.getAbsolutePath());
+					numeroLineas.set(Utilidades.contarLineasFichero(fichero));
 					procesarCSVInternamente(fichero, isCancelled);
 					return true; // Indicar que la operación fue exitosa
-				} catch (SQLException e) {
-					e.printStackTrace();
-					Platform.runLater(
-							() -> nav.alertaException("Error al guardar datos en la base de datos: " + e.getMessage()));
-					return false; // Indicar que la operación falló
 				} catch (IOException e) {
 					e.printStackTrace();
 					Platform.runLater(() -> nav.alertaException("Error al leer el archivo CSV: " + e.getMessage()));
@@ -396,16 +407,10 @@ public class FuncionesExcel {
 				}
 			}
 		};
-		return task;
 	}
 
-	private static void actualizarNumLineas(int numLineas) {
-		NUMERO_LINEAS_FICHERO = numLineas;
-	}
-
-	private static void procesarCSVInternamente(File fichero, AtomicBoolean isCancelled)
-			throws SQLException, IOException {
-		NUMERO_COMICS_LEIDOS = 0;
+	private static void procesarCSVInternamente(File fichero, AtomicBoolean isCancelled) throws IOException {
+		numeroLeidos.set(0); // Reiniciar el valor a 0 utilizando el método set() de AtomicInteger
 		Utilidades.crearCarpeta();
 		try (BufferedReader lineReader = new BufferedReader(new FileReader(fichero), 8192)) { // Tamaño del búfer de
 																								// 8192 caracteres
@@ -458,13 +463,12 @@ public class FuncionesExcel {
 					// Manejar cualquier excepción durante el procesamiento de la línea
 					e.printStackTrace();
 				}
-				try {
-					Thread.sleep(20); // Delay de 0.5 segundos
-				} catch (InterruptedException e) {
-					System.out.println("El hilo fue interrumpido mientras dormía.");
+
+				retrasarCarga();
+
+				if (Thread.interrupted()) {
 					isCancelled.set(true);
 					return;
-
 				}
 			});
 
@@ -476,53 +480,62 @@ public class FuncionesExcel {
 
 		} catch (IOException e) {
 			// Propagar la excepción al nivel superior
+		    logger.warning("An IOException occurred while processing the file.");
 			throw e;
 		}
 	}
 
 	public static void cargaComics(Comic comicNuevo, AtomicReference<CargaComicsController> cargaComicsControllerRef,
 			File directorio, boolean esImportado) {
-		String nombre_portada = "";
-		String nombre_modificado = "";
-		StringBuilder textoBuilder = new StringBuilder();
-		if (esImportado) {
-
-			if (comicNuevo != null) {
-
-				nombre_portada = Utilidades.obtenerNombrePortada(false, comicNuevo.getImagen());
-				nombre_modificado = Utilidades.convertirNombreArchivo(nombre_portada);
-				if (!Utilidades.existeArchivo(directorio.getAbsolutePath(), nombre_portada)) {
-
-					copiarPortadaPredeterminada(DEFAULT_PORTADA_IMAGE_PATH, nombre_modificado);
-
-					/////////////////////////////////////////////////////////////////////
-					////// HAY QUE ARREGLARLO, AL CAMBIAR EL NOMBRE ESTO DA FALLO SIEMPRE//
-					//////////////////////////////////////////////////////////////////////
-//					generarLogFaltaPortada(DEFAULT_IMAGE_PATH_BASE, LOG_FILE_NAME, nombre_portada);
-				}
-
-			} else {
-				return;
-			}
-
+		// Verificar si el cómic es nulo
+		if (comicNuevo == null || cargaComicsControllerRef == null || directorio == null) {
+			return;
 		}
 
-		String mensajeId = String.valueOf(mensajeIdCounter.getAndIncrement()); // Generate a unique ID
+		// Obtener nombre de portada y nombre modificado
+		String nombrePortada = "";
+		String nombreModificado = "";
+		if (esImportado) {
+			nombrePortada = Utilidades.obtenerNombrePortada(false, comicNuevo.getImagen());
+			nombreModificado = Utilidades.convertirNombreArchivo(nombrePortada);
+			if (!Utilidades.existeArchivo(directorio.getAbsolutePath(), nombrePortada)) {
+				copiarPortadaPredeterminada(DEFAULT_PORTADA_IMAGE_PATH, nombreModificado);
+			}
+		}
 
-		// Build the comic information string
-		String comicInfo = "Comic: " + comicNuevo.getNombre() + " - " + comicNuevo.getNumero() + " - "
-				+ comicNuevo.getVariante() + "\n";
+		// Generar un ID único
+		String mensajeId = String.valueOf(mensajeIdCounter.getAndIncrement());
 
-		// Add the comic information with the unique ID to mensajesUnicos
+		// Construir información del cómic
+		String comicInfo = buildComicInfo(comicNuevo);
+
+		// Añadir información del cómic a la lista mensajesUnicos
 		mensajesUnicos.add(mensajeId + ": " + comicInfo);
 
-		// If esImportado is true and a certain condition is met, add the comic
-		// information again to mensajesUnicos
-		if (esImportado && !Utilidades.existeArchivo(DEFAULT_PORTADA_IMAGE_PATH, nombre_modificado)) {
+		// Añadir información del cómic nuevamente si esImportado es true y no existe la
+		// portada
+		if (esImportado && !Utilidades.existeArchivo(DEFAULT_PORTADA_IMAGE_PATH, nombreModificado)) {
 			mensajesUnicos.add(comicInfo);
 		}
 
-		double progress = (double) NUMERO_COMICS_LEIDOS / (NUMERO_LINEAS_FICHERO + 1);
+		// Calcular el progreso de la carga
+		double progress = calculateProgress();
+
+		// Actualizar la interfaz de usuario
+		updateUI(progress, comicInfo, cargaComicsControllerRef);
+	}
+
+	private static String buildComicInfo(Comic comic) {
+		return "Comic: " + comic.getNombre() + " - " + comic.getNumero() + " - " + comic.getVariante() + "\n";
+	}
+
+	private static double calculateProgress() {
+		return (double) numeroLeidos.get() / (numeroLineas.get() + 1);
+	}
+
+	private static void updateUI(double progress, String comicInfo,
+			AtomicReference<CargaComicsController> cargaComicsControllerRef) {
+		StringBuilder textoBuilder = new StringBuilder();
 		String porcentaje = String.format("%.2f%%", progress * 100);
 		if (nav.isVentanaCerrada()) {
 			// Código para actualizar la interfaz de usuario cuando la ventana está cerrada
@@ -545,12 +558,10 @@ public class FuncionesExcel {
 					porcentaje, progress));
 		}
 
-		// Esta actualización se realiza tanto si la ventana está cerrada como si está
-		// abierta
 		Platform.runLater(
 				() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics(comicInfo, porcentaje, progress));
 
-		NUMERO_COMICS_LEIDOS++;
+		numeroLeidos.incrementAndGet();
 	}
 
 	/**
@@ -570,8 +581,7 @@ public class FuncionesExcel {
 
 		try {
 			if (!sourceFile.exists()) {
-				Utilidades utilidades = new Utilidades();
-				try (InputStream input = utilidades.getClass().getResourceAsStream("/imagenes/sinPortada.jpg");
+				try (InputStream input = Utilidades.class.getResourceAsStream("/imagenes/sinPortada.jpg");
 						OutputStream output = new FileOutputStream(destinationFile)) {
 
 					File destinationDirectory = destinationFile.getParentFile();
@@ -579,7 +589,11 @@ public class FuncionesExcel {
 						destinationDirectory.mkdirs();
 					}
 
-					destinationFile.createNewFile();
+					if (destinationFile.createNewFile()) {
+						logger.info("Fichero copiado correctamente");
+					} else {
+						logger.warning("ERROR. Fichero no copiado");
+					}
 
 					byte[] buffer = new byte[4096];
 					int bytesRead;
@@ -595,27 +609,9 @@ public class FuncionesExcel {
 		}
 	}
 
-//	/**
-//	 * Función que genera el log cuando falta una portada
-//	 *
-//	 * @param defaultImagePathBase El directorio base de las portadas
-//	 * @param logFileName          El nombre del archivo de log
-//	 * @param nombreModificado     El nombre del archivo modificado
-//	 * @throws IOException
-//	 */
-//	private void generarLogFaltaPortada(String defaultImagePathBase, String logFileName, String nombreModificado) {
-//		String logFilePath = defaultImagePathBase + File.separator + logFileName;
-//		try (BufferedWriter writer = new BufferedWriter(new FileWriter(logFilePath, true))) {
-//			writer.write("Falta portada: " + nombreModificado);
-//			writer.newLine();
-//		} catch (IOException e) {
-//			Utilidades.manejarExcepcion(e);
-//		}
-//	}
-
 	private static void checkCSVColumns(String filePath) throws IOException {
 		// Columnas esperadas
-		String[] expectedColumns = { "ID", "nomComic", "caja_deposito", "precio_comic", "codigo_comic", "numComic",
+		String[] expectedColumns = { "ID", "nomComic", "nivel_gradeo", "precio_comic", "codigo_comic", "numComic",
 				"nomVariante", "Firma", "nomEditorial", "Formato", "Procedencia", "fecha_publicacion", "nomGuionista",
 				"nomDibujante", "puntuacion", "portada", "key_issue", "url_referencia", "estado" };
 

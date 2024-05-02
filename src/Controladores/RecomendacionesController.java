@@ -226,7 +226,7 @@ public class RecomendacionesController implements Initializable {
 			}
 		});
 		Platform.runLater(() -> {
-			FuncionesManejoFront.stageVentanas.add(estadoStage());
+			FuncionesManejoFront.getStageVentanas().add(estadoStage());
 		});
 	}
 
@@ -323,13 +323,13 @@ public class RecomendacionesController implements Initializable {
 			MenuItem menuItemPresionado = (MenuItem) fuente;
 
 			if (menuItemPresionado == menu_comic_aniadir) {
-				AccionFuncionesComunes.tipoAccion("aniadir");
+				AccionFuncionesComunes.setTipoAccion("aniadir");
 			} else if (menuItemPresionado == menu_comic_modificar) {
-				AccionFuncionesComunes.tipoAccion("modificar");
+				AccionFuncionesComunes.setTipoAccion("modificar");
 			} else if (menuItemPresionado == menu_comic_eliminar) {
-				AccionFuncionesComunes.tipoAccion("eliminar");
+				AccionFuncionesComunes.setTipoAccion("eliminar");
 			} else if (menuItemPresionado == menu_comic_puntuar) {
-				AccionFuncionesComunes.tipoAccion("puntuar");
+				AccionFuncionesComunes.setTipoAccion("puntuar");
 			}
 		}
 
@@ -427,8 +427,8 @@ public class RecomendacionesController implements Initializable {
 	 */
 	public void closeWindows() {
 
-		if (FuncionesManejoFront.stageVentanas.contains(estadoStage())) {
-			FuncionesManejoFront.stageVentanas.remove(estadoStage());
+		if (FuncionesManejoFront.getStageVentanas().contains(estadoStage())) {
+			FuncionesManejoFront.getStageVentanas().remove(estadoStage());
 		}
 		
 		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();

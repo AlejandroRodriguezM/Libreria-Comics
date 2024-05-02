@@ -11,7 +11,7 @@ public class UpdateManager {
 
 	private static final String UPDATE_PUNTUACION = "UPDATE comicsbbdd set puntuacion = ? where ID = ?";
 	private static final String UPDATE_COMIC = "UPDATE comicsbbdd SET "
-			+ "nomComic = ?, caja_deposito = ?, precio_comic = ?, codigo_comic = ?, numComic = ?, nomVariante = ?, "
+			+ "nomComic = ?, nivel_gradeo = ?, precio_comic = ?, codigo_comic = ?, numComic = ?, nomVariante = ?, "
 			+ "Firma = ?, nomEditorial = ?, formato = ?, procedencia = ?, fecha_publicacion = ?, "
 			+ "nomGuionista = ?, nomDibujante = ?,puntuacion = ?, portada = ?, key_issue = ?, "
 			+ "url_referencia = ?, estado = ? " + "WHERE ID = ?";

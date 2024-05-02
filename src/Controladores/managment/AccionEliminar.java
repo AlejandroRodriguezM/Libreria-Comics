@@ -18,7 +18,7 @@ import javafx.scene.control.ComboBox;
 public class AccionEliminar {
 
 	private static AccionFuncionesComunes accionFuncionesComunes = new AccionFuncionesComunes();
-	public static AccionReferencias referenciaVentana = new AccionReferencias();
+	private static AccionReferencias referenciaVentana = getReferenciaVentana();
 	/**
 	 * Instancia de la clase Ventanas para la navegación.
 	 */
@@ -33,61 +33,67 @@ public class AccionEliminar {
 		elementosAMostrarYHabilitar.addAll(Arrays.asList(referenciaVentana.getLabel_id_mod(),
 				referenciaVentana.getBotonVender(), referenciaVentana.getBotonEliminar(),
 				referenciaVentana.getTablaBBDD(), referenciaVentana.getBotonbbdd(), referenciaVentana.getRootVBox(),
-				referenciaVentana.getBotonParametroComic(), referenciaVentana.getIdComicTratar_mod()));
+				referenciaVentana.getBotonParametroComic(), referenciaVentana.getIdComicTratar()));
 		referenciaVentana.getRootVBox().toFront();
 	}
 
 	public static void eliminarComic() {
-		String id_comic = referenciaVentana.getIdComicTratar_mod().getText();
-		referenciaVentana.getIdComicTratar_mod().setStyle("");
-		if (accionFuncionesComunes.comprobarExistenciaComic(id_comic)) {
+		String idComic = getReferenciaVentana().getIdComicTratar().getText();
+		getReferenciaVentana().getIdComicTratar().setStyle("");
+		if (accionFuncionesComunes.comprobarExistenciaComic(idComic)) {
 			if (nav.alertaAccionGeneral()) {
 
-				ComicManagerDAO.borrarComic(id_comic);
+				ComicManagerDAO.borrarComic(idComic);
 				ListaComicsDAO.reiniciarListaComics();
 				ListaComicsDAO.listasAutoCompletado();
 
 				String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
 				List<Comic> listaComics = ComicManagerDAO.verLibreria(sentenciaSQL);
-				referenciaVentana.getTablaBBDD().refresh();
-				FuncionesTableView.nombreColumnas(referenciaVentana.getTablaBBDD());
-				FuncionesTableView.tablaBBDD(listaComics, referenciaVentana.getTablaBBDD());
+				getReferenciaVentana().getTablaBBDD().refresh();
+				FuncionesTableView.nombreColumnas(getReferenciaVentana().getTablaBBDD());
+				FuncionesTableView.tablaBBDD(listaComics, getReferenciaVentana().getTablaBBDD());
 
-				List<ComboBox<String>> comboboxes = referenciaVentana.getComboboxes();
+				List<ComboBox<String>> comboboxes = getReferenciaVentana().getComboboxes();
 
 				funcionesCombo.rellenarComboBox(comboboxes);
-				referenciaVentana.getImagencomic().setImage(null);
-				referenciaVentana.getImagencomic().setVisible(true);
-				referenciaVentana.getProntInfo().clear();
-				referenciaVentana.getProntInfo().setOpacity(0);
-				
+				getReferenciaVentana().getImagencomic().setImage(null);
+				getReferenciaVentana().getImagencomic().setVisible(true);
+				getReferenciaVentana().getProntInfo().clear();
+				getReferenciaVentana().getProntInfo().setOpacity(0);
+
 			} else {
 				String mensaje = "Accion cancelada";
-				AlarmaList.mostrarMensajePront(mensaje, false, referenciaVentana.getProntInfo());
+				AlarmaList.mostrarMensajePront(mensaje, false, getReferenciaVentana().getProntInfo());
 			}
 		}
 	}
 
 	public static void eliminarComicLista() {
-		String id_comic = referenciaVentana.getIdComicTratar_mod().getText();
+		String idComic = getReferenciaVentana().getIdComicTratar().getText();
 
-		if (nav.alertaEliminar()) {
+		if (nav.alertaEliminar() && idComic != null) {
 
-			if (id_comic != null) {
-
-				ListaComicsDAO.comicsImportados.removeIf(c -> c.getID().equals(id_comic));
+				ListaComicsDAO.comicsImportados.removeIf(c -> c.getID().equals(idComic));
 				AccionControlUI.limpiarAutorellenos(false);
-				FuncionesTableView.nombreColumnas(referenciaVentana.getTablaBBDD());
+				FuncionesTableView.nombreColumnas(getReferenciaVentana().getTablaBBDD());
 
-				FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, referenciaVentana.getTablaBBDD());
-				referenciaVentana.getTablaBBDD().refresh();
+				FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, getReferenciaVentana().getTablaBBDD());
+				getReferenciaVentana().getTablaBBDD().refresh();
 
-				if (ListaComicsDAO.comicsImportados.size() < 1) {
+				if (ListaComicsDAO.comicsImportados.isEmpty()) {
 					AccionFuncionesComunes.cambiarEstadoBotones(false);
 				}
 
 			}
-		}
+		
+	}
+
+	public static AccionReferencias getReferenciaVentana() {
+		return referenciaVentana;
+	}
+
+	public static void setReferenciaVentana(AccionReferencias referenciaVentana) {
+		AccionEliminar.referenciaVentana = referenciaVentana;
 	}
 
 }

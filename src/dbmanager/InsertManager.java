@@ -7,8 +7,8 @@ import comicManagement.Comic;
 
 public class InsertManager {
 
-	public final static String INSERT_SENTENCIA = "INSERT INTO comicsbbdd ("
-			+ "nomComic, caja_deposito, precio_comic, codigo_comic, numComic, nomVariante, firma, nomEditorial, "
+	public static final String INSERT_SENTENCIA = "INSERT INTO comicsbbdd ("
+			+ "nomComic, nivel_gradeo, precio_comic, codigo_comic, numComic, nomVariante, firma, nomEditorial, "
 			+ "formato, procedencia, fecha_publicacion, nomGuionista, nomDibujante, puntuacion, portada, "
 			+ "key_issue, url_referencia, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 

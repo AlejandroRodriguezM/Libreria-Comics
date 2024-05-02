@@ -84,7 +84,7 @@ public class ImagenAmpliadaController implements Initializable {
 
 		infoComic.setPrefHeight(computeTextHeight(infoComicString, infoComic.getFont(), textAreaWidth, textAreaHeight));
 		Platform.runLater(() -> {
-			FuncionesManejoFront.stageVentanas.add(estadoStage());
+			FuncionesManejoFront.getStageVentanas().add(estadoStage());
 		});
 	}
 
@@ -198,8 +198,8 @@ public class ImagenAmpliadaController implements Initializable {
 	public void closeWindow() {
 		if (stage != null) {
 			
-			if (FuncionesManejoFront.stageVentanas.contains(estadoStage())) {
-				FuncionesManejoFront.stageVentanas.remove(estadoStage());
+			if (FuncionesManejoFront.getStageVentanas().contains(estadoStage())) {
+				FuncionesManejoFront.getStageVentanas().remove(estadoStage());
 			}
 			
 			stage.close();

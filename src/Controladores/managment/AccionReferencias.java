@@ -93,7 +93,7 @@ public class AccionReferencias {
 	private Button botonEliminar;
 
 	private Button botonComprimirPortadas;
-	
+
 	private Button botonReCopiarPortadas;
 
 	/**
@@ -256,7 +256,7 @@ public class AccionReferencias {
 	/**
 	 * Campo de texto para el ID del cómic a tratar en modificacion.
 	 */
-	private TextField idComicTratar_mod;
+	private TextField idComicTratar;
 
 	/**
 	 * Campo de texto para el codigo del cómic a tratar en modificacion o para
@@ -394,7 +394,7 @@ public class AccionReferencias {
 	/**
 	 * ComboBox para seleccionar el número de caja del cómic.
 	 */
-	private ComboBox<String> numeroCajaComic;
+	private ComboBox<String> gradeoComic;
 
 	/**
 	 * ComboBox para seleccionar el número del cómic.
@@ -583,7 +583,7 @@ public class AccionReferencias {
 	private Label prontInfoEspecial;
 
 	private Label prontInfoPreviews;
-	
+
 	private Label prontInfoPortadas;
 
 	private Stage stage;
@@ -1035,7 +1035,7 @@ public class AccionReferencias {
 	public Label getProntInfoPreviews() {
 		return prontInfoPreviews;
 	}
-	
+
 	public Label getProntInfoPortadas() {
 		return prontInfoPortadas;
 	}
@@ -1119,7 +1119,7 @@ public class AccionReferencias {
 	public void setProntInfoPreviews(Label prontInfoPreviews) {
 		this.prontInfoPreviews = prontInfoPreviews;
 	}
-	
+
 	public void setProntInfoPortadas(Label prontInfoPortadas) {
 		this.prontInfoPortadas = prontInfoPortadas;
 	}
@@ -1432,7 +1432,7 @@ public class AccionReferencias {
 		this.menu_navegacion = menu_navegacion;
 	}
 
-	public void setNavegacion_cerrar(Menu navegacion_cerrar) {
+	public void setNavegacion_Opciones(Menu navegacion_cerrar) {
 		this.navegacion_cerrar = navegacion_cerrar;
 	}
 
@@ -1534,8 +1534,8 @@ public class AccionReferencias {
 		return formatoComic;
 	}
 
-	public ComboBox<String> getNumeroCajaComic() {
-		return numeroCajaComic;
+	public ComboBox<String> getGradeoComic() {
+		return gradeoComic;
 	}
 
 	public ComboBox<String> getNumeroComic() {
@@ -1634,8 +1634,8 @@ public class AccionReferencias {
 		this.formatoComic = formatoComic;
 	}
 
-	public void setNumeroCajaComic(ComboBox<String> numeroCajaComic) {
-		this.numeroCajaComic = numeroCajaComic;
+	public void setGradeoComic(ComboBox<String> gradeoComic) {
+		this.gradeoComic = gradeoComic;
 	}
 
 	public void setNumeroComic(ComboBox<String> numeroComic) {
@@ -1672,8 +1672,8 @@ public class AccionReferencias {
 		this.guionistaComic = guionistaComic;
 	}
 
-	public void setIdComicTratar_mod(TextField idComicTratar_mod) {
-		this.idComicTratar_mod = idComicTratar_mod;
+	public void setIdComicTratar(TextField idComicTratar) {
+		this.idComicTratar = idComicTratar;
 	}
 
 	public void setCodigoComicTratar(TextField codigoComicTratar) {
@@ -1724,8 +1724,8 @@ public class AccionReferencias {
 		return guionistaComic;
 	}
 
-	public TextField getIdComicTratar_mod() {
-		return idComicTratar_mod;
+	public TextField getIdComicTratar() {
+		return idComicTratar;
 	}
 
 	public TextField getCodigoComicTratar() {

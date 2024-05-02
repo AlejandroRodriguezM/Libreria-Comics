@@ -112,7 +112,7 @@ public class ConectManager {
 		DB_PASS = datos[3];
 		DB_HOST = datos[4];
 
-		conexion();
+//		conexion();
 	}
 
 	/**
@@ -157,7 +157,6 @@ public class ConectManager {
 
 		try {
 			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
-
 			if (conn == null) {
 				nav.alertaException("No se pudo establecer la conexión a la base de datos");
 			}
