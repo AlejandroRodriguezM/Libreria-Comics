@@ -33,7 +33,7 @@ public class DBUtilidades {
 		ps.setString(14, "Sin puntuar");
 		ps.setString(15, datos.getImagen());
 		ps.setString(16, datos.getkeyIssue());
-		ps.setString(17, datos.geturlReferencia());
+		ps.setString(17, datos.getUrlReferencia());
 		ps.setString(18, datos.getEstado());
 		if (includeID) {
 			ps.setString(19, datos.getid());
@@ -334,7 +334,7 @@ public class DBUtilidades {
 			return new Comic.ComicBuilder(id, nombre).valorGradeo(valorGradeo).numero(numero).variante(variante)
 					.firma(firma).editorial(editorial).formato(formato).procedencia(procedencia).fecha(fecha)
 					.guionista(guionista).dibujante(dibujante).estado(estado).keyIssue(keyIssue).puntuacion(puntuacion)
-					.imagen(imagen).urlReferencia(urlReferencia).precioComic(precioComic).codigoComic(codigoComic)
+					.imagen(imagen).referenciaComic(urlReferencia).precioComic(precioComic).codigoComic(codigoComic)
 					.build();
 		} catch (SQLException e) {
 			// Manejar la excepción según tus necesidades

@@ -6,8 +6,8 @@ import java.util.List;
 
 import alarmas.AlarmaList;
 import comicManagement.Comic;
-import controlUI.AccionControlUI;
-import controlUI.FuncionesTableView;
+import controladores.funcionesInterfaz.AccionControlUI;
+import controladores.funcionesInterfaz.FuncionesTableView;
 import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
@@ -98,20 +98,20 @@ public class AccionSeleccionar {
 		getReferenciaVentana().getProntInfo().clear();
 
 		FuncionesTableView.nombreColumnas();
-		FuncionesTableView.actualizarBusquedaRaw(getReferenciaVentana().getTablaBBDD());
+		FuncionesTableView.actualizarBusquedaRaw();
 
 		if (ComicManagerDAO.countRows() > 0) {
 			if (completo) {
 				String sentenciaSQL = DBUtilidades.construirSentenciaSQL(TipoBusqueda.COMPLETA);
 
 				List<Comic> listaComics = ComicManagerDAO.verLibreria(sentenciaSQL);
-				FuncionesTableView.tablaBBDD(listaComics, getReferenciaVentana().getTablaBBDD());
+				FuncionesTableView.tablaBBDD(listaComics);
 
 			} else {
 
 				List<Comic> listaParametro = listaPorParametro(comic, esAccion);
 
-				FuncionesTableView.tablaBBDD(listaParametro, getReferenciaVentana().getTablaBBDD());
+				FuncionesTableView.tablaBBDD(listaParametro);
 
 				if (!esAccion) {
 					if (!listaParametro.isEmpty()) {

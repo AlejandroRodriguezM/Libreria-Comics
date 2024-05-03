@@ -1,4 +1,4 @@
-package controlUI;
+package controladores.funcionesInterfaz;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -158,7 +158,7 @@ public class FuncionesComboBox {
 				.numero(comic.getNumero()).variante(comic.getVariante()).firma(comic.getFirma())
 				.editorial(comic.getEditorial()).formato(comic.getFormato()).procedencia(comic.getProcedencia())
 				.fecha("").guionista(comic.getGuionista()).dibujante(comic.getDibujante()).estado("").keyIssue("")
-				.puntuacion("").imagen("").urlReferencia("").precioComic("").codigoComic("").build();
+				.puntuacion("").imagen("").referenciaComic("").precioComic("").codigoComic("").build();
 
 		String sql = DBUtilidades.datosConcatenados(comicTemp);
 		if (!sql.isEmpty()) {

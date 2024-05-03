@@ -225,7 +225,7 @@ public class WebScrapGooglePreviewsWorld {
 			Comic comicInfoArray = new Comic.ComicBuilder(comic.getid(), titulo).valorGradeo("0").numero(numero)
 					.variante("").firma("").editorial("").formato(formato).procedencia(procedencia).fecha("")
 					.guionista("").dibujante("").estado(estado).keyIssue("").puntuacion(puntuacion).imagen("")
-					.urlReferencia(previewsWorldUrl).precioComic(precio).codigoComic(code).build();
+					.referenciaComic(previewsWorldUrl).precioComic(precio).codigoComic(code).build();
 
 			// Escribir en un archivo
 			writeToTextFile(comicInfoArray, claveBusqueda);
@@ -371,13 +371,10 @@ public class WebScrapGooglePreviewsWorld {
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
 
 			System.out.println("Búsqueda: " + busquedaComic + " - Código: " + comicInfo.getcodigoComic() + " - URL: "
-					+ comicInfo.geturlReferencia());
+					+ comicInfo.getUrlReferencia());
 
 			writer.write("UPDATE comicsbbdd set codigo_comic = '" + comicInfo.getcodigoComic() + "' where ID = "
-					+ comicInfo.getid() + "; " + comicInfo.geturlReferencia());
-
-//			writer.write("Búsqueda: " + busquedaComic + " Código: " + comicInfo.getCodigo_comic() + " URL: "
-//			+ comicInfo.getUrl_referencia());
+					+ comicInfo.getid() + "; " + comicInfo.getUrlReferencia());
 
 			// Escribe cualquier otra información que desees en el archivo
 			writer.newLine();

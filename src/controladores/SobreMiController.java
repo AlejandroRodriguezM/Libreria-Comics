@@ -30,9 +30,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import controladores.funcionesInterfaz.FuncionesManejoFront;
 import controladores.managment.AccionFuncionesComunes;
 import alarmas.AlarmaList;
-import controlUI.FuncionesManejoFront;
 import dbmanager.ConectManager;
 import funciones_auxiliares.Utilidades;
 import funciones_auxiliares.Ventanas;

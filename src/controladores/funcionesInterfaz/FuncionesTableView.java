@@ -2,45 +2,19 @@
  * Contiene las clases que hacen funcionar las diferentes funciones de uso de back end y front de todo el proyecto
  *  
 */
-package controlUI;
+package controladores.funcionesInterfaz;
 
-/**
- * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
- * Las ventanas graficas se realizan con JavaFX.
- * El programa permite:
- *  - Conectarse a la base de datos.
- *  - Ver la base de datos completa o parcial segun parametros introducidos.
- *  - Guardar el contenido de la base de datos en un fichero .txt y .xlsx,CSV
- *  - Copia de seguridad de la base de datos en formato .sql
- *  - Introducir comics a la base de datos.
- *  - Modificar comics de la base de datos.
- *  - Eliminar comics de la base de datos(Solamente cambia el estado de "En posesion" a "Vendido". Los datos siguen en la bbdd pero estos no los muestran el programa
- *  - Ver frases de personajes de comics
- *  - Opcion de escoger algo para leer de forma aleatoria.
- *  - Puntuar comics que se encuentren dentro de la base de datos.
- *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
- *
- *  Version 8.0.0.0
- *
- *  @author Alejandro Rodriguez
- *
- */
-
-import java.awt.Desktop;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import controladores.managment.AccionReferencias;
 import comicManagement.Comic;
+import controladores.managment.AccionReferencias;
 import dbmanager.DBUtilidades;
 import dbmanager.ListaComicsDAO;
 import dbmanager.SelectManager;
-import javafx.geometry.Bounds;
+import funciones_auxiliares.Utilidades;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Hyperlink;
@@ -52,13 +26,14 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.util.Duration;
 import javafx.stage.Screen;
+import javafx.util.Duration;
 
 /**
  * Clase que contiene diversas funciones relacionadas con TableView y
@@ -70,55 +45,54 @@ public class FuncionesTableView {
 	 * Fuente utilizada para los tooltips en la interfaz gráfica.
 	 */
 	private static final Font TOOLTIP_FONT = Font.font("Comic Sans MS", FontWeight.NORMAL, FontPosture.REGULAR, 13);
+	private static Tooltip currentTooltip;
 
 	private static AccionReferencias referenciaVentana = getReferenciaVentana();
 
-	/**
-	 * Funcion que permite que los diferentes raw de los TableColumn se puedan
-	 * pinchar. Al hacer, se abre una URL en tu navegador
-	 * 
-	 * @param columna
-	 */
 	public static void busquedaHyperLink(TableColumn<Comic, String> columna) {
-		columna.setCellFactory(column -> {
-			return new TableCell<Comic, String>() {
-				private VBox vbox = new VBox();
-				private String lastItem = null;
+		columna.setCellFactory(column -> new TableCell<Comic, String>() {
+			private VBox vbox = new VBox();
+			private String lastItem = null;
 
-				@Override
-				protected void updateItem(String item, boolean empty) {
-					if (empty || item == null) {
-						setGraphic(null);
-					} else {
-						if (!item.equals(lastItem)) { // Verificar si el contenido ha cambiado
-							lastItem = item;
-							vbox.getChildren().clear();
-
-							if (isValidUrl(item)) {
-								ReferenciaHyperlink referenciaHyperlink = new ReferenciaHyperlink("Referencia", item);
-								Hyperlink hyperlink = new Hyperlink(referenciaHyperlink.getDisplayText());
-								hyperlink.setOnAction(event -> {
-									if (Desktop.isDesktopSupported()) {
-										try {
-											Desktop.getDesktop().browse(new URI(referenciaHyperlink.getUrl()));
-										} catch (IOException | URISyntaxException e) {
-											e.printStackTrace();
-										}
-									}
-								});
-
-								hyperlink.getStyleClass().add("hyperlink");
-								vbox.getChildren().add(hyperlink);
-							} else {
-								Text text = new Text("Sin Referencia");
-								vbox.getChildren().add(text);
-							}
-
-							setGraphic(vbox);
-						}
+			@Override
+			protected void updateItem(String item, boolean empty) {
+				if (empty || item == null) {
+					setGraphic(null);
+				} else {
+					if (!item.equals(lastItem)) {
+						lastItem = item;
+						vbox.getChildren().clear();
+						createContent(item);
+						setGraphic(vbox);
 					}
 				}
-			};
+			}
+
+			private void createContent(String item) {
+				if (isValidUrl(item)) {
+					addHyperlink(item);
+				} else {
+					addText("Sin Referencia");
+				}
+			}
+
+			private void addHyperlink(String url) {
+				ReferenciaHyperlink referenciaHyperlink = new ReferenciaHyperlink("Referencia", url);
+				Hyperlink hyperlink = createHyperlink(referenciaHyperlink);
+				vbox.getChildren().add(hyperlink);
+			}
+
+			private Hyperlink createHyperlink(ReferenciaHyperlink referenciaHyperlink) {
+				Hyperlink hyperlink = new Hyperlink(referenciaHyperlink.getDisplayText());
+				hyperlink.setOnAction(event -> Utilidades.accesoWebWindows(referenciaHyperlink.getUrl()));
+				hyperlink.getStyleClass().add("hyperlink");
+				return hyperlink;
+			}
+
+			private void addText(String text) {
+				Text txt = new Text(text);
+				vbox.getChildren().add(txt);
+			}
 		});
 	}
 
@@ -136,67 +110,91 @@ public class FuncionesTableView {
 	}
 
 	public static void seleccionarRaw() {
-		getReferenciaVentana().getTablaBBDD().setRowFactory(tv -> {
-			TableRow<Comic> row = new TableRow<>();
-			Tooltip tooltip = new Tooltip();
-			tooltip.setShowDelay(Duration.ZERO);
-			tooltip.setHideDelay(Duration.ZERO);
-			tooltip.setFont(TOOLTIP_FONT);
-			row.setOnMouseMoved(event -> {
-				if (!row.isEmpty()) {
-					row.setStyle("-fx-background-color: #BFEFFF;");
+		getReferenciaVentana().getTablaBBDD().setRowFactory(tv -> createRow());
+		disableFocusTraversal();
+		focusOnRootNode();
+	}
 
-					Comic comic = row.getItem();
-					if (comic != null && !tooltip.isShowing()) {
-						String mensaje = "Nombre: " + comic.getNombre() + "\nNúmero: " + comic.getNumero()
-								+ "\nVariante: " + comic.getVariante() + "\nPrecio: "
-								+ (!comic.getprecioComic().isEmpty() ? comic.getprecioComic() + " $" : "");
+	private static TableRow<Comic> createRow() {
+		TableRow<Comic> row = new TableRow<>();
+		Tooltip tooltip = createTooltip();
 
-						if (!comic.getFirma().isEmpty()) {
-							mensaje += "\nFirma: " + comic.getFirma();
-						}
-						tooltip.setText(mensaje);
+		row.setOnMouseMoved(event -> showTooltip(event, row, tooltip));
+		row.setOnMouseExited(event -> hideTooltipIfOutside(event, row, tooltip));
 
-						// Obtener las dimensiones de la pantalla
-						Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+		return row;
+	}
 
-						// Ajustar la posición del tooltip para que no salga del área de la aplicación
-						double posX = event.getScreenX() + 10;
-						double posY = event.getScreenY() - 20;
+	private static Tooltip createTooltip() {
+		Tooltip tooltip = new Tooltip();
+		tooltip.setShowDelay(Duration.ZERO);
+		tooltip.setHideDelay(Duration.ZERO);
+		tooltip.setFont(TOOLTIP_FONT);
+		return tooltip;
+	}
 
-						// Verificar si el tooltip está fuera de los límites de la ventana principal
-						if (posX + tooltip.getWidth() > screenBounds.getMaxX()) {
-							posX = screenBounds.getMaxX() - tooltip.getWidth();
-						}
-						if (posY + tooltip.getHeight() > screenBounds.getMaxY()) {
-							posY = screenBounds.getMaxY() - tooltip.getHeight();
-						}
-
-						tooltip.show(row, posX, posY);
-					}
+	private static void showTooltip(MouseEvent event, TableRow<Comic> row, Tooltip tooltip) {
+		if (!row.isEmpty()) {
+			row.setStyle("-fx-background-color: #BFEFFF;");
+			Comic comic = row.getItem();
+			if (comic != null) {
+				String mensaje = generateTooltipMessage(comic);
+				adjustTooltipPosition(event, tooltip);
+				tooltip.setText(mensaje);
+				if (currentTooltip != null && currentTooltip.isShowing()) {
+					currentTooltip.hide();
 				}
-			});
-
-			row.setOnMouseExited(event -> {
-				if (!row.isEmpty()) {
-					Bounds rowBounds = row.getBoundsInLocal();
-					double mouseX = event.getSceneX();
-					double mouseY = event.getSceneY();
-
-					if (!rowBounds.contains(mouseX, mouseY)) {
-						row.setStyle(""); // Restaura el estilo por defecto solo si el ratón está fuera del área del
-											// nodo
-						tooltip.hide(); // Oculta el tooltip
-					}
-				}
-			});
-
-			return row;
+				currentTooltip = tooltip;
+				tooltip.show(row, event.getScreenX() + 10, event.getScreenY() - 20);
+			}
+		}
+		// Cerrar el tooltip cuando se hace clic en una fila
+		row.setOnMouseClicked(e -> {
+			if (currentTooltip != null && currentTooltip.isShowing()) {
+				currentTooltip.hide();
+			}
 		});
+	}
 
-		// Deshabilitar el enfoque en el TableView
+	private static String generateTooltipMessage(Comic comic) {
+		StringBuilder mensajeBuilder = new StringBuilder();
+		mensajeBuilder.append("Nombre: ").append(comic.getNombre()).append("\nNúmero: ").append(comic.getNumero())
+				.append("\nVariante: ").append(comic.getVariante()).append("\nPrecio: ")
+				.append(!comic.getprecioComic().isEmpty() ? comic.getprecioComic() + " $" : "");
+
+		if (!comic.getFirma().isEmpty()) {
+			mensajeBuilder.append("\nFirma: ").append(comic.getFirma());
+		}
+		return mensajeBuilder.toString();
+	}
+
+	private static void adjustTooltipPosition(MouseEvent event, Tooltip tooltip) {
+		Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+		double posX = event.getScreenX() + 10;
+		double posY = event.getScreenY() - 20;
+
+		if (posX + tooltip.getWidth() > screenBounds.getMaxX()) {
+			posX = screenBounds.getMaxX() - tooltip.getWidth();
+		}
+		if (posY + tooltip.getHeight() > screenBounds.getMaxY()) {
+			posY = screenBounds.getMaxY() - tooltip.getHeight();
+		}
+		tooltip.setX(posX);
+		tooltip.setY(posY);
+	}
+
+	private static void hideTooltipIfOutside(MouseEvent event, TableRow<Comic> row, Tooltip tooltip) {
+		if (!row.isEmpty() && !row.getBoundsInLocal().contains(event.getSceneX(), event.getSceneY())) {
+			row.setStyle("");
+			tooltip.hide();
+		}
+	}
+
+	private static void disableFocusTraversal() {
 		getReferenciaVentana().getTablaBBDD().setFocusTraversable(false);
+	}
 
+	private static void focusOnRootNode() {
 		Scene scene = getReferenciaVentana().getTablaBBDD().getScene();
 		if (scene != null) {
 			VBox root = (VBox) scene.lookup("#rootVBox");
@@ -206,17 +204,9 @@ public class FuncionesTableView {
 		}
 	}
 
-	/**
-	 * Funcion que permite que los diferentes raw de los TableColumn se puedan
-	 * pinchar. Al hacer, genera un nuevo tipo de busqueda personalizada solo con el
-	 * valor que hemos pinchado
-	 * 
-	 * @param columna
-	 */
-	public static void actualizarBusquedaRaw(TableView<Comic> tablaBBDD) {
-		getReferenciaVentana().getColumnasTabla().forEach(columna -> {
-			columna.setCellFactory(column -> {
-				return new TableCell<Comic, String>() {
+	public static void actualizarBusquedaRaw() {
+		getReferenciaVentana().getColumnasTabla()
+				.forEach(columna -> columna.setCellFactory(column -> new TableCell<Comic, String>() {
 					private VBox vbox = new VBox();
 					private String lastItem = null;
 
@@ -229,46 +219,47 @@ public class FuncionesTableView {
 						} else {
 							if (!item.equals(lastItem)) { // Verificar si el contenido ha cambiado
 								lastItem = item;
-								String[] nombres = item.split(" - ");
 								vbox.getChildren().clear();
-
-								for (String nombre : nombres) {
-									if (!nombre.isEmpty()) {
-										Label label;
-
-										if (columna.getText().equalsIgnoreCase("referencia")) {
-											label = new Label(nombre + "\n");
-											busquedaHyperLink(columna);
-
-										} else if (columna.getText().equalsIgnoreCase("fecha")
-												|| columna.getText().equalsIgnoreCase("editorial")
-												|| columna.getText().equalsIgnoreCase("formato")
-												|| columna.getText().equalsIgnoreCase("Nombre")
-												|| columna.getText().equalsIgnoreCase("Nº")
-												|| columna.getText().equalsIgnoreCase("Gradeo")
-												|| columna.getText().equalsIgnoreCase("Origen")) {
-											label = new Label(nombre + "\n");
-										} else if (columna.getText().equalsIgnoreCase("variante")
-												|| columna.getText().equalsIgnoreCase("firma")) {
-											label = new Label("◉ " + nombre + "\n");
-										} else {
-											label = new Label("◉ " + nombre + "\n");
-										}
-										label.getStyleClass().add("hyperlink");
-										Hyperlink hyperlink = new Hyperlink();
-										hyperlink.setGraphic(label);
-										hyperlink.setOnAction(event -> columnaSeleccionada(tablaBBDD, nombre));
-										vbox.getChildren().add(hyperlink);
-									}
-								}
+								createLabels(columna, item, vbox);
 							}
 							setGraphic(vbox);
 						}
 					}
-				};
-			});
-		});
+				}));
 	}
+
+	private static void createLabels(TableColumn<Comic, String> columna, String item, VBox vbox) {
+		String[] nombres = item.split(" - ");
+		for (String nombre : nombres) {
+
+			if (!nombre.isEmpty()) {
+				
+				Label label = new Label();
+				if (columna.getText().equalsIgnoreCase("referencia")) {
+					label.setText(nombre);
+					busquedaHyperLink(columna);
+				} else if (columna.getText().equalsIgnoreCase("variante") || columna.getText().equalsIgnoreCase("firma")
+						|| columna.getText().equalsIgnoreCase("dibujante")
+						|| columna.getText().equalsIgnoreCase("guionista")) {
+
+					label.setText("◉ " + nombre);
+				} else {
+					label.setText(nombre);
+				}
+				label.getStyleClass().add("hyperlink");
+
+				Hyperlink hyperlink = new Hyperlink();
+
+				hyperlink.setGraphic(label);
+				hyperlink.setOnAction(event -> columnaSeleccionada(getReferenciaVentana().getTablaBBDD(), nombre));
+
+				vbox.getChildren().add(hyperlink);
+			}
+		}
+
+	}
+	
+	
 
 	/**
 	 * Genera el resultado de búsqueda para un cómic y devuelve un TextArea con la
@@ -296,9 +287,9 @@ public class FuncionesTableView {
 	 *
 	 * @param listaComic
 	 */
-	public static void tablaBBDD(List<Comic> listaComic, TableView<Comic> tablaBBDD) {
-		tablaBBDD.getColumns().setAll(getReferenciaVentana().getColumnasTabla());
-		tablaBBDD.getItems().setAll(listaComic);
+	public static void tablaBBDD(List<Comic> listaComic) {
+		getReferenciaVentana().getTablaBBDD().getColumns().setAll(getReferenciaVentana().getColumnasTabla());
+		getReferenciaVentana().getTablaBBDD().getItems().setAll(listaComic);
 	}
 
 	/**
@@ -313,7 +304,7 @@ public class FuncionesTableView {
 		ListaComicsDAO.reiniciarListaComics();
 		nombreColumnas();
 
-		tablaBBDD(SelectManager.libreriaSeleccionado(rawSelecionado), tablaBBDD);
+		tablaBBDD(SelectManager.libreriaSeleccionado(rawSelecionado));
 
 		// Deseleccionar la fila seleccionada
 		tablaBBDD.getSelectionModel().clearSelection();
@@ -327,26 +318,23 @@ public class FuncionesTableView {
 	 * @param tablaBBDD  La TableView en la que se aplicarán las configuraciones.
 	 */
 	public static void nombreColumnas() {
-		for (TableColumn<Comic, String> column : getReferenciaVentana().getColumnasTabla()) {
+		for (TableColumn<Comic, String> column : referenciaVentana.getColumnasTabla()) {
 			String columnName = column.getText(); // Obtiene el nombre de la columna
 
+			// Realiza la correspondencia entre los nombres de columna y las propiedades de
+			// Comic
 			if (columnName.equalsIgnoreCase("Nº")) {
 				columnName = "Numero";
-			}
-
-			if (columnName.equalsIgnoreCase("Gradeo")) {
-				columnName = "gradeo";
-			}
-
-			if (columnName.equalsIgnoreCase("Referencia")) {
-				columnName = "Referencia";
-			}
-
-			if (columnName.equalsIgnoreCase("Origen")) {
+			} else if (columnName.equalsIgnoreCase("Gradeo")) {
+				columnName = "valorGradeo";
+			} else if (columnName.equalsIgnoreCase("Referencia")) {
+				columnName = "urlReferencia";
+			} else if (columnName.equalsIgnoreCase("Origen")) {
 				columnName = "Procedencia";
 			}
 
-	        PropertyValueFactory<Comic, String> valueFactory = new PropertyValueFactory<>(columnName);
+			// Crea una PropertyValueFactory con el nombre de la propiedad actual
+			PropertyValueFactory<Comic, String> valueFactory = new PropertyValueFactory<>(columnName);
 			column.setCellValueFactory(valueFactory);
 		}
 	}
@@ -368,14 +356,14 @@ public class FuncionesTableView {
 		// Definir los tamaños específicos para cada columna en la misma posición que en
 		// columnList
 		Double[] columnWidths = { 140.0, // nombre
-				37.0, // caja
-				49.0, // numero
+				40.0, // caja
+				46.0, // numero
 				135.0, // variante
 				110.0, // firma
 				78.0, // editorial
 				92.0, // formato
 				75.0, // procedencia
-				105.0, // fecha
+				100.0, // fecha
 				145.0, // guionista
 				150.0, // dibujante
 				92.0, // referencia

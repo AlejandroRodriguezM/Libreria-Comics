@@ -14,6 +14,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.json.JSONException;
 
+import controladores.funcionesInterfaz.AccionControlUI;
+import controladores.funcionesInterfaz.FuncionesComboBox;
+import controladores.funcionesInterfaz.FuncionesManejoFront;
+import controladores.funcionesInterfaz.FuncionesTableView;
 import controladores.managment.AccionAniadir;
 import controladores.managment.AccionEliminar;
 import controladores.managment.AccionFuncionesComunes;
@@ -23,10 +27,6 @@ import controladores.managment.AccionSeleccionar;
 import alarmas.AlarmaList;
 import apis.funciones.FuncionesApis;
 import comicManagement.Comic;
-import controlUI.AccionControlUI;
-import controlUI.FuncionesComboBox;
-import controlUI.FuncionesManejoFront;
-import controlUI.FuncionesTableView;
 import dbmanager.ConectManager;
 import dbmanager.ListaComicsDAO;
 import funciones_auxiliares.Utilidades;
@@ -524,6 +524,8 @@ public class VentanaAccionController implements Initializable {
 	static final String API_KEY = FuncionesApis.cargarApiComicVine();
 	protected static final String[] clavesMarvel = FuncionesApis.clavesApiMarvel();
 
+	AlarmaList alarmaList = new AlarmaList();
+
 //	private ObservableList<ImageView> listaImagenes;
 //	private static List<TableColumn<Comic, String>> columnList;
 //	private ObservableList<ComboBox<String>> listaComboBoxes;
@@ -619,7 +621,7 @@ public class VentanaAccionController implements Initializable {
 		referenciaVentana.setNavegacion_Opciones(navegacionOpciones);
 		referenciaVentana.setNavegacion_estadistica(navegacionEstadistica);
 
-		//ESTO HAY QUE RETOCARLO
+		// ESTO HAY QUE RETOCARLO
 		referenciaVentana
 				.setComboBoxes(Arrays.asList(numeroComic, procedenciaComic, formatoComic, gradeoComic, estadoComic));
 
@@ -636,10 +638,13 @@ public class VentanaAccionController implements Initializable {
 	public void enviarReferencias() {
 		AccionControlUI.setReferenciaVentana(guardarReferencia());
 		AccionFuncionesComunes.setReferenciaVentana(guardarReferencia());
+		FuncionesTableView.setReferenciaVentana(guardarReferencia());
+		FuncionesManejoFront.setReferenciaVentana(guardarReferencia());
 		AccionSeleccionar.setReferenciaVentana(guardarReferencia());
+		AccionAniadir.setReferenciaVentana(guardarReferencia());
 		AccionEliminar.setReferenciaVentana(guardarReferencia());
 		AccionModificar.setReferenciaVentana(guardarReferencia());
-		AccionAniadir.setReferenciaVentana(guardarReferencia());
+		Utilidades.setReferenciaVentana(guardarReferencia());
 	}
 
 	/**
@@ -651,7 +656,6 @@ public class VentanaAccionController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		AlarmaList alarmaList = new AlarmaList();
 
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
 		alarmaList.setAlarmaConexionInternet(alarmaConexionInternet);
@@ -1180,5 +1184,9 @@ public class VentanaAccionController implements Initializable {
 			nav.cerrarCargaComics();
 			stage.close();
 		}
+	}
+
+	public void stop() {
+		alarmaList.detenerThreadChecker();
 	}
 }

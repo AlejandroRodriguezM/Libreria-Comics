@@ -2,7 +2,7 @@
  * Contiene las clases que hacen funcionar las diferentes funciones de uso de back end y front de todo el proyecto
  *  
 */
-package controlUI;
+package controladores.funcionesInterfaz;
 
 /**
  * Clase que representa un hipervínculo con su texto de visualización y URL.

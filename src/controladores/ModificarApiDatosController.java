@@ -7,7 +7,7 @@ import com.gluonhq.charm.glisten.control.ProgressIndicator;
 
 import alarmas.AlarmaList;
 import apis.funciones.FuncionesApis;
-import controlUI.FuncionesManejoFront;
+import controladores.funcionesInterfaz.FuncionesManejoFront;
 import funciones_auxiliares.Ventanas;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -193,6 +193,10 @@ public class ModificarApiDatosController implements Initializable {
 		Stage myStage = (Stage) guardarDatosApi.getScene().getWindow();
 		myStage.close();
 
+	}
+	
+	public void stop() {
+		alarmaList.detenerThreadChecker();
 	}
 
 }

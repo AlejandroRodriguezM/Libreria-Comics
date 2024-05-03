@@ -2,7 +2,7 @@
  * Contiene las clases que hacen funcionar las diferentes funciones de uso de back end y front de todo el proyecto
  *  
 */
-package controlUI;
+package controladores.funcionesInterfaz;
 
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql

@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import controlUI.FuncionesManejoFront;
+import controladores.funcionesInterfaz.FuncionesManejoFront;
 import dbmanager.ConectManager;
 import funciones_auxiliares.Utilidades;
 import javafx.application.Platform;

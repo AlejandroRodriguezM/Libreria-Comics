@@ -282,7 +282,7 @@ public class WebScrapGoogleLeagueOfComics {
 			return new Comic.ComicBuilder("", titulo).valorGradeo("0").numero(numComic).variante(cover).firma("")
 					.editorial(distribuidora).formato(formato).procedencia(procedencia).fecha(fecha)
 					.guionista(guionista).dibujante(artistas).estado(estado).keyIssue(key).puntuacion(puntuacion)
-					.imagen(coverURL).urlReferencia(url).precioComic(valorComic).codigoComic(upcValue).build();
+					.imagen(coverURL).referenciaComic(url).precioComic(valorComic).codigoComic(upcValue).build();
 
 		} catch (IOException e) {
 			e.printStackTrace();

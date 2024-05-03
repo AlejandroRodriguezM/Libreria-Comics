@@ -18,17 +18,15 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.json.JSONException;
-
+import alarmas.AlarmaList;
 import apis.ApiISBNGeneral;
 import apis.ApiMarvel;
-import controladores.CargaComicsController;
-import alarmas.AlarmaList;
 import comicManagement.Comic;
-import controlUI.AccionControlUI;
-import controlUI.FuncionesComboBox;
-import controlUI.FuncionesManejoFront;
-import controlUI.FuncionesTableView;
+import controladores.CargaComicsController;
+import controladores.funcionesInterfaz.AccionControlUI;
+import controladores.funcionesInterfaz.FuncionesComboBox;
+import controladores.funcionesInterfaz.FuncionesManejoFront;
+import controladores.funcionesInterfaz.FuncionesTableView;
 import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
@@ -106,7 +104,7 @@ public class AccionFuncionesComunes {
 			AlarmaList.mostrarMensajePront(mensaje, false, getReferenciaVentana().getProntInfo());
 			comicsFinal = listaComics = ListaComicsDAO.comicsImportados;
 			Platform.runLater(() -> {
-				FuncionesTableView.tablaBBDD(comicsFinal, getReferenciaVentana().getTablaBBDD());
+				FuncionesTableView.tablaBBDD(comicsFinal);
 			});
 
 			return; // Agregar return para salir del método en este punto
@@ -141,7 +139,7 @@ public class AccionFuncionesComunes {
 		comicsFinal = listaComics; // Declarar otra variable final para listaComics
 
 		Platform.runLater(() -> {
-			FuncionesTableView.tablaBBDD(comicsFinal, getReferenciaVentana().getTablaBBDD());
+			FuncionesTableView.tablaBBDD(comicsFinal);
 		});
 
 		getReferenciaVentana().getTablaBBDD().refresh();
@@ -167,7 +165,7 @@ public class AccionFuncionesComunes {
 
 		ListaComicsDAO.listasAutoCompletado();
 		FuncionesTableView.nombreColumnas();
-		FuncionesTableView.actualizarBusquedaRaw(getReferenciaVentana().getTablaBBDD());
+		FuncionesTableView.actualizarBusquedaRaw();
 		funcionesCombo.rellenarComboBox(comboboxes);
 	}
 
@@ -391,7 +389,7 @@ public class AccionFuncionesComunes {
 
 		// Si el cómic existe en la base de datos
 		if (ComicManagerDAO.comprobarIdentificadorComic(ID)) {
-			FuncionesTableView.actualizarBusquedaRaw(getReferenciaVentana().getTablaBBDD());
+			FuncionesTableView.actualizarBusquedaRaw();
 			return true;
 		} else { // Si el cómic no existe en la base de datos
 			String mensaje = "ERROR. ID desconocido.";
@@ -445,7 +443,7 @@ public class AccionFuncionesComunes {
 			LocalDate fecha = Utilidades.parseFecha(fechaVenta);
 
 			// Variables relacionadas con la imagen del cómic
-			String urlReferencia = Utilidades.defaultIfNullOrEmpty(comic.geturlReferencia(), "Vacio");
+			String urlReferencia = Utilidades.defaultIfNullOrEmpty(comic.getUrlReferencia(), "Vacio");
 			String urlImagen = comic.getImagen();
 			String editorial = Utilidades
 					.defaultIfNullOrEmpty(DatabaseManagerDAO.corregirPatrones(comic.getEditorial()), "Vacio");
@@ -485,13 +483,13 @@ public class AccionFuncionesComunes {
 			Comic comicImport = new Comic.ComicBuilder(id, titulo).valorGradeo("0").numero(numero).variante(variante)
 					.firma("").editorial(editorial).formato(formato).procedencia(procedencia).fecha(fecha.toString())
 					.guionista(escritores).dibujante(dibujantes).estado("Comprado").keyIssue(keyIssue)
-					.puntuacion("Sin puntuar").imagen(imagen).urlReferencia(urlReferencia).precioComic(precio)
+					.puntuacion("Sin puntuar").imagen(imagen).referenciaComic(urlReferencia).precioComic(precio)
 					.codigoComic(codigoComic).build();
 
 			ListaComicsDAO.comicsImportados.add(comicImport);
 //
 			FuncionesTableView.nombreColumnas();
-			FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, getReferenciaVentana().getTablaBBDD());
+			FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados);
 		});
 	}
 

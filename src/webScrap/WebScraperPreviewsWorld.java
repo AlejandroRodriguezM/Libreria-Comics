@@ -182,7 +182,7 @@ public class WebScraperPreviewsWorld {
 				return new Comic.ComicBuilder("", titulo).valorGradeo("0").numero(numero).variante(variant).firma("")
 						.editorial(editorial).formato(formato).procedencia(procedencia).fecha(fecha).guionista(writer)
 						.dibujante(artist).estado(estado).keyIssue(issueKey).puntuacion(puntuacion)
-						.imagen(portadaImagen).urlReferencia(urlReferencia).precioComic(precio).codigoComic(diamondCode)
+						.imagen(portadaImagen).referenciaComic(urlReferencia).precioComic(precio).codigoComic(diamondCode)
 						.build();
 
 			}

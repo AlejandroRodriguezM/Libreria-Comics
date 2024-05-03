@@ -355,7 +355,7 @@ public class FuncionesExcel {
 		fila.createCell(14).setCellValue(comic.getPuntuacion());
 		fila.createCell(15).setCellValue(comic.getImagen());
 		fila.createCell(16).setCellValue(comic.getkeyIssue());
-		fila.createCell(17).setCellValue(comic.geturlReferencia());
+		fila.createCell(17).setCellValue(comic.getUrlReferencia());
 		fila.createCell(18).setCellValue(comic.getEstado());
 	}
 

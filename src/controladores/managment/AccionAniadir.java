@@ -7,9 +7,9 @@ import java.util.List;
 
 import alarmas.AlarmaList;
 import comicManagement.Comic;
-import controlUI.AccionControlUI;
-import controlUI.FuncionesComboBox;
-import controlUI.FuncionesTableView;
+import controladores.funcionesInterfaz.AccionControlUI;
+import controladores.funcionesInterfaz.FuncionesComboBox;
+import controladores.funcionesInterfaz.FuncionesTableView;
 import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.ListaComicsDAO;
@@ -73,8 +73,7 @@ public class AccionAniadir {
 			ListaComicsDAO.comicsImportados.clear();
 			referenciaVentana.getTablaBBDD().getItems().clear();
 			AccionControlUI.validarCamposClave(true);
-			FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, referenciaVentana.getTablaBBDD()); // Llamada
-																												// a
+			FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados);
 			AccionControlUI.limpiarAutorellenos(false);
 
 			String mensajePront = "Has introducido los comics correctamente\n";

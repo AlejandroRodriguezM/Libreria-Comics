@@ -335,7 +335,7 @@ public class ApiMarvel {
 			return new Comic.ComicBuilder("", title).valorGradeo("").numero(numero).variante(variante).firma("")
 					.editorial(editorial).formato(formato).procedencia(procedencia).fecha(fecha).guionista(guionistas)
 					.dibujante(dibujantes).estado(estado).keyIssue(keyIssue).puntuacion(puntuacion).imagen(imagen)
-					.urlReferencia(urlReferencia).precioComic(precioComic).codigoComic(codigoComic).build();
+					.referenciaComic(urlReferencia).precioComic(precioComic).codigoComic(codigoComic).build();
 
 		} catch (JSONException e) {
 			e.printStackTrace();

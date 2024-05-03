@@ -1,4 +1,4 @@
-package controlUI;
+package controladores.funcionesInterfaz;
 
 import java.util.ArrayList;
 import java.util.Arrays;

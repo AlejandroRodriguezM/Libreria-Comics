@@ -7,10 +7,10 @@ import java.util.List;
 
 import alarmas.AlarmaList;
 import comicManagement.Comic;
-import controlUI.AccionControlUI;
-import controlUI.FuncionesComboBox;
-import controlUI.FuncionesManejoFront;
-import controlUI.FuncionesTableView;
+import controladores.funcionesInterfaz.AccionControlUI;
+import controladores.funcionesInterfaz.FuncionesComboBox;
+import controladores.funcionesInterfaz.FuncionesManejoFront;
+import controladores.funcionesInterfaz.FuncionesTableView;
 import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
@@ -87,7 +87,7 @@ public class AccionModificar {
 					funcionesCombo.rellenarComboBox(comboboxes);
 					getReferenciaVentana().getTablaBBDD().refresh();
 					FuncionesTableView.nombreColumnas();
-					FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, getReferenciaVentana().getTablaBBDD());
+					FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados);
 				} else {
 					String mensaje = "Accion cancelada";
 					AlarmaList.mostrarMensajePront(mensaje, false, getReferenciaVentana().getProntInfo());
@@ -113,7 +113,7 @@ public class AccionModificar {
 				funcionesCombo.rellenarComboBox(comboboxes);
 				getReferenciaVentana().getTablaBBDD().refresh();
 				FuncionesTableView.nombreColumnas();
-				FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, getReferenciaVentana().getTablaBBDD());
+				FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados);
 
 			} else {
 				String mensaje = "Accion cancelada";
@@ -147,7 +147,7 @@ public class AccionModificar {
 				List<ComboBox<String>> comboboxes = getReferenciaVentana().getComboboxes();
 				getReferenciaVentana().getTablaBBDD().refresh();
 				FuncionesTableView.nombreColumnas();
-				FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, getReferenciaVentana().getTablaBBDD());
+				FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados);
 				if (comboboxes != null) {
 					funcionesCombo.rellenarComboBox(comboboxes);
 				}
@@ -162,8 +162,8 @@ public class AccionModificar {
 				ListaComicsDAO.reiniciarListaComics();
 				ListaComicsDAO.listasAutoCompletado();
 				FuncionesTableView.nombreColumnas(); // Llamada a funcion
-				FuncionesTableView.actualizarBusquedaRaw(getReferenciaVentana().getTablaBBDD());
-				FuncionesTableView.tablaBBDD(listaComics, getReferenciaVentana().getTablaBBDD());
+				FuncionesTableView.actualizarBusquedaRaw();
+				FuncionesTableView.tablaBBDD(listaComics);
 
 				List<ComboBox<String>> comboboxes = getReferenciaVentana().getComboboxes();
 
@@ -208,7 +208,7 @@ public class AccionModificar {
 		AccionControlUI.limpiarAutorellenos(false);
 
 		FuncionesTableView.nombreColumnas();
-		FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, getReferenciaVentana().getTablaBBDD());
+		FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados);
 	}
 
 	public void mostrarElementosPuntuar(List<Node> elementosAMostrarYHabilitar) {
@@ -276,7 +276,7 @@ public class AccionModificar {
 		if (getReferenciaVentana().getTablaBBDD() != null) {
 			getReferenciaVentana().getTablaBBDD().refresh();
 			FuncionesTableView.nombreColumnas();
-			FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, getReferenciaVentana().getTablaBBDD());
+			FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados);
 		}
 
 	}

@@ -5,9 +5,9 @@ import java.util.List;
 
 import alarmas.AlarmaList;
 import comicManagement.Comic;
-import controlUI.AccionControlUI;
-import controlUI.FuncionesComboBox;
-import controlUI.FuncionesTableView;
+import controladores.funcionesInterfaz.AccionControlUI;
+import controladores.funcionesInterfaz.FuncionesComboBox;
+import controladores.funcionesInterfaz.FuncionesTableView;
 import dbmanager.ComicManagerDAO;
 import dbmanager.DBUtilidades;
 import dbmanager.ListaComicsDAO;
@@ -51,7 +51,7 @@ public class AccionEliminar {
 				List<Comic> listaComics = ComicManagerDAO.verLibreria(sentenciaSQL);
 				getReferenciaVentana().getTablaBBDD().refresh();
 				FuncionesTableView.nombreColumnas();
-				FuncionesTableView.tablaBBDD(listaComics, getReferenciaVentana().getTablaBBDD());
+				FuncionesTableView.tablaBBDD(listaComics);
 
 				List<ComboBox<String>> comboboxes = getReferenciaVentana().getComboboxes();
 
@@ -77,7 +77,7 @@ public class AccionEliminar {
 				AccionControlUI.limpiarAutorellenos(false);
 				FuncionesTableView.nombreColumnas();
 
-				FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados, getReferenciaVentana().getTablaBBDD());
+				FuncionesTableView.tablaBBDD(ListaComicsDAO.comicsImportados);
 				getReferenciaVentana().getTablaBBDD().refresh();
 
 				if (ListaComicsDAO.comicsImportados.isEmpty()) {

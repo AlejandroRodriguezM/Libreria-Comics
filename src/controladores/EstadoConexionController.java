@@ -9,7 +9,7 @@ import java.util.concurrent.Executors;
 import com.gluonhq.charm.glisten.control.ProgressIndicator;
 
 import alarmas.AlarmaList;
-import controlUI.FuncionesManejoFront;
+import controladores.funcionesInterfaz.FuncionesManejoFront;
 import ficherosFunciones.FuncionesFicheros;
 import funciones_auxiliares.Utilidades;
 import javafx.application.Platform;
@@ -149,6 +149,10 @@ public class EstadoConexionController implements Initializable {
 
 			stage.close();
 		}
+	}
+
+	public void stop() {
+		alarmaList.detenerThreadChecker();
 	}
 
 }

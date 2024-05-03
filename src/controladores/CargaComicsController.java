@@ -7,7 +7,7 @@ package controladores;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import controlUI.FuncionesManejoFront;
+import controladores.funcionesInterfaz.FuncionesManejoFront;
 import javafx.application.Platform;
 
 /**

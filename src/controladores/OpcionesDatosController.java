@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import alarmas.AlarmaList;
-import controlUI.FuncionesComboBox;
+import controladores.funcionesInterfaz.FuncionesComboBox;
 import ficherosFunciones.FuncionesFicheros;
 import funciones_auxiliares.Utilidades;
 import funciones_auxiliares.Ventanas;
@@ -211,6 +211,7 @@ public class OpcionesDatosController implements Initializable {
 	 * Instancia de la clase Ventanas para la navegación.
 	 */
 	private static Ventanas nav = new Ventanas();
+	AlarmaList alarmaList = new AlarmaList();
 
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
@@ -221,14 +222,19 @@ public class OpcionesDatosController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		AlarmaList alarmaList = new AlarmaList();
-
 		alarmaList.setAlarmaConexion(alarmaConexion);
 		alarmaList.setAlarmaConexionInternet(alarmaConexionInternet);
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
+		Platform.runLater(() -> {
 
-		alarmaList.iniciarThreadChecker(false);
+			Stage myStage = (Stage) this.usuario_label.getScene().getWindow();
+			myStage.setOnCloseRequest(event -> {
+				stop();
+			});
 
+			alarmaList.iniciarThreadChecker(false);
+
+		});
 		FuncionesFicheros.crearEstructura();
 		AlarmaList.configureEyeToggle(toggleEyeImageView, passUsuarioTextField, pass);
 		restringir_entrada_datos();
@@ -548,6 +554,10 @@ public class OpcionesDatosController implements Initializable {
 		// fuerza.
 		Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
 		myStage.close();
+	}
+
+	public void stop() {
+		alarmaList.detenerThreadChecker();
 	}
 
 }

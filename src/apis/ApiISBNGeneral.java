@@ -112,7 +112,7 @@ public class ApiISBNGeneral {
 			return new Comic.ComicBuilder("", nombre).valorGradeo("").numero(numero).variante(variant).firma("")
 					.editorial(editorial).formato(formato).procedencia("Estados Unidos (United States)").fecha(fecha)
 					.guionista(guionistas).dibujante(dibujantes).estado("En posesion").keyIssue(keyIssue)
-					.puntuacion("Sin puntuacion").imagen(imagen).urlReferencia(urlReferencia).precioComic(precio)
+					.puntuacion("Sin puntuacion").imagen(imagen).referenciaComic(urlReferencia).precioComic(precio)
 					.codigoComic(isbn).build();
 		} catch (IOException | JSONException | URISyntaxException e) {
 			e.printStackTrace();

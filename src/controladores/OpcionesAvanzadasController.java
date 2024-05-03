@@ -17,13 +17,13 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.imageio.ImageIO;
 
+import controladores.funcionesInterfaz.FuncionesComboBox;
+import controladores.funcionesInterfaz.FuncionesManejoFront;
 import controladores.managment.AccionFuncionesComunes;
 import controladores.managment.AccionModificar;
 import controladores.managment.AccionReferencias;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
-import controlUI.FuncionesComboBox;
-import controlUI.FuncionesManejoFront;
 import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.DatabaseManagerDAO;

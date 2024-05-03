@@ -20,6 +20,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import controladores.funcionesInterfaz.AccionControlUI;
+import controladores.funcionesInterfaz.FuncionesComboBox;
+import controladores.funcionesInterfaz.FuncionesManejoFront;
+import controladores.funcionesInterfaz.FuncionesTableView;
 import controladores.managment.AccionEliminar;
 import controladores.managment.AccionFuncionesComunes;
 import controladores.managment.AccionModificar;
@@ -27,10 +31,6 @@ import controladores.managment.AccionReferencias;
 import controladores.managment.AccionSeleccionar;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
-import controlUI.AccionControlUI;
-import controlUI.FuncionesComboBox;
-import controlUI.FuncionesManejoFront;
-import controlUI.FuncionesTableView;
 import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
@@ -449,6 +449,8 @@ public class MenuPrincipalController implements Initializable {
 
 	public static CompletableFuture<List<Entry<String, String>>> urlPreviews;
 
+	AlarmaList alarmaList = new AlarmaList();
+
 	double y = 0;
 
 	public AccionReferencias guardarReferencia() {
@@ -556,7 +558,7 @@ public class MenuPrincipalController implements Initializable {
 
 		AccionReferencias.setColumnasTabla(Arrays.asList(nombre, gradeo, numero, variante, firma, editorial, formato,
 				procedencia, fecha, guionista, dibujante, referencia));
-		
+
 		return referenciaVentana;
 	}
 
@@ -580,12 +582,13 @@ public class MenuPrincipalController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		AlarmaList alarmaList = new AlarmaList();
-
-		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
-		alarmaList.iniciarThreadChecker(true);
-
 		Platform.runLater(() -> {
+
+			Stage myStage = (Stage) this.botonIntroducir.getScene().getWindow();
+			myStage.setOnCloseRequest(event -> stop());
+
+			alarmaList.setAlarmaConexionSql(alarmaConexionSql);
+			alarmaList.iniciarThreadChecker(true);
 
 			urlPreviews = WebScraperCatalogPreviews.urlPreviews();
 
@@ -600,6 +603,7 @@ public class MenuPrincipalController implements Initializable {
 
 			FuncionesTableView.modificarColumnas();
 			AccionControlUI.controlarEventosInterfazPrincipal(guardarReferencia());
+
 		});
 
 		AccionControlUI.establecerTooltips();
@@ -993,7 +997,7 @@ public class MenuPrincipalController implements Initializable {
 		limpiarComboBox();
 		ListaComicsDAO.reiniciarListaComics();
 		FuncionesTableView.nombreColumnas();
-		FuncionesTableView.actualizarBusquedaRaw(tablaBBDD);
+		FuncionesTableView.actualizarBusquedaRaw();
 		List<Comic> listaComics = new ArrayList<Comic>();
 		if (esGuardado) {
 			listaComics = ListaComicsDAO.comicsGuardadosList;
@@ -1003,7 +1007,7 @@ public class MenuPrincipalController implements Initializable {
 			listaComics = SelectManager.verLibreria(sentenciaSQL, false);
 		}
 
-		FuncionesTableView.tablaBBDD(listaComics, tablaBBDD);
+		FuncionesTableView.tablaBBDD(listaComics);
 	}
 
 	////////////////////////////
@@ -1646,13 +1650,17 @@ public class MenuPrincipalController implements Initializable {
 
 		return (Stage) menu_navegacion.getScene().getWindow();
 	}
-
+	
 	/**
 	 * Al cerrar la ventana, carga la ventana del menu principal
 	 *
 	 */
 	public void closeWindows() {
+		Platform.exit();
+	}
 
+	public void stop() {
+		alarmaList.detenerThreadChecker();
 		Platform.exit();
 	}
 }

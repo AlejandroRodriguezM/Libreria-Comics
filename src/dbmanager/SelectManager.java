@@ -106,19 +106,11 @@ public class SelectManager {
 					existe = (rowCount > 0);
 				}
 			}
-		} catch (SQLSyntaxErrorException e) {
+		} catch (Exception e) {
 			Utilidades.manejarExcepcion(e);
 			// Manejar error de sintaxis SQL de manera específica
 			return false;
-		} catch (SQLException e) {
-			Utilidades.manejarExcepcion(e);
-			// Manejar otras excepciones de SQL de manera específica
-			return false;
-		} catch (Exception e) {
-			Utilidades.manejarExcepcion(e);
-			// Manejar otras excepciones de manera general
-			return false;
-		}
+		}  
 
 		return existe; // Devolver si el identificador existe en la base de datos o no
 	}
@@ -208,8 +200,8 @@ public class SelectManager {
 		String sentenciaSQL = "SELECT * FROM comicsbbdd " + "WHERE nomVariante LIKE '%" + datoSeleccionado
 				+ "%' OR nomComic LIKE '%" + datoSeleccionado + "%' OR nomGuionista LIKE '%" + datoSeleccionado
 				+ "%' OR firma LIKE '%" + datoSeleccionado + "%' OR nomDibujante LIKE '%" + datoSeleccionado
-				+ "%' OR nomComic LIKE '%" + datoSeleccionado + "%' OR nomEditorial LIKE '%" + datoSeleccionado
-				+ "%' OR caja_deposito LIKE '%" + datoSeleccionado + "%' OR formato LIKE '%" + datoSeleccionado
+				+ "%' OR numComic LIKE '%" + datoSeleccionado + "%' OR nomEditorial LIKE '%" + datoSeleccionado
+				+ "%' OR nivel_gradeo LIKE '%" + datoSeleccionado + "%' OR formato LIKE '%" + datoSeleccionado
 				+ "%' OR fecha_publicacion LIKE '%" + datoSeleccionado + "%' OR procedencia LIKE '%" + datoSeleccionado
 				+ "%' ORDER BY nomComic, numComic ASC, fecha_publicacion";
 

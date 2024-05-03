@@ -87,6 +87,24 @@ public class Ventanas {
 
 	private boolean ventanaCerrada = false; // Variable para almacenar el estado de la ventana
 
+	public void cerrarStages() {
+		cerrarStage(accesoBBDDStage);
+		cerrarStage(estadoConexionStage);
+		cerrarStage(estadoApiStage);
+		cerrarStage(menuCodigoBarras);
+		cerrarStage(accionComic);
+		cerrarStage(opcionesAvanzadasStage);
+		cerrarStage(cargaComics);
+		cerrarStage(menuPrincipal);
+		cerrarStage(imagenAmpliada);
+	}
+
+	private void cerrarStage(Stage stage) {
+		if (stage != null) {
+			stage.close();
+		}
+	}
+
 	/**
 	 * Abre una ventana para el acceso a la base de datos. Carga la vista y muestra
 	 * una nueva ventana con el controlador correspondiente.
@@ -131,6 +149,75 @@ public class Ventanas {
 	}
 
 	/**
+	 * Abre la ventana del menú principal de la aplicación. Carga la vista de la
+	 * ventana del menú principal y muestra la ventana correspondiente con su
+	 * controlador. Define el tamaño mínimo y máximo de la ventana según la
+	 * resolución de la pantalla. Asocia el comportamiento de cierre de la ventana.
+	 */
+	public void verMenuPrincipal() {
+//		Platform.runLater(() -> {
+		try {
+			ventanaAbierta(menuPrincipal);
+
+			// Cargo la vista
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuPrincipal.fxml"));
+
+			// Cargo el padre
+			Parent root = loader.load();
+
+			// Obtengo el controlador
+			MenuPrincipalController controlador = loader.getController();
+
+			// Crea la escena
+			Scene scene = new Scene(root);
+			scene.getStylesheets().add(getClass().getResource("/style/custom-combobox.css").toExternalForm());
+
+			menuPrincipal = new Stage();
+			// Determine the screen's dimensions
+			Screen screen = Screen.getPrimary();
+			Rectangle2D bounds = screen.getVisualBounds();
+
+			double minWidth = 974;
+			double minHeight = 607;
+
+			// Set the minimum size
+			menuPrincipal.setMinWidth(minWidth);
+			menuPrincipal.setMinHeight(minHeight);
+
+			// Verifica si la resolución es menor que las dimensiones mínimas
+			if (bounds.getWidth() <= minWidth || bounds.getHeight() <= minHeight) {
+				menuPrincipal.setWidth(minWidth);
+				menuPrincipal.setHeight(minHeight);
+			}
+
+			// Set the maximum size to the screen's size
+			menuPrincipal.setMaxWidth(bounds.getWidth());
+			menuPrincipal.setMaxHeight(bounds.getHeight());
+
+			menuPrincipal.setTitle("Menu principal");
+			menuPrincipal.getIcons().add(new Image("/Icono/icon2.png"));
+
+			// Asocio el stage con el scene
+			menuPrincipal.setScene(scene);
+			menuPrincipal.show();
+
+			// Indico qué hacer al cerrar
+			menuPrincipal.setOnCloseRequest(e -> {
+				cerrarStages();
+				controlador.closeWindows();
+				controlador.stop();
+
+				menuPrincipal = null;
+			});
+
+		} catch (IOException ex) {
+			alertaException(ex.toString());
+			ex.printStackTrace();
+		}
+//		});
+	}
+
+	/**
 	 * Muestra la ventana de estado de conexion a la base de datos.
 	 */
 	public void verEstadoConexion() {
@@ -161,7 +248,11 @@ public class Ventanas {
 					estadoConexionStage.show();
 
 					// Indico que debe hacer al cerrar
-					estadoConexionStage.setOnCloseRequest(e -> controlador.closeWindow());
+					estadoConexionStage.setOnCloseRequest(e -> {
+						controlador.closeWindow();
+						controlador.stop();
+						estadoConexionStage = null; // Establece la ventana actual a null cuando se cierra
+					});
 
 				} catch (IOException ex) {
 					alertaException(ex.toString());
@@ -210,7 +301,9 @@ public class Ventanas {
 					// Indico que debe hacer al cerrar
 
 					estadoApiStage.setOnCloseRequest(e -> {
+
 						controlador.closeWindow();
+						controlador.stop();
 						estadoApiStage = null; // Establece la ventana actual a null cuando se cierra
 					});
 
@@ -263,6 +356,7 @@ public class Ventanas {
 			// Indico que debe hacer al cerrar
 			accionComic.setOnCloseRequest(e -> {
 				controlador.closeWindow();
+				controlador.stop();
 				accionComic = null; // Establece la ventana actual a null cuando se cierra
 			});
 			ConectManager.resetConnection();
@@ -412,71 +506,6 @@ public class Ventanas {
 	}
 
 	/**
-	 * Abre la ventana del menú principal de la aplicación. Carga la vista de la
-	 * ventana del menú principal y muestra la ventana correspondiente con su
-	 * controlador. Define el tamaño mínimo y máximo de la ventana según la
-	 * resolución de la pantalla. Asocia el comportamiento de cierre de la ventana.
-	 */
-	public void verMenuPrincipal() {
-		try {
-
-			ventanaAbierta(menuPrincipal);
-
-			// Cargo la vista
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/MenuPrincipal.fxml"));
-
-			// Cargo el padre
-			Parent root = loader.load();
-
-			// Obtengo el controlador
-			MenuPrincipalController controlador = loader.getController();
-
-			// Crea la escena
-			Scene scene = new Scene(root);
-			scene.getStylesheets().add(getClass().getResource("/style/custom-combobox.css").toExternalForm());
-
-			menuPrincipal = new Stage();
-			// Determine the screen's dimensions
-			Screen screen = Screen.getPrimary();
-			Rectangle2D bounds = screen.getVisualBounds();
-
-			double minWidth = 974;
-			double minHeight = 607;
-
-			// Set the minimum size
-			menuPrincipal.setMinWidth(minWidth);
-			menuPrincipal.setMinHeight(minHeight);
-
-			// Verifica si la resolución es menor que las dimensiones mínimas
-			if (bounds.getWidth() <= minWidth || bounds.getHeight() <= minHeight) {
-				menuPrincipal.setWidth(minWidth);
-				menuPrincipal.setHeight(minHeight);
-			}
-
-			// Set the maximum size to the screen's size
-			menuPrincipal.setMaxWidth(bounds.getWidth());
-			menuPrincipal.setMaxHeight(bounds.getHeight());
-
-			menuPrincipal.setTitle("Menu principal");
-			menuPrincipal.getIcons().add(new Image("/Icono/icon2.png"));
-
-			// Asocio el stage con el scene
-			menuPrincipal.setScene(scene);
-			menuPrincipal.show();
-
-			// Indico qué hacer al cerrar
-			menuPrincipal.setOnCloseRequest(e -> {
-				controlador.closeWindows();
-				menuPrincipal = null;
-			});
-
-		} catch (IOException ex) {
-			alertaException(ex.toString());
-			ex.printStackTrace();
-		}
-	}
-
-	/**
 	 * Abre la ventana de recomendaciones de cómics. Carga la vista de la ventana de
 	 * recomendaciones y muestra la ventana correspondiente con su controlador.
 	 * Define el tamaño de la ventana, la asocia con el comportamiento de cierre y
@@ -546,7 +575,9 @@ public class Ventanas {
 			stage.setScene(scene);
 			stage.show();
 			// Indico que debe hacer al cerrar
-			stage.setOnCloseRequest(e -> controlador.closeWindows());
+			stage.setOnCloseRequest(e -> {
+				controlador.closeWindows();
+			});
 
 		} catch (IOException ex) {
 			alertaException(ex.toString());
@@ -586,7 +617,10 @@ public class Ventanas {
 			stage.setScene(scene);
 			stage.show();
 			// Indico que debe hacer al cerrar
-			stage.setOnCloseRequest(e -> controlador.closeWindows());
+			stage.setOnCloseRequest(e -> {
+				controlador.closeWindows();
+				controlador.stop();
+			});
 		} catch (IOException ex) {
 			alertaException(ex.toString());
 		}
@@ -689,8 +723,7 @@ public class Ventanas {
 	}
 
 	public static void cerrarVentanaActual(Stage nodoEscena) {
-		Stage stage = (Stage) nodoEscena.getScene().getWindow(); // Reemplaza tuNodoDeEscena con el nodo de tu
-																	// escena actual
+		Stage stage = (Stage) nodoEscena.getScene().getWindow();
 		stage.close();
 	}
 
@@ -938,38 +971,37 @@ public class Ventanas {
 	 *         operación.
 	 */
 	public CompletableFuture<Boolean> borrarContenidoTabla() {
-	    CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
+		CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
 
-	    Platform.runLater(() -> {
-	        Alert alert1 = new Alert(AlertType.CONFIRMATION);
-	        Stage stage1 = (Stage) alert1.getDialogPane().getScene().getWindow();
-	        stage1.setResizable(false);
-	        stage1.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
-	        alert1.setTitle("Borrando . . .");
-	        alert1.setHeaderText("Estás a punto de borrar el contenido.");
-	        alert1.setContentText("¿Estás seguro que quieres borrarlo todo?");
+		Platform.runLater(() -> {
+			Alert alert1 = new Alert(AlertType.CONFIRMATION);
+			Stage stage1 = (Stage) alert1.getDialogPane().getScene().getWindow();
+			stage1.setResizable(false);
+			stage1.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
+			alert1.setTitle("Borrando . . .");
+			alert1.setHeaderText("Estás a punto de borrar el contenido.");
+			alert1.setContentText("¿Estás seguro que quieres borrarlo todo?");
 
-	        Optional<ButtonType> result1 = alert1.showAndWait();
-	        result1.ifPresent(result -> {
-	            if (result == ButtonType.OK) {
-	                Alert alert2 = new Alert(AlertType.CONFIRMATION);
-	                Stage stage2 = (Stage) alert2.getDialogPane().getScene().getWindow();
-	                stage2.setResizable(false);
-	                stage2.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
-	                alert2.setTitle("Borrando . . .");
-	                alert2.setHeaderText("¿Estás seguro?");
-	                alert2.setContentText("¿De verdad de verdad quieres borrarlo todo?");
+			Optional<ButtonType> result1 = alert1.showAndWait();
+			result1.ifPresent(result -> {
+				if (result == ButtonType.OK) {
+					Alert alert2 = new Alert(AlertType.CONFIRMATION);
+					Stage stage2 = (Stage) alert2.getDialogPane().getScene().getWindow();
+					stage2.setResizable(false);
+					stage2.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
+					alert2.setTitle("Borrando . . .");
+					alert2.setHeaderText("¿Estás seguro?");
+					alert2.setContentText("¿De verdad de verdad quieres borrarlo todo?");
 
-	                alert2.showAndWait().ifPresent(result2 -> futureResult.complete(result2 == ButtonType.OK));
-	            } else {
-	                futureResult.complete(false);
-	            }
-	        });
-	    });
+					alert2.showAndWait().ifPresent(result2 -> futureResult.complete(result2 == ButtonType.OK));
+				} else {
+					futureResult.complete(false);
+				}
+			});
+		});
 
-	    return futureResult;
+		return futureResult;
 	}
-
 
 	/**
 	 * Solicita confirmación al usuario antes de borrar el contenido de la

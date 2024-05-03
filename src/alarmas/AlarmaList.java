@@ -4,6 +4,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import dbmanager.ConectManager;
 import dbmanager.DatabaseManagerDAO;
@@ -56,6 +60,8 @@ public class AlarmaList {
 	 * Línea de tiempo para la animación.
 	 */
 	private static Timeline timelineGif;
+
+	private boolean ejecutando = true;
 
 	private static Label alarmaConexion = new Label("alarmaConexion");
 	private Label alarmaConexionInternet = new Label("alarmaConexionInternet");
@@ -126,86 +132,83 @@ public class AlarmaList {
 	}
 
 	public void iniciarThreadChecker(boolean esComprobarConexion) {
-		Thread checkerThread = new Thread(() -> {
-			try {
-				detenerAnimacionEspera();
-				while (true) {
-					boolean estadoInternet = Utilidades.isInternetAvailable();
-					Platform.runLater(() -> {
-
-						Map<String, String> datosConfiguracion = FuncionesFicheros.devolverDatosConfig();
-
-						String port = datosConfiguracion.get("Puerto");
-						String host = datosConfiguracion.get("Hosting");
-
-						if (!ConectManager.comprobarDatosConexion()) {
-							iniciarAnimacionEspera(iniciarAnimacionEspera);
-						}
-
-						if (estadoInternet) {
-							iniciarAnimacionEspera(iniciarAnimacionEsperaInternet);
-							detenerAnimacion(animacionAlarmaTimelineInternet);
-							asignarTooltip(alarmaConexionInternet, "Tienes conexión a internet");
-							iniciarAnimacionAlarmaOnline(alarmaConexionInternet);
-
-						} else {
-							asignarTooltip(alarmaConexionInternet, "No tienes conexión a internet");
-							iniciarAnimacionAlarmaError(alarmaConexionInternet);
-
-							if (esComprobarConexion) {
-								iniciarAnimacionDesconectado(iniciarAnimacionEspera);
-							}
-						}
-
-						if (Utilidades.isMySQLServiceRunning(host, port)) {
-
-							if (animacionAlarmaTimelineMySql != null
-									&& animacionAlarmaTimelineMySql.getStatus() == Animation.Status.RUNNING) {
-								animacionAlarmaTimelineMySql.stop();
-							}
-
-							iniciarAnimacionAlarma(alarmaConexion);
-
-							if (esComprobarConexion) {
-								if (ConectManager.estadoConexion) {
-									detenerAnimacionEspera();
-//									iniciarAnimacionConectado(iniciarAnimacionEspera);
-									iniciarAnimacionConectado(iniciarAnimacionEspera);
-								} else {
-									iniciarAnimacionEspera(iniciarAnimacionEspera);
-								}
-							}
-							asignarTooltip(alarmaConexionSql, "Servicio de MySQL activado");
-							iniciarAnimacionAlarmaOnline(alarmaConexionSql);
-
-						} else {
-
-							if (esComprobarConexion) {
-								iniciarAnimacionDesconectado(iniciarAnimacionEspera);
-							} else {
-								iniciarAnimacionErrorMySql(iniciarAnimacionEspera);
-							}
-
-							asignarTooltip(alarmaConexionSql, "Servicio de MySQL desactivado");
-							iniciarAnimacionAlarmaError(alarmaConexionSql);
-						}
-
-						asignarTooltip(alarmaConexion,
-								"Esperando guardado/modificación/conexion de datos de la base de datos local");
-
-					});
-					Thread.sleep(5000); // Espera 15 segundos
+		ForkJoinPool.commonPool().execute(() -> {
+			while (ejecutando) {
+				try {
+					procesarEstadoConexion();
+					Thread.sleep(5000); // Espera 5 segundos antes de la próxima ejecución
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt(); // Restaura la bandera de interrupción
+				} catch (Exception e) {
+					Utilidades.manejarExcepcion(e);
 				}
-			} catch (InterruptedException e) {
-				Utilidades.manejarExcepcion(e);
 			}
 		});
+	}
 
-		checkerThread.setDaemon(true); // Marcar el hilo como daemon
-		checkerThread.start();
+	public void detenerThreadChecker() {
+		ejecutando = false;
+	}
 
-		detenerAnimacion();
+	private void procesarEstadoConexion() {
+		detenerAnimacionEspera();
+		boolean estadoInternet = Utilidades.isInternetAvailable();
+		Map<String, String> datosConfiguracion = FuncionesFicheros.devolverDatosConfig();
+		String port = datosConfiguracion.get("Puerto");
+		String host = datosConfiguracion.get("Hosting");
 
+		Platform.runLater(() -> {
+
+			manejarConexionInternet(estadoInternet);
+
+			boolean conexionMySql = Utilidades.isMySQLServiceRunning(host, port);
+			manejarConexionMySQL(conexionMySql);
+
+			asignarTooltip(alarmaConexion,
+					"Esperando guardado/modificación/conexion de datos de la base de datos local");
+		});
+	}
+
+	private void manejarConexionInternet(boolean esComprobarConexion) {
+		if (esComprobarConexion) {
+			iniciarAnimacionEspera(iniciarAnimacionEsperaInternet);
+			detenerAnimacion(animacionAlarmaTimelineInternet);
+			asignarTooltip(alarmaConexionInternet, "Tienes conexión a internet");
+			iniciarAnimacionAlarmaOnline(alarmaConexionInternet);
+		} else {
+			asignarTooltip(alarmaConexionInternet, "No tienes conexión a internet");
+			iniciarAnimacionAlarmaError(alarmaConexionInternet);
+			iniciarAnimacionEspera(iniciarAnimacionEspera);
+		}
+	}
+
+	private void manejarConexionMySQL(boolean esComprobarConexion) {
+
+		if (esComprobarConexion) {
+			if (animacionAlarmaTimelineMySql != null
+					&& animacionAlarmaTimelineMySql.getStatus() == Animation.Status.RUNNING) {
+				animacionAlarmaTimelineMySql.stop();
+			}
+			iniciarAnimacionAlarma(alarmaConexion);
+
+			if (ConectManager.estadoConexion) {
+				detenerAnimacionEspera();
+				iniciarAnimacionConectado(iniciarAnimacionEspera);
+			} else {
+				iniciarAnimacionEspera(iniciarAnimacionEspera);
+			}
+
+			asignarTooltip(alarmaConexionSql, "Servicio de MySQL activado");
+			iniciarAnimacionAlarmaOnline(alarmaConexionSql);
+		} else {
+
+			iniciarAnimacionDesconectado(iniciarAnimacionEspera);
+
+			iniciarAnimacionErrorMySql(iniciarAnimacionEspera);
+			asignarTooltip(alarmaConexionSql, "Servicio de MySQL desactivado");
+			iniciarAnimacionAlarmaError(alarmaConexionSql);
+		}
+		asignarTooltip(alarmaConexion, "Esperando guardado/modificación/conexion de datos de la base de datos local");
 	}
 
 	public void detenerAnimacion(Timeline animacion) {

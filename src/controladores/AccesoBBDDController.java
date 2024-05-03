@@ -199,6 +199,12 @@ public class AccesoBBDDController implements Initializable {
 		ConectManager.asignarValoresPorDefecto();
 
 		Platform.runLater(() -> {
+
+			Stage myStage = (Stage) this.botonOpciones.getScene().getWindow();
+			myStage.setOnCloseRequest(event -> {
+				stop();
+			});
+
 			alarmaList.iniciarThreadChecker(false);
 			if (Utilidades.isInternetAvailable()) {
 				Utilidades.cargarTasasDeCambioDesdeArchivo();
@@ -213,6 +219,7 @@ public class AccesoBBDDController implements Initializable {
 				}
 			});
 		});
+
 	}
 
 	/**
@@ -284,6 +291,7 @@ public class AccesoBBDDController implements Initializable {
 			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
 			AlarmaList.iniciarAnimacionConexion(prontEstadoConexion);
 		}
+		alarmaList.detenerThreadChecker();
 	}
 
 	/**
@@ -359,6 +367,7 @@ public class AccesoBBDDController implements Initializable {
 		if (nav.salirPrograma(event)) { // Llamada a metodo que permite salir completamente del programa
 			Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
 			myStage.close();
+			stop();
 		}
 	}
 
@@ -370,7 +379,7 @@ public class AccesoBBDDController implements Initializable {
 	void opcionesPrograma(ActionEvent event) {
 
 		nav.verOpciones();
-
+		stop();
 		Stage myStage = (Stage) this.botonOpciones.getScene().getWindow();
 		myStage.close();
 	}
@@ -379,8 +388,12 @@ public class AccesoBBDDController implements Initializable {
 	 * Cierra el programa a la fuerza correctamente.
 	 */
 	public void closeWindow() { // Metodo que permite cerrar completamente el programa en caso de cerrar a la //
-		// fuerza.
-		Stage myStage = (Stage) this.botonEnviar.getScene().getWindow();
+
+		Stage myStage = (Stage) this.botonOpciones.getScene().getWindow();
 		myStage.close();
+	}
+
+	public void stop() {
+		alarmaList.detenerThreadChecker();
 	}
 }

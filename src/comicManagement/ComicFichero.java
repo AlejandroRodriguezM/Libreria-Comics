@@ -52,7 +52,7 @@ public class ComicFichero extends Comic {
 			return new Comic.ComicBuilder("", nombre).valorGradeo(numCaja).numero(numero).variante(variante)
 					.firma(firma).editorial(editorial).formato(formato).procedencia(procedencia).fecha(fecha)
 					.guionista(guionista).dibujante(dibujante).estado(estado).keyIssue(keyIssue).puntuacion(puntuacion)
-					.imagen(imagen).urlReferencia(urlReferencia).precioComic(precioComic).codigoComic(codigoComic)
+					.imagen(imagen).referenciaComic(urlReferencia).precioComic(precioComic).codigoComic(codigoComic)
 					.build();
 
 		} else {

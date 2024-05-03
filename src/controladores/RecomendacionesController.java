@@ -34,10 +34,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
 
+import controladores.funcionesInterfaz.FuncionesManejoFront;
 import controladores.managment.AccionFuncionesComunes;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
-import controlUI.FuncionesManejoFront;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
 import dbmanager.SelectManager;

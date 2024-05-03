@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
 import comicManagement.Comic;
-import controlUI.FuncionesManejoFront;
+import controladores.funcionesInterfaz.FuncionesManejoFront;
 import dbmanager.ConectManager;
 import funciones_auxiliares.Utilidades;
 import javafx.application.Platform;

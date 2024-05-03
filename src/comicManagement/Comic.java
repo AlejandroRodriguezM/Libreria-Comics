@@ -259,7 +259,7 @@ public class Comic {
 			return this;
 		}
 
-		public ComicBuilder urlReferencia(String urlReferencia) {
+		public ComicBuilder referenciaComic(String urlReferencia) {
 			this.urlReferencia = urlReferencia;
 			return this;
 		}
@@ -415,6 +415,37 @@ public class Comic {
 	}
 
 	/**
+	 * Getter para obtener la URL de la imagen del cómic.
+	 *
+	 * @return La URL de la imagen del cómic.
+	 */
+	public String getImagen() {
+		return imagen;
+	}
+
+	/**
+	 * Getter para obtener la URL de referencia del cómic.
+	 *
+	 * @return La URL de referencia del cómic.
+	 */
+	public String getUrlReferencia() {
+	    return urlReferencia;
+	}
+
+	/**
+	 * Getter para obtener el precio del cómic.
+	 *
+	 * @return El precio del cómic.
+	 */
+	public String getprecioComic() {
+		return precioComic;
+	}
+
+	public String getcodigoComic() {
+		return codigoComic;
+	}
+
+	/**
 	 * Setter para establecer la clave (key issue) del cómic.
 	 *
 	 * @param keyIssue La clave (key issue) a establecer.
@@ -430,37 +461,6 @@ public class Comic {
 	 */
 	public void setPuntuacion(String puntuacion) {
 		this.puntuacion = puntuacion;
-	}
-
-	/**
-	 * Getter para obtener la URL de la imagen del cómic.
-	 *
-	 * @return La URL de la imagen del cómic.
-	 */
-	public String getImagen() {
-		return imagen;
-	}
-
-	/**
-	 * Getter para obtener la URL de referencia del cómic.
-	 *
-	 * @return La URL de referencia del cómic.
-	 */
-	public String geturlReferencia() {
-		return urlReferencia;
-	}
-
-	/**
-	 * Getter para obtener el precio del cómic.
-	 *
-	 * @return El precio del cómic.
-	 */
-	public String getprecioComic() {
-		return precioComic;
-	}
-
-	public String getcodigoComic() {
-		return codigoComic;
 	}
 
 	public void setcodigoComic(String codigoComic) {
