@@ -157,7 +157,7 @@ public class WebScrapGoogleLeagueOfComics {
 			String key = "";
 			String upcValue = "";
 			String formato = "";
-
+			String gradeo = "NM (Noir Medium)";
 			// Buscar la sección de detalles de la página
 			Element detallesPagina = doc.selectFirst("div.page-details");
 			if (detallesPagina != null) {
@@ -279,7 +279,7 @@ public class WebScrapGoogleLeagueOfComics {
 			String estado = "En posesion";
 			String puntuacion = "Sin puntuacion";
 
-			return new Comic.ComicBuilder("", titulo).valorGradeo("0").numero(numComic).variante(cover).firma("")
+			return new Comic.ComicBuilder("", titulo).valorGradeo(gradeo).numero(numComic).variante(cover).firma("")
 					.editorial(distribuidora).formato(formato).procedencia(procedencia).fecha(fecha)
 					.guionista(guionista).dibujante(artistas).estado(estado).keyIssue(key).puntuacion(puntuacion)
 					.imagen(coverURL).referenciaComic(url).precioComic(valorComic).codigoComic(upcValue).build();

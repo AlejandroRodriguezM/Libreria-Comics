@@ -1,4 +1,4 @@
-# Comic Database Manager - Versión 8.1.0.0
+# Comic Database Manager - Versión 8.2.0.0
 
 ## Descripción
 

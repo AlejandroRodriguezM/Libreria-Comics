@@ -108,8 +108,9 @@ public class ApiISBNGeneral {
 			String urlReferencia = extraerReferencia(bookInfo);
 			String imagen = extraerImagen(bookInfo);
 			String editorial = extraerEditorial(details);
+			String gradeo = "NM (Noir Medium)";
 
-			return new Comic.ComicBuilder("", nombre).valorGradeo("").numero(numero).variante(variant).firma("")
+			return new Comic.ComicBuilder("", nombre).valorGradeo(gradeo).numero(numero).variante(variant).firma("")
 					.editorial(editorial).formato(formato).procedencia("Estados Unidos (United States)").fecha(fecha)
 					.guionista(guionistas).dibujante(dibujantes).estado("En posesion").keyIssue(keyIssue)
 					.puntuacion("Sin puntuacion").imagen(imagen).referenciaComic(urlReferencia).precioComic(precio)

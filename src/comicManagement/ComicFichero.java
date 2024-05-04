@@ -22,7 +22,7 @@ public class ComicFichero extends Comic {
 		if (data.length >= 19) { // Ajusta este valor según la cantidad de campos esperados
 
 			String nombre = data[1];
-			String numCaja = data[2];
+			String valorGradeo = data[2];
 			String precioComic = data[3];
 			String codigoComic = data[4];
 			String numero = data[5];
@@ -47,9 +47,11 @@ public class ComicFichero extends Comic {
 			// Verificaciones y asignaciones predeterminadas
 			precioComic = (precioComic.isEmpty()) ? "0" : precioComic;
 			codigoComic = (codigoComic.isEmpty()) ? "0" : codigoComic;
+			valorGradeo = comprobarGradeo(valorGradeo);
+
 			urlReferencia = (urlReferencia.isEmpty()) ? "Sin referencia" : urlReferencia;
 
-			return new Comic.ComicBuilder("", nombre).valorGradeo(numCaja).numero(numero).variante(variante)
+			return new Comic.ComicBuilder("", nombre).valorGradeo(valorGradeo).numero(numero).variante(variante)
 					.firma(firma).editorial(editorial).formato(formato).procedencia(procedencia).fecha(fecha)
 					.guionista(guionista).dibujante(dibujante).estado(estado).keyIssue(keyIssue).puntuacion(puntuacion)
 					.imagen(imagen).referenciaComic(urlReferencia).precioComic(precioComic).codigoComic(codigoComic)
@@ -59,6 +61,17 @@ public class ComicFichero extends Comic {
 			return null;
 		}
 
+	}
+
+	public static String comprobarGradeo(String valorGradeo) {
+		String[] valores = { "NM (Noir Medium)", "SM (Standard Medium)", "LM (Light Medium)", "FL (Fine Light)",
+				"VF (Very Fine)" };
+		for (String gradeo : valores) {
+			if (valorGradeo.equalsIgnoreCase(gradeo)) {
+				return valorGradeo;
+			}
+		}
+		return "NM (Noir Medium)";
 	}
 
 	/**

@@ -258,28 +258,6 @@ public class FuncionesTableView {
 		}
 
 	}
-	
-	
-
-	/**
-	 * Genera el resultado de búsqueda para un cómic y devuelve un TextArea con la
-	 * información.
-	 *
-	 * @param comic El cómic para el que se generará el resultado de búsqueda.
-	 * @return Un TextArea con el resultado de búsqueda.
-	 * @throws SQLException Si ocurre un error de base de datos.
-	 */
-	public static TextArea resultadoBusquedaPront(Comic comic) {
-		TextArea prontInfoTable = new TextArea(); // Crear un nuevo TextArea
-
-		if (Comic.validarComic(comic)) {
-			int totalComics = DBUtilidades.numeroTotalSelecionado(comic);
-			prontInfoTable.setStyle("-fx-text-fill: black;"); // Reset the text color to black
-			prontInfoTable.setText("El número de cómics donde aparece la búsqueda es: " + totalComics + "\n \n \n");
-		}
-
-		return prontInfoTable;
-	}
 
 	/**
 	 * Obtiene los datos de los comics de la base de datos y los devuelve en el

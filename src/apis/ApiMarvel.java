@@ -331,8 +331,9 @@ public class ApiMarvel {
 			String estado = "En posesion";
 			String precioComic = Float.toString(price);
 			String puntuacion = "Sin puntuacion";
+			String gradeo = "NM (Noir Medium)";
 
-			return new Comic.ComicBuilder("", title).valorGradeo("").numero(numero).variante(variante).firma("")
+			return new Comic.ComicBuilder("", title).valorGradeo(gradeo).numero(numero).variante(variante).firma("")
 					.editorial(editorial).formato(formato).procedencia(procedencia).fecha(fecha).guionista(guionistas)
 					.dibujante(dibujantes).estado(estado).keyIssue(keyIssue).puntuacion(puntuacion).imagen(imagen)
 					.referenciaComic(urlReferencia).precioComic(precioComic).codigoComic(codigoComic).build();

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -14,6 +15,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.json.JSONException;
 
+import alarmas.AlarmaList;
+import apis.funciones.FuncionesApis;
+import comicManagement.Comic;
 import controladores.funcionesInterfaz.AccionControlUI;
 import controladores.funcionesInterfaz.FuncionesComboBox;
 import controladores.funcionesInterfaz.FuncionesManejoFront;
@@ -24,9 +28,6 @@ import controladores.managment.AccionFuncionesComunes;
 import controladores.managment.AccionModificar;
 import controladores.managment.AccionReferencias;
 import controladores.managment.AccionSeleccionar;
-import alarmas.AlarmaList;
-import apis.funciones.FuncionesApis;
-import comicManagement.Comic;
 import dbmanager.ConectManager;
 import dbmanager.ListaComicsDAO;
 import funciones_auxiliares.Utilidades;
@@ -42,6 +43,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Control;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -621,14 +623,13 @@ public class VentanaAccionController implements Initializable {
 		referenciaVentana.setNavegacion_Opciones(navegacionOpciones);
 		referenciaVentana.setNavegacion_estadistica(navegacionEstadistica);
 
-		// ESTO HAY QUE RETOCARLO
-		referenciaVentana
-				.setComboBoxes(Arrays.asList(numeroComic, procedenciaComic, formatoComic, gradeoComic, estadoComic));
+		referenciaVentana.setComboBoxes(
+				Arrays.asList(formatoComic, gradeoComic, numeroComic, procedenciaComic, estadoComic, puntuacionMenu));
 
-		AccionReferencias.setListaTextFields(FXCollections
-				.observableArrayList(Arrays.asList(nombreComic, numeroComic, varianteComic, firmaComic, editorialComic,
-						formatoComic, procedenciaComic, guionistaComic, dibujanteComic, gradeoComic, direccionImagen,
-						estadoComic, nombreKeyIssue, precioComic, urlReferencia, codigoComicTratar, idComicTratar)));
+		referenciaVentana.setListaTextFields(FXCollections.observableArrayList(
+				Arrays.asList(nombreComic, numeroComic, varianteComic, procedenciaComic, formatoComic, dibujanteComic,
+						guionistaComic, editorialComic, firmaComic, gradeoComic, direccionImagen, estadoComic,
+						nombreKeyIssue, precioComic, urlReferencia, codigoComicTratar, idComicTratar)));
 
 		AccionReferencias.setColumnasTabla(Arrays.asList(nombre, variante, editorial, guionista, dibujante));
 
@@ -702,8 +703,7 @@ public class VentanaAccionController implements Initializable {
 	 * ComboBoxes con opciones estáticas predefinidas.
 	 */
 	public void rellenarCombosEstaticos() {
-		FuncionesComboBox.rellenarComboBoxEstaticos(referenciaVentana.getComboboxes(),
-				AccionFuncionesComunes.TIPO_ACCION);
+		FuncionesComboBox.rellenarComboBoxEstaticos(referenciaVentana.getComboboxes());
 	}
 
 	public void formatearTextField() {
@@ -744,13 +744,28 @@ public class VentanaAccionController implements Initializable {
 	 * @throws SQLException
 	 */
 	@FXML
-	void mostrarPorParametro(ActionEvent event) throws SQLException {
+	void mostrarPorParametro(ActionEvent event) {
 		enviarReferencias();
-		AccionControlUI.borrarDatosGraficos();
+		
+		List<String> controls = new ArrayList<>();
+		
+		for (Control control : referenciaVentana.getListaTextFields()) {
+			if (control instanceof TextField) {
+				controls.add(((TextField) control).getText()); // Add the Control object itself
+			} else if (control instanceof ComboBox<?>) {
+				Object selectedItem = ((ComboBox<?>) control).getSelectionModel().getSelectedItem();
+				if (selectedItem != null) {
+					controls.add(selectedItem.toString());
+				} else {
+					controls.add(""); // Add the Control object itself
+				}
+			}
+		}
 
-		Comic comic = AccionControlUI.camposComic(referenciaVentana.getListaCamposTexto(), true);
+		Comic comic = AccionControlUI.camposComic(controls, true);
 
 		AccionSeleccionar.verBasedeDatos(false, true, comic);
+
 	}
 
 	/**

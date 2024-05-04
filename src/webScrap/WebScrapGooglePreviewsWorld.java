@@ -221,8 +221,8 @@ public class WebScrapGooglePreviewsWorld {
 			String procedencia = "Estados Unidos (United States)";
 			String estado = "En posesión";
 			String puntuacion = "Sin puntuación";
-
-			Comic comicInfoArray = new Comic.ComicBuilder(comic.getid(), titulo).valorGradeo("0").numero(numero)
+			String gradeo = "NM (Noir Medium)";
+			Comic comicInfoArray = new Comic.ComicBuilder(comic.getid(), titulo).valorGradeo(gradeo).numero(numero)
 					.variante("").firma("").editorial("").formato(formato).procedencia(procedencia).fecha("")
 					.guionista("").dibujante("").estado(estado).keyIssue("").puntuacion(puntuacion).imagen("")
 					.referenciaComic(previewsWorldUrl).precioComic(precio).codigoComic(code).build();

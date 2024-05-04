@@ -66,41 +66,6 @@ public class DBUtilidades {
 		}
 	}
 
-	/**
-	 * Devuelve el número total de resultados de la búsqueda en varios campos.
-	 *
-	 * @param comic El dato de búsqueda introducido por el usuario
-	 * @return El número total de resultados que coinciden con los criterios de
-	 *         búsqueda
-	 * @throws SQLException Si ocurre un error en la base de datos
-	 */
-	public static int numeroTotalSelecionado(Comic comic) {
-		String connector = " WHERE ";
-		String sentenciaParametrosBusqueda = "SELECT * from comicsbbdd";
-
-		StringBuilder sql = new StringBuilder(sentenciaParametrosBusqueda);
-
-		connector = agregarCondicion(sql, connector, "ID", comic.getid());
-		connector = agregarCondicionLike(sql, connector, "nomComic", comic.getNombre());
-		connector = agregarCondicion(sql, connector, "nivel_gradeo", comic.getValorGradeo());
-		connector = agregarCondicion(sql, connector, "numComic", comic.getNumero());
-		connector = agregarCondicionLike(sql, connector, "nomVariante", comic.getVariante());
-		connector = agregarCondicionLike(sql, connector, "firma", comic.getFirma());
-		connector = agregarCondicionLike(sql, connector, "nomEditorial", comic.getEditorial());
-		connector = agregarCondicionLike(sql, connector, "formato", comic.getFormato());
-		connector = agregarCondicionLike(sql, connector, "procedencia", comic.getProcedencia());
-		connector = agregarCondicionLike(sql, connector, "fecha_publicacion", comic.getFecha());
-		connector = agregarCondicionLike(sql, connector, "nomGuionista", comic.getGuionista());
-		connector = agregarCondicionLike(sql, connector, "nomDibujante", comic.getDibujante());
-
-		if (!Comic.validarComic(comic)) {
-			return 0;
-		}
-
-		return ComicManagerDAO.countRows(); // Devolver la cadena SQL solo si se han agregado condiciones
-
-	}
-
 	public static String datosConcatenados(Comic comic) {
 		String connector = " WHERE ";
 		StringBuilder sql = new StringBuilder(SelectManager.SENTENCIA_BUSQUEDA_COMPLETA);
@@ -168,23 +133,23 @@ public class DBUtilidades {
 	public static String datosGenerales(String tipoBusqueda, String busquedaGeneral) {
 		String connector = " WHERE ";
 		StringBuilder sql = new StringBuilder();
-		sql.append("SELECT * FROM comicsbbdd ");
+		sql.append("SELECT * FROM comicsbbdd");
 
 		switch (tipoBusqueda.toLowerCase()) {
 		case "nomcomic":
-			sql.append(connector).append("nomComic LIKE '%" + busquedaGeneral + "%'");
+			sql.append(connector).append("nomComic LIKE '%" + busquedaGeneral + "%';");
 			break;
 		case "nomvariante":
-			sql.append(connector).append("nomVariante LIKE '%" + busquedaGeneral + "%'");
+			sql.append(connector).append("nomVariante LIKE '%" + busquedaGeneral + "%';");
 			break;
 		case "firma":
-			sql.append(connector).append("firma LIKE '%" + busquedaGeneral + "%'");
+			sql.append(connector).append("firma LIKE '%" + busquedaGeneral + "%';");
 			break;
 		case "nomguionista":
-			sql.append(connector).append("nomGuionista LIKE '%" + busquedaGeneral + "%'");
+			sql.append(connector).append("nomGuionista LIKE '%" + busquedaGeneral + "%';");
 			break;
 		case "nomdibujante":
-			sql.append(connector).append("nomDibujante LIKE '%" + busquedaGeneral + "%'");
+			sql.append(connector).append("nomDibujante LIKE '%" + busquedaGeneral + "%';");
 			break;
 		default:
 			// Tipo de búsqueda no válido, puedes manejarlo según tus necesidades
@@ -208,6 +173,12 @@ public class DBUtilidades {
 		String sql3 = datosGenerales("firma", busquedaGeneral);
 		String sql4 = datosGenerales("nomguionista", busquedaGeneral);
 		String sql5 = datosGenerales("nomdibujante", busquedaGeneral);
+		
+		System.out.println(sql1);
+		System.out.println(sql2);
+		System.out.println(sql3);
+		System.out.println(sql4);
+		System.out.println(sql5);
 
 		try (Connection conn = ConectManager.conexion();
 				PreparedStatement ps1 = conn.prepareStatement(sql1);

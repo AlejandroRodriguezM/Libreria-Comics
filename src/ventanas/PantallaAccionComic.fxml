@@ -60,7 +60,7 @@
          </font>
       </TextField>
       <ComboBox fx:id="estadoComic" layoutX="239.0" layoutY="169.0" prefHeight="25.0" prefWidth="111.0" promptText="Estado" />
-      <ComboBox fx:id="gradeoComic" layoutX="56.0" layoutY="178.0" prefHeight="25.0" prefWidth="125.0" promptText="Nivel de gradeo" stylesheets="@../style/combobox_style.css" />
+      <ComboBox fx:id="gradeoComic" layoutX="56.0" layoutY="178.0" prefHeight="25.0" prefWidth="125.0" promptText="Nivel de gradeo" />
       <TextField fx:id="nombreKeyIssue" layoutX="239.0" layoutY="117.0" prefHeight="21.0" prefWidth="111.0" promptText="Introduce key issue">
          <font>
             <Font size="10.0" />

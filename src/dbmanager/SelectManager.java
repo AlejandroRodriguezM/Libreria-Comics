@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLSyntaxErrorException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +48,20 @@ public class SelectManager {
 			return 0;
 		}
 		return 0;
+	}
+
+	public static int getCount(String sql) {
+		int count = 0;
+		try (Connection conn = ConectManager.conexion();
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql)) {
+			if (rs.next()) {
+				count = rs.getInt(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return count;
 	}
 
 	/**
@@ -110,7 +123,7 @@ public class SelectManager {
 			Utilidades.manejarExcepcion(e);
 			// Manejar error de sintaxis SQL de manera específica
 			return false;
-		}  
+		}
 
 		return existe; // Devolver si el identificador existe en la base de datos o no
 	}
@@ -152,11 +165,17 @@ public class SelectManager {
 	 */
 	public static List<Comic> busquedaParametro(Comic comic, String busquedaGeneral) {
 
-		List<Comic> listComic = new ArrayList<Comic>();
+		List<Comic> listComic = new ArrayList<>();
 		if (ComicManagerDAO.countRows() > 0) {
-
 			if (!busquedaGeneral.isEmpty()) {
-				return DBUtilidades.verBusquedaGeneral(busquedaGeneral);
+
+				listComic = SelectManager.libreriaSeleccionado(busquedaGeneral);
+
+				if (listComic.isEmpty() && Comic.validarComic(comic)) {
+					return DBUtilidades.filtroBBDD(comic);
+				}
+
+				return listComic;
 			} else {
 				return DBUtilidades.filtroBBDD(comic);
 			}
@@ -232,10 +251,7 @@ public class SelectManager {
 					if (!comic.getcodigoComic().isEmpty() && !comic.getcodigoComic().equals("0")) {
 
 						listaComics.add(comic);
-					}else {
-						
 					}
-
 				}
 			} else {
 				while (rs.next()) {
@@ -243,9 +259,7 @@ public class SelectManager {
 				}
 			}
 
-		} catch (
-
-		SQLException e) {
+		} catch (SQLException e) {
 			Utilidades.manejarExcepcion(e);
 		}
 

@@ -178,8 +178,9 @@ public class WebScraperPreviewsWorld {
 				String procedencia = "Estados Unidos (United States)";
 				String estado = "En posesion";
 				String puntuacion = "Sin puntuacion";
+				String gradeo = "NM (Noir Medium)";
 
-				return new Comic.ComicBuilder("", titulo).valorGradeo("0").numero(numero).variante(variant).firma("")
+				return new Comic.ComicBuilder("", titulo).valorGradeo(gradeo).numero(numero).variante(variant).firma("")
 						.editorial(editorial).formato(formato).procedencia(procedencia).fecha(fecha).guionista(writer)
 						.dibujante(artist).estado(estado).keyIssue(issueKey).puntuacion(puntuacion)
 						.imagen(portadaImagen).referenciaComic(urlReferencia).precioComic(precio).codigoComic(diamondCode)

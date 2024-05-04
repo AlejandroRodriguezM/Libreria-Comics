@@ -20,6 +20,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import alarmas.AlarmaList;
+import comicManagement.Comic;
 import controladores.funcionesInterfaz.AccionControlUI;
 import controladores.funcionesInterfaz.FuncionesComboBox;
 import controladores.funcionesInterfaz.FuncionesManejoFront;
@@ -29,8 +31,6 @@ import controladores.managment.AccionFuncionesComunes;
 import controladores.managment.AccionModificar;
 import controladores.managment.AccionReferencias;
 import controladores.managment.AccionSeleccionar;
-import alarmas.AlarmaList;
-import comicManagement.Comic;
 import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
@@ -52,7 +52,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Control;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -262,7 +261,7 @@ public class MenuPrincipalController implements Initializable {
 	 * Selector para el número de caja.
 	 */
 	@FXML
-	private ComboBox<String> numeroCaja;
+	private ComboBox<String> gradeoComic;
 
 	/**
 	 * Selector para el número del cómic.
@@ -449,7 +448,7 @@ public class MenuPrincipalController implements Initializable {
 
 	public static CompletableFuture<List<Entry<String, String>>> urlPreviews;
 
-	AlarmaList alarmaList = new AlarmaList();
+	public static final AlarmaList alarmaList = new AlarmaList();
 
 	double y = 0;
 
@@ -512,7 +511,7 @@ public class MenuPrincipalController implements Initializable {
 		referenciaVentana.setNombreGuionista(nombreGuionista);
 		referenciaVentana.setNombreProcedencia(nombreProcedencia);
 		referenciaVentana.setNombreVariante(nombreVariante);
-		referenciaVentana.setNumeroCaja(numeroCaja);
+		referenciaVentana.setGradeoComic(gradeoComic);
 		referenciaVentana.setNumeroComic(numeroComic);
 		referenciaVentana.setFechaComic(fechaPublicacion);
 		referenciaVentana.setNumeroComic(numeroComic);
@@ -546,12 +545,10 @@ public class MenuPrincipalController implements Initializable {
 		referenciaVentana.setStage(estadoStage());
 		referenciaVentana.setBotonCancelarSubida(botonCancelarSubida);
 
-		referenciaVentana.setComboBoxes(Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreFirma,
-				nombreEditorial, nombreFormato, nombreProcedencia, nombreGuionista, nombreDibujante, numeroCaja));
+		referenciaVentana.setComboBoxes(Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
+				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, gradeoComic));
 
 		AccionReferencias.setListaElementosFondo(FXCollections.observableArrayList(backgroundImage, menu_navegacion));
-
-		AccionReferencias.setListaCamposTexto(FXCollections.observableArrayList(busquedaGeneral, fechaPublicacion));
 
 		AccionReferencias.setListaBotones(FXCollections.observableArrayList(botonLimpiar, botonMostrarParametro,
 				botonbbdd, botonImprimir, botonGuardarResultado));
@@ -723,7 +720,7 @@ public class MenuPrincipalController implements Initializable {
 
 		// Ajustar el máximo altura permitido según la posición del AnchorPane
 		// numeroCaja
-		return windowHeight - numeroCaja.getLayoutY() - 80;
+		return windowHeight - gradeoComic.getLayoutY() - 80;
 	}
 
 	/**
@@ -807,9 +804,7 @@ public class MenuPrincipalController implements Initializable {
 	 * numero entero en los comboBox numeroComic y caja_comic
 	 */
 	public void formatearTextField() {
-
 		numeroComic.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
-		numeroCaja.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
 	}
 
 	/////////////////////////////////
@@ -851,24 +846,10 @@ public class MenuPrincipalController implements Initializable {
 	 * @throws SQLException
 	 */
 	@FXML
-	void mostrarPorParametro(ActionEvent event) throws SQLException {
+	void mostrarPorParametro(ActionEvent event) {
 		enviarReferencias();
+		mostrarComics(false);
 
-		// Convertir la lista de ComboBox<String> a una lista de Control
-		List<Control> controls = new ArrayList<>();
-		for (ComboBox<String> comboBox : referenciaVentana.getComboboxes()) {
-			controls.add(comboBox);
-		}
-
-		Comic comic = AccionControlUI.camposComic(controls, false);
-
-		if (!comic.estaVacio()) {
-
-			mostrarComics(false);
-		} else {
-			String mensaje = "Debes de seleccionar algun valor de los combobox";
-			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
-		}
 	}
 
 	/**
@@ -886,16 +867,13 @@ public class MenuPrincipalController implements Initializable {
 
 	private void mostrarComics(boolean esCompleto) {
 
-		busquedaGeneral.setText("");
 		imagencomic.setVisible(true);
 		if (esCompleto) {
 			AccionSeleccionar.verBasedeDatos(esCompleto, false, null);
 		} else {
-
-			// Convertir la lista de ComboBox<String> a una lista de Control
-			List<Control> controls = new ArrayList<>();
+			List<String> controls = new ArrayList<>();
 			for (ComboBox<String> comboBox : referenciaVentana.getComboboxes()) {
-				controls.add(comboBox);
+				controls.add(comboBox.getSelectionModel().getSelectedItem());
 			}
 
 			Comic comic = AccionControlUI.camposComic(controls, false);
@@ -1280,13 +1258,9 @@ public class MenuPrincipalController implements Initializable {
 								FuncionesManejoFront.cambiarEstadoMenuBar(false);
 								AlarmaList.mostrarMensajePront(mensaje, deleteCompleted, prontInfo);
 
-							} catch (InterruptedException e1) {
-								// TODO Auto-generated catch block
+							} catch (InterruptedException | ExecutionException e1) {
 								e1.printStackTrace();
-							} catch (ExecutionException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
+							} 
 						});
 
 						crearExcelTask.setOnFailed(e -> {
@@ -1650,7 +1624,7 @@ public class MenuPrincipalController implements Initializable {
 
 		return (Stage) menu_navegacion.getScene().getWindow();
 	}
-	
+
 	/**
 	 * Al cerrar la ventana, carga la ventana del menu principal
 	 *

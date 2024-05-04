@@ -165,14 +165,14 @@
 		<ComboBox fx:id="nombreComic" layoutX="73.0" layoutY="61.0" prefHeight="25.0" prefWidth="151.0" promptText="Seleccionar nombre" stylesheets="@../style/combobox_style.css" />
 		<ComboBox fx:id="numeroComic" layoutX="73.0" layoutY="89.0" prefHeight="25.0" prefWidth="151.0" promptText="Seleccionar numero" stylesheets="@../style/combobox_style.css" />
 		<ComboBox fx:id="nombreVariante" layoutX="73.0" layoutY="117.0" prefHeight="25.0" prefWidth="151.0" promptText="Seleccionar variante" stylesheets="@../style/combobox_style.css" />
-		<ComboBox fx:id="nombreProcedencia" layoutX="73.0" layoutY="145.0" prefHeight="25.0" prefWidth="151.0" promptText="Selecciona procedencia" stylesheets="@../style/combobox_style.css" />
-		<ComboBox fx:id="nombreFormato" layoutX="73.0" layoutY="173.0" prefHeight="25.0" prefWidth="151.0" promptText="Selecciona formato" stylesheets="@../style/combobox_style.css" />
+		<ComboBox fx:id="nombreProcedencia" layoutX="73.0" layoutY="145.0" prefHeight="25.0" prefWidth="151.0" promptText="Seleccionar procedencia" stylesheets="@../style/combobox_style.css" />
+		<ComboBox fx:id="nombreFormato" layoutX="73.0" layoutY="173.0" prefHeight="25.0" prefWidth="151.0" promptText="Seleccionar formato" stylesheets="@../style/combobox_style.css" />
 		<ComboBox fx:id="nombreDibujante" layoutX="73.0" layoutY="201.0" prefHeight="25.0" prefWidth="151.0" promptText="Seleccionar dibujante" stylesheets="@../style/combobox_style.css" />
 		<ComboBox fx:id="nombreGuionista" layoutX="73.0" layoutY="229.0" prefHeight="25.0" prefWidth="151.0" promptText="Seleccionar guionista" stylesheets="@../style/combobox_style.css" />
 		<ComboBox fx:id="nombreEditorial" layoutX="73.0" layoutY="257.0" prefHeight="25.0" prefWidth="151.0" promptText="Seleccionar editorial" stylesheets="@../style/combobox_style.css" />
 		<ComboBox fx:id="nombreFirma" layoutX="73.0" layoutY="285.0" prefHeight="25.0" prefWidth="151.0" promptText="Seleccionar firma" stylesheets="@../style/combobox_style.css" />
 		<DatePicker fx:id="fechaPublicacion" layoutX="73.0" layoutY="315.0" prefHeight="25.0" prefWidth="151.0" promptText="2000-01-01" />
-		<ComboBox fx:id="numeroCaja" layoutX="73.0" layoutY="343.0" prefHeight="25.0" prefWidth="151.0" promptText="Nivel de gradeo" stylesheets="@../style/combobox_style.css" />
+		<ComboBox fx:id="gradeoComic" layoutX="73.0" layoutY="343.0" prefHeight="25.0" prefWidth="151.0" promptText="Seleccionar gradeo" stylesheets="@../style/combobox_style.css" />
 		<Button fx:id="botonLimpiar" layoutX="231.0" layoutY="31.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Limpiar" />
 		<Button fx:id="botonbbdd" layoutX="231.0" layoutY="72.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Ver todo" />
 		<Button fx:id="botonMostrarParametro" alignment="CENTER" contentDisplay="BOTTOM" layoutX="231.0" layoutY="116.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Busqueda" />

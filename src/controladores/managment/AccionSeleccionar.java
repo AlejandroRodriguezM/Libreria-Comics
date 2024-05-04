@@ -105,6 +105,7 @@ public class AccionSeleccionar {
 				String sentenciaSQL = DBUtilidades.construirSentenciaSQL(TipoBusqueda.COMPLETA);
 
 				List<Comic> listaComics = ComicManagerDAO.verLibreria(sentenciaSQL);
+
 				FuncionesTableView.tablaBBDD(listaComics);
 
 			} else {
@@ -154,7 +155,9 @@ public class AccionSeleccionar {
 
 		if (!listComic.isEmpty()) {
 			getReferenciaVentana().getProntInfo().setOpacity(1);
-			getReferenciaVentana().getProntInfo().setText(FuncionesTableView.resultadoBusquedaPront(datos).getText());
+			getReferenciaVentana().getProntInfo().setStyle("-fx-text-fill: black;"); // Reset the text color to black
+			getReferenciaVentana().getProntInfo()
+					.setText("El número de cómics donde aparece la búsqueda es: " + listComic.size() + "\n \n \n");
 		} else {
 			getReferenciaVentana().getProntInfo().setOpacity(1);
 			// Show error message in red when no search fields are specified

@@ -572,35 +572,41 @@ public class FuncionesComboBox {
 	 *
 	 * @param comboboxes La lista de ComboBoxes a rellenar.
 	 */
-	public static void rellenarComboBoxEstaticos(List<ComboBox<String>> comboboxes, String tipo_accion) {
-		String[][] valores = {
-				{ "Grapa (Issue individual)", "Tapa blanda (Paperback)", "Edicion absolute (Absolute Edition)",
-						"Cómic de bolsillo (Pocket)", "Edicion de lujo (Deluxe Edition)", "Edicion omnibus(Omnibus)",
-						"Edicion integral (Integral)", "Tapa dura (Hardcover)", "eBook (libro electrónico)",
-						"Comic digital (Digital Comic)", "Manga digital (Digital Manga)", "Manga (Manga tome)",
-						"PDF (Portable Document Format)", "Revista (Magazine)",
-						"Edicion de coleccionista (Collector's Edition)", "Edicion especial (Special Edition)",
-						"Edicion con extras (Bonus Edition)", "Libro (Book)" },
-				{ "Estados Unidos (United States)", "Japón (Japan)", "Francia (France)", "Italia (Italy)",
-						"España (Spain)", "Reino Unido (United Kingdom)", "Alemania (Germany)", "Brasil (Brazil)",
-						"Corea del Sur (South Korea)", "México (Mexico)", "Canadá (Canada)", "China (China)",
-						"Australia (Australia)", "Argentina (Argentina)", "India (India)", "Bélgica (Belgium)",
-						"Países Bajos (Netherlands)", "Portugal (Portugal)", "Suecia (Sweden)", "Suiza (Switzerland)",
-						"Finlandia (Finland)", "Noruega (Norway)", "Dinamarca (Denmark)" },
-				{ "En posesion", "Comprado", "En venta" },
-				{ "0/0", "0.5/5", "1/5", "1.5/5", "2/5", "2.5/5", "3/5", "3.5/5", "4/5", "4.5/5", "5/5" } };
+    public static void rellenarComboBoxEstaticos(List<ComboBox<String>> comboboxes) {
+        String[][] valores = {
+            { "Grapa (Issue individual)", "Tapa blanda (Paperback)", "Edicion absolute (Absolute Edition)",
+                "Cómic de bolsillo (Pocket)", "Edicion de lujo (Deluxe Edition)", "Edicion omnibus(Omnibus)",
+                "Edicion integral (Integral)", "Tapa dura (Hardcover)", "eBook (libro electrónico)",
+                "Comic digital (Digital Comic)", "Manga digital (Digital Manga)", "Manga (Manga tome)",
+                "PDF (Portable Document Format)", "Revista (Magazine)",
+                "Edicion de coleccionista (Collector's Edition)", "Edicion especial (Special Edition)",
+                "Edicion con extras (Bonus Edition)", "Libro (Book)" },
+            { "NM (Noir Medium)", "SM (Standard Medium)", "LM (Light Medium)", "FL (Fine Light)", "VF (Very Fine)",
+                "M (Medium)", "F (Fine)" },
+            { "En posesion", "Comprado", "En venta" },
+            { "Estados Unidos (United States)", "Japón (Japan)", "Francia (France)", "Italia (Italy)",
+                "España (Spain)", "Reino Unido (United Kingdom)", "Alemania (Germany)", "Brasil (Brazil)",
+                "Corea del Sur (South Korea)", "México (Mexico)", "Canadá (Canada)", "China (China)",
+                "Australia (Australia)", "Argentina (Argentina)", "India (India)", "Bélgica (Belgium)",
+                "Países Bajos (Netherlands)", "Portugal (Portugal)", "Suecia (Sweden)", "Suiza (Switzerland)",
+                "Finlandia (Finland)", "Noruega (Norway)", "Dinamarca (Denmark)" },
+            { "0/0", "0.5/5", "1/5", "1.5/5", "2/5", "2.5/5", "3/5", "3.5/5", "4/5", "4.5/5", "5/5" } };
 
-		// Verificar que la lista de ComboBox tenga al menos el mismo tamaño que los
-		// arreglos
-		int tamanio = Math.min(comboboxes.size(), valores.length);
+        String[] ids = { "formatoComic", "gradeoComic", "procedenciaComic", "estadoComic", "puntuacionMenu" };
 
-		for (int i = 0; i < tamanio; i++) {
-			comboboxes.get(i).getItems().clear(); // Limpiar elementos anteriores si los hay
-			comboboxes.get(i).getItems().addAll(valores[i]);
+        // Verificar que la lista de ComboBox tenga al menos el mismo tamaño que los arreglos
+        int tamanio = Math.min(comboboxes.size(), ids.length);
 
-			comboboxes.get(i).getSelectionModel().selectFirst();
-		}
-	}
+        for (int i = 0; i < tamanio; i++) {
+            String id = ids[i];
+            ComboBox<String> comboBox = comboboxes.stream().filter(cb -> cb.getId().equals(id)).findFirst().orElse(null);
+            if (comboBox != null) {
+                comboBox.getItems().clear(); // Limpiar elementos anteriores si los hay
+                comboBox.getItems().addAll(valores[i]);
+                comboBox.getSelectionModel().selectFirst();
+            }
+        }
+    }
 
 	/**
 	 * Funcion que permite modificar la puntuacion de un comic, siempre y cuando el

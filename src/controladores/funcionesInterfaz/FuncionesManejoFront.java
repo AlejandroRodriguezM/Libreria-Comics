@@ -63,7 +63,7 @@ public class FuncionesManejoFront {
 	}
 
 	public static void establecerAnchoMaximoCamposTexto(double maxTextComboWidth) {
-		for (Control campo : referenciaVentana.getListaCamposTexto()) {
+		for (Control campo : referenciaVentana.getComboboxes()) {
 			if (campo instanceof TextField campoTexto) {
 				Platform.runLater(() -> campoTexto.maxWidthProperty()
 						.bind(Bindings.max(maxTextComboWidth, campoTexto.widthProperty())));
@@ -72,10 +72,12 @@ public class FuncionesManejoFront {
 	}
 
 	public static void establecerAnchoMaximoComboBoxes(double maxTextComboWidth) {
-		for (ComboBox<?> comboBox : referenciaVentana.getComboboxes()) {
-			comboBox.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, comboBox.widthProperty()));
-		}
+	    for (ComboBox<String> comboBox : referenciaVentana.getComboboxes()) {
+	    	
+	        comboBox.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, comboBox.widthProperty()));
+	    }
 	}
+
 
 	public static void establecerTamanioMaximoImagen(double maxWidth, double maxHeight) {
 		referenciaVentana.getImagencomic().fitWidthProperty()
@@ -282,7 +284,7 @@ public class FuncionesManejoFront {
 				referenciaVentana.getNombreEditorial(), referenciaVentana.getNombreFirma(),
 				referenciaVentana.getNombreFormato(), referenciaVentana.getNombreGuionista(),
 				referenciaVentana.getNombreProcedencia(), referenciaVentana.getNombreVariante(),
-				referenciaVentana.getNumeroCaja(), referenciaVentana.getNumeroComic(),
+				referenciaVentana.getGradeoComic(), referenciaVentana.getNumeroComic(),
 				referenciaVentana.getFechaPublicacion(), referenciaVentana.getBusquedaGeneral());
 
 		clearAndRefreshTableView(referenciaVentana.getTablaBBDD());

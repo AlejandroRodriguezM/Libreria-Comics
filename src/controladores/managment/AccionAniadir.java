@@ -1,5 +1,6 @@
 package controladores.managment;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -17,6 +18,8 @@ import funciones_auxiliares.Utilidades;
 import funciones_auxiliares.Ventanas;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Control;
+import javafx.scene.control.TextField;
 
 public class AccionAniadir {
 
@@ -49,7 +52,22 @@ public class AccionAniadir {
 
 		Utilidades.convertirNombresCarpetas(AccionFuncionesComunes.SOURCE_PATH);
 
-		Comic comic = AccionControlUI.camposComic(referenciaVentana.getListaCamposTexto(), true);
+		List<String> controls = new ArrayList<>();
+
+		for (Control control : referenciaVentana.getListaTextFields()) {
+			if (control instanceof TextField) {
+				controls.add(((TextField) control).getText()); // Add the Control object itself
+			} else if (control instanceof ComboBox<?>) {
+				Object selectedItem = ((ComboBox<?>) control).getSelectionModel().getSelectedItem();
+				if (selectedItem != null) {
+					controls.add(selectedItem.toString());
+				} else {
+					controls.add(""); // Add the Control object itself
+				}
+			}
+		}
+		
+		Comic comic = AccionControlUI.camposComic(controls, true);
 		accionRellenoDatos.actualizarCamposUnicos(comic);
 
 		referenciaVentana.getProntInfo().setOpacity(1);

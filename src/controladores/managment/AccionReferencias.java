@@ -540,16 +540,10 @@ public class AccionReferencias {
 	private ComboBox<String> nombreVariante;
 
 	/**
-	 * Selector para el número de caja.
-	 */
-	private ComboBox<String> numeroCaja;
-
-	/**
 	 * Declaramos una lista de ComboBox de tipo String
 	 */
 	private static List<ComboBox<String>> comboboxes;
 
-	private static ObservableList<Control> listaCamposTexto;
 	private static ObservableList<Control> listaTextFields;
 	private static ObservableList<Button> listaBotones;
 	private static ObservableList<Node> listaElementosFondo;
@@ -964,10 +958,6 @@ public class AccionReferencias {
 		return comboboxes;
 	}
 
-	public ObservableList<Control> getListaCamposTexto() {
-		return listaCamposTexto;
-	}
-
 	public static ObservableList<Button> getListaBotones() {
 		return listaBotones;
 	}
@@ -1124,7 +1114,7 @@ public class AccionReferencias {
 		this.prontInfoPortadas = prontInfoPortadas;
 	}
 
-	public static void setListaTextFields(ObservableList<Control> listaTextFields) {
+	public void setListaTextFields(ObservableList<Control> listaTextFields) {
 		AccionReferencias.listaTextFields = listaTextFields;
 	}
 
@@ -1134,10 +1124,6 @@ public class AccionReferencias {
 
 	public static void setComboboxes(List<ComboBox<String>> comboboxes) {
 		AccionReferencias.comboboxes = comboboxes;
-	}
-
-	public static void setListaCamposTexto(ObservableList<Control> listaCamposTexto) {
-		AccionReferencias.listaCamposTexto = listaCamposTexto;
 	}
 
 	public static void setListaBotones(ObservableList<Button> listaBotones) {
@@ -1578,10 +1564,6 @@ public class AccionReferencias {
 		return nombreVariante;
 	}
 
-	public ComboBox<String> getNumeroCaja() {
-		return numeroCaja;
-	}
-
 	public ComboBox<String> getTituloComic() {
 		return tituloComic;
 	}
@@ -1624,10 +1606,6 @@ public class AccionReferencias {
 
 	public void setNombreVariante(ComboBox<String> nombreVariante) {
 		this.nombreVariante = nombreVariante;
-	}
-
-	public void setNumeroCaja(ComboBox<String> numeroCaja) {
-		this.numeroCaja = numeroCaja;
 	}
 
 	public void setFormatoComic(ComboBox<String> formatoComic) {

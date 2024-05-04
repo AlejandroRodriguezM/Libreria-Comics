@@ -1,6 +1,7 @@
 package controladores.managment;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +21,8 @@ import funciones_auxiliares.Utilidades;
 import funciones_auxiliares.Ventanas;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Control;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 public class AccionModificar {
@@ -179,7 +182,22 @@ public class AccionModificar {
 			AlarmaList.mostrarMensajePront(mensaje, false, getReferenciaVentana().getProntInfo());
 			return; // Agregar return para salir del método en este punto
 		}
-		Comic datos = AccionControlUI.camposComic(getReferenciaVentana().getListaTextFields(), true);
+		
+		List<String> controls = new ArrayList<>();
+
+		for (Control control : referenciaVentana.getListaTextFields()) {
+			if (control instanceof TextField) {
+				controls.add(((TextField) control).getText()); // Add the Control object itself
+			} else if (control instanceof ComboBox<?>) {
+				Object selectedItem = ((ComboBox<?>) control).getSelectionModel().getSelectedItem();
+				if (selectedItem != null) {
+					controls.add(selectedItem.toString());
+				} else {
+					controls.add(""); // Add the Control object itself
+				}
+			}
+		}
+		Comic datos = AccionControlUI.camposComic(controls, true);
 
 		if (!ListaComicsDAO.comicsImportados.isEmpty()) {
 
