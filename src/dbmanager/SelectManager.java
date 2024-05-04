@@ -233,7 +233,6 @@ public class SelectManager {
 	 * 
 	 * @param sentenciaSQL La sentencia SQL para obtener los cómics de la librería.
 	 * @return Una lista de objetos Comic que representan los cómics de la librería.
-	 * @throws SQLException Si ocurre algún error al ejecutar la consulta SQL.
 	 */
 	public static List<Comic> verLibreria(String sentenciaSQL, boolean esActualizacion) {
 		ListaComicsDAO.listaComics.clear(); // Limpiar la lista existente de cómics
