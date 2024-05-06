@@ -202,7 +202,7 @@ public class OpcionesAvanzadasController implements Initializable {
 		AlarmaList.iniciarAnimacionEspera(prontInfoPortadas);
 
 		checkFirmas.selectedProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue) {
+			if (Boolean.TRUE.equals(newValue)) {
 				if (nav.alertaFirmaActivada()) {
 					actualizarFima.set(true);
 				} else {
@@ -264,13 +264,13 @@ public class OpcionesAvanzadasController implements Initializable {
 
 	@FXML
 	void normalizarDataBase(ActionEvent event) {
-		AlarmaList.detenerAnimacionEspera();
+//		AlarmaList.detenerAnimacionEspera();
 
 		Task<Void> task = new Task<Void>() {
 			@Override
 			protected Void call() throws Exception {
 				DatabaseManagerDAO.comprobarNormalizado("nomComic", prontInfo);
-				DatabaseManagerDAO.comprobarNormalizado("caja_deposito", prontInfo);
+				DatabaseManagerDAO.comprobarNormalizado("nivel_gradeo", prontInfo);
 				DatabaseManagerDAO.comprobarNormalizado("precio_comic", prontInfo);
 				DatabaseManagerDAO.comprobarNormalizado("codigo_comic", prontInfo);
 				DatabaseManagerDAO.comprobarNormalizado("numComic", prontInfo);
@@ -285,6 +285,7 @@ public class OpcionesAvanzadasController implements Initializable {
 				DatabaseManagerDAO.comprobarNormalizado("nomGuionista", prontInfo);
 				DatabaseManagerDAO.comprobarNormalizado("nomDibujante", prontInfo);
 				DatabaseManagerDAO.comprobarNormalizado("nomVariante", prontInfo);
+				DatabaseManagerDAO.comprobarNormalizado("", prontInfo);
 
 				ListaComicsDAO.reiniciarListaComics();
 				ListaComicsDAO.listasAutoCompletado();

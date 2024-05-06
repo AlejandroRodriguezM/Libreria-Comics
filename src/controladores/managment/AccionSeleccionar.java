@@ -32,6 +32,7 @@ public class AccionSeleccionar {
 	 * @throws SQLException Si se produce un error al acceder a la base de datos.
 	 */
 	public static void seleccionarComics(boolean esPrincipal) {
+		
 		FuncionesTableView.nombreColumnas(); // funcion
 		Utilidades.comprobacionListaComics();
 
@@ -47,6 +48,10 @@ public class AccionSeleccionar {
 
 	public static void mostrarComic(String idComic, boolean esPrincipal) {
 
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+		
 		Comic comicTemp = null;
 		AlarmaList.detenerAnimacion();
 		String mensaje = "";
@@ -59,7 +64,6 @@ public class AccionSeleccionar {
 
 		if (idComic == null || idComic.isEmpty() || comicTemp == null) {
 			AccionControlUI.limpiarAutorellenos(esPrincipal);
-			AccionControlUI.borrarDatosGraficos();
 			return;
 		}
 
@@ -91,9 +95,16 @@ public class AccionSeleccionar {
 
 	public static void verBasedeDatos(boolean completo, boolean esAccion, Comic comic) {
 
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+		
 		ListaComicsDAO.reiniciarListaComics();
-		FuncionesTableView.modificarColumnas();
+//		FuncionesTableView.modificarColumnas(esAccion);
 		getReferenciaVentana().getTablaBBDD().refresh();
+		getReferenciaVentana().getProntInfo().setOpacity(0);
+		getReferenciaVentana().getImagencomic().setVisible(false);
+		getReferenciaVentana().getImagencomic().setImage(null);
 		getReferenciaVentana().getProntInfo().setText(null);
 		getReferenciaVentana().getProntInfo().clear();
 

@@ -40,7 +40,7 @@ public class ComicFichero extends Comic {
 			String imagen = FuncionesExcel.DEFAULT_PORTADA_IMAGE_PATH + File.separator + nombrePortada;
 
 			String keyIssue = data[16];
-			keyIssue = keyIssue.replaceAll("\\r|\\n", "");
+			keyIssue = keyIssue.replaceAll("[\\r\\n]", "");
 			String urlReferencia = data[17];
 			String estado = data[18];
 

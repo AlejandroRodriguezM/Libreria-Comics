@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import dbmanager.ConectManager;
 import funciones_auxiliares.Utilidades;
 import funciones_auxiliares.Ventanas;
 
@@ -263,7 +264,7 @@ public class FuncionesApis {
 	public static boolean verificarClavesAPI(String[] clavesMarvel, String apiKey) {
 		String exception = "";
 		Ventanas nav = new Ventanas();
-
+		
 		if (clavesMarvel.length == 0) {
 			exception += "\nDebes obtener una clave API de Marvel. Visita https://developer.marvel.com/";
 		}

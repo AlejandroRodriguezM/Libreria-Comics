@@ -28,6 +28,7 @@ public class FuncionesFicheros {
 	static String userHome = System.getProperty("user.home");
 	static String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
 	static String carpetaLibreria = ubicacion + File.separator + "libreria";
+	private static AlarmaList alarmaList = new AlarmaList();
 
 	public static Map<String, String> devolverDatosConfig() {
 		Map<String, String> datosConfiguracion = new HashMap<>();
@@ -399,7 +400,7 @@ public class FuncionesFicheros {
 			try (Connection connection = DriverManager.getConnection(url, usuario, password)) {
 				return true; // La conexión se estableció correctamente
 			} catch (SQLException e) {
-				AlarmaList.manejarErrorConexion(
+				alarmaList.manejarErrorConexion(
 						"ERROR. Revisa tu configuracion de XAMPP. Es posible que la contraseña u usuario sea incorrecto en la configuracion del fichero o de XAMPP",
 						null);
 				Utilidades.manejarExcepcion(e);

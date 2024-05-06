@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,6 +23,8 @@ import funciones_auxiliares.Ventanas;
 import javafx.scene.control.Label;
 
 public class DatabaseManagerDAO {
+
+	public static AtomicInteger contadorCambios = new AtomicInteger(0);
 
 	/**
 	 * Permite introducir un nuevo cómic en la base de datos.
@@ -250,8 +253,19 @@ public class DatabaseManagerDAO {
 
 	public static void comprobarNormalizado(String columna, Label prontInfo) {
 		String url = "jdbc:mysql://" + ConectManager.DB_HOST + ":" + ConectManager.DB_PORT + "?serverTimezone=UTC";
-		int contador = 0;
+
 		String cadena = "";
+
+		if (columna.equalsIgnoreCase("")) {
+			contadorCambios.set(0);
+			return;
+		}
+
+		if (SelectManager.countRows() == 0) {
+			cadena = "La base de datos esta vacia";
+			AlarmaList.iniciarAnimacionAvanzado(prontInfo, cadena);
+		}
+
 		// Construir la consulta para seleccionar los nombres de la columna
 		String consultaSelect = "SELECT ID, " + columna + " FROM " + ConectManager.DB_NAME + ".comicsbbdd";
 
@@ -283,20 +297,22 @@ public class DatabaseManagerDAO {
 				// Verificar si el nombre no está normalizado
 				if (!nombre.equals(nombreCorregido)) {
 					actualizarNombres(columna, id, nombreCorregido);
-					contador++;
+					contadorCambios.incrementAndGet();
 				}
+
+				System.out.println(contadorCambios.get());
+
+				if (contadorCambios.get() == 0) {
+					cadena = "Ya está todo normalizado.";
+				} else {
+					cadena = "Se han normalizado: " + contadorCambios.get();
+				}
+				AlarmaList.iniciarAnimacionAvanzado(prontInfo, cadena);
+
 			}
-
-			if (contador == 0) {
-				cadena = "Ya esta todo normalizado.";
-
-			} else {
-				cadena = " Se han normalizado: " + contador;
-			}
-			AlarmaList.iniciarAnimacionAvanzado(prontInfo, cadena);
-
 		} catch (SQLException e) {
 			e.printStackTrace();
+			Utilidades.manejarExcepcion(e);
 		}
 
 	}
@@ -366,7 +382,8 @@ public class DatabaseManagerDAO {
 		texto = sb.toString();
 
 		texto = texto.replace("'", " ");
-
+		texto = texto.replaceAll("^\\s*[,\\s-]+", ""); // Al principio
+		texto = texto.replaceAll("[,\\s-]+\\s*$", ""); // Al final
 		return texto;
 	}
 

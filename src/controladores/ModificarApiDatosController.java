@@ -70,7 +70,7 @@ public class ModificarApiDatosController implements Initializable {
 
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
 		alarmaList.setAlarmaConexionInternet(alarmaConexionInternet);
-		alarmaList.iniciarThreadChecker(true);
+		alarmaList.iniciarThreadChecker();
 
 		AlarmaList.iniciarAnimacionEspera(printInfo);
 		Platform.runLater(() -> {

@@ -200,12 +200,7 @@ public class AccesoBBDDController implements Initializable {
 
 		Platform.runLater(() -> {
 
-			Stage myStage = (Stage) this.botonOpciones.getScene().getWindow();
-			myStage.setOnCloseRequest(event -> {
-				stop();
-			});
-
-			alarmaList.iniciarThreadChecker(false);
+			alarmaList.iniciarThreadChecker();
 			if (Utilidades.isInternetAvailable()) {
 				Utilidades.cargarTasasDeCambioDesdeArchivo();
 			}
@@ -312,9 +307,9 @@ public class AccesoBBDDController implements Initializable {
 
 				AlarmaList.detenerAnimacion();
 				AlarmaList.iniciarAnimacionConectado(prontEstadoConexion);
-				AlarmaList.manejarConexionExitosa(datosFichero, prontEstadoConexion);
+				alarmaList.manejarConexionExitosa(datosFichero, prontEstadoConexion);
 			} else {
-				AlarmaList.manejarErrorConexion("No estás conectado a la base de datos.", prontEstadoConexion);
+				alarmaList.manejarErrorConexion("No estás conectado a la base de datos.", prontEstadoConexion);
 			}
 		}
 	}

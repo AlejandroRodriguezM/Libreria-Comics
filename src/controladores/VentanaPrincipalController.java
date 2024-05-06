@@ -20,7 +20,7 @@ package controladores;
  *  - Puntuar comics que se encuentren dentro de la base de datos.
  *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
  *
- *  Version 8.0.0.0
+ *  Version 8.2.0.0
  *
  *  @author Alejandro Rodriguez
  *

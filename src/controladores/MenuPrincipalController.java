@@ -585,7 +585,7 @@ public class MenuPrincipalController implements Initializable {
 			myStage.setOnCloseRequest(event -> stop());
 
 			alarmaList.setAlarmaConexionSql(alarmaConexionSql);
-			alarmaList.iniciarThreadChecker(true);
+			alarmaList.iniciarThreadChecker();
 
 			urlPreviews = WebScraperCatalogPreviews.urlPreviews();
 
@@ -598,7 +598,7 @@ public class MenuPrincipalController implements Initializable {
 			FuncionesTableView.ajustarAnchoVBox();
 			FuncionesTableView.seleccionarRaw();
 
-			FuncionesTableView.modificarColumnas();
+			FuncionesTableView.modificarColumnas(true);
 			AccionControlUI.controlarEventosInterfazPrincipal(guardarReferencia());
 
 		});
@@ -867,7 +867,7 @@ public class MenuPrincipalController implements Initializable {
 
 	private void mostrarComics(boolean esCompleto) {
 
-		imagencomic.setVisible(true);
+//		imagencomic.setVisible(true);
 		if (esCompleto) {
 			AccionSeleccionar.verBasedeDatos(esCompleto, false, null);
 		} else {

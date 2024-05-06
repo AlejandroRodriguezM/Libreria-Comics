@@ -92,7 +92,7 @@ public class AccionFuncionesComunes {
 	 * @throws Exception
 	 */
 	public void procesarComic(Comic comic, boolean esModificacion) throws Exception {
-		final List<Comic> listaComics; // Declarar listaComics como final
+		final List<Comic> listaComics;
 		final List<Comic> comicsFinal;
 		if (!ConectManager.conexionActiva()) {
 			return;
@@ -102,10 +102,8 @@ public class AccionFuncionesComunes {
 		if (!accionRellenoDatos.camposComicSonValidos()) {
 			String mensaje = "Error. Debes de introducir los datos correctos";
 			AlarmaList.mostrarMensajePront(mensaje, false, getReferenciaVentana().getProntInfo());
-			comicsFinal = listaComics = ListaComicsDAO.comicsImportados;
-			Platform.runLater(() -> {
-				FuncionesTableView.tablaBBDD(comicsFinal);
-			});
+			comicsFinal = ListaComicsDAO.comicsImportados;
+			Platform.runLater(() -> FuncionesTableView.tablaBBDD(comicsFinal));
 
 			return; // Agregar return para salir del método en este punto
 		}
@@ -116,9 +114,6 @@ public class AccionFuncionesComunes {
 
 		comic.setImagen(SOURCE_PATH + File.separator + codigo_imagen + ".jpg");
 		if (esModificacion) {
-			comic.setID(getReferenciaVentana().getIdComicTratar().getText());
-			String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
-			listaComics = ComicManagerDAO.verLibreria(sentenciaSQL);
 			ComicManagerDAO.actualizarComicBBDD(comic, "modificar");
 			mensaje = "Has modificado correctamente el cómic";
 		} else {
@@ -134,15 +129,15 @@ public class AccionFuncionesComunes {
 			} else {
 				listaComics = null; // Inicializar listaComics en caso de que no haya ningún cómic seleccionado
 			}
+
+			comicsFinal = listaComics; // Declarar otra variable final para listaComics
+
+			Platform.runLater(() -> {
+				FuncionesTableView.tablaBBDD(comicsFinal);
+			});
+			getReferenciaVentana().getTablaBBDD().refresh();
 		}
 
-		comicsFinal = listaComics; // Declarar otra variable final para listaComics
-
-		Platform.runLater(() -> {
-			FuncionesTableView.tablaBBDD(comicsFinal);
-		});
-
-		getReferenciaVentana().getTablaBBDD().refresh();
 		AlarmaList.mostrarMensajePront(mensaje, esModificacion, getReferenciaVentana().getProntInfo());
 		procesarBloqueComun(comic);
 	}
@@ -155,18 +150,15 @@ public class AccionFuncionesComunes {
 	 * @param comic El objeto Comic que se está procesando.
 	 * @throws SQLException Si ocurre un error al interactuar con la base de datos.
 	 */
-	private void procesarBloqueComun(Comic comic) throws SQLException {
+	private void procesarBloqueComun(Comic comic) {
 		File file = new File(comic.getImagen());
 		Image imagen = new Image(file.toURI().toString(), 250, 0, true, true);
 		getReferenciaVentana().getImagencomic().setImage(imagen);
 		getReferenciaVentana().getImagencomic().setImage(imagen);
 
-		List<ComboBox<String>> comboboxes = getReferenciaVentana().getComboboxes();
-
 		ListaComicsDAO.listasAutoCompletado();
 		FuncionesTableView.nombreColumnas();
 		FuncionesTableView.actualizarBusquedaRaw();
-		funcionesCombo.rellenarComboBox(comboboxes);
 	}
 
 	public static boolean procesarComicPorCodigo(String finalValorCodigo) {
@@ -726,7 +718,6 @@ public class AccionFuncionesComunes {
 		Task<Void> tarea = new Task<>() {
 			@Override
 			protected Void call() {
-//				AccionControlUI.limpiarAutorellenos(false);
 				HashSet<String> mensajesUnicos = new HashSet<>(); // Para almacenar mensajes únicos
 
 				nav.verCargaComics(cargaComicsControllerRef);

@@ -211,7 +211,7 @@ public class OpcionesDatosController implements Initializable {
 	 * Instancia de la clase Ventanas para la navegación.
 	 */
 	private static Ventanas nav = new Ventanas();
-	AlarmaList alarmaList = new AlarmaList();
+	private static AlarmaList alarmaList = new AlarmaList();
 
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
@@ -225,6 +225,7 @@ public class OpcionesDatosController implements Initializable {
 		alarmaList.setAlarmaConexion(alarmaConexion);
 		alarmaList.setAlarmaConexionInternet(alarmaConexionInternet);
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
+		alarmaList.iniciarThreadChecker();
 		Platform.runLater(() -> {
 
 			Stage myStage = (Stage) this.usuario_label.getScene().getWindow();
@@ -232,7 +233,7 @@ public class OpcionesDatosController implements Initializable {
 				stop();
 			});
 
-			alarmaList.iniciarThreadChecker(false);
+			
 
 		});
 		FuncionesFicheros.crearEstructura();
@@ -331,7 +332,6 @@ public class OpcionesDatosController implements Initializable {
 	}
 
 	public void rellenarComboDB(Map<String, String> datosConfiguracion) {
-		AlarmaList alarmaList = new AlarmaList();
 
 		String puertoTexto = datosConfiguracion.get("Puerto");
 		String databaseTexto = datosConfiguracion.get("Database");

@@ -4,10 +4,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import dbmanager.ConectManager;
 import dbmanager.DatabaseManagerDAO;
@@ -63,7 +60,7 @@ public class AlarmaList {
 
 	private boolean ejecutando = true;
 
-	private static Label alarmaConexion = new Label("alarmaConexion");
+	private Label alarmaConexion = new Label("alarmaConexion");
 	private Label alarmaConexionInternet = new Label("alarmaConexionInternet");
 	private Label alarmaConexionSql = new Label("alarmaConexionSql");
 	private Label iniciarAnimacionEspera = new Label("prontEstadoConexion");
@@ -92,7 +89,7 @@ public class AlarmaList {
 	}
 
 	public void setAlarmaConexion(Label alarmaConexion) {
-		AlarmaList.alarmaConexion = alarmaConexion;
+		this.alarmaConexion = alarmaConexion;
 		// Actualizar el Label en el primer elemento de la lista
 		if (!alarmaItems.isEmpty()) {
 			alarmaItems.get(0).setLabel(alarmaConexion);
@@ -131,7 +128,7 @@ public class AlarmaList {
 		}
 	}
 
-	public void iniciarThreadChecker(boolean esComprobarConexion) {
+	public void iniciarThreadChecker() {
 		ForkJoinPool.commonPool().execute(() -> {
 			while (ejecutando) {
 				try {
@@ -217,7 +214,7 @@ public class AlarmaList {
 		}
 	}
 
-	public static void manejarConexionExitosa(String[] datosFichero, Label prontEstadoConexion) {
+	public void manejarConexionExitosa(String[] datosFichero, Label prontEstadoConexion) {
 		if (Utilidades.isMySQLServiceRunning(datosFichero[4], datosFichero[0])) {
 			if (DatabaseManagerDAO.checkTablesAndColumns(datosFichero)) {
 				iniciarAnimacionAlarmaOnline(alarmaConexion);
@@ -262,11 +259,10 @@ public class AlarmaList {
 	 */
 	public static void iniciarAnimacionAvanzado(Label prontEstadoConexion, String cadena) {
 
-		detenerAnimacionEspera();
+//		detenerAnimacionEspera();
 
 		timelineError = new Timeline();
-		timelineError.setCycleCount(Timeline.INDEFINITE);
-//		if (timelineError == null) {
+		timelineError.setCycleCount(Animation.INDEFINITE);
 		prontEstadoConexion.setStyle("-fx-background-color: #29B6CC;");
 
 		// Agregar los keyframes para cambiar el texto
@@ -286,7 +282,6 @@ public class AlarmaList {
 
 		// Iniciar la animación
 		timelineError.play();
-//		}
 	}
 
 	public static void iniciarAnimacionConectado(Label prontEstadoConexion) {
@@ -550,7 +545,7 @@ public class AlarmaList {
 	/**
 	 * Maneja las acciones después de una conexión exitosa.
 	 */
-	public static void manejarConexionExitosa(Label prontEstadoConexion) {
+	public void manejarConexionExitosa(Label prontEstadoConexion) {
 		Utilidades.crearCarpetasBackup();
 		detenerAnimacion();
 		prontEstadoConexion.setStyle("-fx-background-color: #A0F52D");
@@ -566,7 +561,7 @@ public class AlarmaList {
 	 * 
 	 * @param mensaje Mensaje de error.
 	 */
-	public static void manejarErrorConexion(String mensaje, Label prontEstadoConexion) {
+	public void manejarErrorConexion(String mensaje, Label prontEstadoConexion) {
 		asignarTooltip(alarmaConexion, mensaje);
 		detenerAnimacion();
 

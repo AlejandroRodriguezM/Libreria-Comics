@@ -187,6 +187,7 @@ public class AccionControlUI {
 		referenciaVentana.getGradeoComic().getSelectionModel().select(cajaAni);
 
 		referenciaVentana.getNombreKeyIssue().setText(comicTemp.getkeyIssue());
+
 		referenciaVentana.getEstadoComic().getSelectionModel().select(comicTemp.getEstado());
 
 		referenciaVentana.getPrecioComic().setText(comicTemp.getprecioComic());
@@ -376,8 +377,6 @@ public class AccionControlUI {
 		referenciaVentana.getBusquedaCodigo().setText("");
 		referenciaVentana.getCodigoComicTratar().setText("");
 		referenciaVentana.getUrlReferencia().setText("");
-		referenciaVentana.getGradeoComic().setValue("");
-		referenciaVentana.getGradeoComic().getEditor().setText("");
 
 		referenciaVentana.getNombreKeyIssue().setText("");
 		referenciaVentana.getDireccionImagen().setText("");
@@ -394,6 +393,7 @@ public class AccionControlUI {
 		referenciaVentana.getFormatoComic().getSelectionModel().selectFirst();
 		referenciaVentana.getProcedenciaComic().getSelectionModel().selectFirst();
 		referenciaVentana.getEstadoComic().getSelectionModel().selectFirst();
+		referenciaVentana.getGradeoComic().getSelectionModel().selectFirst();
 
 		referenciaVentana.getProntInfo().setText(null);
 		referenciaVentana.getProntInfo().setOpacity(0);
@@ -553,7 +553,7 @@ public class AccionControlUI {
 
 			FuncionesTableView.ajustarAnchoVBox();
 			FuncionesTableView.seleccionarRaw();
-			FuncionesTableView.modificarColumnas();
+			FuncionesTableView.modificarColumnas(true);
 		});
 
 		referenciaVentana.getBotonGuardarResultado().setOnMousePressed(event -> {
@@ -675,7 +675,7 @@ public class AccionControlUI {
 		Comic datos = camposComic(controls, true);
 
 		Comic comicModificado = new Comic();
-
+		comicModificado.setID(comicTemp.getid());
 		comicModificado.setNombre(Utilidades.defaultIfNullOrEmpty(datos.getNombre(), comicTemp.getNombre()));
 		comicModificado.setNumero(Utilidades.defaultIfNullOrEmpty(datos.getNumero(), comicTemp.getNumero()));
 		comicModificado.setVariante(Utilidades.defaultIfNullOrEmpty(datos.getVariante(), comicTemp.getVariante()));
@@ -702,10 +702,10 @@ public class AccionControlUI {
 			comicModificado.setkeyIssue(comicTemp.getkeyIssue());
 		}
 
-		String urlReferencia = Utilidades.defaultIfNullOrEmpty(datos.getUrlReferencia(), "");
+		String urlReferencia = Utilidades.defaultIfNullOrEmpty(datos.getUrlReferencia(), comicTemp.getUrlReferencia());
 		comicModificado.seturlReferencia(urlReferencia.isEmpty() ? "Sin referencia" : urlReferencia);
 
-		String precioComic = Utilidades.defaultIfNullOrEmpty(datos.getprecioComic(), "0");
+		String precioComic = Utilidades.defaultIfNullOrEmpty(datos.getprecioComic(), comicTemp.getprecioComic());
 		comicModificado.setprecioComic(
 				String.valueOf(Utilidades.convertirMonedaADolar(comicModificado.getProcedencia(), precioComic)));
 

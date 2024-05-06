@@ -126,6 +126,8 @@ public class CrearBBDDController implements Initializable {
 	 */
 	private static Ventanas nav = new Ventanas();
 
+	private static AlarmaList alarmaList = new AlarmaList();
+	
 	/**
 	 * Variables para almacenar información de la base de datos.
 	 */
@@ -271,7 +273,7 @@ public class CrearBBDDController implements Initializable {
 				AlarmaList.iniciarAnimacionBaseCreada(prontInformativo, DB_NAME);
 				FuncionesFicheros.guardarDatosBaseLocal(datosBBDD(), prontInformativo, null);
 			} else {
-				AlarmaList.manejarErrorConexion("El servicio MySQL no esta activado. Activalo para crear la base de datos", prontInformativo);
+				alarmaList.manejarErrorConexion("El servicio MySQL no esta activado. Activalo para crear la base de datos", prontInformativo);
 			}
 
 		}

@@ -67,7 +67,7 @@ public class EstadoConexionController implements Initializable {
 		alarmaList.setAlarmaInternetLabel(labelConexionInternet);
 		alarmaList.setAlarmaConexionPrincipal(labelConexionSql);
 
-		alarmaList.iniciarThreadChecker(true);
+		alarmaList.iniciarThreadChecker();
 		Platform.runLater(() -> {
 			progresoCarga.getScene().getWindow().setOnHidden(e -> {
 				if (executorService != null && !executorService.isShutdown()) {

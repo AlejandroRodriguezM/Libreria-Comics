@@ -138,12 +138,12 @@
             <TableView fx:id="tablaBBDD" onKeyPressed="#teclasDireccion" onMouseClicked="#clickRaton" prefHeight="300.0" prefWidth="715.0" stylesheets="@../style/tablas_style.css" tableMenuButtonVisible="true" VBox.vgrow="ALWAYS">
                <columns>
                   <TableColumn fx:id="id" prefWidth="47.0" text="ID" visible="false" />
-                  <TableColumn fx:id="nombre" editable="false" maxWidth="5500.0" prefWidth="102.0" text="Nombre" />
-                  <TableColumn fx:id="gradeo" editable="false" maxWidth="2000.0" prefWidth="39.0" text="Gradeo" />
+                  <TableColumn fx:id="nombre" editable="false" maxWidth="5500.0" prefWidth="110.0" text="Nombre" />
+                  <TableColumn fx:id="gradeo" editable="false" maxWidth="2000.0" prefWidth="60.0" text="Gradeo" />
                   <TableColumn fx:id="numero" editable="false" maxWidth="2500.0" prefWidth="43.0" text="Nº" visible="false" />
                   <TableColumn fx:id="variante" editable="false" prefWidth="116.0" text="Variante" />
                   <TableColumn fx:id="firma" editable="false" maxWidth="4000.0" minWidth="0.0" prefWidth="148.0" text="Firma" visible="false" />
-                  <TableColumn fx:id="editorial" editable="false" maxWidth="4500.0" minWidth="0.0" prefWidth="97.0" style="-fx-alignment: center;" text="Editorial" />
+                  <TableColumn fx:id="editorial" editable="false" maxWidth="4500.0" minWidth="0.0" prefWidth="85.0" text="Editorial" />
                   <TableColumn fx:id="formato" editable="false" maxWidth="4100.0" prefWidth="59.0" text="Formato" visible="false" />
                   <TableColumn fx:id="procedencia" editable="false" text="Origen" visible="false" />
                   <TableColumn fx:id="fecha" editable="false" prefWidth="103.0" text="Fecha" visible="false" />

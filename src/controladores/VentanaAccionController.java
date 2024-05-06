@@ -526,17 +526,7 @@ public class VentanaAccionController implements Initializable {
 	static final String API_KEY = FuncionesApis.cargarApiComicVine();
 	protected static final String[] clavesMarvel = FuncionesApis.clavesApiMarvel();
 
-	AlarmaList alarmaList = new AlarmaList();
-
-//	private ObservableList<ImageView> listaImagenes;
-//	private static List<TableColumn<Comic, String>> columnList;
-//	private ObservableList<ComboBox<String>> listaComboBoxes;
-//	private ObservableList<TableColumn<Comic, String>> listaColumnas;
-//	private List<TableColumn<Comic, String>> columnListCarga;
-//	private ObservableList<Control> listaCamposTexto;
-//	private ObservableList<Button> listaBotones;
-//	private ObservableList<Node> listaElementosFondo;
-//	private ObservableList<TextField> listaTextField;
+	public static final AlarmaList alarmaList = new AlarmaList();
 
 	public static final AccionReferencias referenciaVentana = new AccionReferencias();
 
@@ -631,7 +621,7 @@ public class VentanaAccionController implements Initializable {
 						guionistaComic, editorialComic, firmaComic, gradeoComic, direccionImagen, estadoComic,
 						nombreKeyIssue, precioComic, urlReferencia, codigoComicTratar, idComicTratar)));
 
-		AccionReferencias.setColumnasTabla(Arrays.asList(nombre, variante, editorial, guionista, dibujante));
+		AccionReferencias.setColumnasTabla(Arrays.asList(nombre, gradeo, variante, editorial, guionista, dibujante));
 
 		return referenciaVentana;
 	}
@@ -660,7 +650,7 @@ public class VentanaAccionController implements Initializable {
 
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
 		alarmaList.setAlarmaConexionInternet(alarmaConexionInternet);
-		alarmaList.iniciarThreadChecker(true);
+		alarmaList.iniciarThreadChecker();
 
 		Platform.runLater(() -> {
 
@@ -728,7 +718,6 @@ public class VentanaAccionController implements Initializable {
 		FuncionesManejoFront.permitirUnSimbolo(busquedaCodigo);
 
 		numeroComic.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
-//		gradeoComic.getEditor().setTextFormatter(FuncionesComboBox.validador_Nenteros());
 		idComicTratar.setTextFormatter(FuncionesComboBox.validador_Nenteros());
 		precioComic.setTextFormatter(FuncionesComboBox.validador_Ndecimales());
 
@@ -746,9 +735,9 @@ public class VentanaAccionController implements Initializable {
 	@FXML
 	void mostrarPorParametro(ActionEvent event) {
 		enviarReferencias();
-		
+
 		List<String> controls = new ArrayList<>();
-		
+
 		for (Control control : referenciaVentana.getListaTextFields()) {
 			if (control instanceof TextField) {
 				controls.add(((TextField) control).getText()); // Add the Control object itself
@@ -779,7 +768,6 @@ public class VentanaAccionController implements Initializable {
 	void verTodabbdd(ActionEvent event) throws IOException, SQLException {
 		enviarReferencias();
 		AccionControlUI.limpiarAutorellenos(false);
-		AccionControlUI.borrarDatosGraficos();
 
 		AccionSeleccionar.verBasedeDatos(true, true, null);
 	}
@@ -802,6 +790,7 @@ public class VentanaAccionController implements Initializable {
 			return;
 		}
 		AccionModificar.modificarComic();
+		rellenarCombosEstaticos();
 	}
 
 	@FXML
@@ -809,7 +798,7 @@ public class VentanaAccionController implements Initializable {
 		enviarReferencias();
 
 		AccionEliminar.eliminarComicLista();
-
+		rellenarCombosEstaticos();
 	}
 
 	/**
@@ -852,6 +841,7 @@ public class VentanaAccionController implements Initializable {
 	void borrarPuntuacion(ActionEvent event) {
 		enviarReferencias();
 		AccionModificar.accionPuntuar(false);
+		rellenarCombosEstaticos();
 	}
 
 	/**
@@ -866,6 +856,7 @@ public class VentanaAccionController implements Initializable {
 	void agregarPuntuacion(ActionEvent event) {
 		enviarReferencias();
 		AccionModificar.accionPuntuar(true);
+		rellenarCombosEstaticos();
 	}
 
 	/**
@@ -877,6 +868,7 @@ public class VentanaAccionController implements Initializable {
 	@FXML
 	void busquedaAvanzada(ActionEvent event) {
 		enviarReferencias();
+
 		// Verificar si las claves API están ausentes o vacías
 		if (!FuncionesApis.verificarClavesAPI(clavesMarvel, API_KEY)) {
 			nav.alertaException("Revisa las APIS de Marvel y Vine, estan incorrectas o no funcionan");
@@ -894,24 +886,25 @@ public class VentanaAccionController implements Initializable {
 	 */
 	@FXML
 	void importarFicheroCodigoBarras(ActionEvent evento) {
-		if (FuncionesApis.verificarClavesAPI(clavesMarvel, API_KEY)) {
-			if (Utilidades.isInternetAvailable()) {
 
-				AccionControlUI.limpiarAutorellenos(false);
-				AccionControlUI.borrarDatosGraficos();
-				String frase = "Fichero txt";
+		if (FuncionesApis.verificarClavesAPI(clavesMarvel, API_KEY) && Utilidades.isInternetAvailable()) {
 
-				String formato = "*.txt";
+			AccionControlUI.limpiarAutorellenos(false);
+			AccionControlUI.borrarDatosGraficos();
+			String frase = "Fichero txt";
 
-				File fichero = Utilidades.tratarFichero(frase, formato, false);
+			String formato = "*.txt";
 
-				// Verificar si se obtuvo un objeto FileChooser válido
-				if (fichero != null) {
-					AccionFuncionesComunes.busquedaPorCodigoImportacion(fichero);
-					enviarReferencias();
-				}
+			File fichero = Utilidades.tratarFichero(frase, formato, false);
+
+			// Verificar si se obtuvo un objeto FileChooser válido
+			if (fichero != null) {
+				AccionFuncionesComunes.busquedaPorCodigoImportacion(fichero);
+				enviarReferencias();
+				rellenarCombosEstaticos();
 			}
 		}
+
 	}
 
 	/**
@@ -947,7 +940,7 @@ public class VentanaAccionController implements Initializable {
 
 				AtomicBoolean isCancelled = new AtomicBoolean(true);
 
-				Task<Void> tarea = createSearchTask(valorCodigo, isCancelled);
+				Task<Void> tarea = createSearchTask(valorCodigo);
 
 				configureTaskListeners(tarea, isCancelled);
 
@@ -971,9 +964,10 @@ public class VentanaAccionController implements Initializable {
 		AlarmaList.iniciarAnimacionCargaImagen(cargaImagen);
 		menuImportarFichero.setDisable(true);
 		FuncionesManejoFront.cambiarEstadoMenuBar(true);
+		rellenarCombosEstaticos();
 	}
 
-	private Task<Void> createSearchTask(String valorCodigo, AtomicBoolean isCancelled) {
+	private Task<Void> createSearchTask(String valorCodigo) {
 		return new Task<>() {
 			@Override
 			protected Void call() throws Exception {
@@ -1027,7 +1021,7 @@ public class VentanaAccionController implements Initializable {
 	}
 
 	private void updateButtonsVisibility() {
-		if (ListaComicsDAO.comicsImportados.size() > 0) {
+		if (!ListaComicsDAO.comicsImportados.isEmpty()) {
 			botonEliminarImportadoComic.setVisible(true);
 			botonGuardarCambioComic.setVisible(true);
 			botonGuardarComic.setVisible(true);
@@ -1045,6 +1039,7 @@ public class VentanaAccionController implements Initializable {
 	void limpiarDatos(ActionEvent event) {
 		enviarReferencias();
 		AccionFuncionesComunes.limpiarDatosPantallaAccion();
+		rellenarCombosEstaticos();
 	}
 
 	/**
@@ -1087,6 +1082,7 @@ public class VentanaAccionController implements Initializable {
 	@FXML
 	void guardarDatos(ActionEvent event) {
 		enviarReferencias();
+		rellenarCombosEstaticos();
 		if (!ConectManager.conexionActiva()) {
 			return;
 		}
@@ -1110,6 +1106,7 @@ public class VentanaAccionController implements Initializable {
 			return;
 		}
 		AccionAniadir.guardarContenidoLista();
+		rellenarCombosEstaticos();
 
 	}
 
@@ -1129,6 +1126,7 @@ public class VentanaAccionController implements Initializable {
 		}
 
 		AccionModificar.venderComic();
+		rellenarCombosEstaticos();
 	}
 
 	/**
@@ -1148,6 +1146,7 @@ public class VentanaAccionController implements Initializable {
 		}
 
 		AccionEliminar.eliminarComic();
+		rellenarCombosEstaticos();
 
 	}
 

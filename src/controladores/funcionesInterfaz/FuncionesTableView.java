@@ -11,23 +11,22 @@ import java.util.regex.Pattern;
 
 import comicManagement.Comic;
 import controladores.managment.AccionReferencias;
-import dbmanager.DBUtilidades;
 import dbmanager.ListaComicsDAO;
 import dbmanager.SelectManager;
 import funciones_auxiliares.Utilidades;
+import javafx.geometry.Bounds;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
@@ -79,6 +78,7 @@ public class FuncionesTableView {
 			private void addHyperlink(String url) {
 				ReferenciaHyperlink referenciaHyperlink = new ReferenciaHyperlink("Referencia", url);
 				Hyperlink hyperlink = createHyperlink(referenciaHyperlink);
+
 				vbox.getChildren().add(hyperlink);
 			}
 
@@ -86,12 +86,15 @@ public class FuncionesTableView {
 				Hyperlink hyperlink = new Hyperlink(referenciaHyperlink.getDisplayText());
 				hyperlink.setOnAction(event -> Utilidades.accesoWebWindows(referenciaHyperlink.getUrl()));
 				hyperlink.getStyleClass().add("hyperlink");
+
 				return hyperlink;
 			}
 
 			private void addText(String text) {
 				Text txt = new Text(text);
+
 				vbox.getChildren().add(txt);
+
 			}
 		});
 	}
@@ -221,6 +224,7 @@ public class FuncionesTableView {
 								lastItem = item;
 								vbox.getChildren().clear();
 								createLabels(columna, item, vbox);
+
 							}
 							setGraphic(vbox);
 						}
@@ -231,32 +235,51 @@ public class FuncionesTableView {
 	private static void createLabels(TableColumn<Comic, String> columna, String item, VBox vbox) {
 		String[] nombres = item.split(" - ");
 		for (String nombre : nombres) {
-
 			if (!nombre.isEmpty()) {
-				
-				Label label = new Label();
-				if (columna.getText().equalsIgnoreCase("referencia")) {
-					label.setText(nombre);
-					busquedaHyperLink(columna);
-				} else if (columna.getText().equalsIgnoreCase("variante") || columna.getText().equalsIgnoreCase("firma")
-						|| columna.getText().equalsIgnoreCase("dibujante")
-						|| columna.getText().equalsIgnoreCase("guionista")) {
-
-					label.setText("◉ " + nombre);
-				} else {
-					label.setText(nombre);
-				}
-				label.getStyleClass().add("hyperlink");
-
-				Hyperlink hyperlink = new Hyperlink();
-
-				hyperlink.setGraphic(label);
-				hyperlink.setOnAction(event -> columnaSeleccionada(getReferenciaVentana().getTablaBBDD(), nombre));
-
+				Text text = createTextForColumn(columna, nombre);
+				Hyperlink hyperlink = createHyperlinkForText(text, nombre, columna);
+				hyperlink.getStyleClass().add("hyperlink");
 				vbox.getChildren().add(hyperlink);
+
+				adjustVBoxSizeOnContentChange(vbox);
 			}
 		}
+	}
 
+	private static Hyperlink createHyperlinkForText(Text text, String nombre, TableColumn<Comic, String> columna) {
+		Hyperlink hyperlink = new Hyperlink();
+		text.setWrappingWidth(columna.getWidth() - (columna.getWidth() * 0.3));
+		hyperlink.setGraphic(text);
+
+		hyperlink.setOnAction(event -> columnaSeleccionada(getReferenciaVentana().getTablaBBDD(), nombre));
+		return hyperlink;
+	}
+
+	private static void adjustVBoxSizeOnContentChange(VBox vbox) {
+		vbox.heightProperty()
+				.addListener((obs, oldHeight, newHeight) -> vbox.setMaxHeight(newHeight.doubleValue() - 100));
+
+	}
+
+	private static Text createTextForColumn(TableColumn<Comic, String> columna, String nombre) {
+		Text text = new Text(nombre);
+		if (columna.getText().equalsIgnoreCase("referencia")) {
+			busquedaHyperLink(columna); // No estoy seguro de qué hace esta función, por lo que la he dejado aquí
+		} else if (isSpecialColumn(columna.getText())) {
+			text.setText("◉ " + nombre);
+		} else if (columna.getText().equalsIgnoreCase("numero")) {
+			columna.setStyle("-fx-alignment: CENTER;"); // Centra el contenido de la columna
+		}
+		text.setFont(Font.font("Comic Sans MS", FontWeight.NORMAL, 13));
+		text.setFill(Color.web("#4ea0f2"));
+		text.getStyleClass().add("hyperlink");
+
+		return text;
+	}
+
+	private static boolean isSpecialColumn(String columnName) {
+		return columnName.equalsIgnoreCase("variante") || columnName.equalsIgnoreCase("firma")
+				|| columnName.equalsIgnoreCase("dibujante") || columnName.equalsIgnoreCase("guionista");
 	}
 
 	/**
@@ -268,6 +291,7 @@ public class FuncionesTableView {
 	public static void tablaBBDD(List<Comic> listaComic) {
 		getReferenciaVentana().getTablaBBDD().getColumns().setAll(getReferenciaVentana().getColumnasTabla());
 		getReferenciaVentana().getTablaBBDD().getItems().setAll(listaComic);
+		getReferenciaVentana().getImagencomic().setVisible(true);
 	}
 
 	/**
@@ -286,6 +310,7 @@ public class FuncionesTableView {
 
 		// Deseleccionar la fila seleccionada
 		tablaBBDD.getSelectionModel().clearSelection();
+		getReferenciaVentana().getImagencomic().setVisible(true);
 	}
 
 	/**
@@ -325,7 +350,7 @@ public class FuncionesTableView {
 	 * @param columnList La lista de TableColumn correspondiente a las columnas de
 	 *                   la tabla.
 	 */
-	public static void modificarColumnas() {
+	public static void modificarColumnas(boolean esPrincipal) {
 
 		for (TableColumn<Comic, String> column : getReferenciaVentana().getColumnasTabla()) {
 			column.prefWidthProperty().unbind(); // Desvincular cualquier propiedad prefWidth existente
@@ -333,20 +358,32 @@ public class FuncionesTableView {
 
 		// Definir los tamaños específicos para cada columna en la misma posición que en
 		// columnList
-		Double[] columnWidths = { 140.0, // nombre
-				40.0, // caja
-				46.0, // numero
-				135.0, // variante
-				110.0, // firma
-				78.0, // editorial
-				92.0, // formato
-				75.0, // procedencia
-				100.0, // fecha
-				145.0, // guionista
-				150.0, // dibujante
-				92.0, // referencia
+		Double[] columnWidths;
 
-		};
+		if (esPrincipal) {
+			columnWidths = new Double[] { 140.0, // nombre
+					40.0, // caja
+					46.0, // numero
+					140.0, // variante
+					110.0, // firma
+					75.0, // editorial
+					97.0, // formato
+					90.0, // procedencia
+					95.0, // fecha
+					150.0, // guionista
+					150.0, // dibujante
+					85.0, // referencia
+			};
+		} else {
+			columnWidths = new Double[] { 140.0, // nombre
+					140.0, // variante
+					69.0, // editorial
+					97.0, // formato
+					150.0, // guionista
+					145.0, // dibujante
+					90.0 // caja
+			};
+		}
 
 		// Aplicar los anchos específicos a cada columna
 		for (int i = 0; i < getReferenciaVentana().getColumnasTabla().size(); i++) {

@@ -9,6 +9,7 @@ import controladores.funcionesInterfaz.AccionControlUI;
 import controladores.funcionesInterfaz.FuncionesComboBox;
 import controladores.funcionesInterfaz.FuncionesTableView;
 import dbmanager.ComicManagerDAO;
+import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
 import dbmanager.ListaComicsDAO;
 import funciones_auxiliares.Ventanas;
@@ -38,6 +39,11 @@ public class AccionEliminar {
 	}
 
 	public static void eliminarComic() {
+		
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+		
 		String idComic = getReferenciaVentana().getIdComicTratar().getText();
 		getReferenciaVentana().getIdComicTratar().setStyle("");
 		if (accionFuncionesComunes.comprobarExistenciaComic(idComic)) {
@@ -69,6 +75,11 @@ public class AccionEliminar {
 	}
 
 	public static void eliminarComicLista() {
+		
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+		
 		String idComic = getReferenciaVentana().getIdComicTratar().getText();
 
 		if (nav.alertaEliminar() && idComic != null) {

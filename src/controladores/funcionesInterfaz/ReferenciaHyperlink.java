@@ -29,6 +29,11 @@ public class ReferenciaHyperlink {
         this.displayText = displayText;
         this.url = url;
     }
+    
+    public ReferenciaHyperlink() {
+        this.displayText = "";
+        this.url = "";
+    }
 
     /**
      * Obtiene el texto de visualización del hipervínculo.

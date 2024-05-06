@@ -201,7 +201,7 @@ public class SobreMiController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
-		alarmaList.iniciarThreadChecker(true);
+		alarmaList.iniciarThreadChecker();
 
 		Platform.runLater(() -> FuncionesManejoFront.getStageVentanas().add(estadoStage()));
 	}

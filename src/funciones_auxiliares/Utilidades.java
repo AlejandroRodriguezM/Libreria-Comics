@@ -750,14 +750,24 @@ public class Utilidades {
 	public static void cargarTasasDeCambioDesdeArchivo() {
 		String nombreArchivo = obtenerCarpetaConfiguracion() + File.separator + "tasas_de_cambio.conf";
 
-		// Verificar si el archivo existe y, si no, crearlo con los valores
-		// predeterminados
 		File archivo = new File(nombreArchivo);
 		if (!archivo.exists()) {
 			crearArchivoConValoresPredeterminados(nombreArchivo);
 		}
 
-		ApiCambioDivisas.imprimirDivisas(nombreArchivo);
+		try (BufferedReader reader = new BufferedReader(new FileReader(nombreArchivo))) {
+			String linea;
+			while ((linea = reader.readLine()) != null) {
+				// Dividir la línea en nombre de país y tasa de cambio
+				String[] partes = linea.split(": ");
+				String nombrePais = partes[0];
+				double tasaCambio = Double.parseDouble(partes[1]);
+				// Guardar la tasa de cambio en el mapa
+				tasasDeCambio.put(nombrePais, tasaCambio);
+			}
+		} catch (IOException e) {
+			Utilidades.manejarExcepcion(e);
+		}
 	}
 
 	/**
@@ -793,13 +803,17 @@ public class Utilidades {
 	 * @return La cantidad equivalente en dólares.
 	 */
 	public static double convertirMonedaADolar(String pais, String precio_comic) {
+
 		if (tasasDeCambio.containsKey(pais)) {
 			double tasaDeCambio = tasasDeCambio.get(pais);
 			try {
 				double cantidadMonedaLocal = Double.parseDouble(precio_comic);
 				if (cantidadMonedaLocal > 0) {
 					double resultado = cantidadMonedaLocal / tasaDeCambio;
+
 					return Math.round(resultado * 100.0) / 100.0;
+				} else {
+
 				}
 			} catch (NumberFormatException e) {
 				// Manejo de error si la conversión de la cadena a double falla

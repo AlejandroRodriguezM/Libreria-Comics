@@ -76,6 +76,11 @@ public class AccionAniadir {
 	}
 
 	public static void guardarContenidoLista() {
+		
+		if (!ConectManager.conexionActiva()) {
+			return;
+		}
+		
 		if (!ListaComicsDAO.comicsImportados.isEmpty() && nav.alertaInsertar()) {
 			Collections.sort(ListaComicsDAO.comicsImportados, Comparator.comparing(Comic::getNombre));
 
