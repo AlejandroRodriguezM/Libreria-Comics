@@ -20,7 +20,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="rootAnchorPane" fx:id="rootAnchorPane" focusTraversable="true" maxHeight="Infinity" maxWidth="Infinity" minHeight="0.0" minWidth="0.0" prefHeight="750.0" prefWidth="1212.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controladores.MenuPrincipalController">
+<AnchorPane id="rootAnchorPane" fx:id="rootAnchorPane" focusTraversable="true" maxHeight="Infinity" maxWidth="Infinity" minHeight="0.0" minWidth="0.0" prefHeight="750.0" prefWidth="1212.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.MenuPrincipalController">
     <children>
     <ImageView fx:id="backgroundImage" fitHeight="750.0" fitWidth="1212.0">
         <image>

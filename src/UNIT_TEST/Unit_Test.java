@@ -39,12 +39,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import apis.ApiISBNGeneral;
-import apis.ApiMarvel;
-import apis.funciones.FuncionesApis;
+import Apis.ApiISBNGeneral;
+import Apis.ApiMarvel;
+import apisFunciones.FuncionesApis;
 import comicManagement.Comic;
-import controladores.managment.AccionFuncionesComunes;
 import dbmanager.ConectManager;
+import funcionesManagment.AccionFuncionesComunes;
 import funciones_auxiliares.Utilidades;
 import funciones_auxiliares.Ventanas;
 import funciones_auxiliares.VersionService;

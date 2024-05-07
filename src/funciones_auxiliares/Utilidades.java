@@ -58,19 +58,19 @@ import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
-import apis.ApiCambioDivisas;
-import apis.ApiISBNGeneral;
-import apis.ApiMarvel;
-import controladores.OpcionesAvanzadasController;
-import controladores.VentanaAccionController;
-import controladores.funcionesInterfaz.FuncionesManejoFront;
-import controladores.managment.AccionReferencias;
+import Apis.ApiCambioDivisas;
+import Apis.ApiISBNGeneral;
+import Apis.ApiMarvel;
+import Controladores.OpcionesAvanzadasController;
+import Controladores.VentanaAccionController;
 import comicManagement.Comic;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
 import dbmanager.ListaComicsDAO;
 import dbmanager.SelectManager;
 import ficherosFunciones.FuncionesFicheros;
+import funcionesInterfaz.FuncionesManejoFront;
+import funcionesManagment.AccionReferencias;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.Node;

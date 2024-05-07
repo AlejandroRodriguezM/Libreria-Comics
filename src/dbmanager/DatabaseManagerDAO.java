@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import controladores.CrearBBDDController;
+import Controladores.CrearBBDDController;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
 import funciones_auxiliares.Utilidades;
