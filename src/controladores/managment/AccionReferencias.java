@@ -116,9 +116,9 @@ public class AccionReferencias {
 	private TableColumn<Comic, String> ID;
 
 	/**
-	 * Columna de la tabla para la caja.
+	 * Columna de la tabla para la gradeo.
 	 */
-	private TableColumn<Comic, String> caja;
+	private TableColumn<Comic, String> gradeo;
 
 	/**
 	 * Columna de la tabla para la fecha.
@@ -296,9 +296,9 @@ public class AccionReferencias {
 	private Label labelPuntuacion;
 
 	/**
-	 * Etiqueta para mostrar la caja.
+	 * Etiqueta para mostrar la gradeo.
 	 */
-	private Label label_caja;
+	private Label label_gradeo;
 
 	/**
 	 * Etiqueta para mostrar el dibujante.
@@ -392,7 +392,7 @@ public class AccionReferencias {
 	private ComboBox<String> formatoComic;
 
 	/**
-	 * ComboBox para seleccionar el número de caja del cómic.
+	 * ComboBox para seleccionar el número de gradeo del cómic.
 	 */
 	private ComboBox<String> gradeoComic;
 
@@ -654,8 +654,8 @@ public class AccionReferencias {
 		return ID;
 	}
 
-	public TableColumn<Comic, String> getCaja() {
-		return caja;
+	public TableColumn<Comic, String> getGradeo() {
+		return gradeo;
 	}
 
 	public TableColumn<Comic, String> getFecha() {
@@ -746,8 +746,8 @@ public class AccionReferencias {
 		return labelPuntuacion;
 	}
 
-	public Label getLabel_caja() {
-		return label_caja;
+	public Label getLabel_gradeo() {
+		return label_gradeo;
 	}
 
 	public Label getLabel_dibujante() {
@@ -1210,8 +1210,8 @@ public class AccionReferencias {
 		ID = iD;
 	}
 
-	public void setCaja(TableColumn<Comic, String> caja) {
-		this.caja = caja;
+	public void setGradeo(TableColumn<Comic, String> gradeo) {
+		this.gradeo = gradeo;
 	}
 
 	public void setFecha(TableColumn<Comic, String> fecha) {
@@ -1302,8 +1302,8 @@ public class AccionReferencias {
 		this.labelPuntuacion = labelPuntuacion;
 	}
 
-	public void setLabel_caja(Label label_caja) {
-		this.label_caja = label_caja;
+	public void setLabel_gradeo(Label label_gradeo) {
+		this.label_gradeo = label_gradeo;
 	}
 
 	public void setLabel_dibujante(Label label_dibujante) {

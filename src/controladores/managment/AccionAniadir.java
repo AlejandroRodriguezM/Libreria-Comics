@@ -114,7 +114,7 @@ public class AccionAniadir {
 				referenciaVentana.getProcedenciaComic(), referenciaVentana.getUrlReferencia(),
 				referenciaVentana.getBotonBusquedaAvanzada(), referenciaVentana.getPrecioComic(),
 				referenciaVentana.getDireccionImagen(), referenciaVentana.getLabel_portada(),
-				referenciaVentana.getLabel_precio(), referenciaVentana.getLabel_caja(),
+				referenciaVentana.getLabel_precio(), referenciaVentana.getLabel_gradeo(),
 				referenciaVentana.getLabel_dibujante(), referenciaVentana.getLabel_editorial(),
 				referenciaVentana.getLabel_estado(), referenciaVentana.getLabel_fecha(),
 				referenciaVentana.getLabel_firma(), referenciaVentana.getLabel_formato(),

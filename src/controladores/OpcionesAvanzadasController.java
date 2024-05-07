@@ -264,7 +264,6 @@ public class OpcionesAvanzadasController implements Initializable {
 
 	@FXML
 	void normalizarDataBase(ActionEvent event) {
-//		AlarmaList.detenerAnimacionEspera();
 
 		Task<Void> task = new Task<Void>() {
 			@Override
@@ -303,21 +302,19 @@ public class OpcionesAvanzadasController implements Initializable {
 	}
 
 	public void obtenerVersionDesdeOtraClase() {
-		VersionService versionService = new VersionService();
+	    VersionService versionService = new VersionService();
 
-		versionService.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent event) {
-				String version = VersionService.leerVersionDelArchivo();
-				labelVersion.setText(version);
-				labelVersionPreviews.setText(version);
-				labelVersionPortadas.setText(version);
-				labelVersionEspecial.setText(version);
-			}
-		});
+	    versionService.setOnSucceeded(event -> {
+	        String version = VersionService.leerVersionDelArchivo();
+	        labelVersion.setText(version);
+	        labelVersionPreviews.setText(version);
+	        labelVersionPortadas.setText(version);
+	        labelVersionEspecial.setText(version);
+	    });
 
-		versionService.start();
+	    versionService.start();
 	}
+
 
 	@FXML
 	void descargarPreview(ActionEvent evento) {
@@ -525,7 +522,7 @@ public class OpcionesAvanzadasController implements Initializable {
 			String mensaje = "Comprimiendo portadas";
 			AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, mensaje);
 			botonCancelarSubidaPortadas.setVisible(true);
-			FuncionesManejoFront.cambiarEstadoMenuBar(true);
+			FuncionesManejoFront.cambiarEstadoMenuBar(true,guardarReferencia());
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(true, referenciaVentana);
 		});
 
@@ -534,7 +531,7 @@ public class OpcionesAvanzadasController implements Initializable {
 			AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, mensaje);
 			Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0));
 			botonCancelarSubidaPortadas.setVisible(false);
-			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+			FuncionesManejoFront.cambiarEstadoMenuBar(false,guardarReferencia());
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, referenciaVentana);
 		});
 
@@ -542,7 +539,7 @@ public class OpcionesAvanzadasController implements Initializable {
 			String mensaje = "Cancelada la actualizacion de la base de datos.";
 			botonCancelarSubidaPortadas.setVisible(false);
 			AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, mensaje);
-			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+			FuncionesManejoFront.cambiarEstadoMenuBar(false,guardarReferencia());
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, referenciaVentana);
 
 			Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0));
@@ -622,7 +619,7 @@ public class OpcionesAvanzadasController implements Initializable {
 		Thread thread = new Thread(task);
 
 		task.setOnRunning(e -> {
-			FuncionesManejoFront.cambiarEstadoMenuBar(true);
+			FuncionesManejoFront.cambiarEstadoMenuBar(true,guardarReferencia());
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(true, referenciaVentana);
 
 			String cadenaCancelado = "Copiando portadas";
@@ -630,7 +627,7 @@ public class OpcionesAvanzadasController implements Initializable {
 		});
 
 		task.setOnSucceeded(e -> {
-			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+			FuncionesManejoFront.cambiarEstadoMenuBar(false,guardarReferencia());
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, referenciaVentana);
 
 			String cadenaCancelado = "Portadas copiadas";
@@ -638,7 +635,7 @@ public class OpcionesAvanzadasController implements Initializable {
 		});
 
 		task.setOnFailed(e -> {
-			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+			FuncionesManejoFront.cambiarEstadoMenuBar(false,guardarReferencia());
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, referenciaVentana);
 
 			String cadenaCancelado = "ERROR. No se han podido copiar las portadas";

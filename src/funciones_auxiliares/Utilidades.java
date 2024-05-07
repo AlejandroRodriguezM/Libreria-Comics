@@ -62,6 +62,7 @@ import apis.ApiCambioDivisas;
 import apis.ApiISBNGeneral;
 import apis.ApiMarvel;
 import controladores.OpcionesAvanzadasController;
+import controladores.VentanaAccionController;
 import controladores.funcionesInterfaz.FuncionesManejoFront;
 import controladores.managment.AccionReferencias;
 import comicManagement.Comic;
@@ -117,6 +118,7 @@ public class Utilidades {
 	private static final Random RANDOM = new Random();
 
 	private static AccionReferencias referenciaVentana = getReferenciaVentana();
+	private static AccionReferencias referenciaVentanaPrincipal = getReferenciaVentanaPrincipal();
 
 	/**
 	 * Verifica si el sistema operativo es Windows.
@@ -1124,8 +1126,8 @@ public class Utilidades {
 	 *         cancela la selección o cierra la ventana
 	 */
 	public static File tratarFichero(String frase, String formato, boolean esGuardado) {
-		FuncionesManejoFront.cambiarEstadoMenuBar(true);
-
+		FuncionesManejoFront.cambiarEstadoMenuBar(true,referenciaVentana);
+		FuncionesManejoFront.cambiarEstadoMenuBar(true,referenciaVentanaPrincipal);
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.getExtensionFilters().addAll(new ExtensionFilter(frase, formato));
 
@@ -1141,7 +1143,8 @@ public class Utilidades {
 
 			// Verificar si se seleccionó un archivo
 			if (fichero == null) {
-				FuncionesManejoFront.cambiarEstadoMenuBar(false);
+				FuncionesManejoFront.cambiarEstadoMenuBar(false,referenciaVentana);
+				FuncionesManejoFront.cambiarEstadoMenuBar(false,referenciaVentanaPrincipal);
 				return null; // Devolver null si no se seleccionó ningún archivo
 			}
 			getReferenciaVentana().getBotonCancelarSubida().setVisible(false);
@@ -2337,9 +2340,17 @@ public class Utilidades {
 	public static AccionReferencias getReferenciaVentana() {
 		return referenciaVentana;
 	}
+	
+	public static AccionReferencias getReferenciaVentanaPrincipal() {
+		return referenciaVentanaPrincipal;
+	}
 
 	public static void setReferenciaVentana(AccionReferencias referenciaVentana) {
 		Utilidades.referenciaVentana = referenciaVentana;
+	}
+	
+	public static void setReferenciaVentanaPrincipal(AccionReferencias referenciaVentana) {
+		Utilidades.referenciaVentanaPrincipal = referenciaVentana;
 	}
 
 }

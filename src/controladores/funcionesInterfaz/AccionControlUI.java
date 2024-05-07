@@ -116,6 +116,7 @@ public class AccionControlUI {
 			referenciaVentana.getIdComicTratar().setLayoutY(104);
 			referenciaVentana.getLabel_id_mod().setLayoutX(3);
 			referenciaVentana.getLabel_id_mod().setLayoutY(104);
+			referenciaVentana.getGradeo().setVisible(false);
 		} else {
 			referenciaVentana.getIdComicTratar().setEditable(false);
 			referenciaVentana.getIdComicTratar().setOpacity(0.7);
@@ -139,7 +140,7 @@ public class AccionControlUI {
 				referenciaVentana.getBotonBusquedaCodigo(), referenciaVentana.getBotonbbdd(),
 				referenciaVentana.getPrecioComic(), referenciaVentana.getDireccionImagen(),
 				referenciaVentana.getLabel_portada(), referenciaVentana.getLabel_precio(),
-				referenciaVentana.getLabel_caja(), referenciaVentana.getLabel_dibujante(),
+				referenciaVentana.getLabel_gradeo(), referenciaVentana.getLabel_dibujante(),
 				referenciaVentana.getLabel_editorial(), referenciaVentana.getLabel_estado(),
 				referenciaVentana.getLabel_fecha(), referenciaVentana.getLabel_firma(),
 				referenciaVentana.getLabel_formato(), referenciaVentana.getLabel_guionista(),

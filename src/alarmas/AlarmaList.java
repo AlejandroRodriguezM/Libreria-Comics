@@ -191,8 +191,10 @@ public class AlarmaList {
 			if (ConectManager.estadoConexion) {
 				detenerAnimacionEspera();
 				iniciarAnimacionConectado(iniciarAnimacionEspera);
+				iniciarAnimacionConectado(iniciarAnimacionEsperaInternet);
 			} else {
 				iniciarAnimacionEspera(iniciarAnimacionEspera);
+				iniciarAnimacionEspera(iniciarAnimacionEsperaInternet);
 			}
 
 			asignarTooltip(alarmaConexionSql, "Servicio de MySQL activado");
@@ -286,8 +288,8 @@ public class AlarmaList {
 
 	public static void iniciarAnimacionConectado(Label prontEstadoConexion) {
 		timelineError = new Timeline();
-		timelineError.setCycleCount(Timeline.INDEFINITE);
-//		if (timelineError == null) {
+		timelineError.setCycleCount(Animation.INDEFINITE);
+
 		prontEstadoConexion.setStyle("-fx-background-color: green;");
 
 		// Agregar los keyframes para cambiar el texto
@@ -307,7 +309,7 @@ public class AlarmaList {
 
 		// Iniciar la animación
 		timelineError.play();
-//		}
+
 	}
 
 	public static void detenerAnimacionEspera() {

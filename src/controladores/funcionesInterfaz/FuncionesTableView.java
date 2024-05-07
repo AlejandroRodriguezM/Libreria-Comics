@@ -240,7 +240,7 @@ public class FuncionesTableView {
 				Hyperlink hyperlink = createHyperlinkForText(text, nombre, columna);
 				hyperlink.getStyleClass().add("hyperlink");
 				vbox.getChildren().add(hyperlink);
-
+				
 				adjustVBoxSizeOnContentChange(vbox);
 			}
 		}
@@ -250,7 +250,7 @@ public class FuncionesTableView {
 		Hyperlink hyperlink = new Hyperlink();
 		text.setWrappingWidth(columna.getWidth() - (columna.getWidth() * 0.3));
 		hyperlink.setGraphic(text);
-
+		
 		hyperlink.setOnAction(event -> columnaSeleccionada(getReferenciaVentana().getTablaBBDD(), nombre));
 		return hyperlink;
 	}
@@ -263,14 +263,15 @@ public class FuncionesTableView {
 
 	private static Text createTextForColumn(TableColumn<Comic, String> columna, String nombre) {
 		Text text = new Text(nombre);
+		text.setFont(Font.font("System", FontWeight.NORMAL, 13));
 		if (columna.getText().equalsIgnoreCase("referencia")) {
 			busquedaHyperLink(columna); // No estoy seguro de qué hace esta función, por lo que la he dejado aquí
 		} else if (isSpecialColumn(columna.getText())) {
 			text.setText("◉ " + nombre);
-		} else if (columna.getText().equalsIgnoreCase("numero")) {
-			columna.setStyle("-fx-alignment: CENTER;"); // Centra el contenido de la columna
+		} else if (columna.getText().equalsIgnoreCase("Fecha")) {
+			text.setFont(Font.font("Comic Sans MS", FontWeight.NORMAL, 12));
 		}
-		text.setFont(Font.font("Comic Sans MS", FontWeight.NORMAL, 13));
+
 		text.setFill(Color.web("#4ea0f2"));
 		text.getStyleClass().add("hyperlink");
 
@@ -362,7 +363,7 @@ public class FuncionesTableView {
 
 		if (esPrincipal) {
 			columnWidths = new Double[] { 140.0, // nombre
-					40.0, // caja
+//					40.0, // caja
 					46.0, // numero
 					140.0, // variante
 					110.0, // firma

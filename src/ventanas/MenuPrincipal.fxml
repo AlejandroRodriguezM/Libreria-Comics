@@ -27,44 +27,44 @@
             <Image url="@../imagenes/Fondo%20Menu%202.jpg" />
         </image>
     </ImageView>
-        <MenuBar fx:id="menu_navegacion" maxWidth="1.7976931348623157E308" prefHeight="21.0" prefWidth="1212.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <MenuBar fx:id="menuNavegacion" maxWidth="1.7976931348623157E308" prefHeight="21.0" prefWidth="1212.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
 			<menus>
-				<Menu fx:id="navegacion_cerrar" mnemonicParsing="false" text="Archivo">
+				<Menu fx:id="navegacionCerrar" mnemonicParsing="false" text="Archivo">
 					<items>
-						<MenuItem fx:id="menu_archivo_excel" mnemonicParsing="false" onAction="#exportCSV" text="Exportar Excel" />
-						<MenuItem fx:id="menu_archivo_importar" mnemonicParsing="false" onAction="#importCSV" text="Importar CSV" />
-						<MenuItem fx:id="menu_archivo_delete" mnemonicParsing="false" onAction="#borrarContenidoTabla" text="Eliminar Base de datos" />
-						<MenuItem fx:id="menu_archivo_sobreMi" mnemonicParsing="false" onAction="#verSobreMi" text="Sobre mi" />
-                  <MenuItem fx:id="menu_archivo_conexion" mnemonicParsing="false" onAction="#verEstadoConexion" text="Comprobar Conexion" />
-                  <MenuItem fx:id="menu_archivo_avanzado" mnemonicParsing="false" onAction="#verOpcionesAvanzadas" text="Opciones Avanzadas" />
+						<MenuItem fx:id="menuArchivoExcel" mnemonicParsing="false" onAction="#exportCSV" text="Exportar Excel" />
+						<MenuItem fx:id="menuArchivoImportar" mnemonicParsing="false" onAction="#importCSV" text="Importar CSV" />
+						<MenuItem fx:id="menuArchivoDelete" mnemonicParsing="false" onAction="#borrarContenidoTabla" text="Eliminar Base de datos" />
+						<MenuItem fx:id="menuArchivoSobreMi" mnemonicParsing="false" onAction="#verSobreMi" text="Sobre mi" />
+                  <MenuItem fx:id="menuArchivoConexion" mnemonicParsing="false" onAction="#verEstadoConexion" text="Comprobar Conexion" />
+                  <MenuItem fx:id="menuArchivoAvanzado" mnemonicParsing="false" onAction="#verOpcionesAvanzadas" text="Opciones Avanzadas" />
                   <Menu mnemonicParsing="false" text="Comprobar Apis">
                     <items>
                       <MenuItem mnemonicParsing="false" onAction="#modificarApiMarvel" text="Comprobar Api Marvel" />
                         <MenuItem mnemonicParsing="false" onAction="#modificarApiVine" text="Comprobar Api Vine" />
                     </items>
                   </Menu>
-						<MenuItem fx:id="menu_archivo_desconectar" mnemonicParsing="false" onAction="#volverMenu" text="Desconectar" />
-						<MenuItem fx:id="menu_archivo_cerrar" mnemonicParsing="false" onAction="#salirPrograma" text="Cerrar" />
+						<MenuItem fx:id="menuArchivoDesconectar" mnemonicParsing="false" onAction="#volverMenu" text="Desconectar" />
+						<MenuItem fx:id="menuArchivoCerrar" mnemonicParsing="false" onAction="#salirPrograma" text="Cerrar" />
 					</items>
 				</Menu>
-				<Menu fx:id="navegacion_comic" mnemonicParsing="false" text="Ventanas">
+				<Menu fx:id="navegacionComic" mnemonicParsing="false" text="Ventanas">
 					<items>
-						<MenuItem fx:id="menu_comic_aniadir" mnemonicParsing="false" onAction="#accionComic" text="Añadir comic" />
-						<MenuItem fx:id="menu_comic_eliminar" mnemonicParsing="false" onAction="#accionComic" text="Eliminar Comic" />
-						<MenuItem fx:id="menu_comic_modificar" mnemonicParsing="false" onAction="#accionComic" text="Modificar Comic" />
-						<MenuItem fx:id="menu_comic_puntuar" mnemonicParsing="false" onAction="#accionComic" text="Puntuar Comic" />
-						<MenuItem fx:id="menu_comic_aleatoria" mnemonicParsing="false" onAction="#ventanaRecomendar" text="Lectura aleatoria" />
+						<MenuItem fx:id="menuComicAniadir" mnemonicParsing="false" onAction="#accionComic" text="Añadir comic" />
+						<MenuItem fx:id="menuComicEliminar" mnemonicParsing="false" onAction="#accionComic" text="Eliminar Comic" />
+						<MenuItem fx:id="menuComicModificar" mnemonicParsing="false" onAction="#accionComic" text="Modificar Comic" />
+						<MenuItem fx:id="menuComicPuntuar" mnemonicParsing="false" onAction="#accionComic" text="Puntuar Comic" />
+						<MenuItem fx:id="menuComicAleatoria" mnemonicParsing="false" onAction="#ventanaRecomendar" text="Lectura aleatoria" />
 					</items>
 				</Menu>
-				<Menu fx:id="navegacion_estadistica" mnemonicParsing="false" text="Estadistica">
+				<Menu fx:id="navegacionEstadistica" mnemonicParsing="false" text="Estadistica">
 					<items>
-						<MenuItem fx:id="menu_estadistica_posesion" mnemonicParsing="false" onAction="#comicsEnPosesion" text="Comics en posesion" />
-						<MenuItem fx:id="menu_estadistica_comprados" mnemonicParsing="false" onAction="#comicsComprados" text="Comics Comprados" />
-						<MenuItem fx:id="menu_estadistica_vendidos" mnemonicParsing="false" onAction="#comicsVendidos" text="Comics vendidos" />
-						<MenuItem fx:id="menu_estadistica_puntuados" mnemonicParsing="false" onAction="#comicsPuntuacion" text="Comics puntuados" />
-						<MenuItem fx:id="menu_estadistica_firmados" mnemonicParsing="false" onAction="#comicsFirmados" text="Comics Firmados" />
-						<MenuItem fx:id="menu_estadistica_key_issue" mnemonicParsing="false" onAction="#comicsKeyIssue" text="Comic con Key_issue" />
-						<MenuItem fx:id="menu_estadistica_estadistica" mnemonicParsing="false" onAction="#verEstadistica" text="Descargar estadistica global" />
+						<MenuItem fx:id="menuEstadisticaPosesion" mnemonicParsing="false" onAction="#comicsEnPosesion" text="Comics en posesion" />
+						<MenuItem fx:id="menuEstadisticaComprados" mnemonicParsing="false" onAction="#comicsComprados" text="Comics Comprados" />
+						<MenuItem fx:id="menuEstadisticaVendidos" mnemonicParsing="false" onAction="#comicsVendidos" text="Comics vendidos" />
+						<MenuItem fx:id="menuEstadisticaPuntuados" mnemonicParsing="false" onAction="#comicsPuntuacion" text="Comics puntuados" />
+						<MenuItem fx:id="menuEstadisticaFirmados" mnemonicParsing="false" onAction="#comicsFirmados" text="Comics Firmados" />
+						<MenuItem fx:id="menuEstadisticaKeyIssue" mnemonicParsing="false" onAction="#comicsKeyIssue" text="Comic con Key_issue" />
+						<MenuItem fx:id="menuEstadisticaEstadistica" mnemonicParsing="false" onAction="#verEstadistica" text="Descargar estadistica global" />
 					</items>
 				</Menu>
 			</menus>
@@ -142,7 +142,7 @@
 						<TableColumn fx:id="ID" prefWidth="47.0" text="ID" visible="false" />
 						<TableColumn fx:id="nombre" editable="false" maxWidth="5500.0" prefWidth="102.0" text="Nombre" />
 						<TableColumn fx:id="gradeo" editable="false" maxWidth="2000.0" prefWidth="57.0" text="Gradeo" visible="false" />
-						<TableColumn fx:id="numero" editable="false" maxWidth="2500.0" prefWidth="38.0" text="Nº" />
+						<TableColumn fx:id="numero" editable="false" maxWidth="2500.0" prefWidth="50.0" text="Nº" />
 						<TableColumn fx:id="variante" editable="false" prefWidth="167.0" text="Variante" />
 						<TableColumn fx:id="firma" editable="false" maxWidth="4000.0" minWidth="0.0" prefWidth="148.0" text="Firma" visible="false" />
 						<TableColumn fx:id="editorial" editable="false" maxWidth="4500.0" minWidth="0.0" prefWidth="97.0" text="Editorial" />

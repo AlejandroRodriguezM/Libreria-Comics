@@ -8,6 +8,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
@@ -139,7 +140,7 @@
                <columns>
                   <TableColumn fx:id="id" prefWidth="47.0" text="ID" visible="false" />
                   <TableColumn fx:id="nombre" editable="false" maxWidth="5500.0" prefWidth="110.0" text="Nombre" />
-                  <TableColumn fx:id="gradeo" editable="false" maxWidth="2000.0" prefWidth="60.0" text="Gradeo" />
+                  <TableColumn fx:id="gradeo" editable="false" maxWidth="2000.0" prefWidth="60.0" text="Gradeo" visible="false" />
                   <TableColumn fx:id="numero" editable="false" maxWidth="2500.0" prefWidth="43.0" text="Nº" visible="false" />
                   <TableColumn fx:id="variante" editable="false" prefWidth="116.0" text="Variante" />
                   <TableColumn fx:id="firma" editable="false" maxWidth="4000.0" minWidth="0.0" prefWidth="148.0" text="Firma" visible="false" />
@@ -191,5 +192,6 @@
             <TextArea fx:id="prontInfo" editable="false" opacity="0.0" prefHeight="296.0" prefWidth="214.0" stylesheets="@../style/panel_info_style.css" wrapText="true" />
          </children>
       </VBox>
+      <ProgressIndicator fx:id="progresoCarga" layoutX="713.0" layoutY="287.0" prefHeight="66.0" prefWidth="70.0" stylesheets="@../style/progreso_style.css" visible="false" />
    </children>
 </Pane>

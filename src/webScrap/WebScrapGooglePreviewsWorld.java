@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,6 +16,7 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -30,12 +32,15 @@ import org.jsoup.select.Elements;
 
 import comicManagement.Comic;
 import dbmanager.ConectManager;
-import dbmanager.DBUtilidades;
-import ficherosFunciones.FuncionesFicheros;
 import funciones_auxiliares.Utilidades;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Stage;
 import net.coobird.thumbnailator.Thumbnails;
 
-public class WebScrapGooglePreviewsWorld {
+public class WebScrapGooglePreviewsWorld extends Application {
 
 	public static String agregarMasAMayusculas(String cadena) {
 		return cadena.toUpperCase();
@@ -225,6 +230,44 @@ public class WebScrapGooglePreviewsWorld {
 			Comic comicInfoArray = new Comic.ComicBuilder(comic.getid(), titulo).valorGradeo(gradeo).numero(numero)
 					.variante("").firma("").editorial("").formato(formato).procedencia(procedencia).fecha("")
 					.guionista("").dibujante("").estado(estado).keyIssue("").puntuacion(puntuacion).imagen("")
+					.referenciaComic(previewsWorldUrl).precioComic(precio).codigoComic(code).build();
+
+			// Escribir en un archivo
+			writeToTextFile(comicInfoArray, claveBusqueda);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void displayComicInfoString(String claveBusqueda) throws URISyntaxException {
+		try {
+			claveBusqueda = claveBusqueda.trim();
+			String previewsWorldUrl = buscarEnGoogle(claveBusqueda);
+
+			if (previewsWorldUrl == null || previewsWorldUrl.isEmpty()) {
+				return;
+			}
+
+			Document document = Jsoup.connect(previewsWorldUrl).get();
+
+			if (isDocumentEmpty(document)) {
+				System.out.println("La página está vacía.");
+				return;
+			}
+
+			String titulo = scrapeTitle(document);
+			String numero = extractNumeroFromTitle(document);
+			String formato = "Grapa (Issue individual)";
+			String precio = scrapeAndPrintSRP(document);
+			String code = scrapeElementCode(document, "div.ItemCode");
+			String procedencia = "Estados Unidos (United States)";
+			String estado = "En posesión";
+			String puntuacion = "Sin puntuación";
+			String gradeo = "NM (Noir Medium)";
+			Comic comicInfoArray = new Comic.ComicBuilder("", titulo).valorGradeo(gradeo).numero(numero).variante("")
+					.firma("").editorial("").formato(formato).procedencia(procedencia).fecha("").guionista("")
+					.dibujante("").estado(estado).keyIssue("").puntuacion(puntuacion).imagen("")
 					.referenciaComic(previewsWorldUrl).precioComic(precio).codigoComic(code).build();
 
 			// Escribir en un archivo
@@ -532,37 +575,85 @@ public class WebScrapGooglePreviewsWorld {
 		}
 	}
 
-	public static void main(String[] args) throws URISyntaxException, InterruptedException {
+	public static List<String> leerArchivoTXT() {
+		// Mostrar el diálogo de selección de archivo
+		String frase = "Fichero TXT";
+		String formatoFichero = "*.txt";
 
-		String[] datosFichero = FuncionesFicheros.datosEnvioFichero();
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.getExtensionFilters().addAll(new ExtensionFilter(frase, formatoFichero));
 
-		if (ConectManager.loadDriver()) {
+		// Obtener el directorio actual del usuario
+		File directorioUsuario = new File(System.getProperty("user.home"));
+		fileChooser.setInitialDirectory(directorioUsuario);
 
-			ConectManager.datosBBDD(datosFichero);
+		File fichero = fileChooser.showOpenDialog(null);
+
+		// Crear una lista para almacenar las líneas del archivo
+		List<String> lines = new ArrayList<>();
+
+		// Verificar si se seleccionó un archivo
+		if (fichero != null) {
+			try (BufferedReader reader = new BufferedReader(new FileReader(fichero))) {
+				String line;
+				// Leer cada línea del archivo y agregarla a la lista
+				while ((line = reader.readLine()) != null) {
+					lines.add(line);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else {
+			System.out.println("No se seleccionó ningún archivo.");
 		}
 
-		// Lista de direcciones de las imágenes
-		List<String> inputPaths = DBUtilidades.obtenerValoresColumna("portada");
+		return lines;
+	}
 
-		borrarArchivosNoEnLista(inputPaths);
+	public static void main(String[] args) {
+
+//		String[] datosFichero = FuncionesFicheros.datosEnvioFichero();
+//
+//		if (ConectManager.loadDriver()) {
+//
+//			ConectManager.datosBBDD(datosFichero);
+//		}
+
+		// Lista de direcciones de las imágenes
+//		List<String> inputPaths = DBUtilidades.obtenerValoresColumna("portada");
+
+//		borrarArchivosNoEnLista(inputPaths);
 //		convertJpgToPng(inputPaths);
 //		readMetadata();
 		// Comprimir las imágenes con un factor de compresión del 0.5 (50%)
 //		compressImages(inputPaths, 0.5, 1);
-//
-//		String sentenciaSQL = DBUtilidades.construirSentenciaSQL(TipoBusqueda.COMPLETA);
-//
-//		List<Comic> listaComics = ComicManagerDAO.verLibreria(sentenciaSQL);
-//
-//		for (Comic comic : listaComics) {
-//
-//			displayComicInfo(comic);
-//
-//			// Esperar 1 segundo entre cada solicitud
-//			Thread.sleep(3000); // 1000 milisegundos = 1 segundo
-//		}
 
+//		String sentenciaSQL = DBUtilidades.construirSentenciaSQL(TipoBusqueda.COMPLETA);
+
+//		List<Comic> listaComics = ComicManagerDAO.verLibreria(sentenciaSQL);
+		Platform.runLater(() -> {
+			List<String> listaComics = leerArchivoTXT();
+
+			for (String claveBusqueda : listaComics) {
+
+				// Esperar 1 segundo entre cada solicitud
+				try {
+					displayComicInfoString(claveBusqueda);
+					Thread.sleep(3000);
+				} catch (InterruptedException | URISyntaxException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} // 1000 milisegundos = 1 segundo
+			}
+			return;
+		});
 //		limpiarFichero();
+
+	}
+
+	@Override
+	public void start(Stage arg0) throws Exception {
+		// TODO Auto-generated method stub
 
 	}
 

@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.json.JSONException;
 
@@ -49,6 +48,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -73,6 +73,12 @@ public class VentanaAccionController implements Initializable {
 	private Label alarmaConexionSql;
 
 	/**
+	 * Indicador de progreso.
+	 */
+	@FXML
+	private ProgressIndicator progresoCarga;
+
+	/**
 	 * Campo de texto para la dirección de la imagen.
 	 */
 	@FXML
@@ -85,7 +91,7 @@ public class VentanaAccionController implements Initializable {
 	private TableColumn<Comic, String> id;
 
 	/**
-	 * Columna de la tabla para la caja.
+	 * Columna de la tabla para la gradeo.
 	 */
 	@FXML
 	private TableColumn<Comic, String> gradeo;
@@ -330,7 +336,7 @@ public class VentanaAccionController implements Initializable {
 	private Label labelPuntuacion;
 
 	/**
-	 * Etiqueta para mostrar la caja.
+	 * Etiqueta para mostrar la gradeo.
 	 */
 	@FXML
 	private Label labelGradeo;
@@ -439,7 +445,7 @@ public class VentanaAccionController implements Initializable {
 	private ComboBox<String> formatoComic;
 
 	/**
-	 * ComboBox para seleccionar el número de caja del cómic.
+	 * ComboBox para seleccionar el número de gradeo del cómic.
 	 */
 	@FXML
 	private ComboBox<String> gradeoComic;
@@ -530,12 +536,14 @@ public class VentanaAccionController implements Initializable {
 
 	public static final AccionReferencias referenciaVentana = new AccionReferencias();
 
+	public static AccionReferencias referenciaVentanaPrincipal = new AccionReferencias();
+
 	public AccionReferencias guardarReferencia() {
 		referenciaVentana.setAlarmaConexionInternet(alarmaConexionInternet);
 		referenciaVentana.setAlarmaConexionSql(alarmaConexionSql);
 		referenciaVentana.setDireccionImagen(direccionImagen);
 		referenciaVentana.setID(id);
-		referenciaVentana.setCaja(gradeo);
+		referenciaVentana.setGradeo(gradeo);
 		referenciaVentana.setDibujante(dibujante);
 		referenciaVentana.setEditorial(editorial);
 		referenciaVentana.setFecha(fecha);
@@ -581,9 +589,10 @@ public class VentanaAccionController implements Initializable {
 		referenciaVentana.setIdComicTratar(idComicTratar);
 		referenciaVentana.setCodigoComicTratar(codigoComicTratar);
 		referenciaVentana.setStage(estadoStage());
+		referenciaVentana.setProgresoCarga(progresoCarga);
 
 		referenciaVentana.setLabelPuntuacion(labelPuntuacion);
-		referenciaVentana.setLabel_caja(labelGradeo);
+		referenciaVentana.setLabel_gradeo(labelGradeo);
 		referenciaVentana.setLabel_dibujante(labelDibujante);
 		referenciaVentana.setLabel_editorial(labelEditorial);
 		referenciaVentana.setLabel_estado(labelEstado);
@@ -629,8 +638,10 @@ public class VentanaAccionController implements Initializable {
 	public void enviarReferencias() {
 		AccionControlUI.setReferenciaVentana(guardarReferencia());
 		AccionFuncionesComunes.setReferenciaVentana(guardarReferencia());
+		AccionFuncionesComunes.setReferenciaVentanaPrincipal(referenciaVentanaPrincipal);
 		FuncionesTableView.setReferenciaVentana(guardarReferencia());
 		FuncionesManejoFront.setReferenciaVentana(guardarReferencia());
+
 		AccionSeleccionar.setReferenciaVentana(guardarReferencia());
 		AccionAniadir.setReferenciaVentana(guardarReferencia());
 		AccionEliminar.setReferenciaVentana(guardarReferencia());
@@ -899,9 +910,10 @@ public class VentanaAccionController implements Initializable {
 
 			// Verificar si se obtuvo un objeto FileChooser válido
 			if (fichero != null) {
-				AccionFuncionesComunes.busquedaPorCodigoImportacion(fichero);
 				enviarReferencias();
 				rellenarCombosEstaticos();
+				AccionFuncionesComunes.busquedaPorCodigoImportacion(fichero);
+
 			}
 		}
 
@@ -938,11 +950,9 @@ public class VentanaAccionController implements Initializable {
 
 				limpiarUIBeforeSearch();
 
-				AtomicBoolean isCancelled = new AtomicBoolean(true);
-
 				Task<Void> tarea = createSearchTask(valorCodigo);
 
-				configureTaskListeners(tarea, isCancelled);
+				configureTaskListeners(tarea);
 
 				Thread thread = new Thread(tarea);
 				thread.setDaemon(true);
@@ -963,7 +973,7 @@ public class VentanaAccionController implements Initializable {
 		referenciaVentana.getMenu_Importar_Fichero_CodigoBarras().setDisable(true);
 		AlarmaList.iniciarAnimacionCargaImagen(cargaImagen);
 		menuImportarFichero.setDisable(true);
-		FuncionesManejoFront.cambiarEstadoMenuBar(true);
+		FuncionesManejoFront.cambiarEstadoMenuBar(true, referenciaVentana);
 		rellenarCombosEstaticos();
 	}
 
@@ -988,35 +998,35 @@ public class VentanaAccionController implements Initializable {
 		};
 	}
 
-	private void configureTaskListeners(Task<Void> tarea, AtomicBoolean isCancelled) {
+	private void configureTaskListeners(Task<Void> tarea) {
 		tarea.setOnRunning(ev -> {
 			limpiarUIBeforeSearch();
+			AccionControlUI.limpiarAutorellenos(false);
 			AccionFuncionesComunes.cambiarEstadoBotones(true);
+			FuncionesManejoFront.cambiarEstadoMenuBar(true, referenciaVentana);
+			FuncionesManejoFront.cambiarEstadoMenuBar(true, referenciaVentanaPrincipal);
+			AlarmaList.iniciarAnimacionCarga(progresoCarga);
 		});
 
 		tarea.setOnSucceeded(ev -> {
 			AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
-			botonCancelarSubida.setVisible(false);
-			botonBusquedaCodigo.setDisable(false);
-			botonSubidaPortada.setDisable(false);
-			referenciaVentana.getMenu_Importar_Fichero_CodigoBarras().setDisable(false);
 			AccionFuncionesComunes.cambiarEstadoBotones(false);
-			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentana);
+			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentanaPrincipal);
 			menuImportarFichero.setDisable(false);
 			updateButtonsVisibility();
+			AlarmaList.detenerAnimacionCarga(progresoCarga);
 		});
 
 		tarea.setOnCancelled(ev -> {
 			String mensaje = "Ha cancelado la búsqueda del cómic";
 			AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
-			botonCancelarSubida.setVisible(false);
-			botonBusquedaCodigo.setDisable(false);
-			botonSubidaPortada.setDisable(false);
-			referenciaVentana.getMenu_Importar_Fichero_CodigoBarras().setDisable(false);
 			AlarmaList.detenerAnimacionCargaImagen(cargaImagen);
 			AccionFuncionesComunes.cambiarEstadoBotones(false);
-			FuncionesManejoFront.cambiarEstadoMenuBar(false);
-			menuImportarFichero.setDisable(false);
+			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentana);
+			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentanaPrincipal);
+
+			AlarmaList.detenerAnimacionCarga(progresoCarga);
 		});
 	}
 
@@ -1202,5 +1212,9 @@ public class VentanaAccionController implements Initializable {
 
 	public void stop() {
 		alarmaList.detenerThreadChecker();
+	}
+
+	public static void setReferenciaVentana(AccionReferencias referenciaVentana) {
+		VentanaAccionController.referenciaVentanaPrincipal = referenciaVentana;
 	}
 }

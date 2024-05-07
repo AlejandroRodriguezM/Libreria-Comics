@@ -19,6 +19,10 @@ import org.json.JSONObject;
  */
 public class ApiComicVine {
 
+    private ApiComicVine() {
+
+    }
+	
 	/**
 	 * Esta función toma una cadena de entrada y elimina los espacios entre letras y puntos.
 	 * Busca cualquier letra seguida de un punto, seguida de uno o más espacios, y luego otra letra.

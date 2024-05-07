@@ -46,6 +46,15 @@ import webScrap.WebScraperPreviewsWorld;
 
 public class AccionFuncionesComunes {
 
+	private static File fichero;
+	private static AtomicInteger contadorErrores;
+	private static AtomicInteger comicsProcesados;
+	private static AtomicInteger mensajeIdCounter;
+	private static AtomicInteger numLineas;
+	private static AtomicReference<CargaComicsController> cargaComicsControllerRef;
+	private static StringBuilder codigoFaltante;
+	private static HashSet<String> mensajesUnicos = new HashSet<>();
+
 	/**
 	 * Obtenemos el directorio de inicio del usuario
 	 */
@@ -79,6 +88,8 @@ public class AccionFuncionesComunes {
 	public static String TIPO_ACCION = getTipoAccion();
 
 	private static AccionReferencias referenciaVentana = getReferenciaVentana();
+
+	private static AccionReferencias referenciaVentanaPrincipal = getReferenciaVentana();
 
 	private static AccionControlUI accionRellenoDatos = new AccionControlUI();
 
@@ -472,11 +483,11 @@ public class AccionFuncionesComunes {
 			// Descarga y conversión asíncrona de la imagen
 			Utilidades.descargarYConvertirImagenAsync(uri, SOURCE_PATH, codigoImagen + ".jpg");
 
-			Comic comicImport = new Comic.ComicBuilder(id, titulo).valorGradeo("0").numero(numero).variante(variante)
-					.firma("").editorial(editorial).formato(formato).procedencia(procedencia).fecha(fecha.toString())
-					.guionista(escritores).dibujante(dibujantes).estado("Comprado").keyIssue(keyIssue)
-					.puntuacion("Sin puntuar").imagen(imagen).referenciaComic(urlReferencia).precioComic(precio)
-					.codigoComic(codigoComic).build();
+			Comic comicImport = new Comic.ComicBuilder(id, titulo).valorGradeo("NM (Noir Medium)").numero(numero)
+					.variante(variante).firma("").editorial(editorial).formato(formato).procedencia(procedencia)
+					.fecha(fecha.toString()).guionista(escritores).dibujante(dibujantes).estado("Comprado")
+					.keyIssue(keyIssue).puntuacion("Sin puntuar").imagen(imagen).referenciaComic(urlReferencia)
+					.precioComic(precio).codigoComic(codigoComic).build();
 
 			ListaComicsDAO.comicsImportados.add(comicImport);
 //
@@ -540,107 +551,113 @@ public class AccionFuncionesComunes {
 		});
 	}
 
-	/**
-	 * Realiza una búsqueda utilizando un archivo de importaciones y muestra los
-	 * resultados en la interfaz gráfica.
-	 *
-	 * @param fichero El archivo que contiene los códigos de importación a buscar.
-	 */
-	public static void busquedaPorCodigoImportacion(File fichero) {
+	public static void busquedaPorCodigoImportacion(File file) {
+		fichero = file;
+		contadorErrores = new AtomicInteger(0);
+		comicsProcesados = new AtomicInteger(0);
+		mensajeIdCounter = new AtomicInteger(0);
+		numLineas = new AtomicInteger(0);
+		numLineas.set(Utilidades.contarLineasFichero(fichero));
+		cargaComicsControllerRef = new AtomicReference<>();
+		codigoFaltante = new StringBuilder();
 
 		if (!ConectManager.conexionActiva() && !Utilidades.isInternetAvailable()) {
 			return;
 		}
 
-		StringBuilder codigoFaltante = new StringBuilder();
-		AtomicInteger contadorErrores = new AtomicInteger(0);
-		AtomicInteger comicsProcesados = new AtomicInteger(0);
-		AtomicInteger mensajeIdCounter = new AtomicInteger(0); // Contador para generar IDs únicos
-		AtomicInteger numLineas = new AtomicInteger(0); // Declarar como AtomicInteger
-		numLineas.set(Utilidades.contarLineasFichero(fichero)); // Asignar el valor aquí
-		AtomicReference<CargaComicsController> cargaComicsControllerRef = new AtomicReference<>();
-		String mensaje = "ERROR. Has cancelado la subida de comics";
+		Task<Void> tarea = createSearchTask();
 
+		configureTaskHandlers(tarea);
+
+		Thread thread = new Thread(tarea);
+		thread.setDaemon(true);
+		thread.start();
+	}
+
+	private static Task<Void> createSearchTask() {
 		Task<Void> tarea = new Task<>() {
 			@Override
 			protected Void call() {
-
-				if (isCancelled() || !getReferenciaVentana().getStage().isShowing()) {
-					return null; // Exit the call() method if the task has been canceled or the stage is not
-									// showing
-				}
-
-//				AccionControlUI.limpiarAutorellenos(false);
-				HashSet<String> mensajesUnicos = new HashSet<>(); // Para almacenar mensajes únicos
 				nav.verCargaComics(cargaComicsControllerRef);
-
 				try (BufferedReader reader = new BufferedReader(new FileReader(fichero))) {
-					AtomicReference<String> finalValorCodigoWrapper = new AtomicReference<>();
-
 					reader.lines().forEach(linea -> {
-//						// Verifica si la tarea ha sido cancelada
 						if (isCancelled() || !getReferenciaVentana().getStage().isShowing()) {
-							return; // Sale del método call() si la tarea ha sido cancelada
+							return;
 						}
 						String finalValorCodigo = Utilidades.eliminarEspacios(linea).replace("-", "");
-						finalValorCodigoWrapper.set(finalValorCodigo);
-
-						if (!finalValorCodigo.isEmpty()) {
-
-							StringBuilder textoBuilder = new StringBuilder();
-							Comic comicInfo = obtenerComicInfo(finalValorCodigo);
-							// Dentro del bucle forEach
-							String mensajeId = String.valueOf(mensajeIdCounter.getAndIncrement()); // Generar un ID
-																									// único
-							if (comicInfo != null) {
-								textoBuilder.append("Codigo: ").append(finalValorCodigo).append(" procesado.")
-										.append("\n");
-								AccionFuncionesComunes.procesarComicPorCodigo(finalValorCodigo);
-							} else {
-								codigoFaltante.append("Falta comic con codigo: ").append(finalValorCodigo).append("\n");
-								textoBuilder.append("Comic no capturado: ").append(finalValorCodigo).append("\n");
-								contadorErrores.getAndIncrement();
-							}
-
-							String mensaje = mensajeId + ": " + textoBuilder.toString();
-							mensajesUnicos.add(mensaje);
-
-							comicsProcesados.getAndIncrement();
-
-							long finalProcessedItems = comicsProcesados.get();
-							double progress = (double) finalProcessedItems / (numLineas.get());
-							String porcentaje = String.format("%.2f%%", progress * 100);
-
-							if (nav.isVentanaCerrada()) {
-								nav.verCargaComics(cargaComicsControllerRef);
-
-								StringBuilder textoFiltrado = new StringBuilder();
-								List<String> mensajesOrdenados = new ArrayList<>(mensajesUnicos);
-								Collections.sort(mensajesOrdenados,
-										Comparator.comparingInt(m -> Integer.parseInt(m.split(":")[0])));
-
-								for (String mensajeUnico : mensajesOrdenados) {
-									if (!mensajeUnico.equalsIgnoreCase(mensaje)) {
-										textoFiltrado.append(mensajeUnico.substring(mensajeUnico.indexOf(":") + 2));
-									}
-								}
-
-								Platform.runLater(() -> cargaComicsControllerRef.get()
-										.cargarDatosEnCargaComics(textoFiltrado.toString(), porcentaje, progress));
-							}
-
-							Platform.runLater(() -> cargaComicsControllerRef.get()
-									.cargarDatosEnCargaComics(textoBuilder.toString(), porcentaje, progress));
-						}
+						processComic(finalValorCodigo);
 					});
 				} catch (IOException e) {
 					Utilidades.manejarExcepcion(e);
 				}
-
 				return null;
 			}
 		};
 
+		// Configurar el evento para cancelar la tarea cuando se presiona el botón de
+		// cancelar subida
+		getReferenciaVentana().getBotonCancelarSubida().setOnAction(ev -> {
+			actualizarInterfaz(comicsProcesados, codigoFaltante, "", numLineas);
+			cambiarEstadoBotones(false);
+			tarea.cancel(true);
+			getReferenciaVentana().getMenu_Importar_Fichero_CodigoBarras().setDisable(false);
+		});
+
+		return tarea;
+	}
+
+	private static void processComic(String finalValorCodigo) {
+		if (!getReferenciaVentana().getStage().isShowing()) {
+			return;
+		}
+
+		if (!finalValorCodigo.isEmpty()) {
+			Comic comicInfo = obtenerComicInfo(finalValorCodigo);
+
+			StringBuilder textoBuilder = new StringBuilder();
+
+			if (comicInfo != null) {
+				textoBuilder.append("Codigo: ").append(finalValorCodigo).append(" procesado.").append("\n");
+				AccionFuncionesComunes.procesarComicPorCodigo(finalValorCodigo);
+			} else {
+				codigoFaltante.append("Falta comic con codigo: ").append(finalValorCodigo).append("\n");
+				textoBuilder.append("Comic no capturado: ").append(finalValorCodigo).append("\n");
+				contadorErrores.getAndIncrement();
+			}
+
+			updateGUI(textoBuilder);
+		}
+	}
+
+	private static void updateGUI(StringBuilder textoBuilder) {
+		String mensajeId = String.valueOf(mensajeIdCounter.getAndIncrement());
+
+		String mensaje = mensajeId + ": " + textoBuilder.toString();
+		mensajesUnicos.add(mensaje);
+		comicsProcesados.getAndIncrement();
+
+		long finalProcessedItems = comicsProcesados.get();
+		double progress = (double) finalProcessedItems / (numLineas.get());
+		String porcentaje = String.format("%.2f%%", progress * 100);
+
+		if (nav.isVentanaCerrada()) {
+
+			nav.verCargaComics(cargaComicsControllerRef);
+
+			StringBuilder textoFiltrado = new StringBuilder();
+			for (String mensajeUnico : mensajesUnicos) {
+				textoFiltrado.append(mensajeUnico.substring(mensajeUnico.indexOf(":") + 2));
+			}
+
+			Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics(textoFiltrado.toString(),
+					porcentaje, progress));
+		} else {
+			Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics(textoBuilder.toString(),
+					porcentaje, progress));
+		}
+	}
+
+	private static void configureTaskHandlers(Task<Void> tarea) {
 		tarea.setOnRunning(ev -> {
 			AccionControlUI.limpiarAutorellenos(false);
 			cambiarEstadoBotones(true);
@@ -648,9 +665,15 @@ public class AccionFuncionesComunes {
 			getReferenciaVentana().getImagencomic().setVisible(true);
 
 			AlarmaList.iniciarAnimacionCargaImagen(getReferenciaVentana().getCargaImagen());
-			FuncionesManejoFront.cambiarEstadoMenuBar(true);
+			FuncionesManejoFront.cambiarEstadoMenuBar(true, referenciaVentana);
+
+			FuncionesManejoFront.cambiarEstadoMenuBar(true, referenciaVentanaPrincipal);
+
 			getReferenciaVentana().getMenu_Importar_Fichero_CodigoBarras().setDisable(true);
 			getReferenciaVentana().getBotonSubidaPortada().setDisable(true);
+
+			AlarmaList.mostrarMensajePront("Se estan cargando los datos", true, getReferenciaVentana().getProntInfo());
+			AlarmaList.iniciarAnimacionCarga(getReferenciaVentana().getProgresoCarga());
 		});
 
 		tarea.setOnSucceeded(ev -> {
@@ -658,39 +681,35 @@ public class AccionFuncionesComunes {
 			cambiarEstadoBotones(false);
 
 			actualizarInterfaz(contadorErrores, codigoFaltante, CARPETA_RAIZ_PORTADAS, numLineas);
-			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentana);
+
+			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentanaPrincipal);
+
 			getReferenciaVentana().getMenu_Importar_Fichero_CodigoBarras().setDisable(false);
 
 			Platform.runLater(() -> {
 				cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0);
 			});
-
+			AlarmaList.detenerAnimacionCarga(getReferenciaVentana().getProgresoCarga());
 		});
 
 		tarea.setOnCancelled(ev -> {
 			cambiarEstadoBotones(false);
-			AlarmaList.mostrarMensajePront(mensaje, false, getReferenciaVentana().getProntInfo());
+			AlarmaList.mostrarMensajePront("Mal", false, getReferenciaVentana().getProntInfo());
 			AlarmaList.detenerAnimacionCargaImagen(getReferenciaVentana().getCargaImagen()); // Detiene la animación de
 																								// carga
-			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentana);
 
+			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentanaPrincipal);
 			Platform.runLater(() -> {
 				cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0);
 			});
+
+			AlarmaList.mostrarMensajePront("Se ha cancelado la importacion", false,
+					getReferenciaVentana().getProntInfo());
+
+			AlarmaList.detenerAnimacionCarga(getReferenciaVentana().getProgresoCarga());
 		});
-
-		Thread thread = new Thread(tarea);
-
-		getReferenciaVentana().getBotonCancelarSubida().setOnAction(ev -> {
-			actualizarInterfaz(comicsProcesados, codigoFaltante, "", numLineas);
-			cambiarEstadoBotones(false);
-			tarea.cancel(true);
-			getReferenciaVentana().getMenu_Importar_Fichero_CodigoBarras().setDisable(false);
-
-		});
-
-		thread.setDaemon(true);
-		thread.start();
 	}
 
 	/**
@@ -800,7 +819,7 @@ public class AccionFuncionesComunes {
 			getReferenciaVentana().getBotonCancelarSubida().setVisible(true);
 
 			actualizarCombobox();
-			FuncionesManejoFront.cambiarEstadoMenuBar(true);
+			FuncionesManejoFront.cambiarEstadoMenuBar(true, referenciaVentana);
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(true, getReferenciaVentana());
 		});
 
@@ -821,7 +840,7 @@ public class AccionFuncionesComunes {
 			getReferenciaVentana().getBotonCancelarSubida().setVisible(false);
 
 			actualizarCombobox();
-			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentana);
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, getReferenciaVentana());
 		});
 
@@ -830,7 +849,7 @@ public class AccionFuncionesComunes {
 			AlarmaList.iniciarAnimacionAvanzado(prontEspecial, cadenaAfirmativo);
 
 			actualizarCombobox();
-			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentana);
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, getReferenciaVentana());
 
 			Platform.runLater(() -> {
@@ -899,6 +918,9 @@ public class AccionFuncionesComunes {
 		if (!TIPO_ACCION.equals("aniadir")) {
 			elementos.add(getReferenciaVentana().getBotonBusquedaCodigo());
 			elementos.add(getReferenciaVentana().getBusquedaCodigo());
+			elementos.add(getReferenciaVentana().getBotonCancelarSubida());
+			elementos.add(getReferenciaVentana().getBotonBusquedaCodigo());
+			elementos.add(getReferenciaVentana().getBotonSubidaPortada());
 		}
 
 		getReferenciaVentana().getBotonCancelarSubida().setVisible(esCancelado);
@@ -929,6 +951,10 @@ public class AccionFuncionesComunes {
 
 	public static void setReferenciaVentana(AccionReferencias referenciaVentana) {
 		AccionFuncionesComunes.referenciaVentana = referenciaVentana;
+	}
+
+	public static void setReferenciaVentanaPrincipal(AccionReferencias referenciaVentana) {
+		AccionFuncionesComunes.referenciaVentanaPrincipal = referenciaVentana;
 	}
 
 }

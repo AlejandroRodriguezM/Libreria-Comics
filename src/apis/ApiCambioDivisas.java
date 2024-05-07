@@ -9,6 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import funciones_auxiliares.Utilidades;
@@ -43,18 +44,16 @@ public class ApiCambioDivisas {
 				threads[i].start();
 			}
 
-			// Esperar a que todos los hilos terminen
-			for (Thread thread : threads) {
-				// Escribir los resultados en el archivo
-				try (BufferedWriter writer = new BufferedWriter(new FileWriter(direccionFichero))) {
-					for (String countryName : conversionRates.keySet()) {
-						double conversionRate = conversionRates.get(countryName);
-						writer.write(countryName + ": " + conversionRate);
-						writer.newLine();
-					}
-				} catch (IOException e) {
-					Utilidades.manejarExcepcion(e);
-				}
+			// Escribir los resultados en el archivo
+			try (BufferedWriter writer = new BufferedWriter(new FileWriter(direccionFichero))) {
+			    for (Map.Entry<String, Double> entry : conversionRates.entrySet()) {
+			        String countryName = entry.getKey();
+			        double conversionRate = entry.getValue();
+			        writer.write(countryName + ": " + conversionRate);
+			        writer.newLine();
+			    }
+			} catch (IOException e) {
+			    Utilidades.manejarExcepcion(e);
 			}
 
 		});
@@ -66,6 +65,7 @@ public class ApiCambioDivisas {
 		try {
 			networkThread.join();
 		} catch (InterruptedException e) {
+			networkThread.interrupt();
 			Utilidades.manejarExcepcion(e);
 		}
 	}

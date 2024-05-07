@@ -105,7 +105,7 @@ public class EstadoConexionController implements Initializable {
 
 				Platform.runLater(() -> {
 					if (exito) {
-//						AlarmaList.iniciarAnimacionConectado(labelConexionSql);
+						AlarmaList.iniciarAnimacionConectado(labelConexionSql);
 						AlarmaList.detenerAnimacionCarga(progresoCarga);
 					} else {
 						AlarmaList.detenerAnimacionCarga(progresoCarga);

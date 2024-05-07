@@ -252,7 +252,7 @@ public class AccionModificar {
 						getReferenciaVentana().getUrlReferencia(), getReferenciaVentana().getBotonModificarComic(),
 						getReferenciaVentana().getPrecioComic(), getReferenciaVentana().getDireccionImagen(),
 						getReferenciaVentana().getTablaBBDD(), getReferenciaVentana().getLabel_portada(),
-						getReferenciaVentana().getLabel_precio(), getReferenciaVentana().getLabel_caja(),
+						getReferenciaVentana().getLabel_precio(), getReferenciaVentana().getLabel_gradeo(),
 						getReferenciaVentana().getLabel_dibujante(), getReferenciaVentana().getLabel_editorial(),
 						getReferenciaVentana().getLabel_estado(), getReferenciaVentana().getLabel_fecha(),
 						getReferenciaVentana().getLabel_firma(), getReferenciaVentana().getLabel_formato(),

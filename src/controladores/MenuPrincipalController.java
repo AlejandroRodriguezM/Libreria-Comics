@@ -144,70 +144,79 @@ public class MenuPrincipalController implements Initializable {
 	 * Menú de archivo con opciones relacionadas con la base de datos.
 	 */
 	@FXML
-	private MenuItem menu_archivo_cerrar, menu_archivo_delete, menu_archivo_desconectar, menu_archivo_excel,
-			menu_archivo_importar, menu_archivo_sobreMi;
+	private MenuItem menuArchivoCerrar;
+	@FXML
+	private MenuItem menuArchivoDelete;
+	@FXML
+	private MenuItem menuArchivoDesconectar;
+	@FXML
+	private MenuItem menuArchivoExcel;
+	@FXML
+	private MenuItem menuArchivoImportar;
+	@FXML
+	private MenuItem menuArchivoSobreMi;
 
 	/**
 	 * Menú relacionado con operaciones de cómic.
 	 */
 	@FXML
-	private MenuItem menu_comic_aleatoria;
+	private MenuItem menuComicAleatoria;
 	@FXML
-	private MenuItem menu_comic_aniadir;
+	private MenuItem menuComicAniadir;
 	@FXML
-	private MenuItem menu_comic_eliminar;
+	private MenuItem menuComicEliminar;
 	@FXML
-	private MenuItem menu_comic_modificar;
+	private MenuItem menuComicModificar;
 	@FXML
-	private MenuItem menu_comic_puntuar;
+	private MenuItem menuComicPuntuar;
 
 	/**
 	 * Menú relacionado con estadísticas de cómics.
 	 */
 	@FXML
-	private MenuItem menu_estadistica_comprados;
+	private MenuItem menuEstadisticaComprados;
 	@FXML
-	private MenuItem menu_estadistica_estadistica;
+	private MenuItem menuEstadisticaEstadistica;
 	@FXML
-	private MenuItem menu_estadistica_firmados;
+	private MenuItem menuEstadisticaFirmados;
 	@FXML
-	private MenuItem menu_estadistica_key_issue;
+	private MenuItem menuEstadisticaKeyIssue;
 	@FXML
-	private MenuItem menu_estadistica_posesion;
+	private MenuItem menuEstadisticaPosesion;
 	@FXML
-	private MenuItem menu_estadistica_puntuados;
+	private MenuItem menuEstadisticaPuntuados;
 	@FXML
-	private MenuItem menu_estadistica_vendidos;
+	private MenuItem menuEstadisticaVendidos;
 
 	@FXML
-	private MenuItem menu_archivo_avanzado;
+	private MenuItem menuArchivoAvanzado;
 
 	@FXML
-	private MenuItem menu_archivo_conexion;
+	private MenuItem menuArchivoConexion;
 
 	/**
 	 * Barra de menús de navegación.
 	 */
 	@FXML
-	private MenuBar menu_navegacion;
+	private MenuBar menuNavegacion;
 
 	/**
 	 * Menú de navegación para cerrar.
 	 */
 	@FXML
-	private Menu navegacion_cerrar;
+	private Menu navegacionCerrar;
 
 	/**
 	 * Menú de navegación relacionado con cómics.
 	 */
 	@FXML
-	private Menu navegacion_comic;
+	private Menu navegacionComic;
 
 	/**
 	 * Menú de navegación relacionado con estadísticas.
 	 */
 	@FXML
-	private Menu navegacion_estadistica;
+	private Menu navegacionEstadistica;
 
 	/**
 	 * Selector para el nombre del cómic.
@@ -282,10 +291,10 @@ public class MenuPrincipalController implements Initializable {
 	private ProgressIndicator progresoCarga;
 
 	/**
-	 * Columna de la tabla para el ID.
+	 * Columna de la tabla para elid.
 	 */
 	@FXML
-	private TableColumn<Comic, String> ID;
+	private TableColumn<Comic, String> id;
 
 	/**
 	 * Columna de la tabla para la caja.
@@ -454,8 +463,8 @@ public class MenuPrincipalController implements Initializable {
 
 	public AccionReferencias guardarReferencia() {
 		referenciaVentana.setAlarmaConexionSql(alarmaConexionSql);
-		referenciaVentana.setID(ID);
-		referenciaVentana.setCaja(gradeo);
+		referenciaVentana.setID(id);
+		referenciaVentana.setGradeo(gradeo);
 		referenciaVentana.setDibujante(dibujante);
 		referenciaVentana.setEditorial(editorial);
 		referenciaVentana.setFecha(fecha);
@@ -479,30 +488,30 @@ public class MenuPrincipalController implements Initializable {
 		referenciaVentana.setBusquedaGeneral(busquedaGeneral);
 		referenciaVentana.setFechaPublicacion(fechaPublicacion);
 		referenciaVentana.setImagencomic(imagencomic);
-		referenciaVentana.setMenu_archivo_cerrar(menu_archivo_cerrar);
-		referenciaVentana.setMenu_archivo_delete(menu_archivo_delete);
-		referenciaVentana.setMenu_archivo_desconectar(menu_archivo_desconectar);
-		referenciaVentana.setMenu_archivo_excel(menu_archivo_excel);
-		referenciaVentana.setMenu_archivo_importar(menu_archivo_importar);
-		referenciaVentana.setMenu_archivo_sobreMi(menu_archivo_sobreMi);
-		referenciaVentana.setMenu_comic_aleatoria(menu_comic_aleatoria);
-		referenciaVentana.setMenu_comic_aniadir(menu_comic_aniadir);
-		referenciaVentana.setMenu_comic_eliminar(menu_comic_eliminar);
-		referenciaVentana.setMenu_comic_modificar(menu_comic_modificar);
-		referenciaVentana.setMenu_comic_puntuar(menu_comic_puntuar);
-		referenciaVentana.setMenu_estadistica_comprados(menu_estadistica_comprados);
-		referenciaVentana.setMenu_estadistica_estadistica(menu_estadistica_estadistica);
-		referenciaVentana.setMenu_estadistica_firmados(menu_estadistica_firmados);
-		referenciaVentana.setMenu_estadistica_key_issue(menu_estadistica_key_issue);
-		referenciaVentana.setMenu_estadistica_posesion(menu_estadistica_posesion);
-		referenciaVentana.setMenu_estadistica_puntuados(menu_estadistica_puntuados);
-		referenciaVentana.setMenu_estadistica_vendidos(menu_estadistica_vendidos);
-		referenciaVentana.setMenu_archivo_avanzado(menu_archivo_avanzado);
-		referenciaVentana.setMenu_archivo_conexion(menu_archivo_conexion);
-		referenciaVentana.setMenu_navegacion(menu_navegacion);
-		referenciaVentana.setNavegacion_Opciones(navegacion_cerrar);
-		referenciaVentana.setNavegacion_comic(navegacion_comic);
-		referenciaVentana.setNavegacion_estadistica(navegacion_estadistica);
+		referenciaVentana.setMenu_archivo_cerrar(menuArchivoCerrar);
+		referenciaVentana.setMenu_archivo_delete(menuArchivoDelete);
+		referenciaVentana.setMenu_archivo_desconectar(menuArchivoDesconectar);
+		referenciaVentana.setMenu_archivo_excel(menuArchivoExcel);
+		referenciaVentana.setMenu_archivo_importar(menuArchivoImportar);
+		referenciaVentana.setMenu_archivo_sobreMi(menuArchivoSobreMi);
+		referenciaVentana.setMenu_comic_aleatoria(menuComicAleatoria);
+		referenciaVentana.setMenu_comic_aniadir(menuComicAniadir);
+		referenciaVentana.setMenu_comic_eliminar(menuComicEliminar);
+		referenciaVentana.setMenu_comic_modificar(menuComicModificar);
+		referenciaVentana.setMenu_comic_puntuar(menuComicPuntuar);
+		referenciaVentana.setMenu_estadistica_comprados(menuEstadisticaComprados);
+		referenciaVentana.setMenu_estadistica_estadistica(menuEstadisticaEstadistica);
+		referenciaVentana.setMenu_estadistica_firmados(menuEstadisticaFirmados);
+		referenciaVentana.setMenu_estadistica_key_issue(menuEstadisticaKeyIssue);
+		referenciaVentana.setMenu_estadistica_posesion(menuEstadisticaPosesion);
+		referenciaVentana.setMenu_estadistica_puntuados(menuEstadisticaPuntuados);
+		referenciaVentana.setMenu_estadistica_vendidos(menuEstadisticaVendidos);
+		referenciaVentana.setMenu_archivo_avanzado(menuArchivoAvanzado);
+		referenciaVentana.setMenu_archivo_conexion(menuArchivoConexion);
+		referenciaVentana.setMenu_navegacion(menuNavegacion);
+		referenciaVentana.setNavegacion_Opciones(navegacionCerrar);
+		referenciaVentana.setNavegacion_comic(navegacionComic);
+		referenciaVentana.setNavegacion_estadistica(navegacionEstadistica);
 		referenciaVentana.setTituloComic(nombreComic);
 		referenciaVentana.setNombreDibujante(nombreDibujante);
 		referenciaVentana.setNombreEditorial(nombreEditorial);
@@ -517,8 +526,8 @@ public class MenuPrincipalController implements Initializable {
 		referenciaVentana.setNumeroComic(numeroComic);
 		referenciaVentana.setProntInfo(prontInfo);
 		referenciaVentana.setProgresoCarga(progresoCarga);
-		referenciaVentana.setID(ID);
-		referenciaVentana.setCaja(gradeo);
+		referenciaVentana.setID(id);
+		referenciaVentana.setGradeo(gradeo);
 		referenciaVentana.setDibujante(dibujante);
 		referenciaVentana.setEditorial(editorial);
 		referenciaVentana.setFecha(fecha);
@@ -548,12 +557,12 @@ public class MenuPrincipalController implements Initializable {
 		referenciaVentana.setComboBoxes(Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
 				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, gradeoComic));
 
-		AccionReferencias.setListaElementosFondo(FXCollections.observableArrayList(backgroundImage, menu_navegacion));
+		AccionReferencias.setListaElementosFondo(FXCollections.observableArrayList(backgroundImage, menuNavegacion));
 
 		AccionReferencias.setListaBotones(FXCollections.observableArrayList(botonLimpiar, botonMostrarParametro,
 				botonbbdd, botonImprimir, botonGuardarResultado));
 
-		AccionReferencias.setColumnasTabla(Arrays.asList(nombre, gradeo, numero, variante, firma, editorial, formato,
+		AccionReferencias.setColumnasTabla(Arrays.asList(nombre, numero, variante, firma, editorial, formato,
 				procedencia, fecha, guionista, dibujante, referencia));
 
 		return referenciaVentana;
@@ -568,6 +577,8 @@ public class MenuPrincipalController implements Initializable {
 		AccionEliminar.setReferenciaVentana(guardarReferencia());
 		AccionModificar.setReferenciaVentana(guardarReferencia());
 		Utilidades.setReferenciaVentana(guardarReferencia());
+		Utilidades.setReferenciaVentanaPrincipal(guardarReferencia());
+		VentanaAccionController.setReferenciaVentana(referenciaVentana);
 	}
 
 	/**
@@ -631,17 +642,15 @@ public class MenuPrincipalController implements Initializable {
 
 		// Configurar eventos del ratón para redimensionar el rootVBox desde la parte
 		// superior
-		barraCambioAltura.setOnMousePressed(event -> {
-			y = event.getScreenY();
-		});
+		barraCambioAltura.setOnMousePressed(event -> y = event.getScreenY());
 
 		barraCambioAltura.setOnMouseDragged(event -> {
 			double deltaY = event.getScreenY() - y;
 			double newHeight = rootVBox.getPrefHeight() - deltaY;
-			double max_height = calcularMaxHeight(); // Calcula el máximo altura permitido
-			double min_height = 250; // Límite mínimo de altura
+			double maxHeight = calcularMaxHeight(); // Calcula el máximo altura permitido
+			double minHeight = 250; // Límite mínimo de altura
 
-			if (newHeight > min_height && newHeight <= max_height) {
+			if (newHeight > minHeight && newHeight <= maxHeight) {
 				rootVBox.setPrefHeight(newHeight);
 				rootVBox.setLayoutY(tablaBBDD.getLayoutY() + deltaY);
 				tablaBBDD.setPrefHeight(newHeight);
@@ -660,9 +669,8 @@ public class MenuPrincipalController implements Initializable {
 			}
 		});
 
-		rootAnchorPane.heightProperty().addListener((observable, oldValue, newHeightValue) -> {
-			rootVBox.setMaxHeight(calcularMaxHeight());
-		});
+		rootAnchorPane.heightProperty()
+				.addListener((observable, oldValue, newHeightValue) -> rootVBox.setMaxHeight(calcularMaxHeight()));
 
 		rootAnchorPane.widthProperty().addListener((observable, oldValue, newWidthValue) -> {
 			double newWidth = newWidthValue.doubleValue();
@@ -732,17 +740,12 @@ public class MenuPrincipalController implements Initializable {
 	 *                   la base de datos.
 	 */
 	public void cargarDatosDataBase() {
-
 		tablaBBDD.refresh();
 		prontInfo.setOpacity(0);
 		imagencomic.setImage(null);
 
-		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-
-		scheduler.schedule(() -> {
-
-			Platform.runLater(() -> {
-
+		try (ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1)) {
+			scheduler.schedule(() -> Platform.runLater(() -> {
 				ListaComicsDAO.listasAutoCompletado();
 
 				Task<Void> task = new Task<Void>() {
@@ -761,7 +764,6 @@ public class MenuPrincipalController implements Initializable {
 				// Manejar la cancelación
 				botonCancelarSubida.setOnAction(ev -> {
 					botonCancelarSubida.setVisible(false);
-
 					task.cancel();
 				});
 
@@ -772,11 +774,9 @@ public class MenuPrincipalController implements Initializable {
 				});
 
 				// Cuando la tarea haya terminado, apaga el scheduler
-				task.setOnRunning(event -> {
-					botonCancelarSubida.setVisible(true);
-				});
-			});
-		}, 0, TimeUnit.SECONDS);
+				task.setOnRunning(event -> botonCancelarSubida.setVisible(true));
+			}), 0, TimeUnit.SECONDS);
+		}
 	}
 
 	/**
@@ -821,7 +821,7 @@ public class MenuPrincipalController implements Initializable {
 		nav.verRecomendacion();
 		ConectManager.resetConnection();
 
-		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		Stage myStage = (Stage) menuNavegacion.getScene().getWindow();
 		myStage.close();
 	}
 
@@ -835,7 +835,7 @@ public class MenuPrincipalController implements Initializable {
 		nav.verSobreMi();
 		ConectManager.resetConnection();
 
-		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		Stage myStage = (Stage) menuNavegacion.getScene().getWindow();
 		myStage.close();
 	}
 
@@ -867,7 +867,6 @@ public class MenuPrincipalController implements Initializable {
 
 	private void mostrarComics(boolean esCompleto) {
 
-//		imagencomic.setVisible(true);
 		if (esCompleto) {
 			AccionSeleccionar.verBasedeDatos(esCompleto, false, null);
 		} else {
@@ -976,7 +975,7 @@ public class MenuPrincipalController implements Initializable {
 		ListaComicsDAO.reiniciarListaComics();
 		FuncionesTableView.nombreColumnas();
 		FuncionesTableView.actualizarBusquedaRaw();
-		List<Comic> listaComics = new ArrayList<Comic>();
+		List<Comic> listaComics;
 		if (esGuardado) {
 			listaComics = ListaComicsDAO.comicsGuardadosList;
 		} else {
@@ -1017,8 +1016,6 @@ public class MenuPrincipalController implements Initializable {
 
 		ListaComicsDAO.limpiarListaGuardados();
 
-//		Utilidades.borrarArchivosNoEnLista(ListaComicsDAO.listaImagenes);
-
 	}
 
 	/**
@@ -1048,7 +1045,6 @@ public class MenuPrincipalController implements Initializable {
 
 			ListaComicsDAO.limpiarListaGuardados();
 
-//			Utilidades.borrarArchivosNoEnLista(ListaComicsDAO.listaImagenes);
 			estaVacia = true;
 			mensaje = "Base de datos exportada correctamente";
 		} else {
@@ -1096,7 +1092,7 @@ public class MenuPrincipalController implements Initializable {
 	 * @throws IOException
 	 */
 	@FXML
-	void verEstadistica(ActionEvent event) throws IOException {
+	void verEstadistica(ActionEvent event) {
 
 		if (!ConectManager.conexionActiva()) {
 			return;
@@ -1199,7 +1195,7 @@ public class MenuPrincipalController implements Initializable {
 		if (comicRaw != null) {
 			boolean existeComic = ListaComicsDAO.verificarIDExistente(comicRaw.getid(), true);
 			if (existeComic) {
-				mensaje = "Este comic con dicha ID: " + comicRaw.getid() + " ya existe. No se ha guardado \n \n \n";
+				mensaje = "Este comic con dichaid: " + comicRaw.getid() + " ya existe. No se ha guardado \n \n \n";
 				AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
 				return;
 			}
@@ -1240,7 +1236,7 @@ public class MenuPrincipalController implements Initializable {
 						crearExcelTask.setOnRunning(e -> {
 							cerradoPorOperaciones();
 							botonCancelarSubida.setVisible(true);
-							FuncionesManejoFront.cambiarEstadoMenuBar(true);
+							FuncionesManejoFront.cambiarEstadoMenuBar(true,guardarReferencia());
 						});
 
 						crearExcelTask.setOnSucceeded(e -> {
@@ -1255,12 +1251,12 @@ public class MenuPrincipalController implements Initializable {
 									AlarmaList.detenerAnimacionCarga(referenciaVentana.getProgresoCarga());
 									ListaComicsDAO.limpiarListaGuardados();
 								}
-								FuncionesManejoFront.cambiarEstadoMenuBar(false);
+								FuncionesManejoFront.cambiarEstadoMenuBar(false,guardarReferencia());
 								AlarmaList.mostrarMensajePront(mensaje, deleteCompleted, prontInfo);
 
 							} catch (InterruptedException | ExecutionException e1) {
 								e1.printStackTrace();
-							} 
+							}
 						});
 
 						crearExcelTask.setOnFailed(e -> {
@@ -1279,7 +1275,7 @@ public class MenuPrincipalController implements Initializable {
 						botonCancelarSubida.setOnAction(ev -> {
 							botonCancelarSubida.setVisible(false);
 							AlarmaList.detenerAnimacionCarga(referenciaVentana.getProgresoCarga());
-							FuncionesManejoFront.cambiarEstadoMenuBar(false);
+							FuncionesManejoFront.cambiarEstadoMenuBar(false,guardarReferencia());
 							crearExcelTask.cancel(true); // true indica que la tarea debe ser interrumpida si ya está en
 															// ejecución
 							excelThread.interrupt();
@@ -1317,7 +1313,6 @@ public class MenuPrincipalController implements Initializable {
 		}
 
 		FuncionesExcel excelFuntions = new FuncionesExcel();
-		AlarmaList alarmaList = new AlarmaList();
 		String mensajeErrorExportar = "ERROR. No se ha podido exportar correctamente.";
 		String mensajeCancelarExportar = "ERROR. Se ha cancelado la exportación.";
 		String mensajeValido = "Has exportado el fichero excel correctamente";
@@ -1334,13 +1329,13 @@ public class MenuPrincipalController implements Initializable {
 		crearExcelTask.setOnRunning(e -> {
 			botonCancelarSubida.setVisible(true);
 			cerradoPorOperaciones();
-			FuncionesManejoFront.cambiarEstadoMenuBar(true);
+			FuncionesManejoFront.cambiarEstadoMenuBar(true,guardarReferencia());
 			AlarmaList.iniciarAnimacionCarga(progresoCarga);
 		});
 
 		crearExcelTask.setOnSucceeded(event -> {
 			botonCancelarSubida.setVisible(false);
-			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+			FuncionesManejoFront.cambiarEstadoMenuBar(false,guardarReferencia());
 			AlarmaList.mostrarMensajePront(mensajeValido, true, prontInfo);
 			AlarmaList.detenerAnimacionCarga(progresoCarga);
 		});
@@ -1356,14 +1351,14 @@ public class MenuPrincipalController implements Initializable {
 			excelThread.interrupt();
 
 			alarmaList.manejarFallo(mensajeErrorExportar, prontInfo);
-			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+			FuncionesManejoFront.cambiarEstadoMenuBar(false,guardarReferencia());
 			AlarmaList.detenerAnimacionCarga(progresoCarga);
 		});
 
 		// Configuración del comportamiento cuando la tarea es cancelada
 		crearExcelTask.setOnCancelled(event -> {
 			alarmaList.manejarFallo(mensajeCancelarExportar, prontInfo);
-			FuncionesManejoFront.cambiarEstadoMenuBar(false);
+			FuncionesManejoFront.cambiarEstadoMenuBar(false,guardarReferencia());
 			AlarmaList.detenerAnimacionCarga(progresoCarga);
 		});
 
@@ -1402,13 +1397,13 @@ public class MenuPrincipalController implements Initializable {
 				AlarmaList.detenerAnimacion();
 				AlarmaList.detenerAnimacionCarga(progresoCarga);
 				botonCancelarSubida.setVisible(false);
-				FuncionesManejoFront.cambiarEstadoMenuBar(false);
+				FuncionesManejoFront.cambiarEstadoMenuBar(false,guardarReferencia());
 				AlarmaList.mostrarMensajePront(mensajeValido, true, prontInfo);
 			});
 
 			lecturaTask.setOnRunning(e -> {
 				cerradoPorOperaciones();
-				FuncionesManejoFront.cambiarEstadoMenuBar(true);
+				FuncionesManejoFront.cambiarEstadoMenuBar(true,guardarReferencia());
 				botonCancelarSubida.setVisible(true);
 				AlarmaList.iniciarAnimacionCarga(progresoCarga);
 			});
@@ -1416,7 +1411,7 @@ public class MenuPrincipalController implements Initializable {
 			lecturaTask.setOnFailed(e -> {
 				botonCancelarSubida.setVisible(false);
 				procesarResultadoImportacion(lecturaTask.getValue());
-				FuncionesManejoFront.cambiarEstadoMenuBar(false);
+				FuncionesManejoFront.cambiarEstadoMenuBar(false,guardarReferencia());
 				AlarmaList.detenerAnimacionCarga(progresoCarga);
 			});
 
@@ -1424,7 +1419,7 @@ public class MenuPrincipalController implements Initializable {
 			botonCancelarSubida.setOnAction(ev -> {
 				lecturaTask.cancel(true); // true indica que la tarea debe ser interrumpida si ya está en ejecución
 				botonCancelarSubida.setVisible(false);
-				FuncionesManejoFront.cambiarEstadoMenuBar(false);
+				FuncionesManejoFront.cambiarEstadoMenuBar(false,guardarReferencia());
 				AlarmaList.detenerAnimacionCarga(progresoCarga);
 
 				procesarResultadoImportacion(false);
@@ -1439,7 +1434,7 @@ public class MenuPrincipalController implements Initializable {
 	private void procesarResultadoImportacion(Boolean resultado) {
 		String mensaje = "";
 		prontInfo.clear();
-		if (resultado) {
+		if (Boolean.TRUE.equals(resultado)) {
 			mensaje = "Operacion realizada con exito";
 		} else {
 			mensaje = "ERROR. No se ha podido completar la operacion";
@@ -1489,9 +1484,7 @@ public class MenuPrincipalController implements Initializable {
 		// Pasar la lista de ComboBoxes a VentanaAccionController
 		referenciaVentana.setComboBoxes(referenciaVentana.getComboboxes());
 
-		if (fuente instanceof Button) {
-			Button botonPresionado = (Button) fuente;
-
+		if (fuente instanceof Button botonPresionado) {
 			if (botonPresionado == botonIntroducir) {
 				AccionFuncionesComunes.setTipoAccion("aniadir");
 			} else if (botonPresionado == botonModificar) {
@@ -1501,16 +1494,14 @@ public class MenuPrincipalController implements Initializable {
 			} else if (botonPresionado == botonAgregarPuntuacion) {
 				AccionFuncionesComunes.setTipoAccion("puntuar");
 			}
-		} else if (fuente instanceof MenuItem) {
-			MenuItem menuItemPresionado = (MenuItem) fuente;
-
-			if (menuItemPresionado == menu_comic_aniadir) {
+		} else if (fuente instanceof MenuItem menuItemPresionado) {
+			if (menuItemPresionado == menuComicAniadir) {
 				AccionFuncionesComunes.setTipoAccion("aniadir");
-			} else if (menuItemPresionado == menu_comic_modificar) {
+			} else if (menuItemPresionado == menuComicModificar) {
 				AccionFuncionesComunes.setTipoAccion("modificar");
-			} else if (menuItemPresionado == menu_comic_eliminar) {
+			} else if (menuItemPresionado == menuComicEliminar) {
 				AccionFuncionesComunes.setTipoAccion("eliminar");
-			} else if (menuItemPresionado == menu_comic_puntuar) {
+			} else if (menuItemPresionado == menuComicPuntuar) {
 				AccionFuncionesComunes.setTipoAccion("puntuar");
 			}
 		}
@@ -1558,19 +1549,16 @@ public class MenuPrincipalController implements Initializable {
 	/////////////////////////////
 
 	public Scene miStageVentana() {
-		Node rootNode = menu_navegacion;
+		Node rootNode = menuNavegacion;
 		while (rootNode.getParent() != null) {
 			rootNode = rootNode.getParent();
 		}
 
-		if (rootNode instanceof Parent) {
-			Scene scene = ((Parent) rootNode).getScene();
-
+		if (rootNode instanceof Parent parent) {
+			Scene scene = parent.getScene();
 			ConectManager.activeScenes.add(scene);
-
 			return scene;
 		} else {
-			// Manejar el caso en el que no se pueda encontrar un nodo raíz adecuado
 			return null;
 		}
 	}
@@ -1581,7 +1569,7 @@ public class MenuPrincipalController implements Initializable {
 	 * @param event
 	 */
 	@FXML
-	void volverMenu(ActionEvent event) throws IOException {
+	void volverMenu(ActionEvent event) {
 		ConectManager.close();
 		nav.verAccesoBBDD();
 
@@ -1592,7 +1580,7 @@ public class MenuPrincipalController implements Initializable {
 			stage.close(); // Close the stage if it's not the current state
 		}
 
-		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+		Stage myStage = (Stage) menuNavegacion.getScene().getWindow();
 		myStage.close();
 	}
 
@@ -1606,7 +1594,7 @@ public class MenuPrincipalController implements Initializable {
 		// Lógica para manejar la acción de "Salir"
 
 		if (nav.salirPrograma(event)) {
-			Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
+			Stage myStage = (Stage) menuNavegacion.getScene().getWindow();
 			myStage.close();
 		}
 	}
@@ -1622,7 +1610,7 @@ public class MenuPrincipalController implements Initializable {
 
 	public Stage estadoStage() {
 
-		return (Stage) menu_navegacion.getScene().getWindow();
+		return (Stage) menuNavegacion.getScene().getWindow();
 	}
 
 	/**

@@ -8,7 +8,9 @@ import org.controlsfx.control.textfield.TextFields;
 
 import alarmas.AlarmaList;
 import comicManagement.Comic;
+import controladores.managment.AccionFuncionesComunes;
 import controladores.managment.AccionReferencias;
+import funciones_auxiliares.Utilidades;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.scene.Node;
@@ -37,18 +39,17 @@ public class FuncionesManejoFront {
 			')', '[', ']', '{', '}', ';', ':', '|', '\\', '<', '>', '/', '?', '~', '`', '+', '=', '.');
 
 	public static void establecerFondoDinamico() {
-	    for (Node elemento : referenciaVentana.getListaElementosFondo()) {
-	        if (elemento instanceof ImageView imageview) {
-	            imageview.fitWidthProperty().bind(referenciaVentana.getRootAnchorPane().widthProperty());
-	            imageview.fitHeightProperty().bind(referenciaVentana.getRootAnchorPane().heightProperty());
-	        } else if (elemento instanceof TableView<?> tableview) {
-	            tableview.prefWidthProperty().bind(referenciaVentana.getRootAnchorPane().widthProperty());
-	        } else if (elemento instanceof AnchorPane anchorpane) {
-	            anchorpane.prefWidthProperty().bind(referenciaVentana.getRootAnchorPane().widthProperty());
-	        }
-	    }
+		for (Node elemento : referenciaVentana.getListaElementosFondo()) {
+			if (elemento instanceof ImageView imageview) {
+				imageview.fitWidthProperty().bind(referenciaVentana.getRootAnchorPane().widthProperty());
+				imageview.fitHeightProperty().bind(referenciaVentana.getRootAnchorPane().heightProperty());
+			} else if (elemento instanceof TableView<?> tableview) {
+				tableview.prefWidthProperty().bind(referenciaVentana.getRootAnchorPane().widthProperty());
+			} else if (elemento instanceof AnchorPane anchorpane) {
+				anchorpane.prefWidthProperty().bind(referenciaVentana.getRootAnchorPane().widthProperty());
+			}
+		}
 	}
-
 
 	public static void establecerAnchoColumnas(double numColumns) {
 		for (TableColumn<Comic, String> columna : referenciaVentana.getColumnasTabla()) {
@@ -72,12 +73,11 @@ public class FuncionesManejoFront {
 	}
 
 	public static void establecerAnchoMaximoComboBoxes(double maxTextComboWidth) {
-	    for (ComboBox<String> comboBox : referenciaVentana.getComboboxes()) {
-	    	
-	        comboBox.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, comboBox.widthProperty()));
-	    }
-	}
+		for (ComboBox<String> comboBox : referenciaVentana.getComboboxes()) {
 
+			comboBox.maxWidthProperty().bind(Bindings.max(maxTextComboWidth, comboBox.widthProperty()));
+		}
+	}
 
 	public static void establecerTamanioMaximoImagen(double maxWidth, double maxHeight) {
 		referenciaVentana.getImagencomic().fitWidthProperty()
@@ -267,28 +267,52 @@ public class FuncionesManejoFront {
 		AlarmaList.iniciarAnimacionTextArea(referenciaVentana.getProntInfo(), mensaje);
 	}
 
-	public static void cambiarEstadoMenuBar(boolean estadoAccion) {
+	public static void cambiarEstadoMenuBar(boolean estadoAccion, AccionReferencias referenciaVentana) {
 		disableMenuItems(estadoAccion, referenciaVentana.getMenu_archivo_excel(),
 				referenciaVentana.getMenu_archivo_importar(), referenciaVentana.getMenu_archivo_delete(),
 				referenciaVentana.getMenu_comic_aniadir(), referenciaVentana.getMenu_comic_eliminar(),
 				referenciaVentana.getMenu_comic_modificar(), referenciaVentana.getMenu_comic_puntuar(),
-				referenciaVentana.getMenu_comic_aleatoria(), referenciaVentana.getMenu_archivo_avanzado());
+				referenciaVentana.getMenu_comic_aleatoria(), referenciaVentana.getMenu_archivo_avanzado(),
+				referenciaVentana.getMenu_leer_CodigoBarras(),
+				referenciaVentana.getMenu_Importar_Fichero_CodigoBarras(), referenciaVentana.getMenu_archivo_conexion(),
+				referenciaVentana.getNavegacion_estadistica(),
+				referenciaVentana.getMenu_Importar_Fichero_CodigoBarras());
 
 		disableButtons(estadoAccion, referenciaVentana.getBotonIntroducir(), referenciaVentana.getBotonModificar(),
 				referenciaVentana.getBotonEliminar(), referenciaVentana.getBotonAgregarPuntuacion(),
 				referenciaVentana.getBotonLimpiar(), referenciaVentana.getBotonMostrarParametro(),
 				referenciaVentana.getBotonImprimir(), referenciaVentana.getBotonGuardarResultado(),
-				referenciaVentana.getBotonbbdd());
+				referenciaVentana.getBotonbbdd(), referenciaVentana.getBotonLimpiar(),
+				referenciaVentana.getBotonBusquedaAvanzada(), referenciaVentana.getBotonLimpiar(),
+				referenciaVentana.getBotonSubidaPortada(), referenciaVentana.getBotonGuardarComic(),
+				referenciaVentana.getBotonGuardarCambioComic(), referenciaVentana.getBotonEliminarImportadoComic(),
+				referenciaVentana.getBotonParametroComic(), referenciaVentana.getBotonbbdd(),
+				referenciaVentana.getBotonBusquedaCodigo());
 
 		disableControls(estadoAccion, referenciaVentana.getTituloComic(), referenciaVentana.getNombreDibujante(),
 				referenciaVentana.getNombreEditorial(), referenciaVentana.getNombreFirma(),
 				referenciaVentana.getNombreFormato(), referenciaVentana.getNombreGuionista(),
 				referenciaVentana.getNombreProcedencia(), referenciaVentana.getNombreVariante(),
 				referenciaVentana.getGradeoComic(), referenciaVentana.getNumeroComic(),
-				referenciaVentana.getFechaPublicacion(), referenciaVentana.getBusquedaGeneral());
+				referenciaVentana.getFechaPublicacion(), referenciaVentana.getBusquedaGeneral(),
+				referenciaVentana.getEstadoComic(), referenciaVentana.getProcedenciaComic(),
+				referenciaVentana.getNumeroComic(), referenciaVentana.getFormatoComic(),
+				referenciaVentana.getFechaComic(), referenciaVentana.getBusquedaCodigo());
+
+		disableTextFields(estadoAccion, referenciaVentana.getNombreComic(), referenciaVentana.getVarianteComic(),
+				referenciaVentana.getFirmaComic(), referenciaVentana.getEditorialComic(),
+				referenciaVentana.getPrecioComic(), referenciaVentana.getCodigoComicTratar(),
+				referenciaVentana.getDireccionImagen(), referenciaVentana.getIdComicTratar(),
+				referenciaVentana.getGuionistaComic(), referenciaVentana.getDibujanteComic(),
+				referenciaVentana.getNombreKeyIssue(), referenciaVentana.getUrlReferencia());
+
+		if (referenciaVentana.getNombreComic() != null) {
+			List<Node> elementos = Arrays.asList(getReferenciaVentana().getBotonBusquedaCodigo(),
+					getReferenciaVentana().getBusquedaCodigo());
+			Utilidades.cambiarVisibilidad(elementos, true);
+		}
 
 		clearAndRefreshTableView(referenciaVentana.getTablaBBDD());
-		hideImageAndClearText(referenciaVentana.getImagencomic(), referenciaVentana.getProntInfo());
 	}
 
 	private static void disableMenuItems(boolean estadoAccion, MenuItem... items) {
@@ -315,9 +339,17 @@ public class FuncionesManejoFront {
 		}
 	}
 
+	private static void disableTextFields(boolean estadoAccion, TextField... textFields) {
+		for (TextField textfield : textFields) {
+			if (textfield != null) {
+				textfield.setDisable(estadoAccion);
+			}
+		}
+	}
+
 	private static void clearAndRefreshTableView(TableView<?> tableView) {
 		if (tableView != null) {
-			tableView.getItems().clear();
+//			tableView.getItems().clear();
 			tableView.refresh();
 		}
 	}
@@ -357,11 +389,9 @@ public class FuncionesManejoFront {
 		FuncionesManejoFront.referenciaVentana = referenciaVentana;
 	}
 
-
 	public static List<Stage> getStageVentanas() {
 		return stageVentanas;
 	}
-
 
 	public static void setStageVentanas(List<Stage> stageVentanas) {
 		FuncionesManejoFront.stageVentanas = stageVentanas;
