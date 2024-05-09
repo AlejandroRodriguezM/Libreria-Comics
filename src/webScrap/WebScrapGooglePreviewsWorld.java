@@ -32,6 +32,8 @@ import org.jsoup.select.Elements;
 
 import comicManagement.Comic;
 import dbmanager.ConectManager;
+import dbmanager.DBUtilidades;
+import ficherosFunciones.FuncionesFicheros;
 import funciones_auxiliares.Utilidades;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -612,17 +614,14 @@ public class WebScrapGooglePreviewsWorld extends Application {
 
 	public static void main(String[] args) {
 
-//		String[] datosFichero = FuncionesFicheros.datosEnvioFichero();
-//
-//		if (ConectManager.loadDriver()) {
-//
-//			ConectManager.datosBBDD(datosFichero);
-//		}
+		String[] datosFichero = FuncionesFicheros.datosEnvioFichero();
 
-		// Lista de direcciones de las imágenes
-//		List<String> inputPaths = DBUtilidades.obtenerValoresColumna("portada");
+		if (ConectManager.loadDriver()) {
 
-//		borrarArchivosNoEnLista(inputPaths);
+			ConectManager.datosBBDD(datosFichero);
+		}
+		List<String> inputPaths = DBUtilidades.obtenerValoresColumna("portada");
+		borrarArchivosNoEnLista(inputPaths);
 //		convertJpgToPng(inputPaths);
 //		readMetadata();
 		// Comprimir las imágenes con un factor de compresión del 0.5 (50%)
@@ -631,22 +630,22 @@ public class WebScrapGooglePreviewsWorld extends Application {
 //		String sentenciaSQL = DBUtilidades.construirSentenciaSQL(TipoBusqueda.COMPLETA);
 
 //		List<Comic> listaComics = ComicManagerDAO.verLibreria(sentenciaSQL);
-		Platform.runLater(() -> {
-			List<String> listaComics = leerArchivoTXT();
-
-			for (String claveBusqueda : listaComics) {
-
-				// Esperar 1 segundo entre cada solicitud
-				try {
-					displayComicInfoString(claveBusqueda);
-					Thread.sleep(3000);
-				} catch (InterruptedException | URISyntaxException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} // 1000 milisegundos = 1 segundo
-			}
-			return;
-		});
+//		Platform.runLater(() -> {
+//			List<String> listaComics = leerArchivoTXT();
+//
+//			for (String claveBusqueda : listaComics) {
+//
+//				// Esperar 1 segundo entre cada solicitud
+//				try {
+//					displayComicInfoString(claveBusqueda);
+//					Thread.sleep(3000);
+//				} catch (InterruptedException | URISyntaxException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} // 1000 milisegundos = 1 segundo
+//			}
+//			return;
+//		});
 //		limpiarFichero();
 
 	}

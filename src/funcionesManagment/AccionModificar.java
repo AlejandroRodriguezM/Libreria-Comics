@@ -268,6 +268,8 @@ public class AccionModificar {
 	}
 
 	public static void actualizarDatabase(String tipoUpdate, boolean actualizarFima, Stage ventanaOpciones) {
+		List<String> inputPortadas = DBUtilidades.obtenerValoresColumna("portada");
+		Utilidades.borrarArchivosNoEnLista(inputPortadas);
 
 		boolean estaBaseLlena = ListaComicsDAO.comprobarLista();
 

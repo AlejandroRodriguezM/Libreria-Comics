@@ -294,7 +294,7 @@ public class FuncionesManejoFront {
 				referenciaVentana.getBotonSubidaPortada(), referenciaVentana.getBotonGuardarComic(),
 				referenciaVentana.getBotonGuardarCambioComic(), referenciaVentana.getBotonEliminarImportadoComic(),
 				referenciaVentana.getBotonParametroComic(), referenciaVentana.getBotonbbdd(),
-				referenciaVentana.getBotonBusquedaCodigo());
+				referenciaVentana.getBotonBusquedaCodigo(), referenciaVentana.getBotonGuardarResultado());
 
 		disableControls(estadoAccion, referenciaVentana.getTituloComic(), referenciaVentana.getNombreDibujante(),
 				referenciaVentana.getNombreEditorial(), referenciaVentana.getNombreFirma(),
@@ -383,6 +383,7 @@ public class FuncionesManejoFront {
 		referenciaVentana.getBotonDescargarPdf().setDisable(estadoAccion);
 		referenciaVentana.getBotonDescargarSQL().setDisable(estadoAccion);
 		referenciaVentana.getBotonNormalizarDB().setDisable(estadoAccion);
+		referenciaVentana.getBotonReCopiarPortadas().setDisable(estadoAccion);
 
 		referenciaVentana.getCheckFirmas().setDisable(estadoAccion);
 	}

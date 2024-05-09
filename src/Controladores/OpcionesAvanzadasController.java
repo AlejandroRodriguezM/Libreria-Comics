@@ -21,6 +21,7 @@ import alarmas.AlarmaList;
 import comicManagement.Comic;
 import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
+import dbmanager.DBUtilidades;
 import dbmanager.DatabaseManagerDAO;
 import dbmanager.ListaComicsDAO;
 import ficherosFunciones.FuncionesExcel;
@@ -294,6 +295,9 @@ public class OpcionesAvanzadasController implements Initializable {
 
 				ListaComicsDAO.reiniciarListaComics();
 				ListaComicsDAO.listasAutoCompletado();
+				List<String> inputPaths = DBUtilidades.obtenerValoresColumna("portada");
+				Utilidades.borrarArchivosNoEnLista(inputPaths);
+				
 				List<ComboBox<String>> comboboxes = referenciaVentana.getComboboxes();
 				if (comboboxes != null) {
 					Platform.runLater(() -> funcionesCombo.rellenarComboBox(comboboxes));
@@ -412,12 +416,15 @@ public class OpcionesAvanzadasController implements Initializable {
 		AccionModificar.setReferenciaVentana(guardarReferencia());
 		AccionFuncionesComunes.setReferenciaVentana(guardarReferencia());
 		AccionModificar.actualizarDatabase("actualizar portadas", actualizarFima.get(), estadoStage());
+		
 
 	}
 
 	@FXML
 	void comprimirPortadas(ActionEvent event) {
 		// Constantes
+		List<String> inputPortadas = DBUtilidades.obtenerValoresColumna("portada");
+		Utilidades.borrarArchivosNoEnLista(inputPortadas);
 		final String DOCUMENTS_PATH = Utilidades.DOCUMENTS_PATH;
 		final String DB_NAME = ConectManager.DB_NAME;
 		final String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator + DB_NAME
