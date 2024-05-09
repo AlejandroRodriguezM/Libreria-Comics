@@ -129,6 +129,8 @@ public class AlarmaList {
 	}
 
 	public void iniciarThreadChecker() {
+		ejecutando = true;
+//		detenerAnimacionEspera();
 		ForkJoinPool.commonPool().execute(() -> {
 			while (ejecutando) {
 				try {
@@ -148,14 +150,13 @@ public class AlarmaList {
 	}
 
 	private void procesarEstadoConexion() {
-		detenerAnimacionEspera();
+		
 		boolean estadoInternet = Utilidades.isInternetAvailable();
 		Map<String, String> datosConfiguracion = FuncionesFicheros.devolverDatosConfig();
 		String port = datosConfiguracion.get("Puerto");
 		String host = datosConfiguracion.get("Hosting");
 
 		Platform.runLater(() -> {
-
 			manejarConexionInternet(estadoInternet);
 
 			boolean conexionMySql = Utilidades.isMySQLServiceRunning(host, port);
@@ -235,7 +236,7 @@ public class AlarmaList {
 	public static void iniciarAnimacionEspera(Label prontEstadoConexion) {
 
 		timelineError = new Timeline();
-		timelineError.setCycleCount(Timeline.INDEFINITE);
+		timelineError.setCycleCount(Animation.INDEFINITE);
 		prontEstadoConexion.setStyle("-fx-background-color: #29B6CC;");
 
 		// Agregar los keyframes para cambiar el texto
@@ -287,6 +288,7 @@ public class AlarmaList {
 	}
 
 	public static void iniciarAnimacionConectado(Label prontEstadoConexion) {
+		
 		timelineError = new Timeline();
 		timelineError.setCycleCount(Animation.INDEFINITE);
 
@@ -315,6 +317,7 @@ public class AlarmaList {
 	public static void detenerAnimacionEspera() {
 		if (timelineError != null) {
 			timelineError.stop();
+			
 		}
 	}
 
@@ -323,7 +326,7 @@ public class AlarmaList {
 	 */
 	public void iniciarAnimacionConexionRed(Label alarmaConexion) {
 		animacionAlarmaTimeline = new Timeline();
-		animacionAlarmaTimeline.setCycleCount(Timeline.INDEFINITE);
+		animacionAlarmaTimeline.setCycleCount(Animation.INDEFINITE);
 
 		KeyFrame mostrarAmarillo1 = new KeyFrame(Duration.ZERO,
 				new KeyValue(alarmaConexion.styleProperty(), "-fx-background-color: yellow;"));
@@ -692,7 +695,7 @@ public class AlarmaList {
 	public static void iniciarAnimacionEspera(TextArea prontInfo) {
 		prontInfo.setOpacity(1);
 		Timeline timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
+		timeline.setCycleCount(Animation.INDEFINITE);
 
 		// Agregar los keyframes para cambiar el texto
 		KeyFrame mostrarSubida1 = new KeyFrame(Duration.ZERO, new KeyValue(prontInfo.textProperty(), "Esperando"));

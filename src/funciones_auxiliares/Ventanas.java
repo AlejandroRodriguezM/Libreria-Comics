@@ -45,6 +45,8 @@ import Controladores.RecomendacionesController;
 import Controladores.SobreMiController;
 import Controladores.VentanaAccionController;
 import dbmanager.ConectManager;
+import funcionesInterfaz.FuncionesManejoFront;
+import funcionesManagment.AccionReferencias;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -86,6 +88,10 @@ public class Ventanas {
 	private Stage imagenAmpliada = null;
 
 	private boolean ventanaCerrada = false; // Variable para almacenar el estado de la ventana
+
+	private static AccionReferencias referenciaVentanaPrincipal = getReferenciaVentanaPrincipal();
+
+	private static AccionReferencias referenciaVentana = getReferenciaVentana();
 
 	public void cerrarStages() {
 		cerrarStage(accesoBBDDStage);
@@ -290,7 +296,7 @@ public class Ventanas {
 					scene.getStylesheets().add(getClass().getResource("/style/acces_style.css").toExternalForm());
 					estadoApiStage = new Stage();
 					estadoApiStage.setResizable(false);
-					estadoApiStage.setTitle("Estado de conexion");
+					estadoApiStage.setTitle("Modificacion de Apis");
 
 					estadoApiStage.getIcons().add(new Image("/Icono/icon2.png"));
 
@@ -391,7 +397,7 @@ public class Ventanas {
 			Scene scene = new Scene(root);
 			opcionesAvanzadasStage = new Stage();
 			opcionesAvanzadasStage.setResizable(false);
-			opcionesAvanzadasStage.setTitle("Acciones comic"); // Titulo de la aplicación.
+			opcionesAvanzadasStage.setTitle("Opciones avanzadas"); // Titulo de la aplicación.
 
 			opcionesAvanzadasStage.getIcons().add(new Image("/Icono/icon2.png"));
 
@@ -674,7 +680,6 @@ public class Ventanas {
 				ventanaAbierta(cargaComics);
 				ventanaCerrada = false; // Marcar la ventana como cerrada
 				FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/PantallaCargaComics.fxml"));
-//				loader.setController(this);  // Make sure this line is present
 				Parent root = loader.load();
 
 				CargaComicsController cargaComicsController = loader.getController();
@@ -687,7 +692,7 @@ public class Ventanas {
 				stage.getIcons().add(new Image("/Icono/icon2.png"));
 
 				cargaComics = stage;
-
+				FuncionesManejoFront.getStageVentanas().add(cargaComics);
 				// Asocio el stage con el scene
 				stage.setScene(scene);
 				stage.show();
@@ -703,6 +708,10 @@ public class Ventanas {
 		});
 	}
 
+	public Stage devolverCargaComics() {
+		return cargaComics;
+	}
+
 	// Método para obtener el estado de la ventana
 	public boolean isVentanaCerrada() {
 
@@ -714,11 +723,9 @@ public class Ventanas {
 	}
 
 	public void cerrarCargaComics() {
-		if (cargaComics != null) {
+		if (this.cargaComics != null) {
 
-			cargaComics.close();
-		} else {
-			System.out.println("ERROR en cerrar carga");
+			this.cargaComics.close();
 		}
 	}
 
@@ -974,6 +981,10 @@ public class Ventanas {
 		CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
 
 		Platform.runLater(() -> {
+			FuncionesManejoFront.cambiarEstadoMenuBar(true, getReferenciaVentanaPrincipal());
+
+			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentana);
+			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentanaPrincipal);
 			Alert alert1 = new Alert(AlertType.CONFIRMATION);
 			Stage stage1 = (Stage) alert1.getDialogPane().getScene().getWindow();
 			stage1.setResizable(false);
@@ -995,6 +1006,7 @@ public class Ventanas {
 
 					alert2.showAndWait().ifPresent(result2 -> futureResult.complete(result2 == ButtonType.OK));
 				} else {
+					FuncionesManejoFront.cambiarEstadoMenuBar(false, getReferenciaVentanaPrincipal());
 					futureResult.complete(false);
 				}
 			});
@@ -1107,5 +1119,21 @@ public class Ventanas {
 				dialog.showAndWait(); // Mostrar y esperar hasta que se cierre
 			}
 		});
+	}
+
+	public static AccionReferencias getReferenciaVentanaPrincipal() {
+		return referenciaVentanaPrincipal;
+	}
+
+	public static AccionReferencias getReferenciaVentana() {
+		return referenciaVentana;
+	}
+
+	public static void setReferenciaVentanaPrincipal(AccionReferencias referenciaVentana) {
+		Ventanas.referenciaVentanaPrincipal = referenciaVentana;
+	}
+
+	public static void setReferenciaVentana(AccionReferencias referenciaVentana) {
+		Ventanas.referenciaVentana = referenciaVentana;
 	}
 }

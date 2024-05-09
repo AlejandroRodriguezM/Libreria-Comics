@@ -268,6 +268,11 @@ public class FuncionesManejoFront {
 	}
 
 	public static void cambiarEstadoMenuBar(boolean estadoAccion, AccionReferencias referenciaVentana) {
+
+		if (referenciaVentana == null) {
+			return;
+		}
+
 		disableMenuItems(estadoAccion, referenciaVentana.getMenu_archivo_excel(),
 				referenciaVentana.getMenu_archivo_importar(), referenciaVentana.getMenu_archivo_delete(),
 				referenciaVentana.getMenu_comic_aniadir(), referenciaVentana.getMenu_comic_eliminar(),
@@ -276,7 +281,9 @@ public class FuncionesManejoFront {
 				referenciaVentana.getMenu_leer_CodigoBarras(),
 				referenciaVentana.getMenu_Importar_Fichero_CodigoBarras(), referenciaVentana.getMenu_archivo_conexion(),
 				referenciaVentana.getNavegacion_estadistica(),
-				referenciaVentana.getMenu_Importar_Fichero_CodigoBarras());
+				referenciaVentana.getMenu_Importar_Fichero_CodigoBarras(), referenciaVentana.getMenu_archivo_sobreMi(),
+				referenciaVentana.getMenu_comprobar_apis(), referenciaVentana.getMenu_archivo_desconectar(),
+				referenciaVentana.getMenu_archivo_cerrar());
 
 		disableButtons(estadoAccion, referenciaVentana.getBotonIntroducir(), referenciaVentana.getBotonModificar(),
 				referenciaVentana.getBotonEliminar(), referenciaVentana.getBotonAgregarPuntuacion(),

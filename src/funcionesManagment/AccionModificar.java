@@ -31,6 +31,8 @@ public class AccionModificar {
 
 	private static AccionReferencias referenciaVentana = getReferenciaVentana();
 
+	private static AccionReferencias referenciaVentanaPrincipal = getReferenciaVentanaPrincipal();
+
 	private static AccionControlUI accionRellenoDatos = new AccionControlUI();
 
 	/**
@@ -149,7 +151,7 @@ public class AccionModificar {
 				Utilidades.convertirNombresCarpetas(AccionFuncionesComunes.SOURCE_PATH);
 
 				Comic comicModificado = AccionControlUI.comicModificado();
-				
+
 				accionFuncionesComunes.procesarComic(comicModificado, true);
 
 				ListaComicsDAO.listasAutoCompletado();
@@ -288,7 +290,7 @@ public class AccionModificar {
 
 		// Assuming `stages` is a collection of stages you want to check against
 		for (Stage stage : stageVentanas) {
-			if (stage != ventanaOpciones) {
+			if (stage != ventanaOpciones && !stage.getTitle().equalsIgnoreCase("Menu principal")) {
 				stage.close(); // Close the stage if it's not the current state
 			}
 		}
@@ -307,8 +309,16 @@ public class AccionModificar {
 		return referenciaVentana;
 	}
 
+	public static AccionReferencias getReferenciaVentanaPrincipal() {
+		return referenciaVentanaPrincipal;
+	}
+
 	public static void setReferenciaVentana(AccionReferencias referenciaVentana) {
 		AccionModificar.referenciaVentana = referenciaVentana;
+	}
+
+	public static void setReferenciaVentanaPrincipal(AccionReferencias referenciaVentana) {
+		AccionModificar.referenciaVentanaPrincipal = referenciaVentana;
 	}
 
 }

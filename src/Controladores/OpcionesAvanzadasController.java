@@ -128,6 +128,8 @@ public class OpcionesAvanzadasController implements Initializable {
 
 	public static final AccionReferencias referenciaVentana = new AccionReferencias();
 
+	private static AccionReferencias referenciaVentanaPrincipal = getReferenciaVentanaPrincipal();
+
 	/**
 	 * Instancia de la clase FuncionesComboBox para el manejo de ComboBox.
 	 */
@@ -173,8 +175,10 @@ public class OpcionesAvanzadasController implements Initializable {
 
 	public void enviarReferencias() {
 		AccionFuncionesComunes.setReferenciaVentana(guardarReferencia());
+		AccionFuncionesComunes.setReferenciaVentanaPrincipal(getReferenciaVentanaPrincipal());
 		FuncionesManejoFront.setReferenciaVentana(guardarReferencia());
 		AccionModificar.setReferenciaVentana(guardarReferencia());
+
 	}
 
 	/**
@@ -192,6 +196,8 @@ public class OpcionesAvanzadasController implements Initializable {
 			enviarReferencias();
 
 			obtenerVersionDesdeOtraClase();
+
+			FuncionesManejoFront.getStageVentanas().add(estadoStage());
 
 		});
 		ventanaOpciones = miStageVentana();
@@ -229,7 +235,7 @@ public class OpcionesAvanzadasController implements Initializable {
 		}
 
 		AlarmaList.detenerAnimacionEspera();
-		DatabaseManagerDAO.makeSQL(prontInfo);
+		DatabaseManagerDAO.makeSQL(prontInfo, estadoStage());
 		Utilidades.borrarArchivosNoEnLista(ListaComicsDAO.listaImagenes);
 
 	}
@@ -298,23 +304,25 @@ public class OpcionesAvanzadasController implements Initializable {
 
 		Thread thread = new Thread(task);
 		thread.setDaemon(true); // Hacer que el hilo sea demonio para que termine cuando la aplicación se cierre
+
+		task.setOnRunning(e -> estadoStage().setOnCloseRequest(closeEvent -> task.cancel(true)));
+
 		thread.start();
 	}
 
 	public void obtenerVersionDesdeOtraClase() {
-	    VersionService versionService = new VersionService();
+		VersionService versionService = new VersionService();
 
-	    versionService.setOnSucceeded(event -> {
-	        String version = VersionService.leerVersionDelArchivo();
-	        labelVersion.setText(version);
-	        labelVersionPreviews.setText(version);
-	        labelVersionPortadas.setText(version);
-	        labelVersionEspecial.setText(version);
-	    });
+		versionService.setOnSucceeded(event -> {
+			String version = VersionService.leerVersionDelArchivo();
+			labelVersion.setText(version);
+			labelVersionPreviews.setText(version);
+			labelVersionPortadas.setText(version);
+			labelVersionEspecial.setText(version);
+		});
 
-	    versionService.start();
+		versionService.start();
 	}
-
 
 	@FXML
 	void descargarPreview(ActionEvent evento) {
@@ -323,19 +331,17 @@ public class OpcionesAvanzadasController implements Initializable {
 
 				int indiceSeleccionado = comboPreviews.getSelectionModel().getSelectedIndex();
 				String urlSeleccionada = OpcionesAvanzadasController.urlActualizados.get(indiceSeleccionado);
-				String tituloComboBox = comboPreviews.getSelectionModel().toString();
 				if (urlSeleccionada.equals("No hay previews")) {
 					String cadenaError = "No existe PDF que descargar";
 					AlarmaList.iniciarAnimacionAvanzado(prontInfoPreviews, cadenaError);
 					return;
 				}
 
-				FileChooser fileChooser = new FileChooser();
-				fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos PDF", "*.pdf"));
+				String formato = "*.pdf";
+				String frase = "Archivos PDF";
 
-				fileChooser.setInitialFileName(tituloComboBox);
-
-				File file = fileChooser.showSaveDialog(new Stage());
+				// Mostrar el cuadro de diálogo de guardado y obtener la ubicación seleccionada
+				File file = Utilidades.abrirFileChooser(frase, formato, true, estadoStage());
 
 				if (file != null) {
 					Utilidades.descargarPDFAsync(file, comboPreviews);
@@ -519,10 +525,18 @@ public class OpcionesAvanzadasController implements Initializable {
 
 		// Manejar eventos de la tarea
 		task.setOnRunning(ev -> {
+
+			estadoStage().setOnCloseRequest(closeEvent -> {
+				task.cancel(true);
+				Utilidades.cerrarCargaComics();
+				FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
+				FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, referenciaVentana);
+			});
+
 			String mensaje = "Comprimiendo portadas";
 			AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, mensaje);
 			botonCancelarSubidaPortadas.setVisible(true);
-			FuncionesManejoFront.cambiarEstadoMenuBar(true,guardarReferencia());
+			FuncionesManejoFront.cambiarEstadoMenuBar(true, guardarReferencia());
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(true, referenciaVentana);
 		});
 
@@ -531,7 +545,7 @@ public class OpcionesAvanzadasController implements Initializable {
 			AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, mensaje);
 			Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0));
 			botonCancelarSubidaPortadas.setVisible(false);
-			FuncionesManejoFront.cambiarEstadoMenuBar(false,guardarReferencia());
+			FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, referenciaVentana);
 		});
 
@@ -539,7 +553,7 @@ public class OpcionesAvanzadasController implements Initializable {
 			String mensaje = "Cancelada la actualizacion de la base de datos.";
 			botonCancelarSubidaPortadas.setVisible(false);
 			AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, mensaje);
-			FuncionesManejoFront.cambiarEstadoMenuBar(false,guardarReferencia());
+			FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, referenciaVentana);
 
 			Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0));
@@ -619,7 +633,14 @@ public class OpcionesAvanzadasController implements Initializable {
 		Thread thread = new Thread(task);
 
 		task.setOnRunning(e -> {
-			FuncionesManejoFront.cambiarEstadoMenuBar(true,guardarReferencia());
+			
+			estadoStage().setOnCloseRequest(closeEvent -> {
+				task.cancel(true);
+				Utilidades.cerrarCargaComics();
+				FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
+			});
+			
+			FuncionesManejoFront.cambiarEstadoMenuBar(true, guardarReferencia());
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(true, referenciaVentana);
 
 			String cadenaCancelado = "Copiando portadas";
@@ -627,7 +648,7 @@ public class OpcionesAvanzadasController implements Initializable {
 		});
 
 		task.setOnSucceeded(e -> {
-			FuncionesManejoFront.cambiarEstadoMenuBar(false,guardarReferencia());
+			FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, referenciaVentana);
 
 			String cadenaCancelado = "Portadas copiadas";
@@ -635,7 +656,7 @@ public class OpcionesAvanzadasController implements Initializable {
 		});
 
 		task.setOnFailed(e -> {
-			FuncionesManejoFront.cambiarEstadoMenuBar(false,guardarReferencia());
+			FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, referenciaVentana);
 
 			String cadenaCancelado = "ERROR. No se han podido copiar las portadas";
@@ -686,5 +707,13 @@ public class OpcionesAvanzadasController implements Initializable {
 			Stage stage = (Stage) ventanaOpciones.getWindow();
 			stage.close();
 		}
+	}
+
+	public static AccionReferencias getReferenciaVentanaPrincipal() {
+		return referenciaVentanaPrincipal;
+	}
+
+	public static void setReferenciaVentanaPrincipal(AccionReferencias referenciaVentana) {
+		OpcionesAvanzadasController.referenciaVentanaPrincipal = referenciaVentana;
 	}
 }

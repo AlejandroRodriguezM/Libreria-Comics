@@ -41,6 +41,7 @@ import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.stage.Stage;
 import webScrap.WebScrapGoogleLeagueOfComics;
 import webScrap.WebScraperPreviewsWorld;
 
@@ -89,7 +90,7 @@ public class AccionFuncionesComunes {
 
 	private static AccionReferencias referenciaVentana = getReferenciaVentana();
 
-	private static AccionReferencias referenciaVentanaPrincipal = getReferenciaVentana();
+	private static AccionReferencias referenciaVentanaPrincipal = getReferenciaVentanaPrincipal();
 
 	private static AccionControlUI accionRellenoDatos = new AccionControlUI();
 
@@ -293,13 +294,13 @@ public class AccionFuncionesComunes {
 	 * Funcion que escribe en el TextField de "Direccion de imagen" la dirrecion de
 	 * la imagen
 	 */
-	public static void subirPortada() {
+	public static void subirPortada(Stage miVentana) {
 
 		String frase = "Fichero Excel xlsx";
 
 		String formato = "*.xlsx";
 
-		File fichero = Utilidades.tratarFichero(frase, formato, false);
+		File fichero = Utilidades.tratarFichero(frase, formato, false, miVentana);
 
 		// Verificar si se obtuvo un objeto FileChooser válido
 		if (fichero != null) {
@@ -570,7 +571,7 @@ public class AccionFuncionesComunes {
 		configureTaskHandlers(tarea);
 
 		Thread thread = new Thread(tarea);
-		thread.setDaemon(true);
+//		thread.setDaemon(true);
 		thread.start();
 	}
 
@@ -607,7 +608,7 @@ public class AccionFuncionesComunes {
 	}
 
 	private static void processComic(String finalValorCodigo) {
-		if (!getReferenciaVentana().getStage().isShowing()) {
+		if (!getReferenciaVentana().getStage().isShowing() || !getReferenciaVentanaPrincipal().getStage().isShowing()) {
 			return;
 		}
 
@@ -695,20 +696,17 @@ public class AccionFuncionesComunes {
 
 		tarea.setOnCancelled(ev -> {
 			cambiarEstadoBotones(false);
-			AlarmaList.mostrarMensajePront("Mal", false, getReferenciaVentana().getProntInfo());
-			AlarmaList.detenerAnimacionCargaImagen(getReferenciaVentana().getCargaImagen()); // Detiene la animación de
-																								// carga
+
 			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentana);
 
 			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentanaPrincipal);
-			Platform.runLater(() -> {
-				cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0);
-			});
+			Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0));
 
 			AlarmaList.mostrarMensajePront("Se ha cancelado la importacion", false,
 					getReferenciaVentana().getProntInfo());
 
 			AlarmaList.detenerAnimacionCarga(getReferenciaVentana().getProgresoCarga());
+			AlarmaList.detenerAnimacionCargaImagen(getReferenciaVentana().getCargaImagen());
 		});
 	}
 
@@ -744,8 +742,7 @@ public class AccionFuncionesComunes {
 				listaComicsDatabase.forEach(codigo -> {
 					// Realizar otras acciones
 
-					if (isCancelled() || !getReferenciaVentana().getStage().isShowing()) {
-
+					if (isCancelled() || !getReferenciaVentana().getStage().isShowing() ) {
 						return; // Sale del método call() si la tarea ha sido cancelada
 					}
 
@@ -806,6 +803,21 @@ public class AccionFuncionesComunes {
 
 		tarea.setOnRunning(ev -> {
 			String cadenaAfirmativo = "";
+			List<Stage> stageVentanas = FuncionesManejoFront.getStageVentanas();
+			for (Stage stage : stageVentanas) {
+				
+				if (stage.getTitle().equalsIgnoreCase("Menu principal")
+						|| !stage.getTitle().equalsIgnoreCase("Opciones avanzadas")) {
+					stage.setOnCloseRequest(closeEvent -> {
+						tarea.cancel(true);
+						Utilidades.cerrarCargaComics();
+						FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentana);
+						FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentanaPrincipal);
+						FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, getReferenciaVentana());
+						Utilidades.cerrarMenuOpciones();
+					});
+				}
+			}
 
 			if (tipoUpdate.equalsIgnoreCase("actualizar datos")) {
 				cadenaAfirmativo = "Actualizando datos";
@@ -820,6 +832,7 @@ public class AccionFuncionesComunes {
 
 			actualizarCombobox();
 			FuncionesManejoFront.cambiarEstadoMenuBar(true, referenciaVentana);
+			FuncionesManejoFront.cambiarEstadoMenuBar(true, referenciaVentanaPrincipal);
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(true, getReferenciaVentana());
 		});
 
@@ -841,6 +854,7 @@ public class AccionFuncionesComunes {
 
 			actualizarCombobox();
 			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentana);
+			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentanaPrincipal);
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, getReferenciaVentana());
 		});
 
@@ -850,11 +864,11 @@ public class AccionFuncionesComunes {
 
 			actualizarCombobox();
 			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentana);
+			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentanaPrincipal);
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, getReferenciaVentana());
 
-			Platform.runLater(() -> {
-				cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0);
-			});
+			Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0));
+
 		});
 
 		Thread thread = new Thread(tarea);
@@ -864,7 +878,7 @@ public class AccionFuncionesComunes {
 			tarea.cancel(true);
 		});
 
-		thread.setDaemon(true);
+//		thread.setDaemon(true);
 		thread.start();
 	}
 
@@ -947,6 +961,10 @@ public class AccionFuncionesComunes {
 
 	public static AccionReferencias getReferenciaVentana() {
 		return referenciaVentana;
+	}
+
+	public static AccionReferencias getReferenciaVentanaPrincipal() {
+		return referenciaVentanaPrincipal;
 	}
 
 	public static void setReferenciaVentana(AccionReferencias referenciaVentana) {

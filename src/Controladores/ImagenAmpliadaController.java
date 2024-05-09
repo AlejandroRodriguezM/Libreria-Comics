@@ -143,12 +143,11 @@ public class ImagenAmpliadaController implements Initializable {
 
 		// Crear un FileChooser para permitir al usuario seleccionar la ubicación de
 		// guardado
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JPEG files (*.jpg)", "*.jpg"));
-		fileChooser.setInitialFileName(nombreFichero); // Nombre inicial del archivo
+		String formato = "*.jpg";
+		String frase = "Guardar fichero jpg";
 
 		// Mostrar el cuadro de diálogo de guardado y obtener la ubicación seleccionada
-		File file = fileChooser.showSaveDialog(stage);
+		File file = Utilidades.abrirFileChooser(frase, formato, true, estadoStage());
 
 		// Verificar si el usuario seleccionó una ubicación válida
 		if (file != null) {
@@ -179,7 +178,7 @@ public class ImagenAmpliadaController implements Initializable {
 
 		return (Stage) imagenAmpliada.getScene().getWindow();
 	}
-	
+
 	/**
 	 * Establece la instancia de la ventana (Stage) asociada a este controlador.
 	 *
@@ -197,11 +196,11 @@ public class ImagenAmpliadaController implements Initializable {
 	 */
 	public void closeWindow() {
 		if (stage != null) {
-			
+
 			if (FuncionesManejoFront.getStageVentanas().contains(estadoStage())) {
 				FuncionesManejoFront.getStageVentanas().remove(estadoStage());
 			}
-			
+
 			stage.close();
 		}
 	}

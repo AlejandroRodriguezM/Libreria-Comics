@@ -432,6 +432,8 @@ public class AccionReferencias {
 
 	private MenuItem menu_archivo_conexion;
 
+	private MenuItem menuComprobarApis;
+
 	private MenuItem menu_leer_CodigoBarras;
 
 	private MenuItem menu_comic_aleatoria;
@@ -1384,6 +1386,14 @@ public class AccionReferencias {
 
 	public void setMenu_archivo_conexion(MenuItem menu_archivo_conexion) {
 		this.menu_archivo_conexion = menu_archivo_conexion;
+	}
+
+	public void setMenu_comprobar_apis(MenuItem menuComprobarApis) {
+		this.menuComprobarApis = menuComprobarApis;
+	}
+
+	public MenuItem getMenu_comprobar_apis() {
+		return menuComprobarApis;
 	}
 
 	public void setMenu_leer_CodigoBarras(MenuItem menu_leer_CodigoBarras) {

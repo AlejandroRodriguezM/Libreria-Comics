@@ -247,7 +247,7 @@ public class FuncionesApis {
 
 	public static void comprobarApisComics() {
 		String apiKey = cargarApiComicVine();
-		String clavesMarvel[] = clavesApiMarvel();
+		String[] clavesMarvel = clavesApiMarvel();
 
 		if (!verificarClavesAPI(clavesMarvel, apiKey)) {
 			return; // Salir si hay errores en las claves API

@@ -212,6 +212,9 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	private Menu navegacionComic;
 
+	@FXML
+	private Menu menuComprobarApis;
+
 	/**
 	 * Menú de navegación relacionado con estadísticas.
 	 */
@@ -508,6 +511,7 @@ public class MenuPrincipalController implements Initializable {
 		referenciaVentana.setMenu_estadistica_vendidos(menuEstadisticaVendidos);
 		referenciaVentana.setMenu_archivo_avanzado(menuArchivoAvanzado);
 		referenciaVentana.setMenu_archivo_conexion(menuArchivoConexion);
+		referenciaVentana.setMenu_comprobar_apis(menuComprobarApis);
 		referenciaVentana.setMenu_navegacion(menuNavegacion);
 		referenciaVentana.setNavegacion_Opciones(navegacionCerrar);
 		referenciaVentana.setNavegacion_comic(navegacionComic);
@@ -579,6 +583,8 @@ public class MenuPrincipalController implements Initializable {
 		Utilidades.setReferenciaVentana(guardarReferencia());
 		Utilidades.setReferenciaVentanaPrincipal(guardarReferencia());
 		VentanaAccionController.setReferenciaVentana(referenciaVentana);
+		OpcionesAvanzadasController.setReferenciaVentanaPrincipal(referenciaVentana);
+		Ventanas.setReferenciaVentanaPrincipal(guardarReferencia());
 	}
 
 	/**
@@ -611,6 +617,8 @@ public class MenuPrincipalController implements Initializable {
 
 			FuncionesTableView.modificarColumnas(true);
 			AccionControlUI.controlarEventosInterfazPrincipal(guardarReferencia());
+			FuncionesManejoFront.getStageVentanas().add(estadoStage());
+//			estadoStage().setOnCloseRequest(event -> Utilidades.handleClose());
 
 		});
 
@@ -1046,11 +1054,10 @@ public class MenuPrincipalController implements Initializable {
 			ListaComicsDAO.limpiarListaGuardados();
 
 			estaVacia = true;
-			mensaje = "Base de datos exportada correctamente";
 		} else {
 			mensaje = "La base de datos esta vacia. No hay nada que exportar";
+			AlarmaList.mostrarMensajePront(mensaje, estaVacia, prontInfo);
 		}
-		AlarmaList.mostrarMensajePront(mensaje, estaVacia, prontInfo);
 
 	}
 
@@ -1216,8 +1223,10 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void borrarContenidoTabla(ActionEvent event) {
 		try {
+
 			Thread borradoTablaThread = new Thread(() -> {
 				try {
+					FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
 					boolean confirmacionBorrado = nav.borrarContenidoTabla().get();
 					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
 					if (confirmacionBorrado) {
@@ -1230,16 +1239,23 @@ public class MenuPrincipalController implements Initializable {
 						// Configuración de la tarea para crear el archivo Excel
 
 						Task<Boolean> crearExcelTask = excelFuntions.crearExcelTask(listaComics,
-								TipoBusqueda.ELIMINAR.toString(), dateFormat);
+								TipoBusqueda.ELIMINAR.toString(), dateFormat, estadoStage());
 						Thread excelThread = new Thread(crearExcelTask);
 
 						crearExcelTask.setOnRunning(e -> {
-							cerradoPorOperaciones();
-							botonCancelarSubida.setVisible(true);
-							FuncionesManejoFront.cambiarEstadoMenuBar(true,guardarReferencia());
+						    estadoStage().setOnCloseRequest(closeEvent -> {
+						        crearExcelTask.cancel(true);
+						        Utilidades.cerrarCargaComics();
+						    });
+						    
+						    cerradoPorOperaciones();
+						    botonCancelarSubida.setVisible(true);
+						    FuncionesManejoFront.cambiarEstadoMenuBar(true, guardarReferencia());
+						    limpiezaDeDatos();
 						});
 
 						crearExcelTask.setOnSucceeded(e -> {
+
 							botonCancelarSubida.setVisible(false);
 							boolean deleteCompleted;
 							try {
@@ -1251,7 +1267,7 @@ public class MenuPrincipalController implements Initializable {
 									AlarmaList.detenerAnimacionCarga(referenciaVentana.getProgresoCarga());
 									ListaComicsDAO.limpiarListaGuardados();
 								}
-								FuncionesManejoFront.cambiarEstadoMenuBar(false,guardarReferencia());
+								FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
 								AlarmaList.mostrarMensajePront(mensaje, deleteCompleted, prontInfo);
 
 							} catch (InterruptedException | ExecutionException e1) {
@@ -1261,10 +1277,11 @@ public class MenuPrincipalController implements Initializable {
 
 						crearExcelTask.setOnFailed(e -> {
 							botonCancelarSubida.setVisible(false);
+							FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
 						});
 
 						crearExcelTask.setOnCancelled(e -> {
-
+							FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
 							AlarmaList.detenerAnimacionCarga(referenciaVentana.getProgresoCarga());
 							String mensaje = "Has cancelado el borrado de la base de datos";
 							AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
@@ -1275,7 +1292,7 @@ public class MenuPrincipalController implements Initializable {
 						botonCancelarSubida.setOnAction(ev -> {
 							botonCancelarSubida.setVisible(false);
 							AlarmaList.detenerAnimacionCarga(referenciaVentana.getProgresoCarga());
-							FuncionesManejoFront.cambiarEstadoMenuBar(false,guardarReferencia());
+
 							crearExcelTask.cancel(true); // true indica que la tarea debe ser interrumpida si ya está en
 															// ejecución
 							excelThread.interrupt();
@@ -1288,6 +1305,7 @@ public class MenuPrincipalController implements Initializable {
 						AlarmaList.detenerAnimacionCarga(referenciaVentana.getProgresoCarga());
 						String mensaje = "ERROR. Has cancelado el borrado de la base de datos";
 						AlarmaList.mostrarMensajePront(mensaje, false, prontInfo);
+						FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
 					}
 				} catch (InterruptedException | ExecutionException e) {
 					Utilidades.manejarExcepcion(e);
@@ -1323,54 +1341,76 @@ public class MenuPrincipalController implements Initializable {
 		imagencomic.setImage(null);
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
 		// Configuración de la tarea para crear el archivo Excel
-		Task<Boolean> crearExcelTask = excelFuntions.crearExcelTask(listaComics, tipoBusqueda, dateFormat);
+		Task<Boolean> crearExcelTask = excelFuntions.crearExcelTask(listaComics, tipoBusqueda, dateFormat,
+				estadoStage());
 		Thread excelThread = new Thread(crearExcelTask);
 
-		crearExcelTask.setOnRunning(e -> {
-			botonCancelarSubida.setVisible(true);
-			cerradoPorOperaciones();
-			FuncionesManejoFront.cambiarEstadoMenuBar(true,guardarReferencia());
-			AlarmaList.iniciarAnimacionCarga(progresoCarga);
-		});
-
-		crearExcelTask.setOnSucceeded(event -> {
+		if (crearExcelTask == null) {
 			botonCancelarSubida.setVisible(false);
-			FuncionesManejoFront.cambiarEstadoMenuBar(false,guardarReferencia());
-			AlarmaList.mostrarMensajePront(mensajeValido, true, prontInfo);
-			AlarmaList.detenerAnimacionCarga(progresoCarga);
-		});
-
-		// Configuración del comportamiento cuando la tarea falla
-		crearExcelTask.setOnFailed(event -> {
-			botonCancelarSubida.setVisible(false);
-			procesarResultadoImportacion(crearExcelTask.getValue());
+			FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
 			AlarmaList.detenerAnimacionPront(prontInfo);
 			AlarmaList.detenerAnimacionCarga(progresoCarga);
 
 			// Detener el hilo de la tarea
 			excelThread.interrupt();
+			AlarmaList.mostrarMensajePront(mensajeCancelarExportar, false, prontInfo);
+		} else {
+			crearExcelTask.setOnRunning(e -> {
 
-			alarmaList.manejarFallo(mensajeErrorExportar, prontInfo);
-			FuncionesManejoFront.cambiarEstadoMenuBar(false,guardarReferencia());
-			AlarmaList.detenerAnimacionCarga(progresoCarga);
-		});
+				estadoStage().setOnCloseRequest(event -> {
+					crearExcelTask.cancel(true);
+					Utilidades.cerrarCargaComics();
+				});
 
-		// Configuración del comportamiento cuando la tarea es cancelada
-		crearExcelTask.setOnCancelled(event -> {
-			alarmaList.manejarFallo(mensajeCancelarExportar, prontInfo);
-			FuncionesManejoFront.cambiarEstadoMenuBar(false,guardarReferencia());
-			AlarmaList.detenerAnimacionCarga(progresoCarga);
-		});
+				cerradoPorOperaciones();
+				botonCancelarSubida.setVisible(true);
+				FuncionesManejoFront.cambiarEstadoMenuBar(true, guardarReferencia());
+				AlarmaList.iniciarAnimacionCarga(progresoCarga);
+				limpiezaDeDatos();
+
+			});
+
+			crearExcelTask.setOnSucceeded(event -> {
+				botonCancelarSubida.setVisible(false);
+				FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
+				AlarmaList.mostrarMensajePront(mensajeValido, true, prontInfo);
+				AlarmaList.detenerAnimacionCarga(progresoCarga);
+			});
+
+			// Configuración del comportamiento cuando la tarea falla
+			crearExcelTask.setOnFailed(event -> {
+				botonCancelarSubida.setVisible(false);
+				procesarResultadoImportacion(false);
+				AlarmaList.detenerAnimacionPront(prontInfo);
+				AlarmaList.detenerAnimacionCarga(progresoCarga);
+
+				// Detener el hilo de la tarea
+				excelThread.interrupt();
+				alarmaList.manejarFallo(mensajeErrorExportar, prontInfo);
+				FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
+				AlarmaList.detenerAnimacionCarga(progresoCarga);
+				AlarmaList.mostrarMensajePront(mensajeCancelarExportar, false, prontInfo);
+			});
+
+			// Configuración del comportamiento cuando la tarea es cancelada
+			crearExcelTask.setOnCancelled(event -> {
+				alarmaList.manejarFallo(mensajeCancelarExportar, prontInfo);
+				FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
+				AlarmaList.detenerAnimacionCarga(progresoCarga);
+				AlarmaList.mostrarMensajePront(mensajeCancelarExportar, false, prontInfo);
+				// Detener el hilo de la tarea
+				excelThread.interrupt();
+			});
+		}
 
 		// Manejar la cancelación
 		botonCancelarSubida.setOnAction(ev -> {
 			botonCancelarSubida.setVisible(false);
 
-			crearExcelTask.cancel(true); // true indica que la tarea debe ser interrumpida si ya está en
-			// ejecución
+			crearExcelTask.cancel(true);
 			excelThread.interrupt();
 		});
-
+		excelThread.setDaemon(true); // Establecer como daemon
 		// Iniciar la tarea principal de creación de Excel en un hilo separado
 		excelThread.start();
 	}
@@ -1383,7 +1423,7 @@ public class MenuPrincipalController implements Initializable {
 		String frase = "Fichero CSV";
 		String formatoFichero = "*.csv";
 
-		File fichero = Utilidades.tratarFichero(frase, formatoFichero, false);
+		File fichero = Utilidades.tratarFichero(frase, formatoFichero, false, estadoStage());
 
 		// Verificar si se obtuvo un objeto FileChooser válido
 		if (fichero != null) {
@@ -1397,21 +1437,27 @@ public class MenuPrincipalController implements Initializable {
 				AlarmaList.detenerAnimacion();
 				AlarmaList.detenerAnimacionCarga(progresoCarga);
 				botonCancelarSubida.setVisible(false);
-				FuncionesManejoFront.cambiarEstadoMenuBar(false,guardarReferencia());
+				FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
 				AlarmaList.mostrarMensajePront(mensajeValido, true, prontInfo);
 			});
 
 			lecturaTask.setOnRunning(e -> {
+
+				estadoStage().setOnCloseRequest(event -> {
+					lecturaTask.cancel(true);
+					Utilidades.cerrarCargaComics();
+				});
 				cerradoPorOperaciones();
-				FuncionesManejoFront.cambiarEstadoMenuBar(true,guardarReferencia());
+				FuncionesManejoFront.cambiarEstadoMenuBar(true, guardarReferencia());
 				botonCancelarSubida.setVisible(true);
 				AlarmaList.iniciarAnimacionCarga(progresoCarga);
+				limpiezaDeDatos();
 			});
 
 			lecturaTask.setOnFailed(e -> {
 				botonCancelarSubida.setVisible(false);
 				procesarResultadoImportacion(lecturaTask.getValue());
-				FuncionesManejoFront.cambiarEstadoMenuBar(false,guardarReferencia());
+				FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
 				AlarmaList.detenerAnimacionCarga(progresoCarga);
 			});
 
@@ -1419,7 +1465,7 @@ public class MenuPrincipalController implements Initializable {
 			botonCancelarSubida.setOnAction(ev -> {
 				lecturaTask.cancel(true); // true indica que la tarea debe ser interrumpida si ya está en ejecución
 				botonCancelarSubida.setVisible(false);
-				FuncionesManejoFront.cambiarEstadoMenuBar(false,guardarReferencia());
+				FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
 				AlarmaList.detenerAnimacionCarga(progresoCarga);
 
 				procesarResultadoImportacion(false);
@@ -1427,7 +1473,6 @@ public class MenuPrincipalController implements Initializable {
 
 			// Iniciar la tarea principal de importación en un hilo separado
 			new Thread(lecturaTask).start();
-
 		}
 	}
 
@@ -1570,8 +1615,6 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void volverMenu(ActionEvent event) {
-		ConectManager.close();
-		nav.verAccesoBBDD();
 
 		List<Stage> stageVentanas = FuncionesManejoFront.getStageVentanas();
 
@@ -1582,6 +1625,14 @@ public class MenuPrincipalController implements Initializable {
 
 		Stage myStage = (Stage) menuNavegacion.getScene().getWindow();
 		myStage.close();
+
+		ConectManager.close();
+		nav.cerrarCargaComics();
+		nav.verAccesoBBDD();
+
+		if (FuncionesManejoFront.getStageVentanas().contains(estadoStage())) {
+			FuncionesManejoFront.getStageVentanas().remove(estadoStage());
+		}
 	}
 
 	/**
@@ -1592,7 +1643,7 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	public void salirPrograma(ActionEvent event) {
 		// Lógica para manejar la acción de "Salir"
-
+		nav.cerrarCargaComics();
 		if (nav.salirPrograma(event)) {
 			Stage myStage = (Stage) menuNavegacion.getScene().getWindow();
 			myStage.close();
@@ -1602,9 +1653,15 @@ public class MenuPrincipalController implements Initializable {
 	public void cerradoPorOperaciones() {
 		List<Stage> stageVentanas = FuncionesManejoFront.getStageVentanas();
 
-		// Assuming `stages` is a collection of stages you want to check against
 		for (Stage stage : stageVentanas) {
-			stage.close(); // Close the stage if it's not the current state
+
+			if (!stage.getTitle().equalsIgnoreCase("Menu principal")) {
+				stage.close();
+			}
+		}
+
+		if (FuncionesManejoFront.getStageVentanas().contains(estadoStage())) {
+			FuncionesManejoFront.getStageVentanas().remove(estadoStage());
 		}
 	}
 
@@ -1618,11 +1675,18 @@ public class MenuPrincipalController implements Initializable {
 	 *
 	 */
 	public void closeWindows() {
+		nav.cerrarCargaComics();
 		Platform.exit();
 	}
 
 	public void stop() {
+
+		if (FuncionesManejoFront.getStageVentanas().contains(estadoStage())) {
+			FuncionesManejoFront.getStageVentanas().remove(estadoStage());
+		}
+
 		alarmaList.detenerThreadChecker();
+		nav.cerrarCargaComics();
 		Platform.exit();
 	}
 }

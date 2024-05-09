@@ -21,6 +21,7 @@ import comicManagement.Comic;
 import funciones_auxiliares.Utilidades;
 import funciones_auxiliares.Ventanas;
 import javafx.scene.control.Label;
+import javafx.stage.Stage;
 
 public class DatabaseManagerDAO {
 
@@ -410,7 +411,7 @@ public class DatabaseManagerDAO {
 	 *
 	 * @param fichero
 	 */
-	public static void makeSQL(Label prontInfo) {
+	public static void makeSQL(Label prontInfo, Stage miVentana) {
 
 		if (!ConectManager.conexionActiva()) {
 			return;
@@ -420,7 +421,7 @@ public class DatabaseManagerDAO {
 
 		String formato = "*.sql";
 
-		File fichero = Utilidades.tratarFichero(frase, formato, true);
+		File fichero = Utilidades.tratarFichero(frase, formato, true, miVentana);
 
 		// Verificar si se obtuvo un objeto FileChooser válido
 		if (fichero != null) {

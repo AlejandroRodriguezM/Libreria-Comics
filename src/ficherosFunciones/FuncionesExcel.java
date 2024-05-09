@@ -48,12 +48,14 @@ import comicManagement.ComicFichero;
 import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades.TipoBusqueda;
+import funcionesInterfaz.FuncionesManejoFront;
 import dbmanager.InsertManager;
 import funciones_auxiliares.Utilidades;
 import funciones_auxiliares.Ventanas;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
 
 /**
  * Esta clase sirve para crear tanto los ficheros Excel como los ficheros CSV,
@@ -156,6 +158,11 @@ public class FuncionesExcel {
 	public File carpetaPortadas() {
 		DirectoryChooser directoryChooser = new DirectoryChooser();
 		File directorio = directoryChooser.showDialog(null);
+		// Verificar si el usuario ha cancelado la selección
+		if (directorio == null) {
+			return null; // O puedes lanzar una excepción o hacer algo más, dependiendo de tu lógica
+		}
+		System.out.println(directorio.toPath());
 		String carpetaImagenes = directorio.getAbsolutePath() + File.separator + "copiaPortadas";
 		return new File(carpetaImagenes);
 	}
@@ -194,12 +201,15 @@ public class FuncionesExcel {
 	 * @return Una tarea que realiza la exportación y devuelve true si se realiza
 	 *         con éxito, o false si ocurre un error.
 	 */
-	public Task<Boolean> crearExcelTask(List<Comic> listaComics, String tipoBusqueda, SimpleDateFormat dateFormat) {
+	public Task<Boolean> crearExcelTask(List<Comic> listaComics, String tipoBusqueda, SimpleDateFormat dateFormat,
+			Stage miVentana) {
 		File[] directorioImagenes = { null };
 		File[] directorioFichero = { null };
 
 		numeroLineas.set(0);
 		numeroLeidos.set(0);
+
+		Utilidades.cerrarMenuOpciones();
 
 		if (tipoBusqueda.equalsIgnoreCase(TipoBusqueda.ELIMINAR.toString())) {
 			String nombreCarpeta = dateFormat.format(new Date());
@@ -235,9 +245,14 @@ public class FuncionesExcel {
 
 			String formato = "*.xlsx";
 
-			File fichero = Utilidades.tratarFichero(frase, formato, true);
-			directorioImagenes[0] = carpetaPortadas();
+			File fichero = Utilidades.tratarFichero(frase, formato, true, miVentana);
+
+			if (fichero == null) {
+				return null;
+			}
 			directorioFichero[0] = fichero;
+			directorioImagenes[0] = carpetaPortadas();
+
 		}
 
 		numeroLineas.set(ComicManagerDAO.countRows());
@@ -262,19 +277,20 @@ public class FuncionesExcel {
 					}
 
 					crearEncabezados(hoja);
-
 					AtomicReference<CargaComicsController> cargaComicsControllerRef = new AtomicReference<>();
 					nav.verCargaComics(cargaComicsControllerRef);
+					if (directorioFichero[0] != null) {
 
-					List<Comic> listaComicsCopia = new ArrayList<>(listaComics);
-					copiarImagenesPortadaSiEsNecesario(tipoBusqueda, directorioFichero[0], directorioImagenes[0]);
+						List<Comic> listaComicsCopia = new ArrayList<>(listaComics);
+						escribirDatosComics(listaComicsCopia, hoja, cargaComicsControllerRef, directorioImagenes[0]);
+						escribirLibroYCSV(libro, directorioFichero[0]);
+						actualizarProgreso(cargaComicsControllerRef);
+					}
 
-					escribirDatosComics(listaComicsCopia, hoja, cargaComicsControllerRef, directorioImagenes[0],
-							directorioFichero[0]);
+					if (directorioImagenes[0] != null) {
+						copiarImagenesPortadaSiEsNecesario(tipoBusqueda, directorioFichero[0], directorioImagenes[0]);
 
-					actualizarProgreso(cargaComicsControllerRef);
-
-					escribirLibroYCSV(libro, directorioFichero[0]);
+					}
 
 					return true;
 				} catch (IOException ex) {
@@ -305,26 +321,21 @@ public class FuncionesExcel {
 
 	private void copiarImagenesPortadaSiEsNecesario(String tipoBusqueda, File directorioFichero,
 			File directorioImagenes) {
-		if (("Completa".equalsIgnoreCase(tipoBusqueda) || "Parcial".equalsIgnoreCase(tipoBusqueda))
-				&& directorioFichero != null) {
-			Utilidades.copiarDirectorio(FuncionesExcel.DEFAULT_PORTADA_IMAGE_PATH,
-					directorioImagenes.getAbsolutePath());
+
+		if (("Completa".equalsIgnoreCase(tipoBusqueda) || "Parcial".equalsIgnoreCase(tipoBusqueda))) {
+			Utilidades.copiarDirectorio(directorioImagenes.getAbsolutePath(),
+					FuncionesExcel.DEFAULT_PORTADA_IMAGE_PATH);
 		}
 	}
 
 	private int escribirDatosComics(List<Comic> listaComics, Sheet hoja,
-			AtomicReference<CargaComicsController> cargaComicsControllerRef, File directorioImagenes,
-			File directorioFichero) {
+			AtomicReference<CargaComicsController> cargaComicsControllerRef, File directorioImagenes) {
 		int indiceFinal = 1; // Comenzar desde 1 para omitir la fila de encabezado
 		for (Comic comic : listaComics) {
 			Row fila = hoja.createRow(indiceFinal);
 			llenarFilaConDatos(comic, fila);
 
 			cargaComics(comic, cargaComicsControllerRef, directorioImagenes, false);
-
-			if (!directorioFichero.exists()) {
-				directorioFichero.mkdir();
-			}
 
 			indiceFinal++;
 
@@ -333,7 +344,9 @@ public class FuncionesExcel {
 			if (Thread.interrupted()) {
 				break;
 			}
+
 		}
+
 		return indiceFinal;
 	}
 
@@ -480,7 +493,7 @@ public class FuncionesExcel {
 
 		} catch (IOException e) {
 			// Propagar la excepción al nivel superior
-		    logger.warning("An IOException occurred while processing the file.");
+			logger.warning("An IOException occurred while processing the file.");
 			throw e;
 		}
 	}
@@ -488,9 +501,11 @@ public class FuncionesExcel {
 	public static void cargaComics(Comic comicNuevo, AtomicReference<CargaComicsController> cargaComicsControllerRef,
 			File directorio, boolean esImportado) {
 		// Verificar si el cómic es nulo
-		if (comicNuevo == null || cargaComicsControllerRef == null || directorio == null) {
+		if (comicNuevo == null || cargaComicsControllerRef == null) {
 			return;
 		}
+		
+		
 
 		// Obtener nombre de portada y nombre modificado
 		String nombrePortada = "";
@@ -498,7 +513,7 @@ public class FuncionesExcel {
 		if (esImportado) {
 			nombrePortada = Utilidades.obtenerNombrePortada(false, comicNuevo.getImagen());
 			nombreModificado = Utilidades.convertirNombreArchivo(nombrePortada);
-			if (!Utilidades.existeArchivo(directorio.getAbsolutePath(), nombrePortada)) {
+			if (directorio != null && !Utilidades.existeArchivo(directorio.getAbsolutePath(), nombrePortada)) {
 				copiarPortadaPredeterminada(DEFAULT_PORTADA_IMAGE_PATH, nombreModificado);
 			}
 		}
@@ -535,6 +550,7 @@ public class FuncionesExcel {
 
 	private static void updateUI(double progress, String comicInfo,
 			AtomicReference<CargaComicsController> cargaComicsControllerRef) {
+
 		StringBuilder textoBuilder = new StringBuilder();
 		String porcentaje = String.format("%.2f%%", progress * 100);
 		if (nav.isVentanaCerrada()) {

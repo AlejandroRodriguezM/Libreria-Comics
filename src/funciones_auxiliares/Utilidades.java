@@ -58,11 +58,9 @@ import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
-import Apis.ApiCambioDivisas;
 import Apis.ApiISBNGeneral;
 import Apis.ApiMarvel;
 import Controladores.OpcionesAvanzadasController;
-import Controladores.VentanaAccionController;
 import comicManagement.Comic;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
@@ -73,6 +71,8 @@ import funcionesInterfaz.FuncionesManejoFront;
 import funcionesManagment.AccionReferencias;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
@@ -80,8 +80,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import webScrap.WebScraperPreviewsWorld;
 
@@ -93,6 +94,8 @@ import webScrap.WebScraperPreviewsWorld;
  * @author Alejandro Rodriguez
  */
 public class Utilidades {
+
+	private static boolean fileChooserOpen = false;
 
 	/**
 	 * Sistema operativo actual.
@@ -1116,43 +1119,94 @@ public class Utilidades {
 		return "";
 	}
 
-	/**
-	 * Funcion que abre una ventana que aceptara los formatos de archivos que le
-	 * demos como parametro.
-	 *
-	 * @param frase   Descripción del filtro de archivo (p. ej., "Archivos CSV")
-	 * @param formato Extensiones de archivo permitidas (p. ej., "*.csv")
-	 * @return FileChooser si el usuario selecciona un fichero; null si el usuario
-	 *         cancela la selección o cierra la ventana
-	 */
-	public static File tratarFichero(String frase, String formato, boolean esGuardado) {
-		FuncionesManejoFront.cambiarEstadoMenuBar(true,referenciaVentana);
-		FuncionesManejoFront.cambiarEstadoMenuBar(true,referenciaVentanaPrincipal);
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.getExtensionFilters().addAll(new ExtensionFilter(frase, formato));
+	public static File tratarFichero(String frase, String formato, boolean esGuardado, Stage miVentana) {
+		FuncionesManejoFront.cambiarEstadoMenuBar(true, referenciaVentana);
+		FuncionesManejoFront.cambiarEstadoMenuBar(true, referenciaVentanaPrincipal);
 
 		try {
-			File fichero;
-			// Mostrar el diálogo y obtener el archivo seleccionado
-			if (esGuardado) {
-				fileChooser.setInitialFileName("base de datos");
-				fichero = fileChooser.showSaveDialog(null);
-			} else {
-				fichero = fileChooser.showOpenDialog(null);
+
+			File fichero = abrirFileChooser(frase, formato, esGuardado, miVentana);
+
+			getReferenciaVentana().getBotonCancelarSubida().setVisible(false);
+
+			// Verify if a file was selected
+			if (fichero == null) {
+				FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentana);
+				FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentanaPrincipal);
 			}
 
-			// Verificar si se seleccionó un archivo
-			if (fichero == null) {
-				FuncionesManejoFront.cambiarEstadoMenuBar(false,referenciaVentana);
-				FuncionesManejoFront.cambiarEstadoMenuBar(false,referenciaVentanaPrincipal);
-				return null; // Devolver null si no se seleccionó ningún archivo
-			}
-			getReferenciaVentana().getBotonCancelarSubida().setVisible(false);
-			return fichero; // Devuelve el FileChooser para que la interfaz gráfica lo utilice
+			return fichero;
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public static File abrirFileChooser(String frase, String formato, boolean esGuardado, Stage miVentana) {
+		setFileChooserOpen(true);
+		// Obtener todas las ventanas disponibles
+		List<Stage> stageVentanas = FuncionesManejoFront.getStageVentanas();
+
+		// Deshabilitar el cierre de todas las ventanas mientras el FileChooser está
+		// abierto
+		for (Stage stage : stageVentanas) {
+			stage.setOnCloseRequest(event -> {
+				if (fileChooserOpen) {
+					event.consume();
+				}
+			});
+		}
+
+		// Deshabilitar todas las ventanas mientras el FileChooser está abierto
+		for (Stage stage : stageVentanas) {
+			stage.addEventFilter(MouseEvent.ANY, consumeEvent);
+			stage.addEventFilter(KeyEvent.ANY, consumeEvent);
+		}
+
+		File fichero = null;
+		try {
+			FileChooser fileChooser = new FileChooser();
+			FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(frase, formato);
+			fileChooser.getExtensionFilters().add(extFilter);
+
+			if (esGuardado) {
+				fichero = fileChooser.showSaveDialog(miVentana);
+			} else {
+				fichero = fileChooser.showOpenDialog(miVentana);
+			}
+
+			return fichero;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		} finally {
+
+			for (Stage stage : stageVentanas) {
+				stage.removeEventFilter(MouseEvent.ANY, consumeEvent);
+				stage.removeEventFilter(KeyEvent.ANY, consumeEvent);
+			}
+
+			// Habilitar todas las ventanas después de cerrar el FileChooser
+			for (Stage stage : stageVentanas) {
+				stage.setOnCloseRequest(null);
+			}
+
+		}
+	}
+
+	// EventFilter que consume todos los eventos del ratón y del teclado
+	private static EventHandler<Event> consumeEvent = new EventHandler<Event>() {
+		@Override
+		public void handle(Event event) {
+			event.consume();
+		}
+	};
+
+	// Método para actualizar el estado del FileChooser
+	public static void setFileChooserOpen(boolean open) {
+		fileChooserOpen = open;
 	}
 
 	/**
@@ -2185,6 +2239,8 @@ public class Utilidades {
 		File directorioOrigen = new File(directorioOriginal);
 		File directorioDestino = new File(directorioNuevo);
 
+		System.out.println("Tal: " + directorioOrigen);
+
 		// Verificar si el directorio origen existe y es un directorio
 		if (!directorioOrigen.exists() || !directorioOrigen.isDirectory()) {
 			throw new IllegalArgumentException("El directorio origen no existe o no es un directorio válido.");
@@ -2337,10 +2393,30 @@ public class Utilidades {
 		}
 	}
 
+	public static void cerrarMenuOpciones() {
+		List<Stage> stageVentanas = FuncionesManejoFront.getStageVentanas();
+		for (Stage stage : stageVentanas) {
+
+			if (stage.getTitle().equalsIgnoreCase("Opciones avanzadas")) {
+				stage.close(); // Close the stage if it's not the current state
+			}
+		}
+	}
+	
+	public static void cerrarCargaComics() {
+		List<Stage> stageVentanas = FuncionesManejoFront.getStageVentanas();
+		for (Stage stage : stageVentanas) {
+
+			if (stage.getTitle().equalsIgnoreCase("Carga de comics")) {
+				stage.close(); // Close the stage if it's not the current state
+			}
+		}
+	}
+
 	public static AccionReferencias getReferenciaVentana() {
 		return referenciaVentana;
 	}
-	
+
 	public static AccionReferencias getReferenciaVentanaPrincipal() {
 		return referenciaVentanaPrincipal;
 	}
@@ -2348,7 +2424,7 @@ public class Utilidades {
 	public static void setReferenciaVentana(AccionReferencias referenciaVentana) {
 		Utilidades.referenciaVentana = referenciaVentana;
 	}
-	
+
 	public static void setReferenciaVentanaPrincipal(AccionReferencias referenciaVentana) {
 		Utilidades.referenciaVentanaPrincipal = referenciaVentana;
 	}

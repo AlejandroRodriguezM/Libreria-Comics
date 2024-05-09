@@ -30,6 +30,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.ImageView;
@@ -194,16 +195,18 @@ public class AccesoBBDDController implements Initializable {
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
 		alarmaList.setAlarmaConexionPrincipal(prontEstadoConexion);
 
-		FuncionesApis.comprobarApisComics();
-
-		ConectManager.asignarValoresPorDefecto();
-
 		Platform.runLater(() -> {
 
+			FuncionesApis.comprobarApisComics();
+
+			ConectManager.asignarValoresPorDefecto();
+
 			alarmaList.iniciarThreadChecker();
+
 			if (Utilidades.isInternetAvailable()) {
 				Utilidades.cargarTasasDeCambioDesdeArchivo();
 			}
+
 			// Crear estructura si no existe
 			FuncionesFicheros.crearEstructura();
 			Utilidades.crearCarpeta();

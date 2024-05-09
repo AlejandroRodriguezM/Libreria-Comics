@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import alarmas.AlarmaList;
+import dbmanager.ConectManager;
 import ficherosFunciones.FuncionesFicheros;
 import funcionesInterfaz.FuncionesComboBox;
 import funciones_auxiliares.Utilidades;
@@ -227,14 +228,10 @@ public class OpcionesDatosController implements Initializable {
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
 		alarmaList.iniciarThreadChecker();
 		Platform.runLater(() -> {
-
 			Stage myStage = (Stage) this.usuario_label.getScene().getWindow();
 			myStage.setOnCloseRequest(event -> {
 				stop();
 			});
-
-			
-
 		});
 		FuncionesFicheros.crearEstructura();
 		AlarmaList.configureEyeToggle(toggleEyeImageView, passUsuarioTextField, pass);
@@ -527,6 +524,8 @@ public class OpcionesDatosController implements Initializable {
 	 */
 	@FXML
 	void volverPrograma(ActionEvent event) {
+
+		ConectManager.close();
 		nav.verAccesoBBDD(); // Llamada a metodo para abrir la ventana anterior
 
 		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();

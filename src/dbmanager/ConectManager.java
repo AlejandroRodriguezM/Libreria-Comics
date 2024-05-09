@@ -236,7 +236,7 @@ public class ConectManager {
 	 */
 	public static void close() {
 		try {
-			if (conn != null && !conn.isClosed()) {
+			if (conn != null) {
 				conn.close();
 				conn = null;
 				estadoConexion = false;
