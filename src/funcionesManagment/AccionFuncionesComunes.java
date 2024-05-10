@@ -425,6 +425,9 @@ public class AccionFuncionesComunes {
 
 			String numComic = Utilidades.extraerNumeroLimpio(comic.getNombre());
 			String nombreCorregido = Utilidades.eliminarParentesis(comic.getNombre());
+
+			System.out.println(comic.toString());
+
 			String nombreLimpio = Utilidades.extraerNombreLimpio(nombreCorregido);
 
 			// Variables relacionadas con la importación de cómics

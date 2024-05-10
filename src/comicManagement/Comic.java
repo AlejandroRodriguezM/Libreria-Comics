@@ -429,7 +429,7 @@ public class Comic {
 	 * @return La URL de referencia del cómic.
 	 */
 	public String getUrlReferencia() {
-	    return urlReferencia;
+		return urlReferencia;
 	}
 
 	/**
@@ -659,6 +659,8 @@ public class Comic {
 			campo = campo.replaceAll(",\\s*,", ","); // Comas repetidas
 			campo = campo.replaceAll(",\\s*", " - "); // Reemplazar ", " por " - "
 			campo = campo.replace("'", " "); // Reemplazar ", " por " - "
+		} else {
+			return "";
 		}
 		return campo;
 	}
