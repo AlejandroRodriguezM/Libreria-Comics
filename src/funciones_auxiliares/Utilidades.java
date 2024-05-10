@@ -1130,10 +1130,10 @@ public class Utilidades {
 			getReferenciaVentana().getBotonCancelarSubida().setVisible(false);
 
 			// Verify if a file was selected
-			if (fichero == null) {
+//			if (fichero == null) {
 				FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentana);
 				FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentanaPrincipal);
-			}
+//			}
 
 			return fichero;
 

@@ -50,7 +50,7 @@ public class AccionAniadir {
 			return;
 		}
 
-		Utilidades.convertirNombresCarpetas(AccionFuncionesComunes.SOURCE_PATH);
+		Utilidades.convertirNombresCarpetas(AccionFuncionesComunes.carpetaPortadas(ConectManager.DB_NAME));
 
 		List<String> controls = new ArrayList<>();
 

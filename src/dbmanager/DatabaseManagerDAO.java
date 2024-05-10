@@ -237,6 +237,9 @@ public class DatabaseManagerDAO {
 		// Construir la consulta de actualización
 		String consultaUpdate = "UPDATE " + ConectManager.DB_NAME + ".comicsbbdd SET " + columna + " = ? WHERE ID = "
 				+ idColumna;
+		
+		System.out.println(consultaUpdate);
+		
 		String url = "jdbc:mysql://" + ConectManager.DB_HOST + ":" + ConectManager.DB_PORT + "?serverTimezone=UTC";
 
 		try (Connection connection = DriverManager.getConnection(url, ConectManager.DB_USER, ConectManager.DB_PASS);
@@ -269,7 +272,7 @@ public class DatabaseManagerDAO {
 
 		// Construir la consulta para seleccionar los nombres de la columna
 		String consultaSelect = "SELECT ID, " + columna + " FROM " + ConectManager.DB_NAME + ".comicsbbdd";
-
+		
 		try (Connection connection = DriverManager.getConnection(url, ConectManager.DB_USER, ConectManager.DB_PASS);
 				Statement stmt = connection.createStatement();
 				ResultSet rs = stmt.executeQuery(consultaSelect)) {
@@ -300,8 +303,6 @@ public class DatabaseManagerDAO {
 					actualizarNombres(columna, id, nombreCorregido);
 					contadorCambios.incrementAndGet();
 				}
-
-				System.out.println(contadorCambios.get());
 
 				if (contadorCambios.get() == 0) {
 					cadena = "Ya está todo normalizado.";

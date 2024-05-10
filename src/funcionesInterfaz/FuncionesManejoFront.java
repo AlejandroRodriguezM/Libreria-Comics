@@ -304,7 +304,8 @@ public class FuncionesManejoFront {
 				referenciaVentana.getFechaPublicacion(), referenciaVentana.getBusquedaGeneral(),
 				referenciaVentana.getEstadoComic(), referenciaVentana.getProcedenciaComic(),
 				referenciaVentana.getNumeroComic(), referenciaVentana.getFormatoComic(),
-				referenciaVentana.getFechaComic(), referenciaVentana.getBusquedaCodigo());
+				referenciaVentana.getFechaComic(), referenciaVentana.getBusquedaCodigo(),
+				referenciaVentana.getNombreDibujante());
 
 		disableTextFields(estadoAccion, referenciaVentana.getNombreComic(), referenciaVentana.getVarianteComic(),
 				referenciaVentana.getFirmaComic(), referenciaVentana.getEditorialComic(),
@@ -312,6 +313,19 @@ public class FuncionesManejoFront {
 				referenciaVentana.getDireccionImagen(), referenciaVentana.getIdComicTratar(),
 				referenciaVentana.getGuionistaComic(), referenciaVentana.getDibujanteComic(),
 				referenciaVentana.getNombreKeyIssue(), referenciaVentana.getUrlReferencia());
+
+		if (referenciaVentana.getBotonModificar() != null) {
+			// Limpiar elementos adicionales de la interfaz
+			referenciaVentana.getFechaPublicacion().setDisable(estadoAccion);
+//			referenciaVentana.getProntInfo().clear();
+//			referenciaVentana.getProntInfo().setText(null);
+//			referenciaVentana.getProntInfo().setOpacity(0);
+			referenciaVentana.getBarraCambioAltura().setDisable(estadoAccion);
+			referenciaVentana.getTablaBBDD().getItems().clear();
+			referenciaVentana.getImagencomic().setImage(null);
+			referenciaVentana.getTablaBBDD().refresh();
+			referenciaVentana.getTablaBBDD().setDisable(estadoAccion);
+		}
 
 		if (referenciaVentana.getNombreComic() != null) {
 			List<Node> elementos = Arrays.asList(getReferenciaVentana().getBotonBusquedaCodigo(),

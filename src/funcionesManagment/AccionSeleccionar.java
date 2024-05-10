@@ -32,7 +32,7 @@ public class AccionSeleccionar {
 	 * @throws SQLException Si se produce un error al acceder a la base de datos.
 	 */
 	public static void seleccionarComics(boolean esPrincipal) {
-		
+
 		FuncionesTableView.nombreColumnas(); // funcion
 		Utilidades.comprobacionListaComics();
 
@@ -51,7 +51,7 @@ public class AccionSeleccionar {
 		if (!ConectManager.conexionActiva()) {
 			return;
 		}
-		
+
 		Comic comicTemp = null;
 		AlarmaList.detenerAnimacion();
 		String mensaje = "";
@@ -98,9 +98,8 @@ public class AccionSeleccionar {
 		if (!ConectManager.conexionActiva()) {
 			return;
 		}
-		
+
 		ListaComicsDAO.reiniciarListaComics();
-//		FuncionesTableView.modificarColumnas(esAccion);
 		getReferenciaVentana().getTablaBBDD().refresh();
 		getReferenciaVentana().getProntInfo().setOpacity(0);
 		getReferenciaVentana().getImagencomic().setVisible(false);
@@ -111,11 +110,18 @@ public class AccionSeleccionar {
 		FuncionesTableView.nombreColumnas();
 		FuncionesTableView.actualizarBusquedaRaw();
 
+		
+		
 		if (ComicManagerDAO.countRows() > 0) {
 			if (completo) {
+
+				System.out.println(ConectManager.DB_NAME);
+
 				String sentenciaSQL = DBUtilidades.construirSentenciaSQL(TipoBusqueda.COMPLETA);
 
 				List<Comic> listaComics = ComicManagerDAO.verLibreria(sentenciaSQL);
+				
+				System.out.println(listaComics.size());
 
 				FuncionesTableView.tablaBBDD(listaComics);
 
@@ -138,6 +144,9 @@ public class AccionSeleccionar {
 
 			}
 		} else {
+
+			System.out.println(ConectManager.DB_NAME);
+
 			String mensaje = "ERROR. No hay datos en la base de datos";
 
 			AlarmaList.mostrarMensajePront(mensaje, false, getReferenciaVentana().getProntInfo());

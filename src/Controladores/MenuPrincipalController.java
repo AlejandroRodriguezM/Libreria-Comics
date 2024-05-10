@@ -565,6 +565,7 @@ public class MenuPrincipalController implements Initializable {
 		referenciaVentana.setAlarmaConexionSql(alarmaConexionSql);
 		referenciaVentana.setStage(estadoStage());
 		referenciaVentana.setBotonCancelarSubida(botonCancelarSubida);
+		referenciaVentana.setBarraCambioAltura(barraCambioAltura);
 
 		referenciaVentana.setComboBoxes(Arrays.asList(nombreComic, numeroComic, nombreVariante, nombreProcedencia,
 				nombreFormato, nombreDibujante, nombreGuionista, nombreEditorial, nombreFirma, gradeoComic));
@@ -595,8 +596,6 @@ public class MenuPrincipalController implements Initializable {
 		Ventanas.setReferenciaVentanaPrincipal(guardarReferencia());
 	}
 
-
-
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
 	 *
@@ -617,13 +616,13 @@ public class MenuPrincipalController implements Initializable {
 		menuArchivoApiVine.setGraphic(Utilidades.createIcon("/Icono/Archivo/check_apis.png", 16, 16));
 		menuArchivoDesconectar.setGraphic(Utilidades.createIcon("/Icono/Archivo/apagado.png", 16, 16));
 		menuArchivoCerrar.setGraphic(Utilidades.createIcon("/Icono/Archivo/salir.png", 16, 16));
-		
+
 		menuComicAniadir.setGraphic(Utilidades.createIcon("/Icono/Ventanas/add.png", 16, 16));
 		menuComicEliminar.setGraphic(Utilidades.createIcon("/Icono/Ventanas/delete.png", 16, 16));
 		menuComicModificar.setGraphic(Utilidades.createIcon("/Icono/Ventanas/modify.png", 16, 16));
 		menuComicPuntuar.setGraphic(Utilidades.createIcon("/Icono/Ventanas/puntuar.png", 16, 16));
 		menuComicAleatoria.setGraphic(Utilidades.createIcon("/Icono/Ventanas/aleatorio.png", 16, 16));
-		
+
 		menuEstadisticaPosesion.setGraphic(Utilidades.createIcon("/Icono/Estadistica/posesion.png", 16, 16));
 		menuEstadisticaComprados.setGraphic(Utilidades.createIcon("/Icono/Estadistica/comprado.png", 16, 16));
 		menuEstadisticaVendidos.setGraphic(Utilidades.createIcon("/Icono/Estadistica/vendido.png", 16, 16));
@@ -631,9 +630,8 @@ public class MenuPrincipalController implements Initializable {
 		menuEstadisticaFirmados.setGraphic(Utilidades.createIcon("/Icono/Estadistica/firmados.png", 16, 16));
 		menuEstadisticaKeyIssue.setGraphic(Utilidades.createIcon("/Icono/Estadistica/keys.png", 16, 16));
 		menuEstadisticaEstadistica.setGraphic(Utilidades.createIcon("/Icono/Estadistica/descarga.png", 16, 16));
-		
-		Platform.runLater(() -> {
 
+		Platform.runLater(() -> {
 			estadoStage().setOnCloseRequest(event -> stop());
 
 			alarmaList.setAlarmaConexionSql(alarmaConexionSql);
@@ -654,13 +652,13 @@ public class MenuPrincipalController implements Initializable {
 			AccionControlUI.controlarEventosInterfazPrincipal(guardarReferencia());
 			FuncionesManejoFront.getStageVentanas().add(estadoStage());
 
+			cargarDatosDataBase();
+
 		});
 
 		AccionControlUI.establecerTooltips();
 
 		formatearTextField();
-
-		cargarDatosDataBase();
 
 	}
 
@@ -679,86 +677,89 @@ public class MenuPrincipalController implements Initializable {
 
 	@FXML
 	public void cambiarTamanioTable() {
-		// Vincular el ancho de barraCambioAltura con el ancho de rootVBox
-		barraCambioAltura.widthProperty().bind(rootVBox.widthProperty());
 
-		// Configurar eventos del ratón para redimensionar el rootVBox desde la parte
-		// superior
-		barraCambioAltura.setOnMousePressed(event -> y = event.getScreenY());
+		if (!barraCambioAltura.isDisable()) {
+			// Vincular el ancho de barraCambioAltura con el ancho de rootVBox
+			barraCambioAltura.widthProperty().bind(rootVBox.widthProperty());
 
-		barraCambioAltura.setOnMouseDragged(event -> {
-			double deltaY = event.getScreenY() - y;
-			double newHeight = rootVBox.getPrefHeight() - deltaY;
-			double maxHeight = calcularMaxHeight(); // Calcula el máximo altura permitido
-			double minHeight = 250; // Límite mínimo de altura
+			// Configurar eventos del ratón para redimensionar el rootVBox desde la parte
+			// superior
+			barraCambioAltura.setOnMousePressed(event -> y = event.getScreenY());
 
-			if (newHeight > minHeight && newHeight <= maxHeight) {
-				rootVBox.setPrefHeight(newHeight);
-				rootVBox.setLayoutY(tablaBBDD.getLayoutY() + deltaY);
-				tablaBBDD.setPrefHeight(newHeight);
-				tablaBBDD.setLayoutY(tablaBBDD.getLayoutY() + deltaY);
+			barraCambioAltura.setOnMouseDragged(event -> {
+				double deltaY = event.getScreenY() - y;
+				double newHeight = rootVBox.getPrefHeight() - deltaY;
+				double maxHeight = calcularMaxHeight(); // Calcula el máximo altura permitido
+				double minHeight = 250; // Límite mínimo de altura
 
-				y = event.getScreenY();
-			}
-		});
+				if (newHeight > minHeight && newHeight <= maxHeight) {
+					rootVBox.setPrefHeight(newHeight);
+					rootVBox.setLayoutY(tablaBBDD.getLayoutY() + deltaY);
+					tablaBBDD.setPrefHeight(newHeight);
+					tablaBBDD.setLayoutY(tablaBBDD.getLayoutY() + deltaY);
 
-		// Cambiar el cursor cuando se pasa sobre la barra de redimensionamiento
-		barraCambioAltura.setOnMouseMoved(event -> {
-			if (event.getY() <= 5) {
-				barraCambioAltura.setCursor(Cursor.N_RESIZE);
-			} else {
-				barraCambioAltura.setCursor(Cursor.DEFAULT);
-			}
-		});
+					y = event.getScreenY();
+				}
+			});
 
-		rootAnchorPane.heightProperty()
-				.addListener((observable, oldValue, newHeightValue) -> rootVBox.setMaxHeight(calcularMaxHeight()));
+			// Cambiar el cursor cuando se pasa sobre la barra de redimensionamiento
+			barraCambioAltura.setOnMouseMoved(event -> {
+				if (event.getY() <= 5) {
+					barraCambioAltura.setCursor(Cursor.N_RESIZE);
+				} else {
+					barraCambioAltura.setCursor(Cursor.DEFAULT);
+				}
+			});
 
-		rootAnchorPane.widthProperty().addListener((observable, oldValue, newWidthValue) -> {
-			double newWidth = newWidthValue.doubleValue();
+			rootAnchorPane.heightProperty()
+					.addListener((observable, oldValue, newHeightValue) -> rootVBox.setMaxHeight(calcularMaxHeight()));
 
-			if (newWidth <= 1130) {
+			rootAnchorPane.widthProperty().addListener((observable, oldValue, newWidthValue) -> {
+				double newWidth = newWidthValue.doubleValue();
 
-				botonIntroducir.setLayoutX(231);
-				botonIntroducir.setLayoutY(199);
+				if (newWidth <= 1130) {
 
-				botonEliminar.setLayoutX(231);
-				botonEliminar.setLayoutY(240);
+					botonIntroducir.setLayoutX(231);
+					botonIntroducir.setLayoutY(199);
 
-				botonModificar.setLayoutX(231);
-				botonModificar.setLayoutY(280);
+					botonEliminar.setLayoutX(231);
+					botonEliminar.setLayoutY(240);
 
-				botonAgregarPuntuacion.setLayoutX(231);
-				botonAgregarPuntuacion.setLayoutY(321);
+					botonModificar.setLayoutX(231);
+					botonModificar.setLayoutY(280);
 
-				botonGuardarResultado.setLayoutX(327);
-				botonGuardarResultado.setLayoutY(32);
+					botonAgregarPuntuacion.setLayoutX(231);
+					botonAgregarPuntuacion.setLayoutY(321);
 
-				botonImprimir.setLayoutX(327);
-				botonImprimir.setLayoutY(74);
+					botonGuardarResultado.setLayoutX(327);
+					botonGuardarResultado.setLayoutY(32);
 
-			} else if (newWidth >= 1131) {
+					botonImprimir.setLayoutX(327);
+					botonImprimir.setLayoutY(74);
 
-				botonIntroducir.setLayoutX(340);
-				botonIntroducir.setLayoutY(31);
+				} else if (newWidth >= 1131) {
 
-				botonEliminar.setLayoutX(340);
-				botonEliminar.setLayoutY(72);
+					botonIntroducir.setLayoutX(340);
+					botonIntroducir.setLayoutY(31);
 
-				botonModificar.setLayoutX(439);
-				botonModificar.setLayoutY(31);
+					botonEliminar.setLayoutX(340);
+					botonEliminar.setLayoutY(72);
 
-				botonAgregarPuntuacion.setLayoutX(439);
-				botonAgregarPuntuacion.setLayoutY(72);
+					botonModificar.setLayoutX(439);
+					botonModificar.setLayoutY(31);
 
-				botonGuardarResultado.setLayoutX(231);
-				botonGuardarResultado.setLayoutY(337);
+					botonAgregarPuntuacion.setLayoutX(439);
+					botonAgregarPuntuacion.setLayoutY(72);
 
-				botonImprimir.setLayoutX(290);
-				botonImprimir.setLayoutY(337);
+					botonGuardarResultado.setLayoutX(231);
+					botonGuardarResultado.setLayoutY(337);
 
-			}
-		});
+					botonImprimir.setLayoutX(290);
+					botonImprimir.setLayoutY(337);
+
+				}
+			});
+		}
 
 	}
 
@@ -1016,7 +1017,7 @@ public class MenuPrincipalController implements Initializable {
 			String sentenciaSQL = DBUtilidades.construirSentenciaSQL(tipoBusqueda);
 
 			System.out.println(sentenciaSQL);
-			
+
 			listaComics = SelectManager.verLibreria(sentenciaSQL, false);
 		}
 
@@ -1155,8 +1156,11 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void clickRaton(MouseEvent event) {
-		enviarReferencias();
-		AccionSeleccionar.seleccionarComics(true);
+
+		if (!tablaBBDD.isDisabled()) {
+			enviarReferencias();
+			AccionSeleccionar.seleccionarComics(true);
+		}
 	}
 
 	/**
@@ -1169,10 +1173,11 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void teclasDireccion(KeyEvent event) {
-		if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
+		if ((event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) && !tablaBBDD.isDisabled()) {
 			enviarReferencias();
 			AccionSeleccionar.seleccionarComics(true);
 		}
+
 	}
 
 	/////////////////////////////////
@@ -1665,9 +1670,6 @@ public class MenuPrincipalController implements Initializable {
 			stage.close(); // Close the stage if it's not the current state
 		}
 
-		Stage myStage = (Stage) menuNavegacion.getScene().getWindow();
-		myStage.close();
-
 		ConectManager.close();
 		nav.cerrarCargaComics();
 		nav.verAccesoBBDD();
@@ -1723,13 +1725,12 @@ public class MenuPrincipalController implements Initializable {
 
 	public void stop() {
 
-		if (FuncionesManejoFront.getStageVentanas().contains(estadoStage())) {
-			FuncionesManejoFront.getStageVentanas().remove(estadoStage());
-		}
+		cerradoPorOperaciones();
 		alarmaList.detenerThreadChecker();
 		nav.cerrarMenuOpciones();
 		nav.cerrarCargaComics();
 		nav.cerrarVentanaAccion();
+		Utilidades.cerrarOpcionesAvanzadas();
 
 		Platform.exit();
 	}

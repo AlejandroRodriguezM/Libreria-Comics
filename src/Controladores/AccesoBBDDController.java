@@ -17,6 +17,7 @@ import com.gluonhq.charm.glisten.control.ProgressIndicator;
 import alarmas.AlarmaList;
 import apisFunciones.FuncionesApis;
 import dbmanager.ConectManager;
+import dbmanager.ListaComicsDAO;
 import ficherosFunciones.FuncionesFicheros;
 import funciones_auxiliares.Utilidades;
 import funciones_auxiliares.Ventanas;
@@ -196,10 +197,12 @@ public class AccesoBBDDController implements Initializable {
 		alarmaList.setAlarmaConexionPrincipal(prontEstadoConexion);
 
 		Platform.runLater(() -> {
+			
+			ConectManager.asignarValoresPorDefecto();
+			ListaComicsDAO.reiniciarListas();
+			ConectManager.close();
 
 			FuncionesApis.comprobarApisComics();
-
-			ConectManager.asignarValoresPorDefecto();
 
 			alarmaList.iniciarThreadChecker();
 

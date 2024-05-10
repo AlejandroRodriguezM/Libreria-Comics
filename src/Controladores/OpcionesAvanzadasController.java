@@ -297,7 +297,7 @@ public class OpcionesAvanzadasController implements Initializable {
 				ListaComicsDAO.listasAutoCompletado();
 				List<String> inputPaths = DBUtilidades.obtenerValoresColumna("portada");
 				Utilidades.borrarArchivosNoEnLista(inputPaths);
-				
+
 				List<ComboBox<String>> comboboxes = referenciaVentana.getComboboxes();
 				if (comboboxes != null) {
 					Platform.runLater(() -> funcionesCombo.rellenarComboBox(comboboxes));
@@ -397,6 +397,7 @@ public class OpcionesAvanzadasController implements Initializable {
 
 	@FXML
 	void actualizarCompletoComic(ActionEvent event) {
+		Utilidades.crearCarpeta();
 		AccionModificar.setReferenciaVentana(guardarReferencia());
 		AccionFuncionesComunes.setReferenciaVentana(guardarReferencia());
 		AccionModificar.actualizarDatabase("modificar", actualizarFima.get(), estadoStage());
@@ -412,11 +413,10 @@ public class OpcionesAvanzadasController implements Initializable {
 
 	@FXML
 	void actualizarPortadaComic(ActionEvent event) {
-
+		Utilidades.crearCarpeta();
 		AccionModificar.setReferenciaVentana(guardarReferencia());
 		AccionFuncionesComunes.setReferenciaVentana(guardarReferencia());
 		AccionModificar.actualizarDatabase("actualizar portadas", actualizarFima.get(), estadoStage());
-		
 
 	}
 
@@ -640,13 +640,13 @@ public class OpcionesAvanzadasController implements Initializable {
 		Thread thread = new Thread(task);
 
 		task.setOnRunning(e -> {
-			
+
 			estadoStage().setOnCloseRequest(closeEvent -> {
 				task.cancel(true);
 				Utilidades.cerrarCargaComics();
 				FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
 			});
-			
+
 			FuncionesManejoFront.cambiarEstadoMenuBar(true, guardarReferencia());
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(true, referenciaVentana);
 
@@ -710,9 +710,9 @@ public class OpcionesAvanzadasController implements Initializable {
 			if (FuncionesManejoFront.getStageVentanas().contains(estadoStage())) {
 				FuncionesManejoFront.getStageVentanas().remove(estadoStage());
 			}
+			Utilidades.cerrarOpcionesAvanzadas();
 			nav.cerrarCargaComics();
-			Stage stage = (Stage) ventanaOpciones.getWindow();
-			stage.close();
+			estadoStage().close();
 		}
 	}
 

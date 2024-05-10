@@ -13,30 +13,20 @@ import funciones_auxiliares.Utilidades;
 
 public class SelectManager {
 
-	public static final String TAMANIO_DATABASE = "SELECT COUNT(*) FROM " + ConectManager.DB_NAME + ".comicsbbdd;";
-	private static final String SENTENCIA_BUSQUEDA_INDIVIDUAL = "SELECT * FROM " + ConectManager.DB_NAME
-			+ ".comicsbbdd WHERE ID = ?;";
-	private static final String SENTENCIA_CONTAR_COMICS_POR_ID = "SELECT COUNT(*) FROM " + ConectManager.DB_NAME
-			+ ".comicsbbdd WHERE ID = ?;";
-	private static final String SENTENCIA_BUSCAR_PORTADA = "SELECT portada FROM " + ConectManager.DB_NAME
-			+ ".comicsbbdd WHERE ID = ?;";
-	public static final String SENTENCIA_BUSQUEDA_COMPLETA = "SELECT * FROM " + ConectManager.DB_NAME + ".comicsbbdd";
+	public static final String TAMANIO_DATABASE = "SELECT COUNT(*) FROM comicsbbdd;";
+	private static final String SENTENCIA_BUSQUEDA_INDIVIDUAL = "SELECT * FROM comicsbbdd WHERE ID = ?;";
+	private static final String SENTENCIA_CONTAR_COMICS_POR_ID = "SELECT COUNT(*) FROM comicsbbdd WHERE ID = ?;";
+	private static final String SENTENCIA_BUSCAR_PORTADA = "SELECT portada FROM comicsbbdd WHERE ID = ?;";
+	public static final String SENTENCIA_BUSQUEDA_COMPLETA = "SELECT * FROM comicsbbdd";
 	public static final String SENTENCIA_TOTAL_BUSQUEDA = "SELECT COUNT(*) FROM comicsbbdd WHERE 1=1;";
 
-	public static final String SENTENCIA_POSESION = "SELECT * FROM " + ConectManager.DB_NAME
-			+ ".comicsbbdd WHERE estado = 'En posesion' ORDER BY nomComic, fecha_publicacion, numComic;";
-	public static final String SENTENCIA_KEY_ISSUE = "SELECT * FROM " + ConectManager.DB_NAME
-			+ ".comicsbbdd WHERE key_issue <> 'Vacio' ORDER BY nomComic, fecha_publicacion, numComic;";
-	public static final String SENTENCIA_COMPLETA = "SELECT * FROM " + ConectManager.DB_NAME
-			+ ".comicsbbdd ORDER BY nomComic, fecha_publicacion, numComic;";
-	public static final String SENTENCIA_VENDIDOS = "SELECT * FROM " + ConectManager.DB_NAME
-			+ ".comicsbbdd WHERE estado = 'Vendido' ORDER BY nomComic, fecha_publicacion, numComic;";
-	public static final String SENTENCIA_COMPRADOS = "SELECT * FROM " + ConectManager.DB_NAME
-			+ ".comicsbbdd WHERE estado = 'Comprado' ORDER BY nomComic, fecha_publicacion, numComic;";
-	public static final String SENTENCIA_PUNTUACION = "SELECT * FROM " + ConectManager.DB_NAME
-			+ ".comicsbbdd WHERE puntuacion <> 'Sin puntuar' ORDER BY nomComic, fecha_publicacion, numComic;";
-	public static final String SENTENCIA_FIRMADOS = "SELECT * FROM " + ConectManager.DB_NAME
-			+ ".comicsbbdd WHERE Firma <> '' ORDER BY nomComic, fecha_publicacion, numComic;";
+	public static final String SENTENCIA_POSESION = "SELECT * FROM comicsbbdd WHERE estado = 'En posesion' ORDER BY nomComic, fecha_publicacion, numComic;";
+	public static final String SENTENCIA_KEY_ISSUE = "SELECT * FROM comicsbbdd WHERE key_issue <> 'Vacio' ORDER BY nomComic, fecha_publicacion, numComic;";
+	public static final String SENTENCIA_COMPLETA = "SELECT * FROM comicsbbdd ORDER BY nomComic, fecha_publicacion, numComic;";
+	public static final String SENTENCIA_VENDIDOS = "SELECT * FROM comicsbbdd WHERE estado = 'Vendido' ORDER BY nomComic, fecha_publicacion, numComic;";
+	public static final String SENTENCIA_COMPRADOS = "SELECT * FROM comicsbbdd WHERE estado = 'Comprado' ORDER BY nomComic, fecha_publicacion, numComic;";
+	public static final String SENTENCIA_PUNTUACION = "SELECT * FROM comicsbbdd WHERE puntuacion <> 'Sin puntuar' ORDER BY nomComic, fecha_publicacion, numComic;";
+	public static final String SENTENCIA_FIRMADOS = "SELECT * FROM comicsbbdd WHERE Firma <> '' ORDER BY nomComic, fecha_publicacion, numComic;";
 
 	/**
 	 * Funcion que permite contar cuantas filas hay en la base de datos.
@@ -47,6 +37,7 @@ public class SelectManager {
 
 		try (Connection conn = ConectManager.conexion();
 				Statement stmt = conn.createStatement();
+
 				ResultSet rs = stmt.executeQuery(TAMANIO_DATABASE)) {
 
 			if (rs.next()) {
@@ -61,6 +52,7 @@ public class SelectManager {
 	}
 
 	public static int getCount(String sql) {
+
 		int count = 0;
 		try (Connection conn = ConectManager.conexion();
 				Statement stmt = conn.createStatement();
@@ -83,6 +75,7 @@ public class SelectManager {
 	 * @throws SQLException si ocurre algún error al ejecutar la consulta SQL
 	 */
 	public static Comic comicDatos(String identificador) {
+
 		Comic comic = null;
 
 		try (Connection conn = ConectManager.conexion();
@@ -112,6 +105,7 @@ public class SelectManager {
 	 * @throws SQLException Si ocurre un error en la consulta SQL.
 	 */
 	public static boolean comprobarIdentificadorComic(String identificador) {
+
 		if (identificador == null || identificador.trim().isEmpty()) {
 			return false; // Si el identificador es nulo o está vacío, se considera que no existe
 		}
@@ -146,6 +140,7 @@ public class SelectManager {
 	 * @throws SQLException Si ocurre algún error de SQL
 	 */
 	public static String obtenerDireccionPortada(String idComic) {
+
 		try (Connection conn = ConectManager.conexion();
 				PreparedStatement ps = conn.prepareStatement(SENTENCIA_BUSCAR_PORTADA)) {
 			ps.setString(1, idComic);
@@ -195,7 +190,6 @@ public class SelectManager {
 	}
 
 	public static boolean hayDatosEnLibreria(String sentenciaSQL) {
-
 		if (sentenciaSQL.isEmpty()) {
 			sentenciaSQL = SENTENCIA_BUSQUEDA_COMPLETA;
 		}
@@ -226,6 +220,7 @@ public class SelectManager {
 	 * @throws SQLException
 	 */
 	public static List<Comic> libreriaSeleccionado(String datoSeleccionado) {
+
 		String sentenciaSQL = "SELECT * FROM comicsbbdd " + "WHERE nomVariante LIKE '%" + datoSeleccionado
 				+ "%' OR nomComic LIKE '%" + datoSeleccionado + "%' OR nomGuionista LIKE '%" + datoSeleccionado
 				+ "%' OR firma LIKE '%" + datoSeleccionado + "%' OR nomDibujante LIKE '%" + datoSeleccionado
@@ -245,6 +240,7 @@ public class SelectManager {
 	 * @return Una lista de objetos Comic que representan los cómics de la librería.
 	 */
 	public static List<Comic> verLibreria(String sentenciaSQL, boolean esActualizacion) {
+
 		ListaComicsDAO.listaComics.clear(); // Limpiar la lista existente de cómics
 		List<Comic> listaComics = new ArrayList<>();
 

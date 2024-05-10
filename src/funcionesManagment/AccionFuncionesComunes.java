@@ -65,16 +65,6 @@ public class AccionFuncionesComunes {
 	 */
 	private static final String DOCUMENTS_PATH = USER_DIR + File.separator + "Documents";
 
-	private static final String CARPETA_RAIZ_PORTADAS = DOCUMENTS_PATH + File.separator + "libreria_comics"
-			+ File.separator + ConectManager.DB_NAME + File.separator;
-
-	/**
-	 * Construimos la ruta al directorio "libreria_comics" dentro de "Documents" y
-	 * añadimos el nombre de la base de datos y la carpeta "portadas".
-	 */
-	public static final String SOURCE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
-			+ ConectManager.DB_NAME + File.separator + "portadas";
-
 	/**
 	 * Instancia de la clase Ventanas para la navegación.
 	 */
@@ -119,12 +109,12 @@ public class AccionFuncionesComunes {
 			return;
 		}
 
-		String codigoImagen = Utilidades.generarCodigoUnico(SOURCE_PATH + File.separator);
+		String codigoImagen = Utilidades.generarCodigoUnico(carpetaPortadas(ConectManager.DB_NAME) + File.separator);
 		String mensaje = "";
 		try {
 			Utilidades.redimensionarYGuardarImagen(comic.getImagen(), codigoImagen);
 
-			comic.setImagen(SOURCE_PATH + File.separator + codigoImagen + ".jpg");
+			comic.setImagen(carpetaPortadas(ConectManager.DB_NAME) + File.separator + codigoImagen + ".jpg");
 			if (esModificacion) {
 				ComicManagerDAO.actualizarComicBBDD(comic, "modificar");
 				mensaje = "Has modificado correctamente el cómic";
@@ -210,14 +200,12 @@ public class AccionFuncionesComunes {
 			return;
 		}
 
-		String codigo_imagen = Utilidades.generarCodigoUnico(SOURCE_PATH + File.separator);
+		String codigo_imagen = Utilidades.generarCodigoUnico(carpetaPortadas(ConectManager.DB_NAME) + File.separator);
 		String urlImagen = comicInfo.getImagen();
-		String urlFinal = SOURCE_PATH + File.separator + codigo_imagen + ".jpg";
+		String urlFinal = carpetaPortadas(ConectManager.DB_NAME) + File.separator + codigo_imagen + ".jpg";
 		String correctedUrl = urlImagen.replace("\\", "/").replaceFirst("^http:", "https:");
-
+		comicOriginal.setID(comicOriginal.getid());
 		if (tipoUpdate.equalsIgnoreCase("modificar") || tipoUpdate.equalsIgnoreCase("actualizar datos")) {
-
-			comicOriginal.setID(comicOriginal.getid());
 
 			String numComic = Utilidades.extraerNumeroLimpio(comicOriginal.getNombre());
 			String nombreCorregido = Utilidades.eliminarParentesis(comicOriginal.getNombre());
@@ -242,10 +230,7 @@ public class AccionFuncionesComunes {
 		}
 
 		if (tipoUpdate.equalsIgnoreCase("modificar") || tipoUpdate.equalsIgnoreCase("actualizar portadas")) {
-
-			comicOriginal.setID(comicOriginal.getid());
 			comicOriginal.setImagen(urlFinal);
-
 			// Asynchronously download and convert image
 			Platform.runLater(() -> {
 				URI uri = null;
@@ -254,11 +239,13 @@ public class AccionFuncionesComunes {
 				} catch (URISyntaxException e) {
 					e.printStackTrace();
 				}
-				Utilidades.descargarYConvertirImagenAsync(uri, SOURCE_PATH, codigo_imagen + ".jpg");
+				Utilidades.descargarYConvertirImagenAsync(uri, carpetaPortadas(ConectManager.DB_NAME),
+						codigo_imagen + ".jpg");
 			});
 		}
 
-		if (tipoUpdate.equalsIgnoreCase("modificar") || tipoUpdate.equalsIgnoreCase("actualizar datos")) {
+		if (tipoUpdate.equalsIgnoreCase("modificar") || tipoUpdate.equalsIgnoreCase("actualizar datos")
+				|| tipoUpdate.equalsIgnoreCase("actualizar portadas")) {
 			UpdateManager.actualizarComicBBDD(comicOriginal, "modificar");
 		}
 	}
@@ -292,17 +279,17 @@ public class AccionFuncionesComunes {
 	 * Funcion que escribe en el TextField de "Direccion de imagen" la dirrecion de
 	 * la imagen
 	 */
-	public static void subirPortada(Stage miVentana) {
+	public static void subirPortada() {
 
-		String frase = "Fichero Excel xlsx";
+		String frase = "Fichero JPG";
 
-		String formato = "*.xlsx";
+		String formato = "*.jpg";
 
 		File fichero = Utilidades.tratarFichero(frase, formato, false);
 
 		// Verificar si se obtuvo un objeto FileChooser válido
 		if (fichero != null) {
-			String nuevoNombreArchivo = Utilidades.generarCodigoUnico(CARPETA_RAIZ_PORTADAS);
+			String nuevoNombreArchivo = Utilidades.generarCodigoUnico(carpetaRaizPortadas(ConectManager.DB_NAME));
 
 			try {
 				Utilidades.redimensionarYGuardarImagen(fichero.getAbsolutePath(), nuevoNombreArchivo);
@@ -310,8 +297,8 @@ public class AccionFuncionesComunes {
 				e.printStackTrace();
 			}
 
-			getReferenciaVentana().getDireccionImagen()
-					.setText(CARPETA_RAIZ_PORTADAS + "portadas" + File.separator + nuevoNombreArchivo + ".jpg");
+			getReferenciaVentana().getDireccionImagen().setText(carpetaRaizPortadas(ConectManager.DB_NAME) + "portadas"
+					+ File.separator + nuevoNombreArchivo + ".jpg");
 
 			String mensaje = "Portada subida correctamente.";
 
@@ -472,17 +459,19 @@ public class AccionFuncionesComunes {
 
 			// Corrección y generación de la URL final de la imagen
 			String correctedUrl = urlImagen.replace("\\", "/").replace("http:", "https:").replace("https:", "https:/");
-			String codigoImagen = Utilidades.generarCodigoUnico(SOURCE_PATH + File.separator);
+			String codigoImagen = Utilidades
+					.generarCodigoUnico(carpetaPortadas(ConectManager.DB_NAME) + File.separator);
 			URI uri = null;
 			try {
 				uri = new URI(correctedUrl);
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}
-			String imagen = SOURCE_PATH + File.separator + codigoImagen + ".jpg";
+			String imagen = carpetaPortadas(ConectManager.DB_NAME) + File.separator + codigoImagen + ".jpg";
 			String codigoComic = Utilidades.defaultIfNullOrEmpty(comic.getcodigoComic(), "0");
 			// Descarga y conversión asíncrona de la imagen
-			Utilidades.descargarYConvertirImagenAsync(uri, SOURCE_PATH, codigoImagen + ".jpg");
+			Utilidades.descargarYConvertirImagenAsync(uri, carpetaPortadas(ConectManager.DB_NAME),
+					codigoImagen + ".jpg");
 
 			Comic comicImport = new Comic.ComicBuilder(id, titulo).valorGradeo("NM (Noir Medium)").numero(numero)
 					.variante(variante).firma("").editorial(editorial).formato(formato).procedencia(procedencia)
@@ -738,6 +727,13 @@ public class AccionFuncionesComunes {
 						});
 					}
 				}
+
+				getReferenciaVentanaPrincipal().getProntInfo().setDisable(false);
+				getReferenciaVentanaPrincipal().getProntInfo().setOpacity(1);
+
+				AlarmaList.mostrarMensajePront("Se estan cargando los datos", true,
+						getReferenciaVentanaPrincipal().getProntInfo());
+
 				AlarmaList.iniciarAnimacionAvanzado(getReferenciaVentana().getProntInfoEspecial(), cadenaAfirmativo);
 				getReferenciaVentana().getBotonCancelarSubida().setVisible(true);
 				actualizarCombobox();
@@ -752,13 +748,18 @@ public class AccionFuncionesComunes {
 				AlarmaList.detenerAnimacionCargaImagen(getReferenciaVentana().getCargaImagen());
 				cambiarEstadoBotones(false);
 
-				actualizarInterfaz(contadorErrores, codigoFaltante, CARPETA_RAIZ_PORTADAS, numLineas);
+				actualizarInterfaz(contadorErrores, codigoFaltante, carpetaRaizPortadas(ConectManager.DB_NAME),
+						numLineas);
 
 				getReferenciaVentana().getMenu_Importar_Fichero_CodigoBarras().setDisable(false);
 
 				Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0));
 				AlarmaList.detenerAnimacionCarga(getReferenciaVentana().getProgresoCarga());
 			} else {
+
+				AlarmaList.mostrarMensajePront("Datos cargados correctamente", true,
+						getReferenciaVentanaPrincipal().getProntInfo());
+
 				Platform.runLater(() -> getReferenciaVentana().getBotonCancelarSubida().setVisible(false));
 				String cadenaAfirmativo = getUpdateTypeString(tipoUpdate);
 				AlarmaList.iniciarAnimacionAvanzado(getReferenciaVentana().getProntInfoEspecial(), cadenaAfirmativo);
@@ -788,8 +789,6 @@ public class AccionFuncionesComunes {
 				String cadenaAfirmativo = "Cancelada la actualización de la base de datos.";
 				AlarmaList.iniciarAnimacionAvanzado(getReferenciaVentana().getProntInfoEspecial(), cadenaAfirmativo);
 				actualizarCombobox();
-				FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentana);
-				FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentanaPrincipal);
 				FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, getReferenciaVentana());
 				Platform.runLater(() -> getReferenciaVentana().getBotonCancelarSubida().setVisible(false));
 			}
@@ -805,6 +804,10 @@ public class AccionFuncionesComunes {
 				cambiarEstadoBotones(false);
 				getReferenciaVentana().getMenu_Importar_Fichero_CodigoBarras().setDisable(false);
 			} else {
+
+				referenciaVentanaPrincipal.getProntInfo().clear();
+				referenciaVentanaPrincipal.getProntInfo().setText(null);
+				referenciaVentanaPrincipal.getProntInfo().setOpacity(0);
 				Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0));
 				String cadenaAfirmativo = "Cancelada la actualización de la base de datos.";
 				AlarmaList.iniciarAnimacionAvanzado(getReferenciaVentana().getProntInfoEspecial(), cadenaAfirmativo);
@@ -903,12 +906,15 @@ public class AccionFuncionesComunes {
 		Utilidades.cambiarVisibilidad(elementos, esCancelado);
 	}
 
-	/**
-	 * Establece el tipo de acción que se realizará en la ventana.
-	 *
-	 * @param tipoAccion El tipo de acción a realizar (por ejemplo, "aniadir",
-	 *                   "modificar", "eliminar", "puntuar").
-	 */
+	public static String carpetaRaizPortadas(String nombreDatabase) {
+		return DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator + nombreDatabase + File.separator;
+	}
+
+	public static String carpetaPortadas(String nombreDatabase) {
+		return DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator + nombreDatabase + File.separator
+				+ "portadas";
+	}
+
 	public static void setTipoAccion(String tipoAccion) {
 		TIPO_ACCION = tipoAccion;
 	}

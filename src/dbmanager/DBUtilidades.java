@@ -46,6 +46,8 @@ public class DBUtilidades {
 
 	public static String construirSentenciaSQL(TipoBusqueda tipoBusqueda) {
 
+		System.out.println(ConectManager.DB_NAME);
+		
 		switch (tipoBusqueda) {
 		case POSESION:
 			return SelectManager.SENTENCIA_POSESION;
@@ -173,7 +175,7 @@ public class DBUtilidades {
 		String sql3 = datosGenerales("firma", busquedaGeneral);
 		String sql4 = datosGenerales("nomguionista", busquedaGeneral);
 		String sql5 = datosGenerales("nomdibujante", busquedaGeneral);
-		
+
 		System.out.println(sql1);
 		System.out.println(sql2);
 		System.out.println(sql3);

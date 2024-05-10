@@ -1069,7 +1069,7 @@ public class VentanaAccionController implements Initializable {
 	@FXML
 	void nuevaPortada(ActionEvent event) {
 		nav.cerrarMenuOpciones();
-		AccionFuncionesComunes.subirPortada(estadoStage());
+		AccionFuncionesComunes.subirPortada();
 	}
 
 	/**
@@ -1225,6 +1225,11 @@ public class VentanaAccionController implements Initializable {
 	}
 
 	public void stop() {
+
+		if (FuncionesManejoFront.getStageVentanas().contains(estadoStage())) {
+			FuncionesManejoFront.getStageVentanas().remove(estadoStage());
+		}
+
 		Utilidades.cerrarCargaComics();
 	}
 

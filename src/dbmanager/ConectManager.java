@@ -218,15 +218,15 @@ public class ConectManager {
 	 * Asigna valores predeterminados si las variables están vacías.
 	 */
 	public static void asignarValoresPorDefecto() {
-		DB_USER = null;
+		DB_USER = "";
 
-		DB_PASS = null;
+		DB_PASS = "";
 
-		DB_PORT = null;
+		DB_PORT = "";
 
-		DB_NAME = null;
+		DB_NAME = "";
 
-		DB_HOST = null;
+		DB_HOST = "";
 	}
 
 	/**

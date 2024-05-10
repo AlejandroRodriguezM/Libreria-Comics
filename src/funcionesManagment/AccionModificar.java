@@ -148,7 +148,7 @@ public class AccionModificar {
 			List<Comic> listaComics;
 			if (nav.alertaAccionGeneral()) {
 
-				Utilidades.convertirNombresCarpetas(AccionFuncionesComunes.SOURCE_PATH);
+				Utilidades.convertirNombresCarpetas(AccionFuncionesComunes.carpetaPortadas(ConectManager.DB_NAME));
 
 				Comic comicModificado = AccionControlUI.comicModificado();
 
@@ -286,7 +286,7 @@ public class AccionModificar {
 
 		String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
 		List<Comic> listaComicsDatabase = SelectManager.verLibreria(sentenciaSQL, true);
-		
+
 		Collections.sort(listaComicsDatabase, (comic1, comic2) -> {
 			int id1 = Integer.parseInt(comic1.getid());
 			int id2 = Integer.parseInt(comic2.getid());
@@ -300,8 +300,8 @@ public class AccionModificar {
 				stage.close(); // Close the stage if it's not the current state
 			}
 		}
-		
-		AccionFuncionesComunes.busquedaPorListaDatabase(listaComicsDatabase,tipoUpdate, actualizarFima);
+
+		AccionFuncionesComunes.busquedaPorListaDatabase(listaComicsDatabase, tipoUpdate, actualizarFima);
 
 		if (getReferenciaVentana().getTablaBBDD() != null) {
 			getReferenciaVentana().getTablaBBDD().refresh();
