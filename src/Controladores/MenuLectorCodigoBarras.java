@@ -167,7 +167,7 @@ public class MenuLectorCodigoBarras {
 				String formato = "*.txt";
 
 				// Muestra el diálogo para seleccionar la ubicación del archivo
-				File archivo = Utilidades.tratarFichero(frase, formato, false, estadoStage());
+				File archivo = Utilidades.tratarFichero(frase, formato, false);
 
 				// Verifica si se seleccionó un archivo
 				if (archivo != null) {

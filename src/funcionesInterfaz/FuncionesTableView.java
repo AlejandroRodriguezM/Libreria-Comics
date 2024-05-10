@@ -115,7 +115,6 @@ public class FuncionesTableView {
 	public static void seleccionarRaw() {
 		getReferenciaVentana().getTablaBBDD().setRowFactory(tv -> createRow());
 		disableFocusTraversal();
-		focusOnRootNode();
 	}
 
 	private static TableRow<Comic> createRow() {
@@ -197,15 +196,6 @@ public class FuncionesTableView {
 		getReferenciaVentana().getTablaBBDD().setFocusTraversable(false);
 	}
 
-	private static void focusOnRootNode() {
-		Scene scene = getReferenciaVentana().getTablaBBDD().getScene();
-		if (scene != null) {
-			VBox root = (VBox) scene.lookup("#rootVBox");
-			if (root != null) {
-				root.requestFocus();
-			}
-		}
-	}
 
 	public static void actualizarBusquedaRaw() {
 		getReferenciaVentana().getColumnasTabla()

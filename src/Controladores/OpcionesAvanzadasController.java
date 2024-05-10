@@ -345,7 +345,7 @@ public class OpcionesAvanzadasController implements Initializable {
 				String frase = "Archivos PDF";
 
 				// Mostrar el cuadro de diálogo de guardado y obtener la ubicación seleccionada
-				File file = Utilidades.abrirFileChooser(frase, formato, true, estadoStage());
+				File file = Utilidades.abrirFileChooser(frase, formato, true);
 
 				if (file != null) {
 					Utilidades.descargarPDFAsync(file, comboPreviews);

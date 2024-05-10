@@ -664,6 +664,8 @@ public class VentanaAccionController implements Initializable {
 		alarmaList.setAlarmaConexionInternet(alarmaConexionInternet);
 		alarmaList.iniciarThreadChecker();
 
+		
+		
 		Platform.runLater(() -> {
 
 			enviarReferencias();
@@ -677,8 +679,8 @@ public class VentanaAccionController implements Initializable {
 			AccionControlUI.mostrarOpcion(AccionFuncionesComunes.getTipoAccion());
 
 			FuncionesManejoFront.getStageVentanas().add(estadoStage());
-			
-//			estadoStage().setOnCloseRequest(event -> Utilidades.handleClose());
+
+			estadoStage().setOnCloseRequest(event -> stop());
 
 		});
 
@@ -801,7 +803,7 @@ public class VentanaAccionController implements Initializable {
 	@FXML
 	void modificarDatos(ActionEvent event) throws Exception {
 		enviarReferencias();
-		Utilidades.cerrarMenuOpciones();
+		nav.cerrarMenuOpciones();
 		AccionModificar.modificarComic();
 		rellenarCombosEstaticos();
 	}
@@ -809,7 +811,7 @@ public class VentanaAccionController implements Initializable {
 	@FXML
 	void eliminarComicSeleccionado(ActionEvent event) {
 		enviarReferencias();
-		Utilidades.cerrarMenuOpciones();
+		nav.cerrarMenuOpciones();
 		AccionEliminar.eliminarComicLista();
 		rellenarCombosEstaticos();
 	}
@@ -853,7 +855,7 @@ public class VentanaAccionController implements Initializable {
 	@FXML
 	void borrarPuntuacion(ActionEvent event) {
 		enviarReferencias();
-		Utilidades.cerrarMenuOpciones();
+		nav.cerrarMenuOpciones();
 		AccionModificar.accionPuntuar(false);
 		rellenarCombosEstaticos();
 	}
@@ -869,7 +871,7 @@ public class VentanaAccionController implements Initializable {
 	@FXML
 	void agregarPuntuacion(ActionEvent event) {
 		enviarReferencias();
-		Utilidades.cerrarMenuOpciones();
+		nav.cerrarMenuOpciones();
 		AccionModificar.accionPuntuar(true);
 		rellenarCombosEstaticos();
 	}
@@ -903,20 +905,19 @@ public class VentanaAccionController implements Initializable {
 	void importarFicheroCodigoBarras(ActionEvent evento) {
 		enviarReferencias();
 		if (FuncionesApis.verificarClavesAPI(clavesMarvel, API_KEY) && Utilidades.isInternetAvailable()) {
-			Utilidades.cerrarMenuOpciones();
+			nav.cerrarMenuOpciones();
 			AccionControlUI.limpiarAutorellenos(false);
 			AccionControlUI.borrarDatosGraficos();
 			String frase = "Fichero txt";
 
 			String formato = "*.txt";
-			File fichero = Utilidades.tratarFichero(frase, formato, false, estadoStage());
+			File fichero = Utilidades.tratarFichero(frase, formato, false);
 
 			// Verificar si se obtuvo un objeto FileChooser válido
 			if (fichero != null) {
 				enviarReferencias();
 				rellenarCombosEstaticos();
 				AccionFuncionesComunes.busquedaPorCodigoImportacion(fichero);
-
 			}
 		}
 
@@ -934,7 +935,7 @@ public class VentanaAccionController implements Initializable {
 	@FXML
 	void busquedaPorCodigo(ActionEvent event) {
 		enviarReferencias();
-		Utilidades.cerrarMenuOpciones();
+		nav.cerrarMenuOpciones();
 		Platform.runLater(() -> {
 			try {
 				if (!ConectManager.conexionActiva() || !Utilidades.isInternetAvailable()) {
@@ -1063,7 +1064,7 @@ public class VentanaAccionController implements Initializable {
 	 */
 	@FXML
 	void nuevaPortada(ActionEvent event) {
-		Utilidades.cerrarMenuOpciones();
+		nav.cerrarMenuOpciones();
 		AccionFuncionesComunes.subirPortada(estadoStage());
 	}
 
@@ -1098,7 +1099,7 @@ public class VentanaAccionController implements Initializable {
 	void guardarDatos(ActionEvent event) {
 		enviarReferencias();
 		rellenarCombosEstaticos();
-		Utilidades.cerrarMenuOpciones();
+		nav.cerrarMenuOpciones();
 		if (!ConectManager.conexionActiva()) {
 			return;
 		}
@@ -1118,7 +1119,7 @@ public class VentanaAccionController implements Initializable {
 	@FXML
 	void guardarListaImportados(ActionEvent event) throws IOException, SQLException {
 		enviarReferencias();
-		Utilidades.cerrarMenuOpciones();
+		nav.cerrarMenuOpciones();
 		if (!ConectManager.conexionActiva()) {
 			return;
 		}
@@ -1138,7 +1139,7 @@ public class VentanaAccionController implements Initializable {
 	@FXML
 	void ventaComic(ActionEvent event) throws SQLException {
 		enviarReferencias();
-		Utilidades.cerrarMenuOpciones();
+		nav.cerrarMenuOpciones();
 		if (!ConectManager.conexionActiva()) {
 			return;
 		}
@@ -1159,7 +1160,7 @@ public class VentanaAccionController implements Initializable {
 	@FXML
 	void eliminarDatos(ActionEvent event) {
 		enviarReferencias();
-		Utilidades.cerrarMenuOpciones();
+		nav.cerrarMenuOpciones();
 		if (!ConectManager.conexionActiva()) {
 			return;
 		}
@@ -1220,7 +1221,7 @@ public class VentanaAccionController implements Initializable {
 	}
 
 	public void stop() {
-		alarmaList.detenerThreadChecker();
+		Utilidades.cerrarCargaComics();
 	}
 
 	public static void setReferenciaVentana(AccionReferencias referenciaVentana) {

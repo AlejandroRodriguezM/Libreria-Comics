@@ -201,15 +201,14 @@ public class FuncionesExcel {
 	 * @return Una tarea que realiza la exportación y devuelve true si se realiza
 	 *         con éxito, o false si ocurre un error.
 	 */
-	public Task<Boolean> crearExcelTask(List<Comic> listaComics, String tipoBusqueda, SimpleDateFormat dateFormat,
-			Stage miVentana) {
+	public Task<Boolean> crearExcelTask(List<Comic> listaComics, String tipoBusqueda, SimpleDateFormat dateFormat) {
 		File[] directorioImagenes = { null };
 		File[] directorioFichero = { null };
 
 		numeroLineas.set(0);
 		numeroLeidos.set(0);
 
-		Utilidades.cerrarMenuOpciones();
+		nav.cerrarMenuOpciones();
 
 		if (tipoBusqueda.equalsIgnoreCase(TipoBusqueda.ELIMINAR.toString())) {
 			String nombreCarpeta = dateFormat.format(new Date());
@@ -220,7 +219,7 @@ public class FuncionesExcel {
 					+ File.separator + "backups" + File.separator + nombreCarpeta;
 
 			try {
-				Utilidades.copiaSeguridad(listaComics, dateFormat);
+				Utilidades.copiaSeguridad(dateFormat);
 
 				File carpetaLibreria = new File(direccion);
 				if (!carpetaLibreria.exists()) {
@@ -245,7 +244,7 @@ public class FuncionesExcel {
 
 			String formato = "*.xlsx";
 
-			File fichero = Utilidades.tratarFichero(frase, formato, true, miVentana);
+			File fichero = Utilidades.tratarFichero(frase, formato, true);
 
 			if (fichero == null) {
 				return null;
@@ -288,7 +287,7 @@ public class FuncionesExcel {
 					}
 
 					if (directorioImagenes[0] != null) {
-						copiarImagenesPortadaSiEsNecesario(tipoBusqueda, directorioFichero[0], directorioImagenes[0]);
+						copiarImagenesPortadaSiEsNecesario(tipoBusqueda, directorioImagenes[0]);
 
 					}
 
@@ -319,8 +318,7 @@ public class FuncionesExcel {
 		}
 	}
 
-	private void copiarImagenesPortadaSiEsNecesario(String tipoBusqueda, File directorioFichero,
-			File directorioImagenes) {
+	private void copiarImagenesPortadaSiEsNecesario(String tipoBusqueda, File directorioImagenes) {
 
 		if (("Completa".equalsIgnoreCase(tipoBusqueda) || "Parcial".equalsIgnoreCase(tipoBusqueda))) {
 			Utilidades.copiarDirectorio(directorioImagenes.getAbsolutePath(),
@@ -504,8 +502,6 @@ public class FuncionesExcel {
 		if (comicNuevo == null || cargaComicsControllerRef == null) {
 			return;
 		}
-		
-		
 
 		// Obtener nombre de portada y nombre modificado
 		String nombrePortada = "";

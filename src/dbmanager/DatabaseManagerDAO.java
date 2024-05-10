@@ -421,7 +421,7 @@ public class DatabaseManagerDAO {
 
 		String formato = "*.sql";
 
-		File fichero = Utilidades.tratarFichero(frase, formato, true, miVentana);
+		File fichero = Utilidades.tratarFichero(frase, formato, true);
 
 		// Verificar si se obtuvo un objeto FileChooser válido
 		if (fichero != null) {

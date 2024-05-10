@@ -39,7 +39,6 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import webScrap.WebScrapGoogleLeagueOfComics;
@@ -59,21 +58,21 @@ public class AccionFuncionesComunes {
 	/**
 	 * Obtenemos el directorio de inicio del usuario
 	 */
-	private final static String USER_DIR = System.getProperty("user.home");
+	private static final String USER_DIR = System.getProperty("user.home");
 
 	/**
 	 * Construimos la ruta al directorio "Documents"
 	 */
-	private final static String DOCUMENTS_PATH = USER_DIR + File.separator + "Documents";
+	private static final String DOCUMENTS_PATH = USER_DIR + File.separator + "Documents";
 
-	private final static String CARPETA_RAIZ_PORTADAS = DOCUMENTS_PATH + File.separator + "libreria_comics"
+	private static final String CARPETA_RAIZ_PORTADAS = DOCUMENTS_PATH + File.separator + "libreria_comics"
 			+ File.separator + ConectManager.DB_NAME + File.separator;
 
 	/**
 	 * Construimos la ruta al directorio "libreria_comics" dentro de "Documents" y
 	 * añadimos el nombre de la base de datos y la carpeta "portadas".
 	 */
-	public final static String SOURCE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+	public static final String SOURCE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
 			+ ConectManager.DB_NAME + File.separator + "portadas";
 
 	/**
@@ -103,7 +102,7 @@ public class AccionFuncionesComunes {
 	 *                       una inserción (false).
 	 * @throws Exception
 	 */
-	public void procesarComic(Comic comic, boolean esModificacion) throws Exception {
+	public void procesarComic(Comic comic, boolean esModificacion) {
 		final List<Comic> listaComics;
 		final List<Comic> comicsFinal;
 		if (!ConectManager.conexionActiva()) {
@@ -117,41 +116,44 @@ public class AccionFuncionesComunes {
 			comicsFinal = ListaComicsDAO.comicsImportados;
 			Platform.runLater(() -> FuncionesTableView.tablaBBDD(comicsFinal));
 
-			return; // Agregar return para salir del método en este punto
+			return;
 		}
 
-		String codigo_imagen = Utilidades.generarCodigoUnico(SOURCE_PATH + File.separator);
+		String codigoImagen = Utilidades.generarCodigoUnico(SOURCE_PATH + File.separator);
 		String mensaje = "";
-		Utilidades.redimensionarYGuardarImagen(comic.getImagen(), codigo_imagen);
+		try {
+			Utilidades.redimensionarYGuardarImagen(comic.getImagen(), codigoImagen);
 
-		comic.setImagen(SOURCE_PATH + File.separator + codigo_imagen + ".jpg");
-		if (esModificacion) {
-			ComicManagerDAO.actualizarComicBBDD(comic, "modificar");
-			mensaje = "Has modificado correctamente el cómic";
-		} else {
-			ComicManagerDAO.insertarDatos(comic, true);
-			mensaje = " Has introducido correctamente el cómic";
-			Comic newSelection = getReferenciaVentana().getTablaBBDD().getSelectionModel().getSelectedItem();
-
-			if (newSelection != null) {
-				listaComics = ListaComicsDAO.comicsImportados;
-				String id_comic = newSelection.getid();
-				ListaComicsDAO.comicsImportados.removeIf(c -> c.getid().equals(id_comic));
-				getReferenciaVentana().getTablaBBDD().getItems().clear();
+			comic.setImagen(SOURCE_PATH + File.separator + codigoImagen + ".jpg");
+			if (esModificacion) {
+				ComicManagerDAO.actualizarComicBBDD(comic, "modificar");
+				mensaje = "Has modificado correctamente el cómic";
 			} else {
-				listaComics = null; // Inicializar listaComics en caso de que no haya ningún cómic seleccionado
+				ComicManagerDAO.insertarDatos(comic, true);
+				mensaje = " Has introducido correctamente el cómic";
+				Comic newSelection = getReferenciaVentana().getTablaBBDD().getSelectionModel().getSelectedItem();
+
+				if (newSelection != null) {
+					listaComics = ListaComicsDAO.comicsImportados;
+					String idComic = newSelection.getid();
+					ListaComicsDAO.comicsImportados.removeIf(c -> c.getid().equals(idComic));
+					getReferenciaVentana().getTablaBBDD().getItems().clear();
+				} else {
+					listaComics = null; // Inicializar listaComics en caso de que no haya ningún cómic seleccionado
+				}
+
+				comicsFinal = listaComics; // Declarar otra variable final para listaComics
+
+				Platform.runLater(() -> FuncionesTableView.tablaBBDD(comicsFinal));
+				getReferenciaVentana().getTablaBBDD().refresh();
 			}
 
-			comicsFinal = listaComics; // Declarar otra variable final para listaComics
-
-			Platform.runLater(() -> {
-				FuncionesTableView.tablaBBDD(comicsFinal);
-			});
-			getReferenciaVentana().getTablaBBDD().refresh();
+			AlarmaList.mostrarMensajePront(mensaje, esModificacion, getReferenciaVentana().getProntInfo());
+			procesarBloqueComun(comic);
+		} catch (IOException | SQLException e) {
+			Utilidades.manejarExcepcion(e);
 		}
 
-		AlarmaList.mostrarMensajePront(mensaje, esModificacion, getReferenciaVentana().getProntInfo());
-		procesarBloqueComun(comic);
 	}
 
 	/**
@@ -190,21 +192,21 @@ public class AccionFuncionesComunes {
 	}
 
 	public static void actualizarComicsDatabase(Comic comicOriginal, String tipoUpdate, boolean confirmarFirma) {
-		if (!ConectManager.conexionActiva()) {
+
+		// Verificar si la firma ya está establecida en comicOriginal
+		if (!confirmarFirma && !comicOriginal.getFirma().isEmpty()) {
+			System.out.println("Comic: " + comicOriginal.getid() + " evitado");
+			return; // Si ya tiene firma, salir de la función
+		}
+
+		if (!comprobarCodigo(comicOriginal)) {
 			return;
 		}
 
 		String codigoComic = comicOriginal.getcodigoComic();
 		Comic comicInfo = obtenerComicInfo(codigoComic);
 
-		// Verificar si la firma ya está establecida en comicInfo
-		if (!confirmarFirma && !comicOriginal.getFirma().isEmpty()) {
-			System.out.println("Comic: " + comicOriginal.getid() + " evitado");
-			return; // Si ya tiene firma, salir de la función
-		}
-
-		if (!comprobarCodigo(comicInfo)) {
-
+		if (comicInfo == null) {
 			return;
 		}
 
@@ -215,28 +217,26 @@ public class AccionFuncionesComunes {
 
 		if (tipoUpdate.equalsIgnoreCase("modificar") || tipoUpdate.equalsIgnoreCase("actualizar datos")) {
 
-			comicInfo.setID(comicOriginal.getid());
-			comicInfo.setImagen(urlFinal);
+			comicOriginal.setID(comicOriginal.getid());
 
-			String numComic = Utilidades.extraerNumeroLimpio(comicInfo.getNombre());
-			String nombreCorregido = Utilidades.eliminarParentesis(comicInfo.getNombre());
+			String numComic = Utilidades.extraerNumeroLimpio(comicOriginal.getNombre());
+			String nombreCorregido = Utilidades.eliminarParentesis(comicOriginal.getNombre());
 			String nombreLimpio = Utilidades.extraerNombreLimpio(nombreCorregido);
 			nombreLimpio = DatabaseManagerDAO.corregirPatrones(nombreLimpio);
-			String formatoLimpio = Utilidades.devolverPalabrasClave(comicInfo.getNombre());
-			String editorial = DatabaseManagerDAO.getEditorial(comicInfo.getEditorial());
+			String formatoLimpio = Utilidades.devolverPalabrasClave(comicOriginal.getNombre());
+			String editorial = DatabaseManagerDAO.getEditorial(comicOriginal.getEditorial());
 
-			comicInfo.setNombre(nombreLimpio);
-			comicInfo.setNumero(numComic);
-			comicInfo.setFormato(formatoLimpio);
-			comicInfo.setEditorial(editorial);
+			comicOriginal.setNombre(nombreLimpio);
+			comicOriginal.setNumero(numComic);
+			comicOriginal.setFormato(formatoLimpio);
+			comicOriginal.setEditorial(editorial);
 
-			completarInformacionFaltante(comicInfo, comicOriginal);
+			completarInformacionFaltante(comicOriginal, comicOriginal);
 			if (tipoUpdate.equalsIgnoreCase("modificar")) {
-				comicInfo.setID(comicOriginal.getid());
-				comicInfo.setImagen(urlFinal);
+				Utilidades.deleteFile(comicOriginal.getImagen());
+				comicOriginal.setImagen(urlFinal);
 			} else {
-				comicInfo.setID(comicOriginal.getid());
-				comicInfo.setImagen(comicOriginal.getImagen());
+				comicOriginal.setImagen(comicOriginal.getImagen());
 			}
 
 		}
@@ -259,8 +259,6 @@ public class AccionFuncionesComunes {
 		}
 
 		if (tipoUpdate.equalsIgnoreCase("modificar") || tipoUpdate.equalsIgnoreCase("actualizar datos")) {
-			UpdateManager.actualizarComicBBDD(comicInfo, "modificar");
-		} else {
 			UpdateManager.actualizarComicBBDD(comicOriginal, "modificar");
 		}
 	}
@@ -300,16 +298,15 @@ public class AccionFuncionesComunes {
 
 		String formato = "*.xlsx";
 
-		File fichero = Utilidades.tratarFichero(frase, formato, false, miVentana);
+		File fichero = Utilidades.tratarFichero(frase, formato, false);
 
 		// Verificar si se obtuvo un objeto FileChooser válido
 		if (fichero != null) {
 			String nuevoNombreArchivo = Utilidades.generarCodigoUnico(CARPETA_RAIZ_PORTADAS);
 
 			try {
-				Utilidades.redimensionarYGuardarImagen(fichero.getAbsolutePath().toString(), nuevoNombreArchivo);
+				Utilidades.redimensionarYGuardarImagen(fichero.getAbsolutePath(), nuevoNombreArchivo);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -384,7 +381,7 @@ public class AccionFuncionesComunes {
 	 *         acciones correspondientes, false de lo contrario.
 	 * @throws SQLException Si ocurre un error al interactuar con la base de datos.
 	 */
-	public boolean comprobarExistenciaComic(String ID) {
+	public boolean comprobarExistenciaComic(String idComic) {
 
 		// Verifica si la conexión está activa
 		if (!ConectManager.conexionActiva()) {
@@ -392,7 +389,7 @@ public class AccionFuncionesComunes {
 		}
 
 		// Si el cómic existe en la base de datos
-		if (ComicManagerDAO.comprobarIdentificadorComic(ID)) {
+		if (ComicManagerDAO.comprobarIdentificadorComic(idComic)) {
 			FuncionesTableView.actualizarBusquedaRaw();
 			return true;
 		} else { // Si el cómic no existe en la base de datos
@@ -552,7 +549,38 @@ public class AccionFuncionesComunes {
 		});
 	}
 
+	// ES OPCIONES
+	public static void busquedaPorListaDatabase(List<Comic> listaComicsDatabase, String tipoUpdate,
+			boolean actualizarFirma) {
+
+		if (!ConectManager.conexionActiva() && !Utilidades.isInternetAvailable()) {
+			return;
+		}
+
+		codigoFaltante = new StringBuilder();
+		contadorErrores = new AtomicInteger(0);
+		comicsProcesados = new AtomicInteger(0);
+		mensajeIdCounter = new AtomicInteger(0); // Contador para generar IDs únicos
+		numLineas = new AtomicInteger(listaComicsDatabase.size()); // Obtener el tamaño de la lista
+		cargaComicsControllerRef = new AtomicReference<>();
+		mensajesUnicos = new HashSet<>();
+
+		Task<Void> tarea = createSearchTask(tipoUpdate, actualizarFirma, listaComicsDatabase);
+
+		handleTaskEvents(tarea, tipoUpdate);
+
+		Thread thread = new Thread(tarea);
+		thread.setDaemon(true);
+		thread.start();
+	}
+
+	// ES ACCION
 	public static void busquedaPorCodigoImportacion(File file) {
+
+		if (!ConectManager.conexionActiva() && !Utilidades.isInternetAvailable()) {
+			return;
+		}
+
 		fichero = file;
 		contadorErrores = new AtomicInteger(0);
 		comicsProcesados = new AtomicInteger(0);
@@ -561,73 +589,76 @@ public class AccionFuncionesComunes {
 		numLineas.set(Utilidades.contarLineasFichero(fichero));
 		cargaComicsControllerRef = new AtomicReference<>();
 		codigoFaltante = new StringBuilder();
+		mensajesUnicos = new HashSet<>();
 
-		if (!ConectManager.conexionActiva() && !Utilidades.isInternetAvailable()) {
-			return;
-		}
+		Task<Void> tarea = createSearchTask("", false, null);
 
-		Task<Void> tarea = createSearchTask();
-
-		configureTaskHandlers(tarea);
+		handleTaskEvents(tarea, "");
 
 		Thread thread = new Thread(tarea);
-//		thread.setDaemon(true);
+		thread.setDaemon(true);
 		thread.start();
 	}
 
-	private static Task<Void> createSearchTask() {
-		Task<Void> tarea = new Task<>() {
+	private static Task<Void> createSearchTask(String tipoUpdate, boolean actualizarFirma,
+			List<Comic> listaComicsDatabase) {
+		return new Task<>() {
 			@Override
 			protected Void call() {
 				nav.verCargaComics(cargaComicsControllerRef);
-				try (BufferedReader reader = new BufferedReader(new FileReader(fichero))) {
-					reader.lines().forEach(linea -> {
-						if (isCancelled() || !getReferenciaVentana().getStage().isShowing()) {
-							return;
-						}
-						String finalValorCodigo = Utilidades.eliminarEspacios(linea).replace("-", "");
-						processComic(finalValorCodigo);
+
+				if (tipoUpdate.isEmpty()) {
+					try (BufferedReader reader = new BufferedReader(new FileReader(fichero))) {
+						reader.lines().forEach(linea -> {
+							if (isCancelled() || !getReferenciaVentana().getStage().isShowing()) {
+								return;
+							}
+							String finalValorCodigo = Utilidades.eliminarEspacios(linea).replace("-", "");
+							Comic comicInfo = obtenerComicInfo(finalValorCodigo);
+							processComic(comicInfo, "", false);
+						});
+					} catch (IOException e) {
+						Utilidades.manejarExcepcion(e);
+					}
+				} else {
+					listaComicsDatabase.forEach(codigo -> {
+						String finalValorCodigo = Utilidades.eliminarEspacios(codigo.getcodigoComic()).replace("-", "");
+						codigo.setcodigoComic(finalValorCodigo);
+						processComic(codigo, tipoUpdate, actualizarFirma);
+
 					});
-				} catch (IOException e) {
-					Utilidades.manejarExcepcion(e);
 				}
 				return null;
 			}
 		};
-
-		// Configurar el evento para cancelar la tarea cuando se presiona el botón de
-		// cancelar subida
-		getReferenciaVentana().getBotonCancelarSubida().setOnAction(ev -> {
-			actualizarInterfaz(comicsProcesados, codigoFaltante, "", numLineas);
-			cambiarEstadoBotones(false);
-			tarea.cancel(true);
-			getReferenciaVentana().getMenu_Importar_Fichero_CodigoBarras().setDisable(false);
-		});
-
-		return tarea;
 	}
 
-	private static void processComic(String finalValorCodigo) {
-		if (!getReferenciaVentana().getStage().isShowing() || !getReferenciaVentanaPrincipal().getStage().isShowing()) {
-			return;
-		}
+	private static void processComic(Comic comic, String tipoUpdate, boolean actualizarFirma) {
+		StringBuilder textoBuilder = new StringBuilder();
 
-		if (!finalValorCodigo.isEmpty()) {
-			Comic comicInfo = obtenerComicInfo(finalValorCodigo);
+		if (comic.getcodigoComic().isEmpty()) {
 
-			StringBuilder textoBuilder = new StringBuilder();
-
-			if (comicInfo != null) {
-				textoBuilder.append("Codigo: ").append(finalValorCodigo).append(" procesado.").append("\n");
-				AccionFuncionesComunes.procesarComicPorCodigo(finalValorCodigo);
+			if (tipoUpdate.isEmpty()) {
+				codigoFaltante.append("Falta cómic con código: ").append(comic.getcodigoComic()).append("\n");
+				textoBuilder.append("Cómic no capturado: ").append(comic.getcodigoComic()).append("\n");
 			} else {
-				codigoFaltante.append("Falta comic con codigo: ").append(finalValorCodigo).append("\n");
-				textoBuilder.append("Comic no capturado: ").append(finalValorCodigo).append("\n");
-				contadorErrores.getAndIncrement();
+				codigoFaltante.append("ID no procesado: ").append(comic.getid()).append("\n");
+				textoBuilder.append("ID no procesado: ").append(comic.getid()).append("\n");
 			}
 
-			updateGUI(textoBuilder);
+			contadorErrores.getAndIncrement();
+
+		} else {
+
+			if (tipoUpdate.isEmpty()) {
+				textoBuilder.append("Código: ").append(comic.getcodigoComic()).append(" procesado.").append("\n");
+				AccionFuncionesComunes.procesarComicPorCodigo(comic.getcodigoComic());
+			} else {
+				textoBuilder.append("ID: ").append(comic.getid()).append(" actualizado.").append("\n");
+				AccionFuncionesComunes.actualizarComicsDatabase(comic, tipoUpdate, actualizarFirma);
+			}
 		}
+		updateGUI(textoBuilder);
 	}
 
 	private static void updateGUI(StringBuilder textoBuilder) {
@@ -646,240 +677,164 @@ public class AccionFuncionesComunes {
 			nav.verCargaComics(cargaComicsControllerRef);
 
 			StringBuilder textoFiltrado = new StringBuilder();
-			for (String mensajeUnico : mensajesUnicos) {
-				textoFiltrado.append(mensajeUnico.substring(mensajeUnico.indexOf(":") + 2));
+			List<String> mensajesOrdenados = new ArrayList<>(mensajesUnicos);
+
+			Collections.sort(mensajesOrdenados, Comparator.comparingInt(m -> Integer.parseInt(m.split(":")[0])));
+			for (String mensajeUnico : mensajesOrdenados) {
+				if (!mensajeUnico.equalsIgnoreCase(mensaje)) {
+					textoFiltrado.append(mensajeUnico.substring(mensajeUnico.indexOf(":") + 2));
+				}
 			}
 
 			Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics(textoFiltrado.toString(),
 					porcentaje, progress));
-		} else {
-			Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics(textoBuilder.toString(),
-					porcentaje, progress));
 		}
+		Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics(textoBuilder.toString(),
+				porcentaje, progress));
+
 	}
 
-	private static void configureTaskHandlers(Task<Void> tarea) {
-		tarea.setOnRunning(ev -> {
-			AccionControlUI.limpiarAutorellenos(false);
-			cambiarEstadoBotones(true);
-			getReferenciaVentana().getImagencomic().setImage(null);
-			getReferenciaVentana().getImagencomic().setVisible(true);
-
-			AlarmaList.iniciarAnimacionCargaImagen(getReferenciaVentana().getCargaImagen());
-			FuncionesManejoFront.cambiarEstadoMenuBar(true, referenciaVentana);
-
-			FuncionesManejoFront.cambiarEstadoMenuBar(true, referenciaVentanaPrincipal);
-
-			getReferenciaVentana().getMenu_Importar_Fichero_CodigoBarras().setDisable(true);
-			getReferenciaVentana().getBotonSubidaPortada().setDisable(true);
-
-			AlarmaList.mostrarMensajePront("Se estan cargando los datos", true, getReferenciaVentana().getProntInfo());
-			AlarmaList.iniciarAnimacionCarga(getReferenciaVentana().getProgresoCarga());
-		});
-
-		tarea.setOnSucceeded(ev -> {
-			AlarmaList.detenerAnimacionCargaImagen(getReferenciaVentana().getCargaImagen());
-			cambiarEstadoBotones(false);
-
-			actualizarInterfaz(contadorErrores, codigoFaltante, CARPETA_RAIZ_PORTADAS, numLineas);
-			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentana);
-
-			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentanaPrincipal);
-
-			getReferenciaVentana().getMenu_Importar_Fichero_CodigoBarras().setDisable(false);
-
-			Platform.runLater(() -> {
-				cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0);
-			});
-			AlarmaList.detenerAnimacionCarga(getReferenciaVentana().getProgresoCarga());
-		});
-
-		tarea.setOnCancelled(ev -> {
-			cambiarEstadoBotones(false);
-
-			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentana);
-
-			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentanaPrincipal);
-			Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0));
-
-			AlarmaList.mostrarMensajePront("Se ha cancelado la importacion", false,
-					getReferenciaVentana().getProntInfo());
-
-			AlarmaList.detenerAnimacionCarga(getReferenciaVentana().getProgresoCarga());
-			AlarmaList.detenerAnimacionCargaImagen(getReferenciaVentana().getCargaImagen());
-		});
-	}
-
-	/**
-	 * Realiza una búsqueda utilizando una lista de códigos de importación y muestra
-	 * los resultados en la interfaz gráfica.
-	 *
-	 * @param listaComicsDatabase La lista de códigos de importación a buscar.
-	 */
-	public static void busquedaPorListaDatabase(List<Comic> listaComicsDatabase, String tipoUpdate,
-			boolean actualizarFirma) {
-
-		Label prontEspecial = getReferenciaVentana().getProntInfoEspecial();
-		if (!ConectManager.conexionActiva() && !Utilidades.isInternetAvailable()) {
-			return;
-		}
-
-		StringBuilder codigoFaltante = new StringBuilder();
-		AtomicInteger contadorErrores = new AtomicInteger(0);
-		AtomicInteger comicsProcesados = new AtomicInteger(0);
-		AtomicInteger mensajeIdCounter = new AtomicInteger(0); // Contador para generar IDs únicos
-
-		AtomicInteger numLineas = new AtomicInteger(listaComicsDatabase.size()); // Obtener el tamaño de la lista
-		AtomicReference<CargaComicsController> cargaComicsControllerRef = new AtomicReference<>();
-
-		Task<Void> tarea = new Task<>() {
-			@Override
-			protected Void call() {
-				HashSet<String> mensajesUnicos = new HashSet<>(); // Para almacenar mensajes únicos
-
-				nav.verCargaComics(cargaComicsControllerRef);
-
-				listaComicsDatabase.forEach(codigo -> {
-					// Realizar otras acciones
-
-					if (isCancelled() || !getReferenciaVentana().getStage().isShowing() ) {
-						return; // Sale del método call() si la tarea ha sido cancelada
-					}
-
-					String finalValorCodigo = Utilidades.eliminarEspacios(codigo.getcodigoComic()).replace("-", "");
-					if (!finalValorCodigo.isEmpty()) {
-						StringBuilder textoBuilder = new StringBuilder();
-
-						Comic comicInfo = obtenerComicInfo(finalValorCodigo);
-						// Dentro del bucle forEach
-						String mensajeId = String.valueOf(mensajeIdCounter.getAndIncrement()); // Generar un ID único
-						if (comicInfo != null) {
-							textoBuilder.append("ID: ").append(codigo.getid()).append(" - Comic: ")
-									.append(finalValorCodigo).append("\n");
-						} else {
-							codigoFaltante.append("Falta comic con codigo: ").append(finalValorCodigo).append("\n");
-							textoBuilder.append("Comic no capturado: ").append(finalValorCodigo).append("\n");
-							contadorErrores.getAndIncrement();
-						}
-
-						String mensaje = mensajeId + ": " + textoBuilder.toString();
-						mensajesUnicos.add(mensaje);
-
-						comicsProcesados.getAndIncrement();
-						AccionFuncionesComunes.actualizarComicsDatabase(codigo, tipoUpdate, actualizarFirma);
-
-						// Calcula el progreso y el porcentaje
-						long finalProcessedItems = comicsProcesados.get();
-						double progress = (double) finalProcessedItems / (numLineas.get());
-						String porcentaje = String.format("%.2f%%", progress * 100);
-
-						if (nav.isVentanaCerrada()) {
-							nav.verCargaComics(cargaComicsControllerRef);
-
-							StringBuilder textoFiltrado = new StringBuilder();
-							List<String> mensajesOrdenados = new ArrayList<>(mensajesUnicos); // Convertir el conjunto a
-																								// lista
-							Collections.sort(mensajesOrdenados,
-									Comparator.comparingInt(m -> Integer.parseInt(m.split(":")[0]))); // Ordenar por ID
-
-							for (String mensajeUnico : mensajesOrdenados) {
-								if (!mensajeUnico.equalsIgnoreCase(mensaje)) {
-									textoFiltrado.append(mensajeUnico.substring(mensajeUnico.indexOf(":") + 2));
-								}
-							}
-
-							Platform.runLater(() -> cargaComicsControllerRef.get()
-									.cargarDatosEnCargaComics(textoFiltrado.toString(), porcentaje, progress));
-						}
-
-						Platform.runLater(() -> cargaComicsControllerRef.get()
-								.cargarDatosEnCargaComics(textoBuilder.toString(), porcentaje, progress));
-					}
-				});
-
-				return null;
-			}
-		};
+	private static void handleTaskEvents(Task<Void> tarea, String tipoUpdate) {
 
 		tarea.setOnRunning(ev -> {
-			String cadenaAfirmativo = "";
-			List<Stage> stageVentanas = FuncionesManejoFront.getStageVentanas();
-			for (Stage stage : stageVentanas) {
-				
-				if (stage.getTitle().equalsIgnoreCase("Menu principal")
-						|| !stage.getTitle().equalsIgnoreCase("Opciones avanzadas")) {
-					stage.setOnCloseRequest(closeEvent -> {
-						tarea.cancel(true);
-						Utilidades.cerrarCargaComics();
-						FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentana);
-						FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentanaPrincipal);
-						FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, getReferenciaVentana());
-						Utilidades.cerrarMenuOpciones();
-					});
+			if (tipoUpdate.isEmpty()) {
+				AccionControlUI.limpiarAutorellenos(false);
+
+				cambiarEstadoBotones(true);
+				getReferenciaVentana().getImagencomic().setImage(null);
+				getReferenciaVentana().getImagencomic().setVisible(true);
+
+				AlarmaList.iniciarAnimacionCargaImagen(getReferenciaVentana().getCargaImagen());
+				FuncionesManejoFront.cambiarEstadoMenuBar(true, referenciaVentana);
+				FuncionesManejoFront.cambiarEstadoMenuBar(true, referenciaVentanaPrincipal);
+
+				getReferenciaVentana().getMenu_Importar_Fichero_CodigoBarras().setDisable(true);
+				getReferenciaVentana().getBotonSubidaPortada().setDisable(true);
+
+				AlarmaList.mostrarMensajePront("Se estan cargando los datos", true,
+						getReferenciaVentana().getProntInfo());
+				AlarmaList.iniciarAnimacionCarga(getReferenciaVentana().getProgresoCarga());
+			} else {
+				String cadenaAfirmativo = getAffirmativeMessage(tipoUpdate);
+				List<Stage> stageVentanas = FuncionesManejoFront.getStageVentanas();
+
+				for (Stage stage : stageVentanas) {
+					if (stage.getTitle().equalsIgnoreCase("Menu principal")
+							|| stage.getTitle().equalsIgnoreCase("Opciones avanzadas")) {
+						stage.setOnCloseRequest(closeEvent -> {
+
+							tarea.cancel(true);
+							Utilidades.cerrarCargaComics();
+							FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentana);
+							FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentanaPrincipal);
+							FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, referenciaVentana);
+							nav.cerrarMenuOpciones();
+							nav.cerrarVentanaAccion();
+
+							Utilidades.cerrarOpcionesAvanzadas();
+						});
+					}
 				}
+				AlarmaList.iniciarAnimacionAvanzado(getReferenciaVentana().getProntInfoEspecial(), cadenaAfirmativo);
+				getReferenciaVentana().getBotonCancelarSubida().setVisible(true);
+				actualizarCombobox();
+				FuncionesManejoFront.cambiarEstadoMenuBar(true, referenciaVentana);
+				FuncionesManejoFront.cambiarEstadoMenuBar(true, referenciaVentanaPrincipal);
+				FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(true, getReferenciaVentana());
 			}
-
-			if (tipoUpdate.equalsIgnoreCase("actualizar datos")) {
-				cadenaAfirmativo = "Actualizando datos";
-			} else if (tipoUpdate.equalsIgnoreCase("actualizar portadas")) {
-				cadenaAfirmativo = "Actualizando portadas";
-			} else {
-				cadenaAfirmativo = "Actualizando base de datos";
-			}
-
-			AlarmaList.iniciarAnimacionAvanzado(prontEspecial, cadenaAfirmativo);
-			getReferenciaVentana().getBotonCancelarSubida().setVisible(true);
-
-			actualizarCombobox();
-			FuncionesManejoFront.cambiarEstadoMenuBar(true, referenciaVentana);
-			FuncionesManejoFront.cambiarEstadoMenuBar(true, referenciaVentanaPrincipal);
-			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(true, getReferenciaVentana());
 		});
 
 		tarea.setOnSucceeded(ev -> {
-			Platform.runLater(() -> {
-				cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0);
-			});
-			String cadenaAfirmativo = "";
-			if (tipoUpdate.equalsIgnoreCase("actualizar datos")) {
-				cadenaAfirmativo = "Datos actualizados";
-			} else if (tipoUpdate.equalsIgnoreCase("actualizar portadas")) {
-				cadenaAfirmativo = "Portadas actualizadas";
+			if (tipoUpdate.isEmpty()) {
+				AlarmaList.detenerAnimacionCargaImagen(getReferenciaVentana().getCargaImagen());
+				cambiarEstadoBotones(false);
+
+				actualizarInterfaz(contadorErrores, codigoFaltante, CARPETA_RAIZ_PORTADAS, numLineas);
+
+				getReferenciaVentana().getMenu_Importar_Fichero_CodigoBarras().setDisable(false);
+
+				Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0));
+				AlarmaList.detenerAnimacionCarga(getReferenciaVentana().getProgresoCarga());
 			} else {
-				cadenaAfirmativo = "Base de datos actualizada";
+				Platform.runLater(() -> getReferenciaVentana().getBotonCancelarSubida().setVisible(false));
+				String cadenaAfirmativo = getUpdateTypeString(tipoUpdate);
+				AlarmaList.iniciarAnimacionAvanzado(getReferenciaVentana().getProntInfoEspecial(), cadenaAfirmativo);
+				actualizarCombobox();
+
+				FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, getReferenciaVentana());
 			}
 
-			AlarmaList.iniciarAnimacionAvanzado(prontEspecial, cadenaAfirmativo);
-			getReferenciaVentana().getBotonCancelarSubida().setVisible(false);
-
-			actualizarCombobox();
 			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentana);
 			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentanaPrincipal);
-			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, getReferenciaVentana());
 		});
 
 		tarea.setOnCancelled(ev -> {
-			String cadenaAfirmativo = "Cancelada la actualizacion de la base de datos.";
-			AlarmaList.iniciarAnimacionAvanzado(prontEspecial, cadenaAfirmativo);
 
-			actualizarCombobox();
+			if (tipoUpdate.isEmpty()) {
+				Thread.currentThread().interrupt();
+				cambiarEstadoBotones(false);
+
+				Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0));
+
+				AlarmaList.mostrarMensajePront("Se ha cancelado la importacion", false,
+						getReferenciaVentana().getProntInfo());
+
+				AlarmaList.detenerAnimacionCarga(getReferenciaVentana().getProgresoCarga());
+				AlarmaList.detenerAnimacionCargaImagen(getReferenciaVentana().getCargaImagen());
+			} else {
+				String cadenaAfirmativo = "Cancelada la actualización de la base de datos.";
+				AlarmaList.iniciarAnimacionAvanzado(getReferenciaVentana().getProntInfoEspecial(), cadenaAfirmativo);
+				actualizarCombobox();
+				FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentana);
+				FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentanaPrincipal);
+				FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, getReferenciaVentana());
+				Platform.runLater(() -> getReferenciaVentana().getBotonCancelarSubida().setVisible(false));
+			}
 			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentana);
 			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentanaPrincipal);
-			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, getReferenciaVentana());
-
-			Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0));
-
 		});
 
-		Thread thread = new Thread(tarea);
-
+		// Configurar el evento para cancelar la tarea cuando se presiona el botón de
+		// cancelar subida
 		getReferenciaVentana().getBotonCancelarSubida().setOnAction(ev -> {
-			getReferenciaVentana().getBotonCancelarSubida().setVisible(false);
+			if (tipoUpdate.isEmpty()) {
+				actualizarInterfaz(comicsProcesados, codigoFaltante, "", numLineas);
+				cambiarEstadoBotones(false);
+				getReferenciaVentana().getMenu_Importar_Fichero_CodigoBarras().setDisable(false);
+			} else {
+				Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0));
+				String cadenaAfirmativo = "Cancelada la actualización de la base de datos.";
+				AlarmaList.iniciarAnimacionAvanzado(getReferenciaVentana().getProntInfoEspecial(), cadenaAfirmativo);
+				actualizarCombobox();
+				FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentana);
+				FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentanaPrincipal);
+				FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, getReferenciaVentana());
+				Platform.runLater(() -> getReferenciaVentana().getBotonCancelarSubida().setVisible(false));
+				getReferenciaVentana().getBotonCancelarSubida().setVisible(false);
+
+			}
 			tarea.cancel(true);
 		});
+	}
 
-//		thread.setDaemon(true);
-		thread.start();
+	private static String getUpdateTypeString(String tipoUpdate) {
+		if (tipoUpdate.equalsIgnoreCase("actualizar datos")) {
+			return "Datos actualizados";
+		} else if (tipoUpdate.equalsIgnoreCase("actualizar portadas")) {
+			return "Portadas actualizadas";
+		} else {
+			return "Base de datos actualizada";
+		}
+	}
+
+	private static String getAffirmativeMessage(String tipoUpdate) {
+		if (tipoUpdate.equalsIgnoreCase("actualizar datos")) {
+			return "Actualizando datos";
+		} else if (tipoUpdate.equalsIgnoreCase("actualizar portadas")) {
+			return "Actualizando portadas";
+		} else {
+			return "Actualizando base de datos";
+		}
 	}
 
 	public static void actualizarCombobox() {

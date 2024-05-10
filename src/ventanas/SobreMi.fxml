@@ -9,7 +9,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="413.0" prefWidth="735.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.SobreMiController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="408.0" prefWidth="732.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.SobreMiController">
    <children>
       <ImageView fitHeight="414.0" fitWidth="735.0" pickOnBounds="true" preserveRatio="true">
          <image>
@@ -44,19 +44,19 @@
                   <MenuItem disable="true" mnemonicParsing="false" text="Importar CSV" />
                   <MenuItem disable="true" mnemonicParsing="false" text="Exportar base de datos" />
                   <MenuItem disable="true" mnemonicParsing="false" text="Eliminar base de datos" />
-                  <MenuItem fx:id="menu_archivo_sobreMi" mnemonicParsing="false" onAction="#verSobreMi" text="Sobre mi" />
+                  <MenuItem fx:id="menu_archivo_sobreMi" mnemonicParsing="false" text="Sobre mi" />
                   <MenuItem fx:id="menu_archivo_volver" mnemonicParsing="false" onAction="#volverMenu" text="Volver al menu" />
-                  <MenuItem fx:id="menu_archivo_desconectar" mnemonicParsing="false" onAction="#desconectar" text="Desconectar" />
-                  <MenuItem fx:id="menu_archivo_cerrar" mnemonicParsing="false" onAction="#salirPrograma" text="Cerrar" />
+                  <MenuItem fx:id="menu_archivo_desconectar" mnemonicParsing="false" onAction="#desconectar" text="Desconectar" visible="false" />
+                  <MenuItem fx:id="menu_archivo_cerrar" mnemonicParsing="false" onAction="#salirPrograma" text="Cerrar" visible="false" />
                </items>
             </Menu>
-            <Menu fx:id="navegacion_comic" mnemonicParsing="false" text="Ventanas">
+            <Menu fx:id="navegacion_comic" mnemonicParsing="false" text="Ventanas" visible="false">
                <items>
-                  <MenuItem fx:id="menu_comic_aniadir" mnemonicParsing="false" onAction="#accionComic" text="Añadir comic" />
-                  <MenuItem fx:id="menu_comic_eliminar" mnemonicParsing="false" onAction="#accionComic" text="Eliminar Comic" />
-                  <MenuItem fx:id="menu_comic_modificar" mnemonicParsing="false" onAction="#accionComic" text="Modificar Comic" />
-                  <MenuItem fx:id="menu_comic_puntuar" mnemonicParsing="false" onAction="#accionComic" text="Puntuar Comic" />
-                  <MenuItem fx:id="menu_comic_aleatoria" mnemonicParsing="false" onAction="#ventanaRecomendar" text="Lectura aleatoria" />
+                  <MenuItem fx:id="menu_comic_aniadir" mnemonicParsing="false" text="Añadir comic" visible="false" />
+                  <MenuItem fx:id="menu_comic_eliminar" mnemonicParsing="false" text="Eliminar Comic" visible="false" />
+                  <MenuItem fx:id="menu_comic_modificar" mnemonicParsing="false" text="Modificar Comic" visible="false" />
+                  <MenuItem fx:id="menu_comic_puntuar" mnemonicParsing="false" text="Puntuar Comic" visible="false" />
+                  <MenuItem fx:id="menu_comic_aleatoria" mnemonicParsing="false" text="Lectura aleatoria" visible="false" />
                </items>
             </Menu>
          </menus>

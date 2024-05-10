@@ -27,6 +27,7 @@ package funciones_auxiliares;
  */
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
@@ -719,13 +720,27 @@ public class Ventanas {
 			return ventanaCerrada;
 		}
 		return ventanaCerrada;
+	}
 
+	public boolean comprobarVentanaPrincipal() {
+		return menuPrincipal != null;
 	}
 
 	public void cerrarCargaComics() {
 		if (this.cargaComics != null) {
-
 			this.cargaComics.close();
+		}
+	}
+
+	public void cerrarVentanaAccion() {
+		if (this.accionComic != null) {
+			this.accionComic.close();
+		}
+	}
+
+	public void cerrarMenuOpciones() {
+		if (this.opcionesAvanzadasStage != null) {
+			this.opcionesAvanzadasStage.close();
 		}
 	}
 

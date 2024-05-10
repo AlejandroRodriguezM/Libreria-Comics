@@ -24,6 +24,7 @@ import java.lang.ProcessBuilder.Redirect;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -84,6 +85,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import webScrap.WebScraperPreviewsWorld;
 
 /**
@@ -420,7 +422,7 @@ public class Utilidades {
 		return rutaCompleta.substring(posicionSeparador + 1);
 	}
 
-	public static void copiaSeguridad(final List<Comic> listaComics, final SimpleDateFormat dateFormat) {
+	public static void copiaSeguridad(final SimpleDateFormat dateFormat) {
 		CompletableFuture<Void> backupFuture = CompletableFuture.runAsync(() -> {
 			String nombreCarpeta = dateFormat.format(new Date());
 
@@ -516,11 +518,8 @@ public class Utilidades {
 			pb.redirectError(Redirect.INHERIT);
 			pb.redirectOutput(Redirect.to(archivoCopia));
 			pb.start();
-		} catch (IOException e) {
-			// Manejar errores de E/S
-			manejarExcepcion(e);
 		} catch (Exception e) {
-			// Manejar otras excepciones
+			// Manejar errores de E/S
 			manejarExcepcion(e);
 		}
 	}
@@ -817,8 +816,6 @@ public class Utilidades {
 					double resultado = cantidadMonedaLocal / tasaDeCambio;
 
 					return Math.round(resultado * 100.0) / 100.0;
-				} else {
-
 				}
 			} catch (NumberFormatException e) {
 				// Manejo de error si la conversión de la cadena a double falla
@@ -1052,6 +1049,9 @@ public class Utilidades {
 				}
 
 				return true;
+			} catch (MalformedURLException e) {
+				System.err.println("La URL no es válida: " + urlImagen);
+				return false;
 			} catch (IOException e) {
 				manejarExcepcion(e);
 				return false;
@@ -1119,13 +1119,13 @@ public class Utilidades {
 		return "";
 	}
 
-	public static File tratarFichero(String frase, String formato, boolean esGuardado, Stage miVentana) {
+	public static File tratarFichero(String frase, String formato, boolean esGuardado) {
 		FuncionesManejoFront.cambiarEstadoMenuBar(true, referenciaVentana);
 		FuncionesManejoFront.cambiarEstadoMenuBar(true, referenciaVentanaPrincipal);
 
 		try {
 
-			File fichero = abrirFileChooser(frase, formato, esGuardado, miVentana);
+			File fichero = abrirFileChooser(frase, formato, esGuardado);
 
 			getReferenciaVentana().getBotonCancelarSubida().setVisible(false);
 
@@ -1143,14 +1143,18 @@ public class Utilidades {
 		}
 	}
 
-	public static File abrirFileChooser(String frase, String formato, boolean esGuardado, Stage miVentana) {
+	public static File abrirFileChooser(String frase, String formato, boolean esGuardado) {
 		setFileChooserOpen(true);
 		// Obtener todas las ventanas disponibles
 		List<Stage> stageVentanas = FuncionesManejoFront.getStageVentanas();
+		Map<Stage, EventHandler<WindowEvent>> originalCloseHandlers = new HashMap<>();
 
 		// Deshabilitar el cierre de todas las ventanas mientras el FileChooser está
 		// abierto
 		for (Stage stage : stageVentanas) {
+			EventHandler<WindowEvent> originalCloseHandler = stage.getOnCloseRequest();
+			originalCloseHandlers.put(stage, originalCloseHandler);
+
 			stage.setOnCloseRequest(event -> {
 				if (fileChooserOpen) {
 					event.consume();
@@ -1171,9 +1175,27 @@ public class Utilidades {
 			fileChooser.getExtensionFilters().add(extFilter);
 
 			if (esGuardado) {
-				fichero = fileChooser.showSaveDialog(miVentana);
+				fichero = fileChooser.showSaveDialog(null);
 			} else {
-				fichero = fileChooser.showOpenDialog(miVentana);
+				fichero = fileChooser.showOpenDialog(null);
+			}
+
+			// Restaurar controladores de eventos de cierre originales
+			for (Map.Entry<Stage, EventHandler<WindowEvent>> entry : originalCloseHandlers.entrySet()) {
+				Stage stage = entry.getKey();
+				EventHandler<WindowEvent> originalCloseHandler = entry.getValue();
+				stage.setOnCloseRequest(originalCloseHandler);
+			}
+
+			for (Stage stage : stageVentanas) {
+				stage.removeEventFilter(MouseEvent.ANY, consumeEvent);
+				stage.removeEventFilter(KeyEvent.ANY, consumeEvent);
+			}
+
+			for (Map.Entry<Stage, EventHandler<WindowEvent>> entry : originalCloseHandlers.entrySet()) {
+				Stage stage = entry.getKey();
+				EventHandler<WindowEvent> originalCloseHandler = entry.getValue();
+				stage.setOnCloseRequest(originalCloseHandler);
 			}
 
 			return fichero;
@@ -1181,28 +1203,10 @@ public class Utilidades {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
-		} finally {
-
-			for (Stage stage : stageVentanas) {
-				stage.removeEventFilter(MouseEvent.ANY, consumeEvent);
-				stage.removeEventFilter(KeyEvent.ANY, consumeEvent);
-			}
-
-			// Habilitar todas las ventanas después de cerrar el FileChooser
-			for (Stage stage : stageVentanas) {
-				stage.setOnCloseRequest(null);
-			}
-
 		}
 	}
 
-	// EventFilter que consume todos los eventos del ratón y del teclado
-	private static EventHandler<Event> consumeEvent = new EventHandler<Event>() {
-		@Override
-		public void handle(Event event) {
-			event.consume();
-		}
-	};
+	private static EventHandler<Event> consumeEvent = Event::consume;
 
 	// Método para actualizar el estado del FileChooser
 	public static void setFileChooserOpen(boolean open) {
@@ -1244,7 +1248,7 @@ public class Utilidades {
 		List<String> nombresArchivosEnDirectorio = obtenerNombresArchivosEnDirectorio(directorioComun);
 
 		for (String nombreArchivo : nombresArchivosEnDirectorio) {
-			Path archivoAEliminarPath = Paths.get(directorioComun, nombreArchivo).normalize();
+			Path archivoAEliminarPath = Paths.get("", nombreArchivo).normalize();
 
 			if (!inputPaths.contains(archivoAEliminarPath.toString())) {
 				try {
@@ -1947,13 +1951,16 @@ public class Utilidades {
 		// Itera a través de los elementos y oculta/deshabilita cada uno
 		for (Node elemento : elementos) {
 
-			if (verElemento) {
-				elemento.setVisible(false);
-				elemento.setDisable(true);
-			} else {
-				elemento.setVisible(true);
-				elemento.setDisable(false);
+			if (elemento != null) {
+				if (verElemento) {
+					elemento.setVisible(false);
+					elemento.setDisable(true);
+				} else {
+					elemento.setVisible(true);
+					elemento.setDisable(false);
+				}
 			}
+
 		}
 	}
 
@@ -2393,7 +2400,17 @@ public class Utilidades {
 		}
 	}
 
-	public static void cerrarMenuOpciones() {
+	public static void cerrarCargaComics() {
+		List<Stage> stageVentanas = FuncionesManejoFront.getStageVentanas();
+		for (Stage stage : stageVentanas) {
+
+			if (stage.getTitle().equalsIgnoreCase("Carga de comics")) {
+				stage.close(); // Close the stage if it's not the current state
+			}
+		}
+	}
+
+	public static void cerrarOpcionesAvanzadas() {
 		List<Stage> stageVentanas = FuncionesManejoFront.getStageVentanas();
 		for (Stage stage : stageVentanas) {
 
@@ -2402,13 +2419,35 @@ public class Utilidades {
 			}
 		}
 	}
-	
-	public static void cerrarCargaComics() {
-		List<Stage> stageVentanas = FuncionesManejoFront.getStageVentanas();
-		for (Stage stage : stageVentanas) {
 
-			if (stage.getTitle().equalsIgnoreCase("Carga de comics")) {
-				stage.close(); // Close the stage if it's not the current state
+	public static void deleteFile(String filePath) {
+		Path path = Paths.get(filePath);
+
+		try {
+			Files.delete(path);
+		} catch (IOException e) {
+			System.err.println("No se pudo eliminar el archivo " + filePath + ": " + e.getMessage());
+		}
+	}
+
+	public static void eliminarContenidoCarpeta(String rutaCarpeta) {
+		File carpeta = new File(rutaCarpeta);
+
+		// Verificar si la ruta es una carpeta
+		if (!carpeta.isDirectory()) {
+			System.out.println("La ruta especificada no es una carpeta válida.");
+			return;
+		}
+
+		// Obtener la lista de archivos en la carpeta
+		File[] archivos = carpeta.listFiles();
+
+		// Eliminar cada archivo
+		for (File archivo : archivos) {
+			if (archivo.isFile()) {
+				archivo.delete(); // Si es un archivo, borrarlo
+			} else if (archivo.isDirectory()) {
+				eliminarContenidoCarpeta(archivo.getAbsolutePath()); // Si es una carpeta, llamar recursivamente
 			}
 		}
 	}

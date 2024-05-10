@@ -20,7 +20,7 @@ package Controladores;
  *  - Puntuar comics que se encuentren dentro de la base de datos.
  *  Esta clase permite acceder al menu principal donde se puede viajar a diferentes ventanas, etc.
  *
- *  Version 8.0.0.0
+ *  Version 8.2.0.0
  *
  *  @author Alejandro Rodriguez
  *
@@ -203,7 +203,10 @@ public class SobreMiController implements Initializable {
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
 		alarmaList.iniciarThreadChecker();
 
-		Platform.runLater(() -> FuncionesManejoFront.getStageVentanas().add(estadoStage()));
+		Platform.runLater(() -> {
+			FuncionesManejoFront.getStageVentanas().add(estadoStage());
+			estadoStage().setOnCloseRequest(event -> closeWindows());
+		});
 	}
 
 	/**
@@ -306,62 +309,6 @@ public class SobreMiController implements Initializable {
 	//// METODOS LLAMADA A VENTANAS//
 	/////////////////////////////////
 
-	/**
-	 * Maneja la acción del usuario en relación a los cómics, como agregar,
-	 * modificar, eliminar o puntuar un cómic.
-	 *
-	 * @param event El evento de acción que desencadenó la llamada a esta función.
-	 */
-	@FXML
-	void accionComic(ActionEvent event) {
-
-		Object fuente = event.getSource();
-
-		if (fuente instanceof MenuItem) {
-			MenuItem menuItemPresionado = (MenuItem) fuente;
-
-			if (menuItemPresionado == menu_comic_aniadir) {
-				AccionFuncionesComunes.setTipoAccion("aniadir");
-			} else if (menuItemPresionado == menu_comic_modificar) {
-				AccionFuncionesComunes.setTipoAccion("modificar");
-			} else if (menuItemPresionado == menu_comic_eliminar) {
-				AccionFuncionesComunes.setTipoAccion("eliminar");
-			} else if (menuItemPresionado == menu_comic_puntuar) {
-				AccionFuncionesComunes.setTipoAccion("puntuar");
-			}
-		}
-
-		nav.verAccionComic();
-	}
-
-	/**
-	 * Permite el cambio de ventana a la ventana deRecomendacionesController
-	 *
-	 * @param event
-	 */
-	@FXML
-	void ventanaRecomendar(ActionEvent event) {
-
-		nav.verRecomendacion();
-
-		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-		myStage.close();
-	}
-
-	/**
-	 * Metodo que permite abrir la ventana "sobreMiController"
-	 *
-	 * @param event
-	 */
-	@FXML
-	void verSobreMi(ActionEvent event) {
-
-		nav.verSobreMi();
-
-		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-		myStage.close();
-	}
-
 	/////////////////////////////
 	//// FUNCIONES PARA SALIR////
 	/////////////////////////////
@@ -393,10 +340,7 @@ public class SobreMiController implements Initializable {
 	 */
 	@FXML
 	public void volverMenu(ActionEvent event) throws IOException {
-		nav.verMenuPrincipal();
-
-		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-		myStage.close();
+		closeWindows();
 	}
 
 	/**
@@ -408,8 +352,7 @@ public class SobreMiController implements Initializable {
 	public void salirPrograma(ActionEvent event) {
 		// Lógica para manejar la acción de "Salir"
 		if (nav.salirPrograma(event)) {
-			Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-			myStage.close();
+			closeWindows();
 		}
 	}
 
@@ -422,10 +365,7 @@ public class SobreMiController implements Initializable {
 		if (FuncionesManejoFront.getStageVentanas().contains(estadoStage())) {
 			FuncionesManejoFront.getStageVentanas().remove(estadoStage());
 		}
-
-		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-		myStage.close();
-		nav.verAccesoBBDD();
+		estadoStage().close();
 
 	}
 

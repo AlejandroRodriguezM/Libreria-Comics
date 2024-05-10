@@ -111,8 +111,6 @@ public class ConectManager {
 		DB_USER = datos[2];
 		DB_PASS = datos[3];
 		DB_HOST = datos[4];
-
-//		conexion();
 	}
 
 	/**

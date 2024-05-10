@@ -147,7 +147,7 @@ public class ImagenAmpliadaController implements Initializable {
 		String frase = "Guardar fichero jpg";
 
 		// Mostrar el cuadro de diálogo de guardado y obtener la ubicación seleccionada
-		File file = Utilidades.abrirFileChooser(frase, formato, true, estadoStage());
+		File file = Utilidades.abrirFileChooser(frase, formato, true);
 
 		// Verificar si el usuario seleccionó una ubicación válida
 		if (file != null) {

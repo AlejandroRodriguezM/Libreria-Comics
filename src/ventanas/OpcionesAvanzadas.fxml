@@ -12,119 +12,121 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="331.0" prefWidth="265.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.OpcionesAvanzadasController">
-  <tabs>
-    <Tab text="Opciones">
-      <content>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="240.0">
-               <children>
-                  <ImageView fitHeight="303.0" fitWidth="265.0" pickOnBounds="true">
-                     <image>
-                        <Image url="@../imagenes/azul.jpg" />
-                     </image>
-                  </ImageView>
-                  <Label fx:id="prontInfo" alignment="CENTER" contentDisplay="TOP" layoutX="6.0" layoutY="6.0" mouseTransparent="true" prefHeight="88.0" prefWidth="252.0" style="-fx-background-color: #29B6CC;" wrapText="true">
-                     <font>
-                        <Font name="Comic Sans MS" size="18.0" />
-                     </font>
-                  </Label>
-                  <Label layoutX="6.0" layoutY="108.0" prefHeight="17.0" prefWidth="83.0" style="-fx-text-fill: white;" text="Descargar SQL" />
-                  <Button fx:id="botonDescargarSQL" layoutX="186.0" layoutY="104.0" mnemonicParsing="false" onAction="#descargarSQL" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Descargar" />
-                  <Label fx:id="labelComprobar" layoutX="6.0" layoutY="200.0" prefHeight="17.0" prefWidth="108.0" style="-fx-text-fill: white;" text="Comprobar versión" />
-                  <Button fx:id="botonActualizarSoftware" layoutX="186.0" layoutY="191.0" mnemonicParsing="false" onAction="#comprobarVersion" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Comprobar" />
-                  <Label layoutX="6.0" layoutY="147.0" prefHeight="38.0" prefWidth="107.0" style="-fx-text-fill: white;" text="Normalizar Base de Datos" wrapText="true" />
-                  <Button fx:id="botonNormalizarDB" layoutX="186.0" layoutY="148.0" mnemonicParsing="false" onAction="#normalizarDataBase" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Normalizar" />
-                  <Label layoutX="172.0" layoutY="282.0" prefHeight="17.0" prefWidth="45.0" style="-fx-text-fill: white;" text="Versión" />
-                  <Label fx:id="labelVersion" layoutX="222.0" layoutY="282.0" prefHeight="17.0" prefWidth="45.0" style="-fx-text-fill: white;" text="0.0.0.0" />
-               </children></AnchorPane>
-      </content>
-    </Tab>
-    <Tab text="Previews">
-      <content>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-               <children>
-                  <ImageView fitHeight="302.0" fitWidth="265.0" pickOnBounds="true">
-                     <image>
-                        <Image url="@../imagenes/azul.jpg" />
-                     </image>
-                  </ImageView>
-                  <ComboBox fx:id="comboPreviews" layoutX="57.0" layoutY="146.0" prefWidth="150.0" />
-                  <Label fx:id="prontInfoPreviews" alignment="CENTER" contentDisplay="TOP" layoutX="6.0" layoutY="6.0" mouseTransparent="true" prefHeight="88.0" prefWidth="252.0" style="-fx-background-color: #29B6CC;" wrapText="true">
-                     <font>
-                        <Font name="Comic Sans MS" size="18.0" />
-                     </font>
-                  </Label>
-                  <Label layoutX="69.0" layoutY="114.0" prefHeight="17.0" prefWidth="127.0" style="-fx-background-color: grey;" text="Previews Catalago PDF" />
-                  <Button fx:id="botonDescargarPdf" layoutX="78.0" layoutY="196.0" mnemonicParsing="false" onAction="#descargarPreview" prefHeight="42.0" prefWidth="113.0" stylesheets="@../style/genericos_style.css" text="Descargar" />
-                  <Label layoutX="172.0" layoutY="281.0" prefHeight="17.0" prefWidth="83.0" style="-fx-text-fill: white;" text="Versión" />
-                  <Label fx:id="labelVersionPreviews" layoutX="222.0" layoutY="282.0" prefHeight="17.0" prefWidth="52.0" style="-fx-text-fill: white;" text="0.0.0.0" />
-               </children></AnchorPane>
-      </content>
-    </Tab>
-      <Tab text="Actualizar">
-         <content>
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-               <children>
-                  <ImageView fitHeight="302.0" fitWidth="265.0" pickOnBounds="true">
-                     <image>
-                        <Image url="@../imagenes/azul.jpg" />
-                     </image>
-                  </ImageView>
-                  <Label layoutX="6.0" layoutY="113.0" prefHeight="17.0" prefWidth="103.0" style="-fx-text-fill: white;" text="Actualizar Datos" />
-                  <Button fx:id="botonActualizarDatos" layoutX="185.0" layoutY="104.0" mnemonicParsing="false" onAction="#actualizarDatosComic" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Actualizar" />
-                  <Label layoutX="6.0" layoutY="155.0" prefHeight="10.0" prefWidth="107.0" style="-fx-text-fill: white;" text="Actualizar Portadas" wrapText="true" />
-                  <Button fx:id="botonActualizarPortadas" layoutX="185.0" layoutY="146.0" mnemonicParsing="false" onAction="#actualizarPortadaComic" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Actualizar" />
-                  <Label layoutX="6.0" layoutY="198.0" prefHeight="3.0" prefWidth="107.0" style="-fx-text-fill: white;" text="Actualizar Todo" wrapText="true" />
-                  <Button fx:id="botonActualizarTodo" layoutX="186.0" layoutY="189.0" mnemonicParsing="false" onAction="#actualizarCompletoComic" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Actualizar" />
-                  <Label fx:id="prontInfoEspecial" alignment="CENTER" contentDisplay="TOP" layoutX="6.0" layoutY="6.0" mouseTransparent="true" prefHeight="88.0" prefWidth="252.0" style="-fx-background-color: #29B6CC;" wrapText="true">
-                     <font>
-                        <Font name="Comic Sans MS" size="18.0" />
-                     </font>
-                  </Label>
-                  <CheckBox fx:id="checkFirmas" layoutX="7.0" layoutY="245.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="99.0" style="-fx-text-fill: white;" text="Incluir Firmas" />
-                  <Button fx:id="botonCancelarSubida" layoutX="206.0" layoutY="226.0" mnemonicParsing="false" prefHeight="54.0" prefWidth="57.0" style="-fx-border-color: none; -fx-background-color: none;" visible="false">
-                     <stylesheets>
-                        <URL value="@../style/genericos_style.css" />
-                        <URL value="@../style/boton_reestart_style.css" />
-                     </stylesheets>
-                  </Button>
-                  <Label layoutX="172.0" layoutY="281.0" prefHeight="17.0" prefWidth="83.0" style="-fx-text-fill: white;" text="Versión" />
-                  <Label fx:id="labelVersionEspecial" layoutX="222.0" layoutY="281.0" prefHeight="17.0" prefWidth="52.0" style="-fx-text-fill: white;" text="0.0.0.0" />
-               </children>
-            </AnchorPane>
-         </content>
-      </Tab>
-      <Tab text="Portadas">
-         <content>
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-               <children>
-                  <ImageView fitHeight="302.0" fitWidth="265.0" pickOnBounds="true">
-                     <image>
-                        <Image url="@../imagenes/azul.jpg" />
-                     </image>
-                  </ImageView>
-                  <Label fx:id="prontInfoPortadas" alignment="CENTER" contentDisplay="TOP" layoutX="6.0" layoutY="6.0" mouseTransparent="true" prefHeight="88.0" prefWidth="252.0" style="-fx-background-color: #29B6CC;" wrapText="true">
-                     <font>
-                        <Font name="Comic Sans MS" size="18.0" />
-                     </font>
-                  </Label>
-                  <Label layoutX="6.0" layoutY="198.0" prefHeight="17.0" prefWidth="148.0" style="-fx-text-fill: white;" text="Comprimir Portadas" />
-                  <Button fx:id="botonComprimirPortadas" layoutX="186.0" layoutY="189.0" mnemonicParsing="false" onAction="#comprimirPortadas" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Comprimir" />
-                  <Label layoutX="6.0" layoutY="110.0" prefHeight="17.0" prefWidth="148.0" style="-fx-text-fill: white;" text="Copia seguridad portadas" />
-                  <Button fx:id="botonReCopiarPortadas" layoutX="185.0" layoutY="104.0" mnemonicParsing="false" onAction="#reCopiarPortadas" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Copiar" />
-                  <Button fx:id="botonCancelarSubidaPortadas" layoutX="206.0" layoutY="226.0" mnemonicParsing="false" prefHeight="54.0" prefWidth="57.0" style="-fx-border-color: none; -fx-background-color: none;" visible="false">
-                     <stylesheets>
-                        <URL value="@../style/genericos_style.css" />
-                        <URL value="@../style/boton_reestart_style.css" />
-                     </stylesheets>
-                  </Button>
-                  <Label layoutX="172.0" layoutY="281.0" prefHeight="17.0" prefWidth="83.0" style="-fx-text-fill: white;" text="Versión" />
-                  <Label fx:id="labelVersionPortadas" layoutX="222.0" layoutY="282.0" prefHeight="17.0" prefWidth="52.0" style="-fx-text-fill: white;" text="0.0.0.0" />
-                  <Label layoutX="6.0" layoutY="155.0" prefHeight="17.0" prefWidth="148.0" style="-fx-text-fill: white;" text="Recomponer portadas" />
-                  <Button fx:id="botonRecomponerPortadas" layoutX="185.0" layoutY="146.0" mnemonicParsing="false" onAction="#recomponerPortadas" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Copiar" />
-               </children>
-            </AnchorPane>
-         </content>
-      </Tab>
-  </tabs>
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="329.0" prefWidth="262.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.OpcionesAvanzadasController">
+	<tabs>
+		<Tab text="Opciones">
+			<content>
+				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="240.0">
+					<children>
+						<ImageView fitHeight="303.0" fitWidth="265.0" pickOnBounds="true">
+							<image>
+								<Image url="@../imagenes/azul.jpg" />
+							</image>
+						</ImageView>
+						<Label fx:id="prontInfo" alignment="CENTER" contentDisplay="TOP" layoutX="6.0" layoutY="6.0" mouseTransparent="true" prefHeight="88.0" prefWidth="252.0" style="-fx-background-color: #29B6CC;" wrapText="true">
+							<font>
+								<Font name="Comic Sans MS" size="18.0" />
+							</font>
+						</Label>
+						<Label layoutX="6.0" layoutY="108.0" prefHeight="17.0" prefWidth="83.0" style="-fx-text-fill: white;" text="Descargar SQL" />
+						<Button fx:id="botonDescargarSQL" layoutX="186.0" layoutY="104.0" mnemonicParsing="false" onAction="#descargarSQL" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Descargar" />
+						<Label fx:id="labelComprobar" layoutX="6.0" layoutY="200.0" prefHeight="17.0" prefWidth="108.0" style="-fx-text-fill: white;" text="Comprobar versión" />
+						<Button fx:id="botonActualizarSoftware" layoutX="186.0" layoutY="191.0" mnemonicParsing="false" onAction="#comprobarVersion" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Comprobar" />
+						<Label layoutX="6.0" layoutY="147.0" prefHeight="38.0" prefWidth="107.0" style="-fx-text-fill: white;" text="Normalizar Base de Datos" wrapText="true" />
+						<Button fx:id="botonNormalizarDB" layoutX="186.0" layoutY="148.0" mnemonicParsing="false" onAction="#normalizarDataBase" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Normalizar" />
+						<Label layoutX="172.0" layoutY="282.0" prefHeight="17.0" prefWidth="45.0" style="-fx-text-fill: white;" text="Versión" />
+						<Label fx:id="labelVersion" layoutX="222.0" layoutY="282.0" prefHeight="17.0" prefWidth="45.0" style="-fx-text-fill: white;" text="0.0.0.0" />
+					</children>
+				</AnchorPane>
+			</content>
+		</Tab>
+		<Tab text="Previews">
+			<content>
+				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+					<children>
+						<ImageView fitHeight="302.0" fitWidth="265.0" pickOnBounds="true">
+							<image>
+								<Image url="@../imagenes/azul.jpg" />
+							</image>
+						</ImageView>
+						<ComboBox fx:id="comboPreviews" layoutX="57.0" layoutY="146.0" prefWidth="150.0" />
+						<Label fx:id="prontInfoPreviews" alignment="CENTER" contentDisplay="TOP" layoutX="6.0" layoutY="6.0" mouseTransparent="true" prefHeight="88.0" prefWidth="252.0" style="-fx-background-color: #29B6CC;" wrapText="true">
+							<font>
+								<Font name="Comic Sans MS" size="18.0" />
+							</font>
+						</Label>
+						<Label layoutX="69.0" layoutY="114.0" prefHeight="17.0" prefWidth="127.0" style="-fx-background-color: grey;" text="Previews Catalago PDF" />
+						<Button fx:id="botonDescargarPdf" layoutX="78.0" layoutY="196.0" mnemonicParsing="false" onAction="#descargarPreview" prefHeight="42.0" prefWidth="113.0" stylesheets="@../style/genericos_style.css" text="Descargar" />
+						<Label layoutX="172.0" layoutY="281.0" prefHeight="17.0" prefWidth="83.0" style="-fx-text-fill: white;" text="Versión" />
+						<Label fx:id="labelVersionPreviews" layoutX="222.0" layoutY="282.0" prefHeight="17.0" prefWidth="52.0" style="-fx-text-fill: white;" text="0.0.0.0" />
+					</children>
+				</AnchorPane>
+			</content>
+		</Tab>
+		<Tab text="Actualizar">
+			<content>
+				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+					<children>
+						<ImageView fitHeight="302.0" fitWidth="265.0" pickOnBounds="true">
+							<image>
+								<Image url="@../imagenes/azul.jpg" />
+							</image>
+						</ImageView>
+						<Label layoutX="6.0" layoutY="113.0" prefHeight="17.0" prefWidth="103.0" style="-fx-text-fill: white;" text="Actualizar Datos" />
+						<Button fx:id="botonActualizarDatos" layoutX="185.0" layoutY="104.0" mnemonicParsing="false" onAction="#actualizarDatosComic" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Actualizar" />
+						<Label layoutX="6.0" layoutY="155.0" prefHeight="10.0" prefWidth="107.0" style="-fx-text-fill: white;" text="Actualizar Portadas" wrapText="true" />
+						<Button fx:id="botonActualizarPortadas" layoutX="185.0" layoutY="146.0" mnemonicParsing="false" onAction="#actualizarPortadaComic" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Actualizar" />
+						<Label layoutX="6.0" layoutY="198.0" prefHeight="3.0" prefWidth="107.0" style="-fx-text-fill: white;" text="Actualizar Todo" wrapText="true" />
+						<Button fx:id="botonActualizarTodo" layoutX="186.0" layoutY="189.0" mnemonicParsing="false" onAction="#actualizarCompletoComic" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Actualizar" />
+						<Label fx:id="prontInfoEspecial" alignment="CENTER" contentDisplay="TOP" layoutX="6.0" layoutY="6.0" mouseTransparent="true" prefHeight="88.0" prefWidth="252.0" style="-fx-background-color: #29B6CC;" wrapText="true">
+							<font>
+								<Font name="Comic Sans MS" size="18.0" />
+							</font>
+						</Label>
+						<CheckBox fx:id="checkFirmas" layoutX="7.0" layoutY="245.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="99.0" style="-fx-text-fill: white;" text="Incluir Firmas" />
+						<Button fx:id="botonCancelarSubida" layoutX="206.0" layoutY="226.0" mnemonicParsing="false" prefHeight="54.0" prefWidth="57.0" style="-fx-border-color: none; -fx-background-color: none;" visible="false">
+							<stylesheets>
+								<URL value="@../style/genericos_style.css" />
+								<URL value="@../style/boton_reestart_style.css" />
+							</stylesheets>
+						</Button>
+						<Label layoutX="172.0" layoutY="281.0" prefHeight="17.0" prefWidth="83.0" style="-fx-text-fill: white;" text="Versión" />
+						<Label fx:id="labelVersionEspecial" layoutX="222.0" layoutY="281.0" prefHeight="17.0" prefWidth="52.0" style="-fx-text-fill: white;" text="0.0.0.0" />
+					</children>
+				</AnchorPane>
+			</content>
+		</Tab>
+		<Tab text="Portadas">
+			<content>
+				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+					<children>
+						<ImageView fitHeight="302.0" fitWidth="265.0" pickOnBounds="true">
+							<image>
+								<Image url="@../imagenes/azul.jpg" />
+							</image>
+						</ImageView>
+						<Label fx:id="prontInfoPortadas" alignment="CENTER" contentDisplay="TOP" layoutX="6.0" layoutY="6.0" mouseTransparent="true" prefHeight="88.0" prefWidth="252.0" style="-fx-background-color: #29B6CC;" wrapText="true">
+							<font>
+								<Font name="Comic Sans MS" size="18.0" />
+							</font>
+						</Label>
+						<Label layoutX="6.0" layoutY="198.0" prefHeight="17.0" prefWidth="148.0" style="-fx-text-fill: white;" text="Comprimir Portadas" />
+						<Button fx:id="botonComprimirPortadas" layoutX="186.0" layoutY="189.0" mnemonicParsing="false" onAction="#comprimirPortadas" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Comprimir" />
+						<Label layoutX="6.0" layoutY="110.0" prefHeight="17.0" prefWidth="148.0" style="-fx-text-fill: white;" text="Copia seguridad portadas" />
+						<Button fx:id="botonReCopiarPortadas" layoutX="185.0" layoutY="104.0" mnemonicParsing="false" onAction="#reCopiarPortadas" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Copiar" />
+						<Button fx:id="botonCancelarSubidaPortadas" layoutX="206.0" layoutY="226.0" mnemonicParsing="false" prefHeight="54.0" prefWidth="57.0" style="-fx-border-color: none; -fx-background-color: none;" visible="false">
+							<stylesheets>
+								<URL value="@../style/genericos_style.css" />
+								<URL value="@../style/boton_reestart_style.css" />
+							</stylesheets>
+						</Button>
+						<Label layoutX="172.0" layoutY="281.0" prefHeight="17.0" prefWidth="83.0" style="-fx-text-fill: white;" text="Versión" />
+						<Label fx:id="labelVersionPortadas" layoutX="222.0" layoutY="282.0" prefHeight="17.0" prefWidth="52.0" style="-fx-text-fill: white;" text="0.0.0.0" />
+						<Label layoutX="6.0" layoutY="155.0" prefHeight="17.0" prefWidth="148.0" style="-fx-text-fill: white;" text="Recomponer portadas" />
+						<Button fx:id="botonRecomponerPortadas" layoutX="185.0" layoutY="146.0" mnemonicParsing="false" onAction="#recomponerPortadas" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Copiar" />
+					</children>
+				</AnchorPane>
+			</content>
+		</Tab>
+	</tabs>
 </TabPane>

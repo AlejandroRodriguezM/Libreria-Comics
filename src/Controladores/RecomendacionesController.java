@@ -30,17 +30,14 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
-
 import java.util.Random;
 import java.util.ResourceBundle;
 
-import alarmas.AlarmaList;
 import comicManagement.Comic;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
 import dbmanager.SelectManager;
 import funcionesInterfaz.FuncionesManejoFront;
-import funcionesManagment.AccionFuncionesComunes;
 import funciones_auxiliares.Utilidades;
 import funciones_auxiliares.Ventanas;
 import javafx.application.Platform;
@@ -52,7 +49,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -184,16 +180,6 @@ public class RecomendacionesController implements Initializable {
 	private static Ventanas nav = new Ventanas();
 
 	/**
-	 * Instancia de Utilidades para funciones auxiliares.
-	 */
-	private static Utilidades utilidad = null;
-
-	@FXML
-	private Label alarmaConexionSql;
-
-	private static AlarmaList alarmaList = new AlarmaList();
-
-	/**
 	 * Inicializa el controlador cuando se carga la vista.
 	 *
 	 * @param location  la ubicación del archivo FXML
@@ -201,9 +187,6 @@ public class RecomendacionesController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
-		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
-		alarmaList.iniciarThreadChecker();
 
 		imagencomic.imageProperty().addListener((observable, oldImage, newImage) -> {
 			if (newImage != null) {
@@ -220,9 +203,7 @@ public class RecomendacionesController implements Initializable {
 				});
 			} else {
 				// Restaurar el cursor y la opacidad al salir del ImageView
-				imagencomic.setOnMouseEntered(e -> {
-					imagencomic.setCursor(Cursor.DEFAULT);
-				});
+				imagencomic.setOnMouseEntered(e -> imagencomic.setCursor(Cursor.DEFAULT));
 			}
 		});
 		Platform.runLater(() -> {
@@ -247,7 +228,7 @@ public class RecomendacionesController implements Initializable {
 	 * @throws SQLException
 	 */
 	@FXML
-	void eligePorMi(ActionEvent event) throws IOException, SQLException {
+	void eligePorMi(ActionEvent event) {
 		printComicRecomendado.setOpacity(1);
 
 		printComicRecomendado.setText(generarLectura());
@@ -261,14 +242,14 @@ public class RecomendacionesController implements Initializable {
 	 * @throws IOException
 	 * @throws SQLException
 	 */
-	public String generarLectura() throws IOException, SQLException {
+	public String generarLectura() {
 
 		if (!ConectManager.conexionActiva()) {
 			return null;
 		}
 
 		Random r = new Random();
-		utilidad = new Utilidades();
+		Utilidades utilidad = new Utilidades();
 		String id_comic;
 		String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
 		List<Comic> listaComics = SelectManager.verLibreria(sentenciaSQL, false);
@@ -304,74 +285,9 @@ public class RecomendacionesController implements Initializable {
 		printComicRecomendado.setText("");
 	}
 
-	/////////////////////////////////
-	//// METODOS LLAMADA A VENTANAS//
-	/////////////////////////////////
-
-	/**
-	 * Maneja la acción del usuario en relación a los cómics, como agregar,
-	 * modificar, eliminar o puntuar un cómic.
-	 *
-	 * @param event El evento de acción que desencadenó la llamada a esta función.
-	 */
-	@FXML
-	void accionComic(ActionEvent event) {
-
-		Object fuente = event.getSource();
-
-		if (fuente instanceof MenuItem) {
-			MenuItem menuItemPresionado = (MenuItem) fuente;
-
-			if (menuItemPresionado == menu_comic_aniadir) {
-				AccionFuncionesComunes.setTipoAccion("aniadir");
-			} else if (menuItemPresionado == menu_comic_modificar) {
-				AccionFuncionesComunes.setTipoAccion("modificar");
-			} else if (menuItemPresionado == menu_comic_eliminar) {
-				AccionFuncionesComunes.setTipoAccion("eliminar");
-			} else if (menuItemPresionado == menu_comic_puntuar) {
-				AccionFuncionesComunes.setTipoAccion("puntuar");
-			}
-		}
-
-		nav.verAccionComic();
-	}
-
-	/**
-	 * Metodo que permite abrir la ventana "sobreMiController"
-	 *
-	 * @param event
-	 */
-	@FXML
-	void verSobreMi(ActionEvent event) {
-
-		nav.verSobreMi();
-
-		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-		myStage.close();
-	}
-
 	/////////////////////////////
 	//// FUNCIONES PARA SALIR////
 	/////////////////////////////
-
-	/**
-	 * Vuelve al menu inicial de conexion de la base de datos.
-	 *
-	 * @param event
-	 */
-	@FXML
-	public void desconectar(ActionEvent event) throws IOException {
-
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
-
-		nav.verAccesoBBDD();
-		ConectManager.close();
-
-		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-		myStage.close();
-	}
 
 	public Scene miStageVentana() {
 		Node rootNode = botonElegir;
@@ -393,32 +309,15 @@ public class RecomendacionesController implements Initializable {
 
 		return (Stage) menu_navegacion.getScene().getWindow();
 	}
-	
+
 	/**
 	 * Vuelve al menu inicial de conexion de la base de datos.
 	 *
 	 * @param event
 	 */
 	@FXML
-	public void volverMenu(ActionEvent event) throws IOException {
-		nav.verMenuPrincipal();
-
-		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-		myStage.close();
-	}
-
-	/**
-	 * Maneja la acción de salida del programa.
-	 *
-	 * @param event el evento que desencadena la acción
-	 */
-	@FXML
-	public void salirPrograma(ActionEvent event) {
-		// Lógica para manejar la acción de "Salir"
-		if (nav.salirPrograma(event)) {
-			Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-			myStage.close();
-		}
+	public void volverMenu(ActionEvent event) {
+		closeWindows();
 	}
 
 	/**
@@ -430,10 +329,7 @@ public class RecomendacionesController implements Initializable {
 		if (FuncionesManejoFront.getStageVentanas().contains(estadoStage())) {
 			FuncionesManejoFront.getStageVentanas().remove(estadoStage());
 		}
-		
-		Stage myStage = (Stage) menu_navegacion.getScene().getWindow();
-		myStage.close();
-		nav.verAccesoBBDD();
+		estadoStage().close();
 
 	}
 

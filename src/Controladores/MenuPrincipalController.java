@@ -598,8 +598,7 @@ public class MenuPrincipalController implements Initializable {
 
 		Platform.runLater(() -> {
 
-			Stage myStage = (Stage) this.botonIntroducir.getScene().getWindow();
-			myStage.setOnCloseRequest(event -> stop());
+			estadoStage().setOnCloseRequest(event -> stop());
 
 			alarmaList.setAlarmaConexionSql(alarmaConexionSql);
 			alarmaList.iniciarThreadChecker();
@@ -618,7 +617,6 @@ public class MenuPrincipalController implements Initializable {
 			FuncionesTableView.modificarColumnas(true);
 			AccionControlUI.controlarEventosInterfazPrincipal(guardarReferencia());
 			FuncionesManejoFront.getStageVentanas().add(estadoStage());
-//			estadoStage().setOnCloseRequest(event -> Utilidades.handleClose());
 
 		});
 
@@ -827,10 +825,6 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void ventanaRecomendar(ActionEvent event) {
 		nav.verRecomendacion();
-		ConectManager.resetConnection();
-
-		Stage myStage = (Stage) menuNavegacion.getScene().getWindow();
-		myStage.close();
 	}
 
 	/**
@@ -841,10 +835,6 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void verSobreMi(ActionEvent event) {
 		nav.verSobreMi();
-		ConectManager.resetConnection();
-
-		Stage myStage = (Stage) menuNavegacion.getScene().getWindow();
-		myStage.close();
 	}
 
 	/**
@@ -1223,7 +1213,6 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void borrarContenidoTabla(ActionEvent event) {
 		try {
-
 			Thread borradoTablaThread = new Thread(() -> {
 				try {
 					FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
@@ -1239,65 +1228,81 @@ public class MenuPrincipalController implements Initializable {
 						// Configuración de la tarea para crear el archivo Excel
 
 						Task<Boolean> crearExcelTask = excelFuntions.crearExcelTask(listaComics,
-								TipoBusqueda.ELIMINAR.toString(), dateFormat, estadoStage());
+								TipoBusqueda.ELIMINAR.toString(), dateFormat);
 						Thread excelThread = new Thread(crearExcelTask);
 
-						crearExcelTask.setOnRunning(e -> {
-						    estadoStage().setOnCloseRequest(closeEvent -> {
-						        crearExcelTask.cancel(true);
-						        Utilidades.cerrarCargaComics();
-						    });
-						    
-						    cerradoPorOperaciones();
-						    botonCancelarSubida.setVisible(true);
-						    FuncionesManejoFront.cambiarEstadoMenuBar(true, guardarReferencia());
-						    limpiezaDeDatos();
-						});
-
-						crearExcelTask.setOnSucceeded(e -> {
-
-							botonCancelarSubida.setVisible(false);
-							boolean deleteCompleted;
-							try {
-								deleteCompleted = ComicManagerDAO.deleteTable().get();
-								String mensaje = deleteCompleted ? "Base de datos borrada y reiniciada correctamente"
-										: "ERROR. No se ha podido eliminar y reiniciar la base de datos";
-
-								if (deleteCompleted) {
-									AlarmaList.detenerAnimacionCarga(referenciaVentana.getProgresoCarga());
-									ListaComicsDAO.limpiarListaGuardados();
-								}
-								FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
-								AlarmaList.mostrarMensajePront(mensaje, deleteCompleted, prontInfo);
-
-							} catch (InterruptedException | ExecutionException e1) {
-								e1.printStackTrace();
-							}
-						});
-
-						crearExcelTask.setOnFailed(e -> {
+						if (crearExcelTask == null) {
 							botonCancelarSubida.setVisible(false);
 							FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
-						});
+							AlarmaList.detenerAnimacionPront(prontInfo);
+							AlarmaList.detenerAnimacionCarga(progresoCarga);
 
-						crearExcelTask.setOnCancelled(e -> {
-							FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
-							AlarmaList.detenerAnimacionCarga(referenciaVentana.getProgresoCarga());
-							String mensaje = "Has cancelado el borrado de la base de datos";
-							AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
-
-						});
-
-						// Manejar la cancelación
-						botonCancelarSubida.setOnAction(ev -> {
-							botonCancelarSubida.setVisible(false);
-							AlarmaList.detenerAnimacionCarga(referenciaVentana.getProgresoCarga());
-
-							crearExcelTask.cancel(true); // true indica que la tarea debe ser interrumpida si ya está en
-															// ejecución
+							// Detener el hilo de la tarea
 							excelThread.interrupt();
-						});
+						} else {
 
+							crearExcelTask.setOnRunning(e -> {
+
+								estadoStage().setOnCloseRequest(closeEvent -> {
+									crearExcelTask.cancel(true);
+									excelThread.interrupt(); // Interrumpir el hilo
+									Utilidades.cerrarCargaComics();
+								});
+
+								cerradoPorOperaciones();
+								botonCancelarSubida.setVisible(true);
+								FuncionesManejoFront.cambiarEstadoMenuBar(true, guardarReferencia());
+								limpiezaDeDatos();
+							});
+
+							crearExcelTask.setOnSucceeded(e -> {
+
+								botonCancelarSubida.setVisible(false);
+								boolean deleteCompleted;
+								try {
+									deleteCompleted = ComicManagerDAO.deleteTable().get();
+									String mensaje = deleteCompleted
+											? "Base de datos borrada y reiniciada correctamente"
+											: "ERROR. No se ha podido eliminar y reiniciar la base de datos";
+
+									if (deleteCompleted) {
+										AlarmaList.detenerAnimacionCarga(referenciaVentana.getProgresoCarga());
+										ListaComicsDAO.limpiarListaGuardados();
+										Utilidades.eliminarContenidoCarpeta(FuncionesExcel.DEFAULT_PORTADA_IMAGE_PATH);
+									}
+									FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
+									AlarmaList.mostrarMensajePront(mensaje, deleteCompleted, prontInfo);
+									botonGuardarResultado.setVisible(false);
+
+								} catch (InterruptedException | ExecutionException e1) {
+									crearExcelTask.cancel(true);
+									excelThread.interrupt();
+									Utilidades.manejarExcepcion(e1);
+								}
+							});
+
+							crearExcelTask.setOnFailed(e -> {
+								botonCancelarSubida.setVisible(false);
+								FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
+							});
+
+							crearExcelTask.setOnCancelled(e -> {
+								FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
+								AlarmaList.detenerAnimacionCarga(referenciaVentana.getProgresoCarga());
+								String mensaje = "Has cancelado el borrado de la base de datos";
+								AlarmaList.mostrarMensajePront(mensaje, true, prontInfo);
+
+							});
+
+							// Manejar la cancelación
+							botonCancelarSubida.setOnAction(ev -> {
+								botonCancelarSubida.setVisible(false);
+								AlarmaList.detenerAnimacionCarga(referenciaVentana.getProgresoCarga());
+
+								crearExcelTask.cancel(true);
+								excelThread.interrupt();
+							});
+						}
 						// Iniciar la tarea principal de creación de Excel en un hilo separado
 						excelThread.start();
 
@@ -1341,8 +1346,7 @@ public class MenuPrincipalController implements Initializable {
 		imagencomic.setImage(null);
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
 		// Configuración de la tarea para crear el archivo Excel
-		Task<Boolean> crearExcelTask = excelFuntions.crearExcelTask(listaComics, tipoBusqueda, dateFormat,
-				estadoStage());
+		Task<Boolean> crearExcelTask = excelFuntions.crearExcelTask(listaComics, tipoBusqueda, dateFormat);
 		Thread excelThread = new Thread(crearExcelTask);
 
 		if (crearExcelTask == null) {
@@ -1423,7 +1427,7 @@ public class MenuPrincipalController implements Initializable {
 		String frase = "Fichero CSV";
 		String formatoFichero = "*.csv";
 
-		File fichero = Utilidades.tratarFichero(frase, formatoFichero, false, estadoStage());
+		File fichero = Utilidades.tratarFichero(frase, formatoFichero, false);
 
 		// Verificar si se obtuvo un objeto FileChooser válido
 		if (fichero != null) {
@@ -1684,9 +1688,11 @@ public class MenuPrincipalController implements Initializable {
 		if (FuncionesManejoFront.getStageVentanas().contains(estadoStage())) {
 			FuncionesManejoFront.getStageVentanas().remove(estadoStage());
 		}
-
 		alarmaList.detenerThreadChecker();
+		nav.cerrarMenuOpciones();
 		nav.cerrarCargaComics();
+		nav.cerrarVentanaAccion();
+
 		Platform.exit();
 	}
 }
