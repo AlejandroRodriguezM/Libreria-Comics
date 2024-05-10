@@ -2451,6 +2451,12 @@ public class Utilidades {
 			}
 		}
 	}
+	
+	public static ImageView createIcon(String iconName, double width, double height) {
+		Image image = new Image(Utilidades.class.getResourceAsStream(iconName), width, height, true, true);
+		ImageView imageView = new ImageView(image);
+		return imageView;
+	}
 
 	public static AccionReferencias getReferenciaVentana() {
 		return referenciaVentana;

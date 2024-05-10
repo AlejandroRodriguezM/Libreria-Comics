@@ -32,9 +32,9 @@
                   <MenuItem disable="true" mnemonicParsing="false" text="Exportar base de datos" visible="false" />
                   <MenuItem disable="true" mnemonicParsing="false" text="Eliminar base de datos" visible="false" />
                   <MenuItem fx:id="menu_archivo_sobreMi" mnemonicParsing="false" text="Sobre mi" visible="false" />
-                  <MenuItem fx:id="menu_archivo_volver" mnemonicParsing="false" onAction="#volverMenu" text="Volver al menu" />
+                  <MenuItem fx:id="menu_archivo_volver" mnemonicParsing="false" text="Volver al menu" visible="false" />
                   <MenuItem fx:id="menu_archivo_desconectar" mnemonicParsing="false" text="Desconectar" visible="false" />
-                  <MenuItem fx:id="menu_archivo_cerrar" mnemonicParsing="false" text="Cerrar" visible="false" />
+                  <MenuItem fx:id="menu_archivo_cerrar" mnemonicParsing="false" onAction="#volverMenu" text="Cerrar" />
                </items>
             </Menu>
             <Menu fx:id="navegacion_comic" mnemonicParsing="false" text="Ventanas" visible="false">
@@ -46,7 +46,7 @@
                   <MenuItem disable="true" mnemonicParsing="false" text="Lectura Aleatoria" />
                </items>
             </Menu>
-                      <Menu fx:id="navegacion_estadistica" mnemonicParsing="false" text="Estadistica">
+                      <Menu fx:id="navegacion_estadistica" disable="true" mnemonicParsing="false" text="Estadistica" visible="false">
             <items>
                   <MenuItem disable="true" mnemonicParsing="false" text="Comics en posesion" />
                   <MenuItem disable="true" mnemonicParsing="false" text="Comics Comprados" />

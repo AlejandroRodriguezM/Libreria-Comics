@@ -202,7 +202,7 @@ public class SobreMiController implements Initializable {
 
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
 		alarmaList.iniciarThreadChecker();
-
+		menu_archivo_cerrar.setGraphic(Utilidades.createIcon("/Icono/Archivo/salir.png", 16, 16));
 		Platform.runLater(() -> {
 			FuncionesManejoFront.getStageVentanas().add(estadoStage());
 			estadoStage().setOnCloseRequest(event -> closeWindows());
@@ -341,19 +341,6 @@ public class SobreMiController implements Initializable {
 	@FXML
 	public void volverMenu(ActionEvent event) throws IOException {
 		closeWindows();
-	}
-
-	/**
-	 * Maneja la acción de salida del programa.
-	 *
-	 * @param event el evento que desencadena la acción
-	 */
-	@FXML
-	public void salirPrograma(ActionEvent event) {
-		// Lógica para manejar la acción de "Salir"
-		if (nav.salirPrograma(event)) {
-			closeWindows();
-		}
 	}
 
 	/**

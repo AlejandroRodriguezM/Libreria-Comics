@@ -188,6 +188,8 @@ public class RecomendacionesController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
+		menu_archivo_cerrar.setGraphic(Utilidades.createIcon("/Icono/Archivo/salir.png", 16, 16));
+
 		imagencomic.imageProperty().addListener((observable, oldImage, newImage) -> {
 			if (newImage != null) {
 				// Cambiar la apariencia del cursor y la opacidad cuando la imagen se ha cargado
@@ -206,9 +208,7 @@ public class RecomendacionesController implements Initializable {
 				imagencomic.setOnMouseEntered(e -> imagencomic.setCursor(Cursor.DEFAULT));
 			}
 		});
-		Platform.runLater(() -> {
-			FuncionesManejoFront.getStageVentanas().add(estadoStage());
-		});
+		Platform.runLater(() -> FuncionesManejoFront.getStageVentanas().add(estadoStage()));
 	}
 
 	@FXML

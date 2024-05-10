@@ -13,30 +13,30 @@ import funciones_auxiliares.Utilidades;
 
 public class SelectManager {
 
-	public static final String TAMANIO_DATABASE = "SELECT COUNT(*) FROM " + ConectManager.DB_NAME + ".comicsbbdd";
+	public static final String TAMANIO_DATABASE = "SELECT COUNT(*) FROM " + ConectManager.DB_NAME + ".comicsbbdd;";
 	private static final String SENTENCIA_BUSQUEDA_INDIVIDUAL = "SELECT * FROM " + ConectManager.DB_NAME
-			+ ".comicsbbdd WHERE ID = ?";
+			+ ".comicsbbdd WHERE ID = ?;";
 	private static final String SENTENCIA_CONTAR_COMICS_POR_ID = "SELECT COUNT(*) FROM " + ConectManager.DB_NAME
-			+ ".comicsbbdd WHERE ID = ?";
+			+ ".comicsbbdd WHERE ID = ?;";
 	private static final String SENTENCIA_BUSCAR_PORTADA = "SELECT portada FROM " + ConectManager.DB_NAME
-			+ ".comicsbbdd WHERE ID = ?";
+			+ ".comicsbbdd WHERE ID = ?;";
 	public static final String SENTENCIA_BUSQUEDA_COMPLETA = "SELECT * FROM " + ConectManager.DB_NAME + ".comicsbbdd";
-	public static final String SENTENCIA_TOTAL_BUSQUEDA = "SELECT COUNT(*) FROM comicsbbdd WHERE 1=1";
+	public static final String SENTENCIA_TOTAL_BUSQUEDA = "SELECT COUNT(*) FROM comicsbbdd WHERE 1=1;";
 
 	public static final String SENTENCIA_POSESION = "SELECT * FROM " + ConectManager.DB_NAME
-			+ ".comicsbbdd WHERE estado = 'En posesion' ORDER BY nomComic, fecha_publicacion, numComic";
+			+ ".comicsbbdd WHERE estado = 'En posesion' ORDER BY nomComic, fecha_publicacion, numComic;";
 	public static final String SENTENCIA_KEY_ISSUE = "SELECT * FROM " + ConectManager.DB_NAME
-			+ ".comicsbbdd WHERE key_issue <> 'Vacio' ORDER BY nomComic, fecha_publicacion, numComic";
+			+ ".comicsbbdd WHERE key_issue <> 'Vacio' ORDER BY nomComic, fecha_publicacion, numComic;";
 	public static final String SENTENCIA_COMPLETA = "SELECT * FROM " + ConectManager.DB_NAME
-			+ ".comicsbbdd ORDER BY nomComic, fecha_publicacion, numComic";
+			+ ".comicsbbdd ORDER BY nomComic, fecha_publicacion, numComic;";
 	public static final String SENTENCIA_VENDIDOS = "SELECT * FROM " + ConectManager.DB_NAME
-			+ ".comicsbbdd WHERE estado = 'Vendido' ORDER BY nomComic, fecha_publicacion, numComic";
+			+ ".comicsbbdd WHERE estado = 'Vendido' ORDER BY nomComic, fecha_publicacion, numComic;";
 	public static final String SENTENCIA_COMPRADOS = "SELECT * FROM " + ConectManager.DB_NAME
-			+ ".comicsbbdd WHERE estado = 'Comprado' ORDER BY nomComic, fecha_publicacion, numComic";
+			+ ".comicsbbdd WHERE estado = 'Comprado' ORDER BY nomComic, fecha_publicacion, numComic;";
 	public static final String SENTENCIA_PUNTUACION = "SELECT * FROM " + ConectManager.DB_NAME
-			+ ".comicsbbdd WHERE puntuacion <> 'Sin puntuar' ORDER BY nomComic, fecha_publicacion, numComic";
+			+ ".comicsbbdd WHERE puntuacion <> 'Sin puntuar' ORDER BY nomComic, fecha_publicacion, numComic;";
 	public static final String SENTENCIA_FIRMADOS = "SELECT * FROM " + ConectManager.DB_NAME
-			+ ".comicsbbdd WHERE Firma <> '' ORDER BY nomComic, fecha_publicacion, numComic";
+			+ ".comicsbbdd WHERE Firma <> '' ORDER BY nomComic, fecha_publicacion, numComic;";
 
 	/**
 	 * Funcion que permite contar cuantas filas hay en la base de datos.

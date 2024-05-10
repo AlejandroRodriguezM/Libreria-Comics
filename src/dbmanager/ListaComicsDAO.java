@@ -642,7 +642,7 @@ public class ListaComicsDAO {
 		// conteos
 		Map<String, Integer> nomComicEstadistica = new HashMap<>();
 
-		Map<Integer, Integer> nivelGradeoEstadistica = new HashMap<>();
+		Map<String, Integer> nivelGradeoEstadistica = new HashMap<>();
 		Map<String, Integer> nomVarianteEstadistica = new HashMap<>();
 		Map<String, Integer> firmaEstadistica = new HashMap<>();
 		Map<String, Integer> nomEditorialEstadistica = new HashMap<>();
@@ -666,7 +666,7 @@ public class ListaComicsDAO {
 				// Obtener los datos de cada campo
 				String nomComic = rs.getString("nomComic");
 				int numComic = rs.getInt("numComic");
-				int nivelGradeo = rs.getInt("nivel_gradeo");
+				String nivelGradeo = rs.getString("nivel_gradeo");
 				String nomVariante = rs.getString("nomVariante");
 				String firma = rs.getString("firma");
 				String nomEditorial = rs.getString("nomEditorial");
@@ -780,8 +780,8 @@ public class ListaComicsDAO {
 		estadisticaStr.append(lineaDecorativa1);
 		estadisticaStr.append("\nEstadística de las cajas:\n");
 		estadisticaStr.append(lineaDecorativa2);
-		List<Map.Entry<Integer, Integer>> nivelGradeoList = sortByValueInt(nivelGradeoEstadistica);
-		for (Map.Entry<Integer, Integer> entry : nivelGradeoList) {
+		List<Map.Entry<String, Integer>> nivelGradeoList = sortByValue(nivelGradeoEstadistica);
+		for (Map.Entry<String, Integer> entry : nivelGradeoList) {
 			estadisticaStr.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
 		}
 

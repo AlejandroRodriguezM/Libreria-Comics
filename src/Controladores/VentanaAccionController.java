@@ -660,12 +660,16 @@ public class VentanaAccionController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
+		menuCodigoBarras.setGraphic(Utilidades.createIcon("/Icono/Archivo/exportar.png", 16, 16));
+		menuImportarFichero.setGraphic(Utilidades.createIcon("/Icono/Archivo/importar.png", 16, 16));
+		menuConexion.setGraphic(Utilidades.createIcon("/Icono/Archivo/lista_verificacion.png", 16, 16));
+
+		navegacionMostrarEstadistica.setGraphic(Utilidades.createIcon("/Icono/Estadistica/descarga.png", 16, 16));
+
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
 		alarmaList.setAlarmaConexionInternet(alarmaConexionInternet);
 		alarmaList.iniciarThreadChecker();
 
-		
-		
 		Platform.runLater(() -> {
 
 			enviarReferencias();

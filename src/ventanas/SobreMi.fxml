@@ -40,14 +40,14 @@
          <menus>
             <Menu fx:id="navegacion_cerrar" mnemonicParsing="false" text="Archivo">
                <items>
-                  <MenuItem disable="true" mnemonicParsing="false" text="Exportar CSV" />
-                  <MenuItem disable="true" mnemonicParsing="false" text="Importar CSV" />
-                  <MenuItem disable="true" mnemonicParsing="false" text="Exportar base de datos" />
-                  <MenuItem disable="true" mnemonicParsing="false" text="Eliminar base de datos" />
-                  <MenuItem fx:id="menu_archivo_sobreMi" mnemonicParsing="false" text="Sobre mi" />
-                  <MenuItem fx:id="menu_archivo_volver" mnemonicParsing="false" onAction="#volverMenu" text="Volver al menu" />
+                  <MenuItem mnemonicParsing="false" text="Exportar CSV" visible="false" />
+                  <MenuItem mnemonicParsing="false" text="Importar CSV" visible="false" />
+                  <MenuItem mnemonicParsing="false" text="Exportar base de datos" visible="false" />
+                  <MenuItem mnemonicParsing="false" text="Eliminar base de datos" visible="false" />
+                  <MenuItem fx:id="menu_archivo_sobreMi" mnemonicParsing="false" text="Sobre mi" visible="false" />
+                  <MenuItem fx:id="menu_archivo_volver" disable="true" mnemonicParsing="false" text="Volver al menu" visible="false" />
                   <MenuItem fx:id="menu_archivo_desconectar" mnemonicParsing="false" onAction="#desconectar" text="Desconectar" visible="false" />
-                  <MenuItem fx:id="menu_archivo_cerrar" mnemonicParsing="false" onAction="#salirPrograma" text="Cerrar" visible="false" />
+                  <MenuItem fx:id="menu_archivo_cerrar" mnemonicParsing="false" onAction="#volverMenu" text="Cerrar" />
                </items>
             </Menu>
             <Menu fx:id="navegacion_comic" mnemonicParsing="false" text="Ventanas" visible="false">

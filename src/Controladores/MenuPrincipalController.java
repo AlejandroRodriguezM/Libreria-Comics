@@ -4,6 +4,8 @@
 */
 package Controladores;
 
+import javafx.scene.image.Image;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -190,6 +192,12 @@ public class MenuPrincipalController implements Initializable {
 
 	@FXML
 	private MenuItem menuArchivoAvanzado;
+
+	@FXML
+	private MenuItem menuArchivoApiMarvel;
+
+	@FXML
+	private MenuItem menuArchivoApiVine;
 
 	@FXML
 	private MenuItem menuArchivoConexion;
@@ -587,6 +595,8 @@ public class MenuPrincipalController implements Initializable {
 		Ventanas.setReferenciaVentanaPrincipal(guardarReferencia());
 	}
 
+
+
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
 	 *
@@ -596,6 +606,32 @@ public class MenuPrincipalController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
+		menuArchivoExcel.setGraphic(Utilidades.createIcon("/Icono/Archivo/exportar.png", 16, 16));
+		menuArchivoImportar.setGraphic(Utilidades.createIcon("/Icono/Archivo/importar.png", 16, 16));
+		menuArchivoDelete.setGraphic(Utilidades.createIcon("/Icono/Archivo/basura.png", 16, 16));
+		menuArchivoSobreMi.setGraphic(Utilidades.createIcon("/Icono/Archivo/about.png", 16, 16));
+		menuArchivoConexion.setGraphic(Utilidades.createIcon("/Icono/Archivo/lista_verificacion.png", 16, 16));
+		menuArchivoAvanzado.setGraphic(Utilidades.createIcon("/Icono/Archivo/configuraciones.png", 16, 16));
+		menuComprobarApis.setGraphic(Utilidades.createIcon("/Icono/Archivo/apis_check.png", 16, 16));
+		menuArchivoApiMarvel.setGraphic(Utilidades.createIcon("/Icono/Archivo/check_apis.png", 16, 16));
+		menuArchivoApiVine.setGraphic(Utilidades.createIcon("/Icono/Archivo/check_apis.png", 16, 16));
+		menuArchivoDesconectar.setGraphic(Utilidades.createIcon("/Icono/Archivo/apagado.png", 16, 16));
+		menuArchivoCerrar.setGraphic(Utilidades.createIcon("/Icono/Archivo/salir.png", 16, 16));
+		
+		menuComicAniadir.setGraphic(Utilidades.createIcon("/Icono/Ventanas/add.png", 16, 16));
+		menuComicEliminar.setGraphic(Utilidades.createIcon("/Icono/Ventanas/delete.png", 16, 16));
+		menuComicModificar.setGraphic(Utilidades.createIcon("/Icono/Ventanas/modify.png", 16, 16));
+		menuComicPuntuar.setGraphic(Utilidades.createIcon("/Icono/Ventanas/puntuar.png", 16, 16));
+		menuComicAleatoria.setGraphic(Utilidades.createIcon("/Icono/Ventanas/aleatorio.png", 16, 16));
+		
+		menuEstadisticaPosesion.setGraphic(Utilidades.createIcon("/Icono/Estadistica/posesion.png", 16, 16));
+		menuEstadisticaComprados.setGraphic(Utilidades.createIcon("/Icono/Estadistica/comprado.png", 16, 16));
+		menuEstadisticaVendidos.setGraphic(Utilidades.createIcon("/Icono/Estadistica/vendido.png", 16, 16));
+		menuEstadisticaPuntuados.setGraphic(Utilidades.createIcon("/Icono/Estadistica/puntuados.png", 16, 16));
+		menuEstadisticaFirmados.setGraphic(Utilidades.createIcon("/Icono/Estadistica/firmados.png", 16, 16));
+		menuEstadisticaKeyIssue.setGraphic(Utilidades.createIcon("/Icono/Estadistica/keys.png", 16, 16));
+		menuEstadisticaEstadistica.setGraphic(Utilidades.createIcon("/Icono/Estadistica/descarga.png", 16, 16));
+		
 		Platform.runLater(() -> {
 
 			estadoStage().setOnCloseRequest(event -> stop());
@@ -979,6 +1015,8 @@ public class MenuPrincipalController implements Initializable {
 		} else {
 			String sentenciaSQL = DBUtilidades.construirSentenciaSQL(tipoBusqueda);
 
+			System.out.println(sentenciaSQL);
+			
 			listaComics = SelectManager.verLibreria(sentenciaSQL, false);
 		}
 

@@ -39,8 +39,8 @@
                   <MenuItem fx:id="menuArchivoAvanzado" mnemonicParsing="false" onAction="#verOpcionesAvanzadas" text="Opciones Avanzadas" />
                   <Menu fx:id="menuComprobarApis" mnemonicParsing="false" text="Comprobar Apis">
                     <items>
-                      <MenuItem mnemonicParsing="false" onAction="#modificarApiMarvel" text="Comprobar Api Marvel" />
-                        <MenuItem mnemonicParsing="false" onAction="#modificarApiVine" text="Comprobar Api Vine" />
+                      <MenuItem fx:id="menuArchivoApiMarvel" mnemonicParsing="false" onAction="#modificarApiMarvel" text="Comprobar Api Marvel" />
+                        <MenuItem fx:id="menuArchivoApiVine" mnemonicParsing="false" onAction="#modificarApiVine" text="Comprobar Api Vine" />
                     </items>
                   </Menu>
 						<MenuItem fx:id="menuArchivoDesconectar" mnemonicParsing="false" onAction="#volverMenu" text="Desconectar" />
