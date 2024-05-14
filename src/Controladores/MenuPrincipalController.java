@@ -1620,6 +1620,10 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void volverMenu(ActionEvent event) {
 
+		if (FuncionesManejoFront.getStageVentanas().contains(estadoStage())) {
+			FuncionesManejoFront.getStageVentanas().remove(estadoStage());
+		}
+
 		List<Stage> stageVentanas = FuncionesManejoFront.getStageVentanas();
 
 		// Assuming `stages` is a collection of stages you want to check against
@@ -1630,10 +1634,8 @@ public class MenuPrincipalController implements Initializable {
 		ConectManager.close();
 		nav.cerrarCargaComics();
 		nav.verAccesoBBDD();
+		estadoStage().close();
 
-		if (FuncionesManejoFront.getStageVentanas().contains(estadoStage())) {
-			FuncionesManejoFront.getStageVentanas().remove(estadoStage());
-		}
 	}
 
 	/**
@@ -1646,8 +1648,7 @@ public class MenuPrincipalController implements Initializable {
 		// Lógica para manejar la acción de "Salir"
 		nav.cerrarCargaComics();
 		if (nav.salirPrograma(event)) {
-			Stage myStage = (Stage) menuNavegacion.getScene().getWindow();
-			myStage.close();
+			estadoStage().close();
 		}
 	}
 

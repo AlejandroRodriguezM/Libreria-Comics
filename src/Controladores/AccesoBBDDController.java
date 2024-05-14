@@ -7,6 +7,7 @@ package Controladores;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
@@ -20,6 +21,7 @@ import dbmanager.ConectManager;
 import dbmanager.DatabaseManagerDAO;
 import dbmanager.ListaComicsDAO;
 import ficherosFunciones.FuncionesFicheros;
+import funcionesInterfaz.FuncionesManejoFront;
 import funciones_auxiliares.Utilidades;
 import funciones_auxiliares.Ventanas;
 import javafx.application.Platform;
@@ -194,6 +196,12 @@ public class AccesoBBDDController implements Initializable {
 		alarmaList.setAlarmaConexionInternet(alarmaConexionInternet);
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
 		alarmaList.setAlarmaConexionPrincipal(prontEstadoConexion);
+
+		List<Stage> stageVentanas = FuncionesManejoFront.getStageVentanas();
+
+		for (Stage stage : stageVentanas) {
+			stage.close(); // Close the stage if it's not the current state
+		}
 
 		Platform.runLater(() -> {
 
