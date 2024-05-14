@@ -354,8 +354,9 @@ public class FuncionesComboBox {
 				originalComboBox.setValue("");
 				Comic comic = getComicFromComboBoxes(comboboxes);
 				actualizarComboBoxes(comboboxes, comic);
+				
 				List<String> allFilteredItems = new ArrayList<>(
-						ListaComicsDAO.itemsList.get(comboboxes.indexOf(originalComboBox)));
+						ListaComicsDAO.listaOrdenada.get(comboboxes.indexOf(originalComboBox)));
 				currentFilteredItems.clear();
 				currentFilteredItems.addAll(allFilteredItems);
 				listView.setItems(FXCollections.observableArrayList(currentFilteredItems));
