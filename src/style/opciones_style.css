@@ -38,32 +38,32 @@
     -fx-border-radius: 4.0px;
 }
 
-.button#boton_restaurar {
+.button#botonRestaurar {
     -fx-background-color: #ffd700; /* Amarillo */
     -fx-border-color: #e5b800; /* Borde */
     -fx-text-fill: black;
     }
-.button#boton_restaurar:hover {
+.button#botonRestaurar:hover {
     -fx-background-color: #e5b800;
 }
 
-.button#boton_guardar {
+.button#botonGuardar {
     -fx-background-color: #5cb85c;
     -fx-border-color: #4cae4c;
     
 }
 
-.button#boton_guardar:hover {
+.button#botonGuardar:hover {
     -fx-background-color: #4cae4c;
 }
 
-.button#boton_abrir {
+.button#botonAbrir {
     -fx-background-color: #337ab7;
     -fx-border-color: #2e6da4;
     
 }
 
-.button#boton_abrir:hover {
+.button#botonAbrir:hover {
     -fx-background-color: #2e6da4;
 }
 
@@ -116,7 +116,7 @@
     -fx-border-radius: 4.0px;
 }
 
-#etiquetaHost:hover, #nombre_label:hover, #password_label:hover, #puerto_label:hover, #usuario_label:hover {
+#etiquetaHost:hover, #nombreLabel:hover, #passwordLabel:hover, #puertoLabel:hover, #usuarioLabel:hover {
     -fx-background-color: #e0e0e0;
 }
 

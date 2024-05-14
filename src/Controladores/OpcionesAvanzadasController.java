@@ -37,9 +37,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -50,7 +48,6 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.coobird.thumbnailator.Thumbnails;
 
@@ -147,6 +144,13 @@ public class OpcionesAvanzadasController implements Initializable {
 	private static Ventanas nav = new Ventanas();
 
 	public static AtomicBoolean actualizarFima = new AtomicBoolean(false);
+
+	private static AtomicInteger comicsProcesados;
+	private static AtomicInteger mensajeIdCounter;
+	private static AtomicInteger numLineas;
+	private static AtomicReference<CargaComicsController> cargaComicsControllerRef;
+	private static StringBuilder codigoFaltante;
+	private static HashSet<String> mensajesUnicos = new HashSet<>();
 
 	public AccionReferencias guardarReferencia() {
 
@@ -292,6 +296,7 @@ public class OpcionesAvanzadasController implements Initializable {
 				ListaComicsDAO.reiniciarListaComics();
 				ListaComicsDAO.listasAutoCompletado();
 				List<String> inputPaths = DBUtilidades.obtenerValoresColumna("portada");
+
 				Utilidades.borrarArchivosNoEnLista(inputPaths);
 
 				List<ComboBox<String>> comboboxes = referenciaVentana.getComboboxes();
@@ -306,6 +311,8 @@ public class OpcionesAvanzadasController implements Initializable {
 		thread.setDaemon(true); // Hacer que el hilo sea demonio para que termine cuando la aplicación se cierre
 
 		task.setOnRunning(e -> estadoStage().setOnCloseRequest(closeEvent -> task.cancel(true)));
+
+		task.setOnSucceeded(e -> System.out.println("Terminado"));
 
 		thread.start();
 	}
@@ -418,121 +425,154 @@ public class OpcionesAvanzadasController implements Initializable {
 
 	@FXML
 	void comprimirPortadas(ActionEvent event) {
-		// Constantes
 		List<String> inputPortadas = DBUtilidades.obtenerValoresColumna("portada");
 		Utilidades.borrarArchivosNoEnLista(inputPortadas);
+		List<String> inputPaths = ListaComicsDAO.listaImagenes;
+		comicsProcesados = new AtomicInteger(0);
+		mensajeIdCounter = new AtomicInteger(0);
+		numLineas = new AtomicInteger(0);
+		numLineas.set(inputPaths.size());
+		cargaComicsControllerRef = new AtomicReference<>();
+		codigoFaltante = new StringBuilder();
+		codigoFaltante.setLength(0);
+		mensajesUnicos = new HashSet<>();
+		mensajesUnicos.clear();
+
 		final String DOCUMENTS_PATH = Utilidades.DOCUMENTS_PATH;
-		final String DB_NAME = ConectManager.DB_NAME;
+		final String DB_NAME = Utilidades.nombreDB();
 		final String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator + DB_NAME
 				+ File.separator;
 		final String directorioOriginal = directorioComun + "portadas" + File.separator;
 		final String directorioNuevo = directorioComun + "portadas_originales";
 
-		List<String> inputPaths = ListaComicsDAO.listaImagenes;
-		AtomicReference<CargaComicsController> cargaComicsControllerRef = new AtomicReference<>();
-		AtomicInteger portadasProcesados = new AtomicInteger(0);
-		AtomicInteger mensajeIdCounter = new AtomicInteger(0); // Contador para generar IDs únicos
+		Task<Void> task = createCompressionTask(inputPaths, directorioOriginal, directorioNuevo);
 
-		Task<Void> task = new Task<>() {
+		setupTaskEventHandlers(task);
+
+		Thread thread = new Thread(task);
+
+		thread.setDaemon(true);
+		thread.start();
+	}
+
+	private static void processComic(String codigo) {
+		StringBuilder textoBuilder = new StringBuilder();
+
+		codigoFaltante.append("Comprimiendo: ").append(comicsProcesados.get()).append(" de ").append(numLineas)
+				.append("\n");
+		textoBuilder.append("Comprimiendo: ").append(comicsProcesados.get()).append(" de ").append(numLineas)
+				.append("\n");
+
+		updateUI(textoBuilder);
+	}
+
+	private Task<Void> createCompressionTask(List<String> inputPaths, String directorioOriginal,
+			String directorioNuevo) {
+		return new Task<>() {
 			@Override
 			protected Void call() throws Exception {
-
-				HashSet<String> mensajesUnicos = new HashSet<>(); // Para almacenar mensajes únicos
-				// Copiar directorio original a uno nuevo
 				Utilidades.copiarDirectorio(directorioNuevo, directorioOriginal);
 				nav.verCargaComics(cargaComicsControllerRef);
-
 				boolean estaBaseLlena = ListaComicsDAO.comprobarLista();
+
 				if (!estaBaseLlena) {
 					String cadenaCancelado = "La base de datos esta vacia";
 					AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, cadenaCancelado);
-					cancel(); // Cancelar el Task si la base de datos está vacía
-					return null; // Salir del método call() para finalizar el Task
+					cancel();
+					return null;
 				}
-
-				int numEntries = inputPaths.size();
 				inputPaths.forEach(codigo -> {
-					portadasProcesados.getAndIncrement();
-					if (isCancelled() || !referenciaVentana.getStage().isShowing()) {
-						return; // Sale del método call() si la tarea ha sido cancelada
+
+					if (isCancelled() || !estadoStage().isShowing()) {
+						return;
 					}
 
-					StringBuilder textoBuilder = new StringBuilder();
-					// Actualizar texto de progreso
-					String mensajeId = String.valueOf(mensajeIdCounter.getAndIncrement()); // Generar un ID único
-					textoBuilder.append("Comprimiendo: ").append(portadasProcesados.get()).append(" de ")
-							.append(numEntries).append("\n");
-					mensajesUnicos.add(mensajeId + ": " + textoBuilder.toString());
-					mensajesUnicos.add(textoBuilder.toString());
-					try {
-						File inputFile = new File(codigo);
-						if (!inputFile.exists()) {
-							return; // O manejar el caso de que la imagen no exista de otra manera
-						}
-
-						BufferedImage image = ImageIO.read(inputFile);
-						if (image == null) {
-							return; // O manejar el caso de que la imagen no se cargue correctamente de otra manera
-						}
-
-						// Comprimir imagen en un nuevo hilo
-						Thread compressionThread = new Thread(() -> {
-							try {
-								Thumbnails.of(image).scale(1).outputQuality(0.5).toFile(codigo);
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-						});
-						compressionThread.start();
-						try {
-							compressionThread.join(); // Espera a que termine la compresión
-						} catch (InterruptedException e) {
-							compressionThread.interrupt(); // Envía una señal de interrupción al hilo
-						}
-
-						// Actualizar el progreso y la interfaz de usuario
-						double progress = (double) portadasProcesados.get() / numEntries;
-						String porcentaje = String.format("%.2f%%", progress * 100);
-
-						if (nav.isVentanaCerrada()) {
-							nav.verCargaComics(cargaComicsControllerRef);
-							StringBuilder textoFiltrado = new StringBuilder();
-
-							List<String> mensajesOrdenados = new ArrayList<>(mensajesUnicos); // Convertir el conjunto a
-																								// lista
-							Collections.sort(mensajesOrdenados,
-									Comparator.comparingInt(m -> Integer.parseInt(m.split(":")[0]))); // Ordenar por ID
-
-							for (String mensaje : mensajesOrdenados) {
-								if (!mensaje.equalsIgnoreCase(textoBuilder.toString())) {
-									textoFiltrado.append(mensaje.substring(mensaje.indexOf(":") + 2)); // Añadir mensaje
-																										// sin el ID
-								}
-							}
-
-							Platform.runLater(() -> cargaComicsControllerRef.get()
-									.cargarDatosEnCargaComics(textoFiltrado.toString(), porcentaje, progress));
-						}
-
-						Platform.runLater(() -> cargaComicsControllerRef.get()
-								.cargarDatosEnCargaComics(textoBuilder.toString(), porcentaje, progress));
-					} catch (IOException e) {
-						e.printStackTrace();
-						// Manejar la excepción adecuadamente según tus requisitos
-					}
+					processComic(codigo);
+					comprimirImagenes(codigo);
 				});
 
 				return null;
 			}
 		};
+	}
 
-		// Manejar eventos de la tarea
+	private static void comprimirImagenes(String codigo) {
+
+		try {
+			File inputFile = new File(codigo);
+			if (!inputFile.exists()) {
+				return;
+			}
+
+			BufferedImage image = ImageIO.read(inputFile);
+			if (image == null) {
+				return;
+			}
+
+			Thread compressionThread = new Thread(() -> {
+				try {
+					Thumbnails.of(image).scale(1).outputQuality(0.5).toFile(codigo);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			});
+			compressionThread.start();
+			try {
+				compressionThread.join();
+			} catch (InterruptedException e) {
+				compressionThread.interrupt();
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	private static void updateUI(StringBuilder textoBuilder) {
+
+		String mensajeId = String.valueOf(mensajeIdCounter.getAndIncrement());
+
+		String mensaje = mensajeId + ": " + textoBuilder.toString();
+		mensajesUnicos.add(mensaje);
+		comicsProcesados.getAndIncrement();
+
+		long finalProcessedItems = comicsProcesados.get();
+		double progress = (double) finalProcessedItems / (numLineas.get());
+		String porcentaje = String.format("%.2f%%", progress * 100);
+
+		if (nav.isVentanaCerrada()) {
+			// Código para actualizar la interfaz de usuario cuando la ventana está cerrada
+			nav.verCargaComics(cargaComicsControllerRef);
+
+			StringBuilder textoFiltrado = new StringBuilder();
+			List<String> mensajesOrdenados = new ArrayList<>(mensajesUnicos);
+			Collections.sort(mensajesOrdenados, Comparator.comparingInt(m -> Integer.parseInt(m.split(":")[0])));
+
+			for (String mensajeUnico : mensajesOrdenados) {
+				if (!mensajeUnico.equalsIgnoreCase(textoBuilder.toString())) {
+					int colonIndex = mensajeUnico.indexOf(":");
+					if (colonIndex != -1) {
+						textoFiltrado.append(mensajeUnico.substring(colonIndex + 2));
+					}
+				}
+			}
+
+			Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics(textoFiltrado.toString(),
+					porcentaje, progress));
+		}
+
+		Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics(textoBuilder.toString(),
+				porcentaje, progress));
+	}
+
+	private void setupTaskEventHandlers(Task<Void> task) {
 		task.setOnRunning(ev -> {
-
 			estadoStage().setOnCloseRequest(closeEvent -> {
 				task.cancel(true);
 				Utilidades.cerrarCargaComics();
 				FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
+				FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentanaPrincipal);
 				FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, referenciaVentana);
 			});
 
@@ -540,6 +580,7 @@ public class OpcionesAvanzadasController implements Initializable {
 			AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, mensaje);
 			botonCancelarSubidaPortadas.setVisible(true);
 			FuncionesManejoFront.cambiarEstadoMenuBar(true, guardarReferencia());
+			FuncionesManejoFront.cambiarEstadoMenuBar(true, referenciaVentanaPrincipal);
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(true, referenciaVentana);
 		});
 
@@ -549,6 +590,7 @@ public class OpcionesAvanzadasController implements Initializable {
 			Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0));
 			botonCancelarSubidaPortadas.setVisible(false);
 			FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
+			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentanaPrincipal);
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, referenciaVentana);
 		});
 
@@ -557,23 +599,19 @@ public class OpcionesAvanzadasController implements Initializable {
 			botonCancelarSubidaPortadas.setVisible(false);
 			AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, mensaje);
 			FuncionesManejoFront.cambiarEstadoMenuBar(false, guardarReferencia());
+			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentanaPrincipal);
 			FuncionesManejoFront.cambiarEstadoOpcionesAvanzadas(false, referenciaVentana);
 
 			Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0));
+
+			task.cancel(true);
 		});
 
-		// Iniciar tarea en un nuevo hilo
-		Thread thread = new Thread(task);
-
-		// Manejar la cancelación
 		botonCancelarSubidaPortadas.setOnAction(ev -> {
 			botonCancelarSubidaPortadas.setVisible(false);
-
-			task.cancel();
+			task.cancel(true);
 		});
 
-		thread.setDaemon(true);
-		thread.start();
 	}
 
 	@FXML

@@ -456,7 +456,6 @@ public class FuncionesExcel {
 				}
 
 				try {
-
 					if (isCancelled.get()) {
 						// Si se produce una interrupción, sal del bucle
 						return;
@@ -523,8 +522,7 @@ public class FuncionesExcel {
 		// Añadir información del cómic a la lista mensajesUnicos
 		mensajesUnicos.add(mensajeId + ": " + comicInfo);
 
-		// Añadir información del cómic nuevamente si esImportado es true y no existe la
-		// portada
+
 		if (esImportado && !Utilidades.existeArchivo(DEFAULT_PORTADA_IMAGE_PATH, nombreModificado)) {
 			mensajesUnicos.add(comicInfo);
 		}

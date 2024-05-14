@@ -938,11 +938,10 @@ public class Utilidades {
 		File archivo = new File(rutaImagen);
 
 		// Verificar si el archivo existe antes de intentar borrarlo
-		if (archivo.exists()) {
-			if (archivo.delete()) {
+		if (archivo.exists() && archivo.delete()) {
 				return true;
 			}
-		}
+		
 		return false;
 	}
 
@@ -1200,7 +1199,7 @@ public class Utilidades {
 	 */
 	public static void borrarArchivosNoEnLista(List<String> inputPaths) {
 		String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
-				+ ConectManager.DB_NAME + File.separator + "portadas" + File.separator;
+				+ Utilidades.nombreDB() + File.separator + "portadas" + File.separator;
 
 		List<String> nombresArchivosEnDirectorio = obtenerNombresArchivosEnDirectorio(directorioComun);
 

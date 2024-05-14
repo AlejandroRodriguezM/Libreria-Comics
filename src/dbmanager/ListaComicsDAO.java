@@ -50,7 +50,7 @@ public class ListaComicsDAO {
 	 * añadimos el nombre de la base de datos y la carpeta "portadas".
 	 */
 	private static final String SOURCE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
-			+ ConectManager.DB_NAME + File.separator + "portadas" + File.separator;
+			+ Utilidades.nombreDB() + File.separator + "portadas" + File.separator;
 
 	/**
 	 * Lista de cómics.
@@ -567,6 +567,7 @@ public class ListaComicsDAO {
 					if (columna.equals("nomComic")) {
 						listaAutoCompletado.add(datosAutocompletado.trim());
 					} else if (columna.equals("portada")) {
+
 						listaAutoCompletado
 								.add(SOURCE_PATH + Utilidades.obtenerUltimoSegmentoRuta(datosAutocompletado));
 					} else {
