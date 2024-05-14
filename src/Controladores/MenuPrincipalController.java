@@ -780,7 +780,8 @@ public class MenuPrincipalController implements Initializable {
 		prontInfo.setOpacity(0);
 		imagencomic.setImage(null);
 
-		try (ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1)) {
+		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+		try {
 			scheduler.schedule(() -> Platform.runLater(() -> {
 				ListaComicsDAO.listasAutoCompletado();
 
@@ -801,7 +802,6 @@ public class MenuPrincipalController implements Initializable {
 				botonCancelarSubida.setOnAction(ev -> {
 					botonCancelarSubida.setVisible(false);
 					task.cancel();
-					scheduler.shutdown();
 				});
 
 				// Cuando la tarea haya terminado, apaga el scheduler
@@ -813,6 +813,10 @@ public class MenuPrincipalController implements Initializable {
 				// Cuando la tarea haya terminado, apaga el scheduler
 				task.setOnRunning(event -> botonCancelarSubida.setVisible(true));
 			}), 0, TimeUnit.SECONDS);
+		} catch (Exception e) {
+			Utilidades.manejarExcepcion(e);
+		} finally {
+			scheduler.shutdown();
 		}
 	}
 

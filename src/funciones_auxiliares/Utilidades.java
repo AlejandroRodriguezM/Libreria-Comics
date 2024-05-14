@@ -939,9 +939,9 @@ public class Utilidades {
 
 		// Verificar si el archivo existe antes de intentar borrarlo
 		if (archivo.exists() && archivo.delete()) {
-				return true;
-			}
-		
+			return true;
+		}
+
 		return false;
 	}
 
@@ -2335,6 +2335,29 @@ public class Utilidades {
 		String nombredb = nombreCortado[0];
 
 		return nombredb;
+	}
+
+	public static boolean verificarVersionJava() {
+	    String version = System.getProperty("java.version");
+	    System.out.println("Java version: " + version);
+	    
+	    // Dividimos la versión en partes para comparar cada componente
+	    String[] partesVersion = version.split("\\.");
+
+	    // Convertimos las partes de la versión a enteros
+	    int majorVersion = Integer.parseInt(partesVersion[0]);
+	    int minorVersion = 0; // Si no hay componente de versión menor, consideramos 0
+	    
+	    if (partesVersion.length > 1) {
+	        minorVersion = Integer.parseInt(partesVersion[1]);
+	    }
+	    
+	    // Comparamos la versión mayor y menor
+	    if (majorVersion > 17 || (majorVersion == 17 && minorVersion >= 0)) {
+	        return true; // La versión es al menos 17
+	    } else {
+	        return false; // La versión no es al menos 17
+	    }
 	}
 
 	public static AccionReferencias getReferenciaVentana() {

@@ -30,6 +30,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -187,6 +188,15 @@ public class AccesoBBDDController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+
+		if (!Utilidades.verificarVersionJava()) {
+			Alert alert = new Alert(Alert.AlertType.WARNING);
+			alert.setTitle("Advertencia");
+			alert.setHeaderText(null);
+			alert.setContentText("Su versión de Java no es la 21. Por favor, actualice su versión de Java.");
+			alert.showAndWait();
+			return; // Salir de la aplicación si la versión de Java no es la correcta
+		}
 
 		FuncionesApis.guardarDatosClavesMarvel();
 
