@@ -257,7 +257,7 @@ public class ListaComicsDAO {
 		listaProcedencia = DBUtilidades.obtenerValoresColumna("procedencia");
 		listaCaja = DBUtilidades.obtenerValoresColumna("nivel_gradeo");
 		listaImagenes = DBUtilidades.obtenerValoresColumna("portada");
-
+		
 		listaID = ordenarLista(listaID);
 
 		// Ordenar listaNumeroComic como enteros

@@ -155,13 +155,14 @@ public class FuncionesComboBox {
 	 */
 	public void actualizarComboBoxes(List<ComboBox<String>> comboboxes, Comic comic) {
 
-		Comic comicTemp = new Comic.ComicBuilder("", comic.getNombre()).valorGradeo("")
-				.numero(comic.getNumero()).variante(comic.getVariante()).firma(comic.getFirma())
-				.editorial(comic.getEditorial()).formato(comic.getFormato()).procedencia(comic.getProcedencia())
-				.fecha("").guionista(comic.getGuionista()).dibujante(comic.getDibujante()).estado("").keyIssue("")
-				.puntuacion("").imagen("").referenciaComic("").precioComic("").codigoComic("").build();
+		Comic comicTemp = new Comic.ComicBuilder("", comic.getNombre()).valorGradeo("").numero(comic.getNumero())
+				.variante(comic.getVariante()).firma(comic.getFirma()).editorial(comic.getEditorial())
+				.formato(comic.getFormato()).procedencia(comic.getProcedencia()).fecha("")
+				.guionista(comic.getGuionista()).dibujante(comic.getDibujante()).estado("").keyIssue("").puntuacion("")
+				.imagen("").referenciaComic("").precioComic("").codigoComic("").build();
 
 		String sql = DBUtilidades.datosConcatenados(comicTemp);
+
 		if (!sql.isEmpty()) {
 			isUserInput = false; // Disable user input during programmatic updates
 
@@ -339,10 +340,11 @@ public class FuncionesComboBox {
 		}
 
 		filterTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+			
 			List<String> currentFilteredItems = comboBoxFilteredItemsMap.get(originalComboBox);
 			if (newValue != null && !newValue.isEmpty()) {
 
-				List<String> newFilteredItems = ListaComicsDAO.listaOrdenada.get(comboboxes.indexOf(originalComboBox))
+				List<String> newFilteredItems = ListaComicsDAO.itemsList.get(comboboxes.indexOf(originalComboBox))
 						.stream().filter(item -> item.toLowerCase().contains(newValue.toLowerCase())).toList();
 
 				currentFilteredItems.clear();
@@ -353,7 +355,7 @@ public class FuncionesComboBox {
 				Comic comic = getComicFromComboBoxes(comboboxes);
 				actualizarComboBoxes(comboboxes, comic);
 				List<String> allFilteredItems = new ArrayList<>(
-						ListaComicsDAO.listaOrdenada.get(comboboxes.indexOf(originalComboBox)));
+						ListaComicsDAO.itemsList.get(comboboxes.indexOf(originalComboBox)));
 				currentFilteredItems.clear();
 				currentFilteredItems.addAll(allFilteredItems);
 				listView.setItems(FXCollections.observableArrayList(currentFilteredItems));

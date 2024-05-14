@@ -801,6 +801,7 @@ public class MenuPrincipalController implements Initializable {
 				botonCancelarSubida.setOnAction(ev -> {
 					botonCancelarSubida.setVisible(false);
 					task.cancel();
+					scheduler.shutdown();
 				});
 
 				// Cuando la tarea haya terminado, apaga el scheduler
