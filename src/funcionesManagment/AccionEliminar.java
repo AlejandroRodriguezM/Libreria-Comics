@@ -40,10 +40,6 @@ public class AccionEliminar {
 
 	public static void eliminarComic() {
 		
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
-		
 		String idComic = getReferenciaVentana().getIdComicTratar().getText();
 		getReferenciaVentana().getIdComicTratar().setStyle("");
 		if (accionFuncionesComunes.comprobarExistenciaComic(idComic)) {
@@ -75,10 +71,6 @@ public class AccionEliminar {
 	}
 
 	public static void eliminarComicLista() {
-		
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
 		
 		String idComic = getReferenciaVentana().getIdComicTratar().getText();
 

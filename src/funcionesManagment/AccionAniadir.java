@@ -46,10 +46,6 @@ public class AccionAniadir {
 	 */
 	public void subidaComic() throws Exception {
 
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
-
 		Utilidades.convertirNombresCarpetas(AccionFuncionesComunes.carpetaPortadas(ConectManager.DB_NAME));
 
 		List<String> controls = new ArrayList<>();
@@ -76,10 +72,6 @@ public class AccionAniadir {
 	}
 
 	public static void guardarContenidoLista() {
-		
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
 		
 		if (!ListaComicsDAO.comicsImportados.isEmpty() && nav.alertaInsertar()) {
 			Collections.sort(ListaComicsDAO.comicsImportados, Comparator.comparing(Comic::getNombre));

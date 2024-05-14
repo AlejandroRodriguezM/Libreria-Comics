@@ -9,7 +9,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
@@ -18,6 +20,7 @@ import java.util.regex.Pattern;
 import Controladores.CrearBBDDController;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
+import ficherosFunciones.FuncionesFicheros;
 import funciones_auxiliares.Utilidades;
 import funciones_auxiliares.Ventanas;
 import javafx.scene.control.Label;
@@ -26,6 +29,8 @@ import javafx.stage.Stage;
 public class DatabaseManagerDAO {
 
 	public static AtomicInteger contadorCambios = new AtomicInteger(0);
+
+	private static final String DB_FOLDER = System.getProperty("user.home") + "/Documents/libreria_comics/";
 
 	/**
 	 * Permite introducir un nuevo cómic en la base de datos.
@@ -53,35 +58,26 @@ public class DatabaseManagerDAO {
 	/**
 	 * Crea las tablas de la base de datos si no existen.
 	 */
-	public static void createTable(String[] datos) {
+	public static void createTable(String nombreDatabase) {
 
-		String port = datos[0];
-		String dbName = datos[1];
-		String userName = datos[2];
-		String password = datos[3];
-		String host = datos[4];
+		String url = "jdbc:sqlite:" + DB_FOLDER + nombreDatabase;
 
-		String url = "jdbc:mysql://" + host + ":" + port + "/" + dbName + "?serverTimezone=UTC";
-
-		try (Connection connection = DriverManager.getConnection(url, userName, password);
-				Statement statement = connection.createStatement();
-				PreparedStatement preparedStatement = connection
-						.prepareStatement("alter table comicsbbdd AUTO_INCREMENT = 1;");) {
+		try (Connection connection = DriverManager.getConnection(url);
+				Statement statement = connection.createStatement()) {
 
 			String dropTableSQL = "DROP TABLE IF EXISTS comicsbbdd";
-			String createTableSQL = "CREATE TABLE comicsbbdd (" + "ID INT NOT NULL AUTO_INCREMENT, "
-					+ "nomComic VARCHAR(150) NOT NULL, " + "nivel_gradeo TEXT, " + "precio_comic DOUBLE NOT NULL, "
-					+ "codigo_comic VARCHAR(150), " + "numComic INT NOT NULL, " + "nomVariante VARCHAR(150) NOT NULL, "
-					+ "firma VARCHAR(150) NOT NULL, " + "nomEditorial VARCHAR(150) NOT NULL, "
-					+ "formato VARCHAR(150) NOT NULL, " + "procedencia VARCHAR(150) NOT NULL, "
-					+ "fecha_publicacion DATE NOT NULL, " + "nomGuionista TEXT NOT NULL, "
-					+ "nomDibujante TEXT NOT NULL, " + "puntuacion VARCHAR(300) NOT NULL, " + "portada TEXT, "
-					+ "key_issue TEXT, " + "url_referencia TEXT NOT NULL, " + "estado TEXT NOT NULL, "
-					+ "PRIMARY KEY (ID)) " + "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
 			statement.executeUpdate(dropTableSQL);
+
+			String createTableSQL = "CREATE TABLE comicsbbdd (" + "ID INTEGER PRIMARY KEY AUTOINCREMENT, "
+					+ "nomComic TEXT NOT NULL, " + "nivel_gradeo TEXT, " + "precio_comic REAL NOT NULL, "
+					+ "codigo_comic TEXT, " + "numComic INTEGER NOT NULL, " + "nomVariante TEXT NOT NULL, "
+					+ "firma TEXT NOT NULL, " + "nomEditorial TEXT NOT NULL, " + "formato TEXT NOT NULL, "
+					+ "procedencia TEXT NOT NULL, " + "fecha_publicacion DATE NOT NULL, "
+					+ "nomGuionista TEXT NOT NULL, " + "nomDibujante TEXT NOT NULL, " + "puntuacion TEXT NOT NULL, "
+					+ "portada TEXT, " + "key_issue TEXT, " + "url_referencia TEXT NOT NULL, "
+					+ "estado TEXT NOT NULL)";
 			statement.executeUpdate(createTableSQL);
 
-			preparedStatement.executeUpdate();
 		} catch (SQLException e) {
 			Utilidades.manejarExcepcion(e);
 		}
@@ -90,11 +86,11 @@ public class DatabaseManagerDAO {
 	/**
 	 * Funcion que reconstruye una base de datos.
 	 */
-	public static boolean reconstruirBBDD(String[] datos) {
+	public static boolean reconstruirBBDD(String nombreDatabase) {
 		Ventanas nav = new Ventanas();
 
 		if (nav.alertaTablaError()) {
-			createTable(datos);
+			createTable(nombreDatabase);
 			return true;
 		} else {
 			String excepcion = "Debes de reconstruir la base de datos. Si no, no podras entrar";
@@ -111,16 +107,14 @@ public class DatabaseManagerDAO {
 	 * @return true si las tablas y columnas existen, false si no existen y se
 	 *         reconstruyó la base de datos.
 	 */
-	public static boolean checkTablesAndColumns(String[] datos) {
+	public static boolean checkTablesAndColumns(String nombreDatabase) {
 		try (Connection connection = ConectManager.conexion()) {
 			DatabaseMetaData metaData = connection.getMetaData();
 
-			String database = datos[1];
-
-			ResultSet tables = metaData.getTables(database, null, "comicsbbdd", null);
+			ResultSet tables = metaData.getTables(nombreDatabase, null, "comicsbbdd", null);
 			if (tables.next()) {
 				// La tabla existe, ahora verifiquemos las columnas
-				ResultSet columns = metaData.getColumns(database, null, "comicsbbdd", null);
+				ResultSet columns = metaData.getColumns(nombreDatabase, null, "comicsbbdd", null);
 				Set<String> expectedColumns = Set.of("ID", "nomComic", "nivel_gradeo", "precio_comic", "codigo_comic",
 						"numComic", "nomVariante", "firma", "nomEditorial", "formato", "procedencia",
 						"fecha_publicacion", "nomGuionista", "nomDibujante", "puntuacion", "portada", "key_issue",
@@ -137,13 +131,13 @@ public class DatabaseManagerDAO {
 				if (actualColumns.containsAll(expectedColumns) && actualColumns.size() == expectedColumns.size()) {
 					return true;
 				} else {
-					if (reconstruirBBDD(datos)) {
+					if (reconstruirBBDD(nombreDatabase)) {
 						return true;
 					}
 				}
 			} else {
 				// La tabla no existe, reconstruimos la base de datos
-				if (reconstruirBBDD(datos)) {
+				if (reconstruirBBDD(nombreDatabase)) {
 					return true;
 				}
 			}
@@ -154,109 +148,36 @@ public class DatabaseManagerDAO {
 		return false;
 	}
 
-	/**
-	 * Funcion que permite crear una base de datos MySql
-	 */
-	public static void createDataBase() {
-
-		String sentenciaSQL = "CREATE DATABASE " + CrearBBDDController.DB_NAME + ";";
-
-		String url = "jdbc:mysql://" + CrearBBDDController.DB_HOST + ":" + CrearBBDDController.DB_PORT
-				+ "?serverTimezone=UTC";
-		try (Connection connection = DriverManager.getConnection(url, CrearBBDDController.DB_USER,
-				CrearBBDDController.DB_PASS); Statement statement = connection.createStatement();) {
-
-			statement.executeUpdate(sentenciaSQL);
-
-		} catch (SQLException e) {
-			Utilidades.manejarExcepcion(e);
-		}
-	}
-
-	/**
-	 * Comprueba si existe una base de datos con el nombre especificado para la
-	 * creación.
-	 *
-	 * @return true si la base de datos no existe, false si ya existe o si hay un
-	 *         error en la conexión
-	 */
-	public static boolean checkDatabaseExists(Label prontInformativo, String nombreDataBase) {
-		AlarmaList.detenerAnimacion();
-		boolean exists = false;
-		String sentenciaSQL = "SELECT COUNT(*) FROM information_schema.tables";
-
-		if (!CrearBBDDController.DB_NAME.isEmpty()) {
-			sentenciaSQL += " WHERE table_schema = '" + CrearBBDDController.DB_NAME + "'";
+	public static void actualizarNombresEnLote(String columna, Map<Integer, String> actualizaciones) {
+		if (actualizaciones.isEmpty()) {
+			return; // No hay actualizaciones pendientes
 		}
 
-		try (ResultSet rs = comprobarDataBase(sentenciaSQL)) {
-			int count = rs.getInt("COUNT(*)");
-			exists = count < 1;
+		String consultaUpdate = "UPDATE comicsbbdd SET " + columna + " = ? WHERE ID = ?";
+		String url = "jdbc:sqlite:" + DB_FOLDER + FuncionesFicheros.datosEnvioFichero();
 
-			if (exists) {
-				return true;
-			} else {
-				AlarmaList.iniciarAnimacionBaseExiste(prontInformativo, CrearBBDDController.DB_NAME);
-			}
-		} catch (SQLException e) {
-			Utilidades.manejarExcepcion(e);
-		}
-		return false;
-	}
+		try (Connection connection = DriverManager.getConnection(url);
+				PreparedStatement pstmt = connection.prepareStatement(consultaUpdate)) {
 
-	/**
-	 * Verifica la base de datos ejecutando una sentencia SQL y devuelve el
-	 * ResultSet correspondiente.
-	 * 
-	 * @param sentenciaSQL la sentencia SQL a ejecutar
-	 * @return el ResultSet que contiene los resultados de la consulta
-	 */
-	public static ResultSet comprobarDataBase(String sentenciaSQL) {
+			for (Map.Entry<Integer, String> entry : actualizaciones.entrySet()) {
+				int id = entry.getKey();
+				String nombreCorregido = entry.getValue();
 
-		String url = "jdbc:mysql://" + CrearBBDDController.DB_HOST + ":" + CrearBBDDController.DB_PORT
-				+ "?serverTimezone=UTC";
-
-		try (Connection connection = DriverManager.getConnection(url, CrearBBDDController.DB_USER,
-				CrearBBDDController.DB_PASS);
-				Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-						ResultSet.CONCUR_UPDATABLE);) {
-
-			ResultSet rs = statement.executeQuery(sentenciaSQL);
-
-			if (rs.next()) {
-				return rs;
-			}
-		} catch (SQLException e) {
-			Utilidades.manejarExcepcion(e);
-		}
-
-		return null;
-	}
-
-	private static void actualizarNombres(String columna, int idColumna, String nombreCorregido) {
-		// Construir la consulta de actualización
-		String consultaUpdate = "UPDATE " + ConectManager.DB_NAME + ".comicsbbdd SET " + columna + " = ? WHERE ID = "
-				+ idColumna;
-		
-		System.out.println(consultaUpdate);
-		
-		String url = "jdbc:mysql://" + ConectManager.DB_HOST + ":" + ConectManager.DB_PORT + "?serverTimezone=UTC";
-
-		try (Connection connection = DriverManager.getConnection(url, ConectManager.DB_USER, ConectManager.DB_PASS);
-				Statement stmt = connection.createStatement()) {
-
-			try (PreparedStatement pstmt = connection.prepareStatement(consultaUpdate)) {
 				pstmt.setString(1, nombreCorregido);
-				pstmt.executeUpdate();
-
+				pstmt.setInt(2, id);
+				pstmt.addBatch(); // Agregar la actualización al lote
 			}
+
+			pstmt.executeBatch(); // Ejecutar todas las actualizaciones en lote
+
 		} catch (SQLException e) {
 			e.printStackTrace();
+			Utilidades.manejarExcepcion(e);
 		}
 	}
 
 	public static void comprobarNormalizado(String columna, Label prontInfo) {
-		String url = "jdbc:mysql://" + ConectManager.DB_HOST + ":" + ConectManager.DB_PORT + "?serverTimezone=UTC";
+		String url = "jdbc:sqlite:" + DB_FOLDER + FuncionesFicheros.datosEnvioFichero();
 
 		String cadena = "";
 
@@ -271,9 +192,11 @@ public class DatabaseManagerDAO {
 		}
 
 		// Construir la consulta para seleccionar los nombres de la columna
-		String consultaSelect = "SELECT ID, " + columna + " FROM " + ConectManager.DB_NAME + ".comicsbbdd";
-		
-		try (Connection connection = DriverManager.getConnection(url, ConectManager.DB_USER, ConectManager.DB_PASS);
+		String consultaSelect = "SELECT ID, " + columna + " FROM comicsbbdd";
+
+		Map<Integer, String> actualizaciones = new HashMap<>(); // Contenedor para acumular las actualizaciones en lote
+
+		try (Connection connection = DriverManager.getConnection(url);
 				Statement stmt = connection.createStatement();
 				ResultSet rs = stmt.executeQuery(consultaSelect)) {
 
@@ -300,23 +223,26 @@ public class DatabaseManagerDAO {
 
 				// Verificar si el nombre no está normalizado
 				if (!nombre.equals(nombreCorregido)) {
-					actualizarNombres(columna, id, nombreCorregido);
+					actualizaciones.put(id, nombreCorregido); // Agregar la actualización al contenedor
 					contadorCambios.incrementAndGet();
 				}
-
-				if (contadorCambios.get() == 0) {
-					cadena = "Ya está todo normalizado.";
-				} else {
-					cadena = "Se han normalizado: " + contadorCambios.get();
-				}
-				AlarmaList.iniciarAnimacionAvanzado(prontInfo, cadena);
-
 			}
+
+			if (!actualizaciones.isEmpty()) {
+				actualizarNombresEnLote(columna, actualizaciones); // Ejecutar las actualizaciones en lote
+			}
+
+			if (contadorCambios.get() == 0) {
+				cadena = "Ya está todo normalizado.";
+			} else {
+				cadena = "Se han normalizado: " + contadorCambios.get();
+			}
+			AlarmaList.iniciarAnimacionAvanzado(prontInfo, cadena);
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 			Utilidades.manejarExcepcion(e);
 		}
-
 	}
 
 	// Método para corregir los nombres según los patrones especificados
@@ -414,28 +340,18 @@ public class DatabaseManagerDAO {
 	 */
 	public static void makeSQL(Label prontInfo, Stage miVentana) {
 
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
+		String frase = "Fichero sql lite";
 
-		String frase = "Fichero SQL";
-
-		String formato = "*.sql";
+		String formato = "*.db";
 
 		File fichero = Utilidades.tratarFichero(frase, formato, true);
 
 		// Verificar si se obtuvo un objeto FileChooser válido
 		if (fichero != null) {
 
-			if (Utilidades.isWindows()) {
-				Utilidades.backupWindows(fichero); // Llamada a funcion
+			Utilidades.backupDB(fichero); // Llamada a funcion
 
-			} else {
-				if (Utilidades.isUnix()) {
-					Utilidades.backupLinux(fichero); // Llamada a funcion
-				}
-			}
-			String cadena = "FicheroSQL creado correctamente";
+			String cadena = "Fichero SQL lite creado correctamente";
 			AlarmaList.iniciarAnimacionAvanzado(prontInfo, cadena);
 
 		}

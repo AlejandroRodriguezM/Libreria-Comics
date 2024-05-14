@@ -199,9 +199,6 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	private MenuItem menuArchivoApiVine;
 
-	@FXML
-	private MenuItem menuArchivoConexion;
-
 	/**
 	 * Barra de menús de navegación.
 	 */
@@ -449,7 +446,7 @@ public class MenuPrincipalController implements Initializable {
 	private Button botonAgregarPuntuacion;
 
 	@FXML
-	private Label alarmaConexionSql;
+	private Label alarmaConexionInternet;
 
 	@FXML
 	private Rectangle barraCambioAltura;
@@ -473,7 +470,7 @@ public class MenuPrincipalController implements Initializable {
 	double y = 0;
 
 	public AccionReferencias guardarReferencia() {
-		referenciaVentana.setAlarmaConexionSql(alarmaConexionSql);
+		referenciaVentana.setAlarmaConexionInternet(alarmaConexionInternet);
 		referenciaVentana.setID(id);
 		referenciaVentana.setGradeo(gradeo);
 		referenciaVentana.setDibujante(dibujante);
@@ -518,7 +515,6 @@ public class MenuPrincipalController implements Initializable {
 		referenciaVentana.setMenu_estadistica_puntuados(menuEstadisticaPuntuados);
 		referenciaVentana.setMenu_estadistica_vendidos(menuEstadisticaVendidos);
 		referenciaVentana.setMenu_archivo_avanzado(menuArchivoAvanzado);
-		referenciaVentana.setMenu_archivo_conexion(menuArchivoConexion);
 		referenciaVentana.setMenu_comprobar_apis(menuComprobarApis);
 		referenciaVentana.setMenu_navegacion(menuNavegacion);
 		referenciaVentana.setNavegacion_Opciones(navegacionCerrar);
@@ -562,7 +558,6 @@ public class MenuPrincipalController implements Initializable {
 		referenciaVentana.setBotonIntroducir(botonIntroducir);
 		referenciaVentana.setBotonEliminar(botonEliminar);
 		referenciaVentana.setBotonAgregarPuntuacion(botonAgregarPuntuacion);
-		referenciaVentana.setAlarmaConexionSql(alarmaConexionSql);
 		referenciaVentana.setStage(estadoStage());
 		referenciaVentana.setBotonCancelarSubida(botonCancelarSubida);
 		referenciaVentana.setBarraCambioAltura(barraCambioAltura);
@@ -591,8 +586,8 @@ public class MenuPrincipalController implements Initializable {
 		AccionModificar.setReferenciaVentana(guardarReferencia());
 		Utilidades.setReferenciaVentana(guardarReferencia());
 		Utilidades.setReferenciaVentanaPrincipal(guardarReferencia());
-		VentanaAccionController.setReferenciaVentana(referenciaVentana);
-		OpcionesAvanzadasController.setReferenciaVentanaPrincipal(referenciaVentana);
+		VentanaAccionController.setReferenciaVentana(guardarReferencia());
+		OpcionesAvanzadasController.setReferenciaVentanaPrincipal(guardarReferencia());
 		Ventanas.setReferenciaVentanaPrincipal(guardarReferencia());
 	}
 
@@ -609,7 +604,6 @@ public class MenuPrincipalController implements Initializable {
 		menuArchivoImportar.setGraphic(Utilidades.createIcon("/Icono/Archivo/importar.png", 16, 16));
 		menuArchivoDelete.setGraphic(Utilidades.createIcon("/Icono/Archivo/basura.png", 16, 16));
 		menuArchivoSobreMi.setGraphic(Utilidades.createIcon("/Icono/Archivo/about.png", 16, 16));
-		menuArchivoConexion.setGraphic(Utilidades.createIcon("/Icono/Archivo/lista_verificacion.png", 16, 16));
 		menuArchivoAvanzado.setGraphic(Utilidades.createIcon("/Icono/Archivo/configuraciones.png", 16, 16));
 		menuComprobarApis.setGraphic(Utilidades.createIcon("/Icono/Archivo/apis_check.png", 16, 16));
 		menuArchivoApiMarvel.setGraphic(Utilidades.createIcon("/Icono/Archivo/check_apis.png", 16, 16));
@@ -634,7 +628,7 @@ public class MenuPrincipalController implements Initializable {
 		Platform.runLater(() -> {
 			estadoStage().setOnCloseRequest(event -> stop());
 
-			alarmaList.setAlarmaConexionSql(alarmaConexionSql);
+			alarmaList.setAlarmaConexionInternet(alarmaConexionInternet);
 			alarmaList.iniciarThreadChecker();
 
 			urlPreviews = WebScraperCatalogPreviews.urlPreviews();
@@ -1002,9 +996,6 @@ public class MenuPrincipalController implements Initializable {
 
 	private void imprimirComicsEstado(TipoBusqueda tipoBusqueda, boolean esGuardado) {
 
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
 		limpiezaDeDatos();
 		limpiarComboBox();
 		ListaComicsDAO.reiniciarListaComics();
@@ -1040,10 +1031,6 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void importCSV(ActionEvent event) {
 
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
-
 		limpiezaDeDatos();
 		limpiarComboBox();
 
@@ -1064,10 +1051,6 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void exportCSV(ActionEvent event) throws SQLException {
-
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
 
 		boolean estaVacia = false;
 		String mensaje = "";
@@ -1130,10 +1113,6 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void verEstadistica(ActionEvent event) {
 
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
-
 		AlarmaList.iniciarAnimacionEstadistica(prontInfo);
 		ListaComicsDAO.generar_fichero_estadisticas();
 		AlarmaList.detenerAnimacionPront(prontInfo);
@@ -1195,10 +1174,6 @@ public class MenuPrincipalController implements Initializable {
 	@FXML
 	void imprimirResultado(ActionEvent event) throws SQLException {
 
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
-
 		prontInfo.clear();
 		String tipoBusqueda = "Parcial";
 
@@ -1225,10 +1200,6 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	@FXML
 	void guardarResultado(ActionEvent event) throws SQLException {
-
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
 
 		Comic comicRaw = tablaBBDD.getSelectionModel().getSelectedItem();
 		String mensaje = "";
@@ -1374,10 +1345,6 @@ public class MenuPrincipalController implements Initializable {
 	 */
 	private void cargaExportExcel(List<Comic> listaComics, String tipoBusqueda) {
 
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
-
 		FuncionesExcel excelFuntions = new FuncionesExcel();
 		String mensajeErrorExportar = "ERROR. No se ha podido exportar correctamente.";
 		String mensajeCancelarExportar = "ERROR. Se ha cancelado la exportación.";
@@ -1463,9 +1430,6 @@ public class MenuPrincipalController implements Initializable {
 	}
 
 	public void guardarDatosCSV() {
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
 
 		String frase = "Fichero CSV";
 		String formatoFichero = "*.csv";
@@ -1628,12 +1592,6 @@ public class MenuPrincipalController implements Initializable {
 		tablaBBDD.getItems().clear();
 		ModificarApiDatosController.tipoAccion("Vine");
 		nav.verModificarApis(false);
-	}
-
-	@FXML
-	void verEstadoConexion(ActionEvent event) {
-		nav.verEstadoConexion();
-
 	}
 
 	/////////////////////////////

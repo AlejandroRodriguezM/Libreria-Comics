@@ -614,12 +614,7 @@ public class WebScrapGooglePreviewsWorld extends Application {
 
 	public static void main(String[] args) {
 
-		String[] datosFichero = FuncionesFicheros.datosEnvioFichero();
-
-		if (ConectManager.loadDriver()) {
-
-			ConectManager.datosBBDD(datosFichero);
-		}
+		String datosFichero = FuncionesFicheros.datosEnvioFichero();
 		List<String> inputPaths = DBUtilidades.obtenerValoresColumna("portada");
 		borrarArchivosNoEnLista(inputPaths);
 //		convertJpgToPng(inputPaths);

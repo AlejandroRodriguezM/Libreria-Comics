@@ -64,155 +64,52 @@ import javafx.stage.Stage;
  */
 public class OpcionesDatosController implements Initializable {
 
-	/**
-	 * Etiqueta de alarma para la conexión.
-	 */
 	@FXML
 	private Label alarmaConexion;
 
-	/**
-	 * Etiqueta de alarma para la conexión a Internet.
-	 */
 	@FXML
 	private Label alarmaConexionInternet;
 
-	/**
-	 * Etiqueta de alarma para la conexión a la base de datos SQL.
-	 */
 	@FXML
 	private Label alarmaConexionSql;
 
-	/**
-	 * Botón para crear una nueva base de datos.
-	 */
 	@FXML
 	private Button botonCrearBBDD;
 
-	/**
-	 * Botón para salir de la aplicación.
-	 */
-	@FXML
-	private Button botonSalir;
-
-	/**
-	 * Botón para volver atrás.
-	 */
-	@FXML
-	private Button botonVolver;
-
-	/**
-	 * Botón para abrir un archivo.
-	 */
-	@FXML
-	private Button boton_abrir;
-
-	/**
-	 * Botón para guardar un archivo.
-	 */
-	@FXML
-	private Button boton_guardar;
-
-	/**
-	 * Botón para restaurar un archivo.
-	 */
-	@FXML
-	private Button boton_restaurar;
-
-	/**
-	 * Botón para descargar la base de datos.
-	 */
 	@FXML
 	private Button botonDescargaBBDD;
 
-	/**
-	 * Etiqueta para mostrar el nombre del host.
-	 */
 	@FXML
-	private Label etiquetaHost;
+	private Button botonSalir;
 
-	/**
-	 * Selector para el nombre de la base de datos.
-	 */
+	@FXML
+	private Button botonVolver;
+
+	@FXML
+	private Button boton_abrir;
+
+	@FXML
+	private Button boton_guardar;
+
+	@FXML
+	private Button boton_restaurar;
+
 	@FXML
 	private ComboBox<String> nombreBBDD;
 
-	/**
-	 * Campo de texto para ingresar el nombre del host.
-	 */
-	@FXML
-	private TextField nombreHost;
-
-	/**
-	 * Etiqueta para mostrar el nombre.
-	 */
 	@FXML
 	private Label nombre_label;
 
-	/**
-	 * Campo de contraseña.
-	 */
-	@FXML
-	private PasswordField pass;
-
-	/**
-	 * Campo de texto para ingresar la contraseña del usuario.
-	 */
-	@FXML
-	private TextField passUsuarioTextField;
-
-	/**
-	 * Etiqueta para mostrar la contraseña.
-	 */
-	@FXML
-	private Label password_label;
-
-	/**
-	 * Etiqueta para mostrar el estado del fichero.
-	 */
 	@FXML
 	private Label prontEstadoFichero;
-
-	/**
-	 * Etiqueta para mostrar el puerto.
-	 */
-	@FXML
-	private Label puerto_label;
-
-	/**
-	 * Campo de texto para ingresar el puerto de la base de datos.
-	 */
-	@FXML
-	private TextField puertobbdd;
-
-	/**
-	 * Botón para mostrar u ocultar la contraseña.
-	 */
-	@FXML
-	private ToggleButton toggleEye;
-
-	/**
-	 * Imagen del ojo para mostrar u ocultar la contraseña.
-	 */
-	@FXML
-	private ImageView toggleEyeImageView;
-
-	/**
-	 * Campo de texto para ingresar el nombre de usuario.
-	 */
-	@FXML
-	private TextField usuario;
-
-	/**
-	 * Etiqueta para mostrar el nombre de usuario.
-	 */
-	@FXML
-	private Label usuario_label;
 
 	/**
 	 * Instancia de la clase Ventanas para la navegación.
 	 */
 	private static Ventanas nav = new Ventanas();
 	private static AlarmaList alarmaList = new AlarmaList();
+
+	private static final String DB_FOLDER = System.getProperty("user.home") + "/Documents/libreria_comics/";
 
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
@@ -227,168 +124,32 @@ public class OpcionesDatosController implements Initializable {
 		alarmaList.setAlarmaConexionInternet(alarmaConexionInternet);
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
 		alarmaList.iniciarThreadChecker();
-		Platform.runLater(() -> {
-			Stage myStage = (Stage) this.usuario_label.getScene().getWindow();
-			myStage.setOnCloseRequest(event -> {
-				stop();
-			});
-		});
 		FuncionesFicheros.crearEstructura();
-		AlarmaList.configureEyeToggle(toggleEyeImageView, passUsuarioTextField, pass);
-		restringir_entrada_datos();
 
-		formulario_local();
-		actualizarDataBase();
+		rellenarComboDB();
 
 		AlarmaList.iniciarAnimacionEspera(prontEstadoFichero);
 		AlarmaList.iniciarAnimacionAlarma(alarmaConexion);
 
 	}
 
-	/**
-	 * Llena el formulario de configuración local con valores previamente guardados.
-	 */
-	public void formulario_local() {
+    /**
+     * Rellena el ComboBox con las bases de datos .db disponibles en el directorio DB_FOLDER.
+     */
+    private void rellenarComboDB() {
+        File directorio = new File(DB_FOLDER);
+        File[] ficheros = directorio.listFiles();
 
-		Map<String, String> datosConfiguracion = FuncionesFicheros.devolverDatosConfig();
-
-		usuario.setText(datosConfiguracion.get("Usuario"));
-
-		pass.setText(datosConfiguracion.get("Password"));
-
-		puertobbdd.setText(datosConfiguracion.get("Puerto"));
-
-		nombreHost.setText(datosConfiguracion.get("Hosting"));
-
-		rellenarComboDB(datosConfiguracion);
-	}
-
-	private void actualizarDataBase() {
-		// Escuchador para el campo de texto "usuario"
-		usuario.textProperty().addListener((observable, oldValue, newValue) -> {
-			Platform.runLater(() -> {
-				actualizarComboBoxNombreBBDD();
-			});
-		});
-
-		// Escuchador para el campo de texto "password"
-		pass.textProperty().addListener((observable, oldValue, newValue) -> {
-			Platform.runLater(() -> {
-				actualizarComboBoxNombreBBDD();
-			});
-		});
-
-		// Escuchador para el campo de texto "password"
-		passUsuarioTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-			Platform.runLater(() -> {
-				actualizarComboBoxNombreBBDD();
-			});
-		});
-
-		// Escuchador para el campo de texto "puerto"
-		puertobbdd.textProperty().addListener((observable, oldValue, newValue) -> {
-			Platform.runLater(() -> {
-				actualizarComboBoxNombreBBDD();
-			});
-		});
-
-		// Escuchador para el campo de texto "nombreHost"
-		nombreHost.textProperty().addListener((observable, oldValue, newValue) -> {
-			Platform.runLater(() -> {
-				actualizarComboBoxNombreBBDD();
-			});
-		});
-	}
-
-	/**
-	 * Actualiza el ComboBox de nombreBBDD con opciones disponibles.
-	 */
-	private void actualizarComboBoxNombreBBDD() {
-		String usuario = this.usuario.getText();
-		String password = this.pass.getText();
-		String puerto = this.puertobbdd.getText();
-		String hosting = this.nombreHost.getText();
-
-		if (usuario.isEmpty() || password.isEmpty() || puerto.isEmpty() || hosting.isEmpty()) {
-			nombreBBDD.getSelectionModel().clearSelection();
-			nombreBBDD.setDisable(true);
-			nombreBBDD.setEditable(false);
-		} else {
-			nombreBBDD.getItems().clear();
-			nombreBBDD.setDisable(false);
-
-			Map<String, String> datosConfiguracion = new HashMap<>();
-			datosConfiguracion.put("Usuario", usuario);
-			datosConfiguracion.put("Puerto", puerto);
-			datosConfiguracion.put("Password", password);
-			datosConfiguracion.put("Database", "");
-			datosConfiguracion.put("Hosting", hosting);
-
-			rellenarComboDB(datosConfiguracion);
-		}
-	}
-
-	public void rellenarComboDB(Map<String, String> datosConfiguracion) {
-
-		String puertoTexto = datosConfiguracion.get("Puerto");
-		String databaseTexto = datosConfiguracion.get("Database");
-		String hostingTexto = datosConfiguracion.get("Hosting");
-
-		if (Utilidades.isMySQLServiceRunning(hostingTexto, puertoTexto)) {
-
-			List<String> opciones = FuncionesFicheros.obtenerOpcionesNombreBBDD(datosConfiguracion);
-			AlarmaList.detenerAnimacion();
-			prontEstadoFichero.setText("");
-			if (!opciones.isEmpty()) {
-
-				AlarmaList.iniciarAnimacionEspera(prontEstadoFichero);
-				nombreBBDD.getItems().addAll(opciones);
-				nombreBBDD.getSelectionModel().selectFirst();
-			}
-
-			devolverDB(opciones, databaseTexto);
-			nombreHost.setEditable(false);
-		} else {
-			alarmaList.iniciarAnimacionConexionRed(alarmaConexionSql);
-		}
-	}
-
-	private String devolverDB(List<String> database, String databaseFichero) {
-		int selectedIndex = -1;
-
-		for (int i = 0; i < database.size(); i++) {
-			String nombreDB = database.get(i);
-			if (nombreDB.equalsIgnoreCase(databaseFichero)) {
-				selectedIndex = i;
-				break;
-			}
-		}
-
-		List<String> updatedList = new ArrayList<>(database);
-
-		if (selectedIndex != -1) {
-			// If found, move the matching item to the front
-			String removedItem = updatedList.remove(selectedIndex);
-			updatedList.add(0, removedItem);
-		}
-
-		nombreBBDD.getItems().setAll(updatedList);
-
-		if (!updatedList.isEmpty()) {
-			nombreBBDD.getSelectionModel().selectFirst();
-			return nombreBBDD.getSelectionModel().getSelectedItem();
-		} else {
-			return "";
-		}
-	}
-
-	/**
-	 * Funcion que permite restringir entrada de datos de todo aquello que no sea un
-	 * numero entero en los comboBox numeroComic y caja_comic
-	 */
-	public void restringir_entrada_datos() {
-		puertobbdd.setTextFormatter(FuncionesComboBox.validador_Nenteros());
-	}
+        if (ficheros != null) {
+            List<String> basesDatos = new ArrayList<>();
+            for (File fichero : ficheros) {
+                if (fichero.isFile() && fichero.getName().toLowerCase().endsWith(".db")) {
+                    basesDatos.add(fichero.getName());
+                }
+            }
+            nombreBBDD.getItems().addAll(basesDatos);
+        }
+    }
 
 	/**
 	 * Abre la ubicación de la carpeta "libreria" en el sistema de archivos del
@@ -435,16 +196,9 @@ public class OpcionesDatosController implements Initializable {
 	 */
 	@FXML
 	void guardarDatos(ActionEvent event) throws SQLException {
+		String nombredb = nombreBBDD.getValue();
 
-		String datos[] = new String[6];
-		datos[0] = puertobbdd.getText();
-		datos[1] = nombreBBDD.getValue();
-		datos[2] = usuario.getText();
-		datos[3] = pass.getText();
-		datos[4] = nombreHost.getText();
-		datos[5] = "";
-
-		FuncionesFicheros.guardarDatosBaseLocal(datos, prontEstadoFichero, alarmaConexion);
+		FuncionesFicheros.guardarDatosBaseLocal(nombredb, prontEstadoFichero, alarmaConexion);
 	}
 
 	/**
@@ -454,9 +208,6 @@ public class OpcionesDatosController implements Initializable {
 	 */
 	@FXML
 	void restaurarConfiguracion(ActionEvent event) {
-
-		AlarmaList alarmaList = new AlarmaList();
-
 		if (nav.borrarContenidoConfiguracion()) {
 			String userHome = System.getProperty("user.home");
 			String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
@@ -484,11 +235,6 @@ public class OpcionesDatosController implements Initializable {
 	 * Limpia los datos en los campos de texto.
 	 */
 	public void limpiar_datos() {
-		usuario.setText("");
-
-		pass.setText("");
-
-		puertobbdd.setText("");
 
 		nombreBBDD.getSelectionModel().clearSelection();
 	}

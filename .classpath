@@ -87,5 +87,6 @@
 	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/thumbnailator-0.4.20.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/controlsfx-samples-11.2.1.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/controlsfx-9.0.0.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Java/Plugins/sqlite-jdbc-3.45.3.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

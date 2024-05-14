@@ -244,10 +244,6 @@ public class RecomendacionesController implements Initializable {
 	 */
 	public String generarLectura() {
 
-		if (!ConectManager.conexionActiva()) {
-			return null;
-		}
-
 		Random r = new Random();
 		Utilidades utilidad = new Utilidades();
 		String id_comic;

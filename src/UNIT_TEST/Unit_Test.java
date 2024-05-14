@@ -696,7 +696,7 @@ public class Unit_Test extends Application {
 		datos[3] = "1234";
 		datos[4] = "localhost";
 
-		ConectManager.datosBBDD(datos);
+//		ConectManager.datosBBDD(datos);
 	}
 
 	private static String obtenerAnio(String fecha) {

@@ -27,7 +27,6 @@ package funciones_auxiliares;
  */
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
@@ -35,7 +34,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import Controladores.AccesoBBDDController;
 import Controladores.CargaComicsController;
 import Controladores.CrearBBDDController;
-import Controladores.EstadoConexionController;
 import Controladores.ImagenAmpliadaController;
 import Controladores.MenuLectorCodigoBarras;
 import Controladores.MenuPrincipalController;
@@ -222,50 +220,6 @@ public class Ventanas {
 			ex.printStackTrace();
 		}
 //		});
-	}
-
-	/**
-	 * Muestra la ventana de estado de conexion a la base de datos.
-	 */
-	public void verEstadoConexion() {
-		Platform.runLater(() -> {
-			ventanaAbierta(estadoConexionStage);
-			if (estadoConexionStage == null || !estadoConexionStage.isShowing()) {
-				try {
-					// Cargo la vista
-					FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/EstadoConexionVentana.fxml"));
-
-					// Cargo el padre
-					Parent root = loader.load();
-
-					// Obtengo el controlador
-					EstadoConexionController controlador = loader.getController();
-
-					// Creo la scene y el stage
-					Scene scene = new Scene(root);
-					scene.getStylesheets().add(getClass().getResource("/style/acces_style.css").toExternalForm());
-					estadoConexionStage = new Stage();
-					estadoConexionStage.setResizable(false);
-					estadoConexionStage.setTitle("Estado de conexion");
-
-					estadoConexionStage.getIcons().add(new Image("/Icono/icon2.png"));
-
-					// Asocio el stage con el scene
-					estadoConexionStage.setScene(scene);
-					estadoConexionStage.show();
-
-					// Indico que debe hacer al cerrar
-					estadoConexionStage.setOnCloseRequest(e -> {
-						controlador.closeWindow();
-						controlador.stop();
-						estadoConexionStage = null; // Establece la ventana actual a null cuando se cierra
-					});
-
-				} catch (IOException ex) {
-					alertaException(ex.toString());
-				}
-			}
-		});
 	}
 
 	/**

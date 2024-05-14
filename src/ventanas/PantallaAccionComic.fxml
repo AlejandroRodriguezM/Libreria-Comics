@@ -164,7 +164,6 @@
                <items>
                   <MenuItem fx:id="menuCodigoBarras" mnemonicParsing="false" onAction="#verMenuCodigoBarras" text="Leer codigo de barras" />
                   <MenuItem fx:id="menuImportarFichero" mnemonicParsing="false" onAction="#importarFicheroCodigoBarras" text="Importar fichero" />
-                  <MenuItem fx:id="menuConexion" mnemonicParsing="false" onAction="#verEstadoConexion" text="Comprobar Conexion" />
                </items>
             </Menu>
             <Menu fx:id="navegacionEstadistica" mnemonicParsing="false" text="Estadistica">
@@ -180,8 +179,8 @@
       <ImageView fx:id="cargaImagen" fitHeight="308.0" fitWidth="207.0" layoutX="368.0" layoutY="34.0" pickOnBounds="true" preserveRatio="true" />
       <ImageView fx:id="imagencomic" fitHeight="308.0" fitWidth="199.0" layoutX="373.0" layoutY="31.0" onMouseClicked="#ampliarImagen" pickOnBounds="true" />
       <Button fx:id="botonSubidaPortada" layoutX="186.0" layoutY="253.0" mnemonicParsing="false" onAction="#nuevaPortada" prefHeight="25.0" prefWidth="25.0" stylesheets="@../style/boton_subida_style.css" />
-      <Label fx:id="alarmaConexionSql" layoutX="813.0" prefHeight="25.0" prefWidth="23.0" stylesheets="@../style/alarma_conexion_style.css" />
-      <Label fx:id="alarmaConexionInternet" layoutX="786.0" prefHeight="25.0" prefWidth="23.0" stylesheets="@../style/alarma_conexion_style.css" />
+      <Label fx:id="alarmaConexionSql" disable="true" layoutX="788.0" opacity="0.0" prefHeight="25.0" prefWidth="23.0" stylesheets="@../style/alarma_conexion_style.css" visible="false" />
+      <Label fx:id="alarmaConexionInternet" layoutX="813.0" prefHeight="25.0" prefWidth="23.0" stylesheets="@../style/alarma_conexion_style.css" />
       <Button fx:id="botonCancelarSubida" layoutX="775.0" layoutY="286.0" mnemonicParsing="false" prefHeight="54.0" prefWidth="57.0" style="-fx-border-color: none; -fx-background-color: none;" visible="false">
          <stylesheets>
             <URL value="@../style/genericos_style.css" />

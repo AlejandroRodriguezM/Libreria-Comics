@@ -13,7 +13,8 @@ public class DeleteManager {
 
 	private static final String DELETE_SENTENCIA = "DELETE FROM comicsbbdd WHERE ID = ?";
 	private static final String DELETE_SENTENCIA_COMPLETA = "DELETE FROM comicsbbdd";
-	private static final String SENTENCIA_REBOOT_ID = "ALTER TABLE comicsbbdd AUTO_INCREMENT = 1";
+	private static final String SENTENCIA_REBOOT_ID = "DELETE FROM sqlite_sequence WHERE name = 'comicsbbdd'";
+
 
 	/**
 	 * Borra y reinicia la base de datos de manera asíncrona.

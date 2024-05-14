@@ -7,12 +7,10 @@ package Controladores;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 import alarmas.AlarmaList;
-import dbmanager.DatabaseManagerDAO;
-import ficherosFunciones.FuncionesFicheros;
+import dbmanager.SQLiteManager;
 import funciones_auxiliares.Utilidades;
 import funciones_auxiliares.Ventanas;
 import javafx.application.Platform;
@@ -21,13 +19,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
-import javafx.util.converter.IntegerStringConverter;
 
 /**
  * Esta clase sirve para crear una base de datos donde poder tratar nuestra
@@ -37,105 +30,28 @@ import javafx.util.converter.IntegerStringConverter;
  */
 public class CrearBBDDController implements Initializable {
 
-	/**
-	 * Botón utilizado para crear la base de datos.
-	 */
-	@FXML
-	private Button botonCrearBBDD;
+    @FXML
+    private Button botonCrearBBDD;
 
-	/**
-	 * Botón utilizado para limpiar los datos de la interfaz.
-	 */
-	@FXML
-	private Button botonLimpiarDatos;
+    @FXML
+    private Button botonLimpiarDatos;
 
-	/**
-	 * Botón utilizado para salir de la interfaz.
-	 */
-	@FXML
-	private Button botonSalir;
+    @FXML
+    private Button botonSalir;
 
-	/**
-	 * Botón utilizado para volver atrás en la interfaz.
-	 */
-	@FXML
-	private Button botonVolver;
+    @FXML
+    private Button botonVolver;
 
-	/**
-	 * Etiqueta para mostrar el nombre del host.
-	 */
-	@FXML
-	private Label etiquetaHost;
+    @FXML
+    private TextField nombreBBDD;
 
-	/**
-	 * Campo de texto para ingresar el nombre de la base de datos.
-	 */
-	@FXML
-	private TextField nombreBBDD;
-
-	/**
-	 * Campo de texto para ingresar el nombre del host.
-	 */
-	@FXML
-	private TextField nombreHost;
-
-	/**
-	 * Campo de contraseña para ingresar la contraseña de la base de datos.
-	 */
-	@FXML
-	private PasswordField passBBDD;
-
-	/**
-	 * Campo de texto para ingresar la contraseña del usuario.
-	 */
-	@FXML
-	private TextField passUsuarioText;
-
-	/**
-	 * Etiqueta para mostrar mensajes informativos.
-	 */
-	@FXML
-	private Label prontInformativo;
-
-	/**
-	 * Campo de texto para ingresar el puerto de la base de datos.
-	 */
-	@FXML
-	private TextField puertoBBDD;
-
-	/**
-	 * Botón de alternancia para mostrar/ocultar la contraseña.
-	 */
-	@FXML
-	private ToggleButton toggleEye;
-
-	/**
-	 * Imagen para mostrar/ocultar la contraseña.
-	 */
-	@FXML
-	private ImageView toggleEyeImageView;
-
-	/**
-	 * Campo de texto para ingresar el nombre de usuario de la base de datos.
-	 */
-	@FXML
-	private TextField userBBDD;
+    @FXML
+    private Label prontInformativo;
 
 	/**
 	 * Controlador para la navegación entre ventanas.
 	 */
 	private static Ventanas nav = new Ventanas();
-
-	private static AlarmaList alarmaList = new AlarmaList();
-	
-	/**
-	 * Variables para almacenar información de la base de datos.
-	 */
-	public static String DB_USER;
-	public static String DB_PASS;
-	public static String DB_PORT;
-	public static String DB_NAME;
-	public static String DB_HOST;
 
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
@@ -147,61 +63,19 @@ public class CrearBBDDController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		AlarmaList.detenerAnimacion();
 		AlarmaList.iniciarAnimacionEsperaCreacion(prontInformativo);
-
-		TextFormatter<Integer> textFormatterAni = new TextFormatter<>(new IntegerStringConverter(), null, change -> {
-			String newText = change.getControlNewText();
-			if (newText.matches("\\d*")) {
-				return change;
-			}
-			return null;
-		});
-		puertoBBDD.setTextFormatter(textFormatterAni);
-
-		formulario_local();
-
-		AlarmaList.configureEyeToggle(toggleEyeImageView, passUsuarioText, passBBDD);
-
-	}
-
-	/**
-	 * Llena el formulario de configuración local con valores previamente guardados.
-	 */
-	public void formulario_local() {
-
-		Map<String, String> datosConfiguracion = FuncionesFicheros.devolverDatosConfig();
-
-		userBBDD.setText(datosConfiguracion.get("Usuario"));
-
-		passBBDD.setText(datosConfiguracion.get("Password"));
-
-		puertoBBDD.setText(datosConfiguracion.get("Puerto"));
-
-		nombreHost.setText(datosConfiguracion.get("Hosting"));
-
 	}
 
 	/**
 	 * Funcion que guarda los datos de la nueva base de datos.
 	 */
-	public String[] datosBBDD() {
+	public String datosBBDD() {
 
-		String datos[] = new String[5];
-		DB_PORT = puertoBBDD.getText();
-		DB_NAME = nombreBBDD.getText();
-		DB_USER = userBBDD.getText();
-		DB_PASS = passBBDD.getText();
-		DB_HOST = selectorHost();
+		String dbNombre = nombreBBDD.getText();
 
-		datos[0] = DB_PORT;
-		datos[1] = DB_NAME;
-		datos[2] = DB_USER;
-		datos[3] = DB_PASS;
-		datos[4] = DB_HOST;
-
-		if (!comprobarEntradas()) {
-			return datos;
+		if (!comprobarEntradas(dbNombre)) {
+			return dbNombre;
 		}
-		return null;
+		return "";
 	}
 
 	/**
@@ -209,23 +83,10 @@ public class CrearBBDDController implements Initializable {
 	 * 
 	 * @return
 	 */
-	public boolean comprobarEntradas() {
+	public boolean comprobarEntradas(String dbNombre) {
 		String errorMessage = "";
-
-		if (DB_PORT.isEmpty()) {
-			errorMessage += "El puerto de la base de datos está vacío.\n";
-		}
-
-		if (DB_NAME.isEmpty()) {
+		if (dbNombre.isEmpty()) {
 			errorMessage += "El nombre de la base de datos está vacío.\n";
-		}
-
-		if (DB_USER.isEmpty()) {
-			errorMessage += "El usuario de la base de datos está vacío.\n";
-		}
-
-		if (DB_HOST.isEmpty()) {
-			errorMessage += "El host de la base de datos está vacío.\n";
 		}
 
 		if (!errorMessage.isEmpty()) {
@@ -237,16 +98,6 @@ public class CrearBBDDController implements Initializable {
 	}
 
 	/**
-	 * Metodo que permite seleccionar un host online o el publico.
-	 * 
-	 * @param event
-	 */
-	@FXML
-	void selectorBotonHost(ActionEvent event) {
-		selectorHost();
-	}
-
-	/**
 	 * Metodo que permite llamada a metodos donde se crean la bbdd y las tablas y
 	 * procedimientos almacenados
 	 *
@@ -255,39 +106,19 @@ public class CrearBBDDController implements Initializable {
 	 * @throws SQLException
 	 */
 	@FXML
-	void crearBBDD(ActionEvent event) throws IOException, SQLException {
+	void crearBBDD(ActionEvent event) {
+		String dbName = nombreBBDD.getText();
+		if (!datosBBDD().isEmpty() && SQLiteManager.checkDatabaseExists(dbName)) {
 
-		if (datosBBDD() != null && DatabaseManagerDAO.checkDatabaseExists(prontInformativo, DB_NAME)) {
-			DatabaseManagerDAO.createDataBase();
-			String port = puertoBBDD.getText(); // Reemplaza con el valor deseado
-			String dbName = nombreBBDD.getText(); // Reemplaza con el valor deseado
-			String userName = userBBDD.getText(); // Reemplaza con el valor deseado
-			String password = passBBDD.getText(); // Reemplaza con el valor deseado
-			String host = nombreHost.getText(); // Reemplaza con el valor deseado
+			SQLiteManager.createTable(dbName);
 
-			String[] datos = { port, dbName, userName, password, host };
-			if (Utilidades.isMySQLServiceRunning(host, port)) {
-				DatabaseManagerDAO.createTable(datos);
-				Utilidades.crearCarpeta();
+			Utilidades.crearCarpeta();
 
-				AlarmaList.iniciarAnimacionBaseCreada(prontInformativo, DB_NAME);
-				FuncionesFicheros.guardarDatosBaseLocal(datosBBDD(), prontInformativo, null);
-			} else {
-				alarmaList.manejarErrorConexion("El servicio MySQL no esta activado. Activalo para crear la base de datos", prontInformativo);
-			}
+			AlarmaList.iniciarAnimacionBaseCreada(prontInformativo, dbName);
 
+		} else {
+			AlarmaList.iniciarAnimacionBaseExiste(prontInformativo, dbName);
 		}
-	}
-
-	/**
-	 * Funcion que permite conectarse a un host online o usar el local.
-	 *
-	 * @return
-	 */
-	public String selectorHost() {
-
-		String host = nombreHost.getText();
-		return host;
 	}
 
 	/**
@@ -297,10 +128,6 @@ public class CrearBBDDController implements Initializable {
 	 */
 	@FXML
 	void limpiarDatos(ActionEvent event) {
-
-		userBBDD.setText("");
-		passBBDD.setText("");
-		puertoBBDD.setText("");
 		nombreBBDD.setText("");
 	}
 

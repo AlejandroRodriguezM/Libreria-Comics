@@ -273,11 +273,11 @@ public class ListaComicsDAO {
 	public static void actualizarDatosAutoCompletado(String sentenciaSQL) {
 		List<List<String>> listaOrdenada = new ArrayList<>(); // Cambia el tipo aquí
 		try (Connection conn = ConectManager.conexion();
-				PreparedStatement stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE,
-						ResultSet.CONCUR_UPDATABLE);
+				PreparedStatement stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_FORWARD_ONLY,
+						ResultSet.CONCUR_READ_ONLY);
 				ResultSet rs = stmt.executeQuery()) {
 
-			if (rs != null && rs.first()) {
+			while (rs.next()) {
 				List<String> nombreComicSet = new ArrayList<>(); // Cambia el tipo aquí
 				List<String> nombreGuionistaSet = new ArrayList<>(); // Cambia el tipo aquí
 				List<Integer> numeroComicSet = new ArrayList<>(); // Cambia el tipo aquí
@@ -454,36 +454,36 @@ public class ListaComicsDAO {
 	public static void limpiarListaGuardados() {
 		comicsGuardadosList.clear();
 	}
-	
+
 	public static void reiniciarListas() {
-	    listaComics.clear();
-	    listaComicsCheck.clear();
-	    listaID.clear();
-	    listaNombre.clear();
-	    listaNumeroComic.clear();
-	    listaVariante.clear();
-	    listaFirma.clear();
-	    listaFormato.clear();
-	    listaEditorial.clear();
-	    listaGuionista.clear();
-	    listaDibujante.clear();
-	    listaFecha.clear();
-	    listaProcedencia.clear();
-	    listaCaja.clear();
-	    nombreComicList.clear();
-	    numeroComicList.clear();
-	    nombreFirmaList.clear();
-	    nombreGuionistaList.clear();
-	    nombreVarianteList.clear();
-	    numeroCajaList.clear();
-	    nombreProcedenciaList.clear();
-	    nombreFormatoList.clear();
-	    nombreEditorialList.clear();
-	    nombreDibujanteList.clear();
-	    listaImagenes.clear();
-	    listaLimpia.clear();
-	    listaLimpiaAutoCompletado.clear();
-	    comicsImportados.clear();
+		listaComics.clear();
+		listaComicsCheck.clear();
+		listaID.clear();
+		listaNombre.clear();
+		listaNumeroComic.clear();
+		listaVariante.clear();
+		listaFirma.clear();
+		listaFormato.clear();
+		listaEditorial.clear();
+		listaGuionista.clear();
+		listaDibujante.clear();
+		listaFecha.clear();
+		listaProcedencia.clear();
+		listaCaja.clear();
+		nombreComicList.clear();
+		numeroComicList.clear();
+		nombreFirmaList.clear();
+		nombreGuionistaList.clear();
+		nombreVarianteList.clear();
+		numeroCajaList.clear();
+		nombreProcedenciaList.clear();
+		nombreFormatoList.clear();
+		nombreEditorialList.clear();
+		nombreDibujanteList.clear();
+		listaImagenes.clear();
+		listaLimpia.clear();
+		listaLimpiaAutoCompletado.clear();
+		comicsImportados.clear();
 	}
 
 	/**
@@ -557,11 +557,11 @@ public class ListaComicsDAO {
 		List<String> listaAutoCompletado = new ArrayList<>();
 
 		try (Connection conn = ConectManager.conexion();
-				PreparedStatement stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_SCROLL_INSENSITIVE,
-						ResultSet.CONCUR_UPDATABLE);
+				PreparedStatement stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_FORWARD_ONLY,
+						ResultSet.CONCUR_READ_ONLY);
 				ResultSet rs = stmt.executeQuery()) {
 
-			if (rs != null && rs.first()) {
+			while (rs.next()) {
 				do {
 					String datosAutocompletado = rs.getString(columna);
 					if (columna.equals("nomComic")) {
@@ -661,36 +661,36 @@ public class ListaComicsDAO {
 		}
 		return true;
 	}
-	
+
 	public static void mostrarTamanioListas() {
-	    System.out.println("Tamaño de listaComics: " + listaComics.size());
-	    System.out.println("Tamaño de listaComicsCheck: " + listaComicsCheck.size());
-	    System.out.println("Tamaño de listaID: " + listaID.size());
-	    System.out.println("Tamaño de listaNombre: " + listaNombre.size());
-	    System.out.println("Tamaño de listaNumeroComic: " + listaNumeroComic.size());
-	    System.out.println("Tamaño de listaVariante: " + listaVariante.size());
-	    System.out.println("Tamaño de listaFirma: " + listaFirma.size());
-	    System.out.println("Tamaño de listaFormato: " + listaFormato.size());
-	    System.out.println("Tamaño de listaEditorial: " + listaEditorial.size());
-	    System.out.println("Tamaño de listaGuionista: " + listaGuionista.size());
-	    System.out.println("Tamaño de listaDibujante: " + listaDibujante.size());
-	    System.out.println("Tamaño de listaFecha: " + listaFecha.size());
-	    System.out.println("Tamaño de listaProcedencia: " + listaProcedencia.size());
-	    System.out.println("Tamaño de listaCaja: " + listaCaja.size());
-	    System.out.println("Tamaño de nombreComicList: " + nombreComicList.size());
-	    System.out.println("Tamaño de numeroComicList: " + numeroComicList.size());
-	    System.out.println("Tamaño de nombreFirmaList: " + nombreFirmaList.size());
-	    System.out.println("Tamaño de nombreGuionistaList: " + nombreGuionistaList.size());
-	    System.out.println("Tamaño de nombreVarianteList: " + nombreVarianteList.size());
-	    System.out.println("Tamaño de numeroCajaList: " + numeroCajaList.size());
-	    System.out.println("Tamaño de nombreProcedenciaList: " + nombreProcedenciaList.size());
-	    System.out.println("Tamaño de nombreFormatoList: " + nombreFormatoList.size());
-	    System.out.println("Tamaño de nombreEditorialList: " + nombreEditorialList.size());
-	    System.out.println("Tamaño de nombreDibujanteList: " + nombreDibujanteList.size());
-	    System.out.println("Tamaño de listaImagenes: " + listaImagenes.size());
-	    System.out.println("Tamaño de listaLimpia: " + listaLimpia.size());
-	    System.out.println("Tamaño de listaLimpiaAutoCompletado: " + listaLimpiaAutoCompletado.size());
-	    System.out.println("Tamaño de comicsImportados: " + comicsImportados.size());
+		System.out.println("Tamaño de listaComics: " + listaComics.size());
+		System.out.println("Tamaño de listaComicsCheck: " + listaComicsCheck.size());
+		System.out.println("Tamaño de listaID: " + listaID.size());
+		System.out.println("Tamaño de listaNombre: " + listaNombre.size());
+		System.out.println("Tamaño de listaNumeroComic: " + listaNumeroComic.size());
+		System.out.println("Tamaño de listaVariante: " + listaVariante.size());
+		System.out.println("Tamaño de listaFirma: " + listaFirma.size());
+		System.out.println("Tamaño de listaFormato: " + listaFormato.size());
+		System.out.println("Tamaño de listaEditorial: " + listaEditorial.size());
+		System.out.println("Tamaño de listaGuionista: " + listaGuionista.size());
+		System.out.println("Tamaño de listaDibujante: " + listaDibujante.size());
+		System.out.println("Tamaño de listaFecha: " + listaFecha.size());
+		System.out.println("Tamaño de listaProcedencia: " + listaProcedencia.size());
+		System.out.println("Tamaño de listaCaja: " + listaCaja.size());
+		System.out.println("Tamaño de nombreComicList: " + nombreComicList.size());
+		System.out.println("Tamaño de numeroComicList: " + numeroComicList.size());
+		System.out.println("Tamaño de nombreFirmaList: " + nombreFirmaList.size());
+		System.out.println("Tamaño de nombreGuionistaList: " + nombreGuionistaList.size());
+		System.out.println("Tamaño de nombreVarianteList: " + nombreVarianteList.size());
+		System.out.println("Tamaño de numeroCajaList: " + numeroCajaList.size());
+		System.out.println("Tamaño de nombreProcedenciaList: " + nombreProcedenciaList.size());
+		System.out.println("Tamaño de nombreFormatoList: " + nombreFormatoList.size());
+		System.out.println("Tamaño de nombreEditorialList: " + nombreEditorialList.size());
+		System.out.println("Tamaño de nombreDibujanteList: " + nombreDibujanteList.size());
+		System.out.println("Tamaño de listaImagenes: " + listaImagenes.size());
+		System.out.println("Tamaño de listaLimpia: " + listaLimpia.size());
+		System.out.println("Tamaño de listaLimpiaAutoCompletado: " + listaLimpiaAutoCompletado.size());
+		System.out.println("Tamaño de comicsImportados: " + comicsImportados.size());
 	}
 
 	/**

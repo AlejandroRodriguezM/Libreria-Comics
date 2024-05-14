@@ -34,8 +34,6 @@
 						<MenuItem fx:id="menuArchivoExcel" mnemonicParsing="false" onAction="#exportCSV" text="Exportar Excel" />
 						<MenuItem fx:id="menuArchivoImportar" mnemonicParsing="false" onAction="#importCSV" text="Importar CSV" />
 						<MenuItem fx:id="menuArchivoDelete" mnemonicParsing="false" onAction="#borrarContenidoTabla" text="Eliminar Base de datos" />
-						<MenuItem fx:id="menuArchivoSobreMi" mnemonicParsing="false" onAction="#verSobreMi" text="Sobre mi" />
-                  <MenuItem fx:id="menuArchivoConexion" mnemonicParsing="false" onAction="#verEstadoConexion" text="Comprobar Conexion" />
                   <MenuItem fx:id="menuArchivoAvanzado" mnemonicParsing="false" onAction="#verOpcionesAvanzadas" text="Opciones Avanzadas" />
                   <Menu fx:id="menuComprobarApis" mnemonicParsing="false" text="Comprobar Apis">
                     <items>
@@ -43,6 +41,7 @@
                         <MenuItem fx:id="menuArchivoApiVine" mnemonicParsing="false" onAction="#modificarApiVine" text="Comprobar Api Vine" />
                     </items>
                   </Menu>
+						<MenuItem fx:id="menuArchivoSobreMi" mnemonicParsing="false" onAction="#verSobreMi" text="Sobre mi" />
 						<MenuItem fx:id="menuArchivoDesconectar" mnemonicParsing="false" onAction="#volverMenu" text="Desconectar" />
 						<MenuItem fx:id="menuArchivoCerrar" mnemonicParsing="false" onAction="#salirPrograma" text="Cerrar" />
 					</items>
@@ -176,7 +175,7 @@
 		<Button fx:id="botonLimpiar" layoutX="231.0" layoutY="31.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Limpiar" />
 		<Button fx:id="botonbbdd" layoutX="231.0" layoutY="72.0" mnemonicParsing="false" onAction="#verTodabbdd" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Ver todo" />
 		<Button fx:id="botonMostrarParametro" alignment="CENTER" contentDisplay="BOTTOM" layoutX="231.0" layoutY="116.0" mnemonicParsing="false" onAction="#mostrarPorParametro" prefHeight="35.0" prefWidth="90.0" stylesheets="@../style/genericos_style.css" text="Busqueda" />
-      <Label fx:id="alarmaConexionSql" layoutX="1187.0" prefHeight="25.0" prefWidth="23.0" stylesheets="@../style/alarma_conexion_style.css" AnchorPane.rightAnchor="2.0" />
+      <Label fx:id="alarmaConexionInternet" layoutX="1187.0" prefHeight="25.0" prefWidth="23.0" stylesheets="@../style/alarma_conexion_style.css" AnchorPane.rightAnchor="2.0" />
       <AnchorPane fx:id="anchoPaneInfo" layoutX="610.0" layoutY="31.0" prefHeight="339.0" prefWidth="593.0" AnchorPane.rightAnchor="9.0">
          <children>
               <VBox fx:id="vboxContenido" layoutX="35.0" layoutY="1.0" prefHeight="337.0" prefWidth="241.0">

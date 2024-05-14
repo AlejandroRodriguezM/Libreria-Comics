@@ -279,7 +279,7 @@ public class FuncionesManejoFront {
 				referenciaVentana.getMenu_comic_modificar(), referenciaVentana.getMenu_comic_puntuar(),
 				referenciaVentana.getMenu_comic_aleatoria(), referenciaVentana.getMenu_archivo_avanzado(),
 				referenciaVentana.getMenu_leer_CodigoBarras(),
-				referenciaVentana.getMenu_Importar_Fichero_CodigoBarras(), referenciaVentana.getMenu_archivo_conexion(),
+				referenciaVentana.getMenu_Importar_Fichero_CodigoBarras(),
 				referenciaVentana.getNavegacion_estadistica(),
 				referenciaVentana.getMenu_Importar_Fichero_CodigoBarras(), referenciaVentana.getMenu_archivo_sobreMi(),
 				referenciaVentana.getMenu_comprobar_apis(), referenciaVentana.getMenu_archivo_desconectar(),
@@ -375,31 +375,25 @@ public class FuncionesManejoFront {
 		}
 	}
 
-	private static void hideImageAndClearText(Node imageNode, TextArea textArea) {
-		if (imageNode != null) {
-			imageNode.setVisible(false);
-		}
-		if (textArea != null) {
-			textArea.clear();
-			textArea.setText(null);
-			textArea.setOpacity(0);
+	public static void cambiarEstadoOpcionesAvanzadas(boolean estadoAccion, AccionReferencias referenciaVentana) {
+		if (referenciaVentana != null) {
+			deshabilitarSiNoNulo(referenciaVentana.getBotonActualizarDatos(), estadoAccion);
+			deshabilitarSiNoNulo(referenciaVentana.getBotonActualizarPortadas(), estadoAccion);
+			deshabilitarSiNoNulo(referenciaVentana.getBotonActualizarSoftware(), estadoAccion);
+			deshabilitarSiNoNulo(referenciaVentana.getBotonActualizarTodo(), estadoAccion);
+			deshabilitarSiNoNulo(referenciaVentana.getBotonComprimirPortadas(), estadoAccion);
+			deshabilitarSiNoNulo(referenciaVentana.getBotonReCopiarPortadas(), estadoAccion);
+			deshabilitarSiNoNulo(referenciaVentana.getBotonDescargarPdf(), estadoAccion);
+			deshabilitarSiNoNulo(referenciaVentana.getBotonDescargarSQL(), estadoAccion);
+			deshabilitarSiNoNulo(referenciaVentana.getBotonNormalizarDB(), estadoAccion);
+			deshabilitarSiNoNulo(referenciaVentana.getCheckFirmas(), estadoAccion);
 		}
 	}
 
-	public static void cambiarEstadoOpcionesAvanzadas(boolean estadoAccion, AccionReferencias referenciaVentana) {
-
-		referenciaVentana.getBotonActualizarDatos().setDisable(estadoAccion);
-		referenciaVentana.getBotonActualizarPortadas().setDisable(estadoAccion);
-		referenciaVentana.getBotonActualizarSoftware().setDisable(estadoAccion);
-		referenciaVentana.getBotonActualizarTodo().setDisable(estadoAccion);
-		referenciaVentana.getBotonComprimirPortadas().setDisable(estadoAccion);
-		referenciaVentana.getBotonReCopiarPortadas().setDisable(estadoAccion);
-		referenciaVentana.getBotonDescargarPdf().setDisable(estadoAccion);
-		referenciaVentana.getBotonDescargarSQL().setDisable(estadoAccion);
-		referenciaVentana.getBotonNormalizarDB().setDisable(estadoAccion);
-		referenciaVentana.getBotonReCopiarPortadas().setDisable(estadoAccion);
-
-		referenciaVentana.getCheckFirmas().setDisable(estadoAccion);
+	private static void deshabilitarSiNoNulo(Control control, boolean estado) {
+		if (control != null) {
+			control.setDisable(estado);
+		}
 	}
 
 	public static AccionReferencias getReferenciaVentana() {

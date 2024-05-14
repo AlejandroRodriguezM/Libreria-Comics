@@ -75,11 +75,11 @@ public class FuncionesExcel {
 
 	// Para portadas
 	public static final String DEFAULT_PORTADA_IMAGE_PATH = DOCUMENTS_PATH + File.separator + "libreria_comics"
-			+ File.separator + ConectManager.DB_NAME + File.separator + "portadas";
+			+ File.separator + Utilidades.nombreDB() + File.separator + "portadas";
 
 	// Para la base de la ruta de imágenes predeterminada
 	private static final String DEFAULT_IMAGE_PATH_BASE = DOCUMENTS_PATH + File.separator + "libreria_comics"
-			+ File.separator + ConectManager.DB_NAME;
+			+ File.separator + Utilidades.nombreDB();
 
 	private static final String LOG_FILE_NAME = "log_"
 			+ LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")) + ".txt";
@@ -215,7 +215,7 @@ public class FuncionesExcel {
 
 			String userDir = System.getProperty("user.home");
 			String ubicacion = userDir + File.separator + "AppData" + File.separator + "Roaming";
-			String direccion = ubicacion + File.separator + "libreria" + File.separator + ConectManager.DB_NAME
+			String direccion = ubicacion + File.separator + "libreria" + File.separator + Utilidades.nombreDB()
 					+ File.separator + "backups" + File.separator + nombreCarpeta;
 
 			try {

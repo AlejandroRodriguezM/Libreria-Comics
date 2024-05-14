@@ -176,8 +176,6 @@ public class AccesoBBDDController implements Initializable {
 
 	private static AlarmaList alarmaList = new AlarmaList();
 
-	private static ExecutorService executorService;
-
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
 	 *
@@ -197,7 +195,7 @@ public class AccesoBBDDController implements Initializable {
 		alarmaList.setAlarmaConexionPrincipal(prontEstadoConexion);
 
 		Platform.runLater(() -> {
-			
+
 			ConectManager.asignarValoresPorDefecto();
 			ListaComicsDAO.reiniciarListas();
 			ConectManager.close();
@@ -214,11 +212,6 @@ public class AccesoBBDDController implements Initializable {
 			FuncionesFicheros.crearEstructura();
 			Utilidades.crearCarpeta();
 			ConectManager.closeConnection();
-			progresoCarga.getScene().getWindow().setOnHidden(e -> {
-				if (executorService != null && !executorService.isShutdown()) {
-					executorService.shutdownNow();
-				}
-			});
 		});
 
 	}
@@ -274,13 +267,6 @@ public class AccesoBBDDController implements Initializable {
 	@FXML
 	void entrarMenu(ActionEvent event) {
 
-		if (!Utilidades.isMySQLServiceRunning(ConectManager.DB_HOST, ConectManager.DB_PORT)) {
-			AlarmaList.detenerAnimacion();
-			AlarmaList.iniciarAnimacionConexion(prontEstadoConexion);
-			AlarmaList.iniciarAnimacionAlarma(alarmaConexion);
-			return;
-		}
-
 		if (ConectManager.estadoConexion) { // Siempre que el metodo de la clase DBManager sea true, permitira acceder
 			ConectManager.resetConnection();
 			// al menu principal
@@ -304,12 +290,11 @@ public class AccesoBBDDController implements Initializable {
 	@FXML
 	void enviarDatos(ActionEvent event) {
 
-		String[] datosFichero = FuncionesFicheros.datosEnvioFichero();
+		String datosFichero = FuncionesFicheros.datosEnvioFichero();
 
 		if (ConectManager.loadDriver()) {
 
-			ConectManager.datosBBDD(datosFichero);
-			if (ConectManager.conexionActiva()) {
+			if (ConectManager.conexion() != null) {
 
 				AlarmaList.detenerAnimacion();
 				AlarmaList.iniciarAnimacionConectado(prontEstadoConexion);
@@ -324,37 +309,6 @@ public class AccesoBBDDController implements Initializable {
 
 		return botonEnviar.getScene();
 
-	}
-
-	@FXML
-	void reActivarConexion(ActionEvent event) {
-		Task<Boolean> iniciarXAMPPTask = new Task<Boolean>() {
-			@Override
-			protected Boolean call() throws Exception {
-
-				// Realizar las operaciones de inicio de XAMPP aquí
-				return Utilidades.iniciarXAMPP();
-			}
-		};
-
-		// Configurar eventos onRunning y onSucceeded
-		iniciarXAMPPTask.setOnRunning(e -> {
-			AlarmaList.iniciarAnimacionCarga(progresoCarga);
-		});
-
-		iniciarXAMPPTask.setOnSucceeded(e -> {
-			Platform.runLater(() -> AlarmaList.detenerAnimacionCarga(progresoCarga));
-
-			// Cerrar el hilo después de completar la tarea
-			if (!executorService.isShutdown()) {
-				executorService.shutdown();
-			}
-
-		});
-
-		// Iniciar la tarea en un nuevo hilo utilizando un ExecutorService
-		executorService = Executors.newSingleThreadExecutor();
-		executorService.submit(iniciarXAMPPTask);
 	}
 
 	/**

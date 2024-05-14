@@ -28,7 +28,7 @@
 								<Font name="Comic Sans MS" size="18.0" />
 							</font>
 						</Label>
-						<Label layoutX="6.0" layoutY="108.0" prefHeight="17.0" prefWidth="83.0" style="-fx-text-fill: white;" text="Descargar SQL" />
+						<Label layoutX="6.0" layoutY="108.0" prefHeight="17.0" prefWidth="136.0" style="-fx-text-fill: white;" text="Descargar Copia SQL Lite" />
 						<Button fx:id="botonDescargarSQL" layoutX="186.0" layoutY="104.0" mnemonicParsing="false" onAction="#descargarSQL" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Descargar" />
 						<Label fx:id="labelComprobar" layoutX="6.0" layoutY="200.0" prefHeight="17.0" prefWidth="108.0" style="-fx-text-fill: white;" text="Comprobar versión" />
 						<Button fx:id="botonActualizarSoftware" layoutX="186.0" layoutY="191.0" mnemonicParsing="false" onAction="#comprobarVersion" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Comprobar" />

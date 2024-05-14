@@ -615,7 +615,6 @@ public class VentanaAccionController implements Initializable {
 		referenciaVentana.setProntInfo(prontInfo);
 		referenciaVentana.setRootVBox(rootVBox);
 		referenciaVentana.setMenu_Importar_Fichero_CodigoBarras(menuImportarFichero);
-		referenciaVentana.setMenu_archivo_conexion(menuConexion);
 		referenciaVentana.setMenu_leer_CodigoBarras(menuCodigoBarras);
 		referenciaVentana.setMenu_estadistica_estadistica(navegacionMostrarEstadistica);
 		referenciaVentana.setMenu_navegacion(menuNavegacion);
@@ -942,7 +941,7 @@ public class VentanaAccionController implements Initializable {
 		nav.cerrarMenuOpciones();
 		Platform.runLater(() -> {
 			try {
-				if (!ConectManager.conexionActiva() || !Utilidades.isInternetAvailable()) {
+				if (!Utilidades.isInternetAvailable()) {
 					return;
 				}
 
@@ -1087,13 +1086,6 @@ public class VentanaAccionController implements Initializable {
 		}
 	}
 
-	@FXML
-	void verEstadoConexion(ActionEvent event) {
-		enviarReferencias();
-		nav.verEstadoConexion();
-
-	}
-
 	/**
 	 * Método que maneja el evento de guardar los datos de un cómic.
 	 * 
@@ -1104,10 +1096,6 @@ public class VentanaAccionController implements Initializable {
 		enviarReferencias();
 		rellenarCombosEstaticos();
 		nav.cerrarMenuOpciones();
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
-
 		AccionModificar.actualizarComicLista();
 
 	}
@@ -1124,12 +1112,8 @@ public class VentanaAccionController implements Initializable {
 	void guardarListaImportados(ActionEvent event) throws IOException, SQLException {
 		enviarReferencias();
 		nav.cerrarMenuOpciones();
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
 		AccionAniadir.guardarContenidoLista();
 		rellenarCombosEstaticos();
-
 	}
 
 	/**
@@ -1144,10 +1128,6 @@ public class VentanaAccionController implements Initializable {
 	void ventaComic(ActionEvent event) throws SQLException {
 		enviarReferencias();
 		nav.cerrarMenuOpciones();
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
-
 		AccionModificar.venderComic();
 		rellenarCombosEstaticos();
 	}
@@ -1165,10 +1145,6 @@ public class VentanaAccionController implements Initializable {
 	void eliminarDatos(ActionEvent event) {
 		enviarReferencias();
 		nav.cerrarMenuOpciones();
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
-
 		AccionEliminar.eliminarComic();
 		rellenarCombosEstaticos();
 

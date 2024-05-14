@@ -231,10 +231,6 @@ public class OpcionesAvanzadasController implements Initializable {
 	@FXML
 	void descargarSQL(ActionEvent event) {
 
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
-
 		AlarmaList.detenerAnimacionEspera();
 		DatabaseManagerDAO.makeSQL(prontInfo, estadoStage());
 		Utilidades.borrarArchivosNoEnLista(ListaComicsDAO.listaImagenes);

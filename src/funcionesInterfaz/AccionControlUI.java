@@ -459,20 +459,17 @@ public class AccionControlUI {
 	}
 
 	public static void listas_autocompletado() {
-		if (ConectManager.conexionActiva()) {
-			FuncionesManejoFront.asignarAutocompletado(referenciaVentana.getNombreComic(), ListaComicsDAO.listaNombre);
-			FuncionesManejoFront.asignarAutocompletado(referenciaVentana.getVarianteComic(),
-					ListaComicsDAO.listaVariante);
-			FuncionesManejoFront.asignarAutocompletado(referenciaVentana.getFirmaComic(), ListaComicsDAO.listaFirma);
-			FuncionesManejoFront.asignarAutocompletado(referenciaVentana.getEditorialComic(),
-					ListaComicsDAO.listaEditorial);
-			FuncionesManejoFront.asignarAutocompletado(referenciaVentana.getGuionistaComic(),
-					ListaComicsDAO.listaGuionista);
-			FuncionesManejoFront.asignarAutocompletado(referenciaVentana.getDibujanteComic(),
-					ListaComicsDAO.listaDibujante);
-			FuncionesManejoFront.asignarAutocompletado(referenciaVentana.getNumeroComic().getEditor(),
-					ListaComicsDAO.listaNumeroComic);
-		}
+		FuncionesManejoFront.asignarAutocompletado(referenciaVentana.getNombreComic(), ListaComicsDAO.listaNombre);
+		FuncionesManejoFront.asignarAutocompletado(referenciaVentana.getVarianteComic(), ListaComicsDAO.listaVariante);
+		FuncionesManejoFront.asignarAutocompletado(referenciaVentana.getFirmaComic(), ListaComicsDAO.listaFirma);
+		FuncionesManejoFront.asignarAutocompletado(referenciaVentana.getEditorialComic(),
+				ListaComicsDAO.listaEditorial);
+		FuncionesManejoFront.asignarAutocompletado(referenciaVentana.getGuionistaComic(),
+				ListaComicsDAO.listaGuionista);
+		FuncionesManejoFront.asignarAutocompletado(referenciaVentana.getDibujanteComic(),
+				ListaComicsDAO.listaDibujante);
+		FuncionesManejoFront.asignarAutocompletado(referenciaVentana.getNumeroComic().getEditor(),
+				ListaComicsDAO.listaNumeroComic);
 	}
 
 	public static void controlarEventosInterfaz() {

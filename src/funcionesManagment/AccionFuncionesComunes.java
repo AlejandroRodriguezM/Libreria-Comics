@@ -29,6 +29,7 @@ import dbmanager.DBUtilidades;
 import dbmanager.DatabaseManagerDAO;
 import dbmanager.ListaComicsDAO;
 import dbmanager.UpdateManager;
+import ficherosFunciones.FuncionesFicheros;
 import funcionesInterfaz.AccionControlUI;
 import funcionesInterfaz.FuncionesComboBox;
 import funcionesInterfaz.FuncionesManejoFront;
@@ -95,9 +96,6 @@ public class AccionFuncionesComunes {
 	public void procesarComic(Comic comic, boolean esModificacion) {
 		final List<Comic> listaComics;
 		final List<Comic> comicsFinal;
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
 
 		getReferenciaVentana().getProntInfo().setOpacity(1);
 		if (!accionRellenoDatos.camposComicSonValidos()) {
@@ -109,12 +107,12 @@ public class AccionFuncionesComunes {
 			return;
 		}
 
-		String codigoImagen = Utilidades.generarCodigoUnico(carpetaPortadas(ConectManager.DB_NAME) + File.separator);
+		String codigoImagen = Utilidades.generarCodigoUnico(carpetaPortadas(Utilidades.nombreDB()) + File.separator);
 		String mensaje = "";
 		try {
 			Utilidades.redimensionarYGuardarImagen(comic.getImagen(), codigoImagen);
 
-			comic.setImagen(carpetaPortadas(ConectManager.DB_NAME) + File.separator + codigoImagen + ".jpg");
+			comic.setImagen(carpetaPortadas(Utilidades.nombreDB()) + File.separator + codigoImagen + ".jpg");
 			if (esModificacion) {
 				ComicManagerDAO.actualizarComicBBDD(comic, "modificar");
 				mensaje = "Has modificado correctamente el cómic";
@@ -167,10 +165,6 @@ public class AccionFuncionesComunes {
 
 	public static boolean procesarComicPorCodigo(String finalValorCodigo) {
 
-		if (!ConectManager.conexionActiva()) {
-			return false;
-		}
-
 		Comic comicInfo = obtenerComicInfo(finalValorCodigo);
 
 		if (comprobarCodigo(comicInfo)) {
@@ -200,9 +194,9 @@ public class AccionFuncionesComunes {
 			return;
 		}
 
-		String codigo_imagen = Utilidades.generarCodigoUnico(carpetaPortadas(ConectManager.DB_NAME) + File.separator);
+		String codigo_imagen = Utilidades.generarCodigoUnico(carpetaPortadas(Utilidades.nombreDB()) + File.separator);
 		String urlImagen = comicInfo.getImagen();
-		String urlFinal = carpetaPortadas(ConectManager.DB_NAME) + File.separator + codigo_imagen + ".jpg";
+		String urlFinal = carpetaPortadas(Utilidades.nombreDB()) + File.separator + codigo_imagen + ".jpg";
 		String correctedUrl = urlImagen.replace("\\", "/").replaceFirst("^http:", "https:");
 		comicOriginal.setID(comicOriginal.getid());
 		if (tipoUpdate.equalsIgnoreCase("modificar") || tipoUpdate.equalsIgnoreCase("actualizar datos")) {
@@ -239,7 +233,7 @@ public class AccionFuncionesComunes {
 				} catch (URISyntaxException e) {
 					e.printStackTrace();
 				}
-				Utilidades.descargarYConvertirImagenAsync(uri, carpetaPortadas(ConectManager.DB_NAME),
+				Utilidades.descargarYConvertirImagenAsync(uri, carpetaPortadas(Utilidades.nombreDB()),
 						codigo_imagen + ".jpg");
 			});
 		}
@@ -289,7 +283,7 @@ public class AccionFuncionesComunes {
 
 		// Verificar si se obtuvo un objeto FileChooser válido
 		if (fichero != null) {
-			String nuevoNombreArchivo = Utilidades.generarCodigoUnico(carpetaRaizPortadas(ConectManager.DB_NAME));
+			String nuevoNombreArchivo = Utilidades.generarCodigoUnico(carpetaRaizPortadas(Utilidades.nombreDB()));
 
 			try {
 				Utilidades.redimensionarYGuardarImagen(fichero.getAbsolutePath(), nuevoNombreArchivo);
@@ -297,7 +291,7 @@ public class AccionFuncionesComunes {
 				e.printStackTrace();
 			}
 
-			getReferenciaVentana().getDireccionImagen().setText(carpetaRaizPortadas(ConectManager.DB_NAME) + "portadas"
+			getReferenciaVentana().getDireccionImagen().setText(carpetaRaizPortadas(Utilidades.nombreDB()) + "portadas"
 					+ File.separator + nuevoNombreArchivo + ".jpg");
 
 			String mensaje = "Portada subida correctamente.";
@@ -370,11 +364,6 @@ public class AccionFuncionesComunes {
 	 */
 	public boolean comprobarExistenciaComic(String idComic) {
 
-		// Verifica si la conexión está activa
-		if (!ConectManager.conexionActiva()) {
-			return false;
-		}
-
 		// Si el cómic existe en la base de datos
 		if (ComicManagerDAO.comprobarIdentificadorComic(idComic)) {
 			FuncionesTableView.actualizarBusquedaRaw();
@@ -405,10 +394,6 @@ public class AccionFuncionesComunes {
 	 */
 	private static void rellenarTablaImport(Comic comic) {
 		Platform.runLater(() -> {
-
-			if (!ConectManager.conexionActiva()) {
-				return;
-			}
 
 			String numComic = Utilidades.extraerNumeroLimpio(comic.getNombre());
 			String nombreCorregido = Utilidades.eliminarParentesis(comic.getNombre());
@@ -460,17 +445,17 @@ public class AccionFuncionesComunes {
 			// Corrección y generación de la URL final de la imagen
 			String correctedUrl = urlImagen.replace("\\", "/").replace("http:", "https:").replace("https:", "https:/");
 			String codigoImagen = Utilidades
-					.generarCodigoUnico(carpetaPortadas(ConectManager.DB_NAME) + File.separator);
+					.generarCodigoUnico(carpetaPortadas(Utilidades.nombreDB()) + File.separator);
 			URI uri = null;
 			try {
 				uri = new URI(correctedUrl);
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}
-			String imagen = carpetaPortadas(ConectManager.DB_NAME) + File.separator + codigoImagen + ".jpg";
+			String imagen = carpetaPortadas(Utilidades.nombreDB()) + File.separator + codigoImagen + ".jpg";
 			String codigoComic = Utilidades.defaultIfNullOrEmpty(comic.getcodigoComic(), "0");
 			// Descarga y conversión asíncrona de la imagen
-			Utilidades.descargarYConvertirImagenAsync(uri, carpetaPortadas(ConectManager.DB_NAME),
+			Utilidades.descargarYConvertirImagenAsync(uri, carpetaPortadas(Utilidades.nombreDB()),
 					codigoImagen + ".jpg");
 
 			Comic comicImport = new Comic.ComicBuilder(id, titulo).valorGradeo("NM (Noir Medium)").numero(numero)
@@ -488,10 +473,6 @@ public class AccionFuncionesComunes {
 
 	private static Comic obtenerComicInfo(String finalValorCodigo) {
 		try {
-			// Verificar si hay una conexión activa
-			if (!ConectManager.conexionActiva()) {
-				return null;
-			}
 
 			// Obtener información del cómic según la longitud del código
 			if (finalValorCodigo.matches("[A-Z]{3}\\d{6}")) {
@@ -524,8 +505,8 @@ public class AccionFuncionesComunes {
 		}
 	}
 
-	private static void actualizarInterfaz(AtomicInteger contadorErrores, StringBuilder codigoFaltante,
-			String carpetaDatabase, AtomicInteger contadorTotal) {
+	private static void actualizarInterfaz(AtomicInteger contadorErrores, String carpetaDatabase,
+			AtomicInteger contadorTotal) {
 		Platform.runLater(() -> {
 			String mensaje = "";
 
@@ -545,17 +526,15 @@ public class AccionFuncionesComunes {
 	public static void busquedaPorListaDatabase(List<Comic> listaComicsDatabase, String tipoUpdate,
 			boolean actualizarFirma) {
 
-		if (!ConectManager.conexionActiva() && !Utilidades.isInternetAvailable()) {
-			return;
-		}
-
 		codigoFaltante = new StringBuilder();
+		codigoFaltante.setLength(0);
 		contadorErrores = new AtomicInteger(0);
 		comicsProcesados = new AtomicInteger(0);
 		mensajeIdCounter = new AtomicInteger(0); // Contador para generar IDs únicos
 		numLineas = new AtomicInteger(listaComicsDatabase.size()); // Obtener el tamaño de la lista
 		cargaComicsControllerRef = new AtomicReference<>();
 		mensajesUnicos = new HashSet<>();
+		mensajesUnicos.clear();
 
 		Task<Void> tarea = createSearchTask(tipoUpdate, actualizarFirma, listaComicsDatabase);
 
@@ -569,10 +548,6 @@ public class AccionFuncionesComunes {
 	// ES ACCION
 	public static void busquedaPorCodigoImportacion(File file) {
 
-		if (!ConectManager.conexionActiva() && !Utilidades.isInternetAvailable()) {
-			return;
-		}
-
 		fichero = file;
 		contadorErrores = new AtomicInteger(0);
 		comicsProcesados = new AtomicInteger(0);
@@ -581,7 +556,9 @@ public class AccionFuncionesComunes {
 		numLineas.set(Utilidades.contarLineasFichero(fichero));
 		cargaComicsControllerRef = new AtomicReference<>();
 		codigoFaltante = new StringBuilder();
+		codigoFaltante.setLength(0);
 		mensajesUnicos = new HashSet<>();
+		mensajesUnicos.clear();
 
 		Task<Void> tarea = createSearchTask("", false, null);
 
@@ -748,8 +725,7 @@ public class AccionFuncionesComunes {
 				AlarmaList.detenerAnimacionCargaImagen(getReferenciaVentana().getCargaImagen());
 				cambiarEstadoBotones(false);
 
-				actualizarInterfaz(contadorErrores, codigoFaltante, carpetaRaizPortadas(ConectManager.DB_NAME),
-						numLineas);
+				actualizarInterfaz(contadorErrores, carpetaRaizPortadas(Utilidades.nombreDB()), numLineas);
 
 				getReferenciaVentana().getMenu_Importar_Fichero_CodigoBarras().setDisable(false);
 
@@ -800,7 +776,7 @@ public class AccionFuncionesComunes {
 		// cancelar subida
 		getReferenciaVentana().getBotonCancelarSubida().setOnAction(ev -> {
 			if (tipoUpdate.isEmpty()) {
-				actualizarInterfaz(comicsProcesados, codigoFaltante, "", numLineas);
+				actualizarInterfaz(comicsProcesados, "", numLineas);
 				cambiarEstadoBotones(false);
 				getReferenciaVentana().getMenu_Importar_Fichero_CodigoBarras().setDisable(false);
 			} else {

@@ -430,8 +430,6 @@ public class AccionReferencias {
 
 	private MenuItem menu_Importar_Fichero_CodigoBarras;
 
-	private MenuItem menu_archivo_conexion;
-
 	private MenuItem menuComprobarApis;
 
 	private MenuItem menu_leer_CodigoBarras;
@@ -822,10 +820,6 @@ public class AccionReferencias {
 
 	public MenuItem getMenu_Importar_Fichero_CodigoBarras() {
 		return menu_Importar_Fichero_CodigoBarras;
-	}
-
-	public MenuItem getMenu_archivo_conexion() {
-		return menu_archivo_conexion;
 	}
 
 	public MenuItem getMenu_leer_CodigoBarras() {
@@ -1382,10 +1376,6 @@ public class AccionReferencias {
 
 	public void setMenu_Importar_Fichero_CodigoBarras(MenuItem menu_Importar_Fichero_CodigoBarras) {
 		this.menu_Importar_Fichero_CodigoBarras = menu_Importar_Fichero_CodigoBarras;
-	}
-
-	public void setMenu_archivo_conexion(MenuItem menu_archivo_conexion) {
-		this.menu_archivo_conexion = menu_archivo_conexion;
 	}
 
 	public void setMenu_comprobar_apis(MenuItem menuComprobarApis) {

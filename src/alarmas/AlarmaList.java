@@ -130,7 +130,6 @@ public class AlarmaList {
 
 	public void iniciarThreadChecker() {
 		ejecutando = true;
-//		detenerAnimacionEspera();
 		ForkJoinPool.commonPool().execute(() -> {
 			while (ejecutando) {
 				try {
@@ -150,17 +149,12 @@ public class AlarmaList {
 	}
 
 	private void procesarEstadoConexion() {
-		
+
 		boolean estadoInternet = Utilidades.isInternetAvailable();
-		Map<String, String> datosConfiguracion = FuncionesFicheros.devolverDatosConfig();
-		String port = datosConfiguracion.get("Puerto");
-		String host = datosConfiguracion.get("Hosting");
 
 		Platform.runLater(() -> {
+			manejarConexionPrincipal(estadoInternet);
 			manejarConexionInternet(estadoInternet);
-
-			boolean conexionMySql = Utilidades.isMySQLServiceRunning(host, port);
-			manejarConexionMySQL(conexionMySql);
 
 			asignarTooltip(alarmaConexion,
 					"Esperando guardado/modificación/conexion de datos de la base de datos local");
@@ -180,14 +174,9 @@ public class AlarmaList {
 		}
 	}
 
-	private void manejarConexionMySQL(boolean esComprobarConexion) {
+	private void manejarConexionPrincipal(boolean esComprobarConexion) {
 
 		if (esComprobarConexion) {
-			if (animacionAlarmaTimelineMySql != null
-					&& animacionAlarmaTimelineMySql.getStatus() == Animation.Status.RUNNING) {
-				animacionAlarmaTimelineMySql.stop();
-			}
-			iniciarAnimacionAlarma(alarmaConexion);
 
 			if (ConectManager.estadoConexion) {
 				detenerAnimacionEspera();
@@ -197,16 +186,9 @@ public class AlarmaList {
 				iniciarAnimacionEspera(iniciarAnimacionEspera);
 				iniciarAnimacionEspera(iniciarAnimacionEsperaInternet);
 			}
-
-			asignarTooltip(alarmaConexionSql, "Servicio de MySQL activado");
-			iniciarAnimacionAlarmaOnline(alarmaConexionSql);
 		} else {
-
+			iniciarAnimacionAlarma(alarmaConexion);
 			iniciarAnimacionDesconectado(iniciarAnimacionEspera);
-
-			iniciarAnimacionErrorMySql(iniciarAnimacionEspera);
-			asignarTooltip(alarmaConexionSql, "Servicio de MySQL desactivado");
-			iniciarAnimacionAlarmaError(alarmaConexionSql);
 		}
 		asignarTooltip(alarmaConexion, "Esperando guardado/modificación/conexion de datos de la base de datos local");
 	}
@@ -217,17 +199,15 @@ public class AlarmaList {
 		}
 	}
 
-	public void manejarConexionExitosa(String[] datosFichero, Label prontEstadoConexion) {
-		if (Utilidades.isMySQLServiceRunning(datosFichero[4], datosFichero[0])) {
-			if (DatabaseManagerDAO.checkTablesAndColumns(datosFichero)) {
-				iniciarAnimacionAlarmaOnline(alarmaConexion);
-				manejarConexionExitosa(prontEstadoConexion);
-			} else {
-				manejarErrorConexion("Error al verificar tablas en la base de datos.", prontEstadoConexion);
-			}
+	public void manejarConexionExitosa(String datosFichero, Label prontEstadoConexion) {
+
+		if (DatabaseManagerDAO.checkTablesAndColumns(datosFichero)) {
+			iniciarAnimacionAlarmaOnline(alarmaConexion);
+			manejarConexionExitosa(prontEstadoConexion);
 		} else {
-			iniciarAnimacionErrorMySql(prontEstadoConexion);
+			manejarErrorConexion("Error al verificar tablas en la base de datos.", prontEstadoConexion);
 		}
+
 	}
 
 	/**
@@ -288,7 +268,7 @@ public class AlarmaList {
 	}
 
 	public static void iniciarAnimacionConectado(Label prontEstadoConexion) {
-		
+
 		timelineError = new Timeline();
 		timelineError.setCycleCount(Animation.INDEFINITE);
 
@@ -317,7 +297,7 @@ public class AlarmaList {
 	public static void detenerAnimacionEspera() {
 		if (timelineError != null) {
 			timelineError.stop();
-			
+
 		}
 	}
 

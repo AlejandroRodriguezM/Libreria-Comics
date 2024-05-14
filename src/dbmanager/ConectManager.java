@@ -1,14 +1,18 @@
 package dbmanager;
 
+import java.io.File;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import ficherosFunciones.FuncionesFicheros;
 import funciones_auxiliares.Utilidades;
 import funciones_auxiliares.Ventanas;
+import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 
 /**
@@ -16,7 +20,7 @@ import javafx.scene.Scene;
  * cargar el controlador JDBC, verificar la conexión y obtener una conexión
  * activa.
  */
-public class ConectManager {
+public class ConectManager implements Initializable {
 
 	// Conexion a la base de datos
 	/**
@@ -30,29 +34,9 @@ public class ConectManager {
 	private static Ventanas nav = new Ventanas();
 
 	/**
-	 * Usuario de la base de datos.
-	 */
-	public static String DB_USER;
-
-	/**
-	 * Contraseña de la base de datos.
-	 */
-	public static String DB_PASS;
-
-	/**
-	 * Puerto de la base de datos.
-	 */
-	public static String DB_PORT;
-
-	/**
 	 * Nombre de la base de datos.
 	 */
 	public static String DB_NAME;
-
-	/**
-	 * Host de la base de datos.
-	 */
-	public static String DB_HOST;
 
 	/**
 	 * URL de la base de datos.
@@ -63,6 +47,14 @@ public class ConectManager {
 
 	public static List<Scene> activeScenes = new ArrayList<>();
 
+	private static final String DB_FOLDER = System.getProperty("user.home") + File.separator + "Documents"
+			+ File.separator + "libreria_comics" + File.separator;
+
+	@Override
+	public void initialize(URL arg0, ResourceBundle arg1) {
+		DB_NAME = "";
+	}
+
 	/**
 	 * Carga el controlador JDBC para el proyecto.
 	 * 
@@ -71,13 +63,12 @@ public class ConectManager {
 	 */
 	public static boolean loadDriver() {
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
+			Class.forName("org.sqlite.JDBC");
 			return true;
 		} catch (ClassNotFoundException ex) {
 			nav.alertaException(ex.toString());
 		}
 		return false;
-
 	}
 
 	/**
@@ -97,23 +88,6 @@ public class ConectManager {
 	}
 
 	/**
-	 * Devuelve un objeto Connection en caso de que la conexion sea correcta, datos
-	 * introducidos por parametro
-	 *
-	 * @param numeroPuerto
-	 * @param nombreBBDD
-	 * @param nombreUsuario
-	 * @param contraBBDD
-	 */
-	public static void datosBBDD(String[] datos) {
-		DB_PORT = datos[0];
-		DB_NAME = datos[1];
-		DB_USER = datos[2];
-		DB_PASS = datos[3];
-		DB_HOST = datos[4];
-	}
-
-	/**
 	 * Comprueba si los datos de conexión a la base de datos son correctos.
 	 *
 	 * @return true si todos los datos de conexión son válidos y no están vacíos, de
@@ -121,8 +95,7 @@ public class ConectManager {
 	 */
 	public static boolean comprobarDatosConexion() {
 
-		return !(DB_HOST == null || DB_HOST.isEmpty() || DB_PORT == null || DB_PORT.isEmpty() || DB_NAME == null
-				|| DB_NAME.isEmpty() || DB_USER == null || DB_USER.isEmpty() || DB_PASS == null || DB_PASS.isEmpty());
+		return !(DB_NAME.isEmpty());
 	}
 
 	/**
@@ -135,26 +108,29 @@ public class ConectManager {
 	 * @return objeto Connection
 	 */
 	public static Connection conexion() {
-		if (!comprobarDatosConexion()) {
-			return null;
-		}
+//		if (!comprobarDatosConexion()) {
+//			return null;
+//		}
 
-		if (!FuncionesFicheros.validarDatosConexion()) {
-			nav.alertaException("La URL de conexión no es válida");
-			return null;
-		}
+//		if (!FuncionesFicheros.validarDatosConexion()) {
+//			nav.alertaException("La URL de conexión no es válida");
+//			return null;
+//		}
 
-		DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
+		DB_URL = "jdbc:sqlite:" + DB_FOLDER + FuncionesFicheros.datosEnvioFichero();
+
+		System.out.println(DB_URL);
 
 		// Validar la URL de conexión
-		if (!DB_URL.startsWith("jdbc:mysql://") || DB_URL.indexOf(':', 12) == -1 || DB_URL.indexOf('/', 12) == -1) {
+		if (!DB_URL.startsWith("jdbc:sqlite:")) {
 			nav.alertaException("La URL de conexión no es válida");
 
 			return null;
 		}
 
 		try {
-			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+			conn = DriverManager.getConnection(DB_URL);
+
 			if (conn == null) {
 				nav.alertaException("No se pudo establecer la conexión a la base de datos");
 			}
@@ -203,30 +179,11 @@ public class ConectManager {
 		}
 	}
 
-	public static boolean conexionActiva() {
-
-		boolean estadoConexion = Utilidades.isMySQLServiceRunning(DB_HOST, DB_PORT);
-
-		if (!estadoConexion) {
-			nav.alertaException("Tu conexion con xampp o el servicio MySql se ha detenido");
-		}
-
-		return estadoConexion;
-	}
-
 	/**
 	 * Asigna valores predeterminados si las variables están vacías.
 	 */
 	public static void asignarValoresPorDefecto() {
-		DB_USER = "";
-
-		DB_PASS = "";
-
-		DB_PORT = "";
-
 		DB_NAME = "";
-
-		DB_HOST = "";
 	}
 
 	/**

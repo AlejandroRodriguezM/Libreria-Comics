@@ -48,10 +48,6 @@ public class AccionSeleccionar {
 
 	public static void mostrarComic(String idComic, boolean esPrincipal) {
 
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
-
 		Comic comicTemp = null;
 		AlarmaList.detenerAnimacion();
 		String mensaje = "";
@@ -95,10 +91,6 @@ public class AccionSeleccionar {
 
 	public static void verBasedeDatos(boolean completo, boolean esAccion, Comic comic) {
 
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
-
 		ListaComicsDAO.reiniciarListaComics();
 		getReferenciaVentana().getTablaBBDD().refresh();
 		getReferenciaVentana().getProntInfo().setOpacity(0);
@@ -120,8 +112,6 @@ public class AccionSeleccionar {
 				String sentenciaSQL = DBUtilidades.construirSentenciaSQL(TipoBusqueda.COMPLETA);
 
 				List<Comic> listaComics = ComicManagerDAO.verLibreria(sentenciaSQL);
-				
-				System.out.println(listaComics.size());
 
 				FuncionesTableView.tablaBBDD(listaComics);
 
@@ -160,10 +150,6 @@ public class AccionSeleccionar {
 	 * @throws SQLException
 	 */
 	public static List<Comic> listaPorParametro(Comic datos, boolean esAccion) {
-
-		if (!ConectManager.conexionActiva()) {
-			return Collections.emptyList();
-		}
 		String busquedaGeneralTextField = "";
 
 		if (!esAccion) {

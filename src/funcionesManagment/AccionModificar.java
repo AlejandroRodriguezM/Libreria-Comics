@@ -71,7 +71,6 @@ public class AccionModificar {
 	 */
 	public static void accionPuntuar(boolean esAgregar) {
 
-		if (ConectManager.conexionActiva()) {
 			String idComic = getReferenciaVentana().getIdComicTratar().getText();
 			if (accionFuncionesComunes.comprobarExistenciaComic(idComic)) {
 				if (nav.alertaAccionGeneral()) {
@@ -100,14 +99,9 @@ public class AccionModificar {
 				}
 
 			}
-		}
 	}
 
 	public static void venderComic() throws SQLException {
-
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
 
 		String idComic = getReferenciaVentana().getIdComicTratar().getText();
 		getReferenciaVentana().getIdComicTratar().setStyle("");
@@ -135,10 +129,6 @@ public class AccionModificar {
 	}
 
 	public static void modificarComic() throws Exception {
-
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
 
 		String idComic = getReferenciaVentana().getIdComicTratar().getText();
 		getReferenciaVentana().getIdComicTratar().setStyle("");
@@ -177,10 +167,6 @@ public class AccionModificar {
 	}
 
 	public static void actualizarComicLista() {
-
-		if (!ConectManager.conexionActiva()) {
-			return;
-		}
 
 		if (!accionRellenoDatos.camposComicSonValidos()) {
 			String mensaje = "Error. Debes de introducir los datos correctos";
@@ -269,7 +255,7 @@ public class AccionModificar {
 
 	public static void actualizarDatabase(String tipoUpdate, boolean actualizarFima, Stage ventanaOpciones) {
 
-		if (!ConectManager.conexionActiva() && !Utilidades.isInternetAvailable()) {
+		if (!Utilidades.isInternetAvailable()) {
 			return;
 		}
 

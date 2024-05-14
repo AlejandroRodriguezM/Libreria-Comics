@@ -125,6 +125,9 @@ public class Utilidades {
 	private static AccionReferencias referenciaVentana = getReferenciaVentana();
 	private static AccionReferencias referenciaVentanaPrincipal = getReferenciaVentanaPrincipal();
 
+	private static final String DB_FOLDER = System.getProperty("user.home") + File.separator + "Documents"
+			+ File.separator + "libreria_comics/";
+
 	/**
 	 * Verifica si el sistema operativo es Windows.
 	 *
@@ -490,55 +493,6 @@ public class Utilidades {
 			System.err.println("Error al acceder a la carpeta: " + sourcePath);
 			e.printStackTrace();
 		}
-	}
-
-	public void crearCopiaBaseDatos() {
-		try {
-			// Carpeta de destino para la copia de seguridad
-			String userHome = System.getProperty("user.home");
-			String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
-			String carpeta_backups = ubicacion + File.separator + "libreria" + File.separator + "backups"
-					+ File.separator + ConectManager.DB_NAME + File.separator;
-
-			// Archivo mysqldump.exe
-			String mysqlDump = findMysqlDump();
-
-			// Nombre del archivo de copia de seguridad
-			String nombreCopia = "copia_base_datos.sql";
-			File carpetaDestino = new File(carpeta_backups);
-			File archivoCopia = new File(carpetaDestino, nombreCopia);
-
-			// Comando para crear la copia de seguridad
-			String[] command = new String[] { mysqlDump, "-u" + ConectManager.DB_USER, "-p" + ConectManager.DB_PASS,
-					"-B", ConectManager.DB_NAME, "--hex-blob", "--routines=true",
-					"--result-file=" + archivoCopia.getAbsolutePath() };
-
-			// Ejecutar el comando
-			ProcessBuilder pb = new ProcessBuilder(command);
-			pb.redirectError(Redirect.INHERIT);
-			pb.redirectOutput(Redirect.to(archivoCopia));
-			pb.start();
-		} catch (Exception e) {
-			// Manejar errores de E/S
-			manejarExcepcion(e);
-		}
-	}
-
-	// Método para encontrar la ruta de mysqldump.exe
-	private String findMysqlDump() throws IOException {
-		// Intenta encontrar mysqldump.exe en el directorio de instalación de MySQL
-		String pathMySql = "C:\\Program Files\\MySQL";
-		String mysqlDump = pathMySql + "\\mysqldump.exe";
-		if (!Files.exists(Paths.get(mysqlDump))) {
-			// Si no se encuentra en el directorio de instalación predeterminado, busca en
-			// la variable PATH del sistema
-			mysqlDump = "mysqldump";
-			if (!Files.exists(Paths.get(mysqlDump))) {
-				// Si no se puede encontrar, lanza una excepción
-				throw new FileNotFoundException("mysqldump.exe no se encuentra en el sistema");
-			}
-		}
-		return mysqlDump;
 	}
 
 	/**
@@ -1084,8 +1038,11 @@ public class Utilidades {
 		Ventanas nav = new Ventanas();
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
-		String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
-				+ obtenerDatoDespuesDeDosPuntos("Database") + File.separator + "portadas";
+		String nombreCompletoDB = obtenerDatoDespuesDeDosPuntos("Database");
+		String nombreCortado[] = nombreCompletoDB.split("\\.");
+		String nombredb = nombreCortado[0];
+		String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator + nombredb
+				+ File.separator + "portadas";
 
 		File portadasFolder = new File(defaultImagePath);
 
@@ -1129,11 +1086,9 @@ public class Utilidades {
 
 			getReferenciaVentana().getBotonCancelarSubida().setVisible(false);
 
-			// Verify if a file was selected
-//			if (fichero == null) {
-				FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentana);
-				FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentanaPrincipal);
-//			}
+			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentana);
+			FuncionesManejoFront.cambiarEstadoMenuBar(false, referenciaVentanaPrincipal);
+//			
 
 			return fichero;
 
@@ -1566,32 +1521,6 @@ public class Utilidades {
 		return null;
 	}
 
-	public static boolean comprobarYManejarConexion(Scene ventana) {
-		Ventanas nav = new Ventanas();
-		String mensajeError = "Error. Servicio MySql apagado o desconectado de forma repentina.";
-		if (ventana != null) {
-			Stage stage = (Stage) ventana.getWindow();
-
-			try {
-				if (!ConectManager.conexionActiva()) {
-					Platform.runLater(() -> {
-						ConectManager.asignarValoresPorDefecto();
-						Ventanas.cerrarVentanaActual(stage);
-						nav.alertaException(mensajeError);
-					});
-
-					return false; // No está conectado
-				}
-			} catch (Exception e) {
-				// Manejar la excepción adecuadamente, si es necesario
-				e.printStackTrace();
-				return false;
-			}
-		}
-
-		return true; // Está conectado
-	}
-
 	/**
 	 * Función que verifica si un archivo de portada existe
 	 *
@@ -1650,24 +1579,6 @@ public class Utilidades {
 		Comic.limpiarCampo(value);
 
 		return (value == null || value.isEmpty()) ? defaultValue : value;
-	}
-
-	public static boolean iniciarXAMPP() {
-		try {
-			String[] datosFichero = FuncionesFicheros.datosEnvioFichero();
-			String port = datosFichero[0];
-			String host = datosFichero[4];
-			String xamppRuta = datosFichero[5];
-			FuncionesFicheros.verificarYReemplazarRutaXampp(xamppRuta);
-
-			if (!isMySQLServiceRunning(host, port)) {
-				iniciarConexionMySql(xamppRuta);
-				return true;
-			}
-		} catch (Exception e) {
-			manejarExcepcion(e);
-		}
-		return false;
 	}
 
 	public static String buscarProgramasEnDirectorio(String nombreDirectorio, String nomAplicacion) {
@@ -1766,71 +1677,20 @@ public class Utilidades {
 
 	/**
 	 * Funcion que crea una copia de seguridad de la base de datos siempre que el
-	 * sistema operativo sea Linux
-	 *
-	 * @param fichero
-	 */
-	public static void backupLinux(File fichero) {
-		try {
-			fichero.createNewFile();
-
-			// Crear una lista para los comandos
-			String[] command = { "mysqldump", "-u" + ConectManager.DB_USER, "-p" + ConectManager.DB_PASS, "-B",
-					ConectManager.DB_NAME, "--routines=true", "--result-file=" + fichero.getAbsolutePath() };
-
-			// Crear un ProcessBuilder y configurar los comandos
-			ProcessBuilder pb = new ProcessBuilder(command);
-
-			// Redirigir errores y salida estándar al sistema actual
-			pb.redirectErrorStream(true);
-			pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
-
-			// Iniciar el proceso
-			Process process = pb.start();
-			int exitCode = process.waitFor();
-
-			// Verificar el código de salida para manejar errores
-			if (exitCode == 0) {
-				System.out.println("Copia de seguridad creada exitosamente.");
-			} else {
-				System.err.println("Error al crear la copia de seguridad. Código de salida: " + exitCode);
-			}
-
-		} catch (IOException | InterruptedException e) {
-			Utilidades.manejarExcepcion(e);
-		}
-	}
-
-	/**
-	 * Funcion que crea una copia de seguridad de la base de datos siempre que el
 	 * sistema operativo sea Windows
 	 *
 	 * @param fichero
 	 */
-	public static void backupWindows(File fichero) {
+	public static void backupDB(File fichero) {
 		try {
-			fichero.createNewFile();
+			// Ruta de la base de datos actual
+			File dbFile = new File(DB_FOLDER + FuncionesFicheros.datosEnvioFichero());
 
-			String pathMySql = "C:\\Program Files\\MySQL";
+			// Copiar la base de datos a la ubicación deseada
+			Files.copy(dbFile.toPath(), fichero.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-			File path = new File(pathMySql);
-
-			FileChooser fileChooser = new FileChooser();
-			fileChooser.setInitialDirectory(path);
-			fileChooser.getExtensionFilters()
-					.addAll(new FileChooser.ExtensionFilter("MySqlDump only", "mysqldump.exe"));
-			File directorio = fileChooser.showOpenDialog(null);
-
-			String mysqlDump = directorio.getAbsolutePath();
-
-			String command[] = new String[] { mysqlDump, "-u" + ConectManager.DB_USER, "-p" + ConectManager.DB_PASS,
-					"-B", ConectManager.DB_NAME, "--hex-blob", "--routines=true", "--result-file=" + fichero };
-			ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command));
-			pb.redirectError(Redirect.INHERIT);
-			pb.redirectOutput(Redirect.to(fichero));
-			pb.start();
-
-		} catch (Exception e) {
+			System.out.println("Copia de seguridad de la base de datos creada en: " + fichero.getAbsolutePath());
+		} catch (IOException e) {
 			Utilidades.manejarExcepcion(e);
 		}
 	}
@@ -2451,11 +2311,29 @@ public class Utilidades {
 			}
 		}
 	}
-	
+
 	public static ImageView createIcon(String iconName, double width, double height) {
 		Image image = new Image(Utilidades.class.getResourceAsStream(iconName), width, height, true, true);
 		ImageView imageView = new ImageView(image);
 		return imageView;
+	}
+
+//	public static String directorioPortada() {
+//
+//		String carpeta = System.getProperty("user.home") + "/Documents/libreria_comics/";
+//		String nombreCompletoDB = FuncionesFicheros.datosEnvioFichero();
+//		String nombreCortado[] = nombreCompletoDB.split("\\.");
+//		String nombredb = nombreCortado[0];
+//
+//		return carpeta + nombredb;
+//	}
+
+	public static String nombreDB() {
+		String nombreCompletoDB = FuncionesFicheros.datosEnvioFichero();
+		String nombreCortado[] = nombreCompletoDB.split("\\.");
+		String nombredb = nombreCortado[0];
+
+		return nombredb;
 	}
 
 	public static AccionReferencias getReferenciaVentana() {
