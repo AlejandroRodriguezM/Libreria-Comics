@@ -8,27 +8,19 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 import alarmas.AlarmaList;
 import funciones_auxiliares.Utilidades;
-import javafx.application.Platform;
 import javafx.scene.control.Label;
-import javafx.stage.DirectoryChooser;
 
 public class FuncionesFicheros {
 
 	static String userHome = System.getProperty("user.home");
 	static String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
 	static String carpetaLibreria = ubicacion + File.separator + "libreria";
-	private static AlarmaList alarmaList = new AlarmaList();
 
 	public static Map<String, String> devolverDatosConfig() {
 		Map<String, String> datosConfiguracion = new HashMap<>();
@@ -224,9 +216,6 @@ public class FuncionesFicheros {
 		try (Connection connection = DriverManager.getConnection(url)) {
 			return true; // La conexión se estableció correctamente
 		} catch (SQLException e) {
-			alarmaList.manejarErrorConexion(
-					"ERROR. Revisa tu configuracion de XAMPP. Es posible que la contraseña u usuario sea incorrecto en la configuracion del fichero o de XAMPP",
-					null);
 			Utilidades.manejarExcepcion(e);
 
 		}
@@ -241,7 +230,7 @@ public class FuncionesFicheros {
 	}
 
 	private static String construirURL(String direccionDataBase) {
-		return "jdbc:sqlite:" + direccionDataBase;
+		return "jdbc:sqlite:" + carpetaLibreria + File.separator + direccionDataBase;
 	}
 
 }

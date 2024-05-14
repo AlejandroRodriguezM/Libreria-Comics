@@ -125,8 +125,8 @@ public class Utilidades {
 	private static AccionReferencias referenciaVentana = getReferenciaVentana();
 	private static AccionReferencias referenciaVentanaPrincipal = getReferenciaVentanaPrincipal();
 
-	public static final String DB_FOLDER = System.getProperty("user.home") + File.separator + "Documents"
-			+ File.separator + "libreria_comics/";
+	private static final String DB_FOLDER = System.getProperty("user.home") + File.separator + "AppData"
+			+ File.separator + "Roaming" + File.separator + "libreria" + File.separator;
 
 	/**
 	 * Verifica si el sistema operativo es Windows.
@@ -1041,7 +1041,7 @@ public class Utilidades {
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
 		String nombreCompletoDB = obtenerDatoDespuesDeDosPuntos("Database");
-		String nombreCortado[] = nombreCompletoDB.split("\\.");
+		String[] nombreCortado = nombreCompletoDB.split("\\.");
 		String nombredb = nombreCortado[0];
 		String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator + nombredb
 				+ File.separator + "portadas";

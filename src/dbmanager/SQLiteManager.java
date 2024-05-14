@@ -8,7 +8,8 @@ import java.sql.Statement;
 
 public class SQLiteManager {
 
-	private static final String DB_FOLDER = System.getProperty("user.home") + "/Documents/libreria_comics/";
+	private static final String DB_FOLDER = System.getProperty("user.home") + File.separator + "AppData"
+			+ File.separator + "Roaming" + File.separator + "libreria" + File.separator;
 
 	/**
 	 * Comprueba si existe una base de datos con el nombre especificado para la

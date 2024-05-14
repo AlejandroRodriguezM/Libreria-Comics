@@ -30,7 +30,8 @@ public class DatabaseManagerDAO {
 
 	public static AtomicInteger contadorCambios = new AtomicInteger(0);
 
-	private static final String DB_FOLDER = System.getProperty("user.home") + "/Documents/libreria_comics/";
+	private static final String DB_FOLDER = System.getProperty("user.home") + File.separator + "AppData"
+			+ File.separator + "Roaming" + File.separator + "libreria" + File.separator;
 
 	/**
 	 * Permite introducir un nuevo cómic en la base de datos.
@@ -55,29 +56,26 @@ public class DatabaseManagerDAO {
 		}
 	}
 
-	/**
-	 * Crea las tablas de la base de datos si no existen.
-	 */
 	public static void createTable(String nombreDatabase) {
-
 		String url = "jdbc:sqlite:" + DB_FOLDER + nombreDatabase;
 
-		try (Connection connection = DriverManager.getConnection(url);
-				Statement statement = connection.createStatement()) {
+		try (Connection connection = DriverManager.getConnection(url)) {
+			try (Statement statement = connection.createStatement()) {
+				String dropTableSQL = "DROP TABLE IF EXISTS comicsbbdd";
+				statement.executeUpdate(dropTableSQL);
+			}
 
-			String dropTableSQL = "DROP TABLE IF EXISTS comicsbbdd";
-			statement.executeUpdate(dropTableSQL);
-
-			String createTableSQL = "CREATE TABLE comicsbbdd (" + "ID INTEGER PRIMARY KEY AUTOINCREMENT, "
-					+ "nomComic TEXT NOT NULL, " + "nivel_gradeo TEXT, " + "precio_comic REAL NOT NULL, "
-					+ "codigo_comic TEXT, " + "numComic INTEGER NOT NULL, " + "nomVariante TEXT NOT NULL, "
-					+ "firma TEXT NOT NULL, " + "nomEditorial TEXT NOT NULL, " + "formato TEXT NOT NULL, "
-					+ "procedencia TEXT NOT NULL, " + "fecha_publicacion DATE NOT NULL, "
-					+ "nomGuionista TEXT NOT NULL, " + "nomDibujante TEXT NOT NULL, " + "puntuacion TEXT NOT NULL, "
-					+ "portada TEXT, " + "key_issue TEXT, " + "url_referencia TEXT NOT NULL, "
-					+ "estado TEXT NOT NULL)";
-			statement.executeUpdate(createTableSQL);
-
+			try (Statement statement = connection.createStatement()) {
+				String createTableSQL = "CREATE TABLE IF NOT EXISTS comicsbbdd ("
+						+ "ID INTEGER PRIMARY KEY AUTOINCREMENT, " + "nomComic TEXT NOT NULL, " + "nivel_gradeo TEXT, "
+						+ "precio_comic REAL NOT NULL, " + "codigo_comic TEXT, " + "numComic INTEGER NOT NULL, "
+						+ "nomVariante TEXT NOT NULL, " + "firma TEXT NOT NULL, " + "nomEditorial TEXT NOT NULL, "
+						+ "formato TEXT NOT NULL, " + "procedencia TEXT NOT NULL, "
+						+ "fecha_publicacion DATE NOT NULL, " + "nomGuionista TEXT NOT NULL, "
+						+ "nomDibujante TEXT NOT NULL, " + "puntuacion TEXT NOT NULL, " + "portada TEXT, "
+						+ "key_issue TEXT, " + "url_referencia TEXT NOT NULL, " + "estado TEXT NOT NULL)";
+				statement.executeUpdate(createTableSQL);
+			}
 		} catch (SQLException e) {
 			Utilidades.manejarExcepcion(e);
 		}
@@ -86,12 +84,18 @@ public class DatabaseManagerDAO {
 	/**
 	 * Funcion que reconstruye una base de datos.
 	 */
-	public static boolean reconstruirBBDD(String nombreDatabase) {
+	public static boolean reconstruirBBDD(String nombreDatabase, Connection connection) {
 		Ventanas nav = new Ventanas();
 
 		if (nav.alertaTablaError()) {
-			createTable(nombreDatabase);
-			return true;
+			try {
+				connection.close();
+				createTable(nombreDatabase);
+				return true;
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
 		} else {
 			String excepcion = "Debes de reconstruir la base de datos. Si no, no podras entrar";
 			nav.alertaException(excepcion);
@@ -127,17 +131,15 @@ public class DatabaseManagerDAO {
 					actualColumns.add(columnName);
 				}
 
-				// Verifica si todas las columnas esperadas están presentes
 				if (actualColumns.containsAll(expectedColumns) && actualColumns.size() == expectedColumns.size()) {
 					return true;
 				} else {
-					if (reconstruirBBDD(nombreDatabase)) {
+					if (reconstruirBBDD(nombreDatabase, connection)) {
 						return true;
 					}
 				}
 			} else {
-				// La tabla no existe, reconstruimos la base de datos
-				if (reconstruirBBDD(nombreDatabase)) {
+				if (reconstruirBBDD(nombreDatabase, connection)) {
 					return true;
 				}
 			}

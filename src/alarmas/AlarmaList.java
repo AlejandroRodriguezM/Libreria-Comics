@@ -3,12 +3,9 @@ package alarmas;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ForkJoinPool;
 
 import dbmanager.ConectManager;
-import dbmanager.DatabaseManagerDAO;
-import ficherosFunciones.FuncionesFicheros;
 import funciones_auxiliares.Utilidades;
 import funciones_auxiliares.Ventanas;
 import javafx.animation.Animation;
@@ -197,17 +194,6 @@ public class AlarmaList {
 		if (animacion != null && animacion.getStatus() == Animation.Status.RUNNING) {
 			animacion.stop();
 		}
-	}
-
-	public void manejarConexionExitosa(String datosFichero, Label prontEstadoConexion) {
-
-		if (DatabaseManagerDAO.checkTablesAndColumns(datosFichero)) {
-			iniciarAnimacionAlarmaOnline(alarmaConexion);
-			manejarConexionExitosa(prontEstadoConexion);
-		} else {
-			manejarErrorConexion("Error al verificar tablas en la base de datos.", prontEstadoConexion);
-		}
-
 	}
 
 	/**
@@ -534,7 +520,6 @@ public class AlarmaList {
 		Utilidades.crearCarpetasBackup();
 		detenerAnimacion();
 		prontEstadoConexion.setStyle("-fx-background-color: #A0F52D");
-		iniciarAnimacionConectado(prontEstadoConexion);
 
 		alarmaConexion.setStyle("-fx-background-color: blue;");
 		asignarTooltip(alarmaConexion, "Estás conectado a la base de datos.");

@@ -32,28 +32,19 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 import alarmas.AlarmaList;
 import dbmanager.ConectManager;
 import ficherosFunciones.FuncionesFicheros;
-import funcionesInterfaz.FuncionesComboBox;
-import funciones_auxiliares.Utilidades;
 import funciones_auxiliares.Ventanas;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 /**
@@ -74,10 +65,16 @@ public class OpcionesDatosController implements Initializable {
 	private Label alarmaConexionSql;
 
 	@FXML
+	private Button botonAbrir;
+
+	@FXML
 	private Button botonCrearBBDD;
 
 	@FXML
-	private Button botonDescargaBBDD;
+	private Button botonGuardar;
+
+	@FXML
+	private Button botonRestaurar;
 
 	@FXML
 	private Button botonSalir;
@@ -86,19 +83,10 @@ public class OpcionesDatosController implements Initializable {
 	private Button botonVolver;
 
 	@FXML
-	private Button boton_abrir;
-
-	@FXML
-	private Button boton_guardar;
-
-	@FXML
-	private Button boton_restaurar;
-
-	@FXML
 	private ComboBox<String> nombreBBDD;
 
 	@FXML
-	private Label nombre_label;
+	private Label nombreLabel;
 
 	@FXML
 	private Label prontEstadoFichero;
@@ -109,7 +97,8 @@ public class OpcionesDatosController implements Initializable {
 	private static Ventanas nav = new Ventanas();
 	private static AlarmaList alarmaList = new AlarmaList();
 
-	private static final String DB_FOLDER = System.getProperty("user.home") + "/Documents/libreria_comics/";
+	private static final String DB_FOLDER = System.getProperty("user.home") + File.separator + "AppData"
+			+ File.separator + "Roaming" + File.separator + "libreria" + File.separator;
 
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
@@ -133,23 +122,33 @@ public class OpcionesDatosController implements Initializable {
 
 	}
 
-    /**
-     * Rellena el ComboBox con las bases de datos .db disponibles en el directorio DB_FOLDER.
-     */
-    private void rellenarComboDB() {
-        File directorio = new File(DB_FOLDER);
-        File[] ficheros = directorio.listFiles();
+	/**
+	 * Rellena el ComboBox con las bases de datos .db disponibles en el directorio
+	 * DB_FOLDER.
+	 */
+	private void rellenarComboDB() {
+		File directorio = new File(DB_FOLDER);
+		File[] ficheros = directorio.listFiles();
 
-        if (ficheros != null) {
-            List<String> basesDatos = new ArrayList<>();
-            for (File fichero : ficheros) {
-                if (fichero.isFile() && fichero.getName().toLowerCase().endsWith(".db")) {
-                    basesDatos.add(fichero.getName());
-                }
-            }
-            nombreBBDD.getItems().addAll(basesDatos);
-        }
-    }
+		if (ficheros != null) {
+			List<String> basesDatos = new ArrayList<>();
+			for (File fichero : ficheros) {
+				if (fichero.isFile() && fichero.getName().toLowerCase().endsWith(".db")) {
+					basesDatos.add(fichero.getName());
+				}
+			}
+			// Ordenar los nombres alfabéticamente
+			basesDatos.sort(String::compareToIgnoreCase);
+
+			// Agregar las bases de datos al ComboBox
+			nombreBBDD.getItems().addAll(basesDatos);
+
+			// Seleccionar la primera opción si existe
+			if (!basesDatos.isEmpty()) {
+				nombreBBDD.getSelectionModel().select(0);
+			}
+		}
+	}
 
 	/**
 	 * Abre la ubicación de la carpeta "libreria" en el sistema de archivos del
@@ -183,8 +182,7 @@ public class OpcionesDatosController implements Initializable {
 	void crearBBDD(ActionEvent event) {
 		nav.verCrearBBDD();
 
-		Stage myStage = (Stage) this.botonCrearBBDD.getScene().getWindow();
-		myStage.close();
+		myStage().close();
 	}
 
 	/**
@@ -195,7 +193,7 @@ public class OpcionesDatosController implements Initializable {
 	 * @throws SQLException
 	 */
 	@FXML
-	void guardarDatos(ActionEvent event) throws SQLException {
+	void guardarDatos(ActionEvent event) {
 		String nombredb = nombreBBDD.getValue();
 
 		FuncionesFicheros.guardarDatosBaseLocal(nombredb, prontEstadoFichero, alarmaConexion);
@@ -220,7 +218,7 @@ public class OpcionesDatosController implements Initializable {
 
 			FuncionesFicheros.crearEstructura();
 
-			limpiar_datos();
+			limpiarDatos();
 			AlarmaList.detenerAnimacion();
 			prontEstadoFichero.setStyle("-fx-background-color: #f5af2d");
 			alarmaList.iniciarAnimacionRestaurado(prontEstadoFichero);
@@ -234,33 +232,9 @@ public class OpcionesDatosController implements Initializable {
 	/**
 	 * Limpia los datos en los campos de texto.
 	 */
-	public void limpiar_datos() {
+	public void limpiarDatos() {
 
 		nombreBBDD.getSelectionModel().clearSelection();
-	}
-
-	/**
-	 * Funcion para abrir el navegador y acceder a la URL
-	 *
-	 * @param event
-	 */
-	@FXML
-	void accesoMySqlWorkbench(ActionEvent event) {
-		String url1 = "https://dev.mysql.com/downloads/windows/installer/8.0.html";
-		String url2 = "https://www.youtube.com/watch?v=FvXQBKsp0OI&ab_channel=MisterioRojo";
-
-		if (Utilidades.isWindows()) {
-			Utilidades.accesoWebWindows(url1); // Llamada a funcion
-			Utilidades.accesoWebWindows(url2); // Llamada a funcion
-		} else {
-			if (Utilidades.isUnix()) {
-				Utilidades.accesoWebLinux(url1); // Llamada a funcion
-				Utilidades.accesoWebLinux(url2); // Llamada a funcion
-			} else {
-				Utilidades.accesoWebMac(url1); // Llamada a funcion
-				Utilidades.accesoWebMac(url2); // Llamada a funcion
-			}
-		}
 	}
 
 	/**
@@ -274,8 +248,11 @@ public class OpcionesDatosController implements Initializable {
 		ConectManager.close();
 		nav.verAccesoBBDD(); // Llamada a metodo para abrir la ventana anterior
 
-		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-		myStage.close();
+		myStage().close();
+	}
+
+	private Stage myStage() {
+		return (Stage) botonSalir.getScene().getWindow();
 	}
 
 	/**
@@ -287,22 +264,21 @@ public class OpcionesDatosController implements Initializable {
 	public void salirPrograma(ActionEvent event) {
 
 		if (nav.salirPrograma(event)) { // Llamada a metodo que permite salir completamente del programa
-			Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
-			myStage.close();
+			myStage().close();
 		}
 	}
 
 	/**
 	 * Cierra el programa a la fuerza correctamente.
 	 */
-	public void closeWindows() { // Metodo que permite cerrar completamente el programa en caso de cerrar a la //
-		// fuerza.
-		Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
-		myStage.close();
+	public void closeWindows() {
+
+		myStage().close();
 	}
 
 	public void stop() {
 		alarmaList.detenerThreadChecker();
+		closeWindows();
 	}
 
 }

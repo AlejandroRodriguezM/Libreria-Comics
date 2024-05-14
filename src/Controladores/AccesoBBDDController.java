@@ -17,6 +17,7 @@ import com.gluonhq.charm.glisten.control.ProgressIndicator;
 import alarmas.AlarmaList;
 import apisFunciones.FuncionesApis;
 import dbmanager.ConectManager;
+import dbmanager.DatabaseManagerDAO;
 import dbmanager.ListaComicsDAO;
 import ficherosFunciones.FuncionesFicheros;
 import funciones_auxiliares.Utilidades;
@@ -241,25 +242,6 @@ public class AccesoBBDDController implements Initializable {
 	}
 
 	/**
-	 * Configura el formulario en línea con la información almacenada en el archivo
-	 * de configuración.
-	 */
-	public void formulario_online() {
-
-		Map<String, String> datosConfiguracion = FuncionesFicheros.devolverDatosConfig();
-
-		String usuarioTexto = datosConfiguracion.get("Usuario");
-		String passwordTexto = datosConfiguracion.get("Password");
-
-		nomUsuarioText.setText(usuarioTexto);
-
-		passUsuarioText.setText(passwordTexto);
-
-		checkRecordar.setSelected(true); // Marcar el CheckBox
-
-	}
-
-	/**
 	 * Funcion que permite el acceso a la ventana de menuPrincipal
 	 *
 	 * @param event
@@ -292,17 +274,20 @@ public class AccesoBBDDController implements Initializable {
 
 		String datosFichero = FuncionesFicheros.datosEnvioFichero();
 
-		if (ConectManager.loadDriver()) {
+		if (ConectManager.loadDriver() && DatabaseManagerDAO.checkTablesAndColumns(datosFichero)) {
 
 			if (ConectManager.conexion() != null) {
 
 				AlarmaList.detenerAnimacion();
 				AlarmaList.iniciarAnimacionConectado(prontEstadoConexion);
-				alarmaList.manejarConexionExitosa(datosFichero, prontEstadoConexion);
+				alarmaList.manejarConexionExitosa(prontEstadoConexion);
 			} else {
 				alarmaList.manejarErrorConexion("No estás conectado a la base de datos.", prontEstadoConexion);
 			}
+		} else {
+			alarmaList.manejarErrorConexion("Error al verificar tablas en la base de datos.", prontEstadoConexion);
 		}
+
 	}
 
 	public Scene miStageVentana() {
@@ -320,10 +305,14 @@ public class AccesoBBDDController implements Initializable {
 	public void salirPrograma(ActionEvent event) {
 
 		if (nav.salirPrograma(event)) { // Llamada a metodo que permite salir completamente del programa
-			Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
-			myStage.close();
+			myStage().close();
 			stop();
 		}
+	}
+
+	public Stage myStage() {
+		return (Stage) this.botonSalir.getScene().getWindow();
+
 	}
 
 	/**
@@ -335,8 +324,7 @@ public class AccesoBBDDController implements Initializable {
 
 		nav.verOpciones();
 		stop();
-		Stage myStage = (Stage) this.botonOpciones.getScene().getWindow();
-		myStage.close();
+		myStage().close();
 	}
 
 	/**
@@ -344,8 +332,7 @@ public class AccesoBBDDController implements Initializable {
 	 */
 	public void closeWindow() { // Metodo que permite cerrar completamente el programa en caso de cerrar a la //
 
-		Stage myStage = (Stage) this.botonOpciones.getScene().getWindow();
-		myStage.close();
+		myStage().close();
 	}
 
 	public void stop() {

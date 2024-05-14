@@ -47,9 +47,6 @@ public class ConectManager implements Initializable {
 
 	public static List<Scene> activeScenes = new ArrayList<>();
 
-	private static final String DB_FOLDER = System.getProperty("user.home") + File.separator + "Documents"
-			+ File.separator + "libreria_comics" + File.separator;
-
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		DB_NAME = "";
@@ -109,7 +106,10 @@ public class ConectManager implements Initializable {
 	 */
 	public static Connection conexion() {
 
-		DB_URL = "jdbc:sqlite:" + DB_FOLDER + FuncionesFicheros.datosEnvioFichero();
+		String dbFilePath = System.getProperty("user.home") + File.separator + "AppData" + File.separator + "Roaming"
+				+ File.separator + "libreria" + File.separator + FuncionesFicheros.datosEnvioFichero();
+
+		DB_URL = "jdbc:sqlite:" + dbFilePath;
 
 		// Validar la URL de conexión
 		if (!DB_URL.startsWith("jdbc:sqlite:")) {
@@ -120,24 +120,25 @@ public class ConectManager implements Initializable {
 
 		try {
 			conn = DriverManager.getConnection(DB_URL);
-
-			if (conn == null) {
+			// Check if the connection is valid by catching any SQLException
+			if (conn.isValid(5)) {
+				estadoConexion = true;
+				if (!FuncionesFicheros.validarDatosConexion()) {
+					estadoConexion = false;
+					nav.alertaException("Error. Servicio MySql apagado o desconectado de forma repentina.");
+					return null;
+				}
+				return conn;
+			} else {
+				// Connection is not valid
 				nav.alertaException("No se pudo establecer la conexión a la base de datos");
-			}
-
-			estadoConexion = true;
-
-			if (!FuncionesFicheros.validarDatosConexion()) {
-				estadoConexion = false;
-				nav.alertaException("Error. Servicio MySql apagado o desconectado de forma repentina.");
 				return null;
 			}
-
-			return conn;
 		} catch (SQLException ex) {
-			nav.alertaException("ERROR. Revisa los datos del fichero de conexión.");
+			// Handle any SQL exceptions
+			nav.alertaException("ERROR. Revisa los datos del fichero de conexión: " + ex.getMessage());
+			return null;
 		}
-		return null;
 	}
 
 	/**
