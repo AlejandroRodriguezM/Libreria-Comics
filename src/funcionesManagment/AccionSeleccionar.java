@@ -1,19 +1,17 @@
 package funcionesManagment;
 
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 
 import alarmas.AlarmaList;
 import comicManagement.Comic;
 import dbmanager.ComicManagerDAO;
-import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
 import dbmanager.DBUtilidades.TipoBusqueda;
-import funcionesInterfaz.AccionControlUI;
-import funcionesInterfaz.FuncionesTableView;
 import dbmanager.ListaComicsDAO;
 import dbmanager.SelectManager;
+import funcionesInterfaz.AccionControlUI;
+import funcionesInterfaz.FuncionesTableView;
 import funciones_auxiliares.Utilidades;
 import javafx.collections.FXCollections;
 
@@ -102,12 +100,8 @@ public class AccionSeleccionar {
 		FuncionesTableView.nombreColumnas();
 		FuncionesTableView.actualizarBusquedaRaw();
 
-		
-		
 		if (ComicManagerDAO.countRows() > 0) {
 			if (completo) {
-
-				System.out.println(ConectManager.DB_NAME);
 
 				String sentenciaSQL = DBUtilidades.construirSentenciaSQL(TipoBusqueda.COMPLETA);
 
@@ -134,9 +128,6 @@ public class AccionSeleccionar {
 
 			}
 		} else {
-
-			System.out.println(ConectManager.DB_NAME);
-
 			String mensaje = "ERROR. No hay datos en la base de datos";
 
 			AlarmaList.mostrarMensajePront(mensaje, false, getReferenciaVentana().getProntInfo());
@@ -164,12 +155,11 @@ public class AccionSeleccionar {
 			getReferenciaVentana().getProntInfo().setStyle("-fx-text-fill: black;"); // Reset the text color to black
 			getReferenciaVentana().getProntInfo()
 					.setText("El número de cómics donde aparece la búsqueda es: " + listComic.size() + "\n \n \n");
-		} else {
+		} else if (listComic.isEmpty() && esAccion) {
 			getReferenciaVentana().getProntInfo().setOpacity(1);
 			// Show error message in red when no search fields are specified
 			getReferenciaVentana().getProntInfo().setStyle("-fx-text-fill: red;");
-			getReferenciaVentana().getProntInfo()
-					.setText("Error No existe comic con los datos: " + datos.toString() + "\n \n \n");
+			getReferenciaVentana().getProntInfo().setText("Error. No existen con dichos parametros.");
 		}
 
 		return listComic;

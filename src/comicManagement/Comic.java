@@ -611,13 +611,19 @@ public class Comic {
 		this.valorGradeo = valorGradeo;
 	}
 
+	/**
+	 * Verifica si todos los campos del objeto Comic están vacíos o nulos.
+	 * 
+	 * @return true si todos los campos están vacíos o nulos, false de lo contrario.
+	 */
 	public boolean estaVacio() {
-		return isNullOrEmpty(id) && isNullOrEmpty(nombre) && isNullOrEmpty(valorGradeo) && isNullOrEmpty(numero)
-				&& isNullOrEmpty(variante) && isNullOrEmpty(firma) && isNullOrEmpty(editorial) && isNullOrEmpty(formato)
-				&& isNullOrEmpty(procedencia) && isNullOrEmpty(fecha) && isNullOrEmpty(guionista)
-				&& isNullOrEmpty(dibujante) && isNullOrEmpty(estado) && isNullOrEmpty(keyIssue)
-				&& isNullOrEmpty(puntuacion) && isNullOrEmpty(imagen) && isNullOrEmpty(urlReferencia)
-				&& isNullOrEmpty(precioComic) && isNullOrEmpty(codigoComic);
+		return isNullOrEmpty(this.id) && isNullOrEmpty(this.nombre) && isNullOrEmpty(this.valorGradeo)
+				&& isNullOrEmpty(this.numero) && isNullOrEmpty(this.variante) && isNullOrEmpty(this.firma)
+				&& isNullOrEmpty(this.editorial) && isNullOrEmpty(this.formato) && isNullOrEmpty(this.procedencia)
+				&& isNullOrEmpty(this.fecha) && isNullOrEmpty(this.guionista) && isNullOrEmpty(this.dibujante)
+				&& isNullOrEmpty(this.estado) && isNullOrEmpty(this.keyIssue) && isNullOrEmpty(this.puntuacion)
+				&& isNullOrEmpty(this.imagen) && isNullOrEmpty(this.urlReferencia) && isNullOrEmpty(this.precioComic)
+				&& isNullOrEmpty(this.codigoComic);
 	}
 
 	private boolean isNullOrEmpty(String str) {

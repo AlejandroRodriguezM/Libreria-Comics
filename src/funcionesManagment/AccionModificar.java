@@ -1,5 +1,6 @@
 package funcionesManagment;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,34 +72,34 @@ public class AccionModificar {
 	 */
 	public static void accionPuntuar(boolean esAgregar) {
 
-			String idComic = getReferenciaVentana().getIdComicTratar().getText();
-			if (accionFuncionesComunes.comprobarExistenciaComic(idComic)) {
-				if (nav.alertaAccionGeneral()) {
-					String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
-					List<Comic> listaComics;
-					String mensaje = "";
-					if (esAgregar) {
-						ComicManagerDAO.actualizarOpinion(idComic,
-								FuncionesComboBox.puntuacionCombobox(getReferenciaVentana().getPuntuacionMenu()));
-						mensaje = "Has agregado una puntuacion correctamente";
-					} else {
-						ComicManagerDAO.actualizarOpinion(idComic, "0");
-						mensaje = "Has borrado correctamente la puntuacion";
-					}
-
-					AlarmaList.mostrarMensajePront(mensaje, true, getReferenciaVentana().getProntInfo());
-
-					listaComics = ComicManagerDAO.verLibreria(sentenciaSQL);
-					getReferenciaVentana().getTablaBBDD().refresh();
-					FuncionesTableView.nombreColumnas();
-					FuncionesTableView.tablaBBDD(listaComics);
-
+		String idComic = getReferenciaVentana().getIdComicTratar().getText();
+		if (accionFuncionesComunes.comprobarExistenciaComic(idComic)) {
+			if (nav.alertaAccionGeneral()) {
+				String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
+				List<Comic> listaComics;
+				String mensaje = "";
+				if (esAgregar) {
+					ComicManagerDAO.actualizarOpinion(idComic,
+							FuncionesComboBox.puntuacionCombobox(getReferenciaVentana().getPuntuacionMenu()));
+					mensaje = "Has agregado una puntuacion correctamente";
 				} else {
-					String mensaje = "Accion cancelada";
-					AlarmaList.mostrarMensajePront(mensaje, false, getReferenciaVentana().getProntInfo());
+					ComicManagerDAO.actualizarOpinion(idComic, "0");
+					mensaje = "Has borrado correctamente la puntuacion";
 				}
 
+				AlarmaList.mostrarMensajePront(mensaje, true, getReferenciaVentana().getProntInfo());
+
+				listaComics = ComicManagerDAO.verLibreria(sentenciaSQL);
+				getReferenciaVentana().getTablaBBDD().refresh();
+				FuncionesTableView.nombreColumnas();
+				FuncionesTableView.tablaBBDD(listaComics);
+
+			} else {
+				String mensaje = "Accion cancelada";
+				AlarmaList.mostrarMensajePront(mensaje, false, getReferenciaVentana().getProntInfo());
 			}
+
+		}
 	}
 
 	public static void venderComic() throws SQLException {
@@ -138,7 +139,7 @@ public class AccionModificar {
 			List<Comic> listaComics;
 			if (nav.alertaAccionGeneral()) {
 
-				Utilidades.convertirNombresCarpetas(AccionFuncionesComunes.carpetaPortadas(ConectManager.DB_NAME));
+				Utilidades.convertirNombresCarpetas(AccionFuncionesComunes.carpetaPortadas(Utilidades.nombreDB()));
 
 				Comic comicModificado = AccionControlUI.comicModificado();
 

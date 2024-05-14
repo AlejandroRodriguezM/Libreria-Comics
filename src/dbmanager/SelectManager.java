@@ -17,7 +17,7 @@ public class SelectManager {
 	private static final String SENTENCIA_BUSQUEDA_INDIVIDUAL = "SELECT * FROM comicsbbdd WHERE ID = ?;";
 	private static final String SENTENCIA_CONTAR_COMICS_POR_ID = "SELECT COUNT(*) FROM comicsbbdd WHERE ID = ?;";
 	private static final String SENTENCIA_BUSCAR_PORTADA = "SELECT portada FROM comicsbbdd WHERE ID = ?;";
-	public static final String SENTENCIA_BUSQUEDA_COMPLETA = "SELECT * FROM comicsbbdd;";
+	public static final String SENTENCIA_BUSQUEDA_COMPLETA = "SELECT * FROM comicsbbdd";
 	public static final String SENTENCIA_TOTAL_BUSQUEDA = "SELECT COUNT(*) FROM comicsbbdd WHERE 1=1;";
 
 	public static final String SENTENCIA_POSESION = "SELECT * FROM comicsbbdd WHERE estado = 'En posesion' ORDER BY nomComic, fecha_publicacion, numComic;";
@@ -37,7 +37,6 @@ public class SelectManager {
 
 		try (Connection conn = ConectManager.conexion();
 				Statement stmt = conn.createStatement();
-
 				ResultSet rs = stmt.executeQuery(TAMANIO_DATABASE)) {
 
 			if (rs.next()) {
@@ -46,9 +45,8 @@ public class SelectManager {
 
 		} catch (SQLException e) {
 			Utilidades.manejarExcepcion(e);
-			return 0;
 		}
-		return 0;
+		return -1;
 	}
 
 	public static int getCount(String sql) {
@@ -177,12 +175,14 @@ public class SelectManager {
 				listComic = SelectManager.libreriaSeleccionado(busquedaGeneral);
 
 				if (listComic.isEmpty() && Comic.validarComic(comic)) {
-					return DBUtilidades.filtroBBDD(comic);
+					return DBUtilidades.filtroBBDD(comic, busquedaGeneral);
 				}
 
 				return listComic;
 			} else {
-				return DBUtilidades.filtroBBDD(comic);
+				if (Comic.validarComic(comic)) {
+					return DBUtilidades.filtroBBDD(comic, busquedaGeneral);
+				}
 			}
 
 		}
@@ -219,10 +219,11 @@ public class SelectManager {
 		String sentenciaSQL = "SELECT * FROM comicsbbdd " + "WHERE nomVariante LIKE '%" + datoSeleccionado + "%' OR "
 				+ "nomComic LIKE '%" + datoSeleccionado + "%' OR " + "nomGuionista LIKE '%" + datoSeleccionado
 				+ "%' OR " + "firma LIKE '%" + datoSeleccionado + "%' OR " + "nomDibujante LIKE '%" + datoSeleccionado
-				+ "%' OR " + "numComic LIKE '%" + datoSeleccionado + "%' OR " + "nomEditorial LIKE '%"
+				+ "%' OR " + "CAST(numComic AS TEXT) LIKE '%" + datoSeleccionado + "%' OR " + "nomEditorial LIKE '%"
 				+ datoSeleccionado + "%' OR " + "nivel_gradeo LIKE '%" + datoSeleccionado + "%' OR " + "formato LIKE '%"
 				+ datoSeleccionado + "%' OR " + "fecha_publicacion LIKE '%" + datoSeleccionado + "%' OR "
-				+ "procedencia LIKE '%" + datoSeleccionado + "%' ORDER BY nomComic, numComic ASC, fecha_publicacion";
+				+ "procedencia LIKE '%" + datoSeleccionado + "%' "
+				+ "ORDER BY nomComic, numComic ASC, fecha_publicacion";
 
 		return verLibreria(sentenciaSQL, false);
 	}
@@ -235,32 +236,32 @@ public class SelectManager {
 	 * @return Una lista de objetos Comic que representan los cómics de la librería.
 	 */
 	public static List<Comic> verLibreria(String sentenciaSQL, boolean esActualizacion) {
-	    ListaComicsDAO.listaComics.clear(); // Limpiar la lista existente de cómics
-	    List<Comic> listaComics = new ArrayList<>();
+		ListaComicsDAO.listaComics.clear(); // Limpiar la lista existente de cómics
+		List<Comic> listaComics = new ArrayList<>();
 
-	    try (Connection conn = ConectManager.conexion();
-	         PreparedStatement stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-	         ResultSet rs = stmt.executeQuery()) {
+		try (Connection conn = ConectManager.conexion();
+				PreparedStatement stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_FORWARD_ONLY,
+						ResultSet.CONCUR_READ_ONLY);
+				ResultSet rs = stmt.executeQuery()) {
 
-	        if (esActualizacion) {
-	            while (rs.next()) {
-	                Comic comic = DBUtilidades.obtenerComicDesdeResultSet(rs);
-	                if (!comic.getcodigoComic().isEmpty() && !comic.getcodigoComic().equals("0")) {
-	                    listaComics.add(comic);
-	                }
-	            }
-	        } else {
-	            while (rs.next()) {
-	                listaComics.add(DBUtilidades.obtenerComicDesdeResultSet(rs));
-	            }
-	        }
+			if (esActualizacion) {
+				while (rs.next()) {
+					Comic comic = DBUtilidades.obtenerComicDesdeResultSet(rs);
+					if (!comic.getcodigoComic().isEmpty() && !comic.getcodigoComic().equals("0")) {
+						listaComics.add(comic);
+					}
+				}
+			} else {
+				while (rs.next()) {
+					listaComics.add(DBUtilidades.obtenerComicDesdeResultSet(rs));
+				}
+			}
 
-	    } catch (SQLException e) {
-	        Utilidades.manejarExcepcion(e);
-	    }
+		} catch (SQLException e) {
+			Utilidades.manejarExcepcion(e);
+		}
 
-	    return listaComics;
+		return listaComics;
 	}
-
 
 }

@@ -18,6 +18,7 @@ import alarmas.AlarmaList;
 import apisFunciones.FuncionesApis;
 import comicManagement.Comic;
 import dbmanager.ConectManager;
+import dbmanager.DBUtilidades;
 import dbmanager.ListaComicsDAO;
 import funcionesInterfaz.AccionControlUI;
 import funcionesInterfaz.FuncionesComboBox;
@@ -511,9 +512,6 @@ public class VentanaAccionController implements Initializable {
 	private MenuItem menuImportarFichero;
 
 	@FXML
-	private MenuItem menuConexion;
-
-	@FXML
 	private MenuItem menuCodigoBarras;
 
 	@FXML
@@ -647,6 +645,7 @@ public class VentanaAccionController implements Initializable {
 		AccionModificar.setReferenciaVentana(guardarReferencia());
 		Utilidades.setReferenciaVentana(guardarReferencia());
 		Ventanas.setReferenciaVentana(guardarReferencia());
+		DBUtilidades.setReferenciaVentana(guardarReferencia());
 	}
 
 	/**
@@ -661,7 +660,6 @@ public class VentanaAccionController implements Initializable {
 
 		menuCodigoBarras.setGraphic(Utilidades.createIcon("/Icono/Archivo/exportar.png", 16, 16));
 		menuImportarFichero.setGraphic(Utilidades.createIcon("/Icono/Archivo/importar.png", 16, 16));
-		menuConexion.setGraphic(Utilidades.createIcon("/Icono/Archivo/lista_verificacion.png", 16, 16));
 
 		navegacionMostrarEstadistica.setGraphic(Utilidades.createIcon("/Icono/Estadistica/descarga.png", 16, 16));
 

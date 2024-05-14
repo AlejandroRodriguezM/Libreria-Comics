@@ -4,8 +4,6 @@
 */
 package Controladores;
 
-import javafx.scene.image.Image;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -589,6 +587,7 @@ public class MenuPrincipalController implements Initializable {
 		VentanaAccionController.setReferenciaVentana(guardarReferencia());
 		OpcionesAvanzadasController.setReferenciaVentanaPrincipal(guardarReferencia());
 		Ventanas.setReferenciaVentanaPrincipal(guardarReferencia());
+		DBUtilidades.setReferenciaVentana(guardarReferencia());
 	}
 
 	/**

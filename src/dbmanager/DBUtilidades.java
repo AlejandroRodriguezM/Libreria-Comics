@@ -7,10 +7,15 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
+import Controladores.OpcionesAvanzadasController;
 import comicManagement.Comic;
+import funcionesManagment.AccionReferencias;
 import funciones_auxiliares.Utilidades;
+import funciones_auxiliares.Ventanas;
 
 public class DBUtilidades {
+
+	private static AccionReferencias referenciaVentana = getReferenciaVentana();
 
 	public enum TipoBusqueda {
 		POSESION, KEY_ISSUE, COMPLETA, VENDIDOS, COMPRADOS, PUNTUACION, FIRMADOS, GUARDADOS, ELIMINAR
@@ -47,7 +52,7 @@ public class DBUtilidades {
 	public static String construirSentenciaSQL(TipoBusqueda tipoBusqueda) {
 
 		System.out.println(ConectManager.DB_NAME);
-		
+
 		switch (tipoBusqueda) {
 		case POSESION:
 			return SelectManager.SENTENCIA_POSESION;
@@ -70,6 +75,7 @@ public class DBUtilidades {
 
 	public static String datosConcatenados(Comic comic) {
 		String connector = " WHERE ";
+
 		StringBuilder sql = new StringBuilder(SelectManager.SENTENCIA_BUSQUEDA_COMPLETA);
 
 		connector = agregarCondicion(sql, connector, "ID", comic.getid());
@@ -85,38 +91,23 @@ public class DBUtilidades {
 		connector = agregarCondicionLike(sql, connector, "nomGuionista", comic.getGuionista());
 		connector = agregarCondicionLike(sql, connector, "nomDibujante", comic.getDibujante());
 
+		if (connector.trim().equalsIgnoreCase("where")) {
+			return "";
+		}
+
 		return (connector.length() > 0) ? sql.toString() : "";
 	}
 
-	/**
-	 * Agrega una condición de igualdad a la consulta SQL si el valor no está vacío.
-	 * 
-	 * @param sql       El StringBuilder que representa la consulta SQL.
-	 * @param connector El conector lógico a utilizar (AND o WHERE).
-	 * @param columna   El nombre de la columna en la base de datos.
-	 * @param valor     El valor a comparar.
-	 * @return El nuevo conector lógico a utilizar en las siguientes condiciones.
-	 */
 	public static String agregarCondicion(StringBuilder sql, String connector, String columna, String valor) {
-		if (valor.length() != 0) {
+		if (!valor.isEmpty()) {
 			sql.append(connector).append(columna).append(" = '").append(valor).append("'");
 			return " AND ";
 		}
 		return connector;
 	}
 
-	/**
-	 * Agrega una condición de búsqueda con operador LIKE a la consulta SQL si el
-	 * valor no está vacío.
-	 * 
-	 * @param sql       El StringBuilder que representa la consulta SQL.
-	 * @param connector El conector lógico a utilizar (AND o WHERE).
-	 * @param columna   El nombre de la columna en la base de datos.
-	 * @param valor     El valor a comparar.
-	 * @return El nuevo conector lógico a utilizar en las siguientes condiciones.
-	 */
 	public static String agregarCondicionLike(StringBuilder sql, String connector, String columna, String valor) {
-		if (valor.length() != 0) {
+		if (!valor.isEmpty()) {
 			sql.append(connector).append(columna).append(" LIKE '%").append(valor).append("%'");
 			return " AND ";
 		}
@@ -233,7 +224,10 @@ public class DBUtilidades {
 	 * @param datos Objeto Comic con los datos para filtrar.
 	 * @return Lista de cómics filtrados.
 	 */
-	public static List<Comic> filtroBBDD(Comic datos) {
+	public static List<Comic> filtroBBDD(Comic datos, String busquedaGeneral) {
+
+
+
 		// Reiniciar la lista de cómics antes de realizar el filtrado
 		ListaComicsDAO.listaComics.clear();
 
@@ -256,6 +250,19 @@ public class DBUtilidades {
 				// Manejar la excepción según tus necesidades (en este caso, mostrar una alerta)
 				Utilidades.manejarExcepcion(ex);
 			}
+		} else {
+			getReferenciaVentana().getProntInfo().setOpacity(1);
+			// Show error message in red when no search fields are specified
+			getReferenciaVentana().getProntInfo().setStyle("-fx-text-fill: red;");
+			getReferenciaVentana().getProntInfo()
+					.setText("Error No existe comic con los datos: " + busquedaGeneral + datos.toString());
+		}
+
+		if (sql.isEmpty() && busquedaGeneral.isEmpty()) {
+			getReferenciaVentana().getProntInfo().setOpacity(1);
+			// Show error message in red when no search fields are specified
+			getReferenciaVentana().getProntInfo().setStyle("-fx-text-fill: red;");
+			getReferenciaVentana().getProntInfo().setText("Todos los campos estan vacios");
 		}
 
 		return ListaComicsDAO.listaComics; // Devolver null si la consulta SQL está vacía
@@ -314,5 +321,13 @@ public class DBUtilidades {
 			Utilidades.manejarExcepcion(e);
 			return null; // O lanza una excepción personalizada, según el caso
 		}
+	}
+
+	public static AccionReferencias getReferenciaVentana() {
+		return referenciaVentana;
+	}
+
+	public static void setReferenciaVentana(AccionReferencias referenciaVentana) {
+		DBUtilidades.referenciaVentana = referenciaVentana;
 	}
 }

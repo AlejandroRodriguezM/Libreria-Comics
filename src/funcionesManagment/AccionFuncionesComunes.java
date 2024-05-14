@@ -111,12 +111,12 @@ public class AccionFuncionesComunes {
 		String mensaje = "";
 		try {
 			Utilidades.redimensionarYGuardarImagen(comic.getImagen(), codigoImagen);
-
 			comic.setImagen(carpetaPortadas(Utilidades.nombreDB()) + File.separator + codigoImagen + ".jpg");
 			if (esModificacion) {
 				ComicManagerDAO.actualizarComicBBDD(comic, "modificar");
 				mensaje = "Has modificado correctamente el cómic";
 			} else {
+
 				ComicManagerDAO.insertarDatos(comic, true);
 				mensaje = " Has introducido correctamente el cómic";
 				Comic newSelection = getReferenciaVentana().getTablaBBDD().getSelectionModel().getSelectedItem();
@@ -291,12 +291,16 @@ public class AccionFuncionesComunes {
 				e.printStackTrace();
 			}
 
-			getReferenciaVentana().getDireccionImagen().setText(carpetaRaizPortadas(Utilidades.nombreDB()) + "portadas"
-					+ File.separator + nuevoNombreArchivo + ".jpg");
+			String portada = carpetaRaizPortadas(Utilidades.nombreDB()) + "portadas" + File.separator
+					+ nuevoNombreArchivo + ".jpg";
+
+			getReferenciaVentana().getDireccionImagen().setText(portada);
 
 			String mensaje = "Portada subida correctamente.";
 
 			AlarmaList.mostrarMensajePront(mensaje, true, getReferenciaVentana().getProntInfo());
+
+			Utilidades.cargarImagenAsync(portada, getReferenciaVentana().getImagencomic());
 
 		} else {
 			String mensaje = "Has cancelado la subida de portada.";

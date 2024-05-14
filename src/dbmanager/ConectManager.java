@@ -108,18 +108,8 @@ public class ConectManager implements Initializable {
 	 * @return objeto Connection
 	 */
 	public static Connection conexion() {
-//		if (!comprobarDatosConexion()) {
-//			return null;
-//		}
-
-//		if (!FuncionesFicheros.validarDatosConexion()) {
-//			nav.alertaException("La URL de conexión no es válida");
-//			return null;
-//		}
 
 		DB_URL = "jdbc:sqlite:" + DB_FOLDER + FuncionesFicheros.datosEnvioFichero();
-
-		System.out.println(DB_URL);
 
 		// Validar la URL de conexión
 		if (!DB_URL.startsWith("jdbc:sqlite:")) {

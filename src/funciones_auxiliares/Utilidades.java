@@ -125,7 +125,7 @@ public class Utilidades {
 	private static AccionReferencias referenciaVentana = getReferenciaVentana();
 	private static AccionReferencias referenciaVentanaPrincipal = getReferenciaVentanaPrincipal();
 
-	private static final String DB_FOLDER = System.getProperty("user.home") + File.separator + "Documents"
+	public static final String DB_FOLDER = System.getProperty("user.home") + File.separator + "Documents"
 			+ File.separator + "libreria_comics/";
 
 	/**
@@ -308,7 +308,7 @@ public class Utilidades {
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
 		String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
-				+ ConectManager.DB_NAME + File.separator + "portadas";
+				+ Utilidades.nombreDB() + File.separator + "portadas";
 
 		// Esto se modificara para hacerlo dinamico
 		String imagePath = defaultImagePath;
@@ -515,6 +515,8 @@ public class Utilidades {
 	 * @throws IOException Si hay un error al leer el contenido de la carpeta.
 	 */
 	public static void convertirNombresCarpetas(String rutaCarpeta) throws IOException {
+
+		System.out.println(rutaCarpeta);
 
 		File carpeta = new File(rutaCarpeta);
 
