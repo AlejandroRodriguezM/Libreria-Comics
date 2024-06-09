@@ -10,8 +10,8 @@ import java.util.ResourceBundle;
 
 import comicManagement.Comic;
 import dbmanager.ConectManager;
+import funcionesAuxiliares.Utilidades;
 import funcionesInterfaz.FuncionesManejoFront;
-import funciones_auxiliares.Utilidades;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

@@ -19,9 +19,7 @@
       <Button fx:id="botonCrearBBDD" layoutX="6.0" layoutY="98.0" mnemonicParsing="false" onAction="#crearBBDD" prefHeight="54.0" prefWidth="149.0" style="-fx-background-color: green;" stylesheets="@../style/opciones_style.css" text="Crear base de datos" />
       <Button fx:id="botonLimpiarDatos" layoutX="176.0" layoutY="98.0" mnemonicParsing="false" onAction="#limpiarDatos" prefHeight="54.0" prefWidth="85.0" style="-fx-background-color: #2BE6EE;" stylesheets="@../style/opciones_style.css" text="Limpiar" />
       <Label layoutX="8.0" layoutY="40.0" prefHeight="21.0" prefWidth="156.0" style="-fx-background-color: grey;" stylesheets="@../style/opciones_style.css" text="Nombre de la base de datos" textFill="WHITE" />
-      <Button fx:id="botonSalir" layoutX="434.0" layoutY="98.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="54.0" prefWidth="85.0" stylesheets="@../style/opciones_style.css" text="Salir" />
-      <Button fx:id="botonVolver" layoutX="328.0" layoutY="98.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="54.0" prefWidth="94.0" stylesheets="@../style/opciones_style.css" text="Volver" />
-      <Label fx:id="prontInformativo" alignment="CENTER" contentDisplay="TOP" layoutX="327.0" layoutY="5.0" prefHeight="85.0" prefWidth="190.0" style="-fx-background-color: #29B6CC; -fx-font-size: 16;" stylesheets="@../style/opciones_style.css" text="Esperando entrada de datos" textAlignment="CENTER" wrapText="true">
+      <Label fx:id="prontInformativo" alignment="CENTER" contentDisplay="TOP" layoutX="327.0" layoutY="5.0" prefHeight="150.0" prefWidth="190.0" style="-fx-background-color: #29B6CC; -fx-font-size: 16;" stylesheets="@../style/opciones_style.css" text="Esperando entrada de datos" textAlignment="CENTER" wrapText="true">
          <font>
             <Font size="18.0" />
          </font></Label>

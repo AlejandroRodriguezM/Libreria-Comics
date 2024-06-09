@@ -38,7 +38,7 @@ import java.util.ResourceBundle;
 import alarmas.AlarmaList;
 import dbmanager.ConectManager;
 import ficherosFunciones.FuncionesFicheros;
-import funciones_auxiliares.Ventanas;
+import funcionesAuxiliares.Ventanas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -147,6 +147,8 @@ public class OpcionesDatosController implements Initializable {
 			if (!basesDatos.isEmpty()) {
 				nombreBBDD.getSelectionModel().select(0);
 			}
+		} else {
+			nombreBBDD.getItems().clear();
 		}
 	}
 
@@ -182,7 +184,7 @@ public class OpcionesDatosController implements Initializable {
 	void crearBBDD(ActionEvent event) {
 		nav.verCrearBBDD();
 
-		myStage().close();
+//		myStage().close();
 	}
 
 	/**
@@ -246,9 +248,8 @@ public class OpcionesDatosController implements Initializable {
 	void volverPrograma(ActionEvent event) {
 
 		ConectManager.close();
+		closeWindows();
 		nav.verAccesoBBDD(); // Llamada a metodo para abrir la ventana anterior
-
-		myStage().close();
 	}
 
 	private Stage myStage() {
@@ -264,7 +265,7 @@ public class OpcionesDatosController implements Initializable {
 	public void salirPrograma(ActionEvent event) {
 
 		if (nav.salirPrograma(event)) { // Llamada a metodo que permite salir completamente del programa
-			myStage().close();
+			closeWindows();
 		}
 	}
 
@@ -274,6 +275,7 @@ public class OpcionesDatosController implements Initializable {
 	public void closeWindows() {
 
 		myStage().close();
+		nav.cerrarMenuCreacionDB();
 	}
 
 	public void stop() {

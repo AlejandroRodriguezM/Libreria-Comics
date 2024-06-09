@@ -29,7 +29,7 @@ package Controladores;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import funciones_auxiliares.Ventanas;
+import funcionesAuxiliares.Ventanas;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

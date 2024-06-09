@@ -1,5 +1,5 @@
 
-package funciones_auxiliares;
+package funcionesAuxiliares;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import ficherosFunciones.FuncionesFicheros;
-import funciones_auxiliares.Utilidades;
-import funciones_auxiliares.Ventanas;
+import funcionesAuxiliares.Utilidades;
+import funcionesAuxiliares.Ventanas;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 

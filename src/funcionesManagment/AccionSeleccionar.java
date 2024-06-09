@@ -8,11 +8,11 @@ import comicManagement.Comic;
 import dbmanager.ComicManagerDAO;
 import dbmanager.DBUtilidades;
 import dbmanager.DBUtilidades.TipoBusqueda;
+import funcionesAuxiliares.Utilidades;
 import dbmanager.ListaComicsDAO;
 import dbmanager.SelectManager;
 import funcionesInterfaz.AccionControlUI;
 import funcionesInterfaz.FuncionesTableView;
-import funciones_auxiliares.Utilidades;
 import javafx.collections.FXCollections;
 
 public class AccionSeleccionar {

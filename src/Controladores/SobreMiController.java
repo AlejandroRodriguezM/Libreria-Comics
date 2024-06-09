@@ -32,10 +32,10 @@ import java.util.ResourceBundle;
 
 import alarmas.AlarmaList;
 import dbmanager.ConectManager;
+import funcionesAuxiliares.Utilidades;
+import funcionesAuxiliares.Ventanas;
 import funcionesInterfaz.FuncionesManejoFront;
 import funcionesManagment.AccionFuncionesComunes;
-import funciones_auxiliares.Utilidades;
-import funciones_auxiliares.Ventanas;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

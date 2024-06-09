@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 
 import dbmanager.ConectManager;
-import funciones_auxiliares.Utilidades;
-import funciones_auxiliares.Ventanas;
+import funcionesAuxiliares.Utilidades;
+import funcionesAuxiliares.Ventanas;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -411,16 +411,15 @@ public class AlarmaList {
 	/**
 	 * Metodo que permite crear una animacion
 	 */
-	public static void iniciarAnimacionConexion(Label prontEstadoConexion) {
-//		if (timelineError == null) {
+	public static void iniciarAnimacionConexionError(Label prontEstadoConexion, String mensaje) {
 		timelineError = new Timeline();
-		timelineError.setCycleCount(Timeline.INDEFINITE);
+		timelineError.setCycleCount(Animation.INDEFINITE);
 		prontEstadoConexion.setStyle("-fx-background-color: red;");
 
 		// Agregar los keyframes para cambiar el texto
 		KeyFrame mostrarError = new KeyFrame(Duration.ZERO, new KeyValue(prontEstadoConexion.textProperty(), ""));
 		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.5),
-				new KeyValue(prontEstadoConexion.textProperty(), "ERROR. Conectate primero"));
+				new KeyValue(prontEstadoConexion.textProperty(), mensaje));
 		KeyFrame mostrarError2 = new KeyFrame(Duration.seconds(1),
 				new KeyValue(prontEstadoConexion.textProperty(), ""));
 
@@ -429,12 +428,12 @@ public class AlarmaList {
 
 		// Iniciar la animación
 		timelineError.play();
-//		}
+
 	}
 
 	public static void iniciarAnimacionDesconectado(Label prontEstadoConexion) {
 		timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
+		timeline.setCycleCount(Animation.INDEFINITE);
 
 		prontEstadoConexion.setStyle("-fx-background-color: red; -fx-text-fill: white;");
 

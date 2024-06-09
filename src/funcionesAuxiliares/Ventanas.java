@@ -2,7 +2,7 @@
  * Contiene las clases que hacen funcionar las diferentes funciones de uso de back end y front de todo el proyecto
  *  
 */
-package funciones_auxiliares;
+package funcionesAuxiliares;
 
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
@@ -76,6 +76,8 @@ public class Ventanas {
 
 	private Stage menuCodigoBarras = null;
 
+	private Stage crearDB = null;
+
 	private Stage accionComic = null;
 
 	private Stage opcionesAvanzadasStage = null;
@@ -102,6 +104,7 @@ public class Ventanas {
 		cerrarStage(cargaComics);
 		cerrarStage(menuPrincipal);
 		cerrarStage(imagenAmpliada);
+		cerrarStage(crearDB);
 	}
 
 	private void cerrarStage(Stage stage) {
@@ -514,6 +517,8 @@ public class Ventanas {
 	public void verCrearBBDD() {
 
 		try {
+
+			ventanaAbierta(crearDB);
 			// Cargo la vista
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/CrearBBDD.fxml"));
 
@@ -527,16 +532,16 @@ public class Ventanas {
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("/style/opciones_style.css").toExternalForm());
 
-			Stage stage = new Stage();
-			stage.setResizable(false);
-			stage.setTitle("Menu de creacion"); // Titulo de la aplicacion.
-			stage.getIcons().add(new Image("/Icono/icon2.png"));
+			crearDB = new Stage();
+			crearDB.setResizable(false);
+			crearDB.setTitle("Menu de creacion"); // Titulo de la aplicacion.
+			crearDB.getIcons().add(new Image("/Icono/icon2.png"));
 
 			// Asocio el stage con el scene
-			stage.setScene(scene);
-			stage.show();
+			crearDB.setScene(scene);
+			crearDB.show();
 			// Indico que debe hacer al cerrar
-			stage.setOnCloseRequest(e -> {
+			crearDB.setOnCloseRequest(e -> {
 				controlador.closeWindows();
 			});
 
@@ -695,6 +700,12 @@ public class Ventanas {
 	public void cerrarMenuOpciones() {
 		if (this.opcionesAvanzadasStage != null) {
 			this.opcionesAvanzadasStage.close();
+		}
+	}
+	
+	public void cerrarMenuCreacionDB() {
+		if (this.crearDB != null) {
+			this.crearDB.close();
 		}
 	}
 
@@ -876,6 +887,26 @@ public class Ventanas {
 		alert.setTitle("Insertando . . .");
 		alert.setHeaderText("Estas apunto de introducir datos.");
 		alert.setContentText(" Estas seguro que quieres introducir el comic/comics?");
+		if (alert.showAndWait().get() == ButtonType.OK) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Llama a una ventana de alarma que avisa si se va a introducir un dato
+	 *
+	 * @return
+	 */
+	public boolean alertaCreacionDB() {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.getIcons().add(new Image("/Icono/warning.jpg")); // To add an icon
+		stage.setResizable(false);
+		alert.setTitle("Creando DB . . .");
+		alert.setHeaderText("No existen base de datos en la carpeta raiz.");
+		alert.setContentText(
+				" Quieres crear una base de datos predeterminada? (Puedes crear otra de forma manual si lo deseas)");
 		if (alert.showAndWait().get() == ButtonType.OK) {
 			return true;
 		}

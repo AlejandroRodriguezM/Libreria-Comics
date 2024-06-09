@@ -11,9 +11,7 @@ import java.util.ResourceBundle;
 
 import alarmas.AlarmaList;
 import dbmanager.SQLiteManager;
-import funciones_auxiliares.Utilidades;
-import funciones_auxiliares.Ventanas;
-import javafx.application.Platform;
+import funcionesAuxiliares.Utilidades;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -47,11 +45,6 @@ public class CrearBBDDController implements Initializable {
 
     @FXML
     private Label prontInformativo;
-
-	/**
-	 * Controlador para la navegación entre ventanas.
-	 */
-	private static Ventanas nav = new Ventanas();
 
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
@@ -134,41 +127,16 @@ public class CrearBBDDController implements Initializable {
 	/////////////////////////////////
 	//// METODO LLAMADA A VENTANA//
 	/////////////////////////////////
-
-	/**
-	 * Vuelve al menu inicial de conexion de la base de datos.
-	 *
-	 * @param event
-	 */
-	@FXML
-	public void volverMenu(ActionEvent event) {
-
-		nav.verOpciones(); // Llamada a metodo para abrir la ventana anterior
-
-		Stage myStage = (Stage) this.botonVolver.getScene().getWindow();
-		myStage.close();
-	}
-
-	/**
-	 * Permite salir completamente del programa.
-	 *
-	 * @param event
-	 */
-	@FXML
-	public void salirPrograma(ActionEvent event) {
-
-		if (nav.salirPrograma(event)) {
-			Stage myStage = (Stage) this.botonSalir.getScene().getWindow();
-			myStage.close();
-		}
+	
+	private Stage myStage() {
+		return (Stage) botonCrearBBDD.getScene().getWindow();
 	}
 
 	/**
 	 * Al cerrar la ventana, carga la ventana del menu principal
 	 */
 	public void closeWindows() {
-
-		Platform.exit();
+		myStage().close();
 	}
 
 }

@@ -21,9 +21,9 @@ import dbmanager.ConectManager;
 import dbmanager.DatabaseManagerDAO;
 import dbmanager.ListaComicsDAO;
 import ficherosFunciones.FuncionesFicheros;
+import funcionesAuxiliares.Utilidades;
+import funcionesAuxiliares.Ventanas;
 import funcionesInterfaz.FuncionesManejoFront;
-import funciones_auxiliares.Utilidades;
-import funciones_auxiliares.Ventanas;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -189,14 +189,7 @@ public class AccesoBBDDController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		if (!Utilidades.verificarVersionJava()) {
-			Alert alert = new Alert(Alert.AlertType.WARNING);
-			alert.setTitle("Advertencia");
-			alert.setHeaderText(null);
-			alert.setContentText("Su versión de Java no es la 21. Por favor, actualice su versión de Java.");
-			alert.showAndWait();
-			return; // Salir de la aplicación si la versión de Java no es la correcta
-		}
+		System.out.println(Utilidades.verificarVersionJava());
 
 		FuncionesApis.guardarDatosClavesMarvel();
 
@@ -214,6 +207,9 @@ public class AccesoBBDDController implements Initializable {
 		}
 
 		Platform.runLater(() -> {
+
+			myStage().setOnCloseRequest(event -> stop());
+			Utilidades.crearDBPRedeterminada();
 
 			ConectManager.asignarValoresPorDefecto();
 			ListaComicsDAO.reiniciarListas();
@@ -276,7 +272,8 @@ public class AccesoBBDDController implements Initializable {
 			AlarmaList.detenerAnimacion();
 			ConectManager.asignarValoresPorDefecto();
 			prontEstadoConexion.setStyle("-fx-background-color: #DD370F");
-			AlarmaList.iniciarAnimacionConexion(prontEstadoConexion);
+			String mensaje = "ERROR. Conectate primero";
+			AlarmaList.iniciarAnimacionConexionError(prontEstadoConexion, mensaje);
 		}
 		alarmaList.detenerThreadChecker();
 	}
@@ -292,7 +289,8 @@ public class AccesoBBDDController implements Initializable {
 
 		String datosFichero = FuncionesFicheros.datosEnvioFichero();
 
-		if (ConectManager.loadDriver() && DatabaseManagerDAO.checkTablesAndColumns(datosFichero)) {
+		if (Utilidades.comprobarDB() && ConectManager.loadDriver()
+				&& DatabaseManagerDAO.checkTablesAndColumns(datosFichero)) {
 
 			if (ConectManager.conexion() != null) {
 
@@ -300,10 +298,16 @@ public class AccesoBBDDController implements Initializable {
 				AlarmaList.iniciarAnimacionConectado(prontEstadoConexion);
 				alarmaList.manejarConexionExitosa(prontEstadoConexion);
 			} else {
-				alarmaList.manejarErrorConexion("No estás conectado a la base de datos.", prontEstadoConexion);
+				AlarmaList.detenerAnimacion();
+				String mensaje = "ERROR. No estás conectado a la base de datos.";
+				AlarmaList.iniciarAnimacionConexionError(prontEstadoConexion, mensaje);
 			}
 		} else {
-			alarmaList.manejarErrorConexion("Error al verificar tablas en la base de datos.", prontEstadoConexion);
+			AlarmaList.detenerAnimacion();
+			String mensaje1 = "ERROR. Ve a opciones y guarda la base de datos o en su defecto, crea otra.";
+			String mensaje2 = "ERROR. Noo hay guardada niguna DB, ve a opciones.";
+			nav.alertaException(mensaje1);
+			AlarmaList.iniciarAnimacionConexionError(prontEstadoConexion, mensaje2);
 		}
 
 	}
@@ -341,7 +345,7 @@ public class AccesoBBDDController implements Initializable {
 	void opcionesPrograma(ActionEvent event) {
 
 		nav.verOpciones();
-		stop();
+		alarmaList.detenerThreadChecker();
 		myStage().close();
 	}
 
@@ -354,6 +358,6 @@ public class AccesoBBDDController implements Initializable {
 	}
 
 	public void stop() {
-		alarmaList.detenerThreadChecker();
+		Platform.exit();
 	}
 }

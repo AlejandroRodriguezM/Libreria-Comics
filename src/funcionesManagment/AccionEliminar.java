@@ -9,10 +9,10 @@ import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
 import dbmanager.ListaComicsDAO;
+import funcionesAuxiliares.Ventanas;
 import funcionesInterfaz.AccionControlUI;
 import funcionesInterfaz.FuncionesComboBox;
 import funcionesInterfaz.FuncionesTableView;
-import funciones_auxiliares.Ventanas;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 
