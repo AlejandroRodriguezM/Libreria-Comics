@@ -34,6 +34,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -85,18 +86,6 @@ public class AccesoBBDDController implements Initializable {
 	 */
 	@FXML
 	private Button botonEnviar;
-
-	/**
-	 * Botón para acceder a las opciones.
-	 */
-	@FXML
-	private Button botonOpciones;
-
-	/**
-	 * Botón para salir de la aplicación.
-	 */
-	@FXML
-	private Button botonSalir;
 
 	/**
 	 * Casilla de verificación para recordar la configuración.
@@ -168,6 +157,18 @@ public class AccesoBBDDController implements Initializable {
 	@FXML
 	private ProgressIndicator progresoCarga;
 
+	@FXML
+	private Label prontEstadoConexionBase;
+
+	@FXML
+	private MenuItem menuItemOpciones;
+
+	@FXML
+	private MenuItem menuItemSalir;
+
+	@FXML
+	private MenuItem menuItemSobreMi;
+
 	/**
 	 * Estado del botón de alternancia del ojo.
 	 */
@@ -180,6 +181,8 @@ public class AccesoBBDDController implements Initializable {
 
 	private static AlarmaList alarmaList = new AlarmaList();
 
+	private static boolean estaConectado = false;
+
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
 	 *
@@ -190,7 +193,13 @@ public class AccesoBBDDController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 
 		System.out.println(Utilidades.verificarVersionJava());
-
+		
+		if(!Utilidades.verificarVersionJava()) {
+			Platform.exit();
+		}
+		
+		ConectManager.estadoConexion = false;
+		estaConectado = false;
 		FuncionesApis.guardarDatosClavesMarvel();
 
 		FuncionesApis.guardarApiComicVine();
@@ -199,6 +208,10 @@ public class AccesoBBDDController implements Initializable {
 		alarmaList.setAlarmaConexionInternet(alarmaConexionInternet);
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
 		alarmaList.setAlarmaConexionPrincipal(prontEstadoConexion);
+		
+		menuItemSalir.setGraphic(Utilidades.createIcon("/Icono/Archivo/salir.png", 16, 16));
+		menuItemOpciones.setGraphic(Utilidades.createIcon("/Icono/Archivo/configuraciones.png", 16, 16));
+		menuItemSobreMi.setGraphic(Utilidades.createIcon("/Icono/Archivo/about.png", 16, 16));
 
 		List<Stage> stageVentanas = FuncionesManejoFront.getStageVentanas();
 
@@ -207,6 +220,7 @@ public class AccesoBBDDController implements Initializable {
 		}
 
 		Platform.runLater(() -> {
+			AlarmaList.iniciarAnimacionAvanzado(prontEstadoConexionBase, "No conectado");
 
 			myStage().setOnCloseRequest(event -> stop());
 			Utilidades.crearDBPRedeterminada();
@@ -266,6 +280,7 @@ public class AccesoBBDDController implements Initializable {
 		if (ConectManager.estadoConexion) { // Siempre que el metodo de la clase DBManager sea true, permitira acceder
 			ConectManager.resetConnection();
 			// al menu principal
+			nav.cerrarOpcionesDB();
 			nav.verMenuPrincipal();
 			closeWindow();
 		} else { // En caso contrario mostrara el siguiente mensaje.
@@ -289,32 +304,48 @@ public class AccesoBBDDController implements Initializable {
 
 		String datosFichero = FuncionesFicheros.datosEnvioFichero();
 
+		String[] nombreDB = datosFichero.split("\\.");
+		
 		if (Utilidades.comprobarDB() && ConectManager.loadDriver()
 				&& DatabaseManagerDAO.checkTablesAndColumns(datosFichero)) {
 
 			if (ConectManager.conexion() != null) {
 
-				AlarmaList.detenerAnimacion();
-				AlarmaList.iniciarAnimacionConectado(prontEstadoConexion);
-				alarmaList.manejarConexionExitosa(prontEstadoConexion);
+				if (!estaConectado) {
+					botonEnviar.setText("Desconectar bbdd");
+					alarmaList.manejarConexionExitosa(prontEstadoConexion);
+					AlarmaList.iniciarAnimacionAvanzado(prontEstadoConexionBase, "Conectado a " + nombreDB[0]);
+					AlarmaList.iniciarAnimacionConectado(prontEstadoConexion);
+					estaConectado = true;
+				} else {
+					botonEnviar.setText("Conectar bbdd");
+					ConectManager.estadoConexion = false;
+					AlarmaList.iniciarAnimacionAlarma(alarmaConexion);
+					AlarmaList.iniciarAnimacionAvanzado(prontEstadoConexionBase, "No conectado");
+					AlarmaList.iniciarAnimacionEspera(prontEstadoConexion);
+					estaConectado = false;
+				}
+
 			} else {
 				AlarmaList.detenerAnimacion();
 				String mensaje = "ERROR. No estás conectado a la base de datos.";
 				AlarmaList.iniciarAnimacionConexionError(prontEstadoConexion, mensaje);
+				estaConectado = true;
 			}
 		} else {
 			AlarmaList.detenerAnimacion();
 			String mensaje1 = "ERROR. Ve a opciones y guarda la base de datos o en su defecto, crea otra.";
-			String mensaje2 = "ERROR. Noo hay guardada niguna DB, ve a opciones.";
+			String mensaje2 = "ERROR. No hay guardada niguna DB, ve a opciones.";
 			nav.alertaException(mensaje1);
 			AlarmaList.iniciarAnimacionConexionError(prontEstadoConexion, mensaje2);
+			estaConectado = true;
 		}
 
-	}
-
-	public Scene miStageVentana() {
-
-		return botonEnviar.getScene();
+//		if (estaConectado) {
+//			botonEnviar.setText("Desconectar bbdd");
+//		} else {
+//			botonEnviar.setText("Conectar bbdd");
+//		}
 
 	}
 
@@ -332,8 +363,14 @@ public class AccesoBBDDController implements Initializable {
 		}
 	}
 
+	public Scene miStageVentana() {
+
+		return botonEnviar.getScene();
+
+	}
+
 	public Stage myStage() {
-		return (Stage) this.botonSalir.getScene().getWindow();
+		return (Stage) miStageVentana().getWindow();
 
 	}
 
@@ -343,10 +380,17 @@ public class AccesoBBDDController implements Initializable {
 	 */
 	@FXML
 	void opcionesPrograma(ActionEvent event) {
-
 		nav.verOpciones();
-		alarmaList.detenerThreadChecker();
-		myStage().close();
+	}
+
+	/**
+	 * Permite el cambio de ventana a la ventana de SobreMiController
+	 *
+	 * @param event
+	 */
+	@FXML
+	void verSobreMi(ActionEvent event) {
+		nav.verSobreMi();
 	}
 
 	/**

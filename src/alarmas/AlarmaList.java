@@ -148,7 +148,6 @@ public class AlarmaList {
 	private void procesarEstadoConexion() {
 
 		boolean estadoInternet = Utilidades.isInternetAvailable();
-
 		Platform.runLater(() -> {
 			manejarConexionPrincipal(estadoInternet);
 			manejarConexionInternet(estadoInternet);
@@ -258,7 +257,8 @@ public class AlarmaList {
 		timelineError = new Timeline();
 		timelineError.setCycleCount(Animation.INDEFINITE);
 
-		prontEstadoConexion.setStyle("-fx-background-color: green;");
+//		prontEstadoConexion.setStyle("-fx-background-color: green;");
+		prontEstadoConexion.setStyle("-fx-background-color: #A0F52D");
 
 		// Agregar los keyframes para cambiar el texto
 		KeyFrame mostrarEsperando = new KeyFrame(Duration.ZERO,
@@ -958,17 +958,17 @@ public class AlarmaList {
 	 * Metodo que permite crear una animacion
 	 * 
 	 */
-	public static void iniciarAnimacionBaseExiste(Label prontInformativo, String DB_NAME) {
+	public static void iniciarAnimacionBaseExiste(Label prontInformativo, String dbNombre) {
 		timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
+		timeline.setCycleCount(Animation.INDEFINITE);
 		prontInformativo.setStyle("-fx-background-color: #DD370F");
 
 		// Agregar los keyframes para cambiar el texto
 		KeyFrame mostrarConectado = new KeyFrame(Duration.ZERO, new KeyValue(prontInformativo.textProperty(),
-				"ERROR. Ya existe una base de datos llamada: " + DB_NAME));
+				"ERROR. Ya existe una base de datos llamada: " + dbNombre));
 		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(0.6), new KeyValue(prontInformativo.textProperty(), ""));
 		KeyFrame mostrarConectado2 = new KeyFrame(Duration.seconds(1.1), new KeyValue(prontInformativo.textProperty(),
-				"ERROR. Ya existe una base de datos llamada: " + DB_NAME));
+				"ERROR. Ya existe una base de datos llamada: " + dbNombre));
 
 		// Agregar los keyframes al timeline
 		timeline.getKeyFrames().addAll(mostrarConectado, ocultarTexto, mostrarConectado2);
@@ -983,7 +983,7 @@ public class AlarmaList {
 	 */
 	public static void iniciarAnimacionBaseError(String error, Label prontInformativo) {
 		timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
+		timeline.setCycleCount(Animation.INDEFINITE);
 
 		// Agregar los keyframes para cambiar el texto
 		KeyFrame mostrarConectado = new KeyFrame(Duration.ZERO, new KeyValue(prontInformativo.textProperty(), error));
@@ -1004,7 +1004,7 @@ public class AlarmaList {
 	 */
 	public static void iniciarAnimacionEsperaCreacion(Label prontInformativo) {
 		timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
+		timeline.setCycleCount(Animation.INDEFINITE);
 
 		// Agregar los keyframes para cambiar el texto
 		KeyFrame mostrarEsperando = new KeyFrame(Duration.ZERO,

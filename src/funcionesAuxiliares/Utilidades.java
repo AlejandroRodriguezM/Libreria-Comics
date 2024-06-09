@@ -2352,7 +2352,6 @@ public class Utilidades {
 
 		// Comparamos la versión mayor y menor
 		if (majorVersion > 17 || (majorVersion == 17 && minorVersion >= 0)) {
-			System.out.println(minorVersion);
 			return true; // La versión es al menos 17
 		} else {
 			return false; // La versión no es al menos 17

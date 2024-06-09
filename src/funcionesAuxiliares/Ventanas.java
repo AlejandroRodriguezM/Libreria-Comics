@@ -33,7 +33,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import Controladores.AccesoBBDDController;
 import Controladores.CargaComicsController;
-import Controladores.CrearBBDDController;
 import Controladores.ImagenAmpliadaController;
 import Controladores.MenuLectorCodigoBarras;
 import Controladores.MenuPrincipalController;
@@ -76,8 +75,6 @@ public class Ventanas {
 
 	private Stage menuCodigoBarras = null;
 
-	private Stage crearDB = null;
-
 	private Stage accionComic = null;
 
 	private Stage opcionesAvanzadasStage = null;
@@ -87,6 +84,7 @@ public class Ventanas {
 	private Stage menuPrincipal = null;
 
 	private Stage imagenAmpliada = null;
+	private Stage opcionesDB = null;
 
 	private boolean ventanaCerrada = false; // Variable para almacenar el estado de la ventana
 
@@ -104,7 +102,6 @@ public class Ventanas {
 		cerrarStage(cargaComics);
 		cerrarStage(menuPrincipal);
 		cerrarStage(imagenAmpliada);
-		cerrarStage(crearDB);
 	}
 
 	private void cerrarStage(Stage stage) {
@@ -509,49 +506,6 @@ public class Ventanas {
 	}
 
 	/**
-	 * Abre la ventana de creación de la base de datos. Carga la vista de la ventana
-	 * de creación de la base de datos y muestra la ventana correspondiente con su
-	 * controlador. Define el tamaño de la ventana, la asocia con el comportamiento
-	 * de cierre y aplica estilos de hojas de estilo.
-	 */
-	public void verCrearBBDD() {
-
-		try {
-
-			ventanaAbierta(crearDB);
-			// Cargo la vista
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/CrearBBDD.fxml"));
-
-			// Cargo el padre
-			Parent root = loader.load();
-
-			// Obtengo el controlador
-			CrearBBDDController controlador = loader.getController();
-
-			// Crea la escena y el escenario
-			Scene scene = new Scene(root);
-			scene.getStylesheets().add(getClass().getResource("/style/opciones_style.css").toExternalForm());
-
-			crearDB = new Stage();
-			crearDB.setResizable(false);
-			crearDB.setTitle("Menu de creacion"); // Titulo de la aplicacion.
-			crearDB.getIcons().add(new Image("/Icono/icon2.png"));
-
-			// Asocio el stage con el scene
-			crearDB.setScene(scene);
-			crearDB.show();
-			// Indico que debe hacer al cerrar
-			crearDB.setOnCloseRequest(e -> {
-				controlador.closeWindows();
-			});
-
-		} catch (IOException ex) {
-			alertaException(ex.toString());
-			ex.printStackTrace();
-		}
-	}
-
-	/**
 	 * Abre la ventana de opciones de acceso. Carga la vista de la ventana de
 	 * opciones de acceso y muestra la ventana correspondiente con su controlador.
 	 * Define el tamaño de la ventana, la asocia con el comportamiento de cierre y
@@ -560,6 +514,9 @@ public class Ventanas {
 	public void verOpciones() {
 
 		try {
+
+			ventanaAbierta(opcionesDB);
+
 			// Cargo la vista
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ventanas/OpcionesAcceso.fxml"));
 
@@ -571,19 +528,19 @@ public class Ventanas {
 
 			// Crea la escena y el escenario
 			Scene scene = new Scene(root);
-			scene.getStylesheets().add(getClass().getResource("/style/acces_style.css").toExternalForm());
-			scene.getStylesheets().add(getClass().getResource("/style/opciones_style.css").toExternalForm());
+//			scene.getStylesheets().add(getClass().getResource("/style/acces_style.css").toExternalForm());
+//			scene.getStylesheets().add(getClass().getResource("/style/opciones_style.css").toExternalForm());
 
-			Stage stage = new Stage();
-			stage.setResizable(false);
-			stage.setTitle("Opciones"); // Titulo de la aplicacion.
-			stage.getIcons().add(new Image("/Icono/icon2.png"));
+			opcionesDB = new Stage();
+//			opcionesDB.setResizable(false);
+			opcionesDB.setTitle("Opciones"); // Titulo de la aplicacion.
+			opcionesDB.getIcons().add(new Image("/Icono/icon2.png"));
 
 			// Asocio el stage con el scene
-			stage.setScene(scene);
-			stage.show();
+			opcionesDB.setScene(scene);
+			opcionesDB.show();
 			// Indico que debe hacer al cerrar
-			stage.setOnCloseRequest(e -> {
+			opcionesDB.setOnCloseRequest(e -> {
 				controlador.closeWindows();
 				controlador.stop();
 			});
@@ -702,10 +659,10 @@ public class Ventanas {
 			this.opcionesAvanzadasStage.close();
 		}
 	}
-	
-	public void cerrarMenuCreacionDB() {
-		if (this.crearDB != null) {
-			this.crearDB.close();
+
+	public void cerrarOpcionesDB() {
+		if (this.opcionesDB != null) {
+			this.opcionesDB.close();
 		}
 	}
 
