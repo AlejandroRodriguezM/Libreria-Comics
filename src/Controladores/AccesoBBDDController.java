@@ -341,12 +341,6 @@ public class AccesoBBDDController implements Initializable {
 			estaConectado = true;
 		}
 
-//		if (estaConectado) {
-//			botonEnviar.setText("Desconectar bbdd");
-//		} else {
-//			botonEnviar.setText("Conectar bbdd");
-//		}
-
 	}
 
 	/**

@@ -121,7 +121,7 @@ public class OpcionesDatosController implements Initializable {
 	private final double originalHeight = 333;
 
 	// Tamaño reducido del Pane
-	private final double expandHeight = 492;
+	private final double expandHeight = 490;
 
 	boolean estaDesplegado = false;
 
@@ -150,6 +150,8 @@ public class OpcionesDatosController implements Initializable {
 		FuncionesFicheros.crearEstructura();
 
 		rellenarComboDB();
+		String datosFichero = FuncionesFicheros.datosEnvioFichero();
+		seleccionarValor(nombreBBDD,datosFichero);
 
 		AlarmaList.iniciarAnimacionEspera(prontEstadoFichero);
 		AlarmaList.iniciarAnimacionEspera(prontInformativo);
@@ -350,7 +352,8 @@ public class OpcionesDatosController implements Initializable {
 
 	// Función para cambiar la altura del Pane
 	private void setPaneHeight(double height) {
-		imagenAzul.setFitHeight(height);
+		imagenAzul.setFitHeight(height + 3);
+		imagenAzul.setFitWidth(269);
 
 		miSceneVentana().getWindow().setHeight(height);
 

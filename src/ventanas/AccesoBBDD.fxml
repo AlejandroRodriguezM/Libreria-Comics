@@ -15,20 +15,20 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="454.0" prefWidth="268.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.AccesoBBDDController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="452.0" prefWidth="268.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.AccesoBBDDController">
    <children>
       <ToggleButton fx:id="toggleEye" layoutX="189.0" layoutY="253.0" mnemonicParsing="false" />
-      <ImageView fitHeight="148.0" fitWidth="271.0" layoutY="306.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="155.0" fitWidth="271.0" layoutY="306.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagenes/azul.jpg" />
          </image>
       </ImageView>
-      <ImageView fitHeight="148.0" fitWidth="280.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="155.0" fitWidth="271.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagenes/rojo.jpg" />
          </image>
       </ImageView>
-      <ImageView fitHeight="332.0" fitWidth="271.0" layoutY="145.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="295.0" fitWidth="271.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagenes/Fondo%20AccederBBDD.jpg" />
          </image>
@@ -73,7 +73,7 @@
             <Font name="Comic Sans MS" size="18.0" />
          </font>
       </Label>
-      <MenuBar prefHeight="25.0" prefWidth="268.0">
+      <MenuBar prefHeight="25.0" prefWidth="270.0">
         <menus>
           <Menu mnemonicParsing="false" text="Opciones">
             <items>
