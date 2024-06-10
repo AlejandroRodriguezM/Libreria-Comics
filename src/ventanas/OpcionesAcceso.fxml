@@ -13,7 +13,7 @@
 
 <Pane fx:id="panelMenu" pickOnBounds="false" prefHeight="294.0" prefWidth="269.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.OpcionesDatosController">
    <children>
-      <ImageView fx:id="imagenAzul" fitHeight="294.0" fitWidth="271.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="imagenAzul" fitHeight="294.0" fitWidth="271.0" pickOnBounds="true">
          <image>
             <Image url="@../imagenes/azul.jpg" />
          </image>
