@@ -23,7 +23,7 @@ import org.jsoup.select.Elements;
 
 import alarmas.AlarmaList;
 import comicManagement.Comic;
-import funciones_auxiliares.Utilidades;
+import funcionesAuxiliares.Utilidades;
 import javafx.scene.control.TextArea;
 
 /**

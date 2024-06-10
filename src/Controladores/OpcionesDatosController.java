@@ -34,17 +34,28 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import alarmas.AlarmaList;
-import dbmanager.ConectManager;
+import dbmanager.SQLiteManager;
 import ficherosFunciones.FuncionesFicheros;
-import funciones_auxiliares.Ventanas;
+import funcionesAuxiliares.Utilidades;
+import funcionesAuxiliares.Ventanas;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 /**
@@ -54,6 +65,9 @@ import javafx.stage.Stage;
  * @author Alejandro Rodriguez
  */
 public class OpcionesDatosController implements Initializable {
+
+	@FXML
+	private Pane panelMenu;
 
 	@FXML
 	private Label alarmaConexion;
@@ -77,10 +91,7 @@ public class OpcionesDatosController implements Initializable {
 	private Button botonRestaurar;
 
 	@FXML
-	private Button botonSalir;
-
-	@FXML
-	private Button botonVolver;
+	private Button botonMenuBBDD;
 
 	@FXML
 	private ComboBox<String> nombreBBDD;
@@ -90,6 +101,29 @@ public class OpcionesDatosController implements Initializable {
 
 	@FXML
 	private Label prontEstadoFichero;
+
+	@FXML
+	private Label prontInformativo;
+
+	@FXML
+	private Label labelInfoBBDD;
+
+	@FXML
+	private Rectangle barraSeparacion;
+
+	@FXML
+	private TextField nombreNuevaBBDD;
+
+	@FXML
+	private ImageView imagenAzul;
+
+	// Tamaño original del Pane
+	private final double originalHeight = 333;
+
+	// Tamaño reducido del Pane
+	private final double expandHeight = 490;
+
+	boolean estaDesplegado = false;
 
 	/**
 	 * Instancia de la clase Ventanas para la navegación.
@@ -116,8 +150,11 @@ public class OpcionesDatosController implements Initializable {
 		FuncionesFicheros.crearEstructura();
 
 		rellenarComboDB();
+		String datosFichero = FuncionesFicheros.datosEnvioFichero();
+		seleccionarValor(nombreBBDD,datosFichero);
 
 		AlarmaList.iniciarAnimacionEspera(prontEstadoFichero);
+		AlarmaList.iniciarAnimacionEspera(prontInformativo);
 		AlarmaList.iniciarAnimacionAlarma(alarmaConexion);
 
 	}
@@ -129,6 +166,8 @@ public class OpcionesDatosController implements Initializable {
 	private void rellenarComboDB() {
 		File directorio = new File(DB_FOLDER);
 		File[] ficheros = directorio.listFiles();
+
+		vaciarComboBox(nombreBBDD);
 
 		if (ficheros != null) {
 			List<String> basesDatos = new ArrayList<>();
@@ -147,7 +186,14 @@ public class OpcionesDatosController implements Initializable {
 			if (!basesDatos.isEmpty()) {
 				nombreBBDD.getSelectionModel().select(0);
 			}
+		} else {
+			nombreBBDD.getItems().clear();
 		}
+	}
+
+	private void vaciarComboBox(ComboBox<String> comboBox) {
+		ObservableList<String> items = FXCollections.observableArrayList();
+		comboBox.setItems(items);
 	}
 
 	/**
@@ -174,15 +220,89 @@ public class OpcionesDatosController implements Initializable {
 	}
 
 	/**
+	 * Función que guarda los datos de la nueva base de datos.
+	 */
+	public String datosBBDD() {
+		String dbNombre = nombreNuevaBBDD.getText();
+
+		if (comprobarEntradas(dbNombre)) {
+			return dbNombre;
+		}
+		return "";
+	}
+
+	/**
+	 * Función que permite comprobar si las entradas están rellenas o no.
+	 *
+	 * @param dbNombre el nombre de la base de datos a comprobar
+	 * @return true si hay errores, false en caso contrario
+	 */
+	public boolean comprobarEntradas(String dbNombre) {
+		String errorMessage = "";
+
+		if (dbNombre.isEmpty()) {
+			errorMessage += "El nombre de la base de datos está vacío.\n";
+		} else if (!esNombreValido(dbNombre)) {
+			errorMessage += "El nombre de la base de datos contiene caracteres no permitidos.\n";
+		}
+
+		if (!errorMessage.isEmpty()) {
+			prontInformativo.setStyle("-fx-background-color: #DD370F");
+			AlarmaList.iniciarAnimacionBaseError(errorMessage, prontInformativo);
+			return false;
+		}
+		return true;
+	}
+
+	public static boolean esNombreValido(String nombre) {
+		// Expresión regular para caracteres inválidos
+		String invalidChars = "[,.:;<>\"'/\\\\|?*]";
+
+		// Patrón para la expresión regular
+		Pattern pattern = Pattern.compile(invalidChars);
+
+		// Matcher para buscar coincidencias
+		Matcher matcher = pattern.matcher(nombre);
+
+		// Devuelve true si no hay coincidencias (es decir, no hay caracteres inválidos)
+		return !matcher.find();
+	}
+
+	/**
 	 * Abre la ventana para crear la base de datos.
 	 *
 	 * @param event el evento que desencadena la acción
 	 */
 	@FXML
 	void crearBBDD(ActionEvent event) {
-		nav.verCrearBBDD();
+		String dbNombre = datosBBDD();
 
-		myStage().close();
+		if (!dbNombre.isEmpty()) {
+			if (!SQLiteManager.checkDatabaseExists(dbNombre)) {
+				AlarmaList.iniciarAnimacionBaseExiste(prontInformativo, dbNombre);
+			} else {
+				SQLiteManager.createTable(dbNombre);
+				Utilidades.crearCarpeta();
+				AlarmaList.iniciarAnimacionBaseCreada(prontInformativo, dbNombre);
+				rellenarComboDB();
+
+				seleccionarValor(nombreBBDD, dbNombre + ".db");
+			}
+		} else {
+			String errorMessage = "El nombre de la base de datos está vacío.\n";
+			AlarmaList.iniciarAnimacionBaseError(errorMessage, prontInformativo);
+		}
+	}
+
+	// Método para seleccionar un valor en el ComboBox según el contenido
+	private void seleccionarValor(ComboBox<String> comboBox, String contenido) {
+		ObservableList<String> items = comboBox.getItems();
+		for (String item : items) {
+			if (item.contains(contenido)) {
+				comboBox.setValue(item);
+				break;
+			}
+		}
 	}
 
 	/**
@@ -197,6 +317,7 @@ public class OpcionesDatosController implements Initializable {
 		String nombredb = nombreBBDD.getValue();
 
 		FuncionesFicheros.guardarDatosBaseLocal(nombredb, prontEstadoFichero, alarmaConexion);
+
 	}
 
 	/**
@@ -229,6 +350,81 @@ public class OpcionesDatosController implements Initializable {
 		}
 	}
 
+	// Función para cambiar la altura del Pane
+	private void setPaneHeight(double height) {
+		imagenAzul.setFitHeight(height + 3);
+		imagenAzul.setFitWidth(269);
+
+		miSceneVentana().getWindow().setHeight(height);
+
+	}
+
+	public void restoreOriginalSize() {
+		setPaneHeight(originalHeight);
+		botonMenuBBDD.setText("Abrir Menu creacion DB");
+		mostrarElementos(false);
+		cambiarPosicionOriginal();
+		nombreNuevaBBDD.setText("");
+		AlarmaList.iniciarAnimacionEspera(prontInformativo);
+	}
+
+	public void expandPane() {
+		setPaneHeight(expandHeight);
+		botonMenuBBDD.setText("Cerrar Menu creacion DB");
+		mostrarElementos(true);
+		cambiarPosicionExpandido();
+	}
+
+	@FXML
+	void desplegarMenuDB(ActionEvent event) {
+
+		Platform.runLater(() -> {
+			if (estaDesplegado) {
+				restoreOriginalSize();
+				estaDesplegado = false;
+			} else {
+				expandPane();
+				estaDesplegado = true;
+			}
+		});
+	}
+
+	// Función para hacer visibles y habilitar los nodos
+	public void mostrarElementos(boolean esVisible) {
+		ObservableList<javafx.scene.Node> nodos = FXCollections.observableArrayList(nombreNuevaBBDD, labelInfoBBDD,
+				botonCrearBBDD, prontInformativo, barraSeparacion);
+
+		// Iterar sobre la lista de nodos y hacerlos visibles y habilitados
+		nodos.forEach(nodo -> {
+			nodo.setVisible(esVisible);
+			nodo.setDisable(!esVisible);
+		});
+	}
+
+	public void cambiarPosicionOriginal() {
+		nombreNuevaBBDD.setLayoutY(165);
+
+		labelInfoBBDD.setLayoutY(165);
+
+		botonCrearBBDD.setLayoutY(230);
+
+		prontInformativo.setLayoutY(195);
+
+		barraSeparacion.setLayoutY(143);
+	}
+
+	public void cambiarPosicionExpandido() {
+		nombreNuevaBBDD.setLayoutY(323);
+
+		labelInfoBBDD.setLayoutY(323);
+
+		botonCrearBBDD.setLayoutY(388);
+
+		prontInformativo.setLayoutY(353);
+
+		barraSeparacion.setLayoutY(301);
+	}
+
 	/**
 	 * Limpia los datos en los campos de texto.
 	 */
@@ -237,35 +433,14 @@ public class OpcionesDatosController implements Initializable {
 		nombreBBDD.getSelectionModel().clearSelection();
 	}
 
-	/**
-	 * Vuelve al programa principal desde la ventana actual.
-	 *
-	 * @param event el evento que desencadena la acción
-	 */
-	@FXML
-	void volverPrograma(ActionEvent event) {
+	public Scene miSceneVentana() {
 
-		ConectManager.close();
-		nav.verAccesoBBDD(); // Llamada a metodo para abrir la ventana anterior
+		return botonGuardar.getScene();
 
-		myStage().close();
 	}
 
 	private Stage myStage() {
-		return (Stage) botonSalir.getScene().getWindow();
-	}
-
-	/**
-	 * Maneja la acción de salida del programa.
-	 *
-	 * @param event el evento que desencadena la acción
-	 */
-	@FXML
-	public void salirPrograma(ActionEvent event) {
-
-		if (nav.salirPrograma(event)) { // Llamada a metodo que permite salir completamente del programa
-			myStage().close();
-		}
+		return (Stage) miSceneVentana().getWindow();
 	}
 
 	/**

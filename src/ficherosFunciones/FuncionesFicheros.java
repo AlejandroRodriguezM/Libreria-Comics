@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import alarmas.AlarmaList;
-import funciones_auxiliares.Utilidades;
+import funcionesAuxiliares.Utilidades;
 import javafx.scene.control.Label;
 
 public class FuncionesFicheros {

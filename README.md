@@ -39,4 +39,8 @@ Importante!! Es necesario usar Java 17 como minimo.
 ![image](https://github.com/AlejandroRodriguezM/Libreria-Comics/assets/104910719/330bfa98-31fd-4e06-b580-f4cf51a3713e)
 ![image](https://github.com/AlejandroRodriguezM/Libreria-Comics/assets/104910719/1c630b9c-8bf3-4a01-9b31-d27729000378)
 ![image](https://github.com/AlejandroRodriguezM/Libreria-Comics/assets/104910719/9b25ea2b-6a1f-4b20-b048-dca49b9bc2a2)
+<<<<<<< HEAD
 ![image](https://github.com/AlejandroRodriguezM/Libreria-Comics/assets/104910719/61ac128b-c8f3-4cbf-a955-bab829c0dfb8)
+=======
+![image](https://github.com/AlejandroRodriguezM/Libreria-Comics/assets/104910719/61ac128b-c8f3-4cbf-a955-bab829c0dfb8)
+>>>>>>> refs/heads/V8.2_SQL_LITE

@@ -22,7 +22,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import comicManagement.Comic;
-import funciones_auxiliares.Utilidades;
+import funcionesAuxiliares.Utilidades;
 
 public class WebScrapGoogleLeagueOfComics {
 

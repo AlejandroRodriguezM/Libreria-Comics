@@ -2,7 +2,7 @@
  * Contiene las clases que hacen funcionar las diferentes funciones de uso de back end y front de todo el proyecto
  *  
 */
-package funciones_auxiliares;
+package funcionesAuxiliares;
 
 import java.awt.Desktop;
 import java.awt.image.BufferedImage;
@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.lang.ProcessBuilder.Redirect;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -46,7 +45,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -66,6 +64,7 @@ import comicManagement.Comic;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
 import dbmanager.ListaComicsDAO;
+import dbmanager.SQLiteManager;
 import dbmanager.SelectManager;
 import ficherosFunciones.FuncionesFicheros;
 import funcionesInterfaz.FuncionesManejoFront;
@@ -75,7 +74,6 @@ import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -2338,26 +2336,57 @@ public class Utilidades {
 	}
 
 	public static boolean verificarVersionJava() {
-	    String version = System.getProperty("java.version");
-	    System.out.println("Java version: " + version);
-	    
-	    // Dividimos la versión en partes para comparar cada componente
-	    String[] partesVersion = version.split("\\.");
+		String version = System.getProperty("java.version");
+		System.out.println("Java version: " + version);
 
-	    // Convertimos las partes de la versión a enteros
-	    int majorVersion = Integer.parseInt(partesVersion[0]);
-	    int minorVersion = 0; // Si no hay componente de versión menor, consideramos 0
-	    
-	    if (partesVersion.length > 1) {
-	        minorVersion = Integer.parseInt(partesVersion[1]);
-	    }
-	    
-	    // Comparamos la versión mayor y menor
-	    if (majorVersion > 17 || (majorVersion == 17 && minorVersion >= 0)) {
-	        return true; // La versión es al menos 17
-	    } else {
-	        return false; // La versión no es al menos 17
-	    }
+		// Dividimos la versión en partes para comparar cada componente
+		String[] partesVersion = version.split("\\.");
+
+		// Convertimos las partes de la versión a enteros
+		int majorVersion = Integer.parseInt(partesVersion[0]);
+		int minorVersion = 0; // Si no hay componente de versión menor, consideramos 0
+
+		if (partesVersion.length > 1) {
+			minorVersion = Integer.parseInt(partesVersion[1]);
+		}
+
+		// Comparamos la versión mayor y menor
+		if (majorVersion > 17 || (majorVersion == 17 && minorVersion >= 0)) {
+			return true; // La versión es al menos 17
+		} else {
+			return false; // La versión no es al menos 17
+		}
+	}
+
+	public static boolean comprobarDB() {
+		File directorio = new File(DB_FOLDER);
+		File[] ficheros = directorio.listFiles();
+
+		if (ficheros != null) {
+			for (File fichero : ficheros) {
+				if (fichero.isFile() && fichero.getName().toLowerCase().endsWith(".db")) {
+					return true; // Devuelve true en cuanto encuentra un archivo .db
+				}
+			}
+		}
+		return false;
+	}
+
+	public static void crearDBPRedeterminada() {
+
+		String dbName = "comic_predeterminada";
+		Ventanas nav = new Ventanas();
+		if (!comprobarDB()) {
+			FuncionesFicheros.guardarDatosBaseLocal((" "), null, null);
+			if (nav.alertaCreacionDB()) {
+				SQLiteManager.createTable(dbName);
+
+				Utilidades.crearCarpeta();
+
+				FuncionesFicheros.guardarDatosBaseLocal((dbName + ".db"), null, null);
+			}
+		}
+
 	}
 
 	public static AccionReferencias getReferenciaVentana() {

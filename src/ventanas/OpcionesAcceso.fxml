@@ -1,51 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="339.0" prefWidth="269.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.OpcionesDatosController">
+<Pane fx:id="panelMenu" pickOnBounds="false" prefHeight="294.0" prefWidth="269.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.OpcionesDatosController">
    <children>
-      <ImageView fitHeight="148.0" fitWidth="296.0" layoutY="193.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="imagenAzul" fitHeight="294.0" fitWidth="271.0" pickOnBounds="true">
          <image>
             <Image url="@../imagenes/azul.jpg" />
          </image>
+         <viewport>
+            <Rectangle2D height="454.0" width="271.0" />
+         </viewport>
       </ImageView>
       <ImageView fitHeight="148.0" fitWidth="280.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagenes/rojo.jpg" />
          </image>
       </ImageView>
-      <ImageView fitHeight="332.0" fitWidth="271.0" layoutY="47.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="294.0" fitWidth="271.0" layoutY="1.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagenes/Fondo%20AccederBBDD.jpg" />
          </image>
       </ImageView>
       <Button fx:id="botonGuardar" layoutX="6.0" layoutY="183.0" mnemonicParsing="false" onAction="#guardarDatos" prefHeight="33.0" prefWidth="114.0" stylesheets="@../style/opciones_style.css" text="Guardar" />
-      <Button fx:id="botonSalir" layoutX="186.0" layoutY="293.0" mnemonicParsing="false" onAction="#salirPrograma" prefHeight="39.0" prefWidth="78.0" stylesheets="@../style/opciones_style.css" text="Salir" />
-      <Button fx:id="botonCrearBBDD" layoutX="150.0" layoutY="225.0" mnemonicParsing="false" onAction="#crearBBDD" prefHeight="59.0" prefWidth="114.0" stylesheets="@../style/opciones_style.css" text="Crear base de datos" wrapText="true" />
+      <Button fx:id="botonMenuBBDD" layoutX="150.0" layoutY="225.0" mnemonicParsing="false" onAction="#desplegarMenuDB" prefHeight="59.0" prefWidth="114.0" stylesheets="@../style/opciones_style.css" text="Abrir Menu creacion DB" wrapText="true" />
       <Button fx:id="botonAbrir" layoutX="150.0" layoutY="183.0" mnemonicParsing="false" onAction="#abrirUbicacion" prefHeight="35.0" prefWidth="114.0" style="-fx-font-size: 10;" stylesheets="@../style/opciones_style.css" text="Abrir ubicación">
          <font>
             <Font size="10.0" />
-         </font></Button>
-      <Label fx:id="nombreLabel" layoutX="5.0" layoutY="149.0" style="-fx-background-color: grey;" stylesheets="@../style/opciones_style.css" text="Nombre de la base de datos">
+         </font>
+      </Button>
+      <Label fx:id="nombreLabel" layoutX="5.0" layoutY="140.0" prefHeight="35.0" prefWidth="114.0" style="-fx-background-color: grey;" stylesheets="@../style/opciones_style.css" text="Nombre de la base de datos" wrapText="true">
          <font>
             <Font name="Comic Sans MS" size="11.0" />
-         </font></Label>
+         </font>
+      </Label>
       <Button fx:id="botonRestaurar" layoutX="6.0" layoutY="225.0" mnemonicParsing="false" onAction="#restaurarConfiguracion" prefHeight="59.0" prefWidth="114.0" stylesheets="@../style/opciones_style.css" text="Restaurar configuracion" wrapText="true" />
-      <Label fx:id="prontEstadoFichero" alignment="CENTER" contentDisplay="TOP" layoutX="5.0" layoutY="36.0" prefHeight="90.0" prefWidth="262.0" style="-fx-background-color: #29B6CC; -fx-font-size: 16;" stylesheets="@../style/opciones_style.css" text="Esperando entrada de datos" wrapText="true">
+      <Label fx:id="prontEstadoFichero" alignment="CENTER" contentDisplay="TOP" layoutX="5.0" layoutY="36.0" prefHeight="90.0" prefWidth="262.0" style="-fx-background-color: #29B6CC; -fx-font-size: 16;" stylesheets="@../style/opciones_style.css" wrapText="true">
          <font>
             <Font name="Comic Sans MS" size="18.0" />
          </font>
       </Label>
-      <Button fx:id="botonVolver" layoutX="6.0" layoutY="293.0" mnemonicParsing="false" onAction="#volverPrograma" prefHeight="39.0" prefWidth="78.0" stylesheets="@../style/opciones_style.css" text="Volver" />
-      <ComboBox fx:id="nombreBBDD" layoutX="149.0" layoutY="148.0" prefHeight="25.0" prefWidth="114.0" />
+      <ComboBox fx:id="nombreBBDD" layoutX="150.0" layoutY="141.0" prefHeight="25.0" prefWidth="114.0" />
       <Label fx:id="alarmaConexion" layoutX="4.0" layoutY="3.0" prefHeight="30.0" prefWidth="29.0" stylesheets="@../style/alarma_conexion_style.css" />
       <Label fx:id="alarmaConexionInternet" layoutX="235.0" layoutY="3.0" prefHeight="30.0" prefWidth="29.0" style="-fx-background-radius: 50;" stylesheets="@../style/alarma_conexion_style.css" />
       <Label fx:id="alarmaConexionSql" disable="true" layoutX="191.0" layoutY="3.0" opacity="0.0" prefHeight="30.0" prefWidth="29.0" style="-fx-background-radius: 50;" stylesheets="@../style/alarma_conexion_style.css" visible="false" />
+      <TextField fx:id="nombreNuevaBBDD" disable="true" layoutX="122.0" layoutY="165.0" prefHeight="25.0" prefWidth="143.0" promptText="Nombre BBDD" visible="false" />
+      <Label fx:id="labelInfoBBDD" disable="true" layoutX="7.0" layoutY="165.0" prefHeight="54.0" prefWidth="104.0" style="-fx-background-color: grey;" stylesheets="@../style/opciones_style.css" text="Nombre de la base de datos" textAlignment="CENTER" visible="false" wrapText="true" />
+      <Button fx:id="botonCrearBBDD" disable="true" layoutX="7.0" layoutY="230.0" mnemonicParsing="false" onAction="#crearBBDD" prefHeight="54.0" prefWidth="104.0" style="-fx-background-color: green;" stylesheets="@../style/opciones_style.css" text="Crear base de datos" visible="false" wrapText="true" />
+      <Label fx:id="prontInformativo" alignment="CENTER" contentDisplay="TOP" disable="true" layoutX="122.0" layoutY="195.0" prefHeight="90.0" prefWidth="143.0" style="-fx-background-color: #29B6CC; -fx-font-size: 16;" stylesheets="@../style/opciones_style.css" text="Esperando entrada de datos" textAlignment="CENTER" visible="false" wrapText="true">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Rectangle fx:id="barraSeparacion" arcHeight="5.0" arcWidth="5.0" disable="true" fill="DODGERBLUE" height="15.0" layoutX="8.0" layoutY="143.0" stroke="BLACK" strokeType="INSIDE" visible="false" width="255.0" />
    </children>
 </Pane>

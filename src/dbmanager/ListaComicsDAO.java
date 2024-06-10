@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import comicManagement.Comic;
-import funciones_auxiliares.Utilidades;
+import funcionesAuxiliares.Utilidades;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 

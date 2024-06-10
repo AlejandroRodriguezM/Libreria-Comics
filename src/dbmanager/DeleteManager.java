@@ -7,7 +7,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
 import comicManagement.Comic;
-import funciones_auxiliares.Utilidades;
+import funcionesAuxiliares.Utilidades;
 
 public class DeleteManager {
 

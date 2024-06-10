@@ -7,8 +7,8 @@ import com.gluonhq.charm.glisten.control.ProgressIndicator;
 
 import alarmas.AlarmaList;
 import apisFunciones.FuncionesApis;
+import funcionesAuxiliares.Ventanas;
 import funcionesInterfaz.FuncionesManejoFront;
-import funciones_auxiliares.Ventanas;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

@@ -1,4 +1,4 @@
-#prontEstadoConexion, #prontInfo {
+#prontEstadoConexion, #prontInfo, #prontEstadoFichero {
     -fx-font-size: 25.0px;
     -fx-font-weight: bold;
     -fx-text-fill: #333333;
@@ -9,7 +9,7 @@
     -fx-border-radius: 4.0px;
 }
 
-#prontEstadoConexion:hover {
+#prontEstadoConexion:hover, #prontEstadoFichero:hover {
     -fx-background-color: #f0f0f0;
     -fx-cursor: hand;
 }

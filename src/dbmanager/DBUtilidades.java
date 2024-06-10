@@ -9,9 +9,9 @@ import java.util.List;
 
 import Controladores.OpcionesAvanzadasController;
 import comicManagement.Comic;
+import funcionesAuxiliares.Utilidades;
+import funcionesAuxiliares.Ventanas;
 import funcionesManagment.AccionReferencias;
-import funciones_auxiliares.Utilidades;
-import funciones_auxiliares.Ventanas;
 
 public class DBUtilidades {
 

@@ -8,8 +8,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import dbmanager.ConectManager;
-import funciones_auxiliares.Utilidades;
-import funciones_auxiliares.Ventanas;
+import funcionesAuxiliares.Utilidades;
+import funcionesAuxiliares.Ventanas;
 
 public class FuncionesApis {
 

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import comicManagement.Comic;
-import funciones_auxiliares.Utilidades;
+import funcionesAuxiliares.Utilidades;
 
 public class SelectManager {
 

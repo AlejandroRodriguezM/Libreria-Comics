@@ -17,12 +17,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import Controladores.CrearBBDDController;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
 import ficherosFunciones.FuncionesFicheros;
-import funciones_auxiliares.Utilidades;
-import funciones_auxiliares.Ventanas;
+import funcionesAuxiliares.Utilidades;
+import funcionesAuxiliares.Ventanas;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 

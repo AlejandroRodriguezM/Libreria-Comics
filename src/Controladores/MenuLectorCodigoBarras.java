@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dbmanager.ConectManager;
+import funcionesAuxiliares.Utilidades;
 import funcionesInterfaz.FuncionesManejoFront;
-import funciones_auxiliares.Utilidades;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
