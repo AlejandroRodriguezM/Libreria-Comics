@@ -2329,10 +2329,13 @@ public class Utilidades {
 
 	public static String nombreDB() {
 		String nombreCompletoDB = FuncionesFicheros.datosEnvioFichero();
-		String nombreCortado[] = nombreCompletoDB.split("\\.");
-		String nombredb = nombreCortado[0];
+		if (nombreCompletoDB != null) {
+			String nombreCortado[] = nombreCompletoDB.split("\\.");
+			String nombredb = nombreCortado[0];
+			return nombredb;
+		}
 
-		return nombredb;
+		return "";
 	}
 
 	public static boolean verificarVersionJava() {

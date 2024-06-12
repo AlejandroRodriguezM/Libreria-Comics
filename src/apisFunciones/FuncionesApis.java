@@ -175,13 +175,14 @@ public class FuncionesApis {
 				String[] parts = line.split(": ");
 				if (parts.length == 2) {
 					String clave_api = parts[1];
+
 					return clave_api;
 				}
 			}
 		} catch (IOException e) {
 			Utilidades.manejarExcepcion(e);
 		}
-		return null;
+		return "";
 	}
 
 	/**
@@ -253,7 +254,7 @@ public class FuncionesApis {
 			return; // Salir si hay errores en las claves API
 		}
 	}
-	
+
 	/**
 	 * Verifica si las claves API están ausentes o vacías y muestra una alerta en
 	 * caso de error.
@@ -264,12 +265,12 @@ public class FuncionesApis {
 	public static boolean verificarClavesAPI(String[] clavesMarvel, String apiKey) {
 		String exception = "";
 		Ventanas nav = new Ventanas();
-		
+
 		if (clavesMarvel.length == 0) {
 			exception += "\nDebes obtener una clave API de Marvel. Visita https://developer.marvel.com/";
 		}
 
-		if (apiKey.isEmpty()) {
+		if (apiKey.isEmpty() || apiKey == null) {
 			exception += "\nDebes obtener una clave API de Comic Vine. Visita https://comicvine.gamespot.com/api/ (gratuito)";
 		}
 
