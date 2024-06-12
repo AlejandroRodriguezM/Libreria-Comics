@@ -554,41 +554,38 @@ public class ListaComicsDAO {
 	 * @throws SQLException Si ocurre algún error al ejecutar la consulta SQL.
 	 */
 	public static List<String> guardarDatosAutoCompletado(String sentenciaSQL, String columna) {
-		List<String> listaAutoCompletado = new ArrayList<>();
+	    List<String> listaAutoCompletado = new ArrayList<>();
 
-		try (Connection conn = ConectManager.conexion();
-				PreparedStatement stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_FORWARD_ONLY,
-						ResultSet.CONCUR_READ_ONLY);
-				ResultSet rs = stmt.executeQuery()) {
+	    try (Connection conn = ConectManager.conexion();
+	         PreparedStatement stmt = conn.prepareStatement(sentenciaSQL, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+	         ResultSet rs = stmt.executeQuery()) {
 
-			while (rs.next()) {
-				do {
-					String datosAutocompletado = rs.getString(columna);
-					if (columna.equals("nomComic")) {
-						listaAutoCompletado.add(datosAutocompletado.trim());
-					} else if (columna.equals("portada")) {
+	        while (rs.next()) {
+	            String datosAutocompletado = rs.getString(columna);
+	            if (columna.equals("nomComic")) {
+	                listaAutoCompletado.add(datosAutocompletado.trim());
+	            } else if (columna.equals("portada")) {
+	                listaAutoCompletado.add(SOURCE_PATH + Utilidades.obtenerUltimoSegmentoRuta(datosAutocompletado));
+	            } else {
+	                String[] nombres = datosAutocompletado.split("-");
+	                for (String nombre : nombres) {
+	                    nombre = nombre.trim();
+	                    if (!nombre.isEmpty()) {
+	                        listaAutoCompletado.add(nombre);
+	                    }
+	                }
+	            }
+	        }
 
-						listaAutoCompletado
-								.add(SOURCE_PATH + Utilidades.obtenerUltimoSegmentoRuta(datosAutocompletado));
-					} else {
-						String[] nombres = datosAutocompletado.split("-");
-						for (String nombre : nombres) {
-							nombre = nombre.trim();
-							if (!nombre.isEmpty()) {
-								listaAutoCompletado.add(nombre);
-							}
-						}
-					}
-				} while (rs.next());
+	        listaAutoCompletado = listaArregladaAutoComplete(listaAutoCompletado);
 
-				listaAutoCompletado = listaArregladaAutoComplete(listaAutoCompletado);
-			}
-		} catch (SQLException e) {
-			Utilidades.manejarExcepcion(e);
-		}
+	    } catch (SQLException e) {
+	        Utilidades.manejarExcepcion(e);
+	    }
 
-		return listaAutoCompletado;
+	    return listaAutoCompletado;
 	}
+
 
 	/**
 	 * Funcion que devuelve una lista en la que solamente se guardan aquellos datos

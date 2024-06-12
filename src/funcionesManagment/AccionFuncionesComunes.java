@@ -586,6 +586,7 @@ public class AccionFuncionesComunes {
 							if (isCancelled() || !getReferenciaVentana().getStage().isShowing()) {
 								return;
 							}
+							System.out.println(linea);
 							String finalValorCodigo = Utilidades.eliminarEspacios(linea).replace("-", "");
 							Comic comicInfo = obtenerComicInfo(finalValorCodigo);
 							processComic(comicInfo, "", false);
