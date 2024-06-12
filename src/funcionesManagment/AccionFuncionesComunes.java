@@ -484,6 +484,7 @@ public class AccionFuncionesComunes {
 				return WebScraperPreviewsWorld.displayComicInfo(finalValorCodigo.trim(),
 						getReferenciaVentana().getProntInfo());
 			} else {
+				
 				// Si no, intentar obtener la información del cómic de diferentes fuentes
 				Comic comicInfo = ApiMarvel.infoComicCode(finalValorCodigo.trim(),
 						getReferenciaVentana().getProntInfo());
@@ -598,6 +599,7 @@ public class AccionFuncionesComunes {
 					listaComicsDatabase.forEach(codigo -> {
 						String finalValorCodigo = Utilidades.eliminarEspacios(codigo.getcodigoComic()).replace("-", "");
 						codigo.setcodigoComic(finalValorCodigo);
+						System.out.println(codigo.getcodigoComic());
 						processComic(codigo, tipoUpdate, actualizarFirma);
 
 					});

@@ -43,17 +43,23 @@ public class ApiMarvel {
 	 */
 	public static Comic infoComicCode(String comicCode, TextArea prontInfo) {
 
-		JSONObject jsonComic = null;
-		String cleanedCode = comicCode.replaceAll("\\D", "");
-		if (cleanedCode.length() == 13) {
-			String formattedIsbn = formatIsbn(cleanedCode);
-			jsonComic = getComicInfo(formattedIsbn, "isbn", prontInfo);
-		} else if (cleanedCode.length() == 17) {
-			jsonComic = getComicInfo(cleanedCode, "upc", prontInfo);
+		String[] clavesMarvel = FuncionesApis.clavesApiMarvel();
+		
+		if(FuncionesApis.comprobarClavesApi(clavesMarvel[1])) {
+			JSONObject jsonComic = null;
+			String cleanedCode = comicCode.replaceAll("\\D", "");
+			if (cleanedCode.length() == 13) {
+				String formattedIsbn = formatIsbn(cleanedCode);
+				jsonComic = getComicInfo(formattedIsbn, "isbn", prontInfo);
+			} else if (cleanedCode.length() == 17) {
+				jsonComic = getComicInfo(cleanedCode, "upc", prontInfo);
+			}
+			if (jsonComic != null) {
+				return displayComicInfo(jsonComic, comicCode);
+			}
 		}
-		if (jsonComic != null) {
-			return displayComicInfo(jsonComic, comicCode);
-		}
+		
+
 
 		return null;
 	}

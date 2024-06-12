@@ -203,10 +203,11 @@ public class FuncionesApis {
 
 				claves[0] = clavePublica; // Almacenar la clave pública en el primer elemento del arreglo
 				claves[1] = clavePrivada; // Almacenar la clave privada en el segundo elemento del arreglo
+				return claves;
 			}
 		}
-
 		return claves;
+
 	}
 
 	/**
@@ -266,11 +267,11 @@ public class FuncionesApis {
 		String exception = "";
 		Ventanas nav = new Ventanas();
 
-		if (clavesMarvel.length == 0) {
+		if (comprobarClavesApi(clavesMarvel[1])) {
 			exception += "\nDebes obtener una clave API de Marvel. Visita https://developer.marvel.com/";
 		}
 
-		if (apiKey.isEmpty() || apiKey == null) {
+		if (comprobarClavesApi(apiKey)) {
 			exception += "\nDebes obtener una clave API de Comic Vine. Visita https://comicvine.gamespot.com/api/ (gratuito)";
 		}
 
@@ -278,6 +279,15 @@ public class FuncionesApis {
 			nav.alertaNoApi(exception); // Mostrar alerta de error
 			return false;
 		}
+		return true;
+	}
+
+	public static boolean comprobarClavesApi(String clavePrivada) {
+
+		if (clavePrivada == null || clavePrivada.isEmpty()) {
+			return false;
+		}
+
 		return true;
 	}
 
