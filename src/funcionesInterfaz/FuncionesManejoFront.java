@@ -263,7 +263,8 @@ public class FuncionesManejoFront {
 		}
 	}
 
-	public static void manejarMensajeTextArea(String mensaje) {
+	public static void manejarMensajeTextArea(String mensaje, AccionReferencias referenciaVentana) {
+
 		AlarmaList.iniciarAnimacionTextArea(referenciaVentana.getProntInfo(), mensaje);
 	}
 

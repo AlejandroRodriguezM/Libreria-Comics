@@ -88,9 +88,8 @@ public class FuncionesApis {
 
 			while ((linea = reader.readLine()) != null) {
 				// Verificar la estructura esperada
-				if (contador == 0 && linea.contains("Public Key:")) {
-					contador++;
-				} else if (contador == 1 && linea.contains("Private Key:")) {
+				if ((contador == 0 && linea.contains("Public Key:"))
+						|| (contador == 1 && linea.contains("Private Key:"))) {
 					contador++;
 				}
 			}
@@ -174,9 +173,8 @@ public class FuncionesApis {
 			while ((line = reader.readLine()) != null) {
 				String[] parts = line.split(": ");
 				if (parts.length == 2) {
-					String clave_api = parts[1];
+					return parts[1];
 
-					return clave_api;
 				}
 			}
 		} catch (IOException e) {
@@ -191,7 +189,7 @@ public class FuncionesApis {
 	 * @return Un array de cadenas con las claves pública y privada de la API.
 	 */
 	public static String[] clavesApiMarvel() {
-		String claves[] = new String[2]; // Crear un arreglo de dos elementos para almacenar las claves
+		String[] claves = new String[2]; // Crear un arreglo de dos elementos para almacenar las claves
 
 		String clavesDesdeArchivo = obtenerClaveApiMarvel(); // Obtener las claves desde el archivo
 
@@ -267,11 +265,11 @@ public class FuncionesApis {
 		String exception = "";
 		Ventanas nav = new Ventanas();
 
-		if (comprobarClavesApi(clavesMarvel[1])) {
+		if (!comprobarClavesApi(clavesMarvel[1])) {
 			exception += "\nDebes obtener una clave API de Marvel. Visita https://developer.marvel.com/";
 		}
 
-		if (comprobarClavesApi(apiKey)) {
+		if (!comprobarClavesApi(apiKey)) {
 			exception += "\nDebes obtener una clave API de Comic Vine. Visita https://comicvine.gamespot.com/api/ (gratuito)";
 		}
 

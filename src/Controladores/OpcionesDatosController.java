@@ -32,16 +32,20 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import alarmas.AlarmaList;
+import dbmanager.ConectManager;
 import dbmanager.SQLiteManager;
 import ficherosFunciones.FuncionesFicheros;
 import funcionesAuxiliares.Utilidades;
 import funcionesAuxiliares.Ventanas;
+import funcionesInterfaz.AccionControlUI;
+import funcionesManagment.AccionReferencias;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -125,6 +129,8 @@ public class OpcionesDatosController implements Initializable {
 
 	boolean estaDesplegado = false;
 
+	private static AccionReferencias referenciaVentana = getReferenciaVentana();
+
 	/**
 	 * Instancia de la clase Ventanas para la navegación.
 	 */
@@ -147,11 +153,10 @@ public class OpcionesDatosController implements Initializable {
 		alarmaList.setAlarmaConexionInternet(alarmaConexionInternet);
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
 		alarmaList.iniciarThreadChecker();
-		FuncionesFicheros.crearEstructura();
 
 		rellenarComboDB();
 		String datosFichero = FuncionesFicheros.datosEnvioFichero();
-		seleccionarValor(nombreBBDD,datosFichero);
+		seleccionarValor(nombreBBDD, datosFichero);
 
 		AlarmaList.iniciarAnimacionEspera(prontEstadoFichero);
 		AlarmaList.iniciarAnimacionEspera(prontInformativo);
@@ -278,7 +283,8 @@ public class OpcionesDatosController implements Initializable {
 		String dbNombre = datosBBDD();
 
 		if (!dbNombre.isEmpty()) {
-			if (!SQLiteManager.checkDatabaseExists(dbNombre)) {
+			
+			if (SQLiteManager.checkDatabaseExists(dbNombre)) {
 				AlarmaList.iniciarAnimacionBaseExiste(prontInformativo, dbNombre);
 			} else {
 				SQLiteManager.createTable(dbNombre);
@@ -287,6 +293,8 @@ public class OpcionesDatosController implements Initializable {
 				rellenarComboDB();
 
 				seleccionarValor(nombreBBDD, dbNombre + ".db");
+
+				guardarBaseFichero(nombreBBDD.getValue());
 			}
 		} else {
 			String errorMessage = "El nombre de la base de datos está vacío.\n";
@@ -315,8 +323,18 @@ public class OpcionesDatosController implements Initializable {
 	@FXML
 	void guardarDatos(ActionEvent event) {
 		String nombredb = nombreBBDD.getValue();
+		guardarBaseFichero(nombredb);
+
+	}
+
+	public void guardarBaseFichero(String nombredb) {
 
 		FuncionesFicheros.guardarDatosBaseLocal(nombredb, prontEstadoFichero, alarmaConexion);
+
+		if (ConectManager.estadoConexion) {
+			AccesoBBDDController.estadoBotonConexion(getReferenciaVentana());
+			ConectManager.estadoConexion = false;
+		}
 
 	}
 
@@ -343,6 +361,7 @@ public class OpcionesDatosController implements Initializable {
 			AlarmaList.detenerAnimacion();
 			prontEstadoFichero.setStyle("-fx-background-color: #f5af2d");
 			alarmaList.iniciarAnimacionRestaurado(prontEstadoFichero);
+			guardarBaseFichero("");
 		} else {
 			AlarmaList.detenerAnimacion();
 			prontEstadoFichero.setStyle("-fx-background-color: #DD370F");
@@ -441,6 +460,14 @@ public class OpcionesDatosController implements Initializable {
 
 	private Stage myStage() {
 		return (Stage) miSceneVentana().getWindow();
+	}
+
+	public static AccionReferencias getReferenciaVentana() {
+		return referenciaVentana;
+	}
+
+	public static void setReferenciaVentana(AccionReferencias referenciaVentana) {
+		OpcionesDatosController.referenciaVentana = referenciaVentana;
 	}
 
 	/**

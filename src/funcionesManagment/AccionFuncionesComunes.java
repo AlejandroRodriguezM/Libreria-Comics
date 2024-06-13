@@ -24,12 +24,10 @@ import Controladores.CargaComicsController;
 import alarmas.AlarmaList;
 import comicManagement.Comic;
 import dbmanager.ComicManagerDAO;
-import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
 import dbmanager.DatabaseManagerDAO;
 import dbmanager.ListaComicsDAO;
 import dbmanager.UpdateManager;
-import ficherosFunciones.FuncionesFicheros;
 import funcionesAuxiliares.Utilidades;
 import funcionesAuxiliares.Ventanas;
 import funcionesInterfaz.AccionControlUI;
@@ -484,7 +482,7 @@ public class AccionFuncionesComunes {
 				return WebScraperPreviewsWorld.displayComicInfo(finalValorCodigo.trim(),
 						getReferenciaVentana().getProntInfo());
 			} else {
-				
+
 				// Si no, intentar obtener la información del cómic de diferentes fuentes
 				Comic comicInfo = ApiMarvel.infoComicCode(finalValorCodigo.trim(),
 						getReferenciaVentana().getProntInfo());
@@ -527,6 +525,31 @@ public class AccionFuncionesComunes {
 		});
 	}
 
+    public static void comportamientoTaskAvanzado(Task<Void> tarea) {
+        Thread thread = new Thread(tarea);
+        thread.setDaemon(true);
+        thread.start();
+
+        // Manejar cualquier excepción no controlada
+        tarea.setOnFailed(event -> {
+            Throwable exception = tarea.getException();
+            if (exception != null) {
+                System.err.println("Task failed with exception: " + exception.getMessage());
+                exception.printStackTrace();
+            }
+        });
+
+        // Asegúrate de que el hilo demonio se detenga cuando la aplicación se cierre
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            Platform.runLater(() -> {
+                if (tarea.isRunning()) {
+                    System.out.println("Cerrado de emergencia");
+                    tarea.cancel(true);
+                }
+            });
+        }));
+    }
+
 	// ES OPCIONES
 	public static void busquedaPorListaDatabase(List<Comic> listaComicsDatabase, String tipoUpdate,
 			boolean actualizarFirma) {
@@ -545,9 +568,8 @@ public class AccionFuncionesComunes {
 
 		handleTaskEvents(tarea, tipoUpdate);
 
-		Thread thread = new Thread(tarea);
-		thread.setDaemon(true);
-		thread.start();
+		comportamientoTaskAvanzado(tarea);
+
 	}
 
 	// ES ACCION
@@ -569,9 +591,7 @@ public class AccionFuncionesComunes {
 
 		handleTaskEvents(tarea, "");
 
-		Thread thread = new Thread(tarea);
-		thread.setDaemon(true);
-		thread.start();
+		comportamientoTaskAvanzado(tarea);
 	}
 
 	private static Task<Void> createSearchTask(String tipoUpdate, boolean actualizarFirma,
@@ -599,7 +619,6 @@ public class AccionFuncionesComunes {
 					listaComicsDatabase.forEach(codigo -> {
 						String finalValorCodigo = Utilidades.eliminarEspacios(codigo.getcodigoComic()).replace("-", "");
 						codigo.setcodigoComic(finalValorCodigo);
-						System.out.println(codigo.getcodigoComic());
 						processComic(codigo, tipoUpdate, actualizarFirma);
 
 					});
@@ -738,6 +757,9 @@ public class AccionFuncionesComunes {
 
 				Platform.runLater(() -> cargaComicsControllerRef.get().cargarDatosEnCargaComics("", "100%", 100.0));
 				AlarmaList.detenerAnimacionCarga(getReferenciaVentana().getProgresoCarga());
+
+				List<String> inputPortadas = DBUtilidades.obtenerValoresColumna("portada");
+				Utilidades.borrarArchivosNoEnLista(inputPortadas);
 			} else {
 
 				AlarmaList.mostrarMensajePront("Datos cargados correctamente", true,

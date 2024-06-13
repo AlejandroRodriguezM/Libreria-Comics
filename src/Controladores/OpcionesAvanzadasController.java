@@ -234,11 +234,9 @@ public class OpcionesAvanzadasController implements Initializable {
 
 	@FXML
 	void descargarSQL(ActionEvent event) {
-
-		AlarmaList.detenerAnimacionEspera();
+		AlarmaList.detenerAnimacionEspera(prontInfo);
 		DatabaseManagerDAO.makeSQL(prontInfo, estadoStage());
 		Utilidades.borrarArchivosNoEnLista(ListaComicsDAO.listaImagenes);
-
 	}
 
 	@FXML
@@ -312,7 +310,7 @@ public class OpcionesAvanzadasController implements Initializable {
 
 		task.setOnRunning(e -> estadoStage().setOnCloseRequest(closeEvent -> task.cancel(true)));
 
-		task.setOnSucceeded(e -> System.out.println("Terminado"));
+		task.setOnSucceeded(e -> thread.interrupt());
 
 		thread.start();
 	}
@@ -354,17 +352,17 @@ public class OpcionesAvanzadasController implements Initializable {
 					Utilidades.descargarPDFAsync(file, comboPreviews);
 					String cadenaAfirmativo = "PDF descargado exitosamente.";
 					AlarmaList.iniciarAnimacionAvanzado(prontInfoPreviews, cadenaAfirmativo);
-					FuncionesManejoFront.manejarMensajeTextArea(cadenaAfirmativo);
+					FuncionesManejoFront.manejarMensajeTextArea(cadenaAfirmativo,getReferenciaVentanaPrincipal() );
 				} else {
 					String cadenaCancelado = "Has cancelado la descarga del PDF.";
 					AlarmaList.iniciarAnimacionAvanzado(prontInfoPreviews, cadenaCancelado);
-					FuncionesManejoFront.manejarMensajeTextArea(cadenaCancelado);
+					FuncionesManejoFront.manejarMensajeTextArea(cadenaCancelado,getReferenciaVentanaPrincipal());
 				}
 			});
 		} else {
 			String cadenaCancelado = "No se puede descargar, no hay internet";
 			AlarmaList.iniciarAnimacionAvanzado(prontInfoPreviews, cadenaCancelado);
-			FuncionesManejoFront.manejarMensajeTextArea(cadenaCancelado);
+			FuncionesManejoFront.manejarMensajeTextArea(cadenaCancelado,getReferenciaVentanaPrincipal());
 		}
 	}
 
@@ -391,7 +389,13 @@ public class OpcionesAvanzadasController implements Initializable {
 				}
 			};
 
-			new Thread(task).start();
+			Thread thread = new Thread(task);
+			thread.setDaemon(true); // Hacer que el hilo sea demonio para que termine cuando la aplicación se cierre
+			thread.start();
+
+			task.setOnRunning(e -> estadoStage().setOnCloseRequest(closeEvent -> task.cancel(true)));
+
+			task.setOnSucceeded(e -> thread.interrupt());
 		} else {
 			meses.add("No hay previews");
 			comboPreviews.setItems(meses);
@@ -400,33 +404,35 @@ public class OpcionesAvanzadasController implements Initializable {
 
 	@FXML
 	void actualizarCompletoComic(ActionEvent event) {
-		Utilidades.crearCarpeta();
-		AccionModificar.setReferenciaVentana(guardarReferencia());
-		AccionFuncionesComunes.setReferenciaVentana(guardarReferencia());
-		AccionModificar.actualizarDatabase("modificar", actualizarFima.get(), estadoStage());
-
+		String tipoUpdate = "modificar";
+		accionBaseDatos(tipoUpdate);
 	}
 
 	@FXML
 	void actualizarDatosComic(ActionEvent event) {
-		AccionModificar.setReferenciaVentana(guardarReferencia());
-		AccionFuncionesComunes.setReferenciaVentana(guardarReferencia());
-		AccionModificar.actualizarDatabase("actualizar datos", actualizarFima.get(), estadoStage());
+		String tipoUpdate = "actualizar datos";
+		accionBaseDatos(tipoUpdate);
 	}
 
 	@FXML
 	void actualizarPortadaComic(ActionEvent event) {
+		String tipoUpdate = "actualizar portadas";
+		accionBaseDatos(tipoUpdate);
+	}
+
+	public void accionBaseDatos(String tipoUpdate) {
+
+		AlarmaList.detenerAnimacionEspera(prontInfoEspecial);
+
 		Utilidades.crearCarpeta();
 		AccionModificar.setReferenciaVentana(guardarReferencia());
 		AccionFuncionesComunes.setReferenciaVentana(guardarReferencia());
-		AccionModificar.actualizarDatabase("actualizar portadas", actualizarFima.get(), estadoStage());
-
+		AccionModificar.actualizarDatabase(tipoUpdate, actualizarFima.get(), estadoStage());
 	}
 
 	@FXML
 	void comprimirPortadas(ActionEvent event) {
-		List<String> inputPortadas = DBUtilidades.obtenerValoresColumna("portada");
-		Utilidades.borrarArchivosNoEnLista(inputPortadas);
+
 		List<String> inputPaths = ListaComicsDAO.listaImagenes;
 		comicsProcesados = new AtomicInteger(0);
 		mensajeIdCounter = new AtomicInteger(0);
@@ -449,18 +455,15 @@ public class OpcionesAvanzadasController implements Initializable {
 
 		setupTaskEventHandlers(task);
 
-		Thread thread = new Thread(task);
-
-		thread.setDaemon(true);
-		thread.start();
+		AccionFuncionesComunes.comportamientoTaskAvanzado(task);
 	}
 
 	private static void processComic(String codigo) {
 		StringBuilder textoBuilder = new StringBuilder();
 
-		codigoFaltante.append("Comprimiendo: ").append(comicsProcesados.get()).append(" de ").append(numLineas)
+		codigoFaltante.append("Comprimiendo: ").append(comicsProcesados.get() + 1).append(" de ").append(numLineas)
 				.append("\n");
-		textoBuilder.append("Comprimiendo: ").append(comicsProcesados.get()).append(" de ").append(numLineas)
+		textoBuilder.append("Comprimiendo: ").append(comicsProcesados.get() + 1).append(" de ").append(numLineas)
 				.append("\n");
 
 		updateUI(textoBuilder);
@@ -490,7 +493,8 @@ public class OpcionesAvanzadasController implements Initializable {
 					processComic(codigo);
 					comprimirImagenes(codigo);
 				});
-
+				List<String> inputPortadas = DBUtilidades.obtenerValoresColumna("portada");
+				Utilidades.borrarArchivosNoEnLista(inputPortadas);
 				return null;
 			}
 		};

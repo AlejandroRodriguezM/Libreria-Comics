@@ -214,6 +214,11 @@ public class DatabaseManagerDAO {
 					nombreCorregido = corregirNombre(nombre);
 				}
 
+				if (columna.equalsIgnoreCase("key_issue") && nombreCorregido.isEmpty()) {
+					nombreCorregido = "Vacio";
+
+				}
+
 				if (columna.equalsIgnoreCase("firma")) {
 					nombreCorregido = nombreCorregido.replace("-", " - ");
 				}
@@ -227,6 +232,7 @@ public class DatabaseManagerDAO {
 					actualizaciones.put(id, nombreCorregido); // Agregar la actualización al contenedor
 					contadorCambios.incrementAndGet();
 				}
+
 			}
 
 			if (!actualizaciones.isEmpty()) {
