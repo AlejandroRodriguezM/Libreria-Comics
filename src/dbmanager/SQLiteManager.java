@@ -32,9 +32,6 @@ public class SQLiteManager {
 		
 		try (Connection connection = DriverManager.getConnection(url);
 				Statement statement = connection.createStatement()) {
-
-			String dropTableSQL = "DROP TABLE IF EXISTS comicsbbdd";
-			statement.executeUpdate(dropTableSQL);
 			
 			String createTableSQL = "CREATE TABLE IF NOT EXISTS comicsbbdd (" + "ID INTEGER PRIMARY KEY AUTOINCREMENT, "
 					+ "nomComic TEXT NOT NULL, " + "nivel_gradeo TEXT, " + "precio_comic REAL NOT NULL, "

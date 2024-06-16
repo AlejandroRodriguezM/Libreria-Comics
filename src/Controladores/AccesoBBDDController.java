@@ -245,7 +245,6 @@ public class AccesoBBDDController implements Initializable {
 			AlarmaList.iniciarAnimacionAvanzado(prontEstadoConexionBase, "No conectado");
 
 			myStage().setOnCloseRequest(event -> stop());
-			Utilidades.crearDBPRedeterminada();
 
 			ConectManager.asignarValoresPorDefecto();
 			ListaComicsDAO.reiniciarListas();
@@ -258,10 +257,10 @@ public class AccesoBBDDController implements Initializable {
 			if (Utilidades.isInternetAvailable()) {
 				Utilidades.cargarTasasDeCambioDesdeArchivo();
 			}
-
-			// Crear estructura si no existe
 			FuncionesFicheros.crearEstructura();
+			Utilidades.crearDBPRedeterminada();
 			Utilidades.crearCarpeta();
+
 			ConectManager.closeConnection();
 		});
 

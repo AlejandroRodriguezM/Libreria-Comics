@@ -24,36 +24,37 @@ public class FuncionesFicheros {
 
 	public static Map<String, String> devolverDatosConfig() {
 		Map<String, String> datosConfiguracion = new HashMap<>();
-
-		String userHome = System.getProperty("user.home");
-		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
-		String carpetaLibreria = ubicacion + File.separator + "libreria";
 		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion_local.conf";
 
-		try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				if (line.startsWith("Database: ")) {
-					datosConfiguracion.put("Database",
-							Utilidades.defaultIfNullOrEmpty(line.substring("Database: ".length()), ""));
-				}
-			}
-		} catch (IOException e) {
-			Utilidades.manejarExcepcion(e);
-		}
+		File fichero = new File(archivoConfiguracion);
 
-		return datosConfiguracion;
+		if (fichero.exists()) {
+			try (BufferedReader reader = new BufferedReader(new FileReader(archivoConfiguracion))) {
+				String line;
+				while ((line = reader.readLine()) != null) {
+					if (line.startsWith("Database: ")) {
+						datosConfiguracion.put("Database",
+								Utilidades.defaultIfNullOrEmpty(line.substring("Database: ".length()), ""));
+					}
+				}
+				if (!datosConfiguracion.isEmpty()) {
+					return datosConfiguracion;
+				}
+			} catch (IOException e) {
+				Utilidades.manejarExcepcion(e);
+			}
+		}
+		return null;
+
 	}
 
 	public static void guardarDatosBaseLocal(String nombreBBDD, Label prontEstadoFichero, Label alarmaConexion) {
 
-		String userHome = System.getProperty("user.home");
-		String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
-		String carpetaLibreria = ubicacion + File.separator + "libreria";
-		String carpetaBackup = carpetaLibreria + File.separator + nombreBBDD + File.separator + "backups";
+		String[] nombredbLimpio = nombreBBDD.split("\\."); // Dividir por el punto literal
+
+		String carpetaBackup = carpetaLibreria + File.separator + nombredbLimpio[0] + File.separator + "backups";
 		String archivoConfiguracion = carpetaLibreria + File.separator + "configuracion_local.conf";
 		AlarmaList alarmaList = new AlarmaList();
-
 		try {
 
 			// Leer el archivo de configuración existente
@@ -96,15 +97,28 @@ public class FuncionesFicheros {
 	}
 
 	private static StringBuilder actualizarClave(StringBuilder content, String clave, String valor) {
-		String claveBuscada = clave + ": ";
-		int startIndex = content.indexOf(claveBuscada);
+	    String claveBuscada1 = clave + ":";
+	    String claveBuscada2 = clave + ": ";
+	    int startIndex1 = content.indexOf(claveBuscada1);
+	    int startIndex2 = content.indexOf(claveBuscada2);
 
-		if (startIndex != -1) {
-			int endIndex = content.indexOf(System.lineSeparator(), startIndex);
-			content.replace(startIndex + clave.length() + 1, endIndex, " " + valor);
-		}
+	    // Buscar la primera ocurrencia válida
+	    int startIndex = -1;
+	    if (startIndex1 != -1) {
+	        startIndex = startIndex1;
+	    } else if (startIndex2 != -1) {
+	        startIndex = startIndex2;
+	    }
 
-		return content;
+	    if (startIndex != -1) {
+	        int endIndex = content.indexOf(System.lineSeparator(), startIndex);
+	        content.replace(startIndex + clave.length() + 1, endIndex, " " + valor);
+	    } else {
+	        // Si la clave no se encuentra, agregarla al final
+	        content.append(claveBuscada1).append(valor).append(System.lineSeparator());
+	    }
+
+	    return content;
 	}
 
 	/**
@@ -225,8 +239,11 @@ public class FuncionesFicheros {
 
 	public static String datosEnvioFichero() {
 		Map<String, String> datosConfiguracion = devolverDatosConfig();
-		return datosConfiguracion.get("Database");
 
+		if (datosConfiguracion != null) {
+			return datosConfiguracion.get("Database");
+		}
+		return "";
 	}
 
 	private static String construirURL(String direccionDataBase) {

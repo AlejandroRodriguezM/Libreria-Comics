@@ -283,18 +283,15 @@ public class OpcionesDatosController implements Initializable {
 		String dbNombre = datosBBDD();
 
 		if (!dbNombre.isEmpty()) {
-			
-			if (SQLiteManager.checkDatabaseExists(dbNombre)) {
+			if (!SQLiteManager.checkDatabaseExists(dbNombre)) {
 				AlarmaList.iniciarAnimacionBaseExiste(prontInformativo, dbNombre);
 			} else {
 				SQLiteManager.createTable(dbNombre);
+				guardarBaseFichero(dbNombre + ".db");
 				Utilidades.crearCarpeta();
 				AlarmaList.iniciarAnimacionBaseCreada(prontInformativo, dbNombre);
 				rellenarComboDB();
-
 				seleccionarValor(nombreBBDD, dbNombre + ".db");
-
-				guardarBaseFichero(nombreBBDD.getValue());
 			}
 		} else {
 			String errorMessage = "El nombre de la base de datos está vacío.\n";
