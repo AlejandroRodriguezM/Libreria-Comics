@@ -157,7 +157,7 @@ public class AccionModificar {
 
 				listaComics = ComicManagerDAO.verLibreria(sentenciaSQL);
 
-				ComicManagerDAO.borrarComic(idComic);
+//				ComicManagerDAO.borrarComic(idComic);
 				ListaComicsDAO.reiniciarListaComics();
 				ListaComicsDAO.listasAutoCompletado();
 				FuncionesTableView.nombreColumnas(); // Llamada a funcion
