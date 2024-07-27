@@ -29,18 +29,17 @@ public class SQLiteManager {
 	public static void createTable(String dbName) {
 
 		String url = "jdbc:sqlite:" + DB_FOLDER + dbName + ".db";
-		
+
 		try (Connection connection = DriverManager.getConnection(url);
 				Statement statement = connection.createStatement()) {
-			
-			String createTableSQL = "CREATE TABLE IF NOT EXISTS comicsbbdd (" + "ID INTEGER PRIMARY KEY AUTOINCREMENT, "
-					+ "nomComic TEXT NOT NULL, " + "nivel_gradeo TEXT, " + "precio_comic REAL NOT NULL, "
-					+ "codigo_comic TEXT, " + "numComic INTEGER NOT NULL, " + "nomVariante TEXT NOT NULL, "
-					+ "firma TEXT NOT NULL, " + "nomEditorial TEXT NOT NULL, " + "formato TEXT NOT NULL, "
-					+ "procedencia TEXT NOT NULL, " + "fecha_publicacion DATE NOT NULL, "
-					+ "nomGuionista TEXT NOT NULL, " + "nomDibujante TEXT NOT NULL, " + "puntuacion TEXT NOT NULL, "
-					+ "portada TEXT, " + "key_issue TEXT, " + "url_referencia TEXT NOT NULL, "
-					+ "estado TEXT NOT NULL)";
+
+			String createTableSQL = "CREATE TABLE IF NOT EXISTS comicsbbdd ("
+					+ "idComic INTEGER PRIMARY KEY AUTOINCREMENT, " + "tituloComic TEXT NOT NULL, "
+					+ "codigoComic TEXT NOT NULL, " + "numeroComic TEXT NOT NULL, " + "precioComic TEXT NOT NULL, "
+					+ "fechaGradeo TEXT NOT NULL, " + "editorComic TEXT NOT NULL, " + "keyComentarios TEXT NOT NULL, "
+					+ "firmaComic TEXT NOT NULL, " + "artistaComic TEXT NOT NULL, " + "guionistaComic TEXT NOT NULL, "
+					+ "varianteComic TEXT NOT NULL, " + "direccionImagenComic TEXT NOT NULL, "
+					+ "urlReferenciaComic TEXT NOT NULL" + ");";
 
 			statement.executeUpdate(createTableSQL);
 

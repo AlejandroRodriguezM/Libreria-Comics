@@ -16,7 +16,7 @@ public class WebScraperCatalogPreviews {
 
             try {
                 String urlWeb = "https://prhcomics.com/comics/";
-                Document doc = Jsoup.connect(urlWeb).get();
+                Document doc = Jsoup.connect(urlWeb).timeout(10000).get(); // Increased timeout
 
                 Map<String, String> mesesYEnlaces = new HashMap<>();
                 Elements articulos = doc.select("div.catalog-item");

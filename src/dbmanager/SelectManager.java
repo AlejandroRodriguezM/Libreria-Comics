@@ -14,19 +14,12 @@ import funcionesAuxiliares.Utilidades;
 public class SelectManager {
 
 	public static final String TAMANIO_DATABASE = "SELECT COUNT(*) FROM comicsbbdd;";
-	private static final String SENTENCIA_BUSQUEDA_INDIVIDUAL = "SELECT * FROM comicsbbdd WHERE ID = ?;";
-	private static final String SENTENCIA_CONTAR_COMICS_POR_ID = "SELECT COUNT(*) FROM comicsbbdd WHERE ID = ?;";
-	private static final String SENTENCIA_BUSCAR_PORTADA = "SELECT portada FROM comicsbbdd WHERE ID = ?;";
+	private static final String SENTENCIA_BUSQUEDA_INDIVIDUAL = "SELECT * FROM comicsbbdd WHERE idComic = ?;";
+	private static final String SENTENCIA_CONTAR_COMICS_POR_ID = "SELECT 1 FROM comicsbbdd WHERE idComic = ? LIMIT 1;";
+	private static final String SENTENCIA_BUSCAR_PORTADA = "SELECT direccionImagenComic FROM comicsbbdd WHERE idComic = ?;";
 	public static final String SENTENCIA_BUSQUEDA_COMPLETA = "SELECT * FROM comicsbbdd";
 	public static final String SENTENCIA_TOTAL_BUSQUEDA = "SELECT COUNT(*) FROM comicsbbdd WHERE 1=1;";
-
-	public static final String SENTENCIA_POSESION = "SELECT * FROM comicsbbdd WHERE estado = 'En posesion' ORDER BY nomComic, fecha_publicacion, numComic;";
-	public static final String SENTENCIA_KEY_ISSUE = "SELECT * FROM comicsbbdd WHERE key_issue <> 'Vacio' ORDER BY nomComic, fecha_publicacion, numComic;";
-	public static final String SENTENCIA_COMPLETA = "SELECT * FROM comicsbbdd ORDER BY nomComic, fecha_publicacion, numComic;";
-	public static final String SENTENCIA_VENDIDOS = "SELECT * FROM comicsbbdd WHERE estado = 'Vendido' ORDER BY nomComic, fecha_publicacion, numComic;";
-	public static final String SENTENCIA_COMPRADOS = "SELECT * FROM comicsbbdd WHERE estado = 'Comprado' ORDER BY nomComic, fecha_publicacion, numComic;";
-	public static final String SENTENCIA_PUNTUACION = "SELECT * FROM comicsbbdd WHERE puntuacion <> 'Sin puntuar' ORDER BY nomComic, fecha_publicacion, numComic;";
-	public static final String SENTENCIA_FIRMADOS = "SELECT * FROM comicsbbdd WHERE Firma <> '' ORDER BY nomComic, fecha_publicacion, numComic;";
+	public static final String SENTENCIA_COMPLETA = "SELECT * FROM comicsbbdd ORDER BY tituloComic, numeroComic;";
 
 	/**
 	 * Funcion que permite contar cuantas filas hay en la base de datos.
@@ -95,12 +88,10 @@ public class SelectManager {
 	}
 
 	/**
-	 * Comprueba si el identificador introducido existe en la base de datos.
+	 * Comprueba si un identificador de comic existe en la base de datos.
 	 *
-	 * @param identificador El identificador a verificar.
-	 * @return true si el identificador existe en la base de datos, false si no
-	 *         existe.
-	 * @throws SQLException Si ocurre un error en la consulta SQL.
+	 * @param identificador El identificador de la comic a comprobar.
+	 * @return true si el identificador existe, false en caso contrario.
 	 */
 	public static boolean comprobarIdentificadorComic(String identificador) {
 
@@ -108,26 +99,24 @@ public class SelectManager {
 			return false; // Si el identificador es nulo o está vacío, se considera que no existe
 		}
 
-		boolean existe = false; // Variable para almacenar si el identificador existe en la base de datos
-
 		try (Connection conn = ConectManager.conexion();
 				PreparedStatement preparedStatement = conn.prepareStatement(SENTENCIA_CONTAR_COMICS_POR_ID)) {
 
 			preparedStatement.setString(1, identificador.trim());
 
 			try (ResultSet rs = preparedStatement.executeQuery()) {
-				if (rs.next()) {
-					int rowCount = rs.getInt(1);
-					existe = (rowCount > 0);
-				}
+
+				return rs.next(); // Si hay una fila, el identificador existe
 			}
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			Utilidades.manejarExcepcion(e);
 			// Manejar error de sintaxis SQL de manera específica
-			return false;
+		} catch (Exception e) {
+			Utilidades.manejarExcepcion(e);
+			// Manejar otros errores genéricos
 		}
 
-		return existe; // Devolver si el identificador existe en la base de datos o no
+		return false;
 	}
 
 	/**
@@ -144,7 +133,7 @@ public class SelectManager {
 			ps.setString(1, idComic);
 			try (ResultSet resultado = ps.executeQuery()) {
 				if (resultado.next()) {
-					String portada = resultado.getString("portada");
+					String portada = resultado.getString("direccionImagenComic");
 					if (portada != null && !portada.isEmpty()) {
 						return portada;
 					}
@@ -216,16 +205,25 @@ public class SelectManager {
 	 * @throws SQLException
 	 */
 	public static List<Comic> libreriaSeleccionado(String datoSeleccionado) {
-		String sentenciaSQL = "SELECT * FROM comicsbbdd " + "WHERE nomVariante LIKE '%" + datoSeleccionado + "%' OR "
-				+ "nomComic LIKE '%" + datoSeleccionado + "%' OR " + "nomGuionista LIKE '%" + datoSeleccionado
-				+ "%' OR " + "firma LIKE '%" + datoSeleccionado + "%' OR " + "nomDibujante LIKE '%" + datoSeleccionado
-				+ "%' OR " + "CAST(numComic AS TEXT) LIKE '%" + datoSeleccionado + "%' OR " + "nomEditorial LIKE '%"
-				+ datoSeleccionado + "%' OR " + "nivel_gradeo LIKE '%" + datoSeleccionado + "%' OR " + "formato LIKE '%"
-				+ datoSeleccionado + "%' OR " + "fecha_publicacion LIKE '%" + datoSeleccionado + "%' OR "
-				+ "procedencia LIKE '%" + datoSeleccionado + "%' "
-				+ "ORDER BY nomComic, numComic ASC, fecha_publicacion";
+		String sql = "SELECT * FROM comicsbbdd WHERE "
+			    + "numeroComic = '" + datoSeleccionado + "' OR "
+			    + "tituloComic LIKE '%" + datoSeleccionado + "%' OR "
+			    + "codigoComic = '" + datoSeleccionado + "' OR "
+			    + "precioComic LIKE '%" + datoSeleccionado + "%' OR "
+			    + "fechaGradeo LIKE '%" + datoSeleccionado + "%' OR "
+			    + "editorComic LIKE '%" + datoSeleccionado + "%' OR "
+			    + "keyComentarios LIKE '%" + datoSeleccionado + "%' OR "
+			    + "firmaComic LIKE '%" + datoSeleccionado + "%' OR "
+			    + "artistaComic LIKE '%" + datoSeleccionado + "%' OR "
+			    + "guionistaComic LIKE '%" + datoSeleccionado + "%' OR "
+			    + "varianteComic LIKE '%" + datoSeleccionado + "%' OR "
+			    + "direccionImagenComic LIKE '%" + datoSeleccionado + "%' OR "
+			    + "urlReferenciaComic LIKE '%" + datoSeleccionado + "%' "
+			    + "ORDER BY tituloComic ASC, numeroComic ASC";
 
-		return verLibreria(sentenciaSQL, false);
+
+
+		return verLibreria(sql, false);
 	}
 
 	/**
@@ -236,7 +234,7 @@ public class SelectManager {
 	 * @return Una lista de objetos Comic que representan los cómics de la librería.
 	 */
 	public static List<Comic> verLibreria(String sentenciaSQL, boolean esActualizacion) {
-		ListaComicsDAO.listaComics.clear(); // Limpiar la lista existente de cómics
+		ListasComicsDAO.listaComics.clear(); // Limpiar la lista existente de cómics
 		List<Comic> listaComics = new ArrayList<>();
 
 		try (Connection conn = ConectManager.conexion();
@@ -247,7 +245,7 @@ public class SelectManager {
 			if (esActualizacion) {
 				while (rs.next()) {
 					Comic comic = DBUtilidades.obtenerComicDesdeResultSet(rs);
-					if (!comic.getcodigoComic().isEmpty() && !comic.getcodigoComic().equals("0")) {
+					if (!comic.getUrlReferenciaComic().isEmpty()) {
 						listaComics.add(comic);
 					}
 				}

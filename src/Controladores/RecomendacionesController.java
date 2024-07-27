@@ -4,6 +4,8 @@
 */
 package Controladores;
 
+import java.io.File;
+
 /**
  * Programa que permite el acceso a una base de datos de comics. Mediante JDBC con mySql
  * Las ventanas graficas se realizan con JavaFX.
@@ -27,6 +29,7 @@ package Controladores;
  */
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
@@ -174,10 +177,7 @@ public class RecomendacionesController implements Initializable {
 	@FXML
 	private ImageView imagencomic;
 
-	/**
-	 * Instancia de la clase Ventanas para la navegación.
-	 */
-	private static Ventanas nav = new Ventanas();
+	private Random r = new Random();
 
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
@@ -215,7 +215,7 @@ public class RecomendacionesController implements Initializable {
 	void ampliarImagen(MouseEvent event) {
 
 		if (imagencomic.getImage() != null) {
-			nav.verVentanaImagen();
+			Ventanas.verVentanaImagen();
 		}
 
 	}
@@ -244,25 +244,31 @@ public class RecomendacionesController implements Initializable {
 	 */
 	public String generarLectura() {
 
-		Random r = new Random();
 		Utilidades utilidad = new Utilidades();
-		String id_comic;
+		String idComic = "";
 		String sentenciaSQL = DBUtilidades.construirSentenciaSQL(DBUtilidades.TipoBusqueda.COMPLETA);
 		List<Comic> listaComics = SelectManager.verLibreria(sentenciaSQL, false);
 		limpiarPront(); // Llamada a función para limpiar la pantalla "TextArea"
 
-		if (listaComics.size() != 0) {
+		if (!listaComics.isEmpty()) {
 			int n = r.nextInt(listaComics.size());
 
-			id_comic = listaComics.get(n).getid();
+			idComic = listaComics.get(n).getIdComic();
 
-			String direccionImagen = SelectManager.obtenerDireccionPortada(id_comic);
-			Image imagenComic = Utilidades.devolverImagenComic(direccionImagen);
+			String direccionImagen = SelectManager.obtenerDireccionPortada(idComic);
+			Image imagenComic = null;
+
+			if (Utilidades.existePortada(direccionImagen)) {
+				imagenComic = Utilidades.devolverImagenComic(direccionImagen);
+			} else {
+				InputStream is = getClass().getResourceAsStream("/imagenes/sinPortada.jpg");
+				imagenComic = new Image(is, 250, 0, true, true);
+			}
 
 			imagencomic.setImage(imagenComic);
 			utilidad.deleteImage();
 
-			ImagenAmpliadaController.comicInfo = SelectManager.comicDatos(id_comic);
+			ImagenAmpliadaController.setComicCache(SelectManager.comicDatos(idComic));
 
 			return listaComics.get(n).toString(); // Devuelve un cómic de la
 													// lista

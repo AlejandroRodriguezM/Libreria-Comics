@@ -108,7 +108,8 @@ public class ConectManager implements Initializable {
 
 		String dbFilePath = System.getProperty("user.home") + File.separator + "AppData" + File.separator + "Roaming"
 				+ File.separator + "libreria" + File.separator + FuncionesFicheros.datosEnvioFichero();
-
+ 
+		
 		DB_URL = "jdbc:sqlite:" + dbFilePath;
 
 		// Validar la URL de conexión

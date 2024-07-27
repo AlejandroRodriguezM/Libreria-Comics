@@ -5,104 +5,88 @@ import java.io.File;
 import ficherosFunciones.FuncionesExcel;
 import funcionesAuxiliares.Utilidades;
 
-public class ComicFichero extends Comic {
+public class ComicFichero {
 
 	public static Comic datosComicFichero(String lineText) {
-
 		// Verificar si la línea está vacía
 		if (lineText == null || lineText.trim().isEmpty()) {
-			// Si la línea está vacía, devuelve null para indicar que la línea debe ser
-			// ignorada
 			return null;
 		}
 
 		String[] data = lineText.split(";");
 
 		// Verificar si hay suficientes elementos en el array 'data'
-		if (data.length >= 19) { // Ajusta este valor según la cantidad de campos esperados
+		if (data.length >= 13) { // Ajusta este valor según la cantidad de campos esperados
+			String tituloComic = data[1];
+			String codigoComic = data[2];
+			String numeroComic = data[3];
+			String precioComic = data[4];
+			String fechaGradeo = data[5];
+			String editorComic = data[6];
+			String keyComentarios = data[7];
+			String firmaComic = data[8];
+			String artistaComic = data[9];
+			String guionistaComic = data[10];
+			String varianteComic = data[11];
+			String direccionImagenComic = data[12];
+			String urlReferenciaComic = data[13];
 
-			String nombre = data[1];
-			String valorGradeo = data[2];
-			String precioComic = data[3];
-			String codigoComic = data[4];
-			String numero = data[5];
-			String variante = data[6];
-			String firma = data[7];
-			String editorial = data[8];
-			String formato = data[9];
-			String procedencia = obtenerProcedencia(data[10]);
-			String fecha = Utilidades.convertirFormatoFecha(data[11]);
-			String guionista = data[12];
-			String dibujante = data[13];
-			String puntuacion = obtenerPuntuacion(data[13], data[14]);
-			String direccionPortada = data[15];
-			String nombrePortada = Utilidades.obtenerNombrePortada(false, direccionPortada);
+			String nombrePortada = Utilidades.obtenerNombrePortada(false, direccionImagenComic);
 			String imagen = FuncionesExcel.DEFAULT_PORTADA_IMAGE_PATH + File.separator + nombrePortada;
 
-			String keyIssue = data[16];
-			keyIssue = keyIssue.replaceAll("[\\r\\n]", "");
-			String urlReferencia = data[17];
-			String estado = data[18];
+			urlReferenciaComic = (urlReferenciaComic.isEmpty()) ? "Sin referencia" : urlReferenciaComic;
 
-			// Verificaciones y asignaciones predeterminadas
-			precioComic = (precioComic.isEmpty()) ? "0" : precioComic;
-			codigoComic = (codigoComic.isEmpty()) ? "0" : codigoComic;
-			valorGradeo = comprobarGradeo(valorGradeo);
-
-			urlReferencia = (urlReferencia.isEmpty()) ? "Sin referencia" : urlReferencia;
-
-			return new Comic.ComicBuilder("", nombre).valorGradeo(valorGradeo).numero(numero).variante(variante)
-					.firma(firma).editorial(editorial).formato(formato).procedencia(procedencia).fecha(fecha)
-					.guionista(guionista).dibujante(dibujante).estado(estado).keyIssue(keyIssue).puntuacion(puntuacion)
-					.imagen(imagen).referenciaComic(urlReferencia).precioComic(precioComic).codigoComic(codigoComic)
-					.build();
-
+			return new Comic.ComicGradeoBuilder("", tituloComic).codigoComic(codigoComic).precioComic(precioComic)
+					.numeroComic(numeroComic).fechaGradeo(fechaGradeo).editorComic(editorComic)
+					.keyComentarios(keyComentarios).firmaComic(firmaComic).artistaComic(artistaComic)
+					.guionistaComic(guionistaComic).varianteComic(varianteComic).direccionImagenComic(imagen)
+					.urlReferenciaComic(urlReferenciaComic).build();
 		} else {
 			return null;
 		}
-
 	}
 
-	public static String comprobarGradeo(String valorGradeo) {
-		String[] valores = { "NM (Noir Medium)", "SM (Standard Medium)", "LM (Light Medium)", "FL (Fine Light)",
-				"VF (Very Fine)" };
-		for (String gradeo : valores) {
-			if (valorGradeo.equalsIgnoreCase(gradeo)) {
-				return valorGradeo;
-			}
+	public static String limpiarPrecio(String precioStr) {
+		// Verificar si el precio es nulo o está vacío
+		if (precioStr == null || precioStr.isEmpty()) {
+			return "0";
 		}
-		return "NM (Noir Medium)";
-	}
 
-	/**
-	 * Función que obtiene la procedencia según el país
-	 *
-	 * @param pais El país de origen
-	 * @return La procedencia actualizada
-	 */
-	private static String obtenerProcedencia(String pais) {
-		String procedencia;
-		if (pais.toLowerCase().contains("españa")) {
-			procedencia = pais.toLowerCase().replace("españa", "Spain");
-		} else {
-			procedencia = pais;
-		}
-		return procedencia;
-	}
+		// Eliminar espacios en blanco al inicio y al final
+		precioStr = precioStr.trim();
 
-	/**
-	 * Función que obtiene la puntuación del cómic
-	 *
-	 * @param dibujante  El nombre del dibujante
-	 * @param puntuacion La puntuación actual
-	 * @return La puntuación actualizada
-	 */
-	private static String obtenerPuntuacion(String dibujante, String puntuacion) {
-		if (dibujante.length() != 0) {
-			return puntuacion;
-		} else {
-			return "Sin puntuación";
+		// Paso 1: Eliminar símbolos repetidos y dejar solo uno
+		precioStr = precioStr.replaceAll("([€$])\\1+", "$1");
+
+		// Paso 2: Si hay varios símbolos, mantener solo uno y eliminar el resto
+		precioStr = precioStr.replaceAll("([€$])(.*)([€$])", "$1$2");
+
+		// Extraer el símbolo monetario, si existe
+		String symbol = "";
+		if (precioStr.startsWith("€") || precioStr.startsWith("$")) {
+			symbol = precioStr.substring(0, 1);
+			precioStr = precioStr.substring(1);
 		}
+
+		// Eliminar caracteres no numéricos excepto el primer punto decimal
+		precioStr = precioStr.replaceAll("[^\\d.]", "");
+		int dotIndex = precioStr.indexOf('.');
+		if (dotIndex != -1) {
+			precioStr = precioStr.substring(0, dotIndex + 1) + precioStr.substring(dotIndex + 1).replace("\\.", "");
+		}
+
+		// Verificar si el precio contiene solo un punto decimal y ningún otro número
+		if (precioStr.equals(".") || precioStr.equals(".0")) {
+			return "0";
+		}
+
+		// Si el precio después de limpiar es vacío, retornar "0"
+		if (precioStr.isEmpty()) {
+			return "0";
+		}
+
+		// Retornar el precio limpiado con el símbolo monetario
+		return symbol + precioStr;
 	}
 
 }

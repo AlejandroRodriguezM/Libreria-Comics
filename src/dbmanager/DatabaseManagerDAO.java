@@ -23,7 +23,6 @@ import ficherosFunciones.FuncionesFicheros;
 import funcionesAuxiliares.Utilidades;
 import funcionesAuxiliares.Ventanas;
 import javafx.scene.control.Label;
-import javafx.stage.Stage;
 
 public class DatabaseManagerDAO {
 
@@ -60,19 +59,20 @@ public class DatabaseManagerDAO {
 
 		try (Connection connection = DriverManager.getConnection(url)) {
 			try (Statement statement = connection.createStatement()) {
-				String dropTableSQL = "DROP TABLE IF EXISTS comicsbbdd";
+				String dropTableSQL = "DROP TABLE IF EXISTS comicGbbdd";
 				statement.executeUpdate(dropTableSQL);
 			}
 
 			try (Statement statement = connection.createStatement()) {
 				String createTableSQL = "CREATE TABLE IF NOT EXISTS comicsbbdd ("
-						+ "ID INTEGER PRIMARY KEY AUTOINCREMENT, " + "nomComic TEXT NOT NULL, " + "nivel_gradeo TEXT, "
-						+ "precio_comic REAL NOT NULL, " + "codigo_comic TEXT, " + "numComic INTEGER NOT NULL, "
-						+ "nomVariante TEXT NOT NULL, " + "firma TEXT NOT NULL, " + "nomEditorial TEXT NOT NULL, "
-						+ "formato TEXT NOT NULL, " + "procedencia TEXT NOT NULL, "
-						+ "fecha_publicacion DATE NOT NULL, " + "nomGuionista TEXT NOT NULL, "
-						+ "nomDibujante TEXT NOT NULL, " + "puntuacion TEXT NOT NULL, " + "portada TEXT, "
-						+ "key_issue TEXT, " + "url_referencia TEXT NOT NULL, " + "estado TEXT NOT NULL)";
+						+ "idComic INTEGER PRIMARY KEY AUTOINCREMENT, " + "tituloComic TEXT NOT NULL, "
+						+ "codigoComic TEXT NOT NULL, " + "numeroComic TEXT NOT NULL, " + "precioComic TEXT NOT NULL, "
+						+ "fechaGradeo TEXT NOT NULL, " + "editorComic TEXT NOT NULL, "
+						+ "keyComentarios TEXT NOT NULL, " + "firmaComic TEXT NOT NULL, "
+						+ "artistaComic TEXT NOT NULL, " + "guionistaComic TEXT NOT NULL, "
+						+ "varianteComic TEXT NOT NULL, " + "direccionImagenComic TEXT NOT NULL, "
+						+ "urlReferenciaComic TEXT NOT NULL" + ");";
+
 				statement.executeUpdate(createTableSQL);
 			}
 		} catch (SQLException e) {
@@ -118,10 +118,21 @@ public class DatabaseManagerDAO {
 			if (tables.next()) {
 				// La tabla existe, ahora verifiquemos las columnas
 				ResultSet columns = metaData.getColumns(nombreDatabase, null, "comicsbbdd", null);
-				Set<String> expectedColumns = Set.of("ID", "nomComic", "nivel_gradeo", "precio_comic", "codigo_comic",
-						"numComic", "nomVariante", "firma", "nomEditorial", "formato", "procedencia",
-						"fecha_publicacion", "nomGuionista", "nomDibujante", "puntuacion", "portada", "key_issue",
-						"url_referencia", "estado");
+				Set<String> expectedColumns = Set.of("idComic", // ID del cómic
+						"tituloComic", // Título del cómic
+						"codigoComic", // Código del cómic
+						"numeroComic", // Número del cómic
+						"precioComic", // Precio del comic
+						"fechaGradeo", // Fecha de grado
+						"editorComic", // Editor del cómic
+						"keyComentarios", // Comentarios
+						"firmaComic", // Firma del comic
+						"artistaComic", // Artista del cómic
+						"guionistaComic", // Guionista del cómic
+						"varianteComic", // Variante del cómic
+						"direccionImagenComic", // Dirección de la imagen
+						"urlReferenciaComic" // URL de referencia
+				);
 
 				Set<String> actualColumns = new HashSet<>();
 
@@ -154,7 +165,7 @@ public class DatabaseManagerDAO {
 			return; // No hay actualizaciones pendientes
 		}
 
-		String consultaUpdate = "UPDATE comicsbbdd SET " + columna + " = ? WHERE ID = ?";
+		String consultaUpdate = "UPDATE comicsbbdd SET " + columna + " = ? WHERE idComic = ?";
 		String url = "jdbc:sqlite:" + DB_FOLDER + FuncionesFicheros.datosEnvioFichero();
 
 		try (Connection connection = DriverManager.getConnection(url);
@@ -170,81 +181,6 @@ public class DatabaseManagerDAO {
 			}
 
 			pstmt.executeBatch(); // Ejecutar todas las actualizaciones en lote
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-			Utilidades.manejarExcepcion(e);
-		}
-	}
-
-	public static void comprobarNormalizado(String columna, Label prontInfo) {
-		String url = "jdbc:sqlite:" + DB_FOLDER + FuncionesFicheros.datosEnvioFichero();
-
-		String cadena = "";
-
-		if (columna.equalsIgnoreCase("")) {
-			contadorCambios.set(0);
-			return;
-		}
-
-		if (SelectManager.countRows() == 0) {
-			cadena = "La base de datos esta vacia";
-			AlarmaList.iniciarAnimacionAvanzado(prontInfo, cadena);
-		}
-
-		// Construir la consulta para seleccionar los nombres de la columna
-		String consultaSelect = "SELECT ID, " + columna + " FROM comicsbbdd";
-
-		Map<Integer, String> actualizaciones = new HashMap<>(); // Contenedor para acumular las actualizaciones en lote
-
-		try (Connection connection = DriverManager.getConnection(url);
-				Statement stmt = connection.createStatement();
-				ResultSet rs = stmt.executeQuery(consultaSelect)) {
-
-			while (rs.next()) {
-				int id = rs.getInt("ID");
-				String nombre = rs.getString(columna);
-				String nombreCorregido = "";
-				if (columna.equalsIgnoreCase("nomComic") || columna.equalsIgnoreCase("firma")
-						|| columna.equalsIgnoreCase("nomEditorial") || columna.equalsIgnoreCase("formato")
-						|| columna.equalsIgnoreCase("procedencia") || columna.equalsIgnoreCase("key_issue")
-						|| columna.equalsIgnoreCase("estado")) {
-					nombreCorregido = corregirPatrones(nombre);
-				} else {
-					nombreCorregido = corregirNombre(nombre);
-				}
-
-				if (columna.equalsIgnoreCase("key_issue") && nombreCorregido.isEmpty()) {
-					nombreCorregido = "Vacio";
-
-				}
-
-				if (columna.equalsIgnoreCase("firma")) {
-					nombreCorregido = nombreCorregido.replace("-", " - ");
-				}
-
-				if (columna.equalsIgnoreCase("nomEditorial")) {
-					nombreCorregido = getEditorial(nombreCorregido.replace("-", " - "));
-				}
-
-				// Verificar si el nombre no está normalizado
-				if (!nombre.equals(nombreCorregido)) {
-					actualizaciones.put(id, nombreCorregido); // Agregar la actualización al contenedor
-					contadorCambios.incrementAndGet();
-				}
-
-			}
-
-			if (!actualizaciones.isEmpty()) {
-				actualizarNombresEnLote(columna, actualizaciones); // Ejecutar las actualizaciones en lote
-			}
-
-			if (contadorCambios.get() == 0) {
-				cadena = "Ya está todo normalizado.";
-			} else {
-				cadena = "Se han normalizado: " + contadorCambios.get();
-			}
-			AlarmaList.iniciarAnimacionAvanzado(prontInfo, cadena);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -322,6 +258,80 @@ public class DatabaseManagerDAO {
 		return texto;
 	}
 
+	public static void comprobarNormalizado(String columna, Label prontInfo) {
+		String url = "jdbc:sqlite:" + DB_FOLDER + FuncionesFicheros.datosEnvioFichero();
+
+		String cadena = "";
+
+		if (columna.equalsIgnoreCase("")) {
+			contadorCambios.set(0);
+			return;
+		}
+
+		if (SelectManager.countRows() == 0) {
+			cadena = "La base de datos esta vacia";
+			AlarmaList.iniciarAnimacionAvanzado(prontInfo, cadena);
+		}
+
+		// Construir la consulta para seleccionar los nombres de la columna
+		String consultaSelect = "SELECT idComic, " + columna + " FROM comicsbbdd";
+
+		Map<Integer, String> actualizaciones = new HashMap<>(); // Contenedor para acumular las actualizaciones en lote
+
+		try (Connection connection = DriverManager.getConnection(url);
+				Statement stmt = connection.createStatement();
+				ResultSet rs = stmt.executeQuery(consultaSelect)) {
+
+			while (rs.next()) {
+				int id = rs.getInt("idComic");
+				String nombre = rs.getString(columna);
+				String nombreCorregido = "";
+				if (columna.equalsIgnoreCase("tituloComic") || columna.equalsIgnoreCase("firmaComic")
+						|| columna.equalsIgnoreCase("editorComic") || columna.equalsIgnoreCase("keyComentarios")
+						|| columna.equalsIgnoreCase("estado")) {
+					nombreCorregido = corregirPatrones(nombre);
+				} else {
+					nombreCorregido = corregirNombre(nombre);
+				}
+
+				if (columna.equalsIgnoreCase("keyComentarios") && nombreCorregido.isEmpty()) {
+					nombreCorregido = "Vacio";
+
+				}
+
+				if (columna.equalsIgnoreCase("firmaComic")) {
+					nombreCorregido = nombreCorregido.replace("-", " - ");
+				}
+
+				if (columna.equalsIgnoreCase("editorComic")) {
+					nombreCorregido = getEditorial(nombreCorregido.replace("-", " - "));
+				}
+
+				// Verificar si el nombre no está normalizado
+				if (!nombre.equals(nombreCorregido)) {
+					actualizaciones.put(id, nombreCorregido); // Agregar la actualización al contenedor
+					contadorCambios.incrementAndGet();
+				}
+
+			}
+
+			if (!actualizaciones.isEmpty()) {
+				actualizarNombresEnLote(columna, actualizaciones); // Ejecutar las actualizaciones en lote
+			}
+
+			if (contadorCambios.get() == 0) {
+				cadena = "Ya está todo normalizado.";
+			} else {
+				cadena = "Se han normalizado: " + contadorCambios.get();
+			}
+			AlarmaList.iniciarAnimacionAvanzado(prontInfo, cadena);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			Utilidades.manejarExcepcion(e);
+		}
+	}
+
 	public static String getEditorial(String palabra) {
 		// Convertir la palabra a minúsculas para hacer la comparación insensible a
 		// mayúsculas
@@ -345,7 +355,7 @@ public class DatabaseManagerDAO {
 	 *
 	 * @param fichero
 	 */
-	public static void makeSQL(Label prontInfo, Stage miVentana) {
+	public static void makeSQL(Label prontInfo) {
 
 		String frase = "Fichero sql lite";
 

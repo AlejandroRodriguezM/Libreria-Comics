@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
@@ -44,7 +43,6 @@ import dbmanager.SQLiteManager;
 import ficherosFunciones.FuncionesFicheros;
 import funcionesAuxiliares.Utilidades;
 import funcionesAuxiliares.Ventanas;
-import funcionesInterfaz.AccionControlUI;
 import funcionesManagment.AccionReferencias;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -117,9 +115,11 @@ public class OpcionesDatosController implements Initializable {
 
 	@FXML
 	private TextField nombreNuevaBBDD;
+	
+    @FXML
+    private ImageView fondoOpcionesImagen;
 
-	@FXML
-	private ImageView imagenAzul;
+	private static AccionReferencias referenciaVentana = getReferenciaVentana();
 
 	// Tamaño original del Pane
 	private final double originalHeight = 333;
@@ -128,8 +128,6 @@ public class OpcionesDatosController implements Initializable {
 	private final double expandHeight = 490;
 
 	boolean estaDesplegado = false;
-
-	private static AccionReferencias referenciaVentana = getReferenciaVentana();
 
 	/**
 	 * Instancia de la clase Ventanas para la navegación.
@@ -153,6 +151,7 @@ public class OpcionesDatosController implements Initializable {
 		alarmaList.setAlarmaConexionInternet(alarmaConexionInternet);
 		alarmaList.setAlarmaConexionSql(alarmaConexionSql);
 		alarmaList.iniciarThreadChecker();
+		FuncionesFicheros.crearEstructura();
 
 		rellenarComboDB();
 		String datosFichero = FuncionesFicheros.datosEnvioFichero();
@@ -299,6 +298,17 @@ public class OpcionesDatosController implements Initializable {
 		}
 	}
 
+	public void guardarBaseFichero(String nombredb) {
+
+		FuncionesFicheros.guardarDatosBaseLocal(nombredb, prontEstadoFichero, alarmaConexion);
+
+		if (ConectManager.estadoConexion) {
+			AccesoBBDDController.estadoBotonConexion(getReferenciaVentana());
+			ConectManager.estadoConexion = false;
+		}
+
+	}
+
 	// Método para seleccionar un valor en el ComboBox según el contenido
 	private void seleccionarValor(ComboBox<String> comboBox, String contenido) {
 		ObservableList<String> items = comboBox.getItems();
@@ -320,18 +330,8 @@ public class OpcionesDatosController implements Initializable {
 	@FXML
 	void guardarDatos(ActionEvent event) {
 		String nombredb = nombreBBDD.getValue();
-		guardarBaseFichero(nombredb);
-
-	}
-
-	public void guardarBaseFichero(String nombredb) {
 
 		FuncionesFicheros.guardarDatosBaseLocal(nombredb, prontEstadoFichero, alarmaConexion);
-
-		if (ConectManager.estadoConexion) {
-			AccesoBBDDController.estadoBotonConexion(getReferenciaVentana());
-			ConectManager.estadoConexion = false;
-		}
 
 	}
 
@@ -347,7 +347,6 @@ public class OpcionesDatosController implements Initializable {
 			String ubicacion = userHome + File.separator + "AppData" + File.separator + "Roaming";
 			String ficheroLocal = ubicacion + File.separator + "libreria" + File.separator + "configuracion_local.conf";
 
-			// Verificar y eliminar los archivos dentro de la carpeta "libreria"
 			File ficheroConfiguracionLocal = new File(ficheroLocal);
 
 			ficheroConfiguracionLocal.delete();
@@ -358,7 +357,6 @@ public class OpcionesDatosController implements Initializable {
 			AlarmaList.detenerAnimacion();
 			prontEstadoFichero.setStyle("-fx-background-color: #f5af2d");
 			alarmaList.iniciarAnimacionRestaurado(prontEstadoFichero);
-			guardarBaseFichero("");
 		} else {
 			AlarmaList.detenerAnimacion();
 			prontEstadoFichero.setStyle("-fx-background-color: #DD370F");
@@ -368,8 +366,8 @@ public class OpcionesDatosController implements Initializable {
 
 	// Función para cambiar la altura del Pane
 	private void setPaneHeight(double height) {
-		imagenAzul.setFitHeight(height + 3);
-		imagenAzul.setFitWidth(269);
+		fondoOpcionesImagen.setFitHeight(height);
+		fondoOpcionesImagen.setFitWidth(269);
 
 		miSceneVentana().getWindow().setHeight(height);
 

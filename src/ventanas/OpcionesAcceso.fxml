@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
@@ -13,22 +12,9 @@
 
 <Pane fx:id="panelMenu" pickOnBounds="false" prefHeight="294.0" prefWidth="269.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.OpcionesDatosController">
    <children>
-      <ImageView fx:id="imagenAzul" fitHeight="294.0" fitWidth="271.0" pickOnBounds="true">
+      <ImageView fx:id="fondoOpcionesImagen" fitHeight="294.0" fitWidth="269.0" pickOnBounds="true">
          <image>
-            <Image url="@../imagenes/azul.jpg" />
-         </image>
-         <viewport>
-            <Rectangle2D height="454.0" width="271.0" />
-         </viewport>
-      </ImageView>
-      <ImageView fitHeight="148.0" fitWidth="280.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../imagenes/rojo.jpg" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="294.0" fitWidth="271.0" layoutY="1.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../imagenes/Fondo%20AccederBBDD.jpg" />
+            <Image url="@../imagenes/accesoWeb.jpg" />
          </image>
       </ImageView>
       <Button fx:id="botonGuardar" layoutX="6.0" layoutY="183.0" mnemonicParsing="false" onAction="#guardarDatos" prefHeight="33.0" prefWidth="114.0" stylesheets="@../style/opciones_style.css" text="Guardar" />

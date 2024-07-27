@@ -58,18 +58,6 @@ public class ComicManagerDAO {
 		UpdateManager.actualizarComicBBDD(comic, operacion);
 	}
 
-	/**
-	 * Función que comprueba si la opinión ha sido introducida correctamente.
-	 *
-	 * @param sentenciaSQL La sentencia SQL a ejecutar
-	 * @param ID           La ID del cómic
-	 * @param puntuacion   La puntuación a insertar
-	 * @throws SQLException Si ocurre un error en la base de datos
-	 */
-	public static void actualizarOpinion(String idComic, String puntuacion) {
-		UpdateManager.actualizarOpinion(idComic, puntuacion);
-	}
-
 	// #############################################
 	// ############ FUNCIONES SELECT ###############
 	// #############################################

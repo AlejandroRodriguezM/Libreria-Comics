@@ -58,12 +58,12 @@
     -fx-background-color: #009EE8; /* Color azul más oscuro en hover */
 }
 
-.button#botonRecomponerPortadas,.button#botonDescargarSQL,.button#botonDescargarPdf,.button#botonActualizarDatos,.button#botonActualizarPortadas,.button#botonActualizarTodo,.button#botonDescargarExcel,.button#botonDescargarPortadas,.button#botonNormalizarDB, .button#botonActualizarSoftware, .button#botonDescargarSW, .button#botonReCopiarPortadas, .button#botonComprimirPortadas {
+.button#botonActualizarPrecio,.button#botonRecomponerPortadas,.button#botonDescargarSQL,.button#botonDescargarPdf,.button#botonActualizarDatos,.button#botonActualizarPortadas,.button#botonActualizarTodo,.button#botonDescargarExcel,.button#botonDescargarPortadas,.button#botonNormalizarDB, .button#botonActualizarSoftware, .button#botonDescargarSW, .button#botonReCopiarPortadas, .button#botonComprimirPortadas {
     -fx-background-color: #5cb85c;
     -fx-border-color: #4cae4c;
 }
 
-.button#botonRecomponerPortadas:hover,.button#botonDescargarSQL:hover,.button#botonDescargarExcel:hover,.button#botonDescargarPortadas:hover,.button#botonNormalizarDB:hover, .button#botonActualizarSoftware:hover, .button#botonDescargarSW:hover {
+.button#botonActualizarPrecio:hover,.button#botonRecomponerPortadas:hover,.button#botonDescargarSQL:hover,.button#botonDescargarExcel:hover,.button#botonDescargarPortadas:hover,.button#botonNormalizarDB:hover, .button#botonActualizarSoftware:hover, .button#botonDescargarSW:hover {
     -fx-background-color: #4cae4c;
 }
 
@@ -94,13 +94,13 @@
     -fx-background-color: #4cae4c;
 }
 
-.button#botonLimpiarComic {
+.button#botonLimpiarcomic {
     -fx-background-color: #ffd700; /* Amarillo */
     -fx-border-color: #e5b800; /* Borde */
     -fx-text-fill: black;
 }
 
-.button#botonLimpiarComic:hover {
+.button#botonLimpiarcomic:hover {
     -fx-background-color: #e5b800;
 }
 
@@ -151,12 +151,12 @@
    -fx-background-color: #e5b800;
 }
 
-.button#botonIntroducir {
+.button#botonIntroducirComic {
     -fx-background-color: #6495ED;
     -fx-border-color: #6495ED;
 }
 
-.button#botonIntroducir:hover {
+.button#botonIntroducirComic:hover {
     -fx-background-color: #3b71d3;
     -fx-border-color: #3b71d3;
 }
@@ -170,13 +170,13 @@
     -fx-background-color: #2e6da4;
 }
 
-.button#botonModificar {
+.button#botonModificarComic {
     -fx-font-size: 10.0px;
     -fx-background-color: #d9534f;
     -fx-border-color: #d43f3a;
 }
 
-.button#botonModificar:hover {
+.button#botonModificarComic:hover {
     -fx-font-size: 10.0px;
     -fx-background-color: #c9302c;
 }
@@ -208,15 +208,6 @@
 
 .button#botonLeidos:hover {
     -fx-background-color: #4cae4c;
-}
-
-.button#botonAgregarPuntuacion {
-    -fx-background-color: #d9534f;
-    -fx-border-color: #d43f3a;
-}
-
-.button#botonAgregarPuntuacion:hover {
-    -fx-background-color: #c9302c;
 }
 
 .button#botonBorrarOpinion {
@@ -270,28 +261,28 @@
     -fx-font-size: 9.0px;
 }
 
-.button#botonGuardarComic {
+.button#botonGuardarComic,.button#botonGuardarListaComics {
     -fx-background-color: #4169E1;
     -fx-border-color: #4169E1;
 }
 
-.button#botonGuardarComic:hover {
+.button#botonGuardarComic:hover,.button#botonGuardarListaComics:hover {
     -fx-background-color: #483D8B;
     -fx-border-color: #483D8B;
 }
 
-.button#botonIntroducirCodigo {
+.button#botonIntroducirComicCodigo {
 -fx-font-size: 12.0px;
     -fx-background-color: #6495ED;
 }
 
-.button#botonIntroducirCodigo:hover {
+.button#botonIntroducirComicCodigo:hover {
     -fx-background-color: #6495ED;
 }
 
 .button#botonGuardarCambioComic { 
     -fx-border-width: 5px;
--fx-font-size: 10.0px;
+    -fx-font-size: 10.0px;
     -fx-background-color: #93C572;
 }
 
@@ -303,6 +294,16 @@
     -fx-border-width: 5px;
     -fx-font-size: 9.0px;
     -fx-background-color: green;
+}
+
+.button#botonClonarComic { 
+    -fx-border-width: 5px;
+    -fx-font-size: 10.0px;
+    -fx-background-color: #4169E1;
+}
+
+.button#botonClonarComic:hover {
+    -fx-background-color: #483D8B;
 }
 
 .button#botonBusquedaAvanzada:hover {
@@ -317,12 +318,12 @@
     -fx-background-color: c49235;
 }
 
-.button#botonEliminarImportadoComic { 
+.button#botonEliminarImportadoComic,.button#botonEliminarImportadoListaComic { 
     -fx-border-width: 5px;
     -fx-background-color: #ec5353;
 }
 
-.button#botonEliminarImportadoComic:hover {
+.button#botonEliminarImportadoComic:hover,.button#botonEliminarImportadoListaComic:hover {
     -fx-background-color: #702626;
 }
 

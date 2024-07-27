@@ -2,9 +2,7 @@ package alarmas;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ForkJoinPool;
 
 import dbmanager.ConectManager;
@@ -64,9 +62,6 @@ public class AlarmaList {
 	private Label alarmaConexionSql = new Label("alarmaConexionSql");
 	private Label iniciarAnimacionEspera = new Label("prontEstadoConexion");
 	private Label iniciarAnimacionEsperaInternet = new Label("prontEstadoConexionInternet");
-
-	private static final Map<Label, Timeline> labelAnimations = new HashMap<>();
-    private static final Map<TextArea, Timeline> textAreaAnimations = new HashMap<>();
 
 	/**
 	 * Instancia de la clase Ventanas para la navegación.
@@ -180,7 +175,7 @@ public class AlarmaList {
 		if (esComprobarConexion) {
 
 			if (ConectManager.estadoConexion) {
-				detenerAnimacionEspera(iniciarAnimacionEspera);
+				detenerAnimacionEspera();
 				iniciarAnimacionConectado(iniciarAnimacionEspera);
 				iniciarAnimacionConectado(iniciarAnimacionEsperaInternet);
 			} else {
@@ -232,7 +227,9 @@ public class AlarmaList {
 	 */
 	public static void iniciarAnimacionAvanzado(Label prontEstadoConexion, String cadena) {
 
-		Timeline timelineError = new Timeline();
+//		detenerAnimacionEspera();
+
+		timelineError = new Timeline();
 		timelineError.setCycleCount(Animation.INDEFINITE);
 		prontEstadoConexion.setStyle("-fx-background-color: #29B6CC;");
 
@@ -251,42 +248,42 @@ public class AlarmaList {
 		timelineError.getKeyFrames().addAll(mostrarEsperando, mostrarPunto, mostrarDosPuntos, mostrarTresPuntos,
 				ocultarTexto);
 
-		// Almacenar la animación en el mapa
-		labelAnimations.put(prontEstadoConexion, timelineError);
-
 		// Iniciar la animación
 		timelineError.play();
 	}
 
-    public static void iniciarAnimacionConectado(Label prontEstadoConexion) {
-//        detenerAnimacionEspera(prontEstadoConexion); // Detener cualquier animación existente para esta Label
+	public static void iniciarAnimacionConectado(Label prontEstadoConexion) {
 
-        Timeline timelineError = new Timeline();
-        timelineError.setCycleCount(Animation.INDEFINITE);
+		timelineError = new Timeline();
+		timelineError.setCycleCount(Animation.INDEFINITE);
 
-        prontEstadoConexion.setStyle("-fx-background-color: #A0F52D");
+//		prontEstadoConexion.setStyle("-fx-background-color: green;");
+		prontEstadoConexion.setStyle("-fx-background-color: #A0F52D");
 
-        // Agregar los keyframes para cambiar el texto
-        KeyFrame mostrarEsperando = new KeyFrame(Duration.ZERO, new KeyValue(prontEstadoConexion.textProperty(), "Conectado"));
-        KeyFrame mostrarPunto = new KeyFrame(Duration.seconds(0.5), new KeyValue(prontEstadoConexion.textProperty(), "Conectado."));
-        KeyFrame mostrarDosPuntos = new KeyFrame(Duration.seconds(1), new KeyValue(prontEstadoConexion.textProperty(), "Conectado.."));
-        KeyFrame mostrarTresPuntos = new KeyFrame(Duration.seconds(1.5), new KeyValue(prontEstadoConexion.textProperty(), "Conectado..."));
-        KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(2), new KeyValue(prontEstadoConexion.textProperty(), ""));
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarEsperando = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontEstadoConexion.textProperty(), "Conectado"));
+		KeyFrame mostrarPunto = new KeyFrame(Duration.seconds(0.5),
+				new KeyValue(prontEstadoConexion.textProperty(), "Conectado."));
+		KeyFrame mostrarDosPuntos = new KeyFrame(Duration.seconds(1),
+				new KeyValue(prontEstadoConexion.textProperty(), "Conectado.."));
+		KeyFrame mostrarTresPuntos = new KeyFrame(Duration.seconds(1.5),
+				new KeyValue(prontEstadoConexion.textProperty(), "Conectado..."));
+		KeyFrame ocultarTexto = new KeyFrame(Duration.seconds(2), new KeyValue(prontEstadoConexion.textProperty(), ""));
 
-        // Agregar los keyframes al timeline
-        timelineError.getKeyFrames().addAll(mostrarEsperando, mostrarPunto, mostrarDosPuntos, mostrarTresPuntos, ocultarTexto);
+		// Agregar los keyframes al timeline
+		timelineError.getKeyFrames().addAll(mostrarEsperando, mostrarPunto, mostrarDosPuntos, mostrarTresPuntos,
+				ocultarTexto);
 
-        // Almacenar la animación en el mapa
-        labelAnimations.put(prontEstadoConexion, timelineError);
+		// Iniciar la animación
+		timelineError.play();
 
-        // Iniciar la animación
-        timelineError.play();
-    }
+	}
 
-	public static void detenerAnimacionEspera(Label prontEstadoConexion) {
-		Timeline timelineError = labelAnimations.remove(prontEstadoConexion);
+	public static void detenerAnimacionEspera() {
 		if (timelineError != null) {
 			timelineError.stop();
+
 		}
 	}
 
@@ -680,56 +677,52 @@ public class AlarmaList {
 		timeline.play();
 	}
 
-    public static void iniciarAnimacionTextArea(TextArea prontInfo, String mensaje) {
+	/**
+	 * Metodo que permite crear una animacion
+	 */
+	public static void iniciarAnimacionTextArea(TextArea prontInfo, String mensaje) {
+		prontInfo.setOpacity(1);
+//		Timeline timeline = new Timeline();
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
 
-        prontInfo.setOpacity(1);
-        Timeline timeline = new Timeline();
-        timeline.setCycleCount(Animation.INDEFINITE);
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarSubida1 = new KeyFrame(Duration.ZERO, new KeyValue(prontInfo.textProperty(), mensaje));
+		KeyFrame mostrarSubida2 = new KeyFrame(Duration.seconds(0.5), new KeyValue(prontInfo.textProperty(), ""));
+		KeyFrame mostrarSubida3 = new KeyFrame(Duration.seconds(1), new KeyValue(prontInfo.textProperty(), mensaje));
+		KeyFrame mostrarSubida4 = new KeyFrame(Duration.seconds(1.5), new KeyValue(prontInfo.textProperty(), ""));
 
-        // Agregar los keyframes para cambiar el texto
-        KeyFrame mostrarSubida1 = new KeyFrame(Duration.ZERO, new KeyValue(prontInfo.textProperty(), mensaje));
-        KeyFrame mostrarSubida2 = new KeyFrame(Duration.seconds(0.5), new KeyValue(prontInfo.textProperty(), ""));
-        KeyFrame mostrarSubida3 = new KeyFrame(Duration.seconds(1), new KeyValue(prontInfo.textProperty(), mensaje));
-        KeyFrame mostrarSubida4 = new KeyFrame(Duration.seconds(1.5), new KeyValue(prontInfo.textProperty(), ""));
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarSubida1, mostrarSubida2, mostrarSubida3, mostrarSubida4);
 
-        // Agregar los keyframes al timeline
-        timeline.getKeyFrames().addAll(mostrarSubida1, mostrarSubida2, mostrarSubida3, mostrarSubida4);
+		// Iniciar la animación
+		timeline.play();
+	}
 
-        // Almacenar la animación en el mapa
-        textAreaAnimations.put(prontInfo, timeline);
+	/**
+	 * Metodo que permite crear una animacion
+	 */
+	public static void iniciarAnimacionGuardado(TextArea prontInfo) {
+		prontInfo.setOpacity(1);
+		prontInfo.setStyle("-fx-background-color: green;");
 
-        // Iniciar la animación
-        timeline.play();
-    }
+		Timeline timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
 
-    /**
-     * Método para iniciar la animación de guardado en un TextArea específico.
-     *
-     * @param prontInfo El TextArea en el que se muestra el mensaje de guardado.
-     */
-    public static void iniciarAnimacionGuardado(TextArea prontInfo) {
+		// Agregar los keyframes para cambiar el texto
+		KeyFrame mostrarSubida1 = new KeyFrame(Duration.ZERO,
+				new KeyValue(prontInfo.textProperty(), "Fichero guardado correctamente"));
+		KeyFrame mostrarSubida2 = new KeyFrame(Duration.seconds(0.5), new KeyValue(prontInfo.textProperty(), ""));
+		KeyFrame mostrarSubida3 = new KeyFrame(Duration.seconds(1),
+				new KeyValue(prontInfo.textProperty(), "Fichero guardado correctamente"));
+		KeyFrame mostrarSubida4 = new KeyFrame(Duration.seconds(1.5), new KeyValue(prontInfo.textProperty(), ""));
 
-        prontInfo.setOpacity(1);
-        prontInfo.setStyle("-fx-background-color: green;");
+		// Agregar los keyframes al timeline
+		timeline.getKeyFrames().addAll(mostrarSubida1, mostrarSubida2, mostrarSubida3, mostrarSubida4);
 
-        Timeline timeline = new Timeline();
-        timeline.setCycleCount(Animation.INDEFINITE);
-
-        // Agregar los keyframes para cambiar el texto
-        KeyFrame mostrarSubida1 = new KeyFrame(Duration.ZERO, new KeyValue(prontInfo.textProperty(), "Fichero guardado correctamente"));
-        KeyFrame mostrarSubida2 = new KeyFrame(Duration.seconds(0.5), new KeyValue(prontInfo.textProperty(), ""));
-        KeyFrame mostrarSubida3 = new KeyFrame(Duration.seconds(1), new KeyValue(prontInfo.textProperty(), "Fichero guardado correctamente"));
-        KeyFrame mostrarSubida4 = new KeyFrame(Duration.seconds(1.5), new KeyValue(prontInfo.textProperty(), ""));
-
-        // Agregar los keyframes al timeline
-        timeline.getKeyFrames().addAll(mostrarSubida1, mostrarSubida2, mostrarSubida3, mostrarSubida4);
-
-        // Almacenar la animación en el mapa
-        textAreaAnimations.put(prontInfo, timeline);
-
-        // Iniciar la animación
-        timeline.play();
-    }
+		// Iniciar la animación
+		timeline.play();
+	}
 
 	/**
 	 * Metodo que permite crear una animacion
@@ -738,8 +731,8 @@ public class AlarmaList {
 		prontInfo.setOpacity(1);
 		prontInfo.setStyle("-fx-background-color: #FF6347;");
 
-		timeline = new Timeline();
-		timeline.setCycleCount(Animation.INDEFINITE);
+		Timeline timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
 
 		// Agregar los keyframes para cambiar el texto
 		KeyFrame mostrarSubida1 = new KeyFrame(Duration.ZERO,
@@ -764,7 +757,7 @@ public class AlarmaList {
 		prontInfo.setStyle("-fx-background-color: yellow;");
 
 		Timeline timeline = new Timeline();
-		timeline.setCycleCount(Animation.INDEFINITE);
+		timeline.setCycleCount(Timeline.INDEFINITE);
 
 		// Agregar los keyframes para cambiar el texto
 		KeyFrame mostrarSubida1 = new KeyFrame(Duration.ZERO,
@@ -921,8 +914,12 @@ public class AlarmaList {
 
 	public static void detenerAnimacionCarga(ProgressIndicator progresoCarga) {
 		Platform.runLater(() -> {
-			progresoCarga.setVisible(false);
-			progresoCarga.setProgress(0); // Establece el progreso en 0 para detener la animación
+
+			if (progresoCarga != null) {
+				progresoCarga.setVisible(false);
+				progresoCarga.setProgress(0); // Establece el progreso en 0 para detener la animación
+			}
+
 		});
 	}
 
@@ -1105,6 +1102,20 @@ public class AlarmaList {
 		timelineGif.play();
 	}
 
+	public static void detenerAnimacionCargaImagen(ImageView cargaImagen) {
+		synchronized (timelineGifLock) {
+			if (timelineGif != null) {
+				timelineGif.stop();
+				timelineGif = null; // Destruir el objeto timeline
+
+				Platform.runLater(() -> {
+					cargaImagen.setImage(null);
+					cargaImagen.setVisible(false);
+				});
+			}
+		}
+	}
+
 	/**
 	 * Carga un GIF desde la ruta proporcionada.
 	 *
@@ -1129,20 +1140,6 @@ public class AlarmaList {
 					InputStream imagenStream = Utilidades.class.getResourceAsStream("/imagenes/accionComic.jpg");
 					Image imagen = new Image(imagenStream);
 					imagenFondo.setImage(imagen);
-				});
-			}
-		}
-	}
-
-	public static void detenerAnimacionCargaImagen(ImageView cargaImagen) {
-		synchronized (timelineGifLock) {
-			if (timelineGif != null) {
-				timelineGif.stop();
-				timelineGif = null; // Destruir el objeto timeline
-
-				Platform.runLater(() -> {
-					cargaImagen.setImage(null);
-					cargaImagen.setVisible(false);
 				});
 			}
 		}
