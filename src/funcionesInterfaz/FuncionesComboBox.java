@@ -297,7 +297,6 @@ public class FuncionesComboBox {
 				.anyMatch(cb -> cb.getValue() != null && !cb.getValue().isEmpty());
 
 		List<String> currentItems = ListasComicsDAO.listaOrdenada.get(index);
-		
 
 		if (atLeastOneNotEmpty) {
 			setupFilteredPopup(comboboxes, comboBox, currentItems);
@@ -573,7 +572,7 @@ public class FuncionesComboBox {
 	 * @param comboboxes La lista de ComboBoxes a rellenar.
 	 */
 	public static void rellenarComboBoxEstaticos(List<ComboBox<String>> comboboxes) {
-		String[] valores = { "Marvel", "League of comics", "Previews World" };
+		String[] valores = { "Marvel", "League of comics", "Previews World", "Panini comics" };
 		String[] ids = { "comboBoxTienda" };
 
 		// Verificar que la lista de ComboBox tenga al menos el mismo tamaño que los

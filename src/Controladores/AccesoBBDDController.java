@@ -35,7 +35,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
-import webScrap.WebScrapNodeJSInstall;
 
 /**
  * Esta clase sirve para acceder a la base de datos y poder realizar diferentes
@@ -205,8 +204,6 @@ public class AccesoBBDDController implements Initializable {
 		if (!Utilidades.verificarVersionJava()) {
 			Platform.exit();
 		}
-
-		WebScrapNodeJSInstall.estadoNodeInstallacion();
 
 		ConectManager.estadoConexion = false;
 		estaConectado = false;

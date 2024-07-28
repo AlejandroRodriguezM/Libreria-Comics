@@ -27,7 +27,6 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import webScrap.WebScrapNodeJSInstall;
 
 public class AccionModificar {
 
@@ -242,15 +241,14 @@ public class AccionModificar {
 			}
 		}
 
-		if (WebScrapNodeJSInstall.checkNodeJSVersion()) {
-			AccionFuncionesComunes.busquedaPorListaDatabase(listaComicsDatabase, tipoUpdate);
+		AccionFuncionesComunes.busquedaPorListaDatabase(listaComicsDatabase, tipoUpdate);
 
-			if (getReferenciaVentana().getTablaBBDD() != null) {
-				getReferenciaVentana().getTablaBBDD().refresh();
-				FuncionesTableView.nombreColumnas();
-				FuncionesTableView.tablaBBDD(ListasComicsDAO.comicsImportados);
-			}
+		if (getReferenciaVentana().getTablaBBDD() != null) {
+			getReferenciaVentana().getTablaBBDD().refresh();
+			FuncionesTableView.nombreColumnas();
+			FuncionesTableView.tablaBBDD(ListasComicsDAO.comicsImportados);
 		}
+
 	}
 
 	public static void eliminarComic() {

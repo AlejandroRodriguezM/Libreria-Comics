@@ -65,7 +65,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import webScrap.WebScrapNodeJSInstall;
 
 /**
  * Clase controladora para la ventana de acciones, que gestiona la interfaz de
@@ -749,10 +748,8 @@ public class VentanaAccionController implements Initializable {
 			if (fichero != null) {
 				enviarReferencias();
 				rellenarCombosEstaticos();
-				if (WebScrapNodeJSInstall.checkNodeJSVersion()) {
 
 					AccionFuncionesComunes.busquedaPorCodigoImportacion(fichero, "");
-				}
 
 			}
 		}
@@ -801,9 +798,7 @@ public class VentanaAccionController implements Initializable {
 						if (fichero != null) {
 							enviarReferencias();
 							rellenarCombosEstaticos();
-							if (WebScrapNodeJSInstall.checkNodeJSVersion()) {
 								AccionFuncionesComunes.busquedaPorCodigoImportacion(fichero, tipoTienda);
-							}
 						}
 
 					} catch (IOException e) {

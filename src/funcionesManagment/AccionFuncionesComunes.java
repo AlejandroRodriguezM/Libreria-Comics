@@ -28,7 +28,6 @@ import dbmanager.ComicManagerDAO;
 import dbmanager.DatabaseManagerDAO;
 import dbmanager.ListasComicsDAO;
 import dbmanager.UpdateManager;
-import ficherosFunciones.FuncionesFicheros;
 import funcionesAuxiliares.Utilidades;
 import funcionesAuxiliares.Ventanas;
 import funcionesInterfaz.AccionControlUI;
@@ -41,9 +40,9 @@ import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import webScrap.FuncionesScrapeoComunes;
 import webScrap.WebScrapGoogleLeagueOfComics;
 import webScrap.WebScraperMarvelComic;
+import webScrap.WebScraperPaniniComics;
 import webScrap.WebScraperPreviewsWorld;
 
 public class AccionFuncionesComunes {
@@ -333,6 +332,8 @@ public class AccionFuncionesComunes {
 			return "marvel";
 		} else if (url.contains("leagueofcomicgeeks.com/comic/")) {
 			return "league of comics";
+		} else if (url.contains("panini.es")) {
+			return "panini";
 		}
 		return "";
 	}
@@ -379,26 +380,6 @@ public class AccionFuncionesComunes {
 			e.printStackTrace();
 			return null;
 		}
-	}
-
-	public static void actualizarComicsPortadas(Comic comicOriginal, String tipoTienda) {
-
-		actualizarValorPortadaComic(comicOriginal, tipoTienda);
-		UpdateManager.actualizarComicBBDD(comicOriginal, "portada");
-
-	}
-
-	public static void actualizarValorPortadaComic(Comic comicOriginal, String tipoTienda) {
-		String codigoNuevoComicGradeo = codigoNuevaImagen();
-		String urlFinal = carpetaPortadas(Utilidades.nombreDB()) + File.separator + codigoNuevoComicGradeo + ".jpg";
-		String imagen = "";
-		if (tipoTienda.equalsIgnoreCase("CGC")) {
-			String scriptPath = FuncionesFicheros.rutaDestinoRecursos + File.separator + "scrapImagenesCGC.js";
-			String urlReferencia = comicOriginal.getUrlReferenciaComic();
-			imagen = FuncionesScrapeoComunes.getImagenFromPuppeteer(urlReferencia, scriptPath);
-		}
-		actualizarPortadaComics(codigoNuevoComicGradeo, imagen);
-		comicOriginal.setDireccionImagenComic(urlFinal);
 	}
 
 	/**
@@ -588,6 +569,9 @@ public class AccionFuncionesComunes {
 		} else if (esImport && tipoTienda.equalsIgnoreCase("previews world")) {
 			comic = WebScraperPreviewsWorld.displayComicInfo(finalValorCodigo,
 					getReferenciaVentana().getProntInfoTextArea());
+		} else if (esImport && tipoTienda.equalsIgnoreCase("panini") || tipoTienda.equalsIgnoreCase("panini comics")) {
+			comic = WebScraperPaniniComics.displayComicInfo(finalValorCodigo,
+					getReferenciaVentana().getProntInfoTextArea());
 		}
 
 		comicInfo.add(comic);
@@ -695,6 +679,7 @@ public class AccionFuncionesComunes {
 							if (linea.contains("https:") || linea.contains("www.") || linea.contains(".com")) {
 								tipoTiendaRef[0] = determinarTipoTienda(linea);
 							}
+							System.out.println(tipoTiendaRef[0]);
 							List<Comic> listaOriginal = obtenerComicInfo(linea, true, tipoTiendaRef[0]);
 							for (Comic comic : listaOriginal) {
 
