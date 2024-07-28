@@ -15,9 +15,9 @@
 	<tabs>
 		<Tab text="Opciones">
 			<content>
-				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="240.0">
+				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="234.0" prefWidth="262.0">
 					<children>
-						<ImageView fitHeight="303.0" fitWidth="265.0" pickOnBounds="true">
+						<ImageView fitHeight="319.0" fitWidth="265.0" layoutX="-0.8" layoutY="-4.0" pickOnBounds="true" AnchorPane.bottomAnchor="-14.0" AnchorPane.leftAnchor="-1.0" AnchorPane.rightAnchor="-2.0" AnchorPane.topAnchor="-4.0">
 							<image>
 								<Image url="@../imagenes/azul.jpg" />
 							</image>
@@ -33,17 +33,17 @@
 						<Button fx:id="botonActualizarSoftware" layoutX="186.0" layoutY="191.0" mnemonicParsing="false" onAction="#comprobarVersion" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Comprobar" />
 						<Label layoutX="6.0" layoutY="147.0" prefHeight="38.0" prefWidth="107.0" style="-fx-text-fill: white;" text="Normalizar Base de Datos" wrapText="true" />
 						<Button fx:id="botonNormalizarDB" layoutX="186.0" layoutY="148.0" mnemonicParsing="false" onAction="#normalizarDataBase" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Normalizar" />
-						<Label layoutX="172.0" layoutY="282.0" prefHeight="17.0" prefWidth="45.0" style="-fx-text-fill: white;" text="Versión" />
-						<Label fx:id="labelVersion" layoutX="222.0" layoutY="282.0" prefHeight="17.0" prefWidth="45.0" style="-fx-text-fill: white;" text="0.0.0.0" />
+						<Label layoutX="172.0" layoutY="281.0" prefHeight="17.0" prefWidth="45.0" style="-fx-text-fill: white;" text="Versión" />
+						<Label fx:id="labelVersion" layoutX="222.0" layoutY="281.0" prefHeight="17.0" prefWidth="45.0" style="-fx-text-fill: white;" text="0.0.0.0" />
 					</children>
 				</AnchorPane>
 			</content>
 		</Tab>
 		<Tab text="Previews">
 			<content>
-				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="246.0" prefWidth="262.0">
 					<children>
-						<ImageView fitHeight="302.0" fitWidth="265.0" pickOnBounds="true">
+						<ImageView fitHeight="319.0" fitWidth="265.0" pickOnBounds="true" AnchorPane.bottomAnchor="-15.199999999999989" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-2.6000000000000227" AnchorPane.topAnchor="0.0">
 							<image>
 								<Image url="@../imagenes/azul.jpg" />
 							</image>
@@ -57,7 +57,7 @@
 						<Label layoutX="69.0" layoutY="114.0" prefHeight="17.0" prefWidth="127.0" style="-fx-background-color: grey;" text="Previews Catalago PDF" />
 						<Button fx:id="botonDescargarPdf" layoutX="78.0" layoutY="196.0" mnemonicParsing="false" onAction="#descargarPreview" prefHeight="42.0" prefWidth="113.0" stylesheets="@../style/genericos_style.css" text="Descargar" />
 						<Label layoutX="172.0" layoutY="281.0" prefHeight="17.0" prefWidth="83.0" style="-fx-text-fill: white;" text="Versión" />
-						<Label fx:id="labelVersionPreviews" layoutX="222.0" layoutY="282.0" prefHeight="17.0" prefWidth="52.0" style="-fx-text-fill: white;" text="0.0.0.0" />
+						<Label fx:id="labelVersionPreviews" layoutX="222.0" layoutY="281.0" prefHeight="17.0" prefWidth="52.0" style="-fx-text-fill: white;" text="0.0.0.0" />
 					</children>
 				</AnchorPane>
 			</content>
@@ -66,7 +66,7 @@
 			<content>
 				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
 					<children>
-						<ImageView fitHeight="302.0" fitWidth="265.0" pickOnBounds="true">
+						<ImageView fitHeight="319.0" fitWidth="265.0" pickOnBounds="true" AnchorPane.bottomAnchor="-19.19999999999999" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-2.6000000000000227" AnchorPane.topAnchor="0.0">
 							<image>
 								<Image url="@../imagenes/azul.jpg" />
 							</image>
@@ -98,7 +98,7 @@
 			<content>
 				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
 					<children>
-						<ImageView fitHeight="302.0" fitWidth="265.0" pickOnBounds="true">
+						<ImageView fitHeight="319.0" fitWidth="265.0" pickOnBounds="true" AnchorPane.bottomAnchor="-16.19999999999999" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-2.6000000000000227" AnchorPane.topAnchor="-0.8000000000000114">
 							<image>
 								<Image url="@../imagenes/azul.jpg" />
 							</image>
@@ -119,7 +119,7 @@
 							</stylesheets>
 						</Button>
 						<Label layoutX="172.0" layoutY="281.0" prefHeight="17.0" prefWidth="83.0" style="-fx-text-fill: white;" text="Versión" />
-						<Label fx:id="labelVersionPortadas" layoutX="222.0" layoutY="282.0" prefHeight="17.0" prefWidth="52.0" style="-fx-text-fill: white;" text="0.0.0.0" />
+						<Label fx:id="labelVersionPortadas" layoutX="222.0" layoutY="281.0" prefHeight="17.0" prefWidth="52.0" style="-fx-text-fill: white;" text="0.0.0.0" />
 						<Label layoutX="6.0" layoutY="155.0" prefHeight="17.0" prefWidth="148.0" style="-fx-text-fill: white;" text="Recomponer portadas" />
 						<Button fx:id="botonRecomponerPortadas" layoutX="185.0" layoutY="146.0" mnemonicParsing="false" onAction="#recomponerPortadas" prefHeight="33.0" prefWidth="73.0" stylesheets="@../style/genericos_style.css" text="Copiar" />
 					</children>

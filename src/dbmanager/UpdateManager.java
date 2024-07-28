@@ -36,6 +36,8 @@ public class UpdateManager {
 			// Manejar un caso no válido si es necesario
 			throw new IllegalArgumentException("Operación no válida: " + operacion);
 		}
+		String keyString = comic.getKeyComentarios().replace(";", "");
+		comic.setKeyComentarios(keyString);
 		modificarComic(comic, sentenciaSQL);
 	}
 

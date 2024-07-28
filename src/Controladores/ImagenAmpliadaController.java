@@ -57,7 +57,6 @@ public class ImagenAmpliadaController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 	    mostrarImagen();
 	    String infoComicString = getComicCache().toString(); // Obtener el contenido del TextArea
-	    System.out.println(infoComicString);
 	    // Crear el menú contextual
 	    ContextMenu contextMenu = new ContextMenu();
 	    MenuItem guardarItem = new MenuItem("Guardar imagen");

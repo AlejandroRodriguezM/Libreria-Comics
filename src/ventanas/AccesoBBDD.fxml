@@ -15,9 +15,9 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="452.0" prefWidth="268.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.AccesoBBDDController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="446.0" prefWidth="265.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.AccesoBBDDController">
    <children>
-      <ImageView fitHeight="452.0" fitWidth="268.0" pickOnBounds="true">
+      <ImageView fitHeight="464.0" fitWidth="268.0" pickOnBounds="true">
          <image>
             <Image url="@../imagenes/accesoWeb.jpg" />
          </image>
@@ -63,7 +63,7 @@
             <Font name="Comic Sans MS" size="18.0" />
          </font>
       </Label>
-      <MenuBar prefHeight="25.0" prefWidth="270.0">
+      <MenuBar prefHeight="26.0" prefWidth="268.0">
         <menus>
           <Menu mnemonicParsing="false" text="Opciones">
             <items>

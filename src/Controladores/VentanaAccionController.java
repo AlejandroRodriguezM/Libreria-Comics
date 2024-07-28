@@ -322,7 +322,7 @@ public class VentanaAccionController implements Initializable {
 
 		referenciaVentana.setBotonSubidaPortada(botonSubidaPortada);
 		referenciaVentana.setBusquedaCodigoTextField(busquedaCodigo);
-		referenciaVentana.setStageVentana(estadoStage());
+
 		referenciaVentana.setProgresoCarga(progresoCarga);
 
 		referenciaVentana.setLabelIdMod(labelId);
@@ -350,7 +350,7 @@ public class VentanaAccionController implements Initializable {
 		referenciaVentana.setMenuNavegacion(menuNavegacion);
 		referenciaVentana.setNavegacionCerrar(navegacionOpciones);
 		referenciaVentana.setNavegacionEstadistica(navegacionEstadistica);
-
+		referenciaVentana.setStageVentana(estadoStage());
 		AccionReferencias.setListaTextFields(
 				FXCollections.observableArrayList(Arrays.asList(textFieldNombreComic, textFieldNumeroComic,
 						textFieldEditorComic, textFieldArtistaComic, textFieldVarianteComic, textFieldGuionistaComic,
@@ -359,7 +359,7 @@ public class VentanaAccionController implements Initializable {
 		referenciaVentana.setControlAccion(Arrays.asList(textFieldNombreComic, textFieldNumeroComic, dataPickFechaP,
 				textFieldArtistaComic, textFieldVarianteComic, textFieldGuionistaComic, textFieldUrlComic,
 				textFieldDireccionComic, textAreaKeyComic, textFieldEditorComic, textFieldCodigoComic,
-				textFieldPrecioComic,textFieldFirmaComic, textFieldIdComic));
+				textFieldPrecioComic, textFieldFirmaComic, textFieldIdComic));
 
 		AccionReferencias.setListaColumnasTabla(Arrays.asList(columnaNombre, columnaNumero, columnaArtista,
 				columnaGuionista, columnaVariante, columnaPrecio));
@@ -461,7 +461,8 @@ public class VentanaAccionController implements Initializable {
 		FuncionesManejoFront.reemplazarEspaciosMultiples(textFieldGuionistaComic);
 		FuncionesManejoFront.reemplazarEspaciosMultiples(textFieldCodigoComic);
 		FuncionesManejoFront.reemplazarEspaciosMultiples(textFieldNumeroComic);
-
+		FuncionesManejoFront.restringirSimboloClave(textAreaKeyComic);
+		FuncionesManejoFront.restringirSimboloClave(textFieldEditorComic);
 		FuncionesManejoFront.permitirUnSimbolo(textFieldNombreComic);
 		FuncionesManejoFront.permitirUnSimbolo(busquedaCodigo);
 		textFieldIdComic.setTextFormatter(FuncionesComboBox.validadorNenteros());
@@ -749,7 +750,7 @@ public class VentanaAccionController implements Initializable {
 				enviarReferencias();
 				rellenarCombosEstaticos();
 
-					AccionFuncionesComunes.busquedaPorCodigoImportacion(fichero, "");
+				AccionFuncionesComunes.busquedaPorCodigoImportacion(fichero, "");
 
 			}
 		}
@@ -798,7 +799,7 @@ public class VentanaAccionController implements Initializable {
 						if (fichero != null) {
 							enviarReferencias();
 							rellenarCombosEstaticos();
-								AccionFuncionesComunes.busquedaPorCodigoImportacion(fichero, tipoTienda);
+							AccionFuncionesComunes.busquedaPorCodigoImportacion(fichero, tipoTienda);
 						}
 
 					} catch (IOException e) {

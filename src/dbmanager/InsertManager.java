@@ -20,7 +20,8 @@ public class InsertManager {
 	 * @throws SQLException si ocurre un error al ejecutar la consulta SQL
 	 */
 	public static void insertarDatos(Comic datos, boolean esImportar) {
-		
+		String keyString = datos.getKeyComentarios().replace(";", "");
+		datos.setKeyComentarios(keyString);
 		DatabaseManagerDAO.subirComic(datos, esImportar);
 	}
 

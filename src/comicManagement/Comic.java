@@ -354,6 +354,24 @@ public class Comic implements Cloneable {
 		}
 		return value;
 	}
+	
+	// Método para sustituir comillas dobles, comillas simples y punto y coma por una cadena vacía
+	public void sustituirCaracteres(Comic comic) {
+		comic.setIdComic(comic.getIdComic().replaceAll("[\"';]", ""));
+		comic.setTituloComic(comic.getTituloComic().replaceAll("[\"';]", ""));
+		comic.setCodigoComic(comic.getCodigoComic().replaceAll("[\"';]", ""));
+		comic.setNumeroComic(comic.getNumeroComic().replaceAll("[\"';]", ""));
+		comic.setPrecioComic(comic.getPrecioComic().replaceAll("[\"';]", ""));
+		comic.setFechaGradeo(comic.getFechaGradeo().replaceAll("[\"';]", ""));
+		comic.setEditorComic(comic.getEditorComic().replaceAll("[\"';]", ""));
+		comic.setKeyComentarios(comic.getKeyComentarios().replaceAll("[\"';]", ""));
+		comic.setFirmaComic(comic.getFirmaComic().replaceAll("[\"';]", ""));
+		comic.setArtistaComic(comic.getArtistaComic().replaceAll("[\"';]", ""));
+		comic.setGuionistaComic(comic.getGuionistaComic().replaceAll("[\"';]", ""));
+		comic.setVarianteComic(comic.getVarianteComic().replaceAll("[\"';]", ""));
+		comic.setDireccionImagenComic(comic.getDireccionImagenComic().replaceAll("[\"';]", ""));
+		comic.setUrlReferenciaComic(comic.getUrlReferenciaComic().replaceAll("[\"';]", ""));
+	}
 
 	@Override
 	public boolean equals(Object o) {

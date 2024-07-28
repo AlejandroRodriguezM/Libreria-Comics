@@ -386,13 +386,16 @@ public class ListasComicsDAO {
 				} else if (columna.equals("direccionImagenComic")) {
 					listaAutoCompletado.add(SOURCE_PATH + Utilidades.obtenerUltimoSegmentoRuta(datosAutocompletado));
 				} else {
-					String[] nombres = datosAutocompletado.split("-");
-					for (String nombre : nombres) {
-						nombre = nombre.trim();
-						if (!nombre.isEmpty()) {
-							listaAutoCompletado.add(nombre);
+					if (datosAutocompletado != null) {
+						String[] nombres = datosAutocompletado.split("-");
+						for (String nombre : nombres) {
+							nombre = nombre.trim();
+							if (!nombre.isEmpty()) {
+								listaAutoCompletado.add(nombre);
+							}
 						}
 					}
+
 				}
 			}
 

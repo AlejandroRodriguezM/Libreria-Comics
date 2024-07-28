@@ -339,6 +339,9 @@ public class FuncionesExcel {
 			AtomicReference<CargaComicsController> cargaComicsControllerRef, File directorioImagenes) {
 		int indiceFinal = 1; // Comenzar desde 1 para omitir la fila de encabezado
 		for (Comic comic : listaComics) {
+
+			comic.sustituirCaracteres(comic);
+
 			Row fila = hoja.createRow(indiceFinal);
 			llenarFilaConDatos(comic, fila);
 
@@ -466,7 +469,7 @@ public class FuncionesExcel {
 					}
 
 					Comic comicNuevo = ComicFichero.datosComicFichero(lineText);
-
+					comicNuevo.sustituirCaracteres(comicNuevo);
 					if (comicNuevo != null) {
 						InsertManager.insertarDatos(comicNuevo, true);
 					}
@@ -631,8 +634,7 @@ public class FuncionesExcel {
 
 	private static void checkCSVColumns(String filePath) throws IOException {
 		// Columnas esperadas
-		String[] expectedColumns = { 
-				"idComic", // ID del cómic
+		String[] expectedColumns = { "idComic", // ID del cómic
 				"tituloComic", // Título del cómic
 				"codigoComic", // Código del cómic
 				"numeroComic", // Número del cómic
@@ -640,8 +642,7 @@ public class FuncionesExcel {
 				"fechaGradeo", // Fecha de gradeo
 				"editorComic", // Editor del cómic
 				"keyComentarios", // Comentarios clave
-				"firmaComic", 
-				"artistaComic", // Artista del cómic
+				"firmaComic", "artistaComic", // Artista del cómic
 				"guionistaComic", // Guionista del cómic
 				"varianteComic", // Variante del cómic
 				"direccionImagenComic", // Dirección de la imagen

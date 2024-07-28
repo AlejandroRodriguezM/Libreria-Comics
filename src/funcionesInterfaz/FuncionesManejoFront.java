@@ -160,6 +160,7 @@ public class FuncionesManejoFront {
 						// No hacer nada
 					} else if (simbolos.contains(lastChar)) {
 						// Eliminar el último carácter ingresado si es un símbolo
+						newValue = newValue.replace(";", "");
 						textField.setText(oldValue);
 					}
 				}
@@ -223,7 +224,7 @@ public class FuncionesManejoFront {
 				if (newValue != null) {
 					// Elimina espacios al principio y al final de la cadena.
 					newValue = newValue.trim();
-
+					newValue = newValue.replace(";", "");
 					// Remueve caracteres no permitidos según allowedPattern
 					newValue = newValue.replaceAll("[^\\p{L}\\p{N}\\s!`´\"\\-,.'\"]", "");
 
@@ -243,6 +244,26 @@ public class FuncionesManejoFront {
 		}
 	}
 
+	public static void restringirSimboloClave(Object control) {
+		if (control instanceof TextField) {
+			TextField textField = (TextField) control;
+			textField.textProperty().addListener((observable, oldValue, newValue) -> {
+				if (newValue != null) {
+					// Elimina espacios al principio y al final de la cadena.
+					newValue = newValue.trim();
+
+					// Remueve el punto y coma
+					newValue = newValue.replace(";", "");
+
+					// Establece el nuevo valor en el campo de texto
+					if (!newValue.equals(textField.getText())) {
+						textField.setText(newValue);
+					}
+				}
+			});
+		}
+	}
+
 	private static String removeAccents(String input) {
 		return input.replaceAll("[áÁ]", "a").replaceAll("[éÉ]", "e").replaceAll("[íÍ]", "i").replaceAll("[óÓ]", "o")
 				.replaceAll("[úÚ]", "u").replaceAll("[üÜ]", "u"); // Añadir más reemplazos según sea necesario
@@ -255,7 +276,7 @@ public class FuncionesManejoFront {
 					// Patrón permitido: letras, números, espacios, comas, puntos, y otros
 					// caracteres específicos
 					String allowedPattern = "[\\p{L}\\p{N}\\s!`´\"\\-,.'@]*";
-
+					newValue = newValue.replace(";", "");
 					// Elimina los símbolos especiales ' " ! ? # @
 					String cleanedValue = newValue.replaceAll("[\\'\"!\\?#@]", "");
 
@@ -294,6 +315,7 @@ public class FuncionesManejoFront {
 				@Override
 				public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 					if (newValue != null) {
+						newValue = newValue.replace(";", "");
 						// Reemplaza múltiples espacios seguidos por un solo espacio.
 						String textoActualizado = newValue.replaceAll("\\s+", " ");
 
@@ -361,7 +383,8 @@ public class FuncionesManejoFront {
 		disableControls(estadoAccion, referenciaVentana.getTituloComicCombobox(),
 				referenciaVentana.getNumeroComicCombobox(), referenciaVentana.getNombreVarianteCombobox(),
 				referenciaVentana.getNombreEditorCombobox(), referenciaVentana.getNombreTiendaCombobox(),
-				referenciaVentana.getNombreArtistaCombobox(), referenciaVentana.getNombreGuionistaCombobox());
+				referenciaVentana.getNombreArtistaCombobox(), referenciaVentana.getNombreGuionistaCombobox(),
+				referenciaVentana.getNombreFirmaCombobox());
 
 		disableTextFields(estadoAccion, referenciaVentana.getTituloComicTextField(), // Título del cómic
 				referenciaVentana.getNombreEditorTextField(), // Nombre del editor

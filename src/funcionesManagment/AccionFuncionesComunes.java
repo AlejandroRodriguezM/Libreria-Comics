@@ -540,6 +540,7 @@ public class AccionFuncionesComunes {
 			String direccionImagenComic = Utilidades.defaultIfNullOrEmpty(comic.getDireccionImagenComic(), "Vacio");
 			String urlReferenciaComic = Utilidades.defaultIfNullOrEmpty(comic.getUrlReferenciaComic(), "Vacio");
 			String valorComic = Utilidades.defaultIfNullOrEmpty(comic.getPrecioComic(), "Vacio");
+			String firmaComic = Utilidades.defaultIfNullOrEmpty(comic.getFirmaComic(), "");
 
 			// Variables relacionadas con la imagen del cómic
 			String imagen = esClonar ? direccionImagenComic : descargarImagenComic(comic);
@@ -547,9 +548,9 @@ public class AccionFuncionesComunes {
 			// Construcción del objeto ComicGradeo usando el builder
 			Comic comicImport = new Comic.ComicGradeoBuilder(idComic, tituloComic).codigoComic(codigoComic)
 					.precioComic(valorComic).numeroComic(numeroComic).fechaGradeo(fechaGradeo).editorComic(editorComic)
-					.keyComentarios(keyComentarios).artistaComic(artistaComic).guionistaComic(guionistaComic)
-					.varianteComic(varianteComic).direccionImagenComic(imagen).urlReferenciaComic(urlReferenciaComic)
-					.build();
+					.keyComentarios(keyComentarios).firmaComic(firmaComic).artistaComic(artistaComic)
+					.guionistaComic(guionistaComic).varianteComic(varianteComic).direccionImagenComic(imagen)
+					.urlReferenciaComic(urlReferenciaComic).build();
 
 			// Añadir el cómic a la lista e actualizar la tabla
 			ListasComicsDAO.comicsImportados.add(comicImport);
@@ -574,6 +575,8 @@ public class AccionFuncionesComunes {
 					getReferenciaVentana().getProntInfoTextArea());
 		}
 
+		String keyString = comic.getKeyComentarios().replace(";", "");
+		comic.setKeyComentarios(keyString);
 		comicInfo.add(comic);
 
 		// Convertir la lista a un Set para eliminar duplicados
@@ -679,7 +682,6 @@ public class AccionFuncionesComunes {
 							if (linea.contains("https:") || linea.contains("www.") || linea.contains(".com")) {
 								tipoTiendaRef[0] = determinarTipoTienda(linea);
 							}
-							System.out.println(tipoTiendaRef[0]);
 							List<Comic> listaOriginal = obtenerComicInfo(linea, true, tipoTiendaRef[0]);
 							for (Comic comic : listaOriginal) {
 

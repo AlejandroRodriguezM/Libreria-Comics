@@ -509,15 +509,6 @@ public class AccionControlUI {
 	public static void controlarEventosInterfazPrincipal(AccionReferencias referenciaVentana) {
 		controlarEventosInterfaz();
 
-		referenciaVentana.getTablaBBDD().getSelectionModel().selectedItemProperty()
-				.addListener((obs, oldSelection, newSelection) -> {
-
-					if (newSelection != null) {
-						// Esto algo hace pero seguramente cambie de idea. Mejor no tocar
-//						Comic idRow = referenciaVentana.getTablaBBDD().getSelectionModel().getSelectedItem();
-					}
-				});
-
 		// Establecer un Listener para el tamaño del AnchorPane
 		referenciaVentana.getRootAnchorPane().widthProperty().addListener((observable, oldValue, newValue) -> {
 

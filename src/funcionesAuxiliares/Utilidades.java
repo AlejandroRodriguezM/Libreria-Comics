@@ -1234,7 +1234,7 @@ public class Utilidades {
 	 * @param inputPaths Lista de URLs que representan los archivos a conservar.
 	 */
 	public static void borrarArchivosNoEnLista(List<String> inputPaths) {
-		String directorioComun = DOCUMENTS_PATH + File.separator + "album_comics" + File.separator
+		String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
 				+ Utilidades.nombreDB() + File.separator + "portadas" + File.separator;
 
 		List<String> nombresArchivosEnDirectorio = obtenerNombresArchivosEnDirectorio(directorioComun);

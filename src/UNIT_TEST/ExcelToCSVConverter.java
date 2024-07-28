@@ -72,7 +72,7 @@ public class ExcelToCSVConverter extends Application {
                 boolean firstCell = true;
 
                 // Add a ; for the idComic column, which is always empty
-                rowString.append(';');
+//                rowString.append(';');
 
                 for (Cell cell : row) {
                     if (!firstCell) {

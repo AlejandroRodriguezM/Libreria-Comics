@@ -381,6 +381,7 @@ public class MenuPrincipalController implements Initializable {
 
 		menuPrecioTotal.setGraphic(Utilidades.createIcon("/Icono/Estadistica/posesion.png", 16, 16));
 		menuEstadisticaEstadistica.setGraphic(Utilidades.createIcon("/Icono/Estadistica/descarga.png", 16, 16));
+		menuComicAleatoria.setGraphic(Utilidades.createIcon("/Icono/Ventanas/aleatorio.png", 16, 16));
 
 		Platform.runLater(() -> {
 			estadoStage().setOnCloseRequest(event -> stop());
@@ -388,7 +389,7 @@ public class MenuPrincipalController implements Initializable {
 			alarmaList.setAlarmaConexionInternet(alarmaConexionInternet);
 			alarmaList.iniciarThreadChecker();
 			urlPreviews = WebScraperCatalogPreviews.urlPreviews();
-			
+
 			enviarReferencias();
 
 			establecerDinamismoAnchor();
@@ -575,7 +576,7 @@ public class MenuPrincipalController implements Initializable {
 	 * numero entero en los comboBox numeroComic y caja_comic
 	 */
 	public void formatearTextField() {
-//		comboboxNumeroComic.getEditor().setTextFormatter(FuncionesComboBox.validadorNenteros());
+		comboboxNumeroComic.getEditor().setTextFormatter(FuncionesComboBox.validadorNenteros());
 	}
 
 	/////////////////////////////////

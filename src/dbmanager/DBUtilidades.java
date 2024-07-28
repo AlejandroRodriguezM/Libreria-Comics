@@ -67,7 +67,6 @@ public class DBUtilidades {
 		connector = agregarCondicion(sql, connector, "codigoComic", comic.getCodigoComic());
 		connector = agregarCondicion(sql, connector, "numeroComic", comic.getNumeroComic());
 		connector = agregarCondicion(sql, connector, "editorComic", comic.getEditorComic());
-		connector = agregarCondicion(sql, connector, "keyComentarios", comic.getKeyComentarios());
 		connector = agregarCondicion(sql, connector, "firmaComic", comic.getFirmaComic());
 		connector = agregarCondicion(sql, connector, "artistaComic", comic.getArtistaComic());
 		connector = agregarCondicion(sql, connector, "guionistaComic", comic.getGuionistaComic());

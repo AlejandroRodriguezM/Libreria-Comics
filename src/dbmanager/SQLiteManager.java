@@ -19,7 +19,7 @@ public class SQLiteManager {
 	 *         error en la conexión
 	 */
 	public static boolean checkDatabaseExists(String nombreDataBase) {
-		File file = new File(DB_FOLDER + nombreDataBase);
+		File file = new File(DB_FOLDER + nombreDataBase + ".db");
 		return !file.exists();
 	}
 
