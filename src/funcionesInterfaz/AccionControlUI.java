@@ -279,21 +279,14 @@ public class AccionControlUI {
 
 	public static boolean comprobarListaValidacion(Comic c) {
 		// Validar campos requeridos y "vacio"
-		if (c.getTituloComic() == null || c.getTituloComic().isEmpty() || c.getTituloComic().equalsIgnoreCase("vacio")
-				|| c.getNumeroComic() == null || c.getNumeroComic().isEmpty() || c.getEditorComic() == null
-				|| c.getEditorComic().isEmpty() || c.getEditorComic().equalsIgnoreCase("vacio")
+		if (c.getTituloComic() == null || c.getTituloComic().isEmpty() || c.getNumeroComic() == null
+				|| c.getNumeroComic().isEmpty() || c.getEditorComic() == null || c.getEditorComic().isEmpty()
 				|| c.getUrlReferenciaComic() == null || c.getUrlReferenciaComic().isEmpty()
-				|| c.getUrlReferenciaComic().equalsIgnoreCase("vacio") || c.getFechaGradeo() == null
-				|| c.getFechaGradeo().isEmpty() || c.getFechaGradeo().equalsIgnoreCase("vacio")
-				|| c.getDireccionImagenComic() == null || c.getDireccionImagenComic().isEmpty()
-				|| c.getDireccionImagenComic().equalsIgnoreCase("vacio") || c.getCodigoComic() == null
-				|| c.getCodigoComic().isEmpty() || c.getCodigoComic().equalsIgnoreCase("vacio")
-				|| c.getKeyComentarios() == null || c.getKeyComentarios().isEmpty()
-				|| c.getKeyComentarios().equalsIgnoreCase("vacio") || c.getArtistaComic() == null
-				|| c.getArtistaComic().isEmpty() || c.getArtistaComic().equalsIgnoreCase("vacio")
-				|| c.getGuionistaComic() == null || c.getGuionistaComic().isEmpty()
-				|| c.getGuionistaComic().equalsIgnoreCase("vacio") || c.getVarianteComic() == null
-				|| c.getVarianteComic().isEmpty() || c.getVarianteComic().equalsIgnoreCase("vacio")) {
+				|| c.getFechaGradeo() == null || c.getFechaGradeo().isEmpty() || c.getDireccionImagenComic() == null
+				|| c.getDireccionImagenComic().isEmpty() || c.getCodigoComic() == null || c.getCodigoComic().isEmpty()
+				|| c.getKeyComentarios() == null || c.getKeyComentarios().isEmpty() || c.getArtistaComic() == null
+				|| c.getArtistaComic().isEmpty() || c.getGuionistaComic() == null || c.getGuionistaComic().isEmpty()
+				|| c.getVarianteComic() == null || c.getVarianteComic().isEmpty()) {
 
 			String mensajePront = "Revisa la lista, algunos campos están mal rellenados.";
 			AlarmaList.mostrarMensajePront(mensajePront, false, referenciaVentana.getProntInfoTextArea());

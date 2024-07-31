@@ -694,8 +694,8 @@ public class AccionFuncionesComunes {
 								mensajesCargaComics(comic, tipoUpdate);
 								processComic(comic, "");
 							}
-							getReferenciaVentana().getTablaBBDD().setOpacity(1);
-							getReferenciaVentana().getTablaBBDD().setDisable(false);
+//							getReferenciaVentana().getTablaBBDD().setOpacity(1);
+//							getReferenciaVentana().getTablaBBDD().setDisable(false);
 						});
 
 					} catch (IOException e) {
