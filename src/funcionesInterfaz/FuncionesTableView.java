@@ -42,7 +42,8 @@ public class FuncionesTableView {
 	 * Fuente utilizada para los tooltips en la interfaz gráfica.
 	 */
 	private static final Font TOOLTIP_FONT = Font.font("Comic Sans MS", FontWeight.NORMAL, FontPosture.REGULAR, 13);
-	private static Tooltip currentTooltip;
+	private static Tooltip currentTooltip = null; // Mantiene el tooltip actual
+	private static TableRow<Comic> highlightedRow = null; // Mantiene la fila resaltada
 
 	private static AccionReferencias referenciaVentana = getReferenciaVentana();
 
@@ -53,8 +54,10 @@ public class FuncionesTableView {
 
 			@Override
 			protected void updateItem(String item, boolean empty) {
+				super.updateItem(item, empty);
 				if (empty || item == null) {
 					setGraphic(null);
+					lastItem = null;
 				} else {
 					if (!item.equals(lastItem)) {
 						lastItem = item;
@@ -76,7 +79,6 @@ public class FuncionesTableView {
 			private void addHyperlink(String url) {
 				ReferenciaHyperlink referenciaHyperlink = new ReferenciaHyperlink("Referencia", url);
 				Hyperlink hyperlink = createHyperlink(referenciaHyperlink);
-
 				vbox.getChildren().add(hyperlink);
 			}
 
@@ -84,15 +86,17 @@ public class FuncionesTableView {
 				Hyperlink hyperlink = new Hyperlink(referenciaHyperlink.getDisplayText());
 				hyperlink.setOnAction(event -> Utilidades.accesoWebWindows(referenciaHyperlink.getUrl()));
 				hyperlink.getStyleClass().add("hyperlink");
-
 				return hyperlink;
 			}
 
 			private void addText(String text) {
 				Text txt = new Text(text);
-
 				vbox.getChildren().add(txt);
+			}
 
+			private boolean isValidUrl(String url) {
+				// Implementar validación de URL según tus necesidades
+				return url != null && url.startsWith("http");
 			}
 		});
 	}
@@ -122,20 +126,33 @@ public class FuncionesTableView {
 		row.setOnMouseMoved(event -> showTooltip(event, row, tooltip));
 		row.setOnMouseExited(event -> hideTooltipIfOutside(event, row, tooltip));
 
-		return row;
-	}
+		// Asegúrate de que solo una fila esté seleccionada a la vez
+		row.setOnMouseClicked(event -> {
+			if (!row.isEmpty()) {
+				// Deseleccionar la fila actual si se hace clic en otra
+				if (row.getTableView().getSelectionModel().getSelectedItem() != row.getItem()) {
+					row.getTableView().getSelectionModel().select(row.getItem());
+				}
+				// Eliminar el estilo de la fila resaltada anterior
+				if (highlightedRow != null && highlightedRow != row) {
+					highlightedRow.setStyle(""); // Restaurar el estilo por defecto
+				}
+				// Aplicar el estilo a la fila actual
+				row.setStyle("-fx-background-color: #BFEFFF;");
+				highlightedRow = row; // Actualizar la fila resaltada actual
+			}
+		});
 
-	private static Tooltip createTooltip() {
-		Tooltip tooltip = new Tooltip();
-		tooltip.setShowDelay(Duration.ZERO);
-		tooltip.setHideDelay(Duration.ZERO);
-		tooltip.setFont(TOOLTIP_FONT);
-		return tooltip;
+		return row;
 	}
 
 	private static void showTooltip(MouseEvent event, TableRow<Comic> row, Tooltip tooltip) {
 		if (!row.isEmpty()) {
-			row.setStyle("-fx-background-color: #BFEFFF;");
+			// Restaurar el estilo de la fila resaltada anterior si existe
+			if (highlightedRow != null && highlightedRow != row) {
+				highlightedRow.setStyle(""); // Restaurar el estilo por defecto
+			}
+			row.setStyle("-fx-background-color: #BFEFFF;"); // Aplicar el estilo a la fila activa
 			Comic comic = row.getItem();
 			if (comic != null) {
 				String mensaje = generateTooltipMessage(comic);
@@ -146,14 +163,29 @@ public class FuncionesTableView {
 				}
 				currentTooltip = tooltip;
 				tooltip.show(row, event.getScreenX() + 10, event.getScreenY() - 20);
+				highlightedRow = row; // Actualizar la fila resaltada actual
 			}
 		}
-		// Cerrar el tooltip cuando se hace clic en una fila
-		row.setOnMouseClicked(e -> {
-			if (currentTooltip != null && currentTooltip.isShowing()) {
-				currentTooltip.hide();
-			}
-		});
+	}
+
+	private static void hideTooltipIfOutside(MouseEvent event, TableRow<Comic> row, Tooltip tooltip) {
+		// Eliminar el tooltip si el ratón sale de la fila
+		if (currentTooltip != null && currentTooltip.isShowing()) {
+			currentTooltip.hide();
+		}
+		// Restaurar el estilo de la fila si no está bajo el ratón
+		if (highlightedRow == row) {
+			row.setStyle(""); // Restaurar el estilo por defecto
+			highlightedRow = null; // Limpiar la fila resaltada actual
+		}
+	}
+
+	private static Tooltip createTooltip() {
+		Tooltip tooltip = new Tooltip();
+		tooltip.setShowDelay(Duration.ZERO);
+		tooltip.setHideDelay(Duration.ZERO);
+		tooltip.setFont(TOOLTIP_FONT);
+		return tooltip;
 	}
 
 	private static String generateTooltipMessage(Comic comic) {
@@ -179,13 +211,6 @@ public class FuncionesTableView {
 		}
 		tooltip.setX(posX);
 		tooltip.setY(posY);
-	}
-
-	private static void hideTooltipIfOutside(MouseEvent event, TableRow<Comic> row, Tooltip tooltip) {
-		if (!row.isEmpty() && !row.getBoundsInLocal().contains(event.getSceneX(), event.getSceneY())) {
-			row.setStyle("");
-			tooltip.hide();
-		}
 	}
 
 	private static void disableFocusTraversal() {
