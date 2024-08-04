@@ -914,8 +914,12 @@ public class AlarmaList {
 
 	public static void detenerAnimacionCarga(ProgressIndicator progresoCarga) {
 		Platform.runLater(() -> {
-			progresoCarga.setVisible(false);
-			progresoCarga.setProgress(0); // Establece el progreso en 0 para detener la animación
+
+			if (progresoCarga != null) {
+				progresoCarga.setVisible(false);
+				progresoCarga.setProgress(0); // Establece el progreso en 0 para detener la animación
+			}
+
 		});
 	}
 
@@ -1098,6 +1102,20 @@ public class AlarmaList {
 		timelineGif.play();
 	}
 
+	public static void detenerAnimacionCargaImagen(ImageView cargaImagen) {
+		synchronized (timelineGifLock) {
+			if (timelineGif != null) {
+				timelineGif.stop();
+				timelineGif = null; // Destruir el objeto timeline
+
+				Platform.runLater(() -> {
+					cargaImagen.setImage(null);
+					cargaImagen.setVisible(false);
+				});
+			}
+		}
+	}
+
 	/**
 	 * Carga un GIF desde la ruta proporcionada.
 	 *
@@ -1122,20 +1140,6 @@ public class AlarmaList {
 					InputStream imagenStream = Utilidades.class.getResourceAsStream("/imagenes/accionComic.jpg");
 					Image imagen = new Image(imagenStream);
 					imagenFondo.setImage(imagen);
-				});
-			}
-		}
-	}
-
-	public static void detenerAnimacionCargaImagen(ImageView cargaImagen) {
-		synchronized (timelineGifLock) {
-			if (timelineGif != null) {
-				timelineGif.stop();
-				timelineGif = null; // Destruir el objeto timeline
-
-				Platform.runLater(() -> {
-					cargaImagen.setImage(null);
-					cargaImagen.setVisible(false);
 				});
 			}
 		}

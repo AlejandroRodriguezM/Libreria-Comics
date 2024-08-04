@@ -46,16 +46,13 @@ import Controladores.CargaComicsController;
 import comicManagement.Comic;
 import comicManagement.ComicFichero;
 import dbmanager.ComicManagerDAO;
-import dbmanager.ConectManager;
 import dbmanager.DBUtilidades.TipoBusqueda;
+import dbmanager.InsertManager;
 import funcionesAuxiliares.Utilidades;
 import funcionesAuxiliares.Ventanas;
-import funcionesInterfaz.FuncionesManejoFront;
-import dbmanager.InsertManager;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.Stage;
 
 /**
  * Esta clase sirve para crear tanto los ficheros Excel como los ficheros CSV,
@@ -162,7 +159,6 @@ public class FuncionesExcel {
 		if (directorio == null) {
 			return null; // O puedes lanzar una excepción o hacer algo más, dependiendo de tu lógica
 		}
-		System.out.println(directorio.toPath());
 		String carpetaImagenes = directorio.getAbsolutePath() + File.separator + "copiaPortadas";
 		return new File(carpetaImagenes);
 	}
@@ -309,9 +305,22 @@ public class FuncionesExcel {
 	}
 
 	private void crearEncabezados(Sheet hoja) {
-		String[] encabezados = { "ID", "nomComic", "nivel_gradeo", "precio_comic", "codigo_comic", "numComic",
-				"nomVariante", "Firma", "nomEditorial", "Formato", "Procedencia", "fecha_publicacion", "nomGuionista",
-				"nomDibujante", "puntuacion", "portada", "key_issue", "url_referencia", "estado" };
+		String[] encabezados = { "idComic", // ID del cómic
+				"tituloComic", // Título del cómic
+				"codigoComic", // Código del cómic
+				"numeroComic", // Número del cómic
+				"precioComic", // Precio del cómic
+				"fechaGradeo", // Fecha de grado
+				"editorComic", // Editor del cómic
+				"keyComentarios", // Comentarios
+				"firmaComic", // Firma del comic
+				"artistaComic", // Artista del cómic
+				"guionistaComic", // Guionista del cómic
+				"varianteComic", // Variante del cómic
+				"direccionImagenComic", // Dirección de la imagen
+				"urlReferenciaComic" // URL de referencia
+		};
+
 		Row fila = hoja.createRow(0);
 		for (int i = 0; i < encabezados.length; i++) {
 			fila.createCell(i).setCellValue(encabezados[i]);
@@ -330,6 +339,9 @@ public class FuncionesExcel {
 			AtomicReference<CargaComicsController> cargaComicsControllerRef, File directorioImagenes) {
 		int indiceFinal = 1; // Comenzar desde 1 para omitir la fila de encabezado
 		for (Comic comic : listaComics) {
+
+			comic.sustituirCaracteres(comic);
+
 			Row fila = hoja.createRow(indiceFinal);
 			llenarFilaConDatos(comic, fila);
 
@@ -349,25 +361,20 @@ public class FuncionesExcel {
 	}
 
 	private void llenarFilaConDatos(Comic comic, Row fila) {
-		fila.createCell(0).setCellValue("");
-		fila.createCell(1).setCellValue(comic.getNombre());
-		fila.createCell(2).setCellValue(comic.getValorGradeo());
-		fila.createCell(3).setCellValue(comic.getprecioComic());
-		fila.createCell(4).setCellValue(comic.getcodigoComic());
-		fila.createCell(5).setCellValue(comic.getNumero());
-		fila.createCell(6).setCellValue(comic.getVariante());
-		fila.createCell(7).setCellValue(comic.getFirma());
-		fila.createCell(8).setCellValue(comic.getEditorial());
-		fila.createCell(9).setCellValue(comic.getFormato());
-		fila.createCell(10).setCellValue(comic.getProcedencia());
-		fila.createCell(11).setCellValue(comic.getFecha());
-		fila.createCell(12).setCellValue(comic.getGuionista());
-		fila.createCell(13).setCellValue(comic.getDibujante());
-		fila.createCell(14).setCellValue(comic.getPuntuacion());
-		fila.createCell(15).setCellValue(comic.getImagen());
-		fila.createCell(16).setCellValue(comic.getkeyIssue());
-		fila.createCell(17).setCellValue(comic.getUrlReferencia());
-		fila.createCell(18).setCellValue(comic.getEstado());
+		fila.createCell(0).setCellValue(comic.getIdComic());
+		fila.createCell(1).setCellValue(comic.getTituloComic());
+		fila.createCell(2).setCellValue(comic.getCodigoComic());
+		fila.createCell(3).setCellValue(comic.getNumeroComic());
+		fila.createCell(4).setCellValue(comic.getPrecioComic());
+		fila.createCell(5).setCellValue(comic.getFechaGradeo());
+		fila.createCell(6).setCellValue(comic.getEditorComic());
+		fila.createCell(7).setCellValue(comic.getKeyComentarios());
+		fila.createCell(8).setCellValue(comic.getFirmaComic());
+		fila.createCell(9).setCellValue(comic.getArtistaComic());
+		fila.createCell(10).setCellValue(comic.getGuionistaComic());
+		fila.createCell(11).setCellValue(comic.getVarianteComic());
+		fila.createCell(12).setCellValue(comic.getDireccionImagenComic());
+		fila.createCell(13).setCellValue(comic.getUrlReferenciaComic());
 	}
 
 	private void actualizarProgreso(AtomicReference<CargaComicsController> cargaComicsControllerRef) {
@@ -429,7 +436,7 @@ public class FuncionesExcel {
 			File directorio = new File(DEFAULT_PORTADA_IMAGE_PATH + File.separator);
 
 			// Obtener confirmación para continuar la subida de portadas
-			CompletableFuture<Boolean> confirmacionFuture = nav.cancelar_subida_portadas();
+			CompletableFuture<Boolean> confirmacionFuture = nav.cancelarSubidaPortadas();
 			boolean continuarSubida = confirmacionFuture.join();
 
 			// Actualizar el directorio si se va a continuar la subida de portadas
@@ -462,7 +469,7 @@ public class FuncionesExcel {
 					}
 
 					Comic comicNuevo = ComicFichero.datosComicFichero(lineText);
-
+					comicNuevo.sustituirCaracteres(comicNuevo);
 					if (comicNuevo != null) {
 						InsertManager.insertarDatos(comicNuevo, true);
 					}
@@ -506,7 +513,7 @@ public class FuncionesExcel {
 		String nombrePortada = "";
 		String nombreModificado = "";
 		if (esImportado) {
-			nombrePortada = Utilidades.obtenerNombrePortada(false, comicNuevo.getImagen());
+			nombrePortada = Utilidades.obtenerNombrePortada(false, comicNuevo.getDireccionImagenComic());
 			nombreModificado = Utilidades.convertirNombreArchivo(nombrePortada);
 			if (directorio != null && !Utilidades.existeArchivo(directorio.getAbsolutePath(), nombrePortada)) {
 				copiarPortadaPredeterminada(DEFAULT_PORTADA_IMAGE_PATH, nombreModificado);
@@ -522,7 +529,6 @@ public class FuncionesExcel {
 		// Añadir información del cómic a la lista mensajesUnicos
 		mensajesUnicos.add(mensajeId + ": " + comicInfo);
 
-
 		if (esImportado && !Utilidades.existeArchivo(DEFAULT_PORTADA_IMAGE_PATH, nombreModificado)) {
 			mensajesUnicos.add(comicInfo);
 		}
@@ -535,7 +541,14 @@ public class FuncionesExcel {
 	}
 
 	private static String buildComicInfo(Comic comic) {
-		return "Comic: " + comic.getNombre() + " - " + comic.getNumero() + " - " + comic.getVariante() + "\n";
+		// Construye la información del cómic en un formato más detallado y legible
+		StringBuilder info = new StringBuilder();
+
+		// Añade el nombre del cómic
+		info.append("Nombre del Cómic: ").append(comic.getTituloComic()).append("\n");
+
+		// Devuelve la cadena construida
+		return info.toString();
 	}
 
 	private static double calculateProgress() {
@@ -621,9 +634,20 @@ public class FuncionesExcel {
 
 	private static void checkCSVColumns(String filePath) throws IOException {
 		// Columnas esperadas
-		String[] expectedColumns = { "ID", "nomComic", "nivel_gradeo", "precio_comic", "codigo_comic", "numComic",
-				"nomVariante", "Firma", "nomEditorial", "Formato", "Procedencia", "fecha_publicacion", "nomGuionista",
-				"nomDibujante", "puntuacion", "portada", "key_issue", "url_referencia", "estado" };
+		String[] expectedColumns = { "idComic", // ID del cómic
+				"tituloComic", // Título del cómic
+				"codigoComic", // Código del cómic
+				"numeroComic", // Número del cómic
+				"precioComic", // Número del cómic
+				"fechaGradeo", // Fecha de gradeo
+				"editorComic", // Editor del cómic
+				"keyComentarios", // Comentarios clave
+				"firmaComic", "artistaComic", // Artista del cómic
+				"guionistaComic", // Guionista del cómic
+				"varianteComic", // Variante del cómic
+				"direccionImagenComic", // Dirección de la imagen
+				"urlReferenciaComic" // URL de referencia
+		};
 
 		try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
 			String line;
@@ -635,7 +659,9 @@ public class FuncionesExcel {
 					throw new IOException("El número de columnas no coincide");
 				}
 				for (int i = 0; i < columns.length; i++) {
+					System.out.println(expectedColumns[i]);
 					if (!columns[i].trim().equalsIgnoreCase(expectedColumns[i])) {
+						System.err.println(expectedColumns[i] + " " + columns[i]);
 						throw new IOException("El nombre de la columna en la posición " + i + " no coincide");
 					}
 				}

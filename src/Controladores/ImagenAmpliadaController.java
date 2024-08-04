@@ -27,7 +27,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.stage.FileChooser;
+import javafx.scene.text.TextBoundsType;
 import javafx.stage.Stage;
 
 public class ImagenAmpliadaController implements Initializable {
@@ -37,13 +37,15 @@ public class ImagenAmpliadaController implements Initializable {
 	 */
 	private Stage stage;
 
-	public static Comic comicInfo;
+	public static Comic comicCache;
 
 	@FXML
 	private ImageView imagenAmpliada;
 
 	@FXML
 	private TextArea infoComic;
+	
+	public String idComic;
 
 	/**
 	 * Inicializa el controlador cuando se carga la vista.
@@ -53,55 +55,40 @@ public class ImagenAmpliadaController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		mostrarImagen();
-		String infoComicString = "";
-		// Crear el menú contextual
-		ContextMenu contextMenu = new ContextMenu();
-		MenuItem guardarItem = new MenuItem("Guardar imagen");
-		guardarItem.setOnAction(event -> guardarImagen(comicInfo.getImagen()));
-		contextMenu.getItems().add(guardarItem);
+	    mostrarImagen();
+	    String infoComicString = getComicCache().toString(); // Obtener el contenido del TextArea
+	    // Crear el menú contextual
+	    ContextMenu contextMenu = new ContextMenu();
+	    MenuItem guardarItem = new MenuItem("Guardar imagen");
+	    guardarItem.setOnAction(event -> guardarImagen(getComicCache().getDireccionImagenComic()));
+	    contextMenu.getItems().add(guardarItem);
 
-		// Manejar el evento de clic derecho para mostrar el menú contextual
-		imagenAmpliada.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-			if (event.getButton() == MouseButton.SECONDARY) {
-				contextMenu.show(imagenAmpliada, event.getScreenX(), event.getScreenY());
-			}
-		});
+	    // Manejar el evento de clic derecho para mostrar el menú contextual
+	    imagenAmpliada.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+	        if (event.getButton() == MouseButton.SECONDARY) {
+	            contextMenu.show(imagenAmpliada, event.getScreenX(), event.getScreenY());
+	        }
+	    });
 
-		if (!comicInfo.devolverKeyIssue().isEmpty()) {
-			infoComicString = comicInfo.infoComic() + "\n" + comicInfo.devolverKeyIssue();
+	    infoComic.setText(infoComicString);
 
-		} else {
-			infoComicString = comicInfo.infoComic();
-
-		}
-
-		infoComic.setText(infoComicString);
-
-		// Obtener el ancho del TextArea desde el FXML
-		double textAreaWidth = infoComic.getPrefWidth();
-		double textAreaHeight = infoComic.getPrefHeight();
-
-		infoComic.setPrefHeight(computeTextHeight(infoComicString, infoComic.getFont(), textAreaWidth, textAreaHeight));
-		Platform.runLater(() -> {
-			FuncionesManejoFront.getStageVentanas().add(estadoStage());
-		});
+	    // Calcular la altura del texto y ajustar el tamaño del TextArea
+	    Platform.runLater(() -> {
+	        double textAreaWidth = infoComic.getPrefWidth();
+	        double textHeight = computeTextHeight(infoComicString, infoComic.getFont(), textAreaWidth);
+	        infoComic.setPrefHeight(textHeight + 40);
+	        FuncionesManejoFront.getStageVentanas().add(estadoStage());
+	    });
 	}
 
-	// Método para calcular la altura del texto de manera dinámica
-	private double computeTextHeight(String text, Font font, double textAreaWidth, double textAreaHeight) {
-		// Crear un nodo Text para medir el tamaño real del texto
-		Text textNode = new Text(text);
-		textNode.setFont(font);
-
-		// Establecer el ancho del nodo Text para envolver el texto correctamente
-		textNode.setWrappingWidth(textAreaWidth);
-
-		// Calcular la altura necesaria para mostrar todo el texto
-		double totalHeight = textNode.getLayoutBounds().getHeight();
-
-		return totalHeight * 1.1;
-	}
+	// Método para calcular la altura del texto con 4 tabulaciones
+    private double computeTextHeight(String text, Font font, double width) {
+        Text tempText = new Text(text);
+        tempText.setFont(font);
+        tempText.setWrappingWidth(width);
+        tempText.setBoundsType(TextBoundsType.VISUAL);
+        return tempText.getLayoutBounds().getHeight();
+    }
 
 	public Scene miStageVentana() {
 		Node rootNode = imagenAmpliada;
@@ -123,8 +110,8 @@ public class ImagenAmpliadaController implements Initializable {
 
 		String direccionFinalImg = "";
 		Image imagenCargada = null;
-		if (Utilidades.existePortada(comicInfo.getImagen())) {
-			direccionFinalImg = comicInfo.getImagen();
+		if (Utilidades.existePortada(getComicCache().getDireccionImagenComic())) {
+			direccionFinalImg = getComicCache().getDireccionImagenComic();
 			imagenCargada = new Image(new File(direccionFinalImg).toURI().toString(), true);
 		} else {
 			InputStream is = getClass().getResourceAsStream("/imagenes/sinPortada.jpg");
@@ -189,6 +176,34 @@ public class ImagenAmpliadaController implements Initializable {
 		this.stage = stage;
 	}
 
+	/**
+	 * @return the idComic
+	 */
+	public String getIdComic() {
+		return idComic;
+	}
+
+	/**
+	 * @param idComic the idComic to set
+	 */
+	public void setIdComic(String idComic) {
+		this.idComic = idComic;
+	}
+
+	/**
+	 * @return the comicCache
+	 */
+	public static Comic getComicCache() {
+		return comicCache;
+	}
+
+	/**
+	 * @param comicCache the comicCache to set
+	 */
+	public static void setComicCache(Comic comicCache) {
+		ImagenAmpliadaController.comicCache = comicCache;
+	}
+	
 	/**
 	 * Cierra la ventana asociada a este controlador, si está disponible. Si no se
 	 * ha establecido una instancia de ventana (Stage), este método no realiza

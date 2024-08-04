@@ -57,13 +57,11 @@ import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
-import Apis.ApiISBNGeneral;
-import Apis.ApiMarvel;
 import Controladores.OpcionesAvanzadasController;
 import comicManagement.Comic;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
-import dbmanager.ListaComicsDAO;
+import dbmanager.ListasComicsDAO;
 import dbmanager.SQLiteManager;
 import dbmanager.SelectManager;
 import ficherosFunciones.FuncionesFicheros;
@@ -75,6 +73,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -84,7 +83,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import webScrap.WebScraperPreviewsWorld;
 
 /**
  * Esta clase sirve para realizar diferentes funciones realizanas con la
@@ -96,6 +94,8 @@ import webScrap.WebScraperPreviewsWorld;
 public class Utilidades {
 
 	private static boolean fileChooserOpen = false;
+
+	private static final DateTimeFormatter SQLITE_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	/**
 	 * Sistema operativo actual.
@@ -123,8 +123,8 @@ public class Utilidades {
 	private static AccionReferencias referenciaVentana = getReferenciaVentana();
 	private static AccionReferencias referenciaVentanaPrincipal = getReferenciaVentanaPrincipal();
 
-	private static final String DB_FOLDER = System.getProperty("user.home") + File.separator + "AppData"
-			+ File.separator + "Roaming" + File.separator + "libreria" + File.separator;
+	public static final String DB_FOLDER = System.getProperty("user.home") + File.separator + "AppData" + File.separator
+			+ "Roaming" + File.separator + "libreria" + File.separator;
 
 	/**
 	 * Verifica si el sistema operativo es Windows.
@@ -278,7 +278,7 @@ public class Utilidades {
 		InputStream input = null;
 
 		if (!file.exists()) {
-			input = Utilidades.class.getResourceAsStream("sinPortada.jpg");
+			input = Utilidades.class.getResourceAsStream("/imagenes/sinPortada.jpg");
 			if (input == null) {
 				throw new FileNotFoundException("La imagen predeterminada no se encontró en el paquete");
 			}
@@ -383,26 +383,40 @@ public class Utilidades {
 	public String obtenerNombreCompleto(Comic datos) {
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
-		String defaultImagePath = documentsPath + File.separator + "libreria_comics" + File.separator
+		String defaultImagePath = documentsPath + File.separator + "gradeo_comic" + File.separator
 				+ ConectManager.DB_NAME + File.separator + "portadas" + File.separator;
 		return defaultImagePath + crearNuevoNombre(datos);
 	}
 
-	/**
-	 * Crea un nuevo nombre de archivo para un cómic con información específica.
-	 *
-	 * @param datos Los datos del cómic.
-	 * @return El nuevo nombre de archivo del cómic con formato para archivo.
-	 */
 	public String crearNuevoNombre(Comic datos) {
-		String nombre_comic = datos.getNombre().replace(" ", "_").replace(":", "_").replace("-", "_");
-		String numero_comic = datos.getNumero();
-		String variante_comic = datos.getVariante().replace(" ", "_").replace(",", "_").replace("-", "_").replace(":",
-				"_");
-		String fecha_comic = datos.getFecha();
-		String nombre_completo = nombre_comic + "_" + numero_comic + "_" + variante_comic + "_" + fecha_comic;
+		// Obtener los valores y reemplazar caracteres no válidos
+		String nombreComic = sanitizeString(datos.getTituloComic()); // Cambiado a getTituloComic() según los getters
+																		// proporcionados
+		String numeroComic = sanitizeString(datos.getNumeroComic()); // Cambiado a getNumeroComic() según los getters
+																		// proporcionados
+		String editorialComic = sanitizeString(datos.getEditorComic()); // Cambiado a getEditorComic() según los getters
+																		// proporcionados
+
+		// Construir el nombre completo
+		String nombreCompleto = String.join("_", nombreComic, numeroComic, editorialComic);
 		String extension = ".jpg";
-		return nombre_completo + extension;
+
+		return nombreCompleto + extension;
+	}
+
+	/**
+	 * Reemplaza caracteres no válidos para nombres de archivos.
+	 *
+	 * @param input Cadena de entrada a limpiar.
+	 * @return Cadena de entrada limpia.
+	 */
+	private String sanitizeString(String input) {
+		if (input == null) {
+			return "";
+		}
+		return input.replace(" ", "_").replace(":", "_").replace("-", "_").replace(",", "_").replace("\\", "_")
+				.replace("/", "_").replace("?", "_").replace("*", "_").replace("\"", "_").replace("<", "_")
+				.replace(">", "_").replace("|", "_");
 	}
 
 	/**
@@ -429,8 +443,8 @@ public class Utilidades {
 
 			String userDir = System.getProperty("user.home");
 			String documentsPath = userDir + File.separator + "Documents";
-			String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator
-					+ ConectManager.DB_NAME + File.separator + "portadas";
+			String sourcePath = documentsPath + File.separator + "album_comics" + File.separator + ConectManager.DB_NAME
+					+ File.separator + "portadas";
 			File sourceFolder = new File(sourcePath);
 
 			String ubicacion = userDir + File.separator + "AppData" + File.separator + "Roaming";
@@ -458,8 +472,8 @@ public class Utilidades {
 				backupsFolder.mkdirs();
 			}
 			final String DB_NAME = ConectManager.DB_NAME;
-			final String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
-					+ DB_NAME + File.separator;
+			final String directorioComun = DOCUMENTS_PATH + File.separator + "album_comics" + File.separator + DB_NAME
+					+ File.separator;
 			final String directorioOriginal = directorioComun + "portadas" + File.separator;
 			String backupFileName = "portadas_" + dateFormat.format(new Date());
 			String backupPath = carpetaLibreria + File.separator + backupFileName;
@@ -472,7 +486,7 @@ public class Utilidades {
 	public static void eliminarArchivosEnCarpeta() {
 		String userDir = System.getProperty("user.home");
 		String documentsPath = userDir + File.separator + "Documents";
-		String sourcePath = documentsPath + File.separator + "libreria_comics" + File.separator + ConectManager.DB_NAME
+		String sourcePath = documentsPath + File.separator + "album_comics" + File.separator + ConectManager.DB_NAME
 				+ File.separator + "portadas";
 
 		try {
@@ -513,8 +527,6 @@ public class Utilidades {
 	 * @throws IOException Si hay un error al leer el contenido de la carpeta.
 	 */
 	public static void convertirNombresCarpetas(String rutaCarpeta) throws IOException {
-
-		System.out.println(rutaCarpeta);
 
 		File carpeta = new File(rutaCarpeta);
 
@@ -924,6 +936,34 @@ public class Utilidades {
 		}
 	}
 
+	public static String extractCodeFromUrl(String url) {
+		if (url == null || url.isEmpty()) {
+			return null;
+		}
+
+		try {
+			// Crear un objeto URI a partir de la cadena URL
+			URI uri = new URI(url);
+
+			// Obtener la ruta de la URL
+			String path = uri.getPath();
+
+			// Verificar que la ruta no sea nula o vacía
+			if (path == null || path.isEmpty()) {
+				return null;
+			}
+
+			// Dividir la ruta en segmentos por el carácter '/'
+			String[] segments = path.split("/");
+
+			// Devolver el último segmento que es el código deseado
+			return segments[segments.length - 1];
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	/**
 	 * Borra un archivo de imagen dada su ruta.
 	 *
@@ -986,18 +1026,16 @@ public class Utilidades {
 				String extension = obtenerExtension(nuevoNombre);
 				Path rutaDestino = Path.of(carpetaDestino, nuevoNombre);
 
-				if (!extension.equals("jpg")) {
-					try (InputStream in = url.openStream()) {
+				try (InputStream in = url.openStream()) {
+					if (extension.equalsIgnoreCase("jpg")) {
+						Files.copy(in, rutaDestino, StandardCopyOption.REPLACE_EXISTING);
+					} else {
 						BufferedImage image = ImageIO.read(in);
 						if (image == null) {
 							System.err.println("No se pudo cargar la imagen desde " + urlImagen);
 							return false;
 						}
 						ImageIO.write(image, "jpg", rutaDestino.toFile());
-					}
-				} else {
-					try (InputStream in = url.openStream()) {
-						Files.copy(in, rutaDestino, StandardCopyOption.REPLACE_EXISTING);
 					}
 				}
 
@@ -1314,7 +1352,7 @@ public class Utilidades {
 	 */
 	public static void comprobacionListaComics() {
 
-		if (ListaComicsDAO.listaComics.isEmpty()) {
+		if (ListasComicsDAO.listaComics.isEmpty()) {
 			return;
 		}
 
@@ -1331,7 +1369,7 @@ public class Utilidades {
 	 */
 	public static String obtenerIdComicSeleccionado(TableView<Comic> tablaBBDD) {
 		Comic idRow = tablaBBDD.getSelectionModel().getSelectedItem();
-		return (idRow != null) ? idRow.getid() : null;
+		return (idRow != null) ? idRow.getIdComic() : null;
 	}
 
 	/**
@@ -1343,8 +1381,8 @@ public class Utilidades {
 	 */
 	public static Comic obtenerComicSeleccionado(String idComic) {
 
-		if (!ListaComicsDAO.comicsImportados.isEmpty()) {
-			return ListaComicsDAO.buscarComicPorID(ListaComicsDAO.comicsImportados, idComic);
+		if (!ListasComicsDAO.comicsImportados.isEmpty()) {
+			return ListasComicsDAO.buscarComicPorID(ListasComicsDAO.comicsImportados, idComic);
 		} else {
 			return SelectManager.comicDatos(idComic);
 		}
@@ -1470,28 +1508,6 @@ public class Utilidades {
 
 		nav.alertaException(e.toString());
 		e.printStackTrace();
-	}
-
-	public static boolean codigoCorrectoImportado(String valorCodigo) {
-		try {
-			String finalValorCodigo = eliminarEspacios(valorCodigo).replace("-", "");
-			ApiISBNGeneral isbnGeneral = new ApiISBNGeneral();
-			Comic comicInfo = null;
-
-			if (finalValorCodigo.length() == 9) {
-				comicInfo = WebScraperPreviewsWorld.displayComicInfo(finalValorCodigo.trim(), null);
-			} else {
-				comicInfo = ApiMarvel.infoComicCode(finalValorCodigo.trim(), null);
-
-				if (comicInfo == null) {
-					comicInfo = isbnGeneral.getBookInfo(finalValorCodigo.trim(), null);
-				}
-			}
-			return comicInfo != null; // Devuelve true si se encontró información del cómic.
-		} catch (Exception e) {
-			manejarExcepcion(e);
-			return false;
-		}
 	}
 
 	public static int contarLineasFichero(File fichero) {
@@ -1732,16 +1748,12 @@ public class Utilidades {
 									throw new IOException("Error al cargar la imagen por defecto.");
 								}
 								// Actualizar la interfaz de usuario en el hilo de JavaFX
-								Platform.runLater(() -> {
-									imageView.setImage(imagenCargada);
-								});
+								Platform.runLater(() -> imageView.setImage(imagenCargada));
 								return imagenCargada;
 							}
 						}
 
-						// Si el archivo existe, cargar la imagen desde la ruta especificada
-						String imageUrl = fichero.toURI().toURL().toString();
-						Image imagenCargada = new Image(imageUrl, 250, 0, true, true);
+						Image imagenCargada = new Image(new File(urlImagen).toURI().toString(), true);
 
 						// Verificar si la imagen se ha cargado correctamente
 						if (imagenCargada.isError()) {
@@ -1749,9 +1761,7 @@ public class Utilidades {
 						}
 
 						// Actualizar la interfaz de usuario en el hilo de JavaFX
-						Platform.runLater(() -> {
-							imageView.setImage(imagenCargada);
-						});
+						Platform.runLater(() -> imageView.setImage(imagenCargada));
 						return imagenCargada;
 					} catch (Exception e) {
 						Thread.sleep(1500); // Puedes ajustar el tiempo de espera según sea necesario
@@ -1778,7 +1788,7 @@ public class Utilidades {
 		String nombreCarpeta = archivoOriginal.getParent();
 		String extension = ".jpg"; // La extensión siempre será .jpg
 
-		String carpetaPortada = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator
+		String carpetaPortada = DOCUMENTS_PATH + File.separator + "album_comics" + File.separator
 				+ ConectManager.DB_NAME + File.separator + "portadas";
 
 		String nombreAleatorio = Utilidades.generarCodigoUnico(carpetaPortada);
@@ -1811,6 +1821,7 @@ public class Utilidades {
 		for (Node elemento : elementos) {
 
 			if (elemento != null) {
+
 				if (verElemento) {
 					elemento.setVisible(false);
 					elemento.setDisable(true);
@@ -1827,7 +1838,7 @@ public class Utilidades {
 		Task<Void> task = new Task<Void>() {
 			@Override
 			protected Void call() throws Exception {
-				String urlDescarga = "https://github.com/AlejandroRodriguezM/Libreria-Comics/releases/latest/download/Libreria.exe";
+				String urlDescarga = "https://github.com/AlejandroRodriguezM/GradeCard-Collector/releases/latest/download/Album.exe";
 				URI uri = new URI(urlDescarga);
 
 				HttpURLConnection httpConn = (HttpURLConnection) uri.toURL().openConnection();
@@ -1963,149 +1974,10 @@ public class Utilidades {
 		return texto;
 	}
 
-	public static String devolverPalabrasClave(String texto) {
-		// Definir las palabras clave y sus correspondientes tipos de edición
-		String[] palabrasClave = { "absolute", "omnibus hc", "hc omnibus", "tp omnibus", "omnibus tp", "hc omni",
-				"omni hc", "tp omni", "omni tp", "omnibus", "omni", "tp", "deluxe", "dlx", "treasury edition", "hc",
-				"#", "cvr", "TBD" };
-
-		// Escapar los caracteres especiales en las palabras clave
-		StringBuilder regexBuilder = new StringBuilder();
-		for (String palabra : palabrasClave) {
-			regexBuilder.append(Pattern.quote(palabra)).append("|");
-		}
-		String regex = regexBuilder.substring(0, regexBuilder.length() - 1); // Eliminar el último "|"
-
-		// Compilar la expresión regular
-		Pattern pattern = Pattern.compile(regex);
-
-		// Crear un Matcher para buscar las coincidencias en el texto
-		Matcher matcher = pattern.matcher(texto.toLowerCase());
-
-		// Determinar el tipo de edición correspondiente a la palabra clave encontrada
-		StringBuilder resultado = new StringBuilder();
-		if (matcher.find()) {
-			switch (matcher.group()) {
-			case "absolute":
-				resultado.append("Edición absolute (Absolute Edition)");
-				break;
-			case "omnibus hc":
-			case "hc omnibus":
-			case "tp omnibus":
-			case "omnibus tp":
-			case "hc omni":
-			case "omni hc":
-			case "tp omni":
-			case "omni tp":
-			case "omnibus":
-			case "omni":
-				resultado.append("Edición omnibus (Omnibus)");
-				break;
-			case "tp":
-			case "TBD":
-				resultado.append("Tapa blanda (Paperback)");
-				break;
-			case "deluxe":
-			case "dlx":
-			case "treasury edition":
-				resultado.append("Edición de lujo (Deluxe Edition)");
-				break;
-			case "hc":
-				resultado.append("Tapa dura (Hardcover)");
-				break;
-			case "#":
-			case "cvr":
-				resultado.append("Grapa (Issue individual)");
-				break;
-			default:
-				resultado.append("Grapa (Issue individual)");
-				break;
-			}
-		} else {
-			resultado.append("Grapa (Issue individual)");
-		}
-		return resultado.toString();
-	}
-
-	public static String extraerNumeroLimpio(String numComic) {
-
-		numComic = numComic.replaceAll("\\(.*?\\)", "");
-
-		// Encontrar la posición del símbolo #
-		int indiceNumeral = numComic.indexOf("#");
-
-		// Si no se encuentra el símbolo #, buscar cualquier número en la cadena
-		if (indiceNumeral == -1) {
-			// Buscar cualquier número en la cadena
-			String posibleNumero = numComic.replaceAll("\\D", "").trim();
-			if (!posibleNumero.isEmpty()) {
-				return posibleNumero;
-			} else {
-				return "0";
-			}
-		}
-
-		// Encontrar la posición del primer espacio después del #
-		int indiceEspacioDespuesNumeral = numComic.indexOf(" ", indiceNumeral);
-
-		// Si no se encuentra el espacio después del símbolo #,
-		// devuelve el texto después del #
-		if (indiceEspacioDespuesNumeral == -1) {
-			return numComic.substring(indiceNumeral + 1).trim();
-		}
-
-		// Buscar "hc", "vol", "omnibus" o "tp" después del espacio
-		String textoDespuesNumeral = numComic.substring(indiceNumeral + 1, indiceEspacioDespuesNumeral).trim()
-				.toLowerCase();
-		int indiceHc = textoDespuesNumeral.indexOf("hc ");
-		int indiceVol = textoDespuesNumeral.indexOf("vol ");
-		int indiceOmnibus = textoDespuesNumeral.indexOf("omnibus ");
-		int indiceTp = textoDespuesNumeral.indexOf("tp ");
-		int indiceTermino = Math.min(Math.min(Math.min(indiceHc, indiceVol), indiceOmnibus), indiceTp);
-
-		// Si se encuentra alguna palabra clave, buscar un número después de esa palabra
-		// clave
-		if (indiceTermino != -1) {
-			int indiceEspacioDespuesTermino = numComic.indexOf(" ", indiceEspacioDespuesNumeral + 1);
-			if (indiceEspacioDespuesTermino != -1) {
-				String posibleNumero = numComic.substring(indiceEspacioDespuesNumeral + 1, indiceEspacioDespuesTermino)
-						.trim();
-				if (posibleNumero.matches("\\d+")) {
-					return posibleNumero;
-				}
-			}
-		}
-
-		// Si no se encontró ningún número después de las palabras clave, buscar un
-		// número después del espacio
-		// que sigue al símbolo #
-		int indiceEspacioDespuesNumeral2 = numComic.indexOf(" ", indiceNumeral + 1);
-		if (indiceEspacioDespuesNumeral2 != -1) {
-			String posibleNumero = numComic.substring(indiceNumeral + 1, indiceEspacioDespuesNumeral2).trim();
-			if (posibleNumero.matches("\\d+")) {
-				return posibleNumero;
-			}
-		}
-
-		// Si no se encontró ningún número después de los términos clave o el espacio
-		// después del símbolo #,
-		// buscar cualquier número al final de la cadena
-		Pattern pattern = Pattern.compile("\\d+$");
-		Matcher matcher = pattern.matcher(numComic);
-		if (matcher.find()) {
-			return matcher.group();
-		}
-
-		// Si no se encontró ningún número en la cadena, devolver "0"
-		return "0";
-	}
-
 	public static void copiarDirectorio(String directorioNuevo, String directorioOriginal) {
 
 		File directorioOrigen = new File(directorioOriginal);
 		File directorioDestino = new File(directorioNuevo);
-
-		System.out.println("Tal: " + directorioOrigen);
 
 		// Verificar si el directorio origen existe y es un directorio
 		if (!directorioOrigen.exists() || !directorioOrigen.isDirectory()) {
@@ -2319,7 +2191,7 @@ public class Utilidades {
 
 //	public static String directorioPortada() {
 //
-//		String carpeta = System.getProperty("user.home") + "/Documents/libreria_comics/";
+//		String carpeta = System.getProperty("user.home") + "/Documents/album_comics/";
 //		String nombreCompletoDB = FuncionesFicheros.datosEnvioFichero();
 //		String nombreCortado[] = nombreCompletoDB.split("\\.");
 //		String nombredb = nombreCortado[0];
@@ -2329,8 +2201,9 @@ public class Utilidades {
 
 	public static String nombreDB() {
 		String nombreCompletoDB = FuncionesFicheros.datosEnvioFichero();
-		if (nombreCompletoDB != null) {
-			String nombreCortado[] = nombreCompletoDB.split("\\.");
+
+		if (nombreCompletoDB != null && !nombreCompletoDB.isEmpty()) {
+			String[] nombreCortado = nombreCompletoDB.split("\\.");
 			String nombredb = nombreCortado[0];
 			return nombredb;
 		}
@@ -2380,16 +2253,228 @@ public class Utilidades {
 		String dbName = "comic_predeterminada";
 		Ventanas nav = new Ventanas();
 		if (!comprobarDB()) {
-			FuncionesFicheros.guardarDatosBaseLocal((" "), null, null);
 			if (nav.alertaCreacionDB()) {
 				SQLiteManager.createTable(dbName);
-
-				Utilidades.crearCarpeta();
-
 				FuncionesFicheros.guardarDatosBaseLocal((dbName + ".db"), null, null);
+				Utilidades.crearCarpeta();
+			}
+		}
+	}
+
+	public static boolean checkNodeJSVersion() {
+		try {
+			// Ejecutar el comando para obtener la versión de Node.js
+			ProcessBuilder processBuilder = new ProcessBuilder("node", "--version");
+			Process process = processBuilder.start();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String line = reader.readLine();
+
+			if (line != null && !line.isEmpty()) {
+				System.out.println("Node.js version: " + line);
+				checkAndInstallPuppeteer();
+				return true;
+			} else {
+				System.out.println("Node.js no está instalado.");
+
+				return false;
+			}
+
+		} catch (IOException e) {
+			System.out.println("Node.js no está instalado o ocurrió un error al verificar la versión.");
+		}
+		return false;
+	}
+
+	public static void openDownloadPage() {
+		try {
+			Desktop desktop = Desktop.getDesktop();
+			desktop.browse(new URI("https://nodejs.org/en/download/prebuilt-installer"));
+		} catch (IOException | URISyntaxException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static void checkAndInstallPuppeteer() {
+		try {
+			// Especificar la ruta completa del ejecutable npm
+			ProcessBuilder processBuilder = new ProcessBuilder("C:\\Program Files\\nodejs\\npm.cmd", "list",
+					"puppeteer");
+			Process process = processBuilder.start();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String line;
+			boolean puppeteerInstalled = false;
+
+			while ((line = reader.readLine()) != null) {
+				if (line.contains("puppeteer")) {
+					puppeteerInstalled = true;
+					break;
+				}
+			}
+
+			if (puppeteerInstalled) {
+				System.out.println("Puppeteer ya está instalado.");
+			} else {
+				System.out.println("Puppeteer no está instalado. Instalando Puppeteer...");
+				installPuppeteer();
+			}
+
+		} catch (IOException e) {
+			System.out.println("Ocurrió un error al verificar si Puppeteer está instalado.");
+			e.printStackTrace();
+		}
+	}
+
+	private static void installPuppeteer() {
+		try {
+			// Especificar la ruta completa del ejecutable npm
+			ProcessBuilder processBuilder = new ProcessBuilder("C:\\Program Files\\nodejs\\npm.cmd", "install",
+					"puppeteer");
+			Process process = processBuilder.start();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String line;
+
+			while ((line = reader.readLine()) != null) {
+				System.out.println(line);
+			}
+
+			System.out.println("Puppeteer se ha instalado correctamente.");
+
+		} catch (IOException e) {
+			System.out.println("Ocurrió un error al instalar Puppeteer.");
+			e.printStackTrace();
+		}
+	}
+
+	public static void reiniciarOrdenadorOS() {
+		// Determinar el sistema operativo
+		String os = System.getProperty("os.name").toLowerCase();
+
+		// Llamar a la función correspondiente
+		if (os.contains("win")) {
+			reiniciarOrdenadorWindows();
+		} else if (os.contains("mac")) {
+			reiniciarOrdenadorMac();
+		} else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
+			reiniciarOrdenadorLinux();
+		} else {
+			System.err.println("Sistema operativo no soportado para reiniciar.");
+		}
+	}
+
+	public static void reiniciarOrdenadorWindows() {
+		try {
+			Process process = Runtime.getRuntime().exec("shutdown -r -t 0");
+			int exitCode = process.waitFor();
+			if (exitCode == 0) {
+				System.out.println("Reinicio exitoso en Windows.");
+			} else {
+				System.err.println("No se pudo reiniciar el ordenador en Windows.");
+			}
+		} catch (IOException | InterruptedException e) {
+			System.err.println("Error al reiniciar el ordenador en Windows: " + e.getMessage());
+		}
+	}
+
+	public static void reiniciarOrdenadorMac() {
+		try {
+			Process process = Runtime.getRuntime().exec("sudo shutdown -r now");
+			int exitCode = process.waitFor();
+			if (exitCode == 0) {
+				System.out.println("Reinicio exitoso en MacOS.");
+			} else {
+				System.err.println("No se pudo reiniciar el ordenador en MacOS.");
+			}
+		} catch (IOException | InterruptedException e) {
+			System.err.println("Error al reiniciar el ordenador en MacOS: " + e.getMessage());
+		}
+	}
+
+	public static void reiniciarOrdenadorLinux() {
+		try {
+			Process process = Runtime.getRuntime().exec("sudo reboot");
+			int exitCode = process.waitFor();
+			if (exitCode == 0) {
+				System.out.println("Reinicio exitoso en Linux.");
+			} else {
+				System.err.println("No se pudo reiniciar el ordenador en Linux.");
+			}
+		} catch (IOException | InterruptedException e) {
+			System.err.println("Error al reiniciar el ordenador en Linux: " + e.getMessage());
+		}
+	}
+
+	public static double sumaNumeros(List<String> lista) {
+		double suma = 0.0;
+
+		for (String str : lista) {
+			// Eliminar símbolos no numéricos excepto el punto decimal
+			String numeroStr = str.replaceAll("[^0-9.]", "");
+
+			try {
+				// Intentar parsear la cadena a número
+				double numero = Double.parseDouble(numeroStr);
+				suma += numero;
+			} catch (NumberFormatException e) {
+				// Ignorar cadenas que no se pueden parsear como número
+				System.out.println("No se puede parsear como número: " + str);
 			}
 		}
 
+		// Redondear el resultado a dos decimales
+		return Math.round(suma * 100.0) / 100.0;
+	}
+
+	public static boolean isValidURL(String urlString) {
+		try {
+			URL url = new URL(urlString);
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("GET");
+			connection.setConnectTimeout(100); // 5 segundos de tiempo de espera
+			connection.setReadTimeout(100);
+			int responseCode = connection.getResponseCode();
+
+			// Si el código de respuesta es 200-299, la URL es válida
+			return (200 <= responseCode && responseCode <= 299);
+		} catch (IOException e) {
+			return false; // Si ocurre una excepción, la URL no es válida
+		}
+	}
+
+	public static String parseDate(DatePicker datePicker) {
+		LocalDate date = datePicker.getValue();
+		if (date != null) {
+			return date.format(SQLITE_DATE_FORMATTER);
+		} else {
+			return "";
+		}
+	}
+
+	public static LocalDate parseStringToDate(String dateString) {
+		try {
+			return LocalDate.parse(dateString, SQLITE_DATE_FORMATTER);
+		} catch (DateTimeParseException e) {
+			return null;
+		}
+	}
+
+	public static void setDatePickerValue(DatePicker datePicker, String dateString) {
+		LocalDate date = parseStringToDate(dateString);
+		if (date != null) {
+			datePicker.setValue(date);
+		}
+	}
+
+	public static void abrirEnlace(String url) {
+		if (Utilidades.isWindows()) {
+			Utilidades.accesoWebWindows(url); // Llamada a funcion
+		} else {
+			if (Utilidades.isUnix()) {
+				Utilidades.accesoWebLinux(url); // Llamada a funcion
+			} else {
+				Utilidades.accesoWebMac(url);
+
+			}
+		}
 	}
 
 	public static AccionReferencias getReferenciaVentana() {

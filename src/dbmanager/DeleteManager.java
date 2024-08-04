@@ -11,9 +11,10 @@ import funcionesAuxiliares.Utilidades;
 
 public class DeleteManager {
 
-	private static final String DELETE_SENTENCIA = "DELETE FROM comicsbbdd WHERE ID = ?";
-	private static final String DELETE_SENTENCIA_COMPLETA = "DELETE FROM comicsbbdd";
-	private static final String SENTENCIA_REBOOT_ID = "DELETE FROM sqlite_sequence WHERE name = 'comicsbbdd'";
+	private static final String DELETE_SENTENCIA = "DELETE FROM comicsbbdd WHERE idComic = ?;";
+	private static final String DELETE_SENTENCIA_COMPLETA = "DELETE FROM comicsbbdd;";
+	private static final String SENTENCIA_REBOOT_ID = "DELETE FROM sqlite_sequence WHERE name = 'comicsbbdd';";
+
 
 
 	/**
@@ -25,7 +26,7 @@ public class DeleteManager {
 	public static CompletableFuture<Boolean> deleteAndRestartDatabaseAsync() {
 		return CompletableFuture.supplyAsync(() -> {
 			try {
-				ListaComicsDAO.limpiarListasPrincipales();
+				ListasComicsDAO.limpiarListasPrincipales();
 				CompletableFuture<Boolean> result = CompletableFuture.supplyAsync(() -> {
 					try (Connection conn = ConectManager.conexion();
 							PreparedStatement deleteStatement = conn.prepareStatement(DELETE_SENTENCIA_COMPLETA);
@@ -59,7 +60,7 @@ public class DeleteManager {
 	 * @throws SQLException Si ocurre un error en la base de datos
 	 */
 	public static void borrarComic(String idComic) {
-		ListaComicsDAO.listaComics.clear();
+		ListasComicsDAO.listaComics.clear();
 
 		try (Connection conn = ConectManager.conexion();
 				PreparedStatement ps = conn.prepareStatement(DELETE_SENTENCIA);) {
@@ -68,7 +69,7 @@ public class DeleteManager {
 				Comic comic = SelectManager.comicDatos(idComic);
 				ps.setString(1, idComic);
 				if (ps.executeUpdate() == 1) { // Si se ha modificado correctamente, se añade el cómic a la lista
-					ListaComicsDAO.listaComics.add(comic);
+					ListasComicsDAO.listaComics.add(comic);
 				}
 			}
 		} catch (SQLException ex) {

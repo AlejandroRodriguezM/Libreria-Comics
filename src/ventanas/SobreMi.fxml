@@ -11,7 +11,7 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="408.0" prefWidth="732.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controladores.SobreMiController">
    <children>
-      <ImageView fitHeight="414.0" fitWidth="735.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="423.0" fitWidth="740.0" pickOnBounds="true">
          <image>
             <Image url="@../imagenes/fondo_sobremi.jpg" />
          </image>
@@ -36,21 +36,21 @@
       </ImageView>
       <Label fx:id="TextoInfo" alignment="TOP_LEFT" cache="true" layoutX="5.0" layoutY="30.0" prefHeight="100.0" prefWidth="719.0" stylesheets="@../style/sobremi_style.css" text="Programa creado por Alejandro Rodriguez. Este es un proyecto personal creado en 2022 hasta la fecha. Este programa sirve como portfolio de programación. No dudes en seguirme :)" wrapText="true" />
       <Button fx:id="botonCompra" layoutX="11.0" layoutY="228.0" mnemonicParsing="false" onAction="#comprarComic" prefHeight="43.0" prefWidth="185.0" stylesheets="@../style/sobremi_style.css" text="Webs recomendadas" wrapText="true" />
-      <MenuBar fx:id="menu_navegacion" prefHeight="25.0" prefWidth="735.0">
+      <MenuBar fx:id="menu_navegacion" prefHeight="26.0" prefWidth="740.0">
          <menus>
             <Menu fx:id="navegacion_cerrar" mnemonicParsing="false" text="Archivo">
                <items>
-                  <MenuItem mnemonicParsing="false" text="Exportar CSV" visible="false" />
-                  <MenuItem mnemonicParsing="false" text="Importar CSV" visible="false" />
-                  <MenuItem mnemonicParsing="false" text="Exportar base de datos" visible="false" />
-                  <MenuItem mnemonicParsing="false" text="Eliminar base de datos" visible="false" />
-                  <MenuItem fx:id="menu_archivo_sobreMi" mnemonicParsing="false" text="Sobre mi" visible="false" />
+                  <MenuItem disable="true" mnemonicParsing="false" text="Exportar CSV" visible="false" />
+                  <MenuItem disable="true" mnemonicParsing="false" text="Importar CSV" visible="false" />
+                  <MenuItem disable="true" mnemonicParsing="false" text="Exportar base de datos" visible="false" />
+                  <MenuItem disable="true" mnemonicParsing="false" text="Eliminar base de datos" visible="false" />
+                  <MenuItem fx:id="menu_archivo_sobreMi" disable="true" mnemonicParsing="false" text="Sobre mi" visible="false" />
                   <MenuItem fx:id="menu_archivo_volver" disable="true" mnemonicParsing="false" text="Volver al menu" visible="false" />
-                  <MenuItem fx:id="menu_archivo_desconectar" mnemonicParsing="false" onAction="#desconectar" text="Desconectar" visible="false" />
+                  <MenuItem fx:id="menu_archivo_desconectar" disable="true" mnemonicParsing="false" onAction="#desconectar" text="Desconectar" visible="false" />
                   <MenuItem fx:id="menu_archivo_cerrar" mnemonicParsing="false" onAction="#volverMenu" text="Cerrar" />
                </items>
             </Menu>
-            <Menu fx:id="navegacion_comic" mnemonicParsing="false" text="Ventanas" visible="false">
+            <Menu fx:id="navegacion_comic" disable="true" mnemonicParsing="false" text="Ventanas" visible="false">
                <items>
                   <MenuItem fx:id="menu_comic_aniadir" mnemonicParsing="false" text="Añadir comic" visible="false" />
                   <MenuItem fx:id="menu_comic_eliminar" mnemonicParsing="false" text="Eliminar Comic" visible="false" />

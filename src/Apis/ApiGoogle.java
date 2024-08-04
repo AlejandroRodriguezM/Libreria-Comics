@@ -8,11 +8,16 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 import org.json.JSONArray;
-
 /**
  * Clase que proporciona métodos para traducir texto utilizando la API de Google Translate.
  */
 public class ApiGoogle {
+	
+	public static void main(String[] args) {
+		
+		System.out.println(translateText("Legion de fragmentados", "en"));
+		
+	}
 	
 	/**
 	 * Traduce un texto desde el idioma de origen detectado al idioma de destino
@@ -95,38 +100,29 @@ public class ApiGoogle {
 	 * @return La traducción completa como una cadena de caracteres, o null si
 	 *         ocurre un error.
 	 */
-	public static String parseTranslationResponse(String jsonResponse) {
-		try {
-			// Crear un objeto JSON a partir de la respuesta JSON
-			JSONArray jsonArray = new JSONArray(jsonResponse);
+    public static String parseTranslationResponse(String jsonResponse) {
+        try {
+            JSONArray jsonArray = new JSONArray(jsonResponse);
 
-			// La respuesta JSON contiene múltiples segmentos de traducción
-			StringBuilder translationBuilder = new StringBuilder();
+            StringBuilder translationBuilder = new StringBuilder();
 
-			for (int i = 0; i < jsonArray.length(); i++) {
-				JSONArray segmentArray = jsonArray.getJSONArray(i);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONArray segmentArray = jsonArray.getJSONArray(i);
 
-				// El primer elemento del segmento contiene la traducción
-				String segment = segmentArray.getString(0);
+                String segment = segmentArray.getString(0);
 
-				// Agregar el segmento traducido al resultado
-				translationBuilder.append(segment);
+                translationBuilder.append(segment);
 
-				// Agregar un espacio si no es el último segmento
-				if (i < jsonArray.length() - 1) {
-					translationBuilder.append(" ");
-				}
-			}
+                if (i < jsonArray.length() - 1) {
+                    translationBuilder.append(" ");
+                }
+            }
 
-			// Obtener la traducción completa
-			String translation = translationBuilder.toString();
-
-			return translation;
-		} catch (Exception e) {
-			// Manejar cualquier excepción que pueda ocurrir durante el proceso
-			e.printStackTrace();
-			return null;
-		}
-	}
+            return translationBuilder.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 }

@@ -8,9 +8,9 @@ import comicManagement.Comic;
 public class InsertManager {
 
 	public static final String INSERT_SENTENCIA = "INSERT INTO comicsbbdd ("
-			+ "nomComic, nivel_gradeo, precio_comic, codigo_comic, numComic, nomVariante, firma, nomEditorial, "
-			+ "formato, procedencia, fecha_publicacion, nomGuionista, nomDibujante, puntuacion, portada, "
-			+ "key_issue, url_referencia, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			+ "tituloComic, codigoComic, numeroComic,precioComic, fechaGradeo, editorComic, "
+			+ " keyComentarios, firmaComic, artistaComic, guionistaComic, varianteComic, direccionImagenComic, urlReferenciaComic) "
+			+ "VALUES ( ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?)";
 
 	/**
 	 * Inserta los datos de un cómic en la base de datos.
@@ -20,7 +20,8 @@ public class InsertManager {
 	 * @throws SQLException si ocurre un error al ejecutar la consulta SQL
 	 */
 	public static void insertarDatos(Comic datos, boolean esImportar) {
-
+		String keyString = datos.getKeyComentarios().replace(";", "");
+		datos.setKeyComentarios(keyString);
 		DatabaseManagerDAO.subirComic(datos, esImportar);
 	}
 

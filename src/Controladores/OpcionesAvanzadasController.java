@@ -4,6 +4,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -23,7 +26,7 @@ import dbmanager.ComicManagerDAO;
 import dbmanager.ConectManager;
 import dbmanager.DBUtilidades;
 import dbmanager.DatabaseManagerDAO;
-import dbmanager.ListaComicsDAO;
+import dbmanager.ListasComicsDAO;
 import ficherosFunciones.FuncionesExcel;
 import funcionesAuxiliares.Utilidades;
 import funcionesAuxiliares.Ventanas;
@@ -88,9 +91,6 @@ public class OpcionesAvanzadasController implements Initializable {
 
 	@FXML
 	private Button botonRecomponerPortadas;
-
-	@FXML
-	private CheckBox checkFirmas;
 
 	@FXML
 	private ComboBox<String> comboPreviews;
@@ -162,7 +162,6 @@ public class OpcionesAvanzadasController implements Initializable {
 		referenciaVentana.setBotonDescargarPdf(botonDescargarPdf);
 		referenciaVentana.setBotonDescargarSQL(botonDescargarSQL);
 		referenciaVentana.setBotonNormalizarDB(botonNormalizarDB);
-		referenciaVentana.setCheckFirmas(checkFirmas);
 		referenciaVentana.setComboPreviews(comboPreviews);
 		referenciaVentana.setLabelComprobar(labelComprobar);
 		referenciaVentana.setLabelVersion(labelVersion);
@@ -170,7 +169,7 @@ public class OpcionesAvanzadasController implements Initializable {
 		referenciaVentana.setProntInfoEspecial(prontInfoEspecial);
 		referenciaVentana.setProntInfoPreviews(prontInfoPreviews);
 		referenciaVentana.setProntInfoPortadas(prontInfoPortadas);
-		referenciaVentana.setStage(estadoStage());
+		referenciaVentana.setStageVentana(estadoStage());
 
 		referenciaVentana.setBotonComprimirPortadas(botonComprimirPortadas);
 		referenciaVentana.setBotonReCopiarPortadas(botonReCopiarPortadas);
@@ -211,20 +210,6 @@ public class OpcionesAvanzadasController implements Initializable {
 		AlarmaList.iniciarAnimacionEspera(prontInfoEspecial);
 		AlarmaList.iniciarAnimacionEspera(prontInfoPreviews);
 		AlarmaList.iniciarAnimacionEspera(prontInfoPortadas);
-
-		checkFirmas.selectedProperty().addListener((observable, oldValue, newValue) -> {
-			if (Boolean.TRUE.equals(newValue)) {
-				if (nav.alertaFirmaActivada()) {
-					actualizarFima.set(true);
-				} else {
-					// Si la alerta no está activada, desmarcar el CheckBox
-					checkFirmas.setSelected(false);
-				}
-			} else {
-				// Cuando el CheckBox se desmarca, actualiza actualizarFima a false
-				actualizarFima.set(false);
-			}
-		});
 	}
 
 	@FXML
@@ -234,11 +219,9 @@ public class OpcionesAvanzadasController implements Initializable {
 
 	@FXML
 	void descargarSQL(ActionEvent event) {
-
 		AlarmaList.detenerAnimacionEspera();
-		DatabaseManagerDAO.makeSQL(prontInfo, estadoStage());
-		Utilidades.borrarArchivosNoEnLista(ListaComicsDAO.listaImagenes);
-
+		DatabaseManagerDAO.makeSQL(prontInfo);
+		Utilidades.borrarArchivosNoEnLista(ListasComicsDAO.listaImagenes);
 	}
 
 	@FXML
@@ -275,31 +258,25 @@ public class OpcionesAvanzadasController implements Initializable {
 		Task<Void> task = new Task<Void>() {
 			@Override
 			protected Void call() throws Exception {
-				DatabaseManagerDAO.comprobarNormalizado("nomComic", prontInfo);
-				DatabaseManagerDAO.comprobarNormalizado("nivel_gradeo", prontInfo);
-				DatabaseManagerDAO.comprobarNormalizado("precio_comic", prontInfo);
-				DatabaseManagerDAO.comprobarNormalizado("codigo_comic", prontInfo);
-				DatabaseManagerDAO.comprobarNormalizado("numComic", prontInfo);
-				DatabaseManagerDAO.comprobarNormalizado("firma", prontInfo);
-				DatabaseManagerDAO.comprobarNormalizado("nomEditorial", prontInfo);
-				DatabaseManagerDAO.comprobarNormalizado("formato", prontInfo);
-				DatabaseManagerDAO.comprobarNormalizado("procedencia", prontInfo);
-				DatabaseManagerDAO.comprobarNormalizado("puntuacion", prontInfo);
-				DatabaseManagerDAO.comprobarNormalizado("key_issue", prontInfo);
-				DatabaseManagerDAO.comprobarNormalizado("estado", prontInfo);
-
-				DatabaseManagerDAO.comprobarNormalizado("nomGuionista", prontInfo);
-				DatabaseManagerDAO.comprobarNormalizado("nomDibujante", prontInfo);
-				DatabaseManagerDAO.comprobarNormalizado("nomVariante", prontInfo);
+				DatabaseManagerDAO.comprobarNormalizado("tituloComic", prontInfo);
+				DatabaseManagerDAO.comprobarNormalizado("precioComic", prontInfo);
+				DatabaseManagerDAO.comprobarNormalizado("codigoComic", prontInfo);
+				DatabaseManagerDAO.comprobarNormalizado("numeroComic", prontInfo);
+				DatabaseManagerDAO.comprobarNormalizado("firmaComic", prontInfo);
+				DatabaseManagerDAO.comprobarNormalizado("editorComic", prontInfo);
+				DatabaseManagerDAO.comprobarNormalizado("keyComentarios", prontInfo);
+				DatabaseManagerDAO.comprobarNormalizado("guionistaComic", prontInfo);
+				DatabaseManagerDAO.comprobarNormalizado("artistaComic", prontInfo);
+				DatabaseManagerDAO.comprobarNormalizado("varianteComic", prontInfo);
 				DatabaseManagerDAO.comprobarNormalizado("", prontInfo);
 
-				ListaComicsDAO.reiniciarListaComics();
-				ListaComicsDAO.listasAutoCompletado();
-				List<String> inputPaths = DBUtilidades.obtenerValoresColumna("portada");
+				ListasComicsDAO.reiniciarListaComics();
+				ListasComicsDAO.listasAutoCompletado();
+				List<String> inputPaths = DBUtilidades.obtenerValoresColumna("direccionImagenComic");
 
 				Utilidades.borrarArchivosNoEnLista(inputPaths);
 
-				List<ComboBox<String>> comboboxes = referenciaVentana.getComboboxes();
+				List<ComboBox<String>> comboboxes = AccionReferencias.getListaComboboxes();
 				if (comboboxes != null) {
 					Platform.runLater(() -> funcionesCombo.rellenarComboBox(comboboxes));
 				}
@@ -312,7 +289,7 @@ public class OpcionesAvanzadasController implements Initializable {
 
 		task.setOnRunning(e -> estadoStage().setOnCloseRequest(closeEvent -> task.cancel(true)));
 
-		task.setOnSucceeded(e -> System.out.println("Terminado"));
+		task.setOnSucceeded(e -> thread.interrupt());
 
 		thread.start();
 	}
@@ -391,7 +368,13 @@ public class OpcionesAvanzadasController implements Initializable {
 				}
 			};
 
-			new Thread(task).start();
+			Thread thread = new Thread(task);
+			thread.setDaemon(true); // Hacer que el hilo sea demonio para que termine cuando la aplicación se cierre
+			thread.start();
+
+			task.setOnRunning(e -> estadoStage().setOnCloseRequest(closeEvent -> task.cancel(true)));
+
+			task.setOnSucceeded(e -> thread.interrupt());
 		} else {
 			meses.add("No hay previews");
 			comboPreviews.setItems(meses);
@@ -403,15 +386,14 @@ public class OpcionesAvanzadasController implements Initializable {
 		Utilidades.crearCarpeta();
 		AccionModificar.setReferenciaVentana(guardarReferencia());
 		AccionFuncionesComunes.setReferenciaVentana(guardarReferencia());
-		AccionModificar.actualizarDatabase("modificar", actualizarFima.get(), estadoStage());
-
+		accionBaseDatos("modificar");
 	}
 
 	@FXML
 	void actualizarDatosComic(ActionEvent event) {
 		AccionModificar.setReferenciaVentana(guardarReferencia());
 		AccionFuncionesComunes.setReferenciaVentana(guardarReferencia());
-		AccionModificar.actualizarDatabase("actualizar datos", actualizarFima.get(), estadoStage());
+		accionBaseDatos("actualizar datos");
 	}
 
 	@FXML
@@ -419,15 +401,24 @@ public class OpcionesAvanzadasController implements Initializable {
 		Utilidades.crearCarpeta();
 		AccionModificar.setReferenciaVentana(guardarReferencia());
 		AccionFuncionesComunes.setReferenciaVentana(guardarReferencia());
-		AccionModificar.actualizarDatabase("actualizar portadas", actualizarFima.get(), estadoStage());
+		accionBaseDatos("actualizar portadas");
+	}
 
+	public void accionBaseDatos(String tipoUpdate) {
+
+		AlarmaList.detenerAnimacionEspera();
+
+		Utilidades.crearCarpeta();
+		AccionModificar.setReferenciaVentana(guardarReferencia());
+		AccionFuncionesComunes.setReferenciaVentana(guardarReferencia());
+		AccionModificar.actualizarDatabase(tipoUpdate, estadoStage());
 	}
 
 	@FXML
 	void comprimirPortadas(ActionEvent event) {
-		List<String> inputPortadas = DBUtilidades.obtenerValoresColumna("portada");
+		List<String> inputPortadas = DBUtilidades.obtenerValoresColumna("direccionImagenComic");
 		Utilidades.borrarArchivosNoEnLista(inputPortadas);
-		List<String> inputPaths = ListaComicsDAO.listaImagenes;
+		List<String> inputPaths = ListasComicsDAO.listaImagenes;
 		comicsProcesados = new AtomicInteger(0);
 		mensajeIdCounter = new AtomicInteger(0);
 		numLineas = new AtomicInteger(0);
@@ -440,7 +431,7 @@ public class OpcionesAvanzadasController implements Initializable {
 
 		final String DOCUMENTS_PATH = Utilidades.DOCUMENTS_PATH;
 		final String DB_NAME = Utilidades.nombreDB();
-		final String directorioComun = DOCUMENTS_PATH + File.separator + "libreria_comics" + File.separator + DB_NAME
+		final String directorioComun = DOCUMENTS_PATH + File.separator + "album_comics" + File.separator + DB_NAME
 				+ File.separator;
 		final String directorioOriginal = directorioComun + "portadas" + File.separator;
 		final String directorioNuevo = directorioComun + "portadas_originales";
@@ -458,9 +449,9 @@ public class OpcionesAvanzadasController implements Initializable {
 	private static void processComic(String codigo) {
 		StringBuilder textoBuilder = new StringBuilder();
 
-		codigoFaltante.append("Comprimiendo: ").append(comicsProcesados.get()).append(" de ").append(numLineas)
+		codigoFaltante.append("Comprimiendo: ").append(comicsProcesados.get() + 1).append(" de ").append(numLineas)
 				.append("\n");
-		textoBuilder.append("Comprimiendo: ").append(comicsProcesados.get()).append(" de ").append(numLineas)
+		textoBuilder.append("Comprimiendo: ").append(comicsProcesados.get() + 1).append(" de ").append(numLineas)
 				.append("\n");
 
 		updateUI(textoBuilder);
@@ -473,7 +464,7 @@ public class OpcionesAvanzadasController implements Initializable {
 			protected Void call() throws Exception {
 				Utilidades.copiarDirectorio(directorioNuevo, directorioOriginal);
 				nav.verCargaComics(cargaComicsControllerRef);
-				boolean estaBaseLlena = ListaComicsDAO.comprobarLista();
+				boolean estaBaseLlena = ListasComicsDAO.comprobarLista();
 
 				if (!estaBaseLlena) {
 					String cadenaCancelado = "La base de datos esta vacia";
@@ -490,7 +481,8 @@ public class OpcionesAvanzadasController implements Initializable {
 					processComic(codigo);
 					comprimirImagenes(codigo);
 				});
-
+				List<String> inputPortadas = DBUtilidades.obtenerValoresColumna("portada");
+				Utilidades.borrarArchivosNoEnLista(inputPortadas);
 				return null;
 			}
 		};
@@ -634,7 +626,7 @@ public class OpcionesAvanzadasController implements Initializable {
 			@Override
 			protected Void call() throws Exception {
 				try {
-					boolean estaBaseLlena = ListaComicsDAO.comprobarLista();
+					boolean estaBaseLlena = ListasComicsDAO.comprobarLista();
 					if (!estaBaseLlena) {
 						String cadenaCancelado = "La base de datos esta vacia";
 						AlarmaList.iniciarAnimacionAvanzado(prontInfoPortadas, cadenaCancelado);
@@ -642,12 +634,17 @@ public class OpcionesAvanzadasController implements Initializable {
 						return null; // Salir del método call() para finalizar el Task
 					}
 
-					List<String> listaID = ListaComicsDAO.listaID;
+					List<String> listaID = ListasComicsDAO.listaID;
 					// Mostrar el diálogo de selección de carpeta
 
 					if (esCopia) {
+						// Crear la carpeta "portadas" dentro del directorio seleccionado
+						Path portadasDirectory = Paths.get(selectedDirectory.getAbsolutePath(), "portadas");
+						if (!Files.exists(portadasDirectory)) {
+							Files.createDirectories(portadasDirectory);
+						}
 						Utilidades.copyDirectory(FuncionesExcel.DEFAULT_PORTADA_IMAGE_PATH,
-								selectedDirectory.getAbsolutePath());
+								portadasDirectory.toString());
 					} else {
 						Utilidades.copyDirectory(selectedDirectory.getAbsolutePath(),
 								FuncionesExcel.DEFAULT_PORTADA_IMAGE_PATH);
@@ -656,11 +653,12 @@ public class OpcionesAvanzadasController implements Initializable {
 					for (String idComic : listaID) {
 						Comic comicNuevo = ComicManagerDAO.comicDatos(idComic);
 
-						String nombre_portada = Utilidades.obtenerNombrePortada(false, comicNuevo.getImagen());
-						String nombre_modificado = Utilidades.convertirNombreArchivo(nombre_portada);
-						if (!Utilidades.existeArchivo(FuncionesExcel.DEFAULT_PORTADA_IMAGE_PATH, nombre_portada)) {
+						String nombrePortada = Utilidades.obtenerNombrePortada(false,
+								comicNuevo.getDireccionImagenComic());
+						String nombreModificado = Utilidades.convertirNombreArchivo(nombrePortada);
+						if (!Utilidades.existeArchivo(FuncionesExcel.DEFAULT_PORTADA_IMAGE_PATH, nombrePortada)) {
 							FuncionesExcel.copiarPortadaPredeterminada(selectedDirectory.getAbsolutePath(),
-									nombre_modificado);
+									nombreModificado);
 						}
 					}
 

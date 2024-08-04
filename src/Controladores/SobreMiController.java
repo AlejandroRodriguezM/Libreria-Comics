@@ -35,7 +35,6 @@ import dbmanager.ConectManager;
 import funcionesAuxiliares.Utilidades;
 import funcionesAuxiliares.Ventanas;
 import funcionesInterfaz.FuncionesManejoFront;
-import funcionesManagment.AccionFuncionesComunes;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -218,7 +217,7 @@ public class SobreMiController implements Initializable {
 	void accesoGitHub(ActionEvent event) {
 
 		String url = "https://github.com/AlejandroRodriguezM";
-		abrirEnlace(url);
+		Utilidades.abrirEnlace(url);
 	}
 
 	/**
@@ -230,7 +229,7 @@ public class SobreMiController implements Initializable {
 	void accesoLinkedin(ActionEvent event) {
 
 		String url = "https://www.linkedin.com/in/alejandro-rodriguez-mena-497a00179/";
-		abrirEnlace(url);
+		Utilidades.abrirEnlace(url);
 	}
 
 	/**
@@ -242,21 +241,7 @@ public class SobreMiController implements Initializable {
 	void accesoYoutube(ActionEvent event) {
 
 		String url = "https://www.youtube.com/playlist?list=PL7MV626sbFp6EY0vP8gEEgrVCryitFXCM";
-		abrirEnlace(url);
-
-	}
-
-	public void abrirEnlace(String url) {
-		if (Utilidades.isWindows()) {
-			Utilidades.accesoWebWindows(url); // Llamada a funcion
-		} else {
-			if (Utilidades.isUnix()) {
-				Utilidades.accesoWebLinux(url); // Llamada a funcion
-			} else {
-				Utilidades.accesoWebMac(url);
-
-			}
-		}
+		Utilidades.abrirEnlace(url);
 	}
 
 	/**
@@ -289,8 +274,8 @@ public class SobreMiController implements Initializable {
 		String url1 = "https://www.radarcomics.com/es/";
 		String url2 = "https://www.panini.es/shp_esp_es/comics.html";
 
-		abrirEnlace(url1);
-		abrirEnlace(url2);
+		Utilidades.abrirEnlace(url1);
+		Utilidades.abrirEnlace(url2);
 	}
 
 	/**
@@ -302,7 +287,7 @@ public class SobreMiController implements Initializable {
 	public void otroProyecto() {
 		String url = "https://github.com/AlejandroRodriguezM";
 
-		abrirEnlace(url);
+		Utilidades.abrirEnlace(url);
 	}
 
 	/////////////////////////////////
